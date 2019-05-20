@@ -199,9 +199,9 @@ public class ExecutionTraceCollector {
 	 */
 	public static void processLastSubTrace() {
 		// get an id for the current thread
-//		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
-//
-//		processLastSubtraceForThreadId(threadId, currentSubTraces.remove(threadId));
+		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
+
+		processLastSubtraceForThreadId(threadId, currentSubTraces.remove(threadId));
 	}
 
 	private static Future<?> processLastSubtraceForThreadId(long threadId, List<int[]> subTrace) {
@@ -220,16 +220,20 @@ public class ExecutionTraceCollector {
 		}
 
 		@Override
-		public void run() {
-			// get the respective execution trace
-			BufferedArrayQueue<Integer> trace = executionTraces.get(threadId);
-			if (trace == null) {
-				trace = getNewCollector(threadId);
-				executionTraces.put(threadId, trace);
-			}
-			
-			// get or create id for sub trace
-			int id = getOrCreateIdForSubTrace(subTrace);
+		public void run() { //TODO
+//			// get the respective execution trace
+//			BufferedArrayQueue<Integer> trace = executionTraces.get(threadId);
+//			if (trace == null) {
+//				trace = getNewCollector(threadId);
+//				executionTraces.put(threadId, trace);
+//			}
+//			
+//			// get or create id for sub trace
+//			int id = getOrCreateIdForSubTrace(subTrace);
+//			
+//			// add the sub trace's id to the trace
+//			trace.add(id);
+						
 			
 //			System.out.println("size: " + TouchCollector.registeredClasses.size());
 //			for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
@@ -237,9 +241,6 @@ public class ExecutionTraceCollector {
 //			}
 //
 //			System.out.println(classId + ":" + counterId);
-
-			// add the sub trace's id to the trace
-			trace.add(id);
 		}
 		
 	}
@@ -332,7 +333,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void addStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-//		addStatementToExecutionTrace(classId, counterId);
+		addStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
 
@@ -346,7 +347,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void variableAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-//		variableAddStatementToExecutionTrace(classId, counterId);
+		variableAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
 
@@ -360,7 +361,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void jumpAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-//		jumpAddStatementToExecutionTrace(classId, counterId);
+		jumpAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
 
@@ -374,8 +375,8 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void switchAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-//		processLastSubTrace();
-//		switchAddStatementToExecutionTrace(classId, counterId);
+		processLastSubTrace();
+		switchAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
 
