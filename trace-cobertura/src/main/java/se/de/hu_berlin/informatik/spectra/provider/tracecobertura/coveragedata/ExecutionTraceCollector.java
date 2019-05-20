@@ -157,30 +157,30 @@ public class ExecutionTraceCollector {
 			return 0;
 		}
 		
-		idLock.lock();
-		try {
-			SubTraceIntArrayWrapper wrapper = new SubTraceIntArrayWrapper(subTrace);
-			Integer id = subTraceIdMap.get(wrapper);
-			if (id == null) {
-				// starts with id 1
-				id = ++currentId;
-				// new sub trace, so store new id and store sub trace
-				subTraceIdMap.put(wrapper, currentId);
-				// also, only store the least necessary parts 
-				// of the sub trace as a key in the map!
-				wrapper.simplify();
-				if (existingSubTraces == null) {
-					existingSubTraces = getNewSubTraceMap();
-				}
-				existingSubTraces.put(currentId, subTrace);
+//		idLock.lock();
+//		try {
+		SubTraceIntArrayWrapper wrapper = new SubTraceIntArrayWrapper(subTrace);
+		Integer id = subTraceIdMap.get(wrapper);
+		if (id == null) {
+			// starts with id 1
+			id = ++currentId;
+			// only store the least necessary parts 
+			// of the sub trace as a key in the map!
+			wrapper.simplify();
+			// new sub trace, so store new id and store sub trace
+			subTraceIdMap.put(wrapper, currentId);
+			if (existingSubTraces == null) {
+				existingSubTraces = getNewSubTraceMap();
 			}
-			// help out the garbage collector?
-			wrapper = null;
-			
-			return id;
-		} finally {
-			idLock.unlock();
+			existingSubTraces.put(currentId, subTrace);
 		}
+		// help out the garbage collector?
+		wrapper = null;
+
+		return id;
+//		} finally {
+//			idLock.unlock();
+//		}
 	}
 	
 	private static BufferedMap<List<int[]>> getNewSubTraceMap() {

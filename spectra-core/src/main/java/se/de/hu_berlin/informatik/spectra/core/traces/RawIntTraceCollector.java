@@ -65,6 +65,9 @@ public class RawIntTraceCollector {
 		outputDir.toFile().mkdirs();
 		this.output = outputDir.resolve("rawTraces.zip");
 		new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
+		if (globalIdToSubTraceMap == null) {
+			globalIdToSubTraceMap = getNewSubTraceMap(output.getParent());
+		}
 		
 		this.output.toFile().deleteOnExit();
 //		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
@@ -193,11 +196,11 @@ public class RawIntTraceCollector {
 			// sub trace is not yet part of the global sub trace map
 			// starts with id 1
 			id = ++currentId;
-			// new sub trace, so store new id and store sub trace
-			subTraceGlobalIdMap.put(wrapper, currentId);
-			// also, only store the least necessary parts 
+			// only store the least necessary parts 
 			// of the sub trace as a key in the map!
 			wrapper.simplify();
+			// new sub trace, so store new id and store sub trace
+			subTraceGlobalIdMap.put(wrapper, currentId);
 			globalIdToSubTraceMap.put(currentId, subTrace);
 		}
 		// help out the garbage collector?

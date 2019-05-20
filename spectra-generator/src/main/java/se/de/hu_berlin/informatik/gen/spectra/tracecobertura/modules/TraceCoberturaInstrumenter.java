@@ -170,7 +170,7 @@ final public class TraceCoberturaInstrumenter extends AbstractInstrumenter {
 
 			instrumentationArguments = builder.build();
 			
-			CodeInstrumentationTask instrumentationTask = new CodeInstrumentationTask(true);
+			CodeInstrumentationTask instrumentationTask = new CodeInstrumentationTask(false);
 			try {
 				ProjectData projectData = new ProjectData();
 				instrumentationTask.instrument(instrumentationArguments, projectData);
