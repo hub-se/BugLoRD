@@ -220,17 +220,17 @@ public class ExecutionTraceCollector {
 		}
 
 		@Override
-		public void run() { //TODO
+		public void run() {
 //			// get the respective execution trace
 //			BufferedArrayQueue<Integer> trace = executionTraces.get(threadId);
 //			if (trace == null) {
 //				trace = getNewCollector(threadId);
 //				executionTraces.put(threadId, trace);
 //			}
-//			
-//			// get or create id for sub trace
-//			int id = getOrCreateIdForSubTrace(subTrace);
-//			
+			
+			// get or create id for sub trace
+			int id = getOrCreateIdForSubTrace(subTrace);
+			
 //			// add the sub trace's id to the trace
 //			trace.add(id);
 						
