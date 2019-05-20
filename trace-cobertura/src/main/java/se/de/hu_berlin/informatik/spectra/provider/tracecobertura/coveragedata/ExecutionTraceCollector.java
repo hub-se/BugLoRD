@@ -98,6 +98,7 @@ public class ExecutionTraceCollector {
 			Path path = Paths.get(System.getProperty("user.dir")).resolve("execTracesTmp");
 			path.toFile().mkdirs();
 			tempDir = Files.createTempDirectory(path.toAbsolutePath(), "exec");
+			existingSubTraces = getNewSubTraceMap();
 		} catch (IOException e) {
 			e.printStackTrace();
 			tempDir = null;
@@ -136,7 +137,8 @@ public class ExecutionTraceCollector {
 			BufferedMap<List<int[]>> traceMap = existingSubTraces;
 			// reset id counter and map!
 			currentId = 0;
-			existingSubTraces = null;
+//			existingSubTraces = null;
+			existingSubTraces = getNewSubTraceMap();
 			subTraceIdMap.clear();
 			return traceMap;
 		} finally {
@@ -197,9 +199,9 @@ public class ExecutionTraceCollector {
 	 */
 	public static void processLastSubTrace() {
 		// get an id for the current thread
-		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
-
-		processLastSubtraceForThreadId(threadId, currentSubTraces.remove(threadId));
+//		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
+//
+//		processLastSubtraceForThreadId(threadId, currentSubTraces.remove(threadId));
 	}
 
 	private static Future<?> processLastSubtraceForThreadId(long threadId, List<int[]> subTrace) {
@@ -330,7 +332,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void addStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		addStatementToExecutionTrace(classId, counterId);
+//		addStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
 
@@ -344,7 +346,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void variableAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		variableAddStatementToExecutionTrace(classId, counterId);
+//		variableAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
 
@@ -358,7 +360,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void jumpAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		jumpAddStatementToExecutionTrace(classId, counterId);
+//		jumpAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
 
@@ -372,7 +374,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void switchAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		processLastSubTrace();
+//		processLastSubTrace();
 //		switchAddStatementToExecutionTrace(classId, counterId);
 		incrementCounter(classId, counterId);
 	}
