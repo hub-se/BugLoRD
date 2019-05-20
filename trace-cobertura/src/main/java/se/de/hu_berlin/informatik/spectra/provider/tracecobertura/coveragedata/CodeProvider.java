@@ -42,7 +42,7 @@ public interface CodeProvider {
 	 *
 	 * @param cv - ClassVisitor that is listener of code-generation events
 	 */
-	public abstract void generateCountersField(ClassVisitor cv);
+	public void generateCountersField(ClassVisitor cv);
 
 	/**
 	 * Injects code that increments counter given by parameter.
@@ -52,7 +52,7 @@ public interface CodeProvider {
 	 * @param className         - internal name (asm) of class being instrumented
 	 * @param classId			- unique id of the class
 	 */
-	public abstract void generateCodeThatIncrementsCoberturaCounter(
+	public void generateCodeThatIncrementsCoberturaCounter(
 			MethodVisitor nextMethodVisitor, int counterId, String className, int classId);
 	
 	/**
@@ -63,7 +63,7 @@ public interface CodeProvider {
 	 * @param className         - internal name (asm) of class being instrumented
 	 * @param classId			- unique id of the class
 	 */
-	public abstract void generateCodeThatIncrementsCoberturaCounterAfterJump(
+	public void generateCodeThatIncrementsCoberturaCounterAfterJump(
 			MethodVisitor nextMethodVisitor, int counterId, String className, int classId);
 	
 	/**
@@ -74,7 +74,7 @@ public interface CodeProvider {
 	 * @param className         - internal name (asm) of class being instrumented
 	 * @param classId			- unique id of the class
 	 */
-	public abstract void generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(
+	public void generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(
 			MethodVisitor nextMethodVisitor, int counterId, String className, int classId);
 
 	/**
@@ -88,7 +88,7 @@ public interface CodeProvider {
 	 * @param className               - internal name (asm) of class being instrumented
 	 * @param classId				  - unique id of the class
 	 */
-	public abstract void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
+	public void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
 			String className, int classId);
 
@@ -99,7 +99,7 @@ public interface CodeProvider {
 	 * @param new_value               - value to set the variable to
 	 * @param lastJumpIdVariableIndex - index of variable that have to be set
 	 */
-	public abstract void generateCodeThatSetsJumpCounterIdVariable(
+	public void generateCodeThatSetsJumpCounterIdVariable(
 			MethodVisitor nextMethodVisitor, int new_value,
 			int lastJumpIdVariableIndex);
 
@@ -109,7 +109,7 @@ public interface CodeProvider {
 	 * @param nextMethodVisitor       - {@link MethodVisitor} that is listener of code-generation events
 	 * @param lastJumpIdVariableIndex - index of variable that have to be set
 	 */
-	public abstract void generateCodeThatZeroJumpCounterIdVariable(
+	public void generateCodeThatZeroJumpCounterIdVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex);
 	
 	/**
@@ -118,7 +118,7 @@ public interface CodeProvider {
 	 * @param nextMethodVisitor       - {@link MethodVisitor} that is listener of code-generation events
 	 * @param decisionIndicatorVariableIndex - index of variable that have to be set
 	 */
-	public abstract void generateCodeThatSetsDecisionIndicatorVariable(
+	public void generateCodeThatSetsDecisionIndicatorVariable(
 			MethodVisitor nextMethodVisitor, int decisionIndicatorVariableIndex);
 
 	/**
@@ -127,7 +127,7 @@ public interface CodeProvider {
 	 * @param nextMethodVisitor       - {@link MethodVisitor} that is listener of code-generation events
 	 * @param decisionIndicatorVariableIndex - index of variable that have to be set
 	 */
-	public abstract void generateCodeThatUnsetsDecisionIndicatorVariable(
+	public void generateCodeThatUnsetsDecisionIndicatorVariable(
 			MethodVisitor nextMethodVisitor, int decisionIndicatorVariableIndex);
 
 	/**
@@ -148,7 +148,7 @@ public interface CodeProvider {
 	 * @param className				  - name of the class
 	 * @param classId				  - id of the class
 	 */
-	public abstract void generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
+	public void generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
 			MethodVisitor nextMethodVisitor,
 			Integer neededJumpCounterIdVariableValue,
 			Integer counterIdToIncrement, int lastJumpIdVariableIndex,
@@ -174,18 +174,18 @@ public interface CodeProvider {
 	 * @param cv - listener used to inject the code
 	 * @param className - name of the class
 	 */
-	public abstract void generateCoberturaGetAndResetCountersMethod(
+	public void generateCoberturaGetAndResetCountersMethod(
 			ClassVisitor cv, String className);
 
 	public void generateCoberturaInitMethod(ClassVisitor cv, String className,
 			int classId, int countersCnt);
 
-	public abstract void generateCallCoberturaInitMethod(MethodVisitor mv,
+	public void generateCallCoberturaInitMethod(MethodVisitor mv,
 			String className);
 
-	public abstract void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(MethodVisitor nextMethodVisitor,
+	public void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(MethodVisitor nextMethodVisitor,
 			int lineCounterId, int decisionIndicatorVariableIndex, String className, int classId);
 	
-	public abstract void generateCodeThatMarksBeginningOfNewSubTrace(MethodVisitor nextMethodVisitor,
-			int lineCounterId, int decisionIndicatorVariableIndex, String className, int classId);
+//	public void generateCodeThatMarksBeginningOfNewSubTrace(MethodVisitor nextMethodVisitor,
+//			int lineCounterId, int decisionIndicatorVariableIndex, String className, int classId);
 }

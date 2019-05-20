@@ -84,30 +84,30 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
-	public void generateCodeThatMarksBeginningOfNewSubTrace(
-			MethodVisitor nextMethodVisitor, int counterId, int decisionIndicatorVariableIndex,
-			String className, int classId) {
-		if (collectExecutionTrace) {
-			/*
-			 * Injects code that behaves the same as such a code snippet:
-			 * <pre>
-			 * do_whatever_to_do_after_decision_statement();
-			 * unset_decision_indicator_variable('decisionIndicatorVariableIndex');
-			 * </pre>
-			 */
-
-			// end last segment, etc.
-			nextMethodVisitor.visitLdcInsn(classId);
-			nextMethodVisitor.visitLdcInsn(counterId);
-			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-					.getInternalName(ExecutionTraceCollector.class), "processSubTraceAfterDecision",
-					"(II)V");
-			// reset decision indicator
-			generateCodeThatUnsetsDecisionIndicatorVariable(nextMethodVisitor,
-					decisionIndicatorVariableIndex);
-		}
-	}
+//	@SuppressWarnings("deprecation")
+//	public void generateCodeThatMarksBeginningOfNewSubTrace(
+//			MethodVisitor nextMethodVisitor, int counterId, int decisionIndicatorVariableIndex,
+//			String className, int classId) {
+//		if (collectExecutionTrace) {
+//			/*
+//			 * Injects code that behaves the same as such a code snippet:
+//			 * <pre>
+//			 * do_whatever_to_do_after_decision_statement();
+//			 * unset_decision_indicator_variable('decisionIndicatorVariableIndex');
+//			 * </pre>
+//			 */
+//
+//			// end last segment, etc.
+//			nextMethodVisitor.visitLdcInsn(classId);
+//			nextMethodVisitor.visitLdcInsn(counterId);
+//			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+//					.getInternalName(ExecutionTraceCollector.class), "processSubTraceAfterDecision",
+//					"(II)V");
+//			// reset decision indicator
+//			generateCodeThatUnsetsDecisionIndicatorVariable(nextMethodVisitor,
+//					decisionIndicatorVariableIndex);
+//		}
+//	}
 	
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounter(
