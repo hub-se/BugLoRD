@@ -30,7 +30,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 	
 	public SimpleIntIndexer(
 			ArraySequenceIndexer<Integer, Integer> treeIndexer, 
-			Map<Integer, List<int[]>> idToSubTraceMap, 
+			Map<Integer, SingleLinkedArrayQueue<int[]>> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		// map counter IDs to line numbers!
 		storeSubTraceIdSequences(Objects.requireNonNull(treeIndexer));
@@ -52,7 +52,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		}
 	}
 
-	private void mapCounterIdsToSpectraNodeIds(Map<Integer, List<int[]>> idToSubTraceMap, 
+	private void mapCounterIdsToSpectraNodeIds(Map<Integer, SingleLinkedArrayQueue<int[]>> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		String[] idToClassNameMap = Objects.requireNonNull(projectData.getIdToClassNameMap());
 		
@@ -62,7 +62,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			List<int[]> list = idToSubTraceMap.get(i);
+			SingleLinkedArrayQueue<int[]> list = idToSubTraceMap.get(i);
 			Iterator<int[]> sequenceIterator = list.iterator();
 			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
 			

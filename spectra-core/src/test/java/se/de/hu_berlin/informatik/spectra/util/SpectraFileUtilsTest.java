@@ -31,6 +31,7 @@ import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraPro
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -146,10 +147,10 @@ public class SpectraFileUtilsTest extends TestSettings {
         RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
         
         // sub trace id -> sub trace
-        BufferedMap<List<int[]>> idToSubTraceMap = new BufferedMap<>(outputDir.toFile(), "t1");
-        idToSubTraceMap.put(1,Arrays.asList(rt(5,6,7)));
-        idToSubTraceMap.put(2,Arrays.asList(rt(8,9,10)));
-        idToSubTraceMap.put(3,Arrays.asList(rt(11,12,13)));
+        BufferedMap<SingleLinkedArrayQueue<int[]>> idToSubTraceMap = new BufferedMap<>(outputDir.toFile(), "t1");
+        idToSubTraceMap.put(1,asList(rt(5,6,7)));
+        idToSubTraceMap.put(2,asList(rt(8,9,10)));
+        idToSubTraceMap.put(3,asList(rt(11,12,13)));
         
         traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false, outputDir, "t1", idToSubTraceMap);
         traceCollector.getIndexer().getSequences();
@@ -219,6 +220,14 @@ public class SpectraFileUtilsTest extends TestSettings {
 		assertTrue(output3.toFile().length() > output2.toFile().length());
 	}
 	
+	private SingleLinkedArrayQueue<int[]> asList(int[][] rt) {
+		SingleLinkedArrayQueue<int[]> list = new SingleLinkedArrayQueue<>(rt.length);
+		for (int[] statement : rt) {
+			list.add(statement);
+		}
+		return list;
+	}
+
 	/**
 	 */
 	@Test

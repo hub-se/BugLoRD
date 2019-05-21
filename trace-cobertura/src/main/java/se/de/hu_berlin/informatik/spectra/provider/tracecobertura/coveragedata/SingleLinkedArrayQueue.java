@@ -187,6 +187,12 @@ public class SingleLinkedArrayQueue<E> extends AbstractQueue<E> implements Seria
         	last = null;
         }
     }
+    
+    @SuppressWarnings("unchecked")
+	public E peekLast() {
+        final Node<E> f = last;
+        return ((f == null) ? null : (f.startIndex < f.endIndex ? (E) f.items[f.endIndex-1] : null));
+    }
 
     // Queue operations
 

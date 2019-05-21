@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
 
 /**
  * We assume that a sub trace is uniquely determined by 
@@ -20,10 +21,10 @@ import java.util.Objects;
  */
 public class SubTraceIntArrayWrapper {
 
-	private List<int[]> subTrace;
+	private SingleLinkedArrayQueue<int[]> subTrace;
 	private int[] array = null;
 
-	public SubTraceIntArrayWrapper(List<int[]> subTrace) {
+	public SubTraceIntArrayWrapper(SingleLinkedArrayQueue<int[]> subTrace) {
 		this.subTrace = Objects.requireNonNull(subTrace);
 	}
 	
@@ -37,10 +38,10 @@ public class SubTraceIntArrayWrapper {
 			if (subTrace.isEmpty()) {
 				array = new int[] {};
 			} else if (size == 1) {
-				array = new int[] {subTrace.get(0)[0], subTrace.get(0)[1]};
+				array = new int[] {subTrace.peek()[0], subTrace.peek()[1]};
 			} else {
-				array = new int[] {subTrace.get(0)[0], subTrace.get(0)[1], 
-						subTrace.get(size-1)[0], subTrace.get(size-1)[1]};
+				array = new int[] {subTrace.peek()[0], subTrace.peek()[1], 
+						subTrace.peekLast()[0], subTrace.peekLast()[1]};
 			}
 			// release the pointer to the actual sub trace
 			subTrace = null;
@@ -63,13 +64,13 @@ public class SubTraceIntArrayWrapper {
 					}
 					int size = this.subTrace.size();
 					if (size > 0) {
-						if (this.subTrace.get(0)[0] != o.subTrace.get(0)[0] ||
-								this.subTrace.get(0)[1] != o.subTrace.get(0)[1]) {
+						if (this.subTrace.peek()[0] != o.subTrace.peek()[0] ||
+								this.subTrace.peek()[1] != o.subTrace.peek()[1]) {
 							return false;
 						}
 						if (size > 1) {
-							if (this.subTrace.get(size-1)[0] != o.subTrace.get(size-1)[0] ||
-									this.subTrace.get(size-1)[1] != o.subTrace.get(size-1)[1]) {
+							if (this.subTrace.peekLast()[0] != o.subTrace.peekLast()[0] ||
+									this.subTrace.peekLast()[1] != o.subTrace.peekLast()[1]) {
 								return false;
 							}
 						}
@@ -78,16 +79,16 @@ public class SubTraceIntArrayWrapper {
 					// other: simplified -> only array stored
 					int size = this.subTrace.size();
 					if (size > 0) {
-						if (this.subTrace.get(0)[0] != o.array[0] ||
-								this.subTrace.get(0)[1] != o.array[1]) {
+						if (this.subTrace.peek()[0] != o.array[0] ||
+								this.subTrace.peek()[1] != o.array[1]) {
 							return false;
 						}
 						if (size > 1) {
 							if (o.array.length < 4) {
 								return false;
 							}
-							if (this.subTrace.get(size-1)[0] != o.array[2] ||
-									this.subTrace.get(size-1)[1] != o.array[3]) {
+							if (this.subTrace.peekLast()[0] != o.array[2] ||
+									this.subTrace.peekLast()[1] != o.array[3]) {
 								return false;
 							}
 						}
@@ -101,16 +102,16 @@ public class SubTraceIntArrayWrapper {
 					// other: only sub trace stored
 					int size = o.subTrace.size();
 					if (size > 0) {
-						if (o.subTrace.get(0)[0] != this.array[0] ||
-								o.subTrace.get(0)[1] != this.array[1]) {
+						if (o.subTrace.peek()[0] != this.array[0] ||
+								o.subTrace.peek()[1] != this.array[1]) {
 							return false;
 						}
 						if (size > 1) {
 							if (o.array.length < 4) {
 								return false;
 							}
-							if (o.subTrace.get(size-1)[0] != this.array[2] ||
-									o.subTrace.get(size-1)[1] != this.array[3]) {
+							if (o.subTrace.peekLast()[0] != this.array[2] ||
+									o.subTrace.peekLast()[1] != this.array[3]) {
 								return false;
 							}
 						}
@@ -148,15 +149,15 @@ public class SubTraceIntArrayWrapper {
 				return 527; // = 31 * 17
 			} else if (size == 1) {
 				int hash = 31 * (17 + 2);
-				hash = 31 * hash + subTrace.get(0)[0];
-				hash = 31 * hash + subTrace.get(0)[1];
+				hash = 31 * hash + subTrace.peek()[0];
+				hash = 31 * hash + subTrace.peek()[1];
 				return hash;
 			} else {
 				int hash = 31 * (17 + 2);
-				hash = 31 * hash + subTrace.get(0)[0];
-				hash = 31 * hash + subTrace.get(0)[1];
-				hash = 31 * hash + subTrace.get(size-1)[0];
-				hash = 31 * hash + subTrace.get(size-1)[1];
+				hash = 31 * hash + subTrace.peek()[0];
+				hash = 31 * hash + subTrace.peek()[1];
+				hash = 31 * hash + subTrace.peekLast()[0];
+				hash = 31 * hash + subTrace.peekLast()[1];
 				return hash;
 			}
 		}
