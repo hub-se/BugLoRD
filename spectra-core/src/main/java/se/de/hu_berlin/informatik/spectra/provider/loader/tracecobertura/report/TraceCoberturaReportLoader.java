@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexer;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
@@ -223,7 +224,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// }
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
-			BufferedMap<SingleLinkedArrayQueue<int[]>> idToSubtraceMap = projectData.getIdToSubtraceMap();
+			BufferedMap<BufferedArrayQueue<int[]>> idToSubtraceMap = projectData.getIdToSubtraceMap();
 			for (Iterator<Entry<Long, CompressedIdTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
 				Entry<Long, CompressedIdTrace> entry = iterator.next();
 				++threadId;
@@ -359,10 +360,10 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				String[] idToClassNameMap = projectData.getIdToClassNameMap();
 //				Log.out(true, this, "Thread: " + entry.getKey());
 				// iterate over statements in the sub traces
-				for (Iterator<Entry<Integer, SingleLinkedArrayQueue<int[]>>> subTraceIterator = idToSubtraceMap.entrySetIterator(); 
+				for (Iterator<Entry<Integer, BufferedArrayQueue<int[]>>> subTraceIterator = idToSubtraceMap.entrySetIterator(); 
 						subTraceIterator.hasNext();) {
 					
-					SingleLinkedArrayQueue<int[]> subTrace = subTraceIterator.next().getValue();
+					BufferedArrayQueue<int[]> subTrace = subTraceIterator.next().getValue();
 //					Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.size());
 //					if (subTraceId >= 0) {
 //						continue;

@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
@@ -30,7 +31,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 	
 	public SimpleIntIndexer(
 			ArraySequenceIndexer<Integer, Integer> treeIndexer, 
-			Map<Integer, SingleLinkedArrayQueue<int[]>> idToSubTraceMap, 
+			Map<Integer, BufferedArrayQueue<int[]>> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		// map counter IDs to line numbers!
 		storeSubTraceIdSequences(Objects.requireNonNull(treeIndexer));
@@ -52,7 +53,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		}
 	}
 
-	private void mapCounterIdsToSpectraNodeIds(Map<Integer, SingleLinkedArrayQueue<int[]>> idToSubTraceMap, 
+	private void mapCounterIdsToSpectraNodeIds(Map<Integer, BufferedArrayQueue<int[]>> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		String[] idToClassNameMap = Objects.requireNonNull(projectData.getIdToClassNameMap());
 		
@@ -62,7 +63,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			SingleLinkedArrayQueue<int[]> list = idToSubTraceMap.get(i);
+			BufferedArrayQueue<int[]> list = idToSubTraceMap.get(i);
 			Iterator<int[]> sequenceIterator = list.iterator();
 			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
 			

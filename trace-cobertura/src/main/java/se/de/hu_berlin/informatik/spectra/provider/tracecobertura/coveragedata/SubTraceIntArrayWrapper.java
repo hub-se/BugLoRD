@@ -21,10 +21,10 @@ import java.util.Queue;
  */
 public class SubTraceIntArrayWrapper {
 
-	private SingleLinkedArrayQueue<int[]> subTrace;
+	private BufferedArrayQueue<int[]> subTrace;
 	private int[] array = null;
 
-	public SubTraceIntArrayWrapper(SingleLinkedArrayQueue<int[]> subTrace) {
+	public SubTraceIntArrayWrapper(BufferedArrayQueue<int[]> subTrace) {
 		this.subTrace = Objects.requireNonNull(subTrace);
 	}
 	

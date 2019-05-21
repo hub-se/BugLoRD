@@ -284,6 +284,14 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		}
 	}
 	
+	private Node<E> loadLast() {
+		if (storedNodeExists()) {
+			return load(lastStoreIndex);
+		} else {
+			return lastNode;
+		}
+	}
+	
 	private Node<E> load(int storeIndex) {
 		if (storeIndex == lastNode.storeIndex) {
 			return lastNode;
@@ -474,6 +482,12 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		}
     }
 
+    @SuppressWarnings("unchecked")
+	public E peekLast() {
+        final Node<E> f = loadLast();
+        return ((f == null) ? null : (f.startIndex < f.endIndex ? (E) f.items[f.endIndex-1] : null));
+    }
+    
     // Queue operations
 
     @SuppressWarnings("unchecked")

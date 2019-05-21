@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -30,6 +31,7 @@ import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexer;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
@@ -85,6 +87,14 @@ public class SpectraFileUtilsTest extends TestSettings {
 			result[i] = new int[] {0,numbers[i]};
 		}
 		return result;
+	}
+	
+	private BufferedArrayQueue<int[]> asList(Path outputDir, int[][] rt) {
+		BufferedArrayQueue<int[]> list = new BufferedArrayQueue<>(outputDir.toFile(), String.valueOf(UUID.randomUUID()), rt.length);
+		for (int[] statement : rt) {
+			list.add(statement);
+		}
+		return list;
 	}
 	
 	/**
@@ -147,10 +157,10 @@ public class SpectraFileUtilsTest extends TestSettings {
         RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
         
         // sub trace id -> sub trace
-        BufferedMap<SingleLinkedArrayQueue<int[]>> idToSubTraceMap = new BufferedMap<>(outputDir.toFile(), "t1");
-        idToSubTraceMap.put(1,asList(rt(5,6,7)));
-        idToSubTraceMap.put(2,asList(rt(8,9,10)));
-        idToSubTraceMap.put(3,asList(rt(11,12,13)));
+        BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap = new BufferedMap<>(outputDir.toFile(), "t1");
+        idToSubTraceMap.put(1,asList(outputDir, rt(5,6,7)));
+        idToSubTraceMap.put(2,asList(outputDir, rt(8,9,10)));
+        idToSubTraceMap.put(3,asList(outputDir, rt(11,12,13)));
         
         traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false, outputDir, "t1", idToSubTraceMap);
         traceCollector.getIndexer().getSequences();
@@ -218,14 +228,6 @@ public class SpectraFileUtilsTest extends TestSettings {
 		assertEquals(output1.toFile().length(), output2.toFile().length());
 		assertTrue(output3.toFile().exists());
 		assertTrue(output3.toFile().length() > output2.toFile().length());
-	}
-	
-	private SingleLinkedArrayQueue<int[]> asList(int[][] rt) {
-		SingleLinkedArrayQueue<int[]> list = new SingleLinkedArrayQueue<>(rt.length);
-		for (int[] statement : rt) {
-			list.add(statement);
-		}
-		return list;
 	}
 
 	/**

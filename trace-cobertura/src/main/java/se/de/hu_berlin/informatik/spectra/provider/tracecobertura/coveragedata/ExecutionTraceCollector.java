@@ -74,7 +74,7 @@ public class ExecutionTraceCollector {
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
 	private static Map<Long,BufferedArrayQueue<Integer>> executionTraces = new ConcurrentHashMap<>();
 	// stores (sub trace id -> subTrace)
-	private static BufferedMap<SingleLinkedArrayQueue<int[]>> existingSubTraces = null;
+	private static BufferedMap<BufferedArrayQueue<int[]>> existingSubTraces = null;
 	// stores (sub trace wrapper -> sub trace id) to retrieve subtrace ids
 	// the integer array in the wrapper has to contain start and ending node of the sub trace
 	// if the sub trace is longer than one statement
@@ -83,11 +83,11 @@ public class ExecutionTraceCollector {
 	// lock for getting/generating sub trace ids (ensures that sub trace ids are unique)
 //	private static final transient Lock idLock = new ReentrantLock();
 	// stores currently built up execution trace parts for each thread (thread id -> sub trace)
-	private static Map<Long,SingleLinkedArrayQueue<int[]>> currentSubTraces = new ConcurrentHashMap<>();
+	private static Map<Long,BufferedArrayQueue<int[]>> currentSubTraces = new ConcurrentHashMap<>();
 	
 	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
 
-	private static final int SUBTRACE_ARRAY_SIZE = 50;
+	private static final int SUBTRACE_ARRAY_SIZE = 1000;
 
 	public static void initializeCounterArrayForClass(int classId, int countersCnt) {
 		classesToCounterArrayMap.put(classId, new int[countersCnt]);
@@ -130,13 +130,13 @@ public class ExecutionTraceCollector {
 	 * @return
 	 * The map of ids to actual sub traces; also resets the internal map
 	 */
-	public static BufferedMap<SingleLinkedArrayQueue<int[]>> getAndResetIdToSubtraceMap() {
+	public static BufferedMap<BufferedArrayQueue<int[]>> getAndResetIdToSubtraceMap() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			// process all remaining sub traces. Just to be safe!
 			processAllRemainingSubTraces();
 			// sub trace ids that stay consistent throughout the entire time!!??? TODO
-			BufferedMap<SingleLinkedArrayQueue<int[]>> traceMap = existingSubTraces;
+			BufferedMap<BufferedArrayQueue<int[]>> traceMap = existingSubTraces;
 			// reset id counter and map!
 			currentId = 0;
 //			existingSubTraces = null;
@@ -155,7 +155,7 @@ public class ExecutionTraceCollector {
 	}
 	
 	
-	private static int getOrCreateIdForSubTrace(SingleLinkedArrayQueue<int[]> subTrace) {
+	private static int getOrCreateIdForSubTrace(BufferedArrayQueue<int[]> subTrace) {
 		if (subTrace == null || subTrace.isEmpty()) {
 			// id 0 indicates empty sub trace
 			return 0;
@@ -187,9 +187,15 @@ public class ExecutionTraceCollector {
 //		}
 	}
 	
-	private static BufferedMap<SingleLinkedArrayQueue<int[]>> getNewSubTraceMap() {
+	private static BufferedMap<BufferedArrayQueue<int[]>> getNewSubTraceMap() {
 		// do not delete buffered map on exit, due to possible necessary serialization
-		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), String.valueOf(UUID.randomUUID()), 2*CHUNK_SIZE, false);
+		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
+				String.valueOf(UUID.randomUUID()), 2*CHUNK_SIZE, false);
+	}
+	
+	private static BufferedArrayQueue<int[]> getNewSubtrace() {
+		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
+				String.valueOf(UUID.randomUUID()), SUBTRACE_ARRAY_SIZE, false);
 	}
 
 	
@@ -206,7 +212,7 @@ public class ExecutionTraceCollector {
 		processLastSubtraceForThreadId(threadId, currentSubTraces.remove(threadId));
 	}
 
-	private static void processLastSubtraceForThreadId(long threadId, SingleLinkedArrayQueue<int[]> subTrace) {
+	private static void processLastSubtraceForThreadId(long threadId, BufferedArrayQueue<int[]> subTrace) {
 //		// do more expensive operations in a separate thread?
 //		return executorService.submit(new SubTraceProcessor(threadId, subTrace));
 		
@@ -269,10 +275,10 @@ public class ExecutionTraceCollector {
 //	}
 	
 	private static void processAllRemainingSubTraces() {
-		Iterator<Entry<Long, SingleLinkedArrayQueue<int[]>>> iterator = currentSubTraces.entrySet().iterator();
+		Iterator<Entry<Long, BufferedArrayQueue<int[]>>> iterator = currentSubTraces.entrySet().iterator();
 //		Future<?> future = null;
 		while (iterator.hasNext()) {
-			Entry<Long, SingleLinkedArrayQueue<int[]>> entry = iterator.next();
+			Entry<Long, BufferedArrayQueue<int[]>> entry = iterator.next();
 			processLastSubtraceForThreadId(entry.getKey(), entry.getValue());
 			// clear the current sub trace
 			iterator.remove();
@@ -417,9 +423,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
 		// get the respective sub trace
-		SingleLinkedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
+		BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
 		if (subTrace == null) {
-			subTrace = new SingleLinkedArrayQueue<>(SUBTRACE_ARRAY_SIZE);
+			subTrace = getNewSubtrace();
 			currentSubTraces.put(threadId, subTrace);
 		}
 		
@@ -433,7 +439,7 @@ public class ExecutionTraceCollector {
 		// add the statement to the sub trace
 		subTrace.add(new int[] {classId, counterId});
 	}
-	
+
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
@@ -454,9 +460,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
 		// get the respective sub trace
-		SingleLinkedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
+		BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
 		if (subTrace == null) {
-			subTrace = new SingleLinkedArrayQueue<>(SUBTRACE_ARRAY_SIZE);
+			subTrace = getNewSubtrace();
 			currentSubTraces.put(threadId, subTrace);
 		}
 
@@ -492,9 +498,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
 		// get the respective sub trace
-		SingleLinkedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
+		BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
 		if (subTrace == null) {
-			subTrace = new SingleLinkedArrayQueue<>(SUBTRACE_ARRAY_SIZE);
+			subTrace = getNewSubtrace();
 			currentSubTraces.put(threadId, subTrace);
 		}
 
@@ -528,9 +534,9 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
 		// get the respective sub trace
-		SingleLinkedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
+		BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
 		if (subTrace == null) {
-			subTrace = new SingleLinkedArrayQueue<>(SUBTRACE_ARRAY_SIZE);
+			subTrace = getNewSubtrace();
 			currentSubTraces.put(threadId, subTrace);
 		}
 
