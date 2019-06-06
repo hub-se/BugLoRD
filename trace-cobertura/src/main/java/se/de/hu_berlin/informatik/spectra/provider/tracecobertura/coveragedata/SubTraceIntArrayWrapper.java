@@ -153,7 +153,7 @@ public class SubTraceIntArrayWrapper {
 				hash = 31 * hash + subTrace.peek()[1];
 				return hash;
 			} else {
-				int hash = 31 * (17 + 2);
+				int hash = 31 * (17 + 4);
 				hash = 31 * hash + subTrace.peek()[0];
 				hash = 31 * hash + subTrace.peek()[1];
 				hash = 31 * hash + subTrace.peekLast()[0];

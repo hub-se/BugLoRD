@@ -178,6 +178,7 @@ public class ExecutionTraceCollector {
 			}
 			subTrace.sleep();
 			existingSubTraces.put(currentId, subTrace);
+//			System.out.println(currentId + ":" + wrapper.toString());
 		}
 		// help out the garbage collector?
 		wrapper = null;
@@ -225,7 +226,9 @@ public class ExecutionTraceCollector {
 //		}
 		
 		// get or create id for sub trace
+//		System.out.println(queueToString(subTrace));
 		int id = getOrCreateIdForSubTrace(subTrace);
+//		System.out.println(id + ": " + queueToString(subTrace));
 		
 //		// add the sub trace's id to the trace
 //		trace.add(id);
@@ -237,6 +240,35 @@ public class ExecutionTraceCollector {
 //		}
 //
 //		System.out.println(classId + ":" + counterId);
+	}
+	
+	private static String queueToString(BufferedArrayQueue<int[]> traceArray) {
+		if (traceArray == null) {
+			return "null";
+		}
+		StringBuilder builder = new StringBuilder();
+		builder.append("[ ");
+		ReplaceableCloneableIterator<int[]> iterator = traceArray.iterator();
+		for (; iterator.hasNext();) {
+			builder.append(arrayToString(iterator.next())).append(", ");
+		}
+		builder.setLength(builder.length() > 2 ? builder.length()-2 : builder.length()-1);
+		builder.append(" ]");
+		return builder.toString();
+	}
+	
+	private static String arrayToString(int[] traceArray) {
+		if (traceArray == null) {
+			return "null";
+		}
+		StringBuilder builder = new StringBuilder();
+		builder.append("[ ");
+		for (int entry : traceArray) {
+			builder.append(entry).append(", ");
+		}
+		builder.setLength(builder.length() > 2 ? builder.length()-2 : builder.length()-1);
+		builder.append(" ]");
+		return builder.toString();
 	}
 	
 //	private static class SubTraceProcessor implements Runnable {
