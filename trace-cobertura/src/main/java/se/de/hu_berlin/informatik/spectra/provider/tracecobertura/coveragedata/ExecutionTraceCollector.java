@@ -248,7 +248,7 @@ public class ExecutionTraceCollector {
 		// get or create id for sub trace
 //		System.out.println(queueToString(subTrace));
 		int id = getOrCreateIdForSubTrace(subTrace);
-		System.out.println(id + ": " + queueToString(subTrace));
+//		System.out.println(id + ": " + queueToString(subTrace));
 		
 //		// add the sub trace's id to the trace
 //		trace.add(id);
