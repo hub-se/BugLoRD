@@ -176,6 +176,7 @@ public class ExecutionTraceCollector {
 			if (existingSubTraces == null) {
 				existingSubTraces = getNewSubTraceMap();
 			}
+			subTrace.sleep();
 			existingSubTraces.put(currentId, subTrace);
 		}
 		// help out the garbage collector?

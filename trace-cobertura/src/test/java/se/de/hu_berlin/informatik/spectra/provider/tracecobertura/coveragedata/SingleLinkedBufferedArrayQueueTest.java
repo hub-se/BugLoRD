@@ -113,6 +113,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 		
 		Assert.assertEquals(26, queue.get(2).intValue());
 		Assert.assertEquals(41, queue.get(17).intValue());
+		queue.sleep();
 		
 		queue.clear();
 	}
