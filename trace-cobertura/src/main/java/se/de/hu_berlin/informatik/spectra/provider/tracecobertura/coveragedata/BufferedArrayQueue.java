@@ -47,8 +47,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	
 	private int firstNodeSize = 0;
 	
-	// keep the last node out of the cache at all times
-	private Node<E> lastNode;
+	private transient Node<E> lastNode;
 	
 	private transient Lock lock = new ReentrantLock();
 	
@@ -61,20 +60,10 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	
 	private void writeObject(java.io.ObjectOutputStream stream)
             throws IOException {
-		lock.lock();
-		try {
-			for (Node<E> node : cachedNodes.values()) {
-				// stores cached nodes, if modified (i.e., if elements were removed)
-				if (node.modified) {
-					store(node);
-				}
-			}
-		} finally {
-			lock.unlock();
-		}
+		sleep();
         stream.writeObject(output);
         stream.writeObject(filePrefix);
-        stream.writeObject(lastNode);
+//        stream.writeObject(lastNode);
         stream.writeInt(firstStoreIndex);
         stream.writeInt(currentStoreIndex);
         stream.writeInt(lastStoreIndex);
@@ -83,12 +72,31 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         stream.writeInt(arrayLength);
     }
 
-    @SuppressWarnings("unchecked")
+	// stores all nodes on disk
+	public void sleep() {
+		lock.lock();
+		try {
+			for (Node<E> node : cachedNodes.values()) {
+				// stores cached nodes, if modified (i.e., if elements were added/removed)
+				if (node.modified) {
+					store(node);
+				}
+			}
+			// store the last node, too
+			if (lastNode != null && lastNode.modified) {
+				store(lastNode);
+				lastNode = null;
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+
 	private void readObject(java.io.ObjectInputStream stream)
             throws IOException, ClassNotFoundException {
         output = (File) stream.readObject();
         filePrefix = (String) stream.readObject();
-        lastNode = (Node<E>) stream.readObject();
+//        lastNode = (Node<E>) stream.readObject();
         firstStoreIndex = stream.readInt();
         currentStoreIndex = stream.readInt();
         lastStoreIndex = stream.readInt();
@@ -138,11 +146,18 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		firstStoreIndex = 0;
 		lastStoreIndex = -1;
 		if (lastNode != null) {
-			lastNode.storeIndex = 0;
-			currentStoreIndex = 0;
-		} else {
-			currentStoreIndex = -1;
+			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
+				lastNode.items[j] = null;
+			}
+			uncacheAndDelete(lastNode.storeIndex);
+			lastNode = null;
 		}
+//		if (lastNode != null) {
+//			lastNode.storeIndex = 0;
+//			currentStoreIndex = 0;
+//		} else {
+		currentStoreIndex = -1;
+//		}
 		firstNodeSize = 0;
 		size = 0;
 	}
@@ -162,7 +177,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
      * Stores full nodes to the disk.
      */
     private void linkLast(E e) {
-        final Node<E> l = lastNode;
+        final Node<E> l = loadLast();
         final Node<E> newNode = new Node<>(e, arrayLength, ++currentStoreIndex);
         lastNode = newNode;
         if (l == null) {
@@ -173,7 +188,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 //            l.next = newNode;
         	++lastStoreIndex;
         	store(l);
-        	// we can remove the node now from memory
+        	// we can now remove the node from memory
         	l.items = null;
         }
         ++size;
@@ -215,10 +230,10 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
             	firstNodeSize = size;
             }
         } else {
-        	// there exists only the last node
-        	// keep one node/array to avoid having to allocate a new one
-        	lastNode.startIndex = 0;
-        	lastNode.endIndex = 0;
+//        	// there exists only the last node
+//        	// keep one node/array to avoid having to allocate a new one
+//        	lastNode.startIndex = 0;
+//        	lastNode.endIndex = 0;
         	// no further nodes
         	initialize();
         }
@@ -234,7 +249,10 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 				cacheSequence.remove((Integer)storeIndex);
 			}
 			// stored node should be deleted
-			new File(filename).delete();
+			File file = new File(filename);
+			if (file.exists()) {
+				file.delete();
+			}
 		} finally {
 			lock.unlock();
 		}
@@ -280,37 +298,46 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		if (storedNodeExists()) {
 			return load(firstStoreIndex);
 		} else {
-			return lastNode;
+			return loadLast();
 		}
 	}
 	
 	private Node<E> loadLast() {
-		if (storedNodeExists()) {
-			return load(lastStoreIndex);
+		if (lastNode == null) {
+			lastNode = load(lastStoreIndex+1);
+			return lastNode;
 		} else {
 			return lastNode;
 		}
 	}
 	
 	private Node<E> load(int storeIndex) {
-		if (storeIndex == lastNode.storeIndex) {
+		if (lastNode != null && storeIndex == lastNode.storeIndex) {
 			return lastNode;
 		}
-		if (storeIndex > lastNode.storeIndex) {
+//		if (storeIndex > lastStoreIndex) {
+//			return null;
+//		}
+		String filename = getFileName(storeIndex);
+		if (!(new File(filename).exists())) {
 			return null;
 		}
+		
 		lock.lock();
 		try {
-			if (cachedNodes.containsKey(storeIndex)) {
-				// already cached
-				return cachedNodes.get(storeIndex);
+			// only cache nodes that are not the last node
+			if (storeIndex <= lastStoreIndex) {
+				if (cachedNodes.containsKey(storeIndex)) {
+					// already cached
+					return cachedNodes.get(storeIndex);
+				}
+				// cache the node
+				if (cachedNodes.size() >= CACHE_SIZE) {
+					// remove the node from the cache that has been added first
+					uncache(cacheSequence.remove(0));
+				}
 			}
-			// cache the node
-			if (cachedNodes.size() >= CACHE_SIZE) {
-				// remove the node from the cache that has been added first
-				uncache(cacheSequence.remove(0));
-			}
-			String filename = getFileName(storeIndex);
+			
 			Node<E> loadedNode;
 			try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
 				Object[] items = (Object[])inputStream.readObject();
@@ -320,8 +347,11 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 				e.printStackTrace();
 				throw new IllegalStateException();
 			}
-			cachedNodes.put(storeIndex, loadedNode);
-			cacheSequence.add(storeIndex);
+			
+			if (storeIndex <= lastStoreIndex) {
+				cachedNodes.put(storeIndex, loadedNode);
+				cacheSequence.add(storeIndex);
+			}
 			return loadedNode;
 		} finally {
 			lock.unlock();
@@ -350,6 +380,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 
     @Override
     public boolean add(E e) {
+    	loadLast();
     	if (lastNode != null && lastNode.hasFreeSpace()) {
     		lastNode.add(e);
     		++size;
@@ -372,15 +403,15 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     		for (; storedNodeExists(); ++firstStoreIndex) {
     			uncacheAndDelete(firstStoreIndex);
     		}
-    		// empty last (and now also first) node
-    		if (lastNode != null) {
-    			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
-    				lastNode.items[j] = null;
-    			}
-    			// keep one node/array to avoid having to allocate a new one
-    			lastNode.startIndex = 0;
-    			lastNode.endIndex = 0;
-    		}
+//    		// empty last (and now also first) node
+//    		if (lastNode != null) {
+//    			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
+//    				lastNode.items[j] = null;
+//    			}
+//    			// keep one node/array to avoid having to allocate a new one
+//    			lastNode.startIndex = 0;
+//    			lastNode.endIndex = 0;
+//    		}
     		initialize();
     	} finally {
     		lock.unlock();
@@ -424,6 +455,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     						}
 
     					} else {
+    						loadLast();
     						// no node left on disk, so continue with the last node
     						firstNodeSize = lastNode.endIndex - lastNode.startIndex;
     						x = lastNode;
@@ -462,9 +494,9 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     						firstNodeSize = lastNode.endIndex - lastNode.startIndex;
     					}
     				} else if (x == lastNode) {
-    					// keep one node/array to avoid having to allocate a new one
-    					x.startIndex = 0;
-    					x.endIndex = 0;
+//    					// keep one node/array to avoid having to allocate a new one
+//    					x.startIndex = 0;
+//    					x.endIndex = 0;
     					initialize();
     					break;
     				}
@@ -602,7 +634,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 				storeIndex = firstStoreIndex;
 				Node<E> node = load(storeIndex);
 				index = node.startIndex;
-			} else if (lastNode != null) {
+			} else if (loadLast() != null) {
 				storeIndex = lastNode.storeIndex;
 				index = lastNode.startIndex;
 			} else {
@@ -638,7 +670,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 			if (index >= currentNode.endIndex) {
 				if (storeIndex < lastStoreIndex) {
 					++storeIndex;
-				} else if (lastNode != null) {
+				} else if (loadLast() != null) {
 					if (storeIndex >= lastNode.storeIndex) {
 						// already at the last node
 						storeIndex = -1;
@@ -666,7 +698,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 			if (index >= currentNode.endIndex) {
 				if (storeIndex < lastStoreIndex) {
 					++storeIndex;
-				} else if (lastNode != null) {
+				} else if (loadLast() != null) {
 					if (storeIndex >= lastNode.storeIndex) {
 						// already at the last node
 						storeIndex = -1;
@@ -698,7 +730,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	}
 
 	private static class Node<E> implements Serializable {
-		private transient boolean modified;
+		private transient boolean modified = false;
 
 		/**
 		 * 
@@ -722,6 +754,8 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
             this.items = new Object[arrayLength];
             items[0] = element;
 			this.storeIndex = storeIndex;
+			// ensure that new nodes are stored (if not empty)
+        	this.modified = true;
 		}
 
 		public Node(Object[] items, int startIndex, int storeIndex) {
@@ -733,6 +767,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		
 		// removes the first element
         public E remove() {
+        	this.modified = true;
         	@SuppressWarnings("unchecked")
 			E temp = (E) items[startIndex];
         	items[startIndex++] = null;
@@ -741,6 +776,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 
         // adds an element to the end
 		public void add(E e) {
+			this.modified = true;
 			items[endIndex++] = e;
 		}
 

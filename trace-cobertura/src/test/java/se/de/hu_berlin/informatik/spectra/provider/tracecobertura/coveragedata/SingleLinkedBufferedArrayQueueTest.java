@@ -60,6 +60,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
+		queue.sleep();
 		
 //		Thread.sleep(5000);
 		Iterator<Integer> iterator = queue.iterator();
@@ -82,17 +83,21 @@ public class SingleLinkedBufferedArrayQueueTest {
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
+		queue.sleep();
 		
 //		Assert.assertEquals(2, queue.get(2).intValue());
 		Assert.assertEquals(30, queue.get(30).intValue());
 		
 		queue.clear(10);
+		queue.sleep();
 		
 		queue.clear(13);
+		queue.sleep();
 		
 		Assert.assertEquals(23, queue.get(0).intValue());
 		Assert.assertEquals(25, queue.get(2).intValue());
 		Assert.assertEquals(40, queue.get(17).intValue());
+		queue.sleep();
 		
 		Iterator<Integer> iterator = queue.iterator();
 		
@@ -101,6 +106,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 //			System.out.println(iterator.next());
 			Assert.assertEquals(i++, iterator.next().intValue());
 		}
+		queue.sleep();
 		
 		queue.remove();
 		queue.element();
