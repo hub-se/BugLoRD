@@ -19,6 +19,7 @@ import java.util.Queue;
  * simplified array that only stores the first and last
  * statement.
  */
+@Deprecated
 public class SubTraceIntArrayWrapper {
 
 	private BufferedArrayQueue<int[]> subTrace;

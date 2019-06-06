@@ -78,7 +78,7 @@ public class ExecutionTraceCollector {
 	// stores (sub trace wrapper -> sub trace id) to retrieve subtrace ids
 	// the integer array in the wrapper has to contain start and ending node of the sub trace
 	// if the sub trace is longer than one statement
-	private static Map<SubTraceIntArrayWrapper,Integer> subTraceIdMap = new ConcurrentHashMap<>();
+	private static Map<Long,Integer> subTraceIdMap = new ConcurrentHashMap<>();
 	private static volatile int currentId = 0; 
 	// lock for getting/generating sub trace ids (ensures that sub trace ids are unique)
 //	private static final transient Lock idLock = new ReentrantLock();
@@ -163,14 +163,11 @@ public class ExecutionTraceCollector {
 		
 //		idLock.lock();
 //		try {
-		SubTraceIntArrayWrapper wrapper = new SubTraceIntArrayWrapper(subTrace);
+		long wrapper = generateUniqueRepresentationForSubTrace(subTrace);
 		Integer id = subTraceIdMap.get(wrapper);
 		if (id == null) {
 			// starts with id 1
 			id = ++currentId;
-			// only store the least necessary parts 
-			// of the sub trace as a key in the map!
-			wrapper.simplify();
 			// new sub trace, so store new id and store sub trace
 			subTraceIdMap.put(wrapper, currentId);
 			if (existingSubTraces == null) {
@@ -180,13 +177,36 @@ public class ExecutionTraceCollector {
 			existingSubTraces.put(currentId, subTrace);
 //			System.out.println(currentId + ":" + wrapper.toString());
 		}
-		// help out the garbage collector?
-		wrapper = null;
 
 		return id;
 //		} finally {
 //			idLock.unlock();
 //		}
+	}
+	
+	// store the starting and ending statements in a single long value!
+	// should represent a sub trace uniquely!
+	// uses 10 bit for the class identifier (max 1024);
+	// uses 22 bit for the counter id (max 4,194,304);
+	// a counter with id 0 can not occur!
+	public static long generateUniqueRepresentationForSubTrace(BufferedArrayQueue<int[]> subTrace) {
+		long result = 0;
+		if (subTrace.isEmpty()) {
+			return 0;
+		} else if (subTrace.size() == 1) {
+			result += subTrace.peek()[0];
+			result = result << 22;
+			result += subTrace.peek()[1];
+		} else {
+			result += subTrace.peek()[0];
+			result = result << 22;
+			result += subTrace.peek()[1];
+			result = result << 10;
+			result += subTrace.peekLast()[0];
+			result = result << 22;
+			result += subTrace.peekLast()[1];
+		}
+		return result;
 	}
 	
 	private static BufferedMap<BufferedArrayQueue<int[]>> getNewSubTraceMap() {
@@ -228,7 +248,7 @@ public class ExecutionTraceCollector {
 		// get or create id for sub trace
 //		System.out.println(queueToString(subTrace));
 		int id = getOrCreateIdForSubTrace(subTrace);
-//		System.out.println(id + ": " + queueToString(subTrace));
+		System.out.println(id + ": " + queueToString(subTrace));
 		
 //		// add the sub trace's id to the trace
 //		trace.add(id);

@@ -10,8 +10,6 @@ import net.lingala.zip4j.model.FileHeader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ReplaceableCloneableIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SubTraceIntArrayWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
@@ -39,10 +37,10 @@ public class RawIntTraceCollector {
 	 */
 	private Map<Integer,BufferedArrayQueue<int[]>> globalIdToSubTraceMap;
 
-	// stores (sub trace wrapper -> sub trace id) to retrieve subtrace ids
-	// the integer array in the wrapper has to contain start and ending node of the sub trace
-	// if the sub trace is longer than one (two?) statement(s)
-	private  Map<SubTraceIntArrayWrapper,Integer> subTraceGlobalIdMap = new HashMap<>();
+	// stores (sub trace representation -> sub trace id) to retrieve subtrace ids
+	// the long value representation has to contain start and ending node of the sub trace
+	// if the sub trace is longer than one statement(s)
+	private  Map<Long,Integer> subTraceGlobalIdMap = new HashMap<>();
 	private int currentId = 0; 
 	
 	private final Path output;
@@ -185,27 +183,25 @@ public class RawIntTraceCollector {
 				String.valueOf(UUID.randomUUID()), 2*ExecutionTraceCollector.CHUNK_SIZE, true);
 	}
 	
+	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
 	private int getOrCreateIdForSubTrace(BufferedArrayQueue<int[]> subTrace) {
 		if (subTrace == null || subTrace.isEmpty()) {
 			// id 0 indicates empty sub trace
 			return 0;
 		}
 
-		SubTraceIntArrayWrapper wrapper = new SubTraceIntArrayWrapper(subTrace);
+		long wrapper = ExecutionTraceCollector.generateUniqueRepresentationForSubTrace(subTrace);
 		Integer id = subTraceGlobalIdMap.get(wrapper);
 		if (id == null) {
 			// sub trace is not yet part of the global sub trace map
 			// starts with id 1
 			id = ++currentId;
-			// only store the least necessary parts 
-			// of the sub trace as a key in the map!
-			wrapper.simplify();
+
 			// new sub trace, so store new id and store sub trace
 			subTraceGlobalIdMap.put(wrapper, currentId);
+			subTrace.sleep();
 			globalIdToSubTraceMap.put(currentId, subTrace);
 		}
-		// help out the garbage collector?
-		wrapper = null;
 		
 		return id;
 
