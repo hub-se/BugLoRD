@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -81,13 +82,13 @@ public class ExecutionTraceCollector {
 	private static Map<Long,Integer> subTraceIdMap = new ConcurrentHashMap<>();
 	private static volatile int currentId = 0; 
 	// lock for getting/generating sub trace ids (ensures that sub trace ids are unique)
-//	private static final transient Lock idLock = new ReentrantLock();
+	private static final transient Lock idLock = new ReentrantLock();
 	// stores currently built up execution trace parts for each thread (thread id -> sub trace)
 	private static Map<Long,BufferedArrayQueue<int[]>> currentSubTraces = new ConcurrentHashMap<>();
 	
-	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
+	public static final Map<Integer, int[]> classesToCounterArrayMap = new HashMap<>();
 
-	private static final int SUBTRACE_ARRAY_SIZE = 1000;
+	private static final int SUBTRACE_ARRAY_SIZE = 500;
 
 	public static void initializeCounterArrayForClass(int classId, int countersCnt) {
 		classesToCounterArrayMap.put(classId, new int[countersCnt]);
@@ -160,28 +161,28 @@ public class ExecutionTraceCollector {
 			// id 0 indicates empty sub trace
 			return 0;
 		}
-		
-//		idLock.lock();
-//		try {
-		long wrapper = generateUniqueRepresentationForSubTrace(subTrace);
-		Integer id = subTraceIdMap.get(wrapper);
-		if (id == null) {
-			// starts with id 1
-			id = ++currentId;
-			// new sub trace, so store new id and store sub trace
-			subTraceIdMap.put(wrapper, currentId);
-			if (existingSubTraces == null) {
-				existingSubTraces = getNewSubTraceMap();
-			}
-			subTrace.sleep();
-			existingSubTraces.put(currentId, subTrace);
-//			System.out.println(currentId + ":" + wrapper.toString());
-		}
 
-		return id;
-//		} finally {
-//			idLock.unlock();
-//		}
+		idLock.lock();
+		try {
+			long wrapper = generateUniqueRepresentationForSubTrace(subTrace);
+			Integer id = subTraceIdMap.get(wrapper);
+			if (id == null) {
+				// starts with id 1
+				id = ++currentId;
+				// new sub trace, so store new id and store sub trace
+				subTraceIdMap.put(wrapper, currentId);
+				if (existingSubTraces == null) {
+					existingSubTraces = getNewSubTraceMap();
+				}
+				subTrace.sleep();
+				existingSubTraces.put(currentId, subTrace);
+//				System.out.println(currentId + ":" + wrapper.toString());
+			}
+
+			return id;
+		} finally {
+			idLock.unlock();
+		}
 	}
 	
 	// store the starting and ending statements in a single long value!
@@ -190,23 +191,17 @@ public class ExecutionTraceCollector {
 	// uses 22 bit for the counter id (max 4,194,304);
 	// a counter with id 0 can not occur!
 	public static long generateUniqueRepresentationForSubTrace(BufferedArrayQueue<int[]> subTrace) {
-		long result = 0;
 		if (subTrace.isEmpty()) {
 			return 0;
 		} else if (subTrace.size() == 1) {
-			result += subTrace.peek()[0];
-			result = result << 22;
-			result += subTrace.peek()[1];
+			return ((long)subTrace.peek()[0] << 22) 
+					+ subTrace.peek()[1];
 		} else {
-			result += subTrace.peek()[0];
-			result = result << 22;
-			result += subTrace.peek()[1];
-			result = result << 10;
-			result += subTrace.peekLast()[0];
-			result = result << 22;
-			result += subTrace.peekLast()[1];
+			return ((((long)subTrace.peek()[0] << 22) 
+					+ subTrace.peek()[1] << 10) 
+					+ subTrace.peekLast()[0] << 22) 
+					+ subTrace.peekLast()[1];
 		}
-		return result;
 	}
 	
 	private static BufferedMap<BufferedArrayQueue<int[]>> getNewSubTraceMap() {
