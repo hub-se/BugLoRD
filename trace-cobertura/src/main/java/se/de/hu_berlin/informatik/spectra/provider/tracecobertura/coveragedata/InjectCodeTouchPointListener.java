@@ -192,6 +192,14 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	 */
 	public void afterMethodStart(MethodVisitor nextMethodVisitor) {
 		// TODO: setup counter? answer: probably not...!
+		// this starts a new sub trace whenever we reach the start of a method...
+		// it serves mainly to avoid problems due to having a 
+		// loop in a class that is not instrumented
+		// (e.g. in test classes) that executes code without decision points (branches)
+		// in it. This results in a very large sub trace, potentially...
+		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+		
+		// setup variables
 		codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 				nextMethodVisitor, lastJumpIdVariableIndex);
 		codeProvider.generateCodeThatUnsetsDecisionIndicatorVariable(

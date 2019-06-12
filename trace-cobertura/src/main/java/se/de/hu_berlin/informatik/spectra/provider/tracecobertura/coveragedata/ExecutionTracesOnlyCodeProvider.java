@@ -41,6 +41,14 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	}
 
 	@SuppressWarnings("deprecation")
+	public void generateCodeThatProcessesLastSubtrace(
+			MethodVisitor nextMethodVisitor) {
+		nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+				.getInternalName(ExecutionTraceCollector.class), "processLastSubTrace",
+				"()V");
+	}
+	
+	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(
 			MethodVisitor nextMethodVisitor, int counterId, int decisionIndicatorVariableIndex,
 			String className, int classId) {

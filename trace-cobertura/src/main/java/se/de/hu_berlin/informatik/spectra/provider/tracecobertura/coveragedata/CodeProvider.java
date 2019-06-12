@@ -186,6 +186,8 @@ public interface CodeProvider {
 	public void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(MethodVisitor nextMethodVisitor,
 			int lineCounterId, int decisionIndicatorVariableIndex, String className, int classId);
 	
+	public void generateCodeThatProcessesLastSubtrace(MethodVisitor nextMethodVisitor);
+			
 //	public void generateCodeThatMarksBeginningOfNewSubTrace(MethodVisitor nextMethodVisitor,
 //			int lineCounterId, int decisionIndicatorVariableIndex, String className, int classId);
 }
