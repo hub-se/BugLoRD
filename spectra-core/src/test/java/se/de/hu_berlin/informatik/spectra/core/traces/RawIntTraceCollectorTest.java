@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -116,8 +117,9 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		return nodeIdSequences;
 	}
 	
-	private BufferedMap<BufferedArrayQueue<int[]>> generateIdToSubtraceMap(Path outputDir, int max, String filePrefix) {
-		BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap = new BufferedMap<>(outputDir.toFile(), filePrefix);
+	private Map<Integer,BufferedArrayQueue<int[]>> generateIdToSubtraceMap(Path outputDir, int max, String filePrefix) {
+//		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = new BufferedMap<>(outputDir.toFile(), filePrefix);
+		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = new HashMap<>();
         for (int i = 1; i <= max; ++i) {
         	idToSubTraceMap.put(i,asList(outputDir, rt(i+10)));
         }
@@ -146,7 +148,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-        BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test1");
+        Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test1");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test1"));
@@ -247,7 +249,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-        BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test2");
+		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test2");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test2"));
@@ -346,7 +348,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-        BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test3");
+		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test3");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test3"));
@@ -444,7 +446,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-        BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test4");
+		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test4");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test4"));
@@ -542,7 +544,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-        BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 9, "test5");
+		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 9, "test5");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 9, "test5"));

@@ -74,7 +74,7 @@ public class RawIntTraceCollector {
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			BufferedArrayQueue<Integer> trace, boolean log,
-			BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap) {
+			Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, trace, log, idToSubTraceMap);
 		return true;
 	}
@@ -82,7 +82,7 @@ public class RawIntTraceCollector {
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			Integer[] traceArray, boolean log, Path outputDir, String prefix,
-			BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap) {
+			Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap) {
 		BufferedArrayQueue<Integer> trace = new BufferedArrayQueue<>(outputDir.toFile(), prefix, 100);
         trace.addAll(Arrays.asList(traceArray));
 //		trace.clear(1);
@@ -96,7 +96,7 @@ public class RawIntTraceCollector {
 
 	private void addTrace(int traceIndex, int threadId, 
 			BufferedArrayQueue<Integer> trace, boolean log,
-			BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap) {
+			Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, new CompressedIdTrace(trace, log), idToSubTraceMap);
 	}
 	
