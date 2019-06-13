@@ -201,6 +201,10 @@ public class RawIntTraceCollector {
 			subTraceGlobalIdMap.put(wrapper, currentId);
 			subTrace.sleep();
 			globalIdToSubTraceMap.put(currentId, subTrace);
+		} else {
+			// already got this sub trace in the global map!
+			// delete any stored nodes from disk!
+			subTrace.clear();
 		}
 		
 		return id;

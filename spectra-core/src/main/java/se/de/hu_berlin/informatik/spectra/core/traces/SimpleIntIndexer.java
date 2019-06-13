@@ -174,6 +174,9 @@ public class SimpleIntIndexer implements SequenceIndexer {
 			for (int j = 0; j < nodeIdSequences[i].length; ++j) {
 				nodeIdSequences[i][j] = traceOfNodeIDs.remove();
 			}
+			
+			// delete any stored nodes from disk!
+			list.clear();
 		}
 	}
 	
