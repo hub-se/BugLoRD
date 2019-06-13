@@ -303,23 +303,26 @@ public class ExecutionTraceCollector {
 //	}
 
 	private static void processSubtraceForThreadId(long threadId, BufferedArrayQueue<int[]> subTrace) {
+		if (subTrace == null) {
+			return;
+		}
 //		// do more expensive operations in a separate thread?
 //		return executorService.submit(new SubTraceProcessor(threadId, subTrace));
 		
-//		// get the respective execution trace
-//		BufferedArrayQueue<Integer> trace = executionTraces.get(threadId);
-//		if (trace == null) {
-//			trace = getNewCollector(threadId);
-//			executionTraces.put(threadId, trace);
-//		}
+		// get the respective execution trace
+		BufferedArrayQueue<Integer> trace = executionTraces.get(threadId);
+		if (trace == null) {
+			trace = getNewCollector(threadId);
+			executionTraces.put(threadId, trace);
+		}
 		
 		// get or create id for sub trace
 //		System.out.println(queueToString(subTrace));
 		int id = getOrCreateIdForSubTrace(subTrace);
 //		System.out.println(id + ": " + queueToString(subTrace));
 		
-//		// add the sub trace's id to the trace
-//		trace.add(id);
+		// add the sub trace's id to the trace
+		trace.add(id);
 					
 		
 //		System.out.println("size: " + TouchCollector.registeredClasses.size());
