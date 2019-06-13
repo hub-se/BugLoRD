@@ -72,61 +72,62 @@ public class ExecutionTraceCollector {
 //		}
 //	};
 
-	private static class SubTraceCollector {
-		
-		private BlockingQueue<BufferedArrayQueue<int[]>> queue = new ArrayBlockingQueue<>(100);
-		
-		private Thread handlerThread;
-		private volatile boolean done = false;
-		
-		public SubTraceCollector(final long threadId) {
-			handlerThread = new Thread() {
-				@Override
-				public void run() {
-					while (!queue.isEmpty() || !done) {
-//						System.out.println(threadId);
-						BufferedArrayQueue<int[]> subTrace = queue.poll();
-						if (subTrace == null) {
-							try {
-								Thread.sleep(100);
-							} catch (InterruptedException e) {
-								// do nothing
-							}
-						} else {
-							processSubtraceForThreadId(threadId, subTrace);
-						}
-					}
-				};
-			};
-			
-			handlerThread.start();
-		}
-		
-		public void submitTrace(BufferedArrayQueue<int[]> subTrace) {
-			boolean worked = false;
-			while (!worked) {
-				try {
-					queue.put(subTrace);
-					worked = true;
-				} catch (InterruptedException e) {
-					// try again
-				}
-			}
-		}
-		
-		public void setDoneAndWaitForFinish() {
-			done = true;
-			while (handlerThread.isAlive()) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// do nothing
-				}
-			}
-		}
-	}
 	
-	private static Map<Long,SubTraceCollector> subTraceCollectorThreads = new ConcurrentHashMap<>();
+//	private static class SubTraceCollector {
+//		
+//		private BlockingQueue<BufferedArrayQueue<int[]>> queue = new ArrayBlockingQueue<>(100);
+//		
+//		private Thread handlerThread;
+//		private volatile boolean done = false;
+//		
+//		public SubTraceCollector(final long threadId) {
+//			handlerThread = new Thread() {
+//				@Override
+//				public void run() {
+//					while (!queue.isEmpty() || !done) {
+////						System.out.println(threadId);
+//						BufferedArrayQueue<int[]> subTrace = queue.poll();
+//						if (subTrace == null) {
+//							try {
+//								Thread.sleep(50);
+//							} catch (InterruptedException e) {
+//								// do nothing
+//							}
+//						} else {
+//							processSubtraceForThreadId(threadId, subTrace);
+//						}
+//					}
+//				};
+//			};
+//			
+//			handlerThread.start();
+//		}
+//		
+//		public void submitTrace(BufferedArrayQueue<int[]> subTrace) {
+//			boolean worked = false;
+//			while (!worked) {
+//				try {
+//					queue.put(subTrace);
+//					worked = true;
+//				} catch (InterruptedException e) {
+//					// try again
+//				}
+//			}
+//		}
+//		
+//		public void setDoneAndWaitForFinish() {
+//			done = true;
+//			while (handlerThread.isAlive()) {
+//				try {
+//					Thread.sleep(100);
+//				} catch (InterruptedException e) {
+//					// do nothing
+//				}
+//			}
+//		}
+//	}
+//	
+//	private static Map<Long,SubTraceCollector> subTraceCollectorThreads = new ConcurrentHashMap<>();
 	
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 
@@ -284,22 +285,22 @@ public class ExecutionTraceCollector {
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 //		System.out.println(threadId);
-		submitSubTraceToCollectorThread(threadId, currentSubTraces.remove(threadId));
+//		submitSubTraceToCollectorThread(threadId, currentSubTraces.remove(threadId));
 		
-//		processSubtraceForThreadId(threadId, currentSubTraces.remove(threadId));
+		processSubtraceForThreadId(threadId, currentSubTraces.remove(threadId));
 	}
 
-	private static void submitSubTraceToCollectorThread(long threadId, BufferedArrayQueue<int[]> subTrace) {
-		if (subTrace == null) {
-			return;
-		}
-		SubTraceCollector collector = subTraceCollectorThreads.get(threadId);
-		if (collector == null) {
-			collector = new SubTraceCollector(threadId);
-			subTraceCollectorThreads.put(threadId, collector);
-		}
-		collector.submitTrace(subTrace);
-	}
+//	private static void submitSubTraceToCollectorThread(long threadId, BufferedArrayQueue<int[]> subTrace) {
+//		if (subTrace == null) {
+//			return;
+//		}
+//		SubTraceCollector collector = subTraceCollectorThreads.get(threadId);
+//		if (collector == null) {
+//			collector = new SubTraceCollector(threadId);
+//			subTraceCollectorThreads.put(threadId, collector);
+//		}
+//		collector.submitTrace(subTrace);
+//	}
 
 	private static void processSubtraceForThreadId(long threadId, BufferedArrayQueue<int[]> subTrace) {
 //		// do more expensive operations in a separate thread?
@@ -399,23 +400,23 @@ public class ExecutionTraceCollector {
 //		Future<?> future = null;
 		while (iterator.hasNext()) {
 			Entry<Long, BufferedArrayQueue<int[]>> entry = iterator.next();
-//			processSubtraceForThreadId(entry.getKey(), entry.getValue());
-			submitSubTraceToCollectorThread(entry.getKey(), entry.getValue());
+			processSubtraceForThreadId(entry.getKey(), entry.getValue());
+//			submitSubTraceToCollectorThread(entry.getKey(), entry.getValue());
 			
 			// clear the current sub trace
 			iterator.remove();
 		}
 		
-		Iterator<Entry<Long, SubTraceCollector>> iterator2 = subTraceCollectorThreads.entrySet().iterator();
-//		Future<?> future = null;
-		while (iterator2.hasNext()) {
-			Entry<Long, SubTraceCollector> entry = iterator2.next();
-//			processSubtraceForThreadId(entry.getKey(), entry.getValue());
-			entry.getValue().setDoneAndWaitForFinish();
-			
-			// clear the current sub trace
-			iterator2.remove();
-		}
+//		Iterator<Entry<Long, SubTraceCollector>> iterator2 = subTraceCollectorThreads.entrySet().iterator();
+////		Future<?> future = null;
+//		while (iterator2.hasNext()) {
+//			Entry<Long, SubTraceCollector> entry = iterator2.next();
+////			processSubtraceForThreadId(entry.getKey(), entry.getValue());
+//			entry.getValue().setDoneAndWaitForFinish();
+//			
+//			// clear the current sub trace
+//			iterator2.remove();
+//		}
 		
 //		if (future != null) {
 //			boolean terminated = false;
