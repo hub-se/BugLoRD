@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -224,7 +225,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// }
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
-			BufferedMap<BufferedArrayQueue<int[]>> idToSubtraceMap = projectData.getIdToSubtraceMap();
+			Map<Integer, BufferedArrayQueue<int[]>> idToSubtraceMap = projectData.getIdToSubtraceMap();
 			for (Iterator<Entry<Long, CompressedIdTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
 				Entry<Long, CompressedIdTrace> entry = iterator.next();
 				++threadId;
@@ -360,7 +361,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				String[] idToClassNameMap = projectData.getIdToClassNameMap();
 //				Log.out(true, this, "Thread: " + entry.getKey());
 				// iterate over statements in the sub traces
-				for (Iterator<Entry<Integer, BufferedArrayQueue<int[]>>> subTraceIterator = idToSubtraceMap.entrySetIterator(); 
+				for (Iterator<Entry<Integer, BufferedArrayQueue<int[]>>> subTraceIterator = idToSubtraceMap.entrySet().iterator(); 
 						subTraceIterator.hasNext();) {
 					
 					BufferedArrayQueue<int[]> subTrace = subTraceIterator.next().getValue();

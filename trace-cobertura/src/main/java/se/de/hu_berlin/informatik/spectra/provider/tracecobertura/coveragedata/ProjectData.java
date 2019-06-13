@@ -26,7 +26,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	
 	private String[] idToClassName;
 	private Map<Long,CompressedIdTrace> executionTraces;
-	private BufferedMap<BufferedArrayQueue<int[]>> idToSubtraceMap;
+	private Map<Integer, BufferedArrayQueue<int[]>> idToSubtraceMap;
 	
 	public ProjectData() {
 	}
@@ -56,7 +56,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 	
-	public void addIdToSubTraceMap(BufferedMap<BufferedArrayQueue<int[]>> idToSubtraceMap) {
+	public void addIdToSubTraceMap(Map<Integer,BufferedArrayQueue<int[]>> idToSubtraceMap) {
 		lock.lock();
 		try {
 			this.idToSubtraceMap = idToSubtraceMap;
@@ -78,7 +78,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		return executionTraces;
 	}
 	
-	public BufferedMap<BufferedArrayQueue<int[]>> getIdToSubtraceMap() {
+	public Map<Integer, BufferedArrayQueue<int[]>> getIdToSubtraceMap() {
 		return idToSubtraceMap;
 	}
 	

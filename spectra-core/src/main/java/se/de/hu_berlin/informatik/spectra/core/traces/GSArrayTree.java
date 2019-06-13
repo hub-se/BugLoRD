@@ -189,7 +189,8 @@ public abstract class GSArrayTree<T,K> {
 		
 		if (rawTrace.getCompressedTrace().isEmpty()) {
 			return new BufferedArrayQueue<>(
-					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), ExecutionTraceCollector.CHUNK_SIZE);
+					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
+					ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
 		}
 		
 		if (!indexer.isIndexed()) {
@@ -197,7 +198,8 @@ public abstract class GSArrayTree<T,K> {
 		}
 		
 		BufferedArrayQueue<Integer> indexedtrace = new BufferedArrayQueue<>(
-				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), ExecutionTraceCollector.CHUNK_SIZE);
+				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
+				ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
 		
 		Iterator<T> iterator = rawTrace.iterator();
 		K startElement = getRepresentation(iterator.next());

@@ -30,7 +30,8 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
-	public final static int CHUNK_SIZE = 250000;
+	public final static int EXECUTION_TRACE_CHUNK_SIZE = 5000000;
+	public final static int MAP_CHUNK_SIZE = 1000000;
 	
 //	private static ExecutorService executorService = new ThreadPoolExecutor(1, 1,
 //			0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
@@ -134,7 +135,7 @@ public class ExecutionTraceCollector {
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
 	private static Map<Long,BufferedArrayQueue<Integer>> executionTraces = new ConcurrentHashMap<>();
 	// stores (sub trace id -> subTrace)
-	private static BufferedMap<BufferedArrayQueue<int[]>> existingSubTraces = null;
+	private static Map<Integer,BufferedArrayQueue<int[]>> existingSubTraces = new ConcurrentHashMap<>();
 	// stores (sub trace wrapper -> sub trace id) to retrieve subtrace ids
 	// the integer array in the wrapper has to contain start and ending node of the sub trace
 	// if the sub trace is longer than one statement
@@ -160,7 +161,6 @@ public class ExecutionTraceCollector {
 			Path path = Paths.get(System.getProperty("user.dir")).resolve("execTracesTmp");
 			path.toFile().mkdirs();
 			tempDir = Files.createTempDirectory(path.toAbsolutePath(), "exec");
-			existingSubTraces = getNewSubTraceMap();
 		} catch (IOException e) {
 			e.printStackTrace();
 			tempDir = null;
@@ -190,17 +190,17 @@ public class ExecutionTraceCollector {
 	 * @return
 	 * The map of ids to actual sub traces; also resets the internal map
 	 */
-	public static BufferedMap<BufferedArrayQueue<int[]>> getAndResetIdToSubtraceMap() {
+	public static Map<Integer,BufferedArrayQueue<int[]>> getAndResetIdToSubtraceMap() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			// process all remaining sub traces. Just to be safe!
 			processAllRemainingSubTraces();
 			// sub trace ids that stay consistent throughout the entire time!!??? TODO
-			BufferedMap<BufferedArrayQueue<int[]>> traceMap = existingSubTraces;
+			Map<Integer,BufferedArrayQueue<int[]>> traceMap = existingSubTraces;
 			// reset id counter and map!
 			currentId = 0;
 //			existingSubTraces = null;
-			existingSubTraces = getNewSubTraceMap();
+			existingSubTraces = new ConcurrentHashMap<>();
 			subTraceIdMap.clear();
 			return traceMap;
 		} finally {
@@ -211,7 +211,7 @@ public class ExecutionTraceCollector {
 	private static BufferedArrayQueue<Integer> getNewCollector(long threadId) {
 		// do not delete buffered trace files on exit, due to possible necessary serialization
 		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
-				threadId + "-" + String.valueOf(UUID.randomUUID()), CHUNK_SIZE, false);
+				threadId + "-" + String.valueOf(UUID.randomUUID()), EXECUTION_TRACE_CHUNK_SIZE, false);
 	}
 	
 	
@@ -230,9 +230,9 @@ public class ExecutionTraceCollector {
 				id = ++currentId;
 				// new sub trace, so store new id and store sub trace
 				subTraceIdMap.put(wrapper, currentId);
-				if (existingSubTraces == null) {
-					existingSubTraces = getNewSubTraceMap();
-				}
+//				if (existingSubTraces == null) {
+//					existingSubTraces = new ConcurrentHashMap<>();
+//				}
 				subTrace.sleep();
 				existingSubTraces.put(currentId, subTrace);
 //				System.out.println(currentId + ":" + wrapper.toString());
@@ -263,11 +263,11 @@ public class ExecutionTraceCollector {
 		}
 	}
 	
-	private static BufferedMap<BufferedArrayQueue<int[]>> getNewSubTraceMap() {
-		// do not delete buffered map on exit, due to possible necessary serialization
-		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
-				String.valueOf(UUID.randomUUID()), 2*CHUNK_SIZE, false);
-	}
+//	private static BufferedMap<BufferedArrayQueue<int[]>> getNewSubTraceMap() {
+//		// do not delete buffered map on exit, due to possible necessary serialization
+//		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
+//				String.valueOf(UUID.randomUUID()), MAP_CHUNK_SIZE, false);
+//	}
 	
 	private static BufferedArrayQueue<int[]> getNewSubtrace() {
 		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
@@ -408,6 +408,10 @@ public class ExecutionTraceCollector {
 			
 			// clear the current sub trace
 			iterator.remove();
+		}
+		
+		for (Entry<Long, BufferedArrayQueue<Integer>> entry : executionTraces.entrySet()) {
+			entry.getValue().sleep();
 		}
 		
 //		Iterator<Entry<Long, SubTraceCollector>> iterator2 = subTraceCollectorThreads.entrySet().iterator();

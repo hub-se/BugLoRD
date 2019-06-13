@@ -102,19 +102,19 @@ public class RawIntTraceCollector {
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			CompressedTraceBase<Integer,Integer> eTrace,
-			BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap) {
-		addTrace(traceIndex, threadId, eTrace, idToSubTraceMap);
+			Map<Integer, BufferedArrayQueue<int[]>> map) {
+		addTrace(traceIndex, threadId, eTrace, map);
 		return true;
 	}
 
 	private void addTrace(int traceIndex, int threadId, 
 			CompressedTraceBase<Integer,Integer> eTrace,
-			BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap) {
+			Map<Integer, BufferedArrayQueue<int[]>> map) {
 		// the next few commands are necessary to ensure consistency in sub trace ids!!!
 		// each project data comes potentially with its own mapping from ids to sub traces...
 		// so we need to get the respective ids for existing sub traces and produce 
 		// new ones for newly added sub traces.
-		Map<Integer,Integer> localIdToGlobalIdMap = getAndCreateSubTraceIdMapping(idToSubTraceMap, output.getParent());
+		Map<Integer,Integer> localIdToGlobalIdMap = getAndCreateSubTraceIdMapping(map, output.getParent());
 		// and then replace all local ids with the global ones...
 		globalizeTrace(eTrace, localIdToGlobalIdMap);
 		
@@ -161,14 +161,14 @@ public class RawIntTraceCollector {
 	}
 
 	private Map<Integer, Integer> getAndCreateSubTraceIdMapping(
-			BufferedMap<BufferedArrayQueue<int[]>> idToSubTraceMap, Path tempDir) {
+			Map<Integer, BufferedArrayQueue<int[]>> map, Path tempDir) {
 		if (globalIdToSubTraceMap == null) {
 			globalIdToSubTraceMap = getNewSubTraceMap(tempDir);
 		}
 		// should map local sub trace ids (parameter) to global ids (field),
 		// so that the ids in the submitted raw traces can be replaced.
 		Map<Integer, Integer> subTraceIdMapping = new HashMap<>();
-		Iterator<Entry<Integer, BufferedArrayQueue<int[]>>> iterator = idToSubTraceMap.entrySetIterator();
+		Iterator<Entry<Integer, BufferedArrayQueue<int[]>>> iterator = map.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<Integer, BufferedArrayQueue<int[]>> entry = iterator.next();
 			int globalId = getOrCreateIdForSubTrace(entry.getValue());
@@ -177,10 +177,11 @@ public class RawIntTraceCollector {
 		return subTraceIdMapping;
 	}
 	
-	private BufferedMap<BufferedArrayQueue<int[]>> getNewSubTraceMap(Path tempDir) {
-		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
-		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
-				String.valueOf(UUID.randomUUID()), 2*ExecutionTraceCollector.CHUNK_SIZE, true);
+	private Map<Integer,BufferedArrayQueue<int[]>> getNewSubTraceMap(Path tempDir) {
+		return new HashMap<>();
+//		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
+//		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
+//				String.valueOf(UUID.randomUUID()), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
 	}
 	
 	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
