@@ -211,7 +211,8 @@ public class ExecutionTraceCollector {
 	private static BufferedArrayQueue<Integer> getNewCollector(long threadId) {
 		// do not delete buffered trace files on exit, due to possible necessary serialization
 		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
-				threadId + "-" + String.valueOf(UUID.randomUUID()), EXECUTION_TRACE_CHUNK_SIZE, false);
+				"exec_trc_" + threadId + "-" + String.valueOf(UUID.randomUUID()), 
+				EXECUTION_TRACE_CHUNK_SIZE, false);
 	}
 	
 	
@@ -271,7 +272,8 @@ public class ExecutionTraceCollector {
 	
 	private static BufferedArrayQueue<int[]> getNewSubtrace() {
 		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
-				String.valueOf(UUID.randomUUID()), SUBTRACE_ARRAY_SIZE, false);
+				"sub_trc_" + String.valueOf(UUID.randomUUID()), 
+				SUBTRACE_ARRAY_SIZE, false);
 	}
 
 	

@@ -97,7 +97,7 @@ public class SimpleProgram {
 		System.out.print(".");
 		System.out.print(".");
 		System.out.print(".");
-		if (x < 0) {
+		if (x == 12) {
 			System.out.print(".");
 			System.out.print(".");
 			System.out.print(".");

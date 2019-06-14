@@ -48,49 +48,49 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 				"()V");
 	}
 	
-	@SuppressWarnings("deprecation")
-	public void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(
-			MethodVisitor nextMethodVisitor, int counterId, int decisionIndicatorVariableIndex,
-			String className, int classId) {
-		if (collectExecutionTrace) {
-			/*
-			 * Injects code that behaves the same as such a code snippet:
-			 * <pre>
-			 * if (value('decisionIndicatorVariableIndex')){
-			 * 	 processLastSubTrace();
-			 *   unset_decision_indicator_variable('decisionIndicatorVariableIndex');
-			 * }
-			 * </pre>
-			 */
-			nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, decisionIndicatorVariableIndex);
-			Label afterJump = new Label();
-			// check if decision indicator variable is true
-			nextMethodVisitor.visitJumpInsn(Opcodes.IFEQ, afterJump);
-			// if so, end last segment, etc.
-			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-					.getInternalName(ExecutionTraceCollector.class), "processLastSubTrace",
-					"()V");
-			// reset decision indicator
-			generateCodeThatUnsetsDecisionIndicatorVariable(nextMethodVisitor,
-					decisionIndicatorVariableIndex);
-			// else...
-			nextMethodVisitor.visitLabel(afterJump);
-			
-			// add the statement to the execution trace AND increment counter
-			nextMethodVisitor.visitLdcInsn(classId);
-			nextMethodVisitor.visitLdcInsn(counterId);
-			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTraceAndIncrementCounter",
-					"(II)V");
-		} else {
-			// increment counter
-			nextMethodVisitor.visitLdcInsn(classId);
-			nextMethodVisitor.visitLdcInsn(counterId);
-			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-					.getInternalName(ExecutionTraceCollector.class), "incrementCounter",
-					"(II)V");
-		}
-	}
+//	@SuppressWarnings("deprecation")
+//	public void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(
+//			MethodVisitor nextMethodVisitor, int counterId, int decisionIndicatorVariableIndex,
+//			String className, int classId) {
+//		if (collectExecutionTrace) {
+//			/*
+//			 * Injects code that behaves the same as such a code snippet:
+//			 * <pre>
+//			 * if (value('decisionIndicatorVariableIndex')){
+//			 * 	 processLastSubTrace();
+//			 *   unset_decision_indicator_variable('decisionIndicatorVariableIndex');
+//			 * }
+//			 * </pre>
+//			 */
+//			nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, decisionIndicatorVariableIndex);
+//			Label afterJump = new Label();
+//			// check if decision indicator variable is true
+//			nextMethodVisitor.visitJumpInsn(Opcodes.IFEQ, afterJump);
+//			// if so, end last segment, etc.
+//			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+//					.getInternalName(ExecutionTraceCollector.class), "processLastSubTrace",
+//					"()V");
+//			// reset decision indicator
+//			generateCodeThatUnsetsDecisionIndicatorVariable(nextMethodVisitor,
+//					decisionIndicatorVariableIndex);
+//			// else...
+//			nextMethodVisitor.visitLabel(afterJump);
+//			
+//			// add the statement to the execution trace AND increment counter
+//			nextMethodVisitor.visitLdcInsn(classId);
+//			nextMethodVisitor.visitLdcInsn(counterId);
+//			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+//					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTraceAndIncrementCounter",
+//					"(II)V");
+//		} else {
+//			// increment counter
+//			nextMethodVisitor.visitLdcInsn(classId);
+//			nextMethodVisitor.visitLdcInsn(counterId);
+//			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+//					.getInternalName(ExecutionTraceCollector.class), "incrementCounter",
+//					"(II)V");
+//		}
+//	}
 	
 //	@SuppressWarnings("deprecation")
 //	public void generateCodeThatMarksBeginningOfNewSubTrace(

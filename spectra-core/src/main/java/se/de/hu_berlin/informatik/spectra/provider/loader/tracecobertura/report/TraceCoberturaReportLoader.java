@@ -9,9 +9,11 @@ package se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
@@ -223,7 +225,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// for (Object classData : projectData.getClasses()) {
 			// Log.out(true, this, ((MyClassData)classData).getName());
 			// }
-//			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
+			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
 			Map<Integer, BufferedArrayQueue<int[]>> idToSubtraceMap = projectData.getIdToSubtraceMap();
 			for (Iterator<Entry<Long, CompressedIdTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
@@ -233,132 +235,132 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				
 				
 				
-//				// only for testing... the arrays in a trace are composed of [ class id, counter id].
-//				String[] idToClassNameMap = projectData.getIdToClassNameMap();
-//				Log.out(true, this, "Thread: " + entry.getKey());
-//				// iterate over executed statements in the trace
-//				CloneableIterator<Integer> traceIterator = entry.getValue().iterator();
-//				while (traceIterator.hasNext()) {
-//					Integer subTraceId = traceIterator.next();
-//					List<int[]> subTrace = null;
-//					if (subTraceId == 0) {
-//						subTrace = Collections.emptyList();
-//					} else {
-//						subTrace = idToSubtraceMap.get(subTraceId);
-//						if (subTrace == null) {
-//							Log.err(this, "No sub trace found for ID: " + subTraceId);
-//							return false;
-//						}
-//					}
-//					Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.size());
-////					if (subTraceId >= 0) {
-////						continue;
-////					}
-//					for (int[] statement : subTrace) {
-//						//					 Log.out(true, this, "statement: " + Arrays.toString(statement));
-//						// TODO store the class names with '.' from the beginning, or use the '/' version?
-//						String classSourceFileName = idToClassNameMap[statement[0]];
-//						if (classSourceFileName == null) {
-//							//						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
-//							Log.err(this, "No class name found for class ID: " + statement[0]);
-//							return false;
-//						}
-//						ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
-//
-//						if (classData != null) {
-//							if (classData.getCounterId2LineNumbers() == null) {
-//								Log.err(this, "No counter ID to line number map for class " + classSourceFileName);
-//								return false;
-//							}
-//							int lineNumber = classData.getCounterId2LineNumbers()[statement[1]];
-//
-//							NodeType nodeType = NodeType.NORMAL;
-//							// these following lines print out the execution trace
-//							String addendum = "";
-//							if (statement.length > 2) {
-//								switch (statement[2]) {
-//								case 0:
-//									addendum = " (from branch/'false' branch)";
-//									nodeType = NodeType.FALSE_BRANCH;
-//									break;
-//								case 1:
-//									addendum = " (after jump/'true' branch)";
-//									nodeType = NodeType.TRUE_BRANCH;
-//									break;
-//								case 2:
-//									addendum = " (after switch label)";
-//									break;
-//								case 3:
-//									addendum = " (after decision)";
-//									break;
-//								default:
-//									addendum = " (unknown)";
-//								}
-//							}
-//							Log.out(true, this, classSourceFileName + ", counter ID " + statement[1] +
-//									", line " + (lineNumber < 0 ? "(not set)" : String.valueOf(lineNumber)) +
-//									addendum);
-//
-//							// the array is initially set to -1 to indicate counter IDs that were not set, if any
-//							if (lineNumber >= 0) {
-//								int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber, nodeType);
-//								if (nodeIndex >= 0) {
-//									// everything's fine; the below statement is from an earlier version
-//									//traceOfNodeIDs.add(nodeIndex);
-//								} else {
-//									// node index not correct...
-//									String throwAddendum = "";
-//									if (statement.length > 2) {
-//										switch (statement[2]) {
-//										case 0:
-//											throwAddendum = " (from branch/'false' branch)";
-//											break;
-//										case 1:
-//											throwAddendum = " (after jump/'true' branch)";
-//											break;
-//										case 2:
-//											throwAddendum = " (after switch label)";
-//											break;
-//										case 3:
-//											throwAddendum = " (after decision)";
-//											break;
-//										default:
-//											throwAddendum = " (unknown)";
-//										}
-//									}
-//									Log.err(this, "Node not found in spectra: "
-//											+ classData.getSourceFileName() + ":" + lineNumber 
-//											+ " from counter id " + statement[1] + throwAddendum);
-//									return false;
-//								}
-//							} else if (statement.length <= 2 || statement[2] != 0) {
-//								// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
-//								// this should actually not be an issue anymore!
-//								//							throw new IllegalStateException("No line number found for counter ID: " + counterId
-//								//									+ " in class: " + classData.getName());
-//								Log.err(this, "No line number found for counter ID: " + statement[1]
-//										+ " in class: " + classData.getName());
-//								return false;
-//							} else {
-//								Log.err(this, "No line number found for counter ID: " + statement[1]
-//										+ " in class: " + classData.getName());
-//								return false;
-//								//							// we have to add a dummy node here to not mess up the repetition markers
-//								//							traceOfNodeIDs.add(-1);
-//								//							Log.out(this, "Ignoring counter ID: " + statement[1]
-//								//									+ " in class: " + classData.getName());
-//							}
-//						} else {
-//							throw new IllegalStateException("Class data for '" + classSourceFileName + "' not found.");
-//						}
-//					}
-//				}
-//				System.out.flush();
-//				//Thread.sleep(1000);
-//				// testing done!....
-				
 				// only for testing... the arrays in a trace are composed of [ class id, counter id].
 				String[] idToClassNameMap = projectData.getIdToClassNameMap();
+				Log.out(true, this, "Thread: " + entry.getKey());
+				// iterate over executed statements in the trace
+				CloneableIterator<Integer> traceIterator = entry.getValue().iterator();
+				while (traceIterator.hasNext()) {
+					Integer subTraceId = traceIterator.next();
+					Queue<int[]> subTrace = null;
+					if (subTraceId == 0) {
+						subTrace = new LinkedList<>();
+					} else {
+						subTrace = idToSubtraceMap.get(subTraceId);
+						if (subTrace == null) {
+							Log.err(this, "No sub trace found for ID: " + subTraceId);
+							return false;
+						}
+					}
+					Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.size());
+//					if (subTraceId >= 0) {
+//						continue;
+//					}
+					for (int[] statement : subTrace) {
+						//					 Log.out(true, this, "statement: " + Arrays.toString(statement));
+						// TODO store the class names with '.' from the beginning, or use the '/' version?
+						String classSourceFileName = idToClassNameMap[statement[0]];
+						if (classSourceFileName == null) {
+							//						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
+							Log.err(this, "No class name found for class ID: " + statement[0]);
+							return false;
+						}
+						ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+
+						if (classData != null) {
+							if (classData.getCounterId2LineNumbers() == null) {
+								Log.err(this, "No counter ID to line number map for class " + classSourceFileName);
+								return false;
+							}
+							int lineNumber = classData.getCounterId2LineNumbers()[statement[1]];
+
+							NodeType nodeType = NodeType.NORMAL;
+							// these following lines print out the execution trace
+							String addendum = "";
+							if (statement.length > 2) {
+								switch (statement[2]) {
+								case 0:
+									addendum = " (from branch/'false' branch)";
+									nodeType = NodeType.FALSE_BRANCH;
+									break;
+								case 1:
+									addendum = " (after jump/'true' branch)";
+									nodeType = NodeType.TRUE_BRANCH;
+									break;
+								case 2:
+									addendum = " (after switch label)";
+									break;
+								case 3:
+									addendum = " (after decision)";
+									break;
+								default:
+									addendum = " (unknown)";
+								}
+							}
+							Log.out(true, this, classSourceFileName + ", counter ID " + statement[1] +
+									", line " + (lineNumber < 0 ? "(not set)" : String.valueOf(lineNumber)) +
+									addendum);
+
+							// the array is initially set to -1 to indicate counter IDs that were not set, if any
+							if (lineNumber >= 0) {
+								int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber, nodeType);
+								if (nodeIndex >= 0) {
+									// everything's fine; the below statement is from an earlier version
+									//traceOfNodeIDs.add(nodeIndex);
+								} else {
+									// node index not correct...
+									String throwAddendum = "";
+									if (statement.length > 2) {
+										switch (statement[2]) {
+										case 0:
+											throwAddendum = " (from branch/'false' branch)";
+											break;
+										case 1:
+											throwAddendum = " (after jump/'true' branch)";
+											break;
+										case 2:
+											throwAddendum = " (after switch label)";
+											break;
+										case 3:
+											throwAddendum = " (after decision)";
+											break;
+										default:
+											throwAddendum = " (unknown)";
+										}
+									}
+									Log.err(this, "Node not found in spectra: "
+											+ classData.getSourceFileName() + ":" + lineNumber 
+											+ " from counter id " + statement[1] + throwAddendum);
+									return false;
+								}
+							} else if (statement.length <= 2 || statement[2] != 0) {
+								// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
+								// this should actually not be an issue anymore!
+								//							throw new IllegalStateException("No line number found for counter ID: " + counterId
+								//									+ " in class: " + classData.getName());
+								Log.err(this, "No line number found for counter ID: " + statement[1]
+										+ " in class: " + classData.getName());
+								return false;
+							} else {
+								Log.err(this, "No line number found for counter ID: " + statement[1]
+										+ " in class: " + classData.getName());
+								return false;
+								//							// we have to add a dummy node here to not mess up the repetition markers
+								//							traceOfNodeIDs.add(-1);
+								//							Log.out(this, "Ignoring counter ID: " + statement[1]
+								//									+ " in class: " + classData.getName());
+							}
+						} else {
+							throw new IllegalStateException("Class data for '" + classSourceFileName + "' not found.");
+						}
+					}
+				}
+				System.out.flush();
+				//Thread.sleep(1000);
+				// testing done!....
+				
+				// only for testing... the arrays in a trace are composed of [ class id, counter id].
+//				String[] idToClassNameMap = projectData.getIdToClassNameMap();
 //				Log.out(true, this, "Thread: " + entry.getKey());
 				// iterate over statements in the sub traces
 				for (Iterator<Entry<Integer, BufferedArrayQueue<int[]>>> subTraceIterator = idToSubtraceMap.entrySet().iterator(); 

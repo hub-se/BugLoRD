@@ -51,6 +51,13 @@ public class SimpleProgramTest {
 	 */
 	@Test
 	public void testAdd() throws Exception {
+		Assert.assertEquals(SimpleProgram.add(2, 3), 5);
+		Assert.assertEquals(SimpleProgram.add(12, 3), 15);
+		Assert.assertEquals(SimpleProgram.add(-1, 4), 3);
+	}
+	
+	@Test
+	public void testWeirdStuff() throws Exception {
 		Assert.assertEquals(null, SimpleProgram.toBooleanObject((String) null));
 		Assert.assertEquals(null, SimpleProgram.toBooleanObject(""));
 		Assert.assertEquals(Boolean.FALSE, SimpleProgram.toBooleanObject("false"));
@@ -81,8 +88,6 @@ public class SimpleProgramTest {
 
         Assert.assertEquals(null, SimpleProgram.toBooleanObject("ab"));
         Assert.assertEquals(null, SimpleProgram.toBooleanObject("yoo"));
-		Assert.assertEquals(SimpleProgram.add(2, 3), 5);
-		Assert.assertEquals(SimpleProgram.add(-1, 4), 3);
 	}
 	
 	/**

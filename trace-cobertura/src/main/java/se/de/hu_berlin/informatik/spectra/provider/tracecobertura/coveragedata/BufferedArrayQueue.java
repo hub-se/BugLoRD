@@ -197,7 +197,13 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     private void store(Node<E> node) {
 		String filename = getFileName(node.storeIndex);
 		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-			outputStream.writeObject(node.items);
+			if (node.hasFreeSpace()) {
+				Object[] array = new Object[node.endIndex];
+				System.arraycopy(node.items, 0, array, 0, node.endIndex);
+				outputStream.writeObject(array);
+			} else {
+				outputStream.writeObject(node.items);
+			}
 			outputStream.writeInt(node.startIndex);
 			outputStream.writeInt(node.endIndex);
 			// file can not be removed, due to serialization! TODO
@@ -344,6 +350,11 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 				Object[] items = (Object[])inputStream.readObject();
 				int startIndex = inputStream.readInt();
 				int endIndex = inputStream.readInt();
+				if (items.length < arrayLength) {
+					Object[] realArray = new Object[arrayLength];
+					System.arraycopy(items, 0, realArray, 0, items.length);
+					items = realArray;
+				}
 				loadedNode = new Node<>(items, startIndex, endIndex, storeIndex);
 			} catch (ClassNotFoundException | IOException e) {
 				e.printStackTrace();

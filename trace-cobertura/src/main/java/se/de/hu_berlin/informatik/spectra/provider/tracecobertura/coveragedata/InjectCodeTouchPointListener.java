@@ -54,9 +54,10 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			codeProvider.generateCodeThatSetsJumpCounterIdVariable(
 					nextMethodVisitor, jumpFalseCounterId,
 					lastJumpIdVariableIndex);
-			// indicate a decision... TODO maybe this has to be moved to after the jump?...
-			codeProvider.generateCodeThatSetsDecisionIndicatorVariable(
-					nextMethodVisitor, decisionIndicatorVariableIndex);
+//			// indicate a decision... TODO maybe this has to be moved to after the jump?...
+//			codeProvider.generateCodeThatSetsDecisionIndicatorVariable(
+//					nextMethodVisitor, decisionIndicatorVariableIndex);
+//			codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 		}
 	}
 
@@ -80,6 +81,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 							.getClassName(), classMap.getClassId());
 			codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 					nextMethodVisitor, lastJumpIdVariableIndex);
+			
+			codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 		}
 	}
 
@@ -117,6 +120,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 					.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 							mv, lastJumpIdVariableIndex, 
 							classMap.getClassName(), classMap.getClassId());
+			codeProvider.generateCodeThatProcessesLastSubtrace(mv);
 		}
 
 //		logger.debug("label to event(" + eventId + "):"
@@ -145,8 +149,9 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //			logger.debug("Catch block label for event(" + eventId + "):"
 //					+ label + ", line " + currentLine);
 			// indicate a decision... TODO maybe needs to be moved? idk...
-			codeProvider.generateCodeThatSetsDecisionIndicatorVariable(
-					mv, decisionIndicatorVariableIndex);
+//			codeProvider.generateCodeThatSetsDecisionIndicatorVariable(
+//					mv, decisionIndicatorVariableIndex);
+			codeProvider.generateCodeThatProcessesLastSubtrace(mv);
 		}
 	}
 	
@@ -178,12 +183,12 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		Integer lineCounterId = classMap.getCounterIdForLineEventId(eventId);
 		// TODO when can this be null?
 		if (lineCounterId != null) {
-//			codeProvider.generateCodeThatIncrementsCoberturaCounter(
-//					nextMethodVisitor, lineCounterId, 
-//					classMap.getClassName(), classMap.getClassId());
-			codeProvider.generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(
-					nextMethodVisitor, lineCounterId, decisionIndicatorVariableIndex,
+			codeProvider.generateCodeThatIncrementsCoberturaCounter(
+					nextMethodVisitor, lineCounterId, 
 					classMap.getClassName(), classMap.getClassId());
+//			codeProvider.generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(
+//					nextMethodVisitor, lineCounterId, decisionIndicatorVariableIndex,
+//					classMap.getClassName(), classMap.getClassId());
 		}
 	}
 
@@ -196,8 +201,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		// setup variables
 		codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 				nextMethodVisitor, lastJumpIdVariableIndex);
-		codeProvider.generateCodeThatUnsetsDecisionIndicatorVariable(
-				nextMethodVisitor, decisionIndicatorVariableIndex);
+//		codeProvider.generateCodeThatUnsetsDecisionIndicatorVariable(
+//				nextMethodVisitor, decisionIndicatorVariableIndex);
 		
 		// this starts a new sub trace whenever we reach the start of a method...
 		// it serves mainly to avoid problems due to having a 
