@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 
 
 /**
@@ -51,7 +51,7 @@ public class BufferedMapTest {
 	private File outputDir = new File("target" + File.separator + "bufferedMapTest");
 	
 	/**
-	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.BufferedMap#BufferedMap(java.io.File, java.lang.String)}.
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap#BufferedMap(java.io.File, java.lang.String)}.
 	 */
 	@Test
 	public void testBufferedMapFileString() throws Exception {

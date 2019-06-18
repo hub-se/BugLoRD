@@ -2,8 +2,8 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 
 import java.util.List;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.IntArrayWrapper;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntArrayWrapper;
 
 public class GSIntArrayTree extends GSArrayTree<int[],IntArrayWrapper> {
 	

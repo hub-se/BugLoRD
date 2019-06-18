@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 
 import java.util.List;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
 
 public class GSIntTree extends GSArrayTree<Integer,Integer> {
 	

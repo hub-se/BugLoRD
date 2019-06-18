@@ -1,6 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.IntArrayWrapper;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntArrayWrapper;
 
 public class GSIntArrayTreeIndexer extends GSArrayTreeIndexer<int[], IntArrayWrapper> {
 

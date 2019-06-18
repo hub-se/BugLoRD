@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CloneableIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
 
 public abstract class GSArrayTreeNode<T,K> {
 	
