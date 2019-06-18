@@ -604,28 +604,23 @@ public class ExecutionTraceCollector {
 		}
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
-		
-		globalExecutionTraceCollectorLock.lock();
-		try {
-			// get the respective sub trace
-			BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
-			if (subTrace == null) {
-				subTrace = getNewSubtrace();
-				currentSubTraces.put(threadId, subTrace);
-			}
 
-			//		System.out.println("size: " + TouchCollector.registeredClasses.size());
-			//		for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
-			//			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
-			//		}
-
-			//		System.out.println(classId + ":" + counterId);
-
-			// add the statement to the sub trace
-			subTrace.add(new int[] {classId, counterId});
-		} finally {
-			globalExecutionTraceCollectorLock.unlock();
+		// get the respective sub trace
+		BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
+		if (subTrace == null) {
+			subTrace = getNewSubtrace();
+			currentSubTraces.put(threadId, subTrace);
 		}
+
+		//		System.out.println("size: " + TouchCollector.registeredClasses.size());
+		//		for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
+		//			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
+		//		}
+
+		//		System.out.println(classId + ":" + counterId);
+
+		// add the statement to the sub trace
+		subTrace.add(new int[] {classId, counterId});
 	}
 
 	/**
@@ -647,29 +642,24 @@ public class ExecutionTraceCollector {
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
-		globalExecutionTraceCollectorLock.lock();
-		try {
-			// get the respective sub trace
-			BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
-			if (subTrace == null) {
-				subTrace = getNewSubtrace();
-				currentSubTraces.put(threadId, subTrace);
-			}
-
-			//				System.out.println("size: " + TouchCollector.registeredClasses.size());
-			//				for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
-			//					System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
-			//				}
-
-			//				System.out.println(classId + ":" + counterId);
-
-			// add the statement to the sub trace
-			subTrace.add(new int[] {classId, counterId, 0});
-		} finally {
-			globalExecutionTraceCollectorLock.unlock();
+		// get the respective sub trace
+		BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
+		if (subTrace == null) {
+			subTrace = getNewSubtrace();
+			currentSubTraces.put(threadId, subTrace);
 		}
+
+		//				System.out.println("size: " + TouchCollector.registeredClasses.size());
+		//				for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
+		//					System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
+		//				}
+
+		//				System.out.println(classId + ":" + counterId);
+
+		// add the statement to the sub trace
+		subTrace.add(new int[] {classId, counterId, 0});
 	}
-	
+
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
@@ -690,29 +680,24 @@ public class ExecutionTraceCollector {
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
-		globalExecutionTraceCollectorLock.lock();
-		try {
-			// get the respective sub trace
-			BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
-			if (subTrace == null) {
-				subTrace = getNewSubtrace();
-				currentSubTraces.put(threadId, subTrace);
-			}
-
-			//				System.out.println("size: " + TouchCollector.registeredClasses.size());
-			//				for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
-			//					System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
-			//				}
-
-			//				System.out.println(classId + ":" + counterId);
-
-			// add the statement to the sub trace
-			subTrace.add(new int[] {classId, counterId, 1});
-		} finally {
-			globalExecutionTraceCollectorLock.unlock();
+		// get the respective sub trace
+		BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
+		if (subTrace == null) {
+			subTrace = getNewSubtrace();
+			currentSubTraces.put(threadId, subTrace);
 		}
+
+		//				System.out.println("size: " + TouchCollector.registeredClasses.size());
+		//				for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
+		//					System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
+		//				}
+
+		//				System.out.println(classId + ":" + counterId);
+
+		// add the statement to the sub trace
+		subTrace.add(new int[] {classId, counterId, 1});
 	}
-	
+
 	/**
 	 * This method should be called for each executed statement. Therefore, 
 	 * access to this class has to be ensured for ALL instrumented classes.
@@ -731,27 +716,22 @@ public class ExecutionTraceCollector {
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
-		globalExecutionTraceCollectorLock.lock();
-		try {
-			// get the respective sub trace
-			BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
-			if (subTrace == null) {
-				subTrace = getNewSubtrace();
-				currentSubTraces.put(threadId, subTrace);
-			}
-
-			//				System.out.println("size: " + TouchCollector.registeredClasses.size());
-			//				for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
-			//					System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
-			//				}
-
-			//				System.out.println(classId + ":" + counterId);
-
-			// add the statement to the sub trace
-			subTrace.add(new int[] {classId, counterId, 2});
-		} finally {
-			globalExecutionTraceCollectorLock.unlock();
+		// get the respective sub trace
+		BufferedArrayQueue<int[]> subTrace = currentSubTraces.get(threadId);
+		if (subTrace == null) {
+			subTrace = getNewSubtrace();
+			currentSubTraces.put(threadId, subTrace);
 		}
+
+		//				System.out.println("size: " + TouchCollector.registeredClasses.size());
+		//				for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
+		//					System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
+		//				}
+
+		//				System.out.println(classId + ":" + counterId);
+
+		// add the statement to the sub trace
+		subTrace.add(new int[] {classId, counterId, 2});
 	}
 	
 	/**
