@@ -308,7 +308,11 @@ public class ExecutionTraceCollector {
 
 	private static void processSubtraceForThreadId(long threadId, BufferedArrayQueue<int[]> subTrace) {
 		if (subTrace == null) {
+			// sub trace contains no nodes
 			return;
+		}
+		if (subTrace.isEmpty()) {
+			throw new IllegalStateException("Processing an empty sub trace...");
 		}
 //		// do more expensive operations in a separate thread?
 //		return executorService.submit(new SubTraceProcessor(threadId, subTrace));
@@ -564,6 +568,10 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void addStatementToExecutionTrace(int classId, int counterId) {
+		if (counterId == AbstractCodeProvider.FAKE_COUNTER_ID) {
+			// this marks a fake jump! (ignore)
+			return;
+		}
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 		
