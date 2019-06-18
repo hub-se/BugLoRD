@@ -286,8 +286,14 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 //					}
 //				}
 				
-				// assume that the data to merge into this one is the relevant data
-				idToSubtraceMap.putAll(projectData.getIdToSubtraceMap());
+//				// assume that the data to merge into this one is the relevant data
+//				idToSubtraceMap.putAll(projectData.getIdToSubtraceMap());
+				
+				for (Entry<Integer, BufferedArrayQueue<int[]>> entry : projectData.getIdToSubtraceMap().entrySet()) {
+					if (!idToSubtraceMap.containsKey(entry.getKey())) {
+						idToSubtraceMap.put(entry.getKey(), entry.getValue());
+					}
+				}
 			}
 
             for (String key : projectData.classes.keySet()) {

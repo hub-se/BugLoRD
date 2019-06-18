@@ -110,6 +110,22 @@ public class RawIntTraceCollector {
 	private void addTrace(int traceIndex, int threadId, 
 			CompressedTraceBase<Integer,Integer> eTrace,
 			Map<Integer, BufferedArrayQueue<int[]>> map) {
+		
+		boolean error = false;
+		for (ReplaceableCloneableIterator<Integer> iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
+			// check if all IDs are actually stored in the map
+			Integer id = iterator.next();
+			if (!map.containsKey(id)) {
+				// this should definitely not happen!
+				error = true;
+				System.err.println(traceIndex + "-" + threadId + ": No sub trace mapping found for id " + id);
+			}
+		}
+		
+		if (error) {
+			throw new IllegalStateException("No sub trace mapping found for some ID(s).");
+		}
+		
 		// the next few commands are necessary to ensure consistency in sub trace ids!!!
 		// each project data comes potentially with its own mapping from ids to sub traces...
 		// so we need to get the respective ids for existing sub traces and produce 
