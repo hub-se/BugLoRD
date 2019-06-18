@@ -5,10 +5,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -151,6 +153,8 @@ public class ExecutionTraceCollector {
 	public static final Map<Integer, int[]> classesToCounterArrayMap = new HashMap<>();
 
 	private static final int SUBTRACE_ARRAY_SIZE = 500;
+	
+	private static Set<Thread> currentThreads = new HashSet<>();
 
 	public static void initializeCounterArrayForClass(int classId, int countersCnt) {
 		classesToCounterArrayMap.put(classId, new int[countersCnt]);
@@ -287,7 +291,9 @@ public class ExecutionTraceCollector {
 	 */
 	public static void processLastSubTrace() {
 		// get an id for the current thread
-		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
+		Thread currentThread = Thread.currentThread();
+		currentThreads.add(currentThread);
+		long threadId = currentThread.getId(); // may be reused, once the thread is killed TODO
 //		System.out.println(threadId);
 //		submitSubTraceToCollectorThread(threadId, currentSubTraces.remove(threadId));
 
@@ -412,6 +418,20 @@ public class ExecutionTraceCollector {
 //	}
 	
 	private static void processAllRemainingSubTraces() {
+		
+		for (Thread thread : currentThreads) {
+			boolean done = false;
+			while (!done) {
+				try {
+					thread.join();
+					done = true;
+				} catch (InterruptedException e) {
+					// try again
+				}
+			}
+		}
+		currentThreads.clear();
+		
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			Iterator<Entry<Long, BufferedArrayQueue<int[]>>> iterator = currentSubTraces.entrySet().iterator();
