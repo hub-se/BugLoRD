@@ -38,7 +38,7 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 	final private int repeatCount;
 
 	//used to execute the tests in a separate thread, one at a time
-	final private ExecutorServiceProvider provider;
+//	final private ExecutorServiceProvider provider;
 	
 	final private ByteArrayOutputStream testOutputStream = new ByteArrayOutputStream();
 	
@@ -52,7 +52,7 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 		this.timeout = timeout;
 		this.debugOutput = debugOutput;
 		this.repeatCount = repeatCount > 0 ? repeatCount : 1;
-		this.provider = new ExecutorServiceProvider(1, cl);
+//		this.provider = new ExecutorServiceProvider(1, cl);
 	}
 
 	/* (non-Javadoc)
@@ -111,7 +111,8 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 				throw new TimeoutException();
 			}
 			
-			provider.getExecutorService().submit(task);
+//			provider.getExecutorService().submit(task);
+			new Thread(task).start();
 			
 			if (timeout == null) {
 				test = task.get();
@@ -194,7 +195,7 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 
 	@Override
 	public boolean finalShutdown() {
-		provider.shutdownAndWaitForTermination(20, TimeUnit.SECONDS, false);
+//		provider.shutdownAndWaitForTermination(20, TimeUnit.SECONDS, false);
 		return super.finalShutdown();
 	}
 	
