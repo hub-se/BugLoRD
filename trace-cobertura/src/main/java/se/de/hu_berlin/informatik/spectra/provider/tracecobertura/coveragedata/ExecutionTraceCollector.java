@@ -423,13 +423,14 @@ public class ExecutionTraceCollector {
 			boolean done = false;
 			while (!done) {
 				try {
-					thread.join();
+					thread.join(10000); // wait 10 seconds for threads to die... TODO
 					done = true;
 				} catch (InterruptedException e) {
 					// try again
 				}
 			}
 		}
+		
 		currentThreads.clear();
 		
 		globalExecutionTraceCollectorLock.lock();
