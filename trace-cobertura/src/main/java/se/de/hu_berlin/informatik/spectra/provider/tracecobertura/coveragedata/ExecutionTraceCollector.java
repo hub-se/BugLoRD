@@ -150,14 +150,16 @@ public class ExecutionTraceCollector {
 	// stores currently built up execution trace parts for each thread (thread id -> sub trace)
 	private static Map<Long,BufferedArrayQueue<int[]>> currentSubTraces = new ConcurrentHashMap<>();
 	
-	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
+//	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
 
+	private static int[][] classesToCounterArrayMap = new int[1024][];
 	private static final int SUBTRACE_ARRAY_SIZE = 500;
 	
 	private static Set<Thread> currentThreads = new HashSet<>();
 
 	public static void initializeCounterArrayForClass(int classId, int countersCnt) {
-		classesToCounterArrayMap.put(classId, new int[countersCnt]);
+//		classesToCounterArrayMap.put(classId, new int[countersCnt]);
+		classesToCounterArrayMap[classId] = new int[countersCnt];
 	}
 	
 	private static Path tempDir;
@@ -423,14 +425,12 @@ public class ExecutionTraceCollector {
 			boolean done = false;
 			while (!done) {
 				try {
-					thread.join(10000); // wait 10 seconds for threads to die... TODO
+					thread.join(5000); // wait 10 seconds for threads to die... TODO
 					if (thread.isAlive()) {
 						System.err.println("Thread " + thread.getId() + " is still alive...");
 						thread.interrupt();
-						thread.stop();
-					} else {
-						done = true;
 					}
+					done = true;
 				} catch (InterruptedException e) {
 					// try again
 				}
@@ -753,7 +753,8 @@ public class ExecutionTraceCollector {
 	public static void incrementCounter(int classId, int counterId) {
 //		globalExecutionTraceCollectorLock.lock();
 //		try {
-		++classesToCounterArrayMap.get(classId)[counterId];
+//		++classesToCounterArrayMap.get(classId)[counterId];
+		++classesToCounterArrayMap[classId][counterId];
 //		} finally {
 //			globalExecutionTraceCollectorLock.unlock();
 //		}
@@ -763,9 +764,15 @@ public class ExecutionTraceCollector {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 //			String key = clazz.getName().replace('.','/');
-			int[] counters = classesToCounterArrayMap.get(classId);
+			
+//			int[] counters = classesToCounterArrayMap.get(classId);
+//			if (counters != null) {
+//				classesToCounterArrayMap.put(classId, new int[counters.length]);
+//			}
+			
+			int[] counters = classesToCounterArrayMap[classId];
 			if (counters != null) {
-				classesToCounterArrayMap.put(classId, new int[counters.length]);
+				classesToCounterArrayMap[classId] = new int[counters.length];
 			}
 			return counters;
 		} finally {

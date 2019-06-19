@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.junittestutils.testrunner.running;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -94,6 +95,7 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 		return statistics;
 	}
 
+	@SuppressWarnings("deprecation")
 	private TestStatistics runTest(final TestWrapper testWrapper, final String resultFile, final Long timeout) {
 //		Log.out(this, "Start Running " + testWrapper);
 
@@ -103,6 +105,7 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 		boolean timeoutOccured = false, wasInterrupted = false, exceptionThrown = false;
 		boolean couldBeFinished = false;
 		String errorMsg = null;
+		Set<Thread> threadSetStart = Thread.getAllStackTraces().keySet();
 		try {
 			if (task == null) {
 				throw new ExecutionException("Could not get test from TestWrapper (null).", null);
@@ -139,6 +142,22 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 			errorMsg = testWrapper + ": Time out! ";
 			timeoutOccured = true;
 			cancelTask(task);
+		}
+		
+		Set<Thread> threadSetEnd = Thread.getAllStackTraces().keySet();
+		
+		for (Thread thread : threadSetEnd) {
+			if (!threadSetStart.contains(thread)) {
+				try {
+					thread.join(10000);
+				} catch (InterruptedException e) {
+					// meh
+				}
+				if (thread.isAlive()) {
+					System.err.println("Thread " + thread.getId() + " is still alive after running the test " + testWrapper.toString());
+					thread.interrupt();
+				}
+			}
 		}
 		
 		boolean wasSuccessful = false;
