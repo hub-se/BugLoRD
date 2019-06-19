@@ -113,7 +113,7 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 			
 //			provider.getExecutorService().submit(task);
 			new Thread(task).start();
-			
+
 			if (timeout == null) {
 				test = task.get();
 			} else {

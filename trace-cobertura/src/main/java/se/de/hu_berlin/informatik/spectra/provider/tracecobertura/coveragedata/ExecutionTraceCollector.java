@@ -150,7 +150,7 @@ public class ExecutionTraceCollector {
 	// stores currently built up execution trace parts for each thread (thread id -> sub trace)
 	private static Map<Long,BufferedArrayQueue<int[]>> currentSubTraces = new ConcurrentHashMap<>();
 	
-	public static final Map<Integer, int[]> classesToCounterArrayMap = new HashMap<>();
+	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
 
 	private static final int SUBTRACE_ARRAY_SIZE = 500;
 	
@@ -223,10 +223,10 @@ public class ExecutionTraceCollector {
 	
 	
 	private static int getOrCreateIdForSubTrace(BufferedArrayQueue<int[]> subTrace) {
-		if (subTrace == null || subTrace.isEmpty()) {
-			// id 0 indicates empty sub trace
-			return 0;
-		}
+//		if (subTrace == null || subTrace.isEmpty()) {
+//			// id 0 indicates empty sub trace
+//			return 0;
+//		}
 
 		idLock.lock();
 		try {
@@ -317,9 +317,10 @@ public class ExecutionTraceCollector {
 			// sub trace contains no nodes
 			return;
 		}
-		if (subTrace.isEmpty()) {
-			throw new IllegalStateException("Processing an empty sub trace...");
-		}
+//		if (subTrace.isEmpty()) {
+//			throw new IllegalStateException("Processing an empty sub trace...");
+//		}
+		
 //		// do more expensive operations in a separate thread?
 //		return executorService.submit(new SubTraceProcessor(threadId, subTrace));
 		
@@ -412,6 +413,7 @@ public class ExecutionTraceCollector {
 //		
 //	}
 	
+	@SuppressWarnings("deprecation")
 	private static void processAllRemainingSubTraces() {
 		
 		for (Thread thread : currentThreads) {
@@ -421,10 +423,11 @@ public class ExecutionTraceCollector {
 			boolean done = false;
 			while (!done) {
 				try {
-					thread.join(5000); // wait 5 seconds for threads to die... TODO
+					thread.join(10000); // wait 10 seconds for threads to die... TODO
 					if (thread.isAlive()) {
 						System.err.println("Thread " + thread.getId() + " is still alive...");
 						thread.interrupt();
+						thread.stop();
 					} else {
 						done = true;
 					}
@@ -748,12 +751,12 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void incrementCounter(int classId, int counterId) {
-		globalExecutionTraceCollectorLock.lock();
-		try {
-			++classesToCounterArrayMap.get(classId)[counterId];
-		} finally {
-			globalExecutionTraceCollectorLock.unlock();
-		}
+//		globalExecutionTraceCollectorLock.lock();
+//		try {
+		++classesToCounterArrayMap.get(classId)[counterId];
+//		} finally {
+//			globalExecutionTraceCollectorLock.unlock();
+//		}
 	}
 	
 	public static int[] getAndResetCounterArrayForClass(int classId) {
