@@ -297,12 +297,7 @@ public class ExecutionTraceCollector {
 //		System.out.println(threadId);
 //		submitSubTraceToCollectorThread(threadId, currentSubTraces.remove(threadId));
 
-		globalExecutionTraceCollectorLock.lock();
-		try {
-			processSubtraceForThreadId(threadId, currentSubTraces.remove(threadId));
-		} finally {
-			globalExecutionTraceCollectorLock.unlock();
-		}
+		processSubtraceForThreadId(threadId, currentSubTraces.remove(threadId));
 	}
 
 //	private static void submitSubTraceToCollectorThread(long threadId, BufferedArrayQueue<int[]> subTrace) {
