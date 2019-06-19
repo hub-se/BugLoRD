@@ -415,6 +415,9 @@ public class ExecutionTraceCollector {
 	private static void processAllRemainingSubTraces() {
 		
 		for (Thread thread : currentThreads) {
+			if (thread.equals(Thread.currentThread())) {
+				continue;
+			}
 			boolean done = false;
 			while (!done) {
 				try {
