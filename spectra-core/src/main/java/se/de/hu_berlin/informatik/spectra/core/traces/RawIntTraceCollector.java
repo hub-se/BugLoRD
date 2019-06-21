@@ -15,6 +15,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
@@ -84,7 +85,7 @@ public class RawIntTraceCollector {
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			Long[] traceArray, boolean log, Path outputDir, String prefix,
 			Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap) {
-		BufferedArrayQueue<Long> trace = new BufferedArrayQueue<>(outputDir.toFile(), prefix, 100);
+		BufferedArrayQueue<Long> trace = new BufferedArrayQueue<>(outputDir.toFile(), prefix, 100, Type.LONG);
         trace.addAll(Arrays.asList(traceArray));
 //		trace.clear(1);
 //		for (Iterator<Integer> iterator = trace.iterator(); iterator.hasNext();) {
@@ -165,7 +166,7 @@ public class RawIntTraceCollector {
 			Map<Long, Integer> localIdToGlobalIdMap) {
 		BufferedArrayQueue<Integer> integerIdTrace = new BufferedArrayQueue<>(
 				eTrace.getCompressedTrace().getOutputDir(), "int_" + eTrace.getCompressedTrace().getFilePrefix(), 
-				eTrace.getCompressedTrace().getNodeSize(), true);
+				eTrace.getCompressedTrace().getNodeSize(), true, Type.INTEGER);
 		
 		for (ReplaceableCloneableIterator<Long> iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
 			// this should now replace all local sub trace ids with the respective global ids...

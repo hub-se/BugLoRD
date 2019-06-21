@@ -30,6 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 
 @CoverageIgnore
 public class ExecutionTraceCollector {
@@ -220,7 +221,7 @@ public class ExecutionTraceCollector {
 		// do not delete buffered trace files on exit, due to possible necessary serialization
 		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
 				"exec_trc_" + threadId + "-" + String.valueOf(UUID.randomUUID()), 
-				EXECUTION_TRACE_CHUNK_SIZE, false);
+				EXECUTION_TRACE_CHUNK_SIZE, false, Type.LONG);
 	}
 	
 	
@@ -294,7 +295,7 @@ public class ExecutionTraceCollector {
 	private static BufferedArrayQueue<int[]> getNewSubtrace() {
 		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
 				"sub_trc_" + String.valueOf(UUID.randomUUID()), 
-				SUBTRACE_ARRAY_SIZE, false);
+				SUBTRACE_ARRAY_SIZE, false, Type.OTHER);
 	}
 
 	

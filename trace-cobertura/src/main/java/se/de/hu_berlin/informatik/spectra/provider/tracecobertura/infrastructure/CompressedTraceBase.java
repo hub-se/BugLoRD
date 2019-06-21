@@ -198,7 +198,8 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	private BufferedArrayQueue<T> extractRepetitions(BufferedArrayQueue<T> trace, boolean log, boolean deleteOnExit) {
 		String filePrefix = "cpr_trace_" + UUID.randomUUID().toString();
 		BufferedArrayQueue<T> traceWithoutRepetitions = 
-				new BufferedArrayQueue<>(trace.getOutputDir(), filePrefix, trace.arrayLength, deleteOnExit);
+				new BufferedArrayQueue<>(trace.getOutputDir(), filePrefix, 
+						trace.getNodeSize(), deleteOnExit, trace.getSerializationType());
 		BufferedMap<int[]> traceRepetitions = new BufferedMap<>(trace.getOutputDir(), "cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.arrayLength * 3, deleteOnExit);
 		
 		// mapping from elements to their most recent positions in the result list

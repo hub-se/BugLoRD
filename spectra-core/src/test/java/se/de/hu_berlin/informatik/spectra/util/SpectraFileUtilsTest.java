@@ -36,6 +36,7 @@ import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLPro
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -92,7 +93,8 @@ public class SpectraFileUtilsTest extends TestSettings {
 	}
 	
 	private BufferedArrayQueue<int[]> asList(Path outputDir, int[][] rt) {
-		BufferedArrayQueue<int[]> list = new BufferedArrayQueue<>(outputDir.toFile(), String.valueOf(UUID.randomUUID()), rt.length);
+		BufferedArrayQueue<int[]> list = new BufferedArrayQueue<>(
+				outputDir.toFile(), String.valueOf(UUID.randomUUID()), rt.length, Type.OTHER);
 		for (int[] statement : rt) {
 			list.add(statement);
 		}

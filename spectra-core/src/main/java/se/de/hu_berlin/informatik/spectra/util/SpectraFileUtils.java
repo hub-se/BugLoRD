@@ -38,6 +38,7 @@ import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexer;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTrace;
@@ -1182,7 +1183,7 @@ public class SpectraFileUtils {
 	public static ExecutionTrace loadExecutionTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) {
 		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<>(
 				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-				UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
+				UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, Type.INTEGER);
 		BufferedCompressedByteArrayToIntegerQueueProcessor execTraceProcessor = new BufferedCompressedByteArrayToIntegerQueueProcessor(zipFileWrapper, true, queue);
 		// load the compressed execution trace +  repetition markers (if any)
 		BufferedArrayQueue<Integer> compressedTrace = (BufferedArrayQueue<Integer>) execTraceProcessor.submit(compressedTraceFile).getResult();
@@ -1192,7 +1193,7 @@ public class SpectraFileUtils {
 		if (zipFileWrapper.exists(repetitionFile)) {
 			BufferedArrayQueue<int[]> queueRep = new BufferedArrayQueue<>(
 					zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-					UUID.randomUUID().toString(), 1);
+					UUID.randomUUID().toString(), 1, Type.OTHER);
 			BufferedCompressedByteArrayToIntArrayQueueProcessor repProcessor = new BufferedCompressedByteArrayToIntArrayQueueProcessor(zipFileWrapper, true, queueRep);
 			BufferedArrayQueue<int[]> repetitionMarkers = (BufferedArrayQueue<int[]>) repProcessor.submit(repetitionFile).getResult();
 			e = new ExecutionTrace(compressedTrace, repetitionMarkers, 0);
@@ -1220,7 +1221,7 @@ public class SpectraFileUtils {
 	public static CompressedIntegerIdTrace loadRawTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) {
 		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<>(
 				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-				UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
+				UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, Type.INTEGER);
 		BufferedCompressedByteArrayToIntegerQueueProcessor execTraceProcessor = new BufferedCompressedByteArrayToIntegerQueueProcessor(zipFileWrapper, true, queue);
 		// load the compressed raw trace
 		BufferedArrayQueue<Integer> compressedTrace = (BufferedArrayQueue<Integer>) execTraceProcessor.submit(compressedTraceFile).getResult();
@@ -1231,7 +1232,7 @@ public class SpectraFileUtils {
 		if (zipFileWrapper.exists(repetitionFile)) {
 			BufferedArrayQueue<int[]> queueRep = new BufferedArrayQueue<>(
 					zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-					UUID.randomUUID().toString(), 1);
+					UUID.randomUUID().toString(), 1, Type.OTHER);
 			BufferedCompressedByteArrayToIntArrayQueueProcessor repProcessor = new BufferedCompressedByteArrayToIntArrayQueueProcessor(zipFileWrapper, true, queueRep);
 			BufferedArrayQueue<int[]> repetitionMarkers = (BufferedArrayQueue<int[]>) repProcessor.submit(repetitionFile).getResult();
 			e = new CompressedIntegerIdTrace(compressedTrace, repetitionMarkers, 0);
@@ -1244,7 +1245,7 @@ public class SpectraFileUtils {
 	public static CompressedTrace loadRawArrayTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) {
 		BufferedArrayQueue<int[]> queue = new BufferedArrayQueue<>(
 				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-				UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
+				UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, Type.OTHER);
 		BufferedCompressedByteArrayToIntArrayQueueProcessor execTraceProcessor = new BufferedCompressedByteArrayToIntArrayQueueProcessor(zipFileWrapper, 2, true, queue);
 		// load the compressed raw trace
 		BufferedArrayQueue<int[]> compressedTrace = (BufferedArrayQueue<int[]>) execTraceProcessor.submit(compressedTraceFile).getResult();
@@ -1255,7 +1256,7 @@ public class SpectraFileUtils {
 		if (zipFileWrapper.exists(repetitionFile)) {
 			BufferedArrayQueue<int[]> queueRep = new BufferedArrayQueue<>(
 					zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-					UUID.randomUUID().toString(), 1);
+					UUID.randomUUID().toString(), 1, Type.OTHER);
 			BufferedCompressedByteArrayToIntArrayQueueProcessor repProcessor = new BufferedCompressedByteArrayToIntArrayQueueProcessor(zipFileWrapper, true, queueRep);
 			BufferedArrayQueue<int[]> repetitionMarkers = (BufferedArrayQueue<int[]>) repProcessor.submit(repetitionFile).getResult();
 			e = new CompressedTrace(compressedTrace, repetitionMarkers, 0);

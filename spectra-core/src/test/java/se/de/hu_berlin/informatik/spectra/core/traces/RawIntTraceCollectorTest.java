@@ -22,6 +22,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 
@@ -128,7 +129,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 	
 	private BufferedArrayQueue<int[]> asList(Path outputDir, int[][] rt) {
 		BufferedArrayQueue<int[]> list = new BufferedArrayQueue<>(outputDir.toFile(), 
-				String.valueOf(UUID.randomUUID()), rt.length);
+				String.valueOf(UUID.randomUUID()), rt.length, Type.OTHER);
 		for (int[] statement : rt) {
 			list.add(statement);
 		}

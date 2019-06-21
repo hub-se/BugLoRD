@@ -13,6 +13,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
+
 
 /**
  * @author Simon
@@ -55,7 +57,7 @@ public class CompressedTraceTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt() throws Exception {
-		BufferedArrayQueue<Long> queue = new BufferedArrayQueue<Long>(outputDir, "test", 5);
+		BufferedArrayQueue<Long> queue = new BufferedArrayQueue<Long>(outputDir, "test", 5, Type.LONG);
 		
 		for (long i = 0; i < 20; ++i) {
 			queue.add(i);

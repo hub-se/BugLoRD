@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntArrayWrapper;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
@@ -62,7 +63,7 @@ public class RawArrayTraceCollector {
 	
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, int[][] traceArray, boolean log, Path outputDir, String prefix) {
-		BufferedArrayQueue<int[]> trace = new BufferedArrayQueue<>(outputDir.toFile(), prefix, 100);
+		BufferedArrayQueue<int[]> trace = new BufferedArrayQueue<>(outputDir.toFile(), prefix, 100, Type.OTHER);
         trace.addAll(Arrays.asList(traceArray));
 //		trace.clear(1);
 //		for (Iterator<Integer> iterator = trace.iterator(); iterator.hasNext();) {

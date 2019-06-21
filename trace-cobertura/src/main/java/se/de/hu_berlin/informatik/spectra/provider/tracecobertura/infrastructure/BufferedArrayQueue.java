@@ -58,11 +58,14 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	private transient List<Integer> cacheSequence = new LinkedList<>();
 
 	private transient boolean deleteOnExit;
+
+	private Type serializationType;
 	
 	
 	private void writeObject(java.io.ObjectOutputStream stream)
             throws IOException {
 		sleep();
+		stream.writeInt(serializationType.ordinal());
         stream.writeObject(output);
         stream.writeObject(filePrefix);
 //        stream.writeObject(lastNode);
@@ -96,6 +99,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 
 	private void readObject(java.io.ObjectInputStream stream)
             throws IOException, ClassNotFoundException {
+		serializationType = Type.values()[stream.readInt()];
         output = (File) stream.readObject();
         filePrefix = (String) stream.readObject();
 //        lastNode = (Node<E>) stream.readObject();
@@ -113,16 +117,17 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         deleteOnExit = true;
     }
     
-    public BufferedArrayQueue(File outputDir, String filePrefix, boolean deleteOnExit) {
+    public BufferedArrayQueue(File outputDir, String filePrefix, boolean deleteOnExit, Type serializationType) {
     	this.deleteOnExit = deleteOnExit;
+		this.serializationType = serializationType;
 		check(outputDir);
 		this.output = outputDir;
 		this.filePrefix = Objects.requireNonNull(filePrefix);
 		initialize();
     }
     
-    public BufferedArrayQueue(File outputDir, String filePrefix) {
-    	this(outputDir, filePrefix, true);
+    public BufferedArrayQueue(File outputDir, String filePrefix, Type serializationType) {
+    	this(outputDir, filePrefix, true, serializationType);
     }
     
     private void check(File outputDir) {
@@ -135,13 +140,13 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		}
 	}
 
-	public BufferedArrayQueue(File output, String filePrefix, int nodeArrayLength, boolean deleteOnExit) {
-    	this(output, filePrefix, deleteOnExit);
+	public BufferedArrayQueue(File output, String filePrefix, int nodeArrayLength, boolean deleteOnExit, Type serializationType) {
+    	this(output, filePrefix, deleteOnExit, serializationType);
     	this.arrayLength = nodeArrayLength < 1 ? 1 : nodeArrayLength;
     }
 	
-	public BufferedArrayQueue(File output, String filePrefix, int nodeArrayLength) {
-    	this(output, filePrefix, nodeArrayLength, true);
+	public BufferedArrayQueue(File output, String filePrefix, int nodeArrayLength, Type serializationType) {
+    	this(output, filePrefix, nodeArrayLength, true, serializationType);
     }
 	
 	private void initialize() {
@@ -162,6 +167,10 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 //		}
 		firstNodeSize = 0;
 		size = 0;
+	}
+	
+	public Type getSerializationType() {
+		return serializationType;
 	}
 	
 	public int getNodeSize() {
@@ -198,19 +207,47 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         }
         ++size;
     }
+    
+    public static enum Type {
+    	INTEGER,
+    	LONG,
+    	OTHER
+    }
 
     private void store(Node<E> node) {
 		String filename = getFileName(node.storeIndex);
 		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+			Object[] array = null;
 			if (node.hasFreeSpace()) {
-				Object[] array = new Object[node.endIndex];
+				array = new Object[node.endIndex];
 				System.arraycopy(node.items, 0, array, 0, node.endIndex);
-				outputStream.writeObject(array);
 			} else {
-				outputStream.writeObject(node.items);
+				array = node.items;
 			}
+			
 			outputStream.writeInt(node.startIndex);
 			outputStream.writeInt(node.endIndex);
+			
+			switch (serializationType) {
+			case INTEGER:
+				for (int i = node.startIndex; i < node.endIndex; ++i) {
+					outputStream.writeInt((int)array[i]);
+				}
+				break;
+			case LONG:
+				for (int i = node.startIndex; i < node.endIndex; ++i) {
+					outputStream.writeLong((long)array[i]);
+				}
+				break;
+			case OTHER:
+				for (int i = node.startIndex; i < node.endIndex; ++i) {
+					outputStream.writeObject(array[i]);
+				}
+				break;
+			default:
+				throw new UnsupportedOperationException();
+			}
+			
 			// file can not be removed, due to serialization! TODO
 			if (deleteOnExit) {
 				new File(filename).deleteOnExit();
@@ -352,14 +389,36 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 			
 			Node<E> loadedNode;
 			try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
-				Object[] items = (Object[])inputStream.readObject();
+				Object[] items = new Object[arrayLength];
+				
 				int startIndex = inputStream.readInt();
 				int endIndex = inputStream.readInt();
-				if (items.length < arrayLength) {
-					Object[] realArray = new Object[arrayLength];
-					System.arraycopy(items, 0, realArray, 0, items.length);
-					items = realArray;
+				
+				switch (serializationType) {
+				case INTEGER:
+					for (int i = startIndex; i < endIndex; ++i) {
+						items[i] = inputStream.readInt();
+					}
+					break;
+				case LONG:
+					for (int i = startIndex; i < endIndex; ++i) {
+						items[i] = inputStream.readLong(); 
+					}
+					break;
+				case OTHER:
+					for (int i = startIndex; i < endIndex; ++i) {
+						items[i] = inputStream.readObject(); 
+					}
+					break;
+				default:
+					throw new UnsupportedOperationException();
 				}
+				
+//				if (items.length < arrayLength) {
+//					Object[] realArray = new Object[arrayLength];
+//					System.arraycopy(items, 0, realArray, 0, items.length);
+//					items = realArray;
+//				}
 				loadedNode = new Node<>(items, startIndex, endIndex, storeIndex);
 			} catch (ClassNotFoundException | IOException e) {
 				e.printStackTrace();

@@ -14,6 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 
 
 /**
@@ -57,7 +58,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt() throws Exception {
-		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test", 5);
+		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test", 5, Type.INTEGER);
 		
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
@@ -80,7 +81,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt2() throws Exception {
-		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test2", 5);
+		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test2", 5, Type.INTEGER);
 		
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
@@ -125,7 +126,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt3() throws Exception {
-		BufferedArrayQueue<int[]> queue = new BufferedArrayQueue<int[]>(outputDir, "test2", 5);
+		BufferedArrayQueue<int[]> queue = new BufferedArrayQueue<int[]>(outputDir, "test3", 5, Type.OTHER);
 		
 		for (int i = 0; i < 50; ++i) {
 			queue.add(new int[] {i});

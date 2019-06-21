@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 
 public abstract class GSArrayTree<T,K> {
 	
@@ -190,7 +191,7 @@ public abstract class GSArrayTree<T,K> {
 		if (rawTrace.getCompressedTrace().isEmpty()) {
 			return new BufferedArrayQueue<>(
 					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
-					ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
+					ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, Type.INTEGER);
 		}
 		
 		if (!indexer.isIndexed()) {
@@ -199,7 +200,7 @@ public abstract class GSArrayTree<T,K> {
 		
 		BufferedArrayQueue<Integer> indexedtrace = new BufferedArrayQueue<>(
 				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
-				ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
+				ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, Type.INTEGER);
 		
 		Iterator<T> iterator = rawTrace.iterator();
 		K startElement = getRepresentation(iterator.next());
