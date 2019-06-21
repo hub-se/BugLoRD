@@ -68,7 +68,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	}
 
 	@Override
-	public int getMaxStoredValue() {
+	public long getMaxStoredValue() {
 		if (getChild() == null) {
 			int max = 0;
 			for (int i : getCompressedTrace()) {
@@ -77,7 +77,7 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 			return max;
 		}
 		
-		int max = getChild().getMaxStoredValue();
+		long max = getChild().getMaxStoredValue();
 		Iterator<Entry<Integer, int[]>> entrySetIterator = getRepetitionMarkers().entrySetIterator();
 		while (entrySetIterator.hasNext()) {
 			Entry<Integer, int[]> entry = entrySetIterator.next();

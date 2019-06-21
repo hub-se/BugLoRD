@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIdTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
@@ -73,17 +74,17 @@ public class RawIntTraceCollector {
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
-			BufferedArrayQueue<Integer> trace, boolean log,
-			Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap) {
+			BufferedArrayQueue<Long> trace, boolean log,
+			Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, trace, log, idToSubTraceMap);
 		return true;
 	}
 	
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
-			Integer[] traceArray, boolean log, Path outputDir, String prefix,
-			Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap) {
-		BufferedArrayQueue<Integer> trace = new BufferedArrayQueue<>(outputDir.toFile(), prefix, 100);
+			Long[] traceArray, boolean log, Path outputDir, String prefix,
+			Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap) {
+		BufferedArrayQueue<Long> trace = new BufferedArrayQueue<>(outputDir.toFile(), prefix, 100);
         trace.addAll(Arrays.asList(traceArray));
 //		trace.clear(1);
 //		for (Iterator<Integer> iterator = trace.iterator(); iterator.hasNext();) {
@@ -95,26 +96,26 @@ public class RawIntTraceCollector {
 	}
 
 	private void addTrace(int traceIndex, int threadId, 
-			BufferedArrayQueue<Integer> trace, boolean log,
-			Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap) {
+			BufferedArrayQueue<Long> trace, boolean log,
+			Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, new CompressedIdTrace(trace, log), idToSubTraceMap);
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
-			CompressedTraceBase<Integer,Integer> eTrace,
-			Map<Integer, BufferedArrayQueue<int[]>> map) {
+			CompressedTraceBase<Long,Long> eTrace,
+			Map<Long, BufferedArrayQueue<int[]>> map) {
 		addTrace(traceIndex, threadId, eTrace, map);
 		return true;
 	}
 
 	private void addTrace(int traceIndex, int threadId, 
-			CompressedTraceBase<Integer,Integer> eTrace,
-			Map<Integer, BufferedArrayQueue<int[]>> map) {
+			CompressedTraceBase<Long,Long> eTrace,
+			Map<Long, BufferedArrayQueue<int[]>> map) {
 		
 		boolean error = false;
-		for (ReplaceableCloneableIterator<Integer> iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
+		for (ReplaceableCloneableIterator<Long> iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
 			// check if all IDs are actually stored in the map
-			Integer id = iterator.next();
+			Long id = iterator.next();
 			if (!map.containsKey(id)) {
 				// this should definitely not happen!
 				error = true;
@@ -130,9 +131,10 @@ public class RawIntTraceCollector {
 		// each project data comes potentially with its own mapping from ids to sub traces...
 		// so we need to get the respective ids for existing sub traces and produce 
 		// new ones for newly added sub traces.
-		Map<Integer,Integer> localIdToGlobalIdMap = getAndCreateSubTraceIdMapping(map, output.getParent());
+		Map<Long,Integer> localIdToGlobalIdMap = getAndCreateSubTraceIdMapping(map, output.getParent());
 		// and then replace all local ids with the global ones...
-		globalizeTrace(eTrace, localIdToGlobalIdMap);
+		CompressedIntegerIdTrace globalizedTrace = globalizeTrace(eTrace, localIdToGlobalIdMap);
+		eTrace = null;
 		
 		// collect raw trace
 		String traceFileName = traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION;
@@ -140,7 +142,7 @@ public class RawIntTraceCollector {
 		// avoid storing traces in memory...
 		// store the compressed trace
 		try {
-			SpectraFileUtils.storeCompressedTraceForRawTraceInZipFile(eTrace, output, traceFileName, repMarkerFileName);
+			SpectraFileUtils.storeCompressedTraceForRawTraceInZipFile(globalizedTrace, output, traceFileName, repMarkerFileName);
 		} catch (IOException e) {
 			Log.abort(this, e, "Could not store raw trace.");
 		}
@@ -154,39 +156,55 @@ public class RawIntTraceCollector {
 		
 		// only extract all elements that mark the beginning of sequences;
 		// adding the traces to the GS tree has to be done in a separate, last step
-		eTrace.addStartingElementsToSet(startElements);
-		eTrace.clear();
-		eTrace = null;
+		globalizedTrace.addStartingElementsToSet(startElements);
+		globalizedTrace.clear();
+		globalizedTrace = null;
 	}
 	
-	private void globalizeTrace(CompressedTraceBase<Integer, Integer> eTrace,
-			Map<Integer, Integer> localIdToGlobalIdMap) {
-		for (ReplaceableCloneableIterator<Integer> iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
-			// this should now replace all local sub trace ids with the respective global ids...
-			@SuppressWarnings("unused")
-			Integer previous = iterator.processNextAndReplaceWithResult(k -> {
-				Integer globalId = localIdToGlobalIdMap.get(k);
-				if (globalId == null) {
-					// this should definitely not happen!
-					throw new IllegalStateException("No global id found for local id " + k);
-				}
-				return globalId;
-			});
-		}
+	private CompressedIntegerIdTrace globalizeTrace(CompressedTraceBase<Long, Long> eTrace,
+			Map<Long, Integer> localIdToGlobalIdMap) {
+		BufferedArrayQueue<Integer> integerIdTrace = new BufferedArrayQueue<>(
+				eTrace.getCompressedTrace().getOutputDir(), "int_" + eTrace.getCompressedTrace().getFilePrefix(), 
+				eTrace.getCompressedTrace().getNodeSize(), true);
 		
+		for (ReplaceableCloneableIterator<Long> iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
+			// this should now replace all local sub trace ids with the respective global ids...
+//			@SuppressWarnings("unused")
+//			Long previous = iterator.processNextAndReplaceWithResult(k -> {
+//				Integer globalId = localIdToGlobalIdMap.get(k);
+//				if (globalId == null) {
+//					// this should definitely not happen!
+//					throw new IllegalStateException("No global id found for local id " + k);
+//				}
+//				return (long) globalId;
+//			});
+			
+			Long longId = iterator.next();
+			Integer globalId = localIdToGlobalIdMap.get(longId);
+			if (globalId == null) {
+				// this should definitely not happen!
+				throw new IllegalStateException("No global id found for local id " + longId);
+			}
+			integerIdTrace.add(globalId);
+		}
+		// not needed anymore...
+		eTrace.getCompressedTrace().clear();
+		
+		integerIdTrace.sleep();
+		return new CompressedIntegerIdTrace(integerIdTrace, eTrace);
 	}
 
-	private Map<Integer, Integer> getAndCreateSubTraceIdMapping(
-			Map<Integer, BufferedArrayQueue<int[]>> map, Path tempDir) {
+	private Map<Long, Integer> getAndCreateSubTraceIdMapping(
+			Map<Long, BufferedArrayQueue<int[]>> map, Path tempDir) {
 		if (globalIdToSubTraceMap == null) {
 			globalIdToSubTraceMap = getNewSubTraceMap(tempDir);
 		}
 		// should map local sub trace ids (parameter) to global ids (field),
 		// so that the ids in the submitted raw traces can be replaced.
-		Map<Integer, Integer> subTraceIdMapping = new HashMap<>();
-		Iterator<Entry<Integer, BufferedArrayQueue<int[]>>> iterator = map.entrySet().iterator();
+		Map<Long, Integer> subTraceIdMapping = new HashMap<>();
+		Iterator<Entry<Long, BufferedArrayQueue<int[]>>> iterator = map.entrySet().iterator();
 		while (iterator.hasNext()) {
-			Entry<Integer, BufferedArrayQueue<int[]>> entry = iterator.next();
+			Entry<Long, BufferedArrayQueue<int[]>> entry = iterator.next();
 			int globalId = getOrCreateIdForSubTrace(entry.getValue());
 			subTraceIdMapping.put(entry.getKey(), globalId);
 		}

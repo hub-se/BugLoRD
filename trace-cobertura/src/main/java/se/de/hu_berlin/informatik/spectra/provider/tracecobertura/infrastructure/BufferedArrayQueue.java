@@ -164,6 +164,9 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		size = 0;
 	}
 	
+	public int getNodeSize() {
+		return arrayLength;
+	}
 	
 	public File getOutputDir() {
 		return output;

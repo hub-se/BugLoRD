@@ -55,23 +55,23 @@ public class CompressedTraceTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt() throws Exception {
-		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test", 5);
+		BufferedArrayQueue<Long> queue = new BufferedArrayQueue<Long>(outputDir, "test", 5);
 		
-		for (int i = 0; i < 20; ++i) {
+		for (long i = 0; i < 20; ++i) {
 			queue.add(i);
 			queue.add(i);
 		}
-		queue.add(99);
-		for (int i = 0; i < 20; ++i) {
+		queue.add(99L);
+		for (long i = 0; i < 20; ++i) {
 			queue.add(i);
 			queue.add(i);
 		}
-		for (int i = 0; i < 20; ++i) {
+		for (long i = 0; i < 20; ++i) {
 			queue.add(i);
 			queue.add(i);
 			queue.add(i);
 		}
-		for (int i = 0; i < 10; ++i) {
+		for (long i = 0; i < 10; ++i) {
 			queue.add(i);
 			queue.add(i);
 		}
@@ -84,7 +84,7 @@ public class CompressedTraceTest {
 		Assert.assertEquals(51, compressedIdTrace.getCompressedTrace().size());
 		
 //		Thread.sleep(5000);
-		Iterator<Integer> iterator = compressedIdTrace.iterator();
+		Iterator<Long> iterator = compressedIdTrace.iterator();
 		
 		int i = 0;
 		while (iterator.hasNext() && i < 20) {

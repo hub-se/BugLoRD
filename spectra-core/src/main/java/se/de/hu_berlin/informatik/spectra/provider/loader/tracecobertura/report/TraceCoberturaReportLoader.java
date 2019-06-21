@@ -227,7 +227,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// }
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
-			Map<Integer, BufferedArrayQueue<int[]>> idToSubtraceMap = projectData.getIdToSubtraceMap();
+			Map<Long, BufferedArrayQueue<int[]>> idToSubtraceMap = projectData.getIdToSubtraceMap();
 			for (Iterator<Entry<Long, CompressedIdTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
 				Entry<Long, CompressedIdTrace> entry = iterator.next();
 				++threadId;
@@ -363,7 +363,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				String[] idToClassNameMap = projectData.getIdToClassNameMap();
 //				Log.out(true, this, "Thread: " + entry.getKey());
 				// iterate over statements in the sub traces
-				for (Iterator<Entry<Integer, BufferedArrayQueue<int[]>>> subTraceIterator = idToSubtraceMap.entrySet().iterator(); 
+				for (Iterator<Entry<Long, BufferedArrayQueue<int[]>>> subTraceIterator = idToSubtraceMap.entrySet().iterator(); 
 						subTraceIterator.hasNext();) {
 					
 					BufferedArrayQueue<int[]> subTrace = subTraceIterator.next().getValue();

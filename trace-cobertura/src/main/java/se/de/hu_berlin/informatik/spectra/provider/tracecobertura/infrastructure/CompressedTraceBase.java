@@ -104,7 +104,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	
 	public abstract CompressedTraceBase<T,K> newChildInstance(BufferedArrayQueue<T> trace, boolean log, int iteration);
 	
-	public int getMaxStoredValue() {
+	public long getMaxStoredValue() {
 		throw new UnsupportedOperationException("not implemented!");
 	}
 	

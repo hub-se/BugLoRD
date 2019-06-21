@@ -153,16 +153,16 @@ public class SpectraFileUtilsTest extends TestSettings {
     	int[][] nodeIdSequences = new int[][] {s(), s(1,2,3), s(4,5,6), s(7,8,9)};
     	
         // sub trace id array
-        Integer[] rawTrace = new Integer[] {1,2,3,1,2,3};
+        Long[] rawTrace = new Long[] {1L,2L,3L,1L,2L,3L};
         
         Path outputDir = Paths.get(getStdTestDir());
         RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
         
         // sub trace id -> sub trace
-        Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = new HashMap<>();
-        idToSubTraceMap.put(1,asList(outputDir, rt(5,6,7)));
-        idToSubTraceMap.put(2,asList(outputDir, rt(8,9,10)));
-        idToSubTraceMap.put(3,asList(outputDir, rt(11,12,13)));
+        Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap = new HashMap<>();
+        idToSubTraceMap.put(1L,asList(outputDir, rt(5,6,7)));
+        idToSubTraceMap.put(2L,asList(outputDir, rt(8,9,10)));
+        idToSubTraceMap.put(3L,asList(outputDir, rt(11,12,13)));
         
         traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false, outputDir, "t1", idToSubTraceMap);
         traceCollector.getIndexer().getSequences();
