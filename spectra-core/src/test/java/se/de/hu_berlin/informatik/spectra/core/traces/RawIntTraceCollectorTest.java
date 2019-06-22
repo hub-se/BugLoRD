@@ -18,11 +18,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.TraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 
@@ -56,18 +56,18 @@ public class RawIntTraceCollectorTest extends TestSettings {
 	public void tearDown() {
 	}
 
-	private Long[] s(int... numbers) {
-		Long[] result = new Long[numbers.length];
+	private Integer[] s(int... numbers) {
+		Integer[] result = new Integer[numbers.length];
 		for (int i = 0; i < numbers.length; ++i) {
-			result[i] = (long) numbers[i];
+			result[i] =numbers[i];
 		}
 		return result;
 	}
 	
-	private int[][] rt(int... l) {
-		int[][] result = new int[l.length][];
-		for (int i = 0; i < l.length; ++i) {
-			result[i] = new int[] {0,l[i]};
+	private int[][] rt(int... numbers) {
+		int[][] result = new int[numbers.length][];
+		for (int i = 0; i < numbers.length; ++i) {
+			result[i] = new int[] {0,numbers[i]};
 		}
 		return result;
 	}
@@ -93,13 +93,13 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		return subTraceIdSequences;
 	}
 	
-	private int[][] getNodeIdSequences(Map<Long, BufferedArrayQueue<int[]>> idToSubTraceMap) {
+	private int[][] getNodeIdSequences(Map<Integer, BufferedArrayQueue<int[]>> idToSubTraceMap) {
 		// indexer.getSequences() will generate all sequences of sub trace IDs that exist in the GS tree
 		int[][] nodeIdSequences = new int[idToSubTraceMap.size()+1][];
 
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		nodeIdSequences[0] = new int[] {};
-		for (long i = 1; i < idToSubTraceMap.size() + 1; i++) {
+		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
 			BufferedArrayQueue<int[]> list = idToSubTraceMap.get(i);
 			Iterator<int[]> sequenceIterator = list.iterator();
 			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
@@ -109,20 +109,20 @@ public class RawIntTraceCollectorTest extends TestSettings {
 				traceOfNodeIDs.add(statement[1]);
 			}
 			
-			nodeIdSequences[(int)i] = new int[traceOfNodeIDs.size()];
-			for (int j = 0; j < nodeIdSequences[(int)i].length; ++j) {
-				nodeIdSequences[(int)i][j] = traceOfNodeIDs.remove();
+			nodeIdSequences[i] = new int[traceOfNodeIDs.size()];
+			for (int j = 0; j < nodeIdSequences[i].length; ++j) {
+				nodeIdSequences[i][j] = traceOfNodeIDs.remove();
 			}
 		}
 		
 		return nodeIdSequences;
 	}
 	
-	private Map<Long,BufferedArrayQueue<int[]>> generateIdToSubtraceMap(Path outputDir, int max, String filePrefix) {
+	private Map<Integer,BufferedArrayQueue<int[]>> generateIdToSubtraceMap(Path outputDir, int max, String filePrefix) {
 //		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = new BufferedMap<>(outputDir.toFile(), filePrefix);
-		Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap = new HashMap<>();
+		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = new HashMap<>();
         for (int i = 1; i <= max; ++i) {
-        	idToSubTraceMap.put((long) i,asList(outputDir, rt(i+10)));
+        	idToSubTraceMap.put(i,asList(outputDir, rt(i+10)));
         }
 		return idToSubTraceMap;
 	}
@@ -136,7 +136,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		return list;
 	}
 
-	private void checkMappedTrace(Long[] traceArray, int[] fullMappedTrace) {
+	private void checkMappedTrace(Integer[] traceArray, int[] fullMappedTrace) {
 		Assert.assertEquals(traceArray.length, fullMappedTrace.length);
 		for (int i = 0; i < traceArray.length; i++) {
 			Assert.assertEquals(traceArray[i]+10, fullMappedTrace[i]);
@@ -149,7 +149,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-        Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test1");
+        Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test1");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test1"));
@@ -157,7 +157,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 				generateIdToSubtraceMap(outputDir, 8, "test1"));
 		
 		//                        0    1    2    4    4    1    2    4    4    1    2    1      3      ????
-		Long[] traceArray = s(1,2, 3,4, 5,6, 5,7, 5,7, 3,4, 5,6, 5,7, 5,7, 3,4, 5,6, 3,4, 5,6,7,8);
+		Integer[] traceArray = s(1,2, 3,4, 5,6, 5,7, 5,7, 3,4, 5,6, 5,7, 5,7, 3,4, 5,6, 3,4, 5,6,7,8);
 		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
 				generateIdToSubtraceMap(outputDir, 8, "test1"));
 		
@@ -250,14 +250,14 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-		Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test2");
+		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test2");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test2"));
 		collector.addRawTraceToPool(2, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t2", 
 				generateIdToSubtraceMap(outputDir, 8, "test2"));
 		
-		Long[] traceArray = s(1,2, 3,4, 1,2, 3,4, 1,2, 3,4, 3,4, 5,6, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8);
+		Integer[] traceArray = s(1,2, 3,4, 1,2, 3,4, 1,2, 3,4, 3,4, 5,6, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8);
 		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
 				generateIdToSubtraceMap(outputDir, 8, "test2"));
 		
@@ -349,14 +349,14 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-		Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test3");
+		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test3");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test3"));
 		collector.addRawTraceToPool(2, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t2", 
 				generateIdToSubtraceMap(outputDir, 8, "test3"));
 		
-		Long[] traceArray = s(1,2, 3,4, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8, 5,6,7,8, 5,6,7,8, 5,6,7,8, 5,6,7,8);
+		Integer[] traceArray = s(1,2, 3,4, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8, 5,6,7,8, 5,6,7,8, 5,6,7,8, 5,6,7,8);
 		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
 				generateIdToSubtraceMap(outputDir, 8, "test3"));
 		
@@ -447,14 +447,14 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-		Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test4");
+		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test4");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test4"));
 		collector.addRawTraceToPool(2, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t2", 
 				generateIdToSubtraceMap(outputDir, 8, "test4"));
 		
-		Long[] traceArray = s(1,2,3, 4,5,6,5,6, 4,5,6,5,6,5,6, 7,8);
+		Integer[] traceArray = s(1,2,3, 4,5,6,5,6, 4,5,6,5,6,5,6, 7,8);
 		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
 				generateIdToSubtraceMap(outputDir, 8, "test4"));
 		
@@ -545,14 +545,14 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-		Map<Long,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 9, "test5");
+		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 9, "test5");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 9, "test5"));
 		collector.addRawTraceToPool(2, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t2", 
 				generateIdToSubtraceMap(outputDir, 9, "test5"));
 		
-		Long[] traceArray = s(1,2,3, 4,5,6,7,7,5,6,7,7,7, 4,5,6,7,5,6,7,7,5,6,7,7,7,7, 9,8);
+		Integer[] traceArray = s(1,2,3, 4,5,6,7,7,5,6,7,7,7, 4,5,6,7,5,6,7,7,5,6,7,7,7,7, 9,8);
 		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
 				generateIdToSubtraceMap(outputDir, 9, "test5"));
 		
@@ -652,20 +652,6 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		return builder.toString();
 	}
 
-	private String arrayToString(Long[] traceArray) {
-		if (traceArray == null) {
-			return "null";
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.append("[ ");
-		for (long entry : traceArray) {
-			builder.append(entry).append(", ");
-		}
-		builder.setLength(builder.length() > 2 ? builder.length()-2 : builder.length()-1);
-		builder.append(" ]");
-		return builder.toString();
-	}
-	
 	private String arrayToString(Integer[] traceArray) {
 		if (traceArray == null) {
 			return "null";

@@ -56,7 +56,7 @@ public class CompressedTraceTest {
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
 	@Test
-	public void testSingleLinkedBufferedArrayQueueFileStringInt() throws Exception {
+	public void testSingleLinkedBufferedArrayQueueFileStringLong() throws Exception {
 		BufferedArrayQueue<Long> queue = new BufferedArrayQueue<Long>(outputDir, "test", 5, Type.LONG);
 		
 		for (long i = 0; i < 20; ++i) {
@@ -87,6 +87,68 @@ public class CompressedTraceTest {
 		
 //		Thread.sleep(5000);
 		Iterator<Long> iterator = compressedIdTrace.iterator();
+		
+		int i = 0;
+		while (iterator.hasNext() && i < 20) {
+			Assert.assertEquals(i, iterator.next().intValue());
+			Assert.assertEquals(i++, iterator.next().intValue());
+		}
+		Assert.assertEquals(99, iterator.next().intValue());
+		i = 0;
+		while (iterator.hasNext() && i < 20) {
+			Assert.assertEquals(i, iterator.next().intValue());
+			Assert.assertEquals(i++, iterator.next().intValue());
+		}
+		i = 0;
+		while (iterator.hasNext() && i < 20) {
+			Assert.assertEquals(i, iterator.next().intValue());
+			Assert.assertEquals(i, iterator.next().intValue());
+			Assert.assertEquals(i++, iterator.next().intValue());
+		}
+		i = 0;
+		while (iterator.hasNext() && i < 10) {
+			Assert.assertEquals(i, iterator.next().intValue());
+			Assert.assertEquals(i++, iterator.next().intValue());
+		}
+		
+		queue.clear();
+	}
+	
+	/*
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
+	 */
+	@Test
+	public void testSingleLinkedBufferedArrayQueueFileStringInt() throws Exception {
+		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test2", 5, Type.INTEGER);
+		
+		for (int i = 0; i < 20; ++i) {
+			queue.add(i);
+			queue.add(i);
+		}
+		queue.add(99);
+		for (int i = 0; i < 20; ++i) {
+			queue.add(i);
+			queue.add(i);
+		}
+		for (int i = 0; i < 20; ++i) {
+			queue.add(i);
+			queue.add(i);
+			queue.add(i);
+		}
+		for (int i = 0; i < 10; ++i) {
+			queue.add(i);
+			queue.add(i);
+		}
+		queue.sleep();
+		
+		CompressedIntegerIdTrace compressedIdTrace = new CompressedIntegerIdTrace(queue, true);
+		
+		Assert.assertEquals(161, compressedIdTrace.size());
+		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
+		Assert.assertEquals(51, compressedIdTrace.getCompressedTrace().size());
+		
+//		Thread.sleep(5000);
+		Iterator<Integer> iterator = compressedIdTrace.iterator();
 		
 		int i = 0;
 		while (iterator.hasNext() && i < 20) {

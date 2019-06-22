@@ -24,13 +24,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIterator;
 
 @CoverageIgnore
 public class ExecutionTraceCollector {
@@ -138,16 +139,16 @@ public class ExecutionTraceCollector {
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
-	private static Map<Long,BufferedArrayQueue<Long>> executionTraces = new ConcurrentHashMap<>();
+	private static Map<Long,BufferedArrayQueue<Integer>> executionTraces = new ConcurrentHashMap<>();
 	// stores (sub trace id -> subTrace)
-	private static Map<Long,BufferedArrayQueue<int[]>> existingSubTraces = new ConcurrentHashMap<>();
-//	// stores (sub trace wrapper -> sub trace id) to retrieve subtrace ids
-//	// the integer array in the wrapper has to contain start and ending node of the sub trace
-//	// if the sub trace is longer than one statement
-//	private static Map<Long,Integer> subTraceIdMap = new ConcurrentHashMap<>();
-//	private static volatile int currentId = 0; 
-//	// lock for getting/generating sub trace ids (ensures that sub trace ids are unique)
-//	private static final transient Lock idLock = new ReentrantLock();
+	private static Map<Integer,BufferedArrayQueue<int[]>> existingSubTraces = new ConcurrentHashMap<>();
+	// stores (sub trace wrapper -> sub trace id) to retrieve subtrace ids
+	// the integer array in the wrapper has to contain start and ending node of the sub trace
+	// if the sub trace is longer than one statement
+	private static Map<Long,Integer> subTraceIdMap = new ConcurrentHashMap<>();
+	private static volatile int currentId = 0; 
+	// lock for getting/generating sub trace ids (ensures that sub trace ids are unique)
+	private static final transient Lock idLock = new ReentrantLock();
 	// stores currently built up execution trace parts for each thread (thread id -> sub trace)
 	private static Map<Long,BufferedArrayQueue<int[]>> currentSubTraces = new ConcurrentHashMap<>();
 	
@@ -183,11 +184,11 @@ public class ExecutionTraceCollector {
 	 * the statements in the traces are stored as "class_id:statement_counter";
 	 * also resets the internal map and collects potentially remaining sub traces.
 	 */
-	public static Map<Long,BufferedArrayQueue<Long>> getAndResetExecutionTraces() {
+	public static Map<Long,BufferedArrayQueue<Integer>> getAndResetExecutionTraces() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			processAllRemainingSubTraces();
-			Map<Long, BufferedArrayQueue<Long>> traces = executionTraces;
+			Map<Long, BufferedArrayQueue<Integer>> traces = executionTraces;
 			executionTraces = new ConcurrentHashMap<>();
 			return traces;
 		} finally {
@@ -199,69 +200,61 @@ public class ExecutionTraceCollector {
 	 * @return
 	 * The map of ids to actual sub traces; also resets the internal map
 	 */
-	public static Map<Long,BufferedArrayQueue<int[]>> getAndResetIdToSubtraceMap() {
+	public static Map<Integer,BufferedArrayQueue<int[]>> getAndResetIdToSubtraceMap() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			// process all remaining sub traces. Just to be safe!
 			processAllRemainingSubTraces();
-			// sub trace ids stay consistent
-			Map<Long,BufferedArrayQueue<int[]>> traceMap = existingSubTraces;
-//			// reset id counter and map!
-//			currentId = 0;
+			// sub trace ids that stay consistent throughout the entire time!!??? TODO
+			Map<Integer,BufferedArrayQueue<int[]>> traceMap = existingSubTraces;
+			// reset id counter and map!
+			currentId = 0;
 //			existingSubTraces = null;
 			existingSubTraces = new ConcurrentHashMap<>();
-//			subTraceIdMap.clear();
+			subTraceIdMap.clear();
 			return traceMap;
 		} finally {
 			globalExecutionTraceCollectorLock.unlock();
 		}
 	}
 	
-	private static BufferedArrayQueue<Long> getNewCollector(long threadId) {
+	private static BufferedArrayQueue<Integer> getNewCollector(long threadId) {
 		// do not delete buffered trace files on exit, due to possible necessary serialization
 		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
 				"exec_trc_" + threadId + "-" + String.valueOf(UUID.randomUUID()), 
-				EXECUTION_TRACE_CHUNK_SIZE, false, Type.LONG);
+				EXECUTION_TRACE_CHUNK_SIZE, false, Type.INTEGER);
 	}
 	
 	
-	private static long getOrCreateIdForSubTrace(BufferedArrayQueue<int[]> subTrace) {
+	private static int getOrCreateIdForSubTrace(BufferedArrayQueue<int[]> subTrace) {
 //		if (subTrace == null || subTrace.isEmpty()) {
 //			// id 0 indicates empty sub trace
 //			return 0;
 //		}
 
-////		idLock.lock();
-////		try {
-//			long wrapper = generateUniqueRepresentationForSubTrace(subTrace);
-//			Long id = subTraceIdMap.get(wrapper);
-//			if (id == null) {
-//				// starts with id 1
-//				id = ++currentId;
-//				// new sub trace, so store new id and store sub trace
-////				subTraceIdMap.put(wrapper, currentId);
-////				if (existingSubTraces == null) {
-////					existingSubTraces = new ConcurrentHashMap<>();
-////				}
-//				subTrace.sleep();
-//				existingSubTraces.put(currentId, subTrace);
-////				System.out.println(currentId + ":" + wrapper.toString());
-//			}
-//
-//			return id;
-////		} finally {
-////			idLock.unlock();
-////		}
-			
-		long id = generateUniqueRepresentationForSubTrace(subTrace);
-		if (!existingSubTraces.containsKey(id)) {			
-			BufferedArrayQueue<int[]> previous = existingSubTraces.put(id, subTrace);
-			if (previous != null) {
-				// may occur due to race condition? only keep the last stored sub trace then...
-				previous.clear();
+		long wrapper = generateUniqueRepresentationForSubTrace(subTrace);
+		Integer id = subTraceIdMap.get(wrapper);
+		if (id == null) {
+			idLock.lock();
+			try {
+				id = subTraceIdMap.get(wrapper);
+				// check again while locked!
+				if (id == null) {
+					// 
+					// starts with id 1
+					id = ++currentId;
+					// new sub trace, so store new id and store sub trace
+					subTraceIdMap.put(wrapper, id);
+//					if (existingSubTraces == null) {
+//						existingSubTraces = new ConcurrentHashMap<>();
+//					}
+				}
+			} finally {
+				idLock.unlock();
 			}
 			subTrace.sleep();
-//			System.out.println(id + ":" + subTrace.toString());
+			existingSubTraces.put(id, subTrace);
+			//				System.out.println(currentId + ":" + wrapper.toString());
 		}
 
 		return id;
@@ -277,12 +270,12 @@ public class ExecutionTraceCollector {
 			return 0;
 		} else if (subTrace.size() == 1) {
 			return ((long)subTrace.peek()[0] << 22) 
-					| subTrace.peek()[1];
+					+ subTrace.peek()[1];
 		} else {
-			return ((((((long)subTrace.peek()[0] << 22) 
-					| subTrace.peek()[1]) << 10) 
-					| subTrace.peekLast()[0]) << 22) 
-					| subTrace.peekLast()[1];
+			return ((((long)subTrace.peek()[0] << 22) 
+					+ subTrace.peek()[1] << 10) 
+					+ subTrace.peekLast()[0] << 22) 
+					+ subTrace.peekLast()[1];
 		}
 	}
 	
@@ -341,7 +334,7 @@ public class ExecutionTraceCollector {
 //		return executorService.submit(new SubTraceProcessor(threadId, subTrace));
 		
 		// get the respective execution trace
-		BufferedArrayQueue<Long> trace = executionTraces.get(threadId);
+		BufferedArrayQueue<Integer> trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
@@ -349,12 +342,13 @@ public class ExecutionTraceCollector {
 		
 		// get or create id for sub trace
 //		System.out.println(queueToString(subTrace));
-		long id = getOrCreateIdForSubTrace(subTrace);
+		int id = getOrCreateIdForSubTrace(subTrace);
 //		System.out.println(id + ": " + queueToString(subTrace));
 		
 		// add the sub trace's id to the trace
 		trace.add(id);
 					
+		
 //		System.out.println("size: " + TouchCollector.registeredClasses.size());
 //		for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
 //			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
@@ -428,6 +422,7 @@ public class ExecutionTraceCollector {
 //		
 //	}
 	
+	@SuppressWarnings("deprecation")
 	private static void processAllRemainingSubTraces() {
 		
 		for (Thread thread : currentThreads) {
@@ -464,7 +459,7 @@ public class ExecutionTraceCollector {
 				iterator.remove();
 			}
 
-			for (Entry<Long, BufferedArrayQueue<Long>> entry : executionTraces.entrySet()) {
+			for (Entry<Long, BufferedArrayQueue<Integer>> entry : executionTraces.entrySet()) {
 				entry.getValue().sleep();
 			}
 		} finally {
