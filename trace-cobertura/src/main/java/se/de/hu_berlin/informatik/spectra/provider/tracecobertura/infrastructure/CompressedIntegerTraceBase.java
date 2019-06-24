@@ -13,11 +13,6 @@ import java.util.UUID;
 /**
  * An execution trace consists structurally of a list of executed nodes
  * and a list of tuples that mark repeated sequences in the trace.
- *
- * @param <T>
- * type of elements in the trace
- * @param <K>
- * type of a representation for storing elements in a map
  */
 public abstract class CompressedIntegerTraceBase implements Serializable {
 

@@ -73,7 +73,7 @@ public class TraceCoberturaRunSingleTestAndReportModule extends AbstractRunSingl
 		this.cl = cl;
 
 		this.dataFile = dataFile;
-		String baseDir = null;
+//		String baseDir = null;
 		validateDataFile(this.dataFile.toString());
 		validateAndCreateDestinationDirectory(testOutput);
 

@@ -1,8 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Map.Entry;
 
 /**
  * An execution trace consists structurally of a list of executed nodes

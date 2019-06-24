@@ -20,9 +20,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.F
 
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
- * 
- * @param <E> 
- * the type of elements held in the queue
  */
 public class BufferedIntArrayQueue implements Serializable {
 

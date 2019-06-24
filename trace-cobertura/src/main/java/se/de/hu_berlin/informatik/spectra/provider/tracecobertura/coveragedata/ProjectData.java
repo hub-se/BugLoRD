@@ -8,7 +8,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocker;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
 
 import java.io.File;

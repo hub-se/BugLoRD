@@ -19,7 +19,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.OutputStreamManipulationUtilities;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
-import se.de.hu_berlin.informatik.utils.threaded.ExecutorServiceProvider;
 
 /**
  * Runs a single test and generates statistics. A timeout may be set
@@ -95,7 +94,6 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 		return statistics;
 	}
 
-	@SuppressWarnings("deprecation")
 	private TestStatistics runTest(final TestWrapper testWrapper, final String resultFile, final Long timeout) {
 //		Log.out(this, "Start Running " + testWrapper);
 

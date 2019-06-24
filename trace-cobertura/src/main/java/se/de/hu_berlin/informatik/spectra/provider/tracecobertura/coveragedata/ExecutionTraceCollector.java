@@ -408,7 +408,6 @@ public class ExecutionTraceCollector {
 //		
 //	}
 	
-	@SuppressWarnings("deprecation")
 	private static void processAllRemainingSubTraces() {
 		
 		for (Thread thread : currentThreads) {
