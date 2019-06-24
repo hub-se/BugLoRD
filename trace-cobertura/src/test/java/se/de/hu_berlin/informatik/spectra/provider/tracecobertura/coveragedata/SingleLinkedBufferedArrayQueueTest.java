@@ -4,7 +4,17 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.Iterator;
+import java.util.Random;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -215,6 +225,196 @@ public class SingleLinkedBufferedArrayQueueTest {
 		queue.sleep();
 		
 		queue.clear();
+	}
+	
+	@Test
+	public void testTime() {
+		outputDir.mkdirs();
+
+		int[] ints = new int[NUM_INTS];
+		Random r = new Random();
+		for (int i=0; i<NUM_INTS; i++) {
+			ints[i] = r.nextInt();
+		}
+		//		  time("DataOutputStream", new IntWriter() {
+		//		    public void write(int[] ints) {
+		//		      storeDO(ints);
+		//		    }
+		//		  }, ints);
+
+		time("ObjectOutputStreamWrite", new IntWriter() {
+			public void write(int[] ints) {
+				for (int i = 0; i < NUM_REPS; ++i) {
+					storeOO(ints, "oo.out");
+				}
+			}
+		}, ints);
+		time("ObjectOutputStreamRead", new IntWriter() {
+			public void write(int[] ints) {
+				for (int i = 0; i < NUM_REPS; ++i) {
+					readOO(ints, "oo.out");
+				}
+			}
+		}, ints);
+
+		time("FileChannel1write", new IntWriter() {
+			public void write(int[] ints) {
+				for (int i = 0; i < NUM_REPS; ++i) {
+					storeFC(ints, "fc.out");
+				}
+			}
+		}, ints);
+		time("FileChannel1read", new IntWriter() {
+			public void write(int[] ints) {
+				for (int i = 0; i < NUM_REPS; ++i) {
+					readFC(ints, "fc.out");
+				}
+			}
+		}, ints);
+
+		// seems to have trouble deleting the created file after termination
+		time("FileChannel2write", new IntWriter() {
+			public void write(int[] ints) {
+				for (int i = 0; i < NUM_REPS; ++i) {
+					storeFC2(ints, "fc2.out");
+				}
+			}
+		}, ints);
+		time("FileChannel2read", new IntWriter() {
+			public void write(int[] ints) {
+				for (int i = 0; i < NUM_REPS; ++i) {
+					readFC2(ints, "fc2.out");
+				}
+			}
+		}, ints);
+	}
+
+	private static final int NUM_INTS = 10000000;
+	private static final int NUM_REPS = 1;
+
+	interface IntWriter {
+		void write(int[] ints);
+	}
+	
+	private static void time(String name, IntWriter writer, int[] ints) {
+		long start = System.nanoTime();
+		writer.write(ints);
+		long end = System.nanoTime();
+		double ms = (end - start) / 1000000d;
+		System.out.printf("%s wrote %,d ints in %,.3f ms%n", name, ints.length, ms);
+	}
+
+	private void storeOO(int[] ints, String filename) {
+		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outputDir.getAbsolutePath() + File.separator + filename))) {
+			out.writeObject(ints);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		new File(outputDir.getAbsolutePath() + File.separator + filename).deleteOnExit();
+	}
+	
+	private void readOO(int[] ints, String filename) {
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(outputDir.getAbsolutePath() + File.separator + filename))) {
+			int[] items = (int[]) in.readObject();
+			
+			for (int i = 0; i < items.length; ++i) {
+				Assert.assertEquals(ints[i], items[i]);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		new File(outputDir.getAbsolutePath() + File.separator + filename).deleteOnExit();
+	}
+
+	//		private void storeDO(int[] ints) {
+	//		  DataOutputStream out = null;
+	//		  try {
+	//		    out = new DataOutputStream(new FileOutputStream(outputDir.getAbsolutePath() + File.separator + "data.out"));
+	//		    for (int anInt : ints) {
+	//		      out.write(anInt);
+	//		    }
+	//		  } catch (IOException e) {
+	//		    throw new RuntimeException(e);
+	//		  } finally {
+	//		    safeClose(out);
+	//		  }
+	//		}
+
+	private void storeFC(int[] ints, String filename) {
+		try (FileOutputStream out = new FileOutputStream(outputDir.getAbsolutePath() + File.separator + filename)) {
+			try (FileChannel file = out.getChannel()) {
+				ByteBuffer directBuf = ByteBuffer.allocateDirect(4 * ints.length);
+				for (int i : ints) {
+					directBuf.putInt(i);
+				}
+				directBuf.flip();
+				file.write(directBuf);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		new File(outputDir.getAbsolutePath() + File.separator + filename).deleteOnExit();
+	}
+	
+	private void readFC(int[] ints, String filename) {
+		try (FileInputStream in = new FileInputStream(outputDir.getAbsolutePath() + File.separator + filename)) {
+			try (FileChannel file = in.getChannel()) {
+				ByteBuffer directBuf = ByteBuffer.allocateDirect(4 * ints.length);
+				file.read(directBuf);
+				directBuf.flip();
+				
+				int arrayLength = directBuf.capacity()/4;
+				int[] items = new int[arrayLength];
+				for (int i = 0; i < arrayLength; ++i) {
+					items[i] = directBuf.getInt();
+				}
+				
+				for (int i = 0; i < arrayLength; ++i) {
+					Assert.assertEquals(ints[i], items[i]);
+				}
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		new File(outputDir.getAbsolutePath() + File.separator + filename).deleteOnExit();
+	}
+
+	private void storeFC2(int[] ints, String filename) {
+		try (RandomAccessFile raFile = new RandomAccessFile(outputDir.getAbsolutePath() + File.separator + filename, "rw")) {
+			try (FileChannel file = raFile.getChannel()) {
+				MappedByteBuffer buf = file.map(FileChannel.MapMode.READ_WRITE, 0, 4 * ints.length);
+				for (int i : ints) {
+					buf.putInt(i);
+				}
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		new File(outputDir.getAbsolutePath() + File.separator + filename).deleteOnExit();
+	}
+	
+	private void readFC2(int[] ints, String filename) {
+		try (RandomAccessFile raFile = new RandomAccessFile(outputDir.getAbsolutePath() + File.separator + filename, "r")) {
+			try (FileChannel file = raFile.getChannel()) {
+				MappedByteBuffer directBuf = file.map(FileChannel.MapMode.READ_ONLY, 0, file.size());
+				
+				int arrayLength = (int)(file.size()/4);
+				int[] items = new int[arrayLength];
+				for (int i = 0; i < arrayLength; ++i) {
+					items[i] = directBuf.getInt();
+				}
+				
+				for (int i = 0; i < arrayLength; ++i) {
+					Assert.assertEquals(ints[i], items[i]);
+				}
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		new File(outputDir.getAbsolutePath() + File.separator + filename).deleteOnExit();
 	}
 
 }

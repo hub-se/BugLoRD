@@ -2,11 +2,11 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -195,19 +195,49 @@ public class BufferedIntArrayQueue implements Serializable {
     
     private void store(Node node) {
 		String filename = getFileName(node.storeIndex);
-		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-			outputStream.writeObject(node.items);
-			
-			outputStream.writeInt(node.startIndex);
-			outputStream.writeInt(node.endIndex);
-			
-			// file can not be removed, due to serialization! TODO
-			if (deleteOnExit) {
-				new File(filename).deleteOnExit();
+		// apparently, this is faster than using an ObjectOutputStream...
+		try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {
+			try (FileChannel file = raFile.getChannel()) {
+//				ByteBuffer buf = file.map(FileChannel.MapMode.READ_WRITE, 0, 4 * node.items.length + 8);
+//				buf.putInt(node.startIndex);
+//				buf.putInt(node.endIndex);
+//				for (int i : node.items) {
+//					buf.putInt(i);
+//				}
+				
+				ByteBuffer directBuf = ByteBuffer.allocateDirect(4 * node.items.length + 8);
+				directBuf.putInt(node.startIndex);
+				directBuf.putInt(node.endIndex);
+				for (int i : node.items) {
+					directBuf.putInt(i);
+				}
+				directBuf.flip();
+				file.write(directBuf);
+
+				// file can not be removed, due to serialization! TODO
+				if (deleteOnExit) {
+					new File(filename).deleteOnExit();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+//		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+//			outputStream.writeObject(node.items);
+//			
+//			outputStream.writeInt(node.startIndex);
+//			outputStream.writeInt(node.endIndex);
+//			
+//			// file can not be removed, due to serialization! TODO
+//			if (deleteOnExit) {
+//				new File(filename).deleteOnExit();
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	/**
@@ -340,17 +370,66 @@ public class BufferedIntArrayQueue implements Serializable {
 			}
 			
 			Node loadedNode;
-			try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
-				int[] items = (int[]) inputStream.readObject();
-				
-				int startIndex = inputStream.readInt();
-				int endIndex = inputStream.readInt();
-				
-				loadedNode = new Node(items, startIndex, endIndex, storeIndex);
-			} catch (ClassNotFoundException | IOException e) {
+			try (FileInputStream in = new FileInputStream(filename)) {
+				try (FileChannel file = in.getChannel()) {
+					long fileSize = file.size();
+					if (fileSize > Integer.MAX_VALUE) {
+						throw new UnsupportedOperationException("File size too big!");
+					}
+					ByteBuffer directBuf = ByteBuffer.allocateDirect((int) fileSize);
+					file.read(directBuf);
+					directBuf.flip();
+					
+					int startIndex = directBuf.getInt();
+					int endIndex = directBuf.getInt();
+					
+					int arrayLength = (int)fileSize/4 - 2;
+					int[] items = new int[arrayLength];
+					for (int i = 0; i < arrayLength; ++i) {
+						items[i] = directBuf.getInt();
+					}
+					
+					loadedNode = new Node(items, startIndex, endIndex, storeIndex);
+					
+					// file can not be removed, due to serialization! TODO
+					if (deleteOnExit) {
+						new File(filename).deleteOnExit();
+					}
+				}
+			} catch (IOException | IndexOutOfBoundsException e) {
 				e.printStackTrace();
 				throw new IllegalStateException();
 			}
+//			try (RandomAccessFile raFile = new RandomAccessFile(filename, "r")) {
+//				try (FileChannel file = raFile.getChannel()) {
+//					long fileSize = file.size();
+//					ByteBuffer buf = file.map(FileChannel.MapMode.READ_ONLY, 0, fileSize);
+//					int startIndex = buf.getInt();
+//					int endIndex = buf.getInt();
+//
+//					int arrayLength = (int) (fileSize/4 - 2);
+//					int[] items = new int[arrayLength];
+//					for (int i = 0; i < arrayLength; ++i) {
+//						items[i] = buf.getInt();
+//					}
+//
+//					loadedNode = new Node(items, startIndex, endIndex, storeIndex);
+//				} 
+//			} catch (IOException | IndexOutOfBoundsException e) {
+//				e.printStackTrace();
+//				throw new IllegalStateException();
+//			}
+			
+//			try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
+//				int[] items = (int[]) inputStream.readObject();
+//				
+//				
+//				
+//				loadedNode = new Node(items, startIndex, endIndex, storeIndex);
+//			} catch (ClassNotFoundException | IOException e) {
+//				e.printStackTrace();
+//				throw new IllegalStateException();
+//			}
 			
 			if (storeIndex <= lastStoreIndex) {
 				cachedNodes.put(storeIndex, loadedNode);
