@@ -3,34 +3,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIterator;
 
 @CoverageIgnore
@@ -139,7 +125,7 @@ public class ExecutionTraceCollector {
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
-	private static Map<Long,BufferedArrayQueue<Integer>> executionTraces = new ConcurrentHashMap<>();
+	private static Map<Long,BufferedIntArrayQueue> executionTraces = new ConcurrentHashMap<>();
 	// stores (sub trace id -> subTrace)
 	private static Map<Integer,BufferedArrayQueue<int[]>> existingSubTraces = new ConcurrentHashMap<>();
 	// stores (sub trace wrapper -> sub trace id) to retrieve subtrace ids
@@ -184,11 +170,11 @@ public class ExecutionTraceCollector {
 	 * the statements in the traces are stored as "class_id:statement_counter";
 	 * also resets the internal map and collects potentially remaining sub traces.
 	 */
-	public static Map<Long,BufferedArrayQueue<Integer>> getAndResetExecutionTraces() {
+	public static Map<Long,BufferedIntArrayQueue> getAndResetExecutionTraces() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			processAllRemainingSubTraces();
-			Map<Long, BufferedArrayQueue<Integer>> traces = executionTraces;
+			Map<Long, BufferedIntArrayQueue> traces = executionTraces;
 			executionTraces = new ConcurrentHashMap<>();
 			return traces;
 		} finally {
@@ -218,11 +204,11 @@ public class ExecutionTraceCollector {
 		}
 	}
 	
-	private static BufferedArrayQueue<Integer> getNewCollector(long threadId) {
+	private static BufferedIntArrayQueue getNewCollector(long threadId) {
 		// do not delete buffered trace files on exit, due to possible necessary serialization
-		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
+		return new BufferedIntArrayQueue(tempDir.toAbsolutePath().toFile(), 
 				"exec_trc_" + threadId + "-" + String.valueOf(UUID.randomUUID()), 
-				EXECUTION_TRACE_CHUNK_SIZE, false, Type.INTEGER);
+				EXECUTION_TRACE_CHUNK_SIZE, false);
 	}
 	
 	
@@ -334,7 +320,7 @@ public class ExecutionTraceCollector {
 //		return executorService.submit(new SubTraceProcessor(threadId, subTrace));
 		
 		// get the respective execution trace
-		BufferedArrayQueue<Integer> trace = executionTraces.get(threadId);
+		BufferedIntArrayQueue trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
@@ -459,7 +445,7 @@ public class ExecutionTraceCollector {
 				iterator.remove();
 			}
 
-			for (Entry<Long, BufferedArrayQueue<Integer>> entry : executionTraces.entrySet()) {
+			for (Entry<Long, BufferedIntArrayQueue> entry : executionTraces.entrySet()) {
 				entry.getValue().sleep();
 			}
 		} finally {

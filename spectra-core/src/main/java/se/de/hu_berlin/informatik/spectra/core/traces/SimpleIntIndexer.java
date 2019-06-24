@@ -30,21 +30,21 @@ public class SimpleIntIndexer implements SequenceIndexer {
 	}
 	
 	public SimpleIntIndexer(
-			ArraySequenceIndexer<Integer, Integer> treeIndexer, 
+			IntArraySequenceIndexer intArraySequenceIndexer, 
 			Map<Integer, BufferedArrayQueue<int[]>> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		// map counter IDs to line numbers!
-		storeSubTraceIdSequences(Objects.requireNonNull(treeIndexer));
+		storeSubTraceIdSequences(Objects.requireNonNull(intArraySequenceIndexer));
 		// map counter IDs to line numbers!
 		mapCounterIdsToSpectraNodeIds(Objects.requireNonNull(idToSubTraceMap), 
 				Objects.requireNonNull(lineSpectra), Objects.requireNonNull(projectData));
 	}
 
-	private void storeSubTraceIdSequences(ArraySequenceIndexer<Integer, Integer> indexer) {
-		this.subTraceIdSequences = new int[indexer.getSequences().length][];
-		for (int i = 0; i < indexer.getSequences().length; i++) {
-			Iterator<Integer> sequenceIterator = indexer.getSequenceIterator(i);
-			int length = indexer.getSequenceLength(i);
+	private void storeSubTraceIdSequences(IntArraySequenceIndexer intArraySequenceIndexer) {
+		this.subTraceIdSequences = new int[intArraySequenceIndexer.getSequences().length][];
+		for (int i = 0; i < intArraySequenceIndexer.getSequences().length; i++) {
+			Iterator<Integer> sequenceIterator = intArraySequenceIndexer.getSequenceIterator(i);
+			int length = intArraySequenceIndexer.getSequenceLength(i);
 			
 			subTraceIdSequences[i] = new int[length];
 			for (int j = 0; j < length; ++j) {

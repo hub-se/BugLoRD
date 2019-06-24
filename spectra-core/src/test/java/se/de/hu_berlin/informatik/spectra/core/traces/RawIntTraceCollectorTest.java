@@ -20,7 +20,9 @@ import org.junit.Test;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.TraceIterator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -56,12 +58,12 @@ public class RawIntTraceCollectorTest extends TestSettings {
 	public void tearDown() {
 	}
 
-	private Integer[] s(int... numbers) {
-		Integer[] result = new Integer[numbers.length];
-		for (int i = 0; i < numbers.length; ++i) {
-			result[i] =numbers[i];
-		}
-		return result;
+	private int[] s(int... numbers) {
+//		int[] result = new int[numbers.length];
+//		for (int i = 0; i < numbers.length; ++i) {
+//			result[i] =numbers[i];
+//		}
+		return numbers;
 	}
 	
 	private int[][] rt(int... numbers) {
@@ -74,7 +76,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 	
 	private int[][] getSubTraceIdSequences(RawIntTraceCollector collector) {
 		int[][] subTraceIdSequences;
-		ArraySequenceIndexer<Integer, Integer> indexer = collector.getIndexer();
+		IntArraySequenceIndexer indexer = collector.getIndexer();
 		
 		subTraceIdSequences = new int[indexer.getSequences().length][];
 		for (int i = 0; i < indexer.getSequences().length; i++) {
@@ -136,7 +138,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		return list;
 	}
 
-	private void checkMappedTrace(Integer[] traceArray, int[] fullMappedTrace) {
+	private void checkMappedTrace(int[] traceArray, int[] fullMappedTrace) {
 		Assert.assertEquals(traceArray.length, fullMappedTrace.length);
 		for (int i = 0; i < traceArray.length; i++) {
 			Assert.assertEquals(traceArray[i]+10, fullMappedTrace[i]);
@@ -156,26 +158,27 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.addRawTraceToPool(2, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t2", 
 				generateIdToSubtraceMap(outputDir, 8, "test1"));
 		
-		//                        0    1    2    4    4    1    2    4    4    1    2    1      3      ????
-		Integer[] traceArray = s(1,2, 3,4, 5,6, 5,7, 5,7, 3,4, 5,6, 5,7, 5,7, 3,4, 5,6, 3,4, 5,6,7,8);
+		//                    0    1    2    4    4    1    2    4    4    1    2    1      3      ????
+		int[] traceArray = s(1,2, 3,4, 5,6, 5,7, 5,7, 3,4, 5,6, 5,7, 5,7, 3,4, 5,6, 3,4, 5,6,7,8);
 		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
 				generateIdToSubtraceMap(outputDir, 8, "test1"));
 		
 //		Thread.sleep(20000);
 		System.out.println(collector.getGsTree());
 		
-		CompressedTraceBase<Integer, ?> rawTrace = collector.getRawTraces(3).get(0);
+		CompressedIntegerTraceBase rawTrace = collector.getRawTraces(3).get(0);
 		
 		System.out.println(traceArray.length + ", " + arrayToString(traceArray));
 		
 //		System.out.println(rawTrace.getCompressedTrace());
 		System.out.println(mapToString(rawTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(rawTrace.getChild().getRepetitionMarkers()));
-		for (Integer integer : rawTrace) {
-			System.out.print(integer + ", ");
+		IntTraceIterator traceIterator = rawTrace.iterator();
+		while (traceIterator.hasNext()) {
+			System.out.print(traceIterator.next() + ", ");
 		}
 		System.out.println();
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
+		for (IntTraceIterator iterator = rawTrace.iterator(); iterator.hasNext();) {
 			if (iterator.isStartOfRepetition()) {
 				System.out.print("s:");
 			}
@@ -227,8 +230,9 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		System.out.println(executionTrace.getCompressedTrace());
 		System.out.println(mapToString(executionTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
-		for (Integer integer : executionTrace) {
-			System.out.print(integer + ", ");
+		IntTraceIterator eTraceIterator = executionTrace.iterator();
+		while (eTraceIterator.hasNext()) {
+			System.out.print(eTraceIterator.next() + ", ");
 		}
 		System.out.println();
 		
@@ -257,24 +261,25 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.addRawTraceToPool(2, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t2", 
 				generateIdToSubtraceMap(outputDir, 8, "test2"));
 		
-		Integer[] traceArray = s(1,2, 3,4, 1,2, 3,4, 1,2, 3,4, 3,4, 5,6, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8);
+		int[] traceArray = s(1,2, 3,4, 1,2, 3,4, 1,2, 3,4, 3,4, 5,6, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8);
 		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
 				generateIdToSubtraceMap(outputDir, 8, "test2"));
 		
 		System.out.println(collector.getGsTree());
 		
-		CompressedTraceBase<Integer, ?> rawTrace = collector.getRawTraces(3).get(0);
+		CompressedIntegerTraceBase rawTrace = collector.getRawTraces(3).get(0);
 		
 		System.out.println(traceArray.length + ", " + arrayToString(traceArray));
 		
 //		System.out.println(rawTrace.getCompressedTrace());
 		System.out.println(mapToString(rawTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(rawTrace.getChild().getRepetitionMarkers()));
-		for (Integer integer : rawTrace) {
-			System.out.print(integer + ", ");
+		IntTraceIterator traceIterator = rawTrace.iterator();
+		while (traceIterator.hasNext()) {
+			System.out.print(traceIterator.next() + ", ");
 		}
 		System.out.println();
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
+		for (IntTraceIterator iterator = rawTrace.iterator(); iterator.hasNext();) {
 			if (iterator.isStartOfRepetition()) {
 				System.out.print("s:");
 			}
@@ -325,8 +330,9 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		System.out.println(executionTrace.getCompressedTrace());
 		System.out.println(mapToString(executionTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
-		for (Integer integer : executionTrace) {
-			System.out.print(integer + ", ");
+		IntTraceIterator eTraceIterator = executionTrace.iterator();
+		while (eTraceIterator.hasNext()) {
+			System.out.print(eTraceIterator.next() + ", ");
 		}
 		System.out.println();
 		
@@ -356,24 +362,25 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.addRawTraceToPool(2, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t2", 
 				generateIdToSubtraceMap(outputDir, 8, "test3"));
 		
-		Integer[] traceArray = s(1,2, 3,4, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8, 5,6,7,8, 5,6,7,8, 5,6,7,8, 5,6,7,8);
+		int[] traceArray = s(1,2, 3,4, 5,6, 5,7, 3,4, 5,6, 3,4, 5,6,7,8, 5,6,7,8, 5,6,7,8, 5,6,7,8, 5,6,7,8);
 		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
 				generateIdToSubtraceMap(outputDir, 8, "test3"));
 		
 		System.out.println(collector.getGsTree());
 		
-		CompressedTraceBase<Integer, ?> rawTrace = collector.getRawTraces(3).get(0);
+		CompressedIntegerTraceBase rawTrace = collector.getRawTraces(3).get(0);
 		
 		System.out.println(traceArray.length + ", " + arrayToString(traceArray));
 		
 //		System.out.println(rawTrace.getCompressedTrace());
 		System.out.println(mapToString(rawTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(rawTrace.getChild().getRepetitionMarkers()));
-		for (Integer integer : rawTrace) {
-			System.out.print(integer + ", ");
+		IntTraceIterator traceIterator = rawTrace.iterator();
+		while (traceIterator.hasNext()) {
+			System.out.print(traceIterator.next() + ", ");
 		}
 		System.out.println();
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
+		for (IntTraceIterator iterator = rawTrace.iterator(); iterator.hasNext();) {
 			if (iterator.isStartOfRepetition()) {
 				System.out.print("s:");
 			}
@@ -424,8 +431,9 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		System.out.println(executionTrace.getCompressedTrace());
 		System.out.println(mapToString(executionTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
-		for (Integer integer : executionTrace) {
-			System.out.print(integer + ", ");
+		IntTraceIterator eTraceIterator = executionTrace.iterator();
+		while (eTraceIterator.hasNext()) {
+			System.out.print(eTraceIterator.next() + ", ");
 		}
 		System.out.println();
 		
@@ -454,24 +462,25 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.addRawTraceToPool(2, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t2", 
 				generateIdToSubtraceMap(outputDir, 8, "test4"));
 		
-		Integer[] traceArray = s(1,2,3, 4,5,6,5,6, 4,5,6,5,6,5,6, 7,8);
+		int[] traceArray = s(1,2,3, 4,5,6,5,6, 4,5,6,5,6,5,6, 7,8);
 		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
 				generateIdToSubtraceMap(outputDir, 8, "test4"));
 		
 		System.out.println(collector.getGsTree());
 		
-		CompressedTraceBase<Integer, ?> rawTrace = collector.getRawTraces(3).get(0);
+		CompressedIntegerTraceBase rawTrace = collector.getRawTraces(3).get(0);
 		
 		System.out.println(traceArray.length + ", " + arrayToString(traceArray));
 		
 //		System.out.println(rawTrace.getCompressedTrace());
 		System.out.println(mapToString(rawTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(rawTrace.getChild().getRepetitionMarkers()));
-		for (Integer integer : rawTrace) {
-			System.out.print(integer + ", ");
+		IntTraceIterator traceIterator = rawTrace.iterator();
+		while (traceIterator.hasNext()) {
+			System.out.print(traceIterator.next() + ", ");
 		}
 		System.out.println();
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
+		for (IntTraceIterator iterator = rawTrace.iterator(); iterator.hasNext();) {
 			if (iterator.isStartOfRepetition()) {
 				System.out.print("s:");
 			}
@@ -522,8 +531,9 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		System.out.println(executionTrace.getCompressedTrace());
 		System.out.println(mapToString(executionTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
-		for (Integer integer : executionTrace) {
-			System.out.print(integer + ", ");
+		IntTraceIterator eTraceIterator = executionTrace.iterator();
+		while (eTraceIterator.hasNext()) {
+			System.out.print(eTraceIterator.next() + ", ");
 		}
 		System.out.println();
 		
@@ -552,24 +562,25 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.addRawTraceToPool(2, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t2", 
 				generateIdToSubtraceMap(outputDir, 9, "test5"));
 		
-		Integer[] traceArray = s(1,2,3, 4,5,6,7,7,5,6,7,7,7, 4,5,6,7,5,6,7,7,5,6,7,7,7,7, 9,8);
+		int[] traceArray = s(1,2,3, 4,5,6,7,7,5,6,7,7,7, 4,5,6,7,5,6,7,7,5,6,7,7,7,7, 9,8);
 		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
 				generateIdToSubtraceMap(outputDir, 9, "test5"));
 		
 		System.out.println(collector.getGsTree());
 		
-		CompressedTraceBase<Integer, ?> rawTrace = collector.getRawTraces(3).get(0);
+		CompressedIntegerTraceBase rawTrace = collector.getRawTraces(3).get(0);
 		
 		System.out.println(traceArray.length + ", " + arrayToString(traceArray));
 		
 //		System.out.println(rawTrace.getCompressedTrace());
 		System.out.println(mapToString(rawTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(rawTrace.getChild().getRepetitionMarkers()));
-		for (Integer integer : rawTrace) {
-			System.out.print(integer + ", ");
+		IntTraceIterator traceIterator = rawTrace.iterator();
+		while (traceIterator.hasNext()) {
+			System.out.print(traceIterator.next() + ", ");
 		}
 		System.out.println();
-		for (TraceIterator<Integer> iterator = rawTrace.iterator(); iterator.hasNext();) {
+		for (IntTraceIterator iterator = rawTrace.iterator(); iterator.hasNext();) {
 			if (iterator.isStartOfRepetition()) {
 				System.out.print("s:");
 			}
@@ -620,8 +631,9 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		System.out.println(executionTrace.getCompressedTrace());
 		System.out.println(mapToString(executionTrace.getRepetitionMarkers()));
 		System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
-		for (Integer integer : executionTrace) {
-			System.out.print(integer + ", ");
+		IntTraceIterator eTraceIterator = executionTrace.iterator();
+		while (eTraceIterator.hasNext()) {
+			System.out.print(eTraceIterator.next() + ", ");
 		}
 		System.out.println();
 		
@@ -652,7 +664,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		return builder.toString();
 	}
 
-	private String arrayToString(Integer[] traceArray) {
+	private String arrayToString(int[] traceArray) {
 		if (traceArray == null) {
 			return "null";
 		}

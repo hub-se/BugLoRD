@@ -1,6 +1,8 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
-public class IntArrayIterator implements CloneableIterator<Integer> {
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
+
+public class IntArrayIterator implements ReplaceableCloneableIntIterator {
 	
 	private final int[] array;
 	private int index = 0;
@@ -25,16 +27,17 @@ public class IntArrayIterator implements CloneableIterator<Integer> {
 	}
 
 	@Override
-	public Integer next() {
+	public int next() {
 		return array[index++];
 	}
 	
-	public Integer peek() {
+	public int peek() {
 		return array[index];
 	}
 
 	@Override
-	public void remove() {
+	public int processNextAndReplaceWithResult(Function<Integer, Integer> function) {
 		throw new UnsupportedOperationException();
 	}
+
 }

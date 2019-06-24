@@ -10,11 +10,15 @@ import net.lingala.zip4j.model.FileHeader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntTraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIntIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
@@ -47,9 +51,9 @@ public class RawIntTraceCollector {
 	
 	private final Path output;
 
-	private final GSArrayTree<Integer,Integer> gsTree = new GSIntTree();
+	private final IntGSArrayTree gsTree = new IntGSArrayTree();
 
-	private ArraySequenceIndexer<Integer,Integer> indexer = null;
+	private IntArraySequenceIndexer indexer = null;
 	
 	private final Set<Integer> startElements = new HashSet<>();
 	
@@ -75,7 +79,7 @@ public class RawIntTraceCollector {
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
-			BufferedArrayQueue<Integer> trace, boolean log,
+			BufferedIntArrayQueue trace, boolean log,
 			Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, trace, log, idToSubTraceMap);
 		return true;
@@ -83,10 +87,13 @@ public class RawIntTraceCollector {
 	
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
-			Integer[] traceArray, boolean log, Path outputDir, String prefix,
+			int[] traceArray, boolean log, Path outputDir, String prefix,
 			Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap) {
-		BufferedArrayQueue<Integer> trace = new BufferedArrayQueue<>(outputDir.toFile(), prefix, 100, Type.INTEGER);
-        trace.addAll(Arrays.asList(traceArray));
+		BufferedIntArrayQueue trace = new BufferedIntArrayQueue(outputDir.toFile(), prefix, 100);
+//        trace.addAll(Arrays.asList(traceArray));
+		for (int i : traceArray) {
+			trace.add(i);
+		}
 //		trace.clear(1);
 //		for (Iterator<Integer> iterator = trace.iterator(); iterator.hasNext();) {
 //			Integer integer = iterator.next();
@@ -97,24 +104,24 @@ public class RawIntTraceCollector {
 	}
 
 	private void addTrace(int traceIndex, int threadId, 
-			BufferedArrayQueue<Integer> trace, boolean log,
+			BufferedIntArrayQueue trace, boolean log,
 			Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, new CompressedIntegerIdTrace(trace, log), idToSubTraceMap);
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
-			CompressedTraceBase<Integer,Integer> eTrace,
+			CompressedIntegerTraceBase eTrace,
 			Map<Integer, BufferedArrayQueue<int[]>> map) {
 		addTrace(traceIndex, threadId, eTrace, map);
 		return true;
 	}
 
 	private void addTrace(int traceIndex, int threadId, 
-			CompressedTraceBase<Integer,Integer> eTrace,
+			CompressedIntegerTraceBase eTrace,
 			Map<Integer, BufferedArrayQueue<int[]>> map) {
 		
 		boolean error = false;
-		for (ReplaceableCloneableIterator<Integer> iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
+		for (ReplaceableCloneableIntIterator iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
 			// check if all IDs are actually stored in the map
 			Integer id = iterator.next();
 			if (!map.containsKey(id)) {
@@ -161,9 +168,9 @@ public class RawIntTraceCollector {
 		eTrace = null;
 	}
 	
-	private void globalizeTrace(CompressedTraceBase<Integer, Integer> eTrace,
+	private void globalizeTrace(CompressedIntegerTraceBase eTrace,
 			Map<Integer, Integer> localIdToGlobalIdMap) {
-		for (ReplaceableCloneableIterator<Integer> iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
+		for (ReplaceableCloneableIntIterator iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
 			// this should now replace all local sub trace ids with the respective global ids...
 			@SuppressWarnings("unused")
 			Integer previous = iterator.processNextAndReplaceWithResult(k -> {
@@ -230,12 +237,12 @@ public class RawIntTraceCollector {
 
 	}
 
-	public List<CompressedTraceBase<Integer,?>> getRawTraces(int traceIndex) {
+	public List<CompressedIntegerTraceBase> getRawTraces(int traceIndex) {
 		if (!output.toFile().exists()) {
 			return null;
 		}
 		// retrieve the raw traces from the zip file
-		List<CompressedTraceBase<Integer,?>> result = new ArrayList<>(1);
+		List<CompressedIntegerTraceBase> result = new ArrayList<>(1);
 		ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
 
 		int traceCounter = -1;
@@ -244,7 +251,7 @@ public class RawIntTraceCollector {
 			String compressedTraceFile = traceIndex + "-" + (++traceCounter) + RAW_TRACE_FILE_EXTENSION;
 			if (zip.exists(compressedTraceFile)) {
 				String repetitionFile = traceIndex + "-" + (traceCounter) + REP_MARKER_FILE_EXTENSION;
-				CompressedTraceBase<Integer,?> rawTrace = SpectraFileUtils
+				CompressedIntegerTraceBase rawTrace = SpectraFileUtils
 						.loadRawTraceFromZipFile(zip, compressedTraceFile, repetitionFile);
 				result.add(rawTrace);
 			} else {
@@ -307,11 +314,11 @@ public class RawIntTraceCollector {
 		// generate execution trace from current GS tree
 		if (indexer == null) {
 			extractCommonSequencesFromRawTraces();
-			indexer = new GSIntTreeIndexer(gsTree);
+			indexer = new IntGSArrayTreeIndexer(gsTree);
 		}
 
 		// if at this point, try generating the execution traces from raw traces on the fly
-		List<CompressedTraceBase<Integer, ?>> rawTraces = getRawTraces(traceIndex);
+		List<CompressedIntegerTraceBase> rawTraces = getRawTraces(traceIndex);
 		if (rawTraces == null) {
 			return null;
 		}
@@ -336,10 +343,10 @@ public class RawIntTraceCollector {
 		return executionTraces;
 	}
 
-	private List<ExecutionTrace> generateExecutiontraceFromRawTraces(List<CompressedTraceBase<Integer, ?>> rawTraces, boolean log) {
+	private List<ExecutionTrace> generateExecutiontraceFromRawTraces(List<CompressedIntegerTraceBase> rawTraces, boolean log) {
 		// replace sequences in the raw trace with indices
 		List<ExecutionTrace> traces = new ArrayList<>(rawTraces.size());
-		for (CompressedTraceBase<Integer, ?> rawTrace : rawTraces) {
+		for (CompressedIntegerTraceBase rawTrace : rawTraces) {
 			try {
 				traces.add(new ExecutionTrace(gsTree.generateIndexedTrace(rawTrace, indexer), log));
 			} catch (IllegalStateException e) {
@@ -356,7 +363,7 @@ public class RawIntTraceCollector {
 
 	private void extractCommonSequencesFromRawTraces() {
 		if (indexer == null) {
-			indexer = new GSIntTreeIndexer(gsTree);
+			indexer = new IntGSArrayTreeIndexer(gsTree);
 		}
 		
 		ProgressTracker tracker = new ProgressTracker(false);
@@ -371,7 +378,7 @@ public class RawIntTraceCollector {
 					zip.getFileHeadersContainingString(RAW_TRACE_FILE_EXTENSION);
 			for (FileHeader fileHeader : rawTraceFiles) {
 				tracker.track("processing " + fileHeader.getFileName());
-				CompressedTraceBase<Integer,?> rawTrace = SpectraFileUtils
+				CompressedIntegerIdTrace rawTrace = SpectraFileUtils
 						.loadRawTraceFromZipFile(zip, fileHeader.getFileName(), fileHeader.getFileName()
 								.replace(RAW_TRACE_FILE_EXTENSION, REP_MARKER_FILE_EXTENSION));
 
@@ -386,15 +393,15 @@ public class RawIntTraceCollector {
 		}
 	}
 
-	private void extractCommonSequencesFromRawTrace(CloneableIterator<Integer> traceIterator) {
+	private void extractCommonSequencesFromRawTrace(ReplaceableCloneableIntIterator replaceableCloneableIntIterator) {
 		if (indexer != null) {
 			indexer.reset();
 		}
 		// remember starting position
-		CloneableIterator<Integer> unprocessedIterator = traceIterator.clone();
+		ReplaceableCloneableIntIterator unprocessedIterator = replaceableCloneableIntIterator.clone();
 		int processedElements = 0;
-		while (traceIterator.hasNext()) {
-			Integer element = gsTree.getRepresentation(traceIterator.peek());
+		while (replaceableCloneableIntIterator.hasNext()) {
+			Integer element = replaceableCloneableIntIterator.peek();
 //			System.out.println("next: " + element);
 			// TODO prevent negative elements!
 //			if (element < 0) {
@@ -409,38 +416,38 @@ public class RawIntTraceCollector {
 					// there exists an unprocessed sequence 
 					// before this element's position
 					gsTree.__addSequence(unprocessedIterator, processedElements, 
-							gsTree.getRepresentation(unprocessedIterator.peek()));
+							unprocessedIterator.peek());
 	
-					unprocessedIterator = traceIterator.clone();
+					unprocessedIterator = replaceableCloneableIntIterator.clone();
 					processedElements = 0;
 				}
 			}
 			
 			// add the current element to the list of unprocessed elements
 			++processedElements;
-			traceIterator.next();
+			replaceableCloneableIntIterator.next();
 		}
 		
 		// process remaining elements
 		if (processedElements > 0) {
 			// there exists an unprocessed sequence
 			gsTree.__addSequence(unprocessedIterator, processedElements, 
-					gsTree.getRepresentation(unprocessedIterator.peek()));
+					unprocessedIterator.peek());
 		}
 	}
 
-	public GSArrayTree<Integer,Integer> getGsTree() {
+	public IntGSArrayTree getGsTree() {
 		if (indexer == null) {
 			extractCommonSequencesFromRawTraces();
-			indexer = new GSIntTreeIndexer(gsTree);
+			indexer = new IntGSArrayTreeIndexer(gsTree);
 		}
 		return gsTree;
 	}
 
-	public ArraySequenceIndexer<Integer,Integer> getIndexer() {
+	public IntArraySequenceIndexer getIndexer() {
 		if (indexer == null) {
 			extractCommonSequencesFromRawTraces();
-			indexer = new GSIntTreeIndexer(gsTree);
+			indexer = new IntGSArrayTreeIndexer(gsTree);
 		}
 		return indexer;
 	}

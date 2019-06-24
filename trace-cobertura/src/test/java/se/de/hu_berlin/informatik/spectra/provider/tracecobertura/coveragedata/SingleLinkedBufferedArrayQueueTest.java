@@ -15,6 +15,8 @@ import org.junit.Test;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIntIterator;
 
 
 /**
@@ -143,6 +145,76 @@ public class SingleLinkedBufferedArrayQueueTest {
 		
 		queue.clear();
 		
+	}
+	
+	
+	
+	/*
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
+	 */
+	@Test
+	public void testSingleLinkedBufferedIntArrayQueueFileStringInt() throws Exception {
+		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "testInt", 5);
+		
+		for (int i = 0; i < 50; ++i) {
+			queue.add(i);
+		}
+		queue.sleep();
+		
+//		Thread.sleep(5000);
+		ReplaceableCloneableIntIterator iterator = queue.iterator();
+		
+		int i = 0;
+		while (iterator.hasNext()) {
+			Assert.assertEquals(i++, iterator.next());
+		}
+		
+		queue.clear();
+	}
+	
+	/*
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
+	 */
+	@Test
+	public void testSingleLinkedBufferedIntArrayQueueFileStringInt2() throws Exception {
+		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "testInt2", 5);
+		
+		for (int i = 0; i < 50; ++i) {
+			queue.add(i);
+		}
+		queue.sleep();
+		
+//		Assert.assertEquals(2, queue.get(2).intValue());
+		Assert.assertEquals(30, queue.get(30));
+		
+		queue.clear(10);
+		queue.sleep();
+		
+		queue.clear(13);
+		queue.sleep();
+		
+		Assert.assertEquals(23, queue.get(0));
+		Assert.assertEquals(25, queue.get(2));
+		Assert.assertEquals(40, queue.get(17));
+		queue.sleep();
+		
+		ReplaceableCloneableIntIterator iterator = queue.iterator();
+		
+		int i = 23;
+		while (iterator.hasNext()) {
+//			System.out.println(iterator.next());
+			Assert.assertEquals(i++, iterator.next());
+		}
+		queue.sleep();
+		
+		queue.remove();
+		queue.element();
+		
+		Assert.assertEquals(26, queue.get(2));
+		Assert.assertEquals(41, queue.get(17));
+		queue.sleep();
+		
+		queue.clear();
 	}
 
 }

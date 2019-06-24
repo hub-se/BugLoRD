@@ -119,7 +119,7 @@ public class CompressedTraceTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt() throws Exception {
-		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test2", 5, Type.INTEGER);
+		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test2", 5);
 		
 		for (int i = 0; i < 20; ++i) {
 			queue.add(i);
@@ -148,29 +148,29 @@ public class CompressedTraceTest {
 		Assert.assertEquals(51, compressedIdTrace.getCompressedTrace().size());
 		
 //		Thread.sleep(5000);
-		Iterator<Integer> iterator = compressedIdTrace.iterator();
+		IntTraceIterator iterator = compressedIdTrace.iterator();
 		
 		int i = 0;
 		while (iterator.hasNext() && i < 20) {
-			Assert.assertEquals(i, iterator.next().intValue());
-			Assert.assertEquals(i++, iterator.next().intValue());
+			Assert.assertEquals(i, iterator.next());
+			Assert.assertEquals(i++, iterator.next());
 		}
-		Assert.assertEquals(99, iterator.next().intValue());
+		Assert.assertEquals(99, iterator.next());
 		i = 0;
 		while (iterator.hasNext() && i < 20) {
-			Assert.assertEquals(i, iterator.next().intValue());
-			Assert.assertEquals(i++, iterator.next().intValue());
+			Assert.assertEquals(i, iterator.next());
+			Assert.assertEquals(i++, iterator.next());
 		}
 		i = 0;
 		while (iterator.hasNext() && i < 20) {
-			Assert.assertEquals(i, iterator.next().intValue());
-			Assert.assertEquals(i, iterator.next().intValue());
-			Assert.assertEquals(i++, iterator.next().intValue());
+			Assert.assertEquals(i, iterator.next());
+			Assert.assertEquals(i, iterator.next());
+			Assert.assertEquals(i++, iterator.next());
 		}
 		i = 0;
 		while (iterator.hasNext() && i < 10) {
-			Assert.assertEquals(i, iterator.next().intValue());
-			Assert.assertEquals(i++, iterator.next().intValue());
+			Assert.assertEquals(i, iterator.next());
+			Assert.assertEquals(i++, iterator.next());
 		}
 		
 		queue.clear();

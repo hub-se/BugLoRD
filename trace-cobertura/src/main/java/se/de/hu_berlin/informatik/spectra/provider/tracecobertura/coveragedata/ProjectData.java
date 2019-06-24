@@ -7,6 +7,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageD
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocker;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
 
@@ -34,11 +35,11 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	public ProjectData() {
 	}
 	
-	public void addExecutionTraces(Map<Long, BufferedArrayQueue<Integer>> map) {
+	public void addExecutionTraces(Map<Long, BufferedIntArrayQueue> map) {
 		lock.lock();
 		try {
 			this.executionTraces = new HashMap<>();
-			for (Entry<Long, BufferedArrayQueue<Integer>> entry : map.entrySet()) {
+			for (Entry<Long, BufferedIntArrayQueue> entry : map.entrySet()) {
 				try {
 					// might run into heap exceptions, etc...
 					this.executionTraces.put(entry.getKey(), new CompressedIntegerIdTrace(entry.getValue(), true));

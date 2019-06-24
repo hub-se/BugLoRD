@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntTraceIterator;
 
 import java.util.Objects;
 
@@ -17,7 +20,7 @@ import java.util.Objects;
  * and a list of tuples that mark repeated sequences in the trace.
  *
  */
-public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implements Serializable {
+public class ExecutionTrace extends CompressedIntegerTraceBase implements Serializable {
 
 
 	/**
@@ -25,38 +28,38 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 	 */
 	private static final long serialVersionUID = -7333694882324910595L;
 
-	public ExecutionTrace(BufferedArrayQueue<Integer> trace, boolean log) {
+	public ExecutionTrace(BufferedIntArrayQueue trace, boolean log) {
 		super(trace, log);
 	}
 	
-	public ExecutionTrace(BufferedArrayQueue<Integer> trace, CompressedTraceBase<?, ?> otherCompressedTrace) {
+	public ExecutionTrace(BufferedIntArrayQueue trace, CompressedIntegerTraceBase otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
 
-	public ExecutionTrace(BufferedArrayQueue<Integer> compressedTrace, BufferedArrayQueue<int[]> repMarkerLists, int index) {
+	public ExecutionTrace(BufferedIntArrayQueue compressedTrace, BufferedArrayQueue<int[]> repMarkerLists, int index) {
 		super(compressedTrace, repMarkerLists, index);
 	}
 	
 	@Override
-	public CompressedTraceBase<Integer, Integer> newChildInstance(BufferedArrayQueue<Integer> trace,
-			CompressedTraceBase<?, ?> otherCompressedTrace) {
+	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace,
+			CompressedIntegerTraceBase otherCompressedTrace) {
 		return new ExecutionTrace(trace, otherCompressedTrace);
 	}
 
 	@Override
-	public CompressedTraceBase<Integer, Integer> newChildInstance(BufferedArrayQueue<Integer> compressedTrace, 
+	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue compressedTrace, 
 			BufferedArrayQueue<int[]> repMarkerLists, int index) {
 		return new ExecutionTrace(compressedTrace, repMarkerLists, index);
 	}
 	
 	@Override
-	public CompressedTraceBase<Integer, Integer> newChildInstance(BufferedArrayQueue<Integer> trace, boolean log, int iteration) {
+	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace, boolean log, int iteration) {
 		return new ExecutionTrace(trace, log);
 	}
 	
 
 	public int[] reconstructFullMappedTrace(SequenceIndexer indexer) {
-		CloneableIterator<Integer> indexedFullTrace = iterator();
+		IntTraceIterator indexedFullTrace = iterator();
 		List<Integer> fullTrace = new ArrayList<>();
 		while (indexedFullTrace.hasNext()) {
 			Iterator<Integer> sequence = indexer.getFullSequenceIterator(indexedFullTrace.next());
@@ -66,43 +69,11 @@ public class ExecutionTrace extends CompressedTraceBase<Integer, Integer> implem
 		}
 		return fullTrace.stream().mapToInt(i -> i).toArray();
 	}
-
-	@Override
-	public long getMaxStoredValue() {
-		if (getChild() == null) {
-			int max = 0;
-			for (int i : getCompressedTrace()) {
-				max = Math.max(i, max);
-			}
-			return max;
-		}
-		
-		long max = getChild().getMaxStoredValue();
-		Iterator<Entry<Integer, int[]>> entrySetIterator = getRepetitionMarkers().entrySetIterator();
-		while (entrySetIterator.hasNext()) {
-			Entry<Integer, int[]> entry = entrySetIterator.next();
-			max = Math.max(entry.getKey(), max);
-			max = Math.max(entry.getValue()[0], max);
-			max = Math.max(entry.getValue()[1], max);
-		}
-		return max;
-	}
-
-	@Override
-	public boolean isEqual(Integer first, Integer second) {
-		return Objects.equals(first, second);
-	}
-
-	@Override
-	public Integer getRepresentation(Integer element) {
-		return element;
-	}
-	
 	
 	public Iterator<Integer> mappedIterator(SequenceIndexer indexer) {
 		return new Iterator<Integer>(){
 			
-			final CloneableIterator<Integer> iterator = ExecutionTrace.this.iterator();
+			final IntTraceIterator iterator = ExecutionTrace.this.iterator();
 			Iterator<Integer> currentSequence;
 
 			@Override

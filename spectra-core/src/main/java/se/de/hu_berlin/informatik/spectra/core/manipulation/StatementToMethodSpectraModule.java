@@ -16,6 +16,7 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -80,9 +81,9 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 			
 			// iterate over all execution traces
 			for (ExecutionTrace executiontrace : trace.getExecutionTraces()) {
-				BufferedArrayQueue<Integer> methodExecutionTrace = 
-						new BufferedArrayQueue<>(executiontrace.getCompressedTrace().getOutputDir(), 
-								UUID.randomUUID().toString(), 50000, Type.INTEGER);
+				BufferedIntArrayQueue methodExecutionTrace = 
+						new BufferedIntArrayQueue(executiontrace.getCompressedTrace().getOutputDir(), 
+								"m_cpr_trace_" + UUID.randomUUID().toString(), 50000);
 				int lastNodeIndex = -1;
 				for (Iterator<Integer> iterator = executiontrace.mappedIterator(input.getIndexer()); iterator.hasNext();) {
 					int nodeIndex = lineToMethodMap.get(iterator.next());

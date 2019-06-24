@@ -155,7 +155,7 @@ public class SpectraFileUtilsTest extends TestSettings {
     	int[][] nodeIdSequences = new int[][] {s(), s(1,2,3), s(4,5,6), s(7,8,9)};
     	
         // sub trace id array
-    	Integer[] rawTrace = new Integer[] {1,2,3,1,2,3};
+    	int[] rawTrace = new int[] {1,2,3,1,2,3};
         
         Path outputDir = Paths.get(getStdTestDir());
         RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
