@@ -34,6 +34,7 @@ import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountX
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -84,16 +85,16 @@ public class SpectraFileUtilsTest extends TestSettings {
 	private int[][] rt(int... numbers) {
 		int[][] result = new int[numbers.length][];
 		for (int i = 0; i < numbers.length; ++i) {
-			result[i] = new int[] {0,numbers[i]};
+			result[i] = new int[] {0,numbers[i],0};
 		}
 		return result;
 	}
 	
-	private BufferedArrayQueue<int[]> asList(Path outputDir, int[][] rt) {
-		BufferedArrayQueue<int[]> list = new BufferedArrayQueue<>(
-				outputDir.toFile(), String.valueOf(UUID.randomUUID()), rt.length, Type.OTHER);
+	private BufferedArrayQueue<Long> asList(Path outputDir, int[][] rt) {
+		BufferedArrayQueue<Long> list = new BufferedArrayQueue<>(
+				outputDir.toFile(), String.valueOf(UUID.randomUUID()), rt.length, Type.LONG);
 		for (int[] statement : rt) {
-			list.add(statement);
+			list.add(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(statement[0], statement[1], statement[2]));
 		}
 		return list;
 	}
@@ -158,7 +159,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
         
         // sub trace id -> sub trace
-        Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = new HashMap<>();
+        Map<Integer,BufferedArrayQueue<Long>> idToSubTraceMap = new HashMap<>();
         idToSubTraceMap.put(1,asList(outputDir, rt(5,6,7)));
         idToSubTraceMap.put(2,asList(outputDir, rt(8,9,10)));
         idToSubTraceMap.put(3,asList(outputDir, rt(11,12,13)));

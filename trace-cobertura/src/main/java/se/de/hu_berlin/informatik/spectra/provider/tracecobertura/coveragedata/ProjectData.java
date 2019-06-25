@@ -29,7 +29,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	
 	private String[] idToClassName;
 	private Map<Long,CompressedIntegerIdTrace> executionTraces;
-	private Map<Integer, BufferedArrayQueue<int[]>> idToSubtraceMap;
+	private Map<Integer, BufferedArrayQueue<Long>> idToSubtraceMap;
 	
 	public ProjectData() {
 	}
@@ -59,10 +59,10 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 	
-	public void addIdToSubTraceMap(Map<Integer, BufferedArrayQueue<int[]>> map) {
+	public void addIdToSubTraceMap(Map<Integer, BufferedArrayQueue<Long>> idToSubtraceMap) {
 		lock.lock();
 		try {
-			this.idToSubtraceMap = map;
+			this.idToSubtraceMap = idToSubtraceMap;
 		} finally {
 			lock.unlock();
 		}
@@ -81,7 +81,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		return executionTraces;
 	}
 	
-	public Map<Integer, BufferedArrayQueue<int[]>> getIdToSubtraceMap() {
+	public Map<Integer, BufferedArrayQueue<Long>> getIdToSubtraceMap() {
 		return idToSubtraceMap;
 	}
 	
@@ -290,7 +290,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 //				// assume that the data to merge into this one is the relevant data
 //				idToSubtraceMap.putAll(projectData.getIdToSubtraceMap());
 				
-				for (Entry<Integer, BufferedArrayQueue<int[]>> entry : projectData.getIdToSubtraceMap().entrySet()) {
+				for (Entry<Integer, BufferedArrayQueue<Long>> entry : projectData.getIdToSubtraceMap().entrySet()) {
 					if (!idToSubtraceMap.containsKey(entry.getKey())) {
 						idToSubtraceMap.put(entry.getKey(), entry.getValue());
 					}

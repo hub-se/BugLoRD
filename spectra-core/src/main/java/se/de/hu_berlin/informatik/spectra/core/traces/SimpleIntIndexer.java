@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 
 public class SimpleIntIndexer implements SequenceIndexer {
@@ -31,7 +32,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 	
 	public SimpleIntIndexer(
 			IntArraySequenceIndexer intArraySequenceIndexer, 
-			Map<Integer, BufferedArrayQueue<int[]>> idToSubTraceMap, 
+			Map<Integer, BufferedArrayQueue<Long>> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		// map counter IDs to line numbers!
 		storeSubTraceIdSequences(Objects.requireNonNull(intArraySequenceIndexer));
@@ -53,7 +54,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		}
 	}
 
-	private void mapCounterIdsToSpectraNodeIds(Map<Integer, BufferedArrayQueue<int[]>> idToSubTraceMap, 
+	private void mapCounterIdsToSpectraNodeIds(Map<Integer, BufferedArrayQueue<Long>> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		String[] idToClassNameMap = Objects.requireNonNull(projectData.getIdToClassNameMap());
 		
@@ -63,17 +64,20 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			BufferedArrayQueue<int[]> list = idToSubTraceMap.get(i);
-			Iterator<int[]> sequenceIterator = list.iterator();
+			BufferedArrayQueue<Long> list = idToSubTraceMap.get(i);
+			Iterator<Long> sequenceIterator = list.iterator();
 			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
 			
 			while (sequenceIterator.hasNext()) {
-				int[] statement = sequenceIterator.next();
+				Long encodedStatement = sequenceIterator.next();
+				int classId = CoberturaStatementEncoding.getClassId(encodedStatement);
+				int counterId = CoberturaStatementEncoding.getCounterId(encodedStatement);
+				int specialIndicatorId = CoberturaStatementEncoding.getSpecialIndicatorId(encodedStatement);
 				//			 Log.out(true, this, "statement: " + Arrays.toString(statement));
 				// TODO store the class names with '.' from the beginning, or use the '/' version?
-				String classSourceFileName = idToClassNameMap[statement[0]];
+				String classSourceFileName = idToClassNameMap[classId];
 				if (classSourceFileName == null) {
-					throw new IllegalStateException("No class name found for class ID: " + statement[0]);
+					throw new IllegalStateException("No class name found for class ID: " + classId);
 				}
 				ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
 
@@ -81,7 +85,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 					if (classData.getCounterId2LineNumbers() == null) {
 						throw new IllegalStateException("No counter ID to line number map for class " + classSourceFileName);
 					}
-					int lineNumber = classData.getCounterId2LineNumbers()[statement[1]];
+					int lineNumber = classData.getCounterId2LineNumbers()[counterId];
 
 					//				// these following lines print out the execution trace
 					//				String addendum = "";
@@ -105,23 +109,15 @@ public class SimpleIntIndexer implements SequenceIndexer {
 					//						addendum);
 					
 					NodeType nodeType = NodeType.NORMAL;
-					if (statement.length > 2) {
-						switch (statement[2]) {
-						case 0:
-							// false branch
-							nodeType = NodeType.FALSE_BRANCH;
-							break;
-						case 1:
-							// true branch
-							nodeType = NodeType.TRUE_BRANCH;
-							break;
-						case 2:
-							// after switch label
-							// TODO necessary?
-							break;
-						default:
-							// meh?
-						}
+					switch (specialIndicatorId) {
+					case CoberturaStatementEncoding.BRANCH_ID:
+						nodeType = NodeType.FALSE_BRANCH;
+						break;
+					case CoberturaStatementEncoding.JUMP_ID:
+						nodeType = NodeType.TRUE_BRANCH;
+						break;
+					default:
+						// ignore switch statements...
 					}
 
 					// the array is initially set to -1 to indicate counter IDs that were not set, if any
@@ -131,38 +127,31 @@ public class SimpleIntIndexer implements SequenceIndexer {
 							traceOfNodeIDs.add(nodeIndex);
 						} else {
 							String throwAddendum = "";
-							if (statement.length > 2) {
-								switch (statement[2]) {
-								case 0:
-									throwAddendum = " (from branch)";
-									break;
-								case 1:
-									throwAddendum = " (after jump)";
-									break;
-								case 2:
-									throwAddendum = " (after switch label)";
-									break;
-								default:
-									throwAddendum = " (unknown)";
-								}
+							switch (specialIndicatorId) {
+							case CoberturaStatementEncoding.BRANCH_ID:
+								throwAddendum = " (from branch/'false' branch)";
+								break;
+							case CoberturaStatementEncoding.JUMP_ID:
+								throwAddendum = " (after jump/'true' branch)";
+								break;
+							case CoberturaStatementEncoding.SWITCH_ID:
+								throwAddendum = " (after switch label)";
+								break;
+							default:
+								// ?
 							}
 //							if (nodeType.equals(NodeType.NORMAL)) {
 							throw new IllegalStateException("Node not found in spectra: "
 									+ classData.getSourceFileName() + ":" + lineNumber 
-									+ " from counter id " + statement[1] + throwAddendum);
+									+ " from counter id " + counterId + throwAddendum);
 //							} else {
 //								System.err.println("Node not found in spectra: "
 //										+ classData.getSourceFileName() + ":" + lineNumber 
 //										+ " from counter id " + statement[1] + throwAddendum);
 //							}
 						}
-					} else if (statement.length <= 2 || statement[2] != 0) {
-						// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
-						// this should actually not be an issue anymore!
-						throw new IllegalStateException("No line number found for counter ID: " + statement[1]
-								+ " in class: " + classData.getName());
 					} else {
-						throw new IllegalStateException("No line number found for counter ID: " + statement[1]
+						throw new IllegalStateException("No line number found for counter ID: " + counterId
 								+ " in class: " + classData.getName());
 					}
 				} else {

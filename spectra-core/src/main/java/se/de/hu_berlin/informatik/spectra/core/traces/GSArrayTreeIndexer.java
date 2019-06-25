@@ -225,7 +225,7 @@ public abstract class GSArrayTreeIndexer<T,K> implements ArraySequenceIndexer<T,
                     // sequence contains the node, so generate a new sequence and replace the old
                     List<T> newSequence = new ArrayList<>(tkgsArrayTreeNode.getSequence().length - 1);
                     for (int k = 0; k < tkgsArrayTreeNode.getSequence().length; k++) {
-                        if (!tree.getRepresentation(tkgsArrayTreeNode.getSequence()[k]).equals(element)) {
+                        if (!tree.getRepresentation(tkgsArrayTreeNode.getSequence()[k]).equals(rep)) {
                             newSequence.add(tkgsArrayTreeNode.getSequence()[k]);
                         }
                     }

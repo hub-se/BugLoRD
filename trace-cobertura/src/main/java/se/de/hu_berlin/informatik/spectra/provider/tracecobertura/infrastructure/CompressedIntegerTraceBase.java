@@ -78,7 +78,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		} else {
 			this.repetitionMarkers = constructFromArray(repetitionMarkers.get(index), 
 					compressedTrace.getOutputDir(), 
-					compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.arrayLength * 3,
+					compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.arrayLength,
 					compressedTrace.isDeleteOnExit());
 			this.child = newChildInstance(compressedTrace, repetitionMarkers, ++index);
 			this.originalSize = computeFullTraceLength();
@@ -213,7 +213,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 				new BufferedIntArrayQueue(trace.getOutputDir(), filePrefix, 
 						trace.getNodeSize(), deleteOnExit);
 		BufferedMap<int[]> traceRepetitions = new BufferedMap<>(trace.getOutputDir(), 
-				"cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.arrayLength * 3, deleteOnExit);
+				"cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.arrayLength, deleteOnExit);
 		
 		// mapping from elements to their most recent positions in the result list
 		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
