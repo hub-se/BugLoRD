@@ -7,9 +7,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -139,6 +141,8 @@ public class ExecutionTraceCollector {
 	// stores currently built up execution trace parts for each thread (thread id -> sub trace)
 	private static Map<Long,BufferedArrayQueue<Long>> currentSubTraces = new ConcurrentHashMap<>();
 	
+	private static Queue<BufferedArrayQueue<Long>> unusedSubTraceCache = new ConcurrentLinkedQueue<>();
+	
 //	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
 
 	private static int[][] classesToCounterArrayMap = new int[1024][];
@@ -242,6 +246,9 @@ public class ExecutionTraceCollector {
 			subTrace.sleep();
 			existingSubTraces.put(id, subTrace);
 			//				System.out.println(currentId + ":" + wrapper.toString());
+		} else {
+			subTrace.clear();
+			unusedSubTraceCache.add(subTrace);
 		}
 
 		return id;
@@ -255,9 +262,14 @@ public class ExecutionTraceCollector {
 //	}
 	
 	private static BufferedArrayQueue<Long> getNewSubtrace() {
-		return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
-				"sub_trc_" + String.valueOf(UUID.randomUUID()), 
-				SUBTRACE_ARRAY_SIZE, false, Type.LONG);
+		BufferedArrayQueue<Long> subTrace = unusedSubTraceCache.poll();
+		if (subTrace == null) {
+			return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
+					"sub_trc_" + String.valueOf(UUID.randomUUID()), 
+					SUBTRACE_ARRAY_SIZE, false, Type.LONG);
+		} else {
+			return subTrace;
+		}
 	}
 
 	
