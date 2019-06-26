@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -111,6 +112,7 @@ public class UnitTestRunner {
 		boolean timeoutOccured = false, wasInterrupted = false, exceptionThrown = false;
 		boolean couldBeFinished = false;
 		String errorMsg = null;
+		Set<Thread> threadSetStart = Thread.getAllStackTraces().keySet();
 		try {
 			if (task == null) {
 				throw new ExecutionException("Could not get test from TestWrapper (null).", null);
@@ -148,6 +150,23 @@ public class UnitTestRunner {
 			errorMsg = testWrapper + ": Time out! ";
 			timeoutOccured = true;
 			cancelTask(task);
+		}
+		
+		Set<Thread> threadSetEnd = Thread.getAllStackTraces().keySet();
+
+		for (Thread thread : threadSetEnd) {
+			if (!threadSetStart.contains(thread)) {
+				try {
+					thread.join(60000);
+				} catch (InterruptedException e) {
+					// meh
+				}
+				if (thread.isAlive()) {
+					System.err.println("Thread " + thread.getId() + " is still alive after running the test " + testWrapper.toString());
+					//					thread.interrupt();
+					break;
+				}
+			}
 		}
 		
 		boolean wasSuccessful = false;
