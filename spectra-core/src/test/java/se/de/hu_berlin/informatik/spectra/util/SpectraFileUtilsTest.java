@@ -170,10 +170,10 @@ public class SpectraFileUtilsTest extends TestSettings {
 //        System.out.println(traceCollector.getGsTree());
         
         List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex(), false);
-//        for (ExecutionTrace eTrace : executionTraces) {
-//        	System.out.println(eTrace.getCompressedTrace());
-//        	trace.addExecutionTrace(eTrace);
-//        }
+        for (ExecutionTrace eTrace : executionTraces) {
+        	System.out.println(eTrace.getCompressedTrace());
+        	trace.addExecutionTrace(eTrace);
+        }
         assertFalse(trace.getExecutionTraces().isEmpty());
         
         spectra.setIndexer(new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences));
