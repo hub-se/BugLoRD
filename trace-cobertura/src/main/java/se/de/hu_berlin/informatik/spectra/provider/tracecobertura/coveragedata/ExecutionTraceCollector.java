@@ -410,10 +410,11 @@ public class ExecutionTraceCollector {
 			boolean done = false;
 			while (!done) {
 				try {
-					thread.join(5000); // wait 10 seconds for threads to die... TODO
+					thread.join(30000); // wait 10 seconds for threads to die... TODO
 					if (thread.isAlive()) {
 						System.err.println("Thread " + thread.getId() + " is still alive...");
-						thread.interrupt();
+//						thread.interrupt();
+						break;
 					}
 					done = true;
 				} catch (InterruptedException e) {

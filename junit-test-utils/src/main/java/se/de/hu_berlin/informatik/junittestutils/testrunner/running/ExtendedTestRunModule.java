@@ -147,13 +147,14 @@ public class ExtendedTestRunModule extends AbstractProcessor<TestWrapper, TestSt
 		for (Thread thread : threadSetEnd) {
 			if (!threadSetStart.contains(thread)) {
 				try {
-					thread.join(10000);
+					thread.join(60000);
 				} catch (InterruptedException e) {
 					// meh
 				}
 				if (thread.isAlive()) {
 					System.err.println("Thread " + thread.getId() + " is still alive after running the test " + testWrapper.toString());
-					thread.interrupt();
+//					thread.interrupt();
+					break;
 				}
 			}
 		}

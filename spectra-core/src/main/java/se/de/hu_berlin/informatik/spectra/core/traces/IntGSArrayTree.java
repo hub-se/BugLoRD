@@ -211,7 +211,6 @@ public class IntGSArrayTree {
 				throw new IllegalStateException("Could not get index for a sequence in the input trace.");
 			}
 		}
-		System.out.println(indexedtrace);
 
 		return indexedtrace;
 	}
