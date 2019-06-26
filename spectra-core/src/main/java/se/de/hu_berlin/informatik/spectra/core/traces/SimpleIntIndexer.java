@@ -12,8 +12,9 @@ import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableLongIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 
 public class SimpleIntIndexer implements SequenceIndexer {
@@ -32,7 +33,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 	
 	public SimpleIntIndexer(
 			IntArraySequenceIndexer intArraySequenceIndexer, 
-			Map<Integer, BufferedArrayQueue<Long>> idToSubTraceMap, 
+			Map<Integer, BufferedLongArrayQueue> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		// map counter IDs to line numbers!
 		storeSubTraceIdSequences(Objects.requireNonNull(intArraySequenceIndexer));
@@ -54,7 +55,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		}
 	}
 
-	private void mapCounterIdsToSpectraNodeIds(Map<Integer, BufferedArrayQueue<Long>> idToSubTraceMap, 
+	private void mapCounterIdsToSpectraNodeIds(Map<Integer, BufferedLongArrayQueue> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		String[] idToClassNameMap = Objects.requireNonNull(projectData.getIdToClassNameMap());
 		
@@ -64,12 +65,12 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			BufferedArrayQueue<Long> list = idToSubTraceMap.get(i);
-			Iterator<Long> sequenceIterator = list.iterator();
+			BufferedLongArrayQueue list = idToSubTraceMap.get(i);
+			ReplaceableCloneableLongIterator sequenceIterator = list.iterator();
 			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
 			
 			while (sequenceIterator.hasNext()) {
-				Long encodedStatement = sequenceIterator.next();
+				long encodedStatement = sequenceIterator.next();
 				int classId = CoberturaStatementEncoding.getClassId(encodedStatement);
 				int counterId = CoberturaStatementEncoding.getCounterId(encodedStatement);
 				int specialIndicatorId = CoberturaStatementEncoding.getSpecialIndicatorId(encodedStatement);

@@ -16,11 +16,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIterator;
 
 @CoverageIgnore
 public class ExecutionTraceCollector {
@@ -130,7 +128,7 @@ public class ExecutionTraceCollector {
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
 	private static Map<Long,BufferedIntArrayQueue> executionTraces = new ConcurrentHashMap<>();
 	// stores (sub trace id -> subTrace)
-	private static Map<Integer,BufferedArrayQueue<Long>> existingSubTraces = new ConcurrentHashMap<>();
+	private static Map<Integer,BufferedLongArrayQueue> existingSubTraces = new ConcurrentHashMap<>();
 	// stores (sub trace wrapper -> sub trace id) to retrieve subtrace ids
 	// the integer array in the wrapper has to contain start and ending node of the sub trace
 	// if the sub trace is longer than one statement
@@ -139,9 +137,9 @@ public class ExecutionTraceCollector {
 	// lock for getting/generating sub trace ids (ensures that sub trace ids are unique)
 	private static final transient Lock idLock = new ReentrantLock();
 	// stores currently built up execution trace parts for each thread (thread id -> sub trace)
-	private static Map<Long,BufferedArrayQueue<Long>> currentSubTraces = new ConcurrentHashMap<>();
+	private static Map<Long,BufferedLongArrayQueue> currentSubTraces = new ConcurrentHashMap<>();
 	
-	private static Queue<BufferedArrayQueue<Long>> unusedSubTraceCache = new ConcurrentLinkedQueue<>();
+	private static Queue<BufferedLongArrayQueue> unusedSubTraceCache = new ConcurrentLinkedQueue<>();
 	
 //	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
 
@@ -191,13 +189,13 @@ public class ExecutionTraceCollector {
 	 * @return
 	 * The map of ids to actual sub traces; also resets the internal map
 	 */
-	public static Map<Integer, BufferedArrayQueue<Long>> getAndResetIdToSubtraceMap() {
+	public static Map<Integer, BufferedLongArrayQueue> getAndResetIdToSubtraceMap() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			// process all remaining sub traces. Just to be safe!
 			processAllRemainingSubTraces();
 			// sub trace ids that stay consistent throughout the entire time!!??? TODO
-			Map<Integer, BufferedArrayQueue<Long>> traceMap = existingSubTraces;
+			Map<Integer, BufferedLongArrayQueue> traceMap = existingSubTraces;
 			// reset id counter and map!
 			currentId = 0;
 //			existingSubTraces = null;
@@ -217,7 +215,7 @@ public class ExecutionTraceCollector {
 	}
 	
 	
-	private static int getOrCreateIdForSubTrace(BufferedArrayQueue<Long> subTrace) {
+	private static int getOrCreateIdForSubTrace(BufferedLongArrayQueue subTrace) {
 //		if (subTrace == null || subTrace.isEmpty()) {
 //			// id 0 indicates empty sub trace
 //			return 0;
@@ -261,12 +259,12 @@ public class ExecutionTraceCollector {
 //				String.valueOf(UUID.randomUUID()), MAP_CHUNK_SIZE, false);
 //	}
 	
-	private static BufferedArrayQueue<Long> getNewSubtrace() {
-		BufferedArrayQueue<Long> subTrace = unusedSubTraceCache.poll();
+	private static BufferedLongArrayQueue getNewSubtrace() {
+		BufferedLongArrayQueue subTrace = unusedSubTraceCache.poll();
 		if (subTrace == null) {
-			return new BufferedArrayQueue<>(tempDir.toAbsolutePath().toFile(), 
+			return new BufferedLongArrayQueue(tempDir.toAbsolutePath().toFile(), 
 					"sub_trc_" + String.valueOf(UUID.randomUUID()), 
-					SUBTRACE_ARRAY_SIZE, false, Type.LONG);
+					SUBTRACE_ARRAY_SIZE, false);
 		} else {
 			return subTrace;
 		}
@@ -302,7 +300,7 @@ public class ExecutionTraceCollector {
 //		collector.submitTrace(subTrace);
 //	}
 
-	private static void processSubtraceForThreadId(long threadId, BufferedArrayQueue<Long> subTrace) {
+	private static void processSubtraceForThreadId(long threadId, BufferedLongArrayQueue subTrace) {
 		if (subTrace == null) {
 			// sub trace contains no nodes
 			return;
@@ -338,34 +336,34 @@ public class ExecutionTraceCollector {
 //		System.out.println(classId + ":" + counterId);
 	}
 	
-	private static String queueToString(BufferedArrayQueue<int[]> traceArray) {
-		if (traceArray == null) {
-			return "null";
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.append("[ ");
-		ReplaceableCloneableIterator<int[]> iterator = traceArray.iterator();
-		for (; iterator.hasNext();) {
-			builder.append(arrayToString(iterator.next())).append(", ");
-		}
-		builder.setLength(builder.length() > 2 ? builder.length()-2 : builder.length()-1);
-		builder.append(" ]");
-		return builder.toString();
-	}
-	
-	private static String arrayToString(int[] traceArray) {
-		if (traceArray == null) {
-			return "null";
-		}
-		StringBuilder builder = new StringBuilder();
-		builder.append("[ ");
-		for (int entry : traceArray) {
-			builder.append(entry).append(", ");
-		}
-		builder.setLength(builder.length() > 2 ? builder.length()-2 : builder.length()-1);
-		builder.append(" ]");
-		return builder.toString();
-	}
+//	private static String queueToString(BufferedArrayQueue<int[]> traceArray) {
+//		if (traceArray == null) {
+//			return "null";
+//		}
+//		StringBuilder builder = new StringBuilder();
+//		builder.append("[ ");
+//		ReplaceableCloneableIterator<int[]> iterator = traceArray.iterator();
+//		for (; iterator.hasNext();) {
+//			builder.append(arrayToString(iterator.next())).append(", ");
+//		}
+//		builder.setLength(builder.length() > 2 ? builder.length()-2 : builder.length()-1);
+//		builder.append(" ]");
+//		return builder.toString();
+//	}
+//	
+//	private static String arrayToString(int[] traceArray) {
+//		if (traceArray == null) {
+//			return "null";
+//		}
+//		StringBuilder builder = new StringBuilder();
+//		builder.append("[ ");
+//		for (int entry : traceArray) {
+//			builder.append(entry).append(", ");
+//		}
+//		builder.setLength(builder.length() > 2 ? builder.length()-2 : builder.length()-1);
+//		builder.append(" ]");
+//		return builder.toString();
+//	}
 	
 //	private static class SubTraceProcessor implements Runnable {
 //		
@@ -428,10 +426,10 @@ public class ExecutionTraceCollector {
 		
 		globalExecutionTraceCollectorLock.lock();
 		try {
-			Iterator<Entry<Long, BufferedArrayQueue<Long>>> iterator = currentSubTraces.entrySet().iterator();
+			Iterator<Entry<Long, BufferedLongArrayQueue>> iterator = currentSubTraces.entrySet().iterator();
 			//		Future<?> future = null;
 			while (iterator.hasNext()) {
-				Entry<Long, BufferedArrayQueue<Long>> entry = iterator.next();
+				Entry<Long, BufferedLongArrayQueue> entry = iterator.next();
 				processSubtraceForThreadId(entry.getKey(), entry.getValue());
 				//			submitSubTraceToCollectorThread(entry.getKey(), entry.getValue());
 
@@ -648,7 +646,7 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
 		// get the respective sub trace
-		BufferedArrayQueue<Long> subTrace = currentSubTraces.get(threadId);
+		BufferedLongArrayQueue subTrace = currentSubTraces.get(threadId);
 		if (subTrace == null) {
 			subTrace = getNewSubtrace();
 			currentSubTraces.put(threadId, subTrace);

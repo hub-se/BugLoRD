@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocker;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
 
 import java.io.File;
@@ -29,7 +29,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	
 	private String[] idToClassName;
 	private Map<Long,CompressedIntegerIdTrace> executionTraces;
-	private Map<Integer, BufferedArrayQueue<Long>> idToSubtraceMap;
+	private Map<Integer, BufferedLongArrayQueue> idToSubtraceMap;
 	
 	public ProjectData() {
 	}
@@ -59,10 +59,10 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 	
-	public void addIdToSubTraceMap(Map<Integer, BufferedArrayQueue<Long>> idToSubtraceMap) {
+	public void addIdToSubTraceMap(Map<Integer, BufferedLongArrayQueue> map) {
 		lock.lock();
 		try {
-			this.idToSubtraceMap = idToSubtraceMap;
+			this.idToSubtraceMap = map;
 		} finally {
 			lock.unlock();
 		}
@@ -81,7 +81,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		return executionTraces;
 	}
 	
-	public Map<Integer, BufferedArrayQueue<Long>> getIdToSubtraceMap() {
+	public Map<Integer, BufferedLongArrayQueue> getIdToSubtraceMap() {
 		return idToSubtraceMap;
 	}
 	
@@ -290,7 +290,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 //				// assume that the data to merge into this one is the relevant data
 //				idToSubtraceMap.putAll(projectData.getIdToSubtraceMap());
 				
-				for (Entry<Integer, BufferedArrayQueue<Long>> entry : projectData.getIdToSubtraceMap().entrySet()) {
+				for (Entry<Integer, BufferedLongArrayQueue> entry : projectData.getIdToSubtraceMap().entrySet()) {
 					if (!idToSubtraceMap.containsKey(entry.getKey())) {
 						idToSubtraceMap.put(entry.getKey(), entry.getValue());
 					}

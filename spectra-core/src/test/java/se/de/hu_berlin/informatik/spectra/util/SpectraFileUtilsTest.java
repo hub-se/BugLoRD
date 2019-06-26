@@ -34,6 +34,7 @@ import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountX
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -90,9 +91,9 @@ public class SpectraFileUtilsTest extends TestSettings {
 		return result;
 	}
 	
-	private BufferedArrayQueue<Long> asList(Path outputDir, int[][] rt) {
-		BufferedArrayQueue<Long> list = new BufferedArrayQueue<>(
-				outputDir.toFile(), String.valueOf(UUID.randomUUID()), rt.length, Type.LONG);
+	private BufferedLongArrayQueue asList(Path outputDir, int[][] rt) {
+		BufferedLongArrayQueue list = new BufferedLongArrayQueue(
+				outputDir.toFile(), String.valueOf(UUID.randomUUID()), rt.length);
 		for (int[] statement : rt) {
 			list.add(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(statement[0], statement[1], statement[2]));
 		}
@@ -159,7 +160,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
         
         // sub trace id -> sub trace
-        Map<Integer,BufferedArrayQueue<Long>> idToSubTraceMap = new HashMap<>();
+        Map<Integer,BufferedLongArrayQueue> idToSubTraceMap = new HashMap<>();
         idToSubTraceMap.put(1,asList(outputDir, rt(5,6,7)));
         idToSubTraceMap.put(2,asList(outputDir, rt(8,9,10)));
         idToSubTraceMap.put(3,asList(outputDir, rt(11,12,13)));

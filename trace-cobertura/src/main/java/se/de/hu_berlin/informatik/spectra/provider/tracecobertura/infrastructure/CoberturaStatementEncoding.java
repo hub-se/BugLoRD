@@ -44,7 +44,7 @@ public class CoberturaStatementEncoding {
 	// store the starting and ending statements in a single long value!
 	// should represent a sub trace uniquely!
 	// a counter with id 0 can not occur!
-	public static long generateUniqueRepresentationForSubTrace(BufferedArrayQueue<Long> subTrace) {
+	public static long generateUniqueRepresentationForSubTrace(BufferedLongArrayQueue subTrace) {
 		if (subTrace.isEmpty()) {
 			return 0;
 		} else if (subTrace.size() == 1) {

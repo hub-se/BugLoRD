@@ -7,8 +7,8 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import net.lingala.zip4j.model.FileHeader;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
@@ -34,7 +34,7 @@ public class RawIntTraceCollector {
 	 * map from (global) sub trace ids to actual sub traces;
 	 * this stores all existing (and executed) sub traces!
 	 */
-	private Map<Integer,BufferedArrayQueue<Long>> globalIdToSubTraceMap;
+	private Map<Integer,BufferedLongArrayQueue> globalIdToSubTraceMap;
 
 	// stores (sub trace representation -> sub trace id) to retrieve subtrace ids
 	// the long value representation has to contain start and ending node of the sub trace
@@ -50,7 +50,7 @@ public class RawIntTraceCollector {
 	
 	private final Set<Integer> startElements = new HashSet<>();
 	
-	public Map<Integer,BufferedArrayQueue<Long>> getGlobalIdToSubTraceMap() {
+	public Map<Integer,BufferedLongArrayQueue> getGlobalIdToSubTraceMap() {
 		return globalIdToSubTraceMap;
 	}
 	
@@ -73,7 +73,7 @@ public class RawIntTraceCollector {
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			BufferedIntArrayQueue trace, boolean log,
-			Map<Integer,BufferedArrayQueue<Long>> idToSubTraceMap) {
+			Map<Integer,BufferedLongArrayQueue> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, trace, log, idToSubTraceMap);
 		return true;
 	}
@@ -81,7 +81,7 @@ public class RawIntTraceCollector {
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			int[] traceArray, boolean log, Path outputDir, String prefix,
-			Map<Integer,BufferedArrayQueue<Long>> idToSubTraceMap) {
+			Map<Integer,BufferedLongArrayQueue> idToSubTraceMap) {
 		BufferedIntArrayQueue trace = new BufferedIntArrayQueue(outputDir.toFile(), prefix, 100);
 //        trace.addAll(Arrays.asList(traceArray));
 		for (int i : traceArray) {
@@ -98,20 +98,20 @@ public class RawIntTraceCollector {
 
 	private void addTrace(int traceIndex, int threadId, 
 			BufferedIntArrayQueue trace, boolean log,
-			Map<Integer,BufferedArrayQueue<Long>> idToSubTraceMap) {
+			Map<Integer,BufferedLongArrayQueue> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, new CompressedIntegerIdTrace(trace, log), idToSubTraceMap);
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			CompressedIntegerTraceBase eTrace,
-			Map<Integer, BufferedArrayQueue<Long>> map) {
+			Map<Integer, BufferedLongArrayQueue> map) {
 		addTrace(traceIndex, threadId, eTrace, map);
 		return true;
 	}
 
 	private void addTrace(int traceIndex, int threadId, 
 			CompressedIntegerTraceBase eTrace,
-			Map<Integer, BufferedArrayQueue<Long>> map) {
+			Map<Integer, BufferedLongArrayQueue> map) {
 		
 		boolean error = false;
 		for (ReplaceableCloneableIntIterator iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
@@ -179,23 +179,23 @@ public class RawIntTraceCollector {
 	}
 
 	private Map<Integer, Integer> getAndCreateSubTraceIdMapping(
-			Map<Integer, BufferedArrayQueue<Long>> map, Path tempDir) {
+			Map<Integer, BufferedLongArrayQueue> map, Path tempDir) {
 		if (globalIdToSubTraceMap == null) {
 			globalIdToSubTraceMap = getNewSubTraceMap(tempDir);
 		}
 		// should map local sub trace ids (parameter) to global ids (field),
 		// so that the ids in the submitted raw traces can be replaced.
 		Map<Integer, Integer> subTraceIdMapping = new HashMap<>();
-		Iterator<Entry<Integer, BufferedArrayQueue<Long>>> iterator = map.entrySet().iterator();
+		Iterator<Entry<Integer, BufferedLongArrayQueue>> iterator = map.entrySet().iterator();
 		while (iterator.hasNext()) {
-			Entry<Integer, BufferedArrayQueue<Long>> entry = iterator.next();
+			Entry<Integer, BufferedLongArrayQueue> entry = iterator.next();
 			int globalId = getOrCreateIdForSubTrace(entry.getValue());
 			subTraceIdMapping.put(entry.getKey(), globalId);
 		}
 		return subTraceIdMapping;
 	}
 	
-	private Map<Integer,BufferedArrayQueue<Long>> getNewSubTraceMap(Path tempDir) {
+	private Map<Integer,BufferedLongArrayQueue> getNewSubTraceMap(Path tempDir) {
 		return new HashMap<>();
 //		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
 //		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
@@ -203,7 +203,7 @@ public class RawIntTraceCollector {
 	}
 	
 	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
-	private int getOrCreateIdForSubTrace(BufferedArrayQueue<Long> subTrace) {
+	private int getOrCreateIdForSubTrace(BufferedLongArrayQueue subTrace) {
 		if (subTrace == null || subTrace.isEmpty()) {
 			// id 0 indicates empty sub trace
 			return 0;

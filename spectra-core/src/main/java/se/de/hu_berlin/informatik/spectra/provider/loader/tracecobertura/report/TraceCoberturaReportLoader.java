@@ -24,9 +24,10 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SwitchData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableLongIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
@@ -220,7 +221,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// }
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
-			Map<Integer, BufferedArrayQueue<Long>> idToSubtraceMap = projectData.getIdToSubtraceMap();
+			Map<Integer, BufferedLongArrayQueue> idToSubtraceMap = projectData.getIdToSubtraceMap();
 			for (Iterator<Entry<Long, CompressedIntegerIdTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
 				Entry<Long, CompressedIntegerIdTrace> entry = iterator.next();
 				++threadId;
@@ -356,15 +357,17 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				String[] idToClassNameMap = projectData.getIdToClassNameMap();
 //				Log.out(true, this, "Thread: " + entry.getKey());
 				// iterate over statements in the sub traces
-				for (Iterator<Entry<Integer, BufferedArrayQueue<Long>>> subTraceIterator = idToSubtraceMap.entrySet().iterator(); 
+				for (Iterator<Entry<Integer, BufferedLongArrayQueue>> subTraceIterator = idToSubtraceMap.entrySet().iterator(); 
 						subTraceIterator.hasNext();) {
 					
-					BufferedArrayQueue<Long> subTrace = subTraceIterator.next().getValue();
+					BufferedLongArrayQueue subTrace = subTraceIterator.next().getValue();
 //					Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.size());
 //					if (subTraceId >= 0) {
 //						continue;
 //					}
-					for (Long encodedStatement : subTrace) {
+					ReplaceableCloneableLongIterator statementIterator = subTrace.iterator();
+					while (statementIterator.hasNext()) {
+						long encodedStatement = statementIterator.next();
 						int classId = CoberturaStatementEncoding.getClassId(encodedStatement);
 						int counterId = CoberturaStatementEncoding.getCounterId(encodedStatement);
 						int specialIndicatorId = CoberturaStatementEncoding.getSpecialIndicatorId(encodedStatement);
