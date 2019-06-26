@@ -97,18 +97,27 @@ public class SingleLinkedBufferedArrayQueueTest {
 	public void testSingleLinkedBufferedArrayQueueFileStringInt2() throws Exception {
 		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test2", 5, Type.INTEGER);
 		
+		testIntQueue(queue);
+		testIntQueue(queue);
+	}
+
+	private void testIntQueue(BufferedArrayQueue<Integer> queue) {
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
 		queue.sleep();
 		
+		Assert.assertEquals(50, queue.size());
+		
 //		Assert.assertEquals(2, queue.get(2).intValue());
 		Assert.assertEquals(30, queue.get(30).intValue());
 		
 		queue.clear(10);
+		Assert.assertEquals(40, queue.size());
 		queue.sleep();
 		
 		queue.clear(13);
+		Assert.assertEquals(27, queue.size());
 		queue.sleep();
 		
 		Assert.assertEquals(23, queue.get(0).intValue());
@@ -133,6 +142,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 		queue.sleep();
 		
 		queue.clear();
+		Assert.assertEquals(0, queue.size());
 	}
 	
 	/*

@@ -146,14 +146,16 @@ public class BufferedLongArrayQueue implements Serializable {
 //				lastNode.items[j] = null;
 //			}
 			uncacheAndDelete(lastNode.storeIndex);
-			lastNode = null;
+//			lastNode = null;
 		}
-//		if (lastNode != null) {
-//			lastNode.storeIndex = 0;
-//			currentStoreIndex = 0;
-//		} else {
-		currentStoreIndex = -1;
-//		}
+		if (lastNode != null) {
+			lastNode.storeIndex = 0;
+			lastNode.startIndex = 0;
+			lastNode.endIndex = 1;
+			currentStoreIndex = 0;
+		} else {
+			currentStoreIndex = -1;
+		}
 		firstNodeSize = 0;
 		size = 0;
 	}
