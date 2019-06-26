@@ -88,8 +88,8 @@ public class RawIntTraceCollector {
 			trace.add(i);
 		}
 //		trace.clear(1);
-//		for (Iterator<Integer> iterator = trace.iterator(); iterator.hasNext();) {
-//			Integer integer = iterator.next();
+//		for (ReplaceableCloneableIntIterator iterator = trace.iterator(); iterator.hasNext();) {
+//			int integer = iterator.next();
 //			System.out.print(integer + ", ");
 //		}
 //		System.out.println();

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -166,14 +167,23 @@ public class SpectraFileUtilsTest extends TestSettings {
         traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false, outputDir, "t1", idToSubTraceMap);
         traceCollector.getIndexer().getSequences();
         
+//        System.out.println(traceCollector.getGsTree());
+        
         List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex(), false);
-        System.out.println(executionTraces.get(0).getCompressedTrace());
-        for (ExecutionTrace eTrace : executionTraces) {
-        	trace.addExecutionTrace(eTrace);
-        }
+//        for (ExecutionTrace eTrace : executionTraces) {
+//        	System.out.println(eTrace.getCompressedTrace());
+//        	trace.addExecutionTrace(eTrace);
+//        }
         assertFalse(trace.getExecutionTraces().isEmpty());
         
         spectra.setIndexer(new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences));
+        
+        int[] trace1 = executionTraces.get(0).reconstructFullMappedTrace(spectra.getIndexer());
+        
+        Log.out(this, Arrays.toString(trace1));
+        assertEquals(18, trace1.length);
+
+        assertArrayEquals(s(1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9), trace1);
         
 //        try {
 //			traceCollector.finalize();
@@ -203,7 +213,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 //        	Log.out(this, Arrays.toString(spectra2.getIndexer().getSequences()[i]));
 //		}
         
-        int[] trace1 = executionTrace1.reconstructFullMappedTrace(spectra2.getIndexer());
+        trace1 = executionTrace1.reconstructFullMappedTrace(spectra2.getIndexer());
         assertEquals(18, trace1.length);
 
         assertArrayEquals(s(1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9), trace1);

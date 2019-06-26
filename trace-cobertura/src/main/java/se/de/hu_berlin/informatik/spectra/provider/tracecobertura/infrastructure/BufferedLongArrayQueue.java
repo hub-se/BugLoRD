@@ -151,7 +151,7 @@ public class BufferedLongArrayQueue implements Serializable {
 		if (lastNode != null) {
 			lastNode.storeIndex = 0;
 			lastNode.startIndex = 0;
-			lastNode.endIndex = 1;
+			lastNode.endIndex = 0;
 			currentStoreIndex = 0;
 		} else {
 			currentStoreIndex = -1;

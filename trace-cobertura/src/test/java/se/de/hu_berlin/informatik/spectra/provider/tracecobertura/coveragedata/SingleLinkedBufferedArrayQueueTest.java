@@ -201,18 +201,27 @@ public class SingleLinkedBufferedArrayQueueTest {
 	public void testSingleLinkedBufferedIntArrayQueueFileStringInt2() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "testInt2", 5);
 		
+		testIntQueue(queue);
+		testIntQueue(queue);
+	}
+	
+	private void testIntQueue(BufferedIntArrayQueue queue) {
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
 		queue.sleep();
 		
+		Assert.assertEquals(50, queue.size());
+		
 //		Assert.assertEquals(2, queue.get(2).intValue());
 		Assert.assertEquals(30, queue.get(30));
 		
 		queue.clear(10);
+		Assert.assertEquals(40, queue.size());
 		queue.sleep();
 		
 		queue.clear(13);
+		Assert.assertEquals(27, queue.size());
 		queue.sleep();
 		
 		Assert.assertEquals(23, queue.get(0));
@@ -237,6 +246,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 		queue.sleep();
 		
 		queue.clear();
+		Assert.assertEquals(0, queue.size());
 	}
 	
 	/*
@@ -269,18 +279,27 @@ public class SingleLinkedBufferedArrayQueueTest {
 	public void testSingleLinkedBufferedLongArrayQueueFileStringInt2() throws Exception {
 		BufferedLongArrayQueue queue = new BufferedLongArrayQueue(outputDir, "testLong2", 5);
 		
+		testLongQueue(queue);
+		testLongQueue(queue);
+	}
+	
+	private void testLongQueue(BufferedLongArrayQueue queue) {
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
 		queue.sleep();
 		
+		Assert.assertEquals(50, queue.size());
+		
 //		Assert.assertEquals(2, queue.get(2).intValue());
 		Assert.assertEquals(30, queue.get(30));
 		
 		queue.clear(10);
+		Assert.assertEquals(40, queue.size());
 		queue.sleep();
 		
 		queue.clear(13);
+		Assert.assertEquals(27, queue.size());
 		queue.sleep();
 		
 		Assert.assertEquals(23, queue.get(0));
@@ -305,6 +324,7 @@ public class SingleLinkedBufferedArrayQueueTest {
 		queue.sleep();
 		
 		queue.clear();
+		Assert.assertEquals(0, queue.size());
 	}
 	
 	@Test

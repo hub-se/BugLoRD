@@ -646,6 +646,106 @@ public class RawIntTraceCollectorTest extends TestSettings {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void testAddRawTraceToPool6() {
+		Path outputDir = Paths.get(getStdTestDir()).resolve("test6");
+		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
+		
+		// sub trace id -> sub trace
+		Map<Integer,BufferedLongArrayQueue> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 3, "test6");
+        
+		collector.addRawTraceToPool(1, 0, s(1,2,3, 1,2,3, 1,2,3), true, outputDir, "t1", 
+				generateIdToSubtraceMap(outputDir, 3, "test6"));
+		collector.addRawTraceToPool(2, 0, s(1,2,3, 1,2,3), true, outputDir, "t2", 
+				generateIdToSubtraceMap(outputDir, 3, "test6"));
+		
+		int[] traceArray = s(1,2,3, 1,2,3);
+		collector.addRawTraceToPool(3, 0, traceArray, true, outputDir, "t3", 
+				generateIdToSubtraceMap(outputDir, 3, "test6"));
+		
+		System.out.println(collector.getGsTree());
+		
+		CompressedIntegerTraceBase rawTrace = collector.getRawTraces(3).get(0);
+		
+		System.out.println(traceArray.length + ", " + arrayToString(traceArray));
+		
+//		System.out.println(rawTrace.getCompressedTrace());
+		System.out.println(mapToString(rawTrace.getRepetitionMarkers()));
+		System.out.println(mapToString(rawTrace.getChild().getRepetitionMarkers()));
+		IntTraceIterator traceIterator = rawTrace.iterator();
+		while (traceIterator.hasNext()) {
+			System.out.print(traceIterator.next() + ", ");
+		}
+		System.out.println();
+		for (IntTraceIterator iterator = rawTrace.iterator(); iterator.hasNext();) {
+			if (iterator.isStartOfRepetition()) {
+				System.out.print("s:");
+			}
+			if (iterator.isEndOfRepetition()) {
+				System.out.print("e:");
+			}
+//			System.out.print(iterator.index + ":");
+//			System.out.print(iterator.childIterator.index + ":");
+//			System.out.print(iterator.childIterator.childIterator.index + ":");
+			Integer integer = iterator.next();
+			System.out.print(integer + ", ");
+		}
+		System.out.println();
+		
+//		for (TraceIterator<Integer> iterator = rawTrace.iterator(1); iterator.hasNext();) {
+//			if (iterator.isStartOfRepetition()) {
+//				System.out.print("s:");
+//			}
+//			if (iterator.isEndOfRepetition()) {
+//				System.out.print("e:");
+//			}
+////			System.out.print(iterator.index + ":");
+////			System.out.print(iterator.childIterator.index + ":");
+////			System.out.print(iterator.childIterator.childIterator.index + ":");
+//			Integer integer = iterator.next();
+//			System.out.print(integer + ", ");
+//		}
+//		System.out.println();
+		
+		ExecutionTrace executionTrace = collector.getExecutionTraces(3, true).get(0);
+		collector.getIndexer().getSequences();
+		
+		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
+		int[][] nodeIdSequences = getNodeIdSequences(idToSubTraceMap);
+		SimpleIntIndexer simpleIndexer = new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences);
+		
+		int[] fullMappedTrace = executionTrace.reconstructFullMappedTrace(simpleIndexer);
+		checkMappedTrace(traceArray, fullMappedTrace);
+		System.out.println(Arrays.toString(fullMappedTrace));
+		
+		StringBuilder result = new StringBuilder("[ ");
+		for (int j = 0; j < collector.getIndexer().getSequences().length; j++) {
+			result.append(arrayToString(collector.getIndexer().getSequence(j))).append(" ");
+		}
+		result.append("]");
+		System.out.println(result);
+		
+		System.out.println(executionTrace.getCompressedTrace());
+		System.out.println(mapToString(executionTrace.getRepetitionMarkers()));
+		System.out.println(mapToString(executionTrace.getChild().getRepetitionMarkers()));
+		IntTraceIterator eTraceIterator = executionTrace.iterator();
+		while (eTraceIterator.hasNext()) {
+			System.out.print(eTraceIterator.next() + ", ");
+		}
+		System.out.println();
+		
+		System.out.println(executionTrace.getCompressedTrace());
+		
+		System.out.println(collector.getGsTree());
+		
+		try {
+			collector.finalize();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	private String mapToString(BufferedMap<int[]> map) {
 		if (map == null) {
