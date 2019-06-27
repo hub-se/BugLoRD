@@ -54,6 +54,16 @@ public class CoberturaStatementEncoding {
 		}
 	}
 	
+	public static long generateUniqueRepresentationForSubTrace(CompressedLongTraceBase subTrace) {
+		if (subTrace.isEmpty()) {
+			return 0;
+		} else if (subTrace.size() == 1) {
+			return subTrace.getFirstElement() & UPPER_BITMASK;
+		} else {
+			return (subTrace.getFirstElement() & UPPER_BITMASK) | (subTrace.getLastElement() >> INTEGER_BITS);
+		}
+	}
+	
 	public static int getFirstClassId(long encodedSubTrace) {
 		return getClassId(encodedSubTrace);
 	}
@@ -69,6 +79,8 @@ public class CoberturaStatementEncoding {
 	public static int getLastCounterId(long encodedSubTrace) {
 		return getCounterId(encodedSubTrace << 32);
 	}
+
+	
 	
 
 }

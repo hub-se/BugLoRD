@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
-import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
+import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 
 
 /**
@@ -63,7 +63,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     private Map<K, Map<K, Double>> similarities = null;
 
 	private LocalizerCache<T> localizer;
-	private SequenceIndexer indexer;
+	private SequenceIndexerCompressed indexer;
 	private Path spectraZipFile;
 	private RawIntTraceCollector rawTraceCollector;
 
@@ -344,12 +344,12 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 	}
 
 	@Override
-	public SequenceIndexer getIndexer() {
+	public SequenceIndexerCompressed getIndexer() {
 		return this.indexer;
 	}
 
 	@Override
-	public void setIndexer(SequenceIndexer indexer) {
+	public void setIndexer(SequenceIndexerCompressed indexer) {
 		this.indexer = indexer;
 	}
 	

@@ -204,12 +204,12 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //		codeProvider.generateCodeThatUnsetsDecisionIndicatorVariable(
 //				nextMethodVisitor, decisionIndicatorVariableIndex);
 		
-		// this starts a new sub trace whenever we reach the start of a method...
-		// it serves mainly to avoid problems due to having a 
-		// loop in a class that is not instrumented
-		// (e.g. in test classes) that executes code without decision points (branches)
-		// in it. This results in a very large sub trace, potentially...
-		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+//		// this starts a new sub trace whenever we reach the start of a method...
+//		// it serves mainly to avoid problems due to having a 
+//		// loop in a class that is not instrumented
+//		// (e.g. in test classes) that executes code without decision points (branches)
+//		// in it. This results in a very large sub trace, potentially...
+//		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 	}
 
 	// ------------------- ignored events -------------------------------	

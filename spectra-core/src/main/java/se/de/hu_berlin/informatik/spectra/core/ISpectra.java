@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
-import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
+import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 
 
@@ -169,13 +169,13 @@ public interface ISpectra<T, K extends ITrace<T>> {
 	 * @return
 	 * an indexer used for indexing sequences of execution traces, if available
 	 */
-	public SequenceIndexer getIndexer();
+	public SequenceIndexerCompressed getIndexer();
 	
 	/**
 	 * @param indexer
 	 * an indexer used for indexing sequences of execution traces
 	 */
-	public void setIndexer(SequenceIndexer indexer);
+	public void setIndexer(SequenceIndexerCompressed indexer);
 	
 	/**
 	 * @return

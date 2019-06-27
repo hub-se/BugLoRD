@@ -5,10 +5,10 @@ import java.util.List;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
 
-public class IntTraceIterator implements ReplaceableCloneableIntIterator {
+public class LongTraceIterator implements ReplaceableCloneableLongIterator {
 	
-	private final CompressedIntegerTraceBase trace;
-	public final IntTraceIterator childIterator;
+	private final CompressedLongTraceBase trace;
+	public final LongTraceIterator childIterator;
 	
 	public int index = 0;
 	private int repetitionIndex = -1;
@@ -18,13 +18,13 @@ public class IntTraceIterator implements ReplaceableCloneableIntIterator {
 
 	private List<int[]> resetStateList;
 
-	public IntTraceIterator(CompressedIntegerTraceBase trace) {
+	public LongTraceIterator(CompressedLongTraceBase trace) {
 		this.trace = trace;
-		childIterator = (trace.getChild() == null ? null : new IntTraceIterator(trace.getChild()));
+		childIterator = (trace.getChild() == null ? null : new LongTraceIterator(trace.getChild()));
 	}
 	
 	// clone constructor
-	private IntTraceIterator(IntTraceIterator iterator) {
+	private LongTraceIterator(LongTraceIterator iterator) {
 		trace = iterator.trace;
 		childIterator = iterator.childIterator == null ? null : 
 			iterator.childIterator.clone();
@@ -37,8 +37,8 @@ public class IntTraceIterator implements ReplaceableCloneableIntIterator {
 			new ArrayList<>(iterator.resetStateList);
 	}
 
-	public IntTraceIterator clone() {
-		return new IntTraceIterator(this);
+	public LongTraceIterator clone() {
+		return new LongTraceIterator(this);
 	}
 
 	private void setResetPoint() {
@@ -86,7 +86,7 @@ public class IntTraceIterator implements ReplaceableCloneableIntIterator {
 	}
 
 	@Override
-	public int next() {
+	public long next() {
 		if (childIterator == null) {
 			return trace.getCompressedTrace().get(index++);
 		} else {
@@ -99,7 +99,7 @@ public class IntTraceIterator implements ReplaceableCloneableIntIterator {
 					++repetitionCounter;
 					if (repetitionCounter < repetitionCount) {
 						// still an iteration to go
-						int lastElementOfRepetition = childIterator.peek();
+						long lastElementOfRepetition = childIterator.peek();
 						// reset to previous reset point
 						resetState();
 						return lastElementOfRepetition;
@@ -136,7 +136,7 @@ public class IntTraceIterator implements ReplaceableCloneableIntIterator {
 		}
 	}
 
-	public int peek() {
+	public long peek() {
 		if (childIterator == null) {
 			return trace.getCompressedTrace().get(index);
 		} else {
@@ -175,54 +175,8 @@ public class IntTraceIterator implements ReplaceableCloneableIntIterator {
 	}
 
 	@Override
-	public int processNextAndReplaceWithResult(Function<Integer, Integer> function) {
-		if (childIterator == null) {
-			return trace.getCompressedTrace().getAndReplaceWith(index++, function);
-		} else {
-			// prioritize repetitions in parent 
-			// (parent repetitions should be contained in child repetitions)
-			if (repetitionIndex >= 0) {
-				// inside of a repeated sequence
-				if (index == repetitionIndex + repetitionLength - 1) {
-					// right at the end of the repeated sequence
-					++repetitionCounter;
-					if (repetitionCounter < repetitionCount) {
-						// still an iteration to go
-						int lastElementOfRepetition = childIterator.peek();
-						// reset to previous reset point
-						resetState();
-						return lastElementOfRepetition;
-					} else {
-						// no further iteration
-						repetitionIndex = -1;
-						++index;
-						return childIterator.next();
-					}
-				} else {
-					// still inside of the repeated sequence
-					++index;
-					return childIterator.next();
-				}
-			} else {
-				// check if we are in a repeated sequence
-				int[] repMarker = trace.getRepetitionMarkers().get(index);
-				if (repMarker != null) {
-					// we are in a new repeated sequence!
-					// [length, repeat_count]
-					repetitionIndex = index;
-					repetitionLength = repMarker[0];
-					repetitionCount = repMarker[1];
-					repetitionCounter = 0;
-					// set the reset point to this exact point
-					setResetPoint();
-					return next();
-				} else {
-					// not in a repeated sequence!
-					++index;
-					return childIterator.next();
-				}
-			}
-		}
+	public long processNextAndReplaceWithResult(Function<Long, Long> function) {
+		throw new UnsupportedOperationException();
 	}
 
 }

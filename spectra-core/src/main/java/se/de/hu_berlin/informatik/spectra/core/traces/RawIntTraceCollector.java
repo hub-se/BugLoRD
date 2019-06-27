@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIntIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
@@ -34,7 +35,7 @@ public class RawIntTraceCollector {
 	 * map from (global) sub trace ids to actual sub traces;
 	 * this stores all existing (and executed) sub traces!
 	 */
-	private Map<Integer,BufferedLongArrayQueue> globalIdToSubTraceMap;
+	private Map<Integer,CompressedLongTraceBase> globalIdToSubTraceMap;
 
 	// stores (sub trace representation -> sub trace id) to retrieve subtrace ids
 	// the long value representation has to contain start and ending node of the sub trace
@@ -50,7 +51,7 @@ public class RawIntTraceCollector {
 	
 	private final Set<Integer> startElements = new HashSet<>();
 	
-	public Map<Integer,BufferedLongArrayQueue> getGlobalIdToSubTraceMap() {
+	public Map<Integer,CompressedLongTraceBase> getGlobalIdToSubTraceMap() {
 		return globalIdToSubTraceMap;
 	}
 	
@@ -73,7 +74,7 @@ public class RawIntTraceCollector {
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			BufferedIntArrayQueue trace, boolean log,
-			Map<Integer,BufferedLongArrayQueue> idToSubTraceMap) {
+			Map<Integer,CompressedLongTraceBase> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, trace, log, idToSubTraceMap);
 		return true;
 	}
@@ -81,7 +82,7 @@ public class RawIntTraceCollector {
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			int[] traceArray, boolean log, Path outputDir, String prefix,
-			Map<Integer,BufferedLongArrayQueue> idToSubTraceMap) {
+			Map<Integer,CompressedLongTraceBase> idToSubTraceMap) {
 		BufferedIntArrayQueue trace = new BufferedIntArrayQueue(outputDir.toFile(), prefix, 100);
 //        trace.addAll(Arrays.asList(traceArray));
 		for (int i : traceArray) {
@@ -98,20 +99,20 @@ public class RawIntTraceCollector {
 
 	private void addTrace(int traceIndex, int threadId, 
 			BufferedIntArrayQueue trace, boolean log,
-			Map<Integer,BufferedLongArrayQueue> idToSubTraceMap) {
+			Map<Integer,CompressedLongTraceBase> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, new CompressedIntegerIdTrace(trace, log), idToSubTraceMap);
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			CompressedIntegerTraceBase eTrace,
-			Map<Integer, BufferedLongArrayQueue> map) {
+			Map<Integer, CompressedLongTraceBase> map) {
 		addTrace(traceIndex, threadId, eTrace, map);
 		return true;
 	}
 
 	private void addTrace(int traceIndex, int threadId, 
 			CompressedIntegerTraceBase eTrace,
-			Map<Integer, BufferedLongArrayQueue> map) {
+			Map<Integer, CompressedLongTraceBase> map) {
 		
 		boolean error = false;
 		for (ReplaceableCloneableIntIterator iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
@@ -179,23 +180,23 @@ public class RawIntTraceCollector {
 	}
 
 	private Map<Integer, Integer> getAndCreateSubTraceIdMapping(
-			Map<Integer, BufferedLongArrayQueue> map, Path tempDir) {
+			Map<Integer, CompressedLongTraceBase> map, Path tempDir) {
 		if (globalIdToSubTraceMap == null) {
 			globalIdToSubTraceMap = getNewSubTraceMap(tempDir);
 		}
 		// should map local sub trace ids (parameter) to global ids (field),
 		// so that the ids in the submitted raw traces can be replaced.
 		Map<Integer, Integer> subTraceIdMapping = new HashMap<>();
-		Iterator<Entry<Integer, BufferedLongArrayQueue>> iterator = map.entrySet().iterator();
+		Iterator<Entry<Integer, CompressedLongTraceBase>> iterator = map.entrySet().iterator();
 		while (iterator.hasNext()) {
-			Entry<Integer, BufferedLongArrayQueue> entry = iterator.next();
+			Entry<Integer, CompressedLongTraceBase> entry = iterator.next();
 			int globalId = getOrCreateIdForSubTrace(entry.getValue());
 			subTraceIdMapping.put(entry.getKey(), globalId);
 		}
 		return subTraceIdMapping;
 	}
 	
-	private Map<Integer,BufferedLongArrayQueue> getNewSubTraceMap(Path tempDir) {
+	private Map<Integer, CompressedLongTraceBase> getNewSubTraceMap(Path tempDir) {
 		return new HashMap<>();
 //		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
 //		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
@@ -203,13 +204,13 @@ public class RawIntTraceCollector {
 	}
 	
 	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
-	private int getOrCreateIdForSubTrace(BufferedLongArrayQueue subTrace) {
-		if (subTrace == null || subTrace.isEmpty()) {
+	private int getOrCreateIdForSubTrace(CompressedLongTraceBase compressedLongTraceBase) {
+		if (compressedLongTraceBase == null || compressedLongTraceBase.size() == 0) {
 			// id 0 indicates empty sub trace
 			return 0;
 		}
 
-		long wrapper = CoberturaStatementEncoding.generateUniqueRepresentationForSubTrace(subTrace);
+		long wrapper = CoberturaStatementEncoding.generateUniqueRepresentationForSubTrace(compressedLongTraceBase);
 		Integer id = subTraceGlobalIdMap.get(wrapper);
 		if (id == null) {
 			// sub trace is not yet part of the global sub trace map
@@ -218,12 +219,12 @@ public class RawIntTraceCollector {
 
 			// new sub trace, so store new id and store sub trace
 			subTraceGlobalIdMap.put(wrapper, currentId);
-			subTrace.sleep();
-			globalIdToSubTraceMap.put(currentId, subTrace);
+			compressedLongTraceBase.sleep();
+			globalIdToSubTraceMap.put(currentId, compressedLongTraceBase);
 		} else {
 			// already got this sub trace in the global map!
 			// delete any stored nodes from disk!
-			subTrace.clear();
+			compressedLongTraceBase.clear();
 		}
 		
 		return id;

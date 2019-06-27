@@ -16,6 +16,7 @@ import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexer;
+import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.JumpData;
@@ -27,6 +28,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageD
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableLongIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
@@ -221,7 +223,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// }
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
-			Map<Integer, BufferedLongArrayQueue> idToSubtraceMap = projectData.getIdToSubtraceMap();
+			Map<Integer, CompressedLongTraceBase> idToSubtraceMap = projectData.getIdToSubtraceMap();
 			for (Iterator<Entry<Long, CompressedIntegerIdTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
 				Entry<Long, CompressedIntegerIdTrace> entry = iterator.next();
 				++threadId;
@@ -357,15 +359,15 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				String[] idToClassNameMap = projectData.getIdToClassNameMap();
 //				Log.out(true, this, "Thread: " + entry.getKey());
 				// iterate over statements in the sub traces
-				for (Iterator<Entry<Integer, BufferedLongArrayQueue>> subTraceIterator = idToSubtraceMap.entrySet().iterator(); 
+				for (Iterator<Entry<Integer, CompressedLongTraceBase>> subTraceIterator = idToSubtraceMap.entrySet().iterator(); 
 						subTraceIterator.hasNext();) {
 					
-					BufferedLongArrayQueue subTrace = subTraceIterator.next().getValue();
+					CompressedLongTraceBase subTrace = subTraceIterator.next().getValue();
 //					Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.size());
 //					if (subTraceId >= 0) {
 //						continue;
 //					}
-					ReplaceableCloneableLongIterator statementIterator = subTrace.iterator();
+					ReplaceableCloneableLongIterator statementIterator = subTrace.getCompressedTrace().iterator();
 					while (statementIterator.hasNext()) {
 						long encodedStatement = statementIterator.next();
 						int classId = CoberturaStatementEncoding.getClassId(encodedStatement);
@@ -532,7 +534,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		Log.out(SpectraFileUtils.class, "Mapping counter IDs to line numbers...");
 		
 		// generate mapping from statements to spectra nodes
-		SimpleIntIndexer simpleIndexer = new SimpleIntIndexer(
+		SimpleIntIndexerCompressed simpleIndexer = new SimpleIntIndexerCompressed(
 				traceCollector.getIndexer(), traceCollector.getGlobalIdToSubTraceMap(), 
 				spectra, projectData);
 		

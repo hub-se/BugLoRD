@@ -35,7 +35,9 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexer;
+import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexer;
+import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
@@ -45,6 +47,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIntIterator;
 import se.de.hu_berlin.informatik.utils.compression.BufferedCompressedByteArrayToIntArrayQueueProcessor;
 import se.de.hu_berlin.informatik.utils.compression.BufferedIntArraysToCompressedByteArrayProcessor;
@@ -429,7 +432,7 @@ public class SpectraFileUtils {
 
 	private static <T> void saveExecutionTraces(ISpectra<T, ?> spectra,
 			Map<Integer, Integer> nodeIndexToStoreIdMap, Path outputFile) {
-		SequenceIndexer indexer = spectra.getIndexer();
+		SequenceIndexerCompressed indexer = spectra.getIndexer();
 
 		try {
 			if (indexer != null) {
@@ -453,7 +456,8 @@ public class SpectraFileUtils {
 					tracker.track("mem: " + Runtime.getRuntime().freeMemory() + ", " + trace.getIdentifier());
 					//				Runtime.getRuntime().gc();
 
-					hasExecutionTraces |= trace.storeExecutionTracesInZipFile(outputFile, new TraceFileNameSupplier(traceCount), new RepMarkerFileNameSupplier(traceCount));
+					hasExecutionTraces |= trace.storeExecutionTracesInZipFile(outputFile, 
+							new TraceFileNameSupplier(traceCount), new RepMarkerFileNameSupplier(traceCount));
 
 				}
 				
@@ -521,7 +525,8 @@ public class SpectraFileUtils {
 
 						try {
 							for (int i = 0; i < indexer.getNodeIdSequences().length; i++) {
-								Iterator<Integer> iterator = indexer.getNodeIdSequenceIterator(i);
+								// TODO this stores the entire sub trace which may be very long...
+								IntTraceIterator iterator = indexer.getNodeIdSequenceIterator(i);
 								List<Integer> result = new ArrayList<>();
 								// we have to ensure that the node IDs are based on the order of the nodes as they are stored
 								while (iterator.hasNext()) {
@@ -1332,7 +1337,7 @@ public class SpectraFileUtils {
 		int[][] nodeIdSequences = new int[list2.length][];
 		System.arraycopy(list2, 0, nodeIdSequences, 0, list2.length);
 		
-		spectra.setIndexer(new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences));
+		spectra.setIndexer(new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences));
 	}
 	
 //	private static <T> void loadSequenceIndexer(ZipFileWrapper zip, ISpectra<T, ?> spectra) {

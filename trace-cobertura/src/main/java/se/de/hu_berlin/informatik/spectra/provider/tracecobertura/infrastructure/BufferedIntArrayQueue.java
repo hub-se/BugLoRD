@@ -851,6 +851,10 @@ public class BufferedIntArrayQueue implements Serializable {
 		public int get(int i) {
 			return items[i+startIndex];
 		}
+		
+		public void set(int i, int value) {
+			items[i+startIndex] = value;
+		}
 
 	}
 	
@@ -880,6 +884,24 @@ public class BufferedIntArrayQueue implements Serializable {
             throw new NoSuchElementException();
         return f.get(itemIndex);
 	}
+	
+	private void set(int i, int value) {
+		// we can compute the store index using the size of the 
+		// first node and the constant size of each array node
+		if (i < firstNodeSize) {
+			final Node f = loadFirst();
+	        if (f == null || f.startIndex >= f.endIndex)
+	            throw new NoSuchElementException();
+	        f.set(i, value);
+		}
+		i -= firstNodeSize;
+		int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
+		int itemIndex = i % arrayLength;
+		final Node f = load(storeIndex);
+        if (f == null || itemIndex >= f.endIndex)
+            throw new NoSuchElementException();
+        f.set(itemIndex, value);
+	}
 
 	@Override
 	public String toString() {
@@ -895,6 +917,12 @@ public class BufferedIntArrayQueue implements Serializable {
 
 	public boolean isDeleteOnExit() {
 		return deleteOnExit;
+	}
+
+	public int getAndReplaceWith(int i, Function<Integer, Integer> function) {
+		int previous = get(i);
+		set(i, function.apply(previous));
+		return previous;
 	}
 	
 }

@@ -14,7 +14,7 @@ import java.util.UUID;
  * An execution trace consists structurally of a list of executed nodes
  * and a list of tuples that mark repeated sequences in the trace.
  */
-public abstract class CompressedIntegerTraceBase implements Serializable {
+public abstract class CompressedLongTraceBase implements Serializable {
 
 	/**
 	 * 
@@ -24,10 +24,10 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 	private static final int MAX_ITERATION_COUNT = 10;
 	
 	private int originalSize;
-	private BufferedIntArrayQueue compressedTrace;
+	private BufferedLongArrayQueue compressedTrace;
 	private BufferedMap<int[]> repetitionMarkers;
 	
-	private CompressedIntegerTraceBase child;
+	private CompressedLongTraceBase child;
 	
 	/**
 	 * Adds the given queue's contents to the trace. 
@@ -37,14 +37,14 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 	 * @param log
 	 * whether to log some status information
 	 */
-	public CompressedIntegerTraceBase(BufferedIntArrayQueue trace, boolean log) {
+	public CompressedLongTraceBase(BufferedLongArrayQueue trace, boolean log) {
 		this(trace, log, 0);
 	}
 	
-	private CompressedIntegerTraceBase(BufferedIntArrayQueue trace, boolean log, int iteration) {
+	private CompressedLongTraceBase(BufferedLongArrayQueue trace, boolean log, int iteration) {
 		this.originalSize = trace.size();
 		// inherit whether buffered trace files should be deleted on exit
-		BufferedIntArrayQueue traceWithoutRepetitions = extractRepetitions(trace, log, trace.isDeleteOnExit());
+		BufferedLongArrayQueue traceWithoutRepetitions = extractRepetitions(trace, log, trace.isDeleteOnExit());
 		trace = null;
 		// did something change?
 		if (originalSize == traceWithoutRepetitions.size() || ++iteration >= MAX_ITERATION_COUNT) {
@@ -62,7 +62,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		}
 	}
 	
-	public CompressedIntegerTraceBase(BufferedIntArrayQueue traceOfNodeIDs, CompressedIntegerTraceBase otherCompressedTrace) {
+	public CompressedLongTraceBase(BufferedLongArrayQueue traceOfNodeIDs, CompressedLongTraceBase otherCompressedTrace) {
 		if (otherCompressedTrace.getChild() == null) {
 			this.compressedTrace = traceOfNodeIDs;
 		} else {
@@ -72,17 +72,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		}
 	}
 	
-	public CompressedIntegerTraceBase(BufferedIntArrayQueue traceOfNodeIDs, CompressedLongTraceBase otherCompressedTrace) {
-		if (otherCompressedTrace.getChild() == null) {
-			this.compressedTrace = traceOfNodeIDs;
-		} else {
-			this.repetitionMarkers = otherCompressedTrace.getRepetitionMarkers();
-			this.child = newChildInstance(traceOfNodeIDs, otherCompressedTrace.getChild());
-			this.originalSize = computeFullTraceLength();
-		}
-	}
-	
-	public CompressedIntegerTraceBase(BufferedIntArrayQueue compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, int index) {
+	public CompressedLongTraceBase(BufferedLongArrayQueue compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, int index) {
 		if (repetitionMarkers == null || index >= repetitionMarkers.size()) {
 			this.compressedTrace = compressedTrace;
 		} else {
@@ -103,24 +93,22 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		return map;
 	}
 
-	public abstract CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace, CompressedIntegerTraceBase otherCompressedTrace);
+	public abstract CompressedLongTraceBase newChildInstance(BufferedLongArrayQueue trace, CompressedLongTraceBase otherCompressedTrace);
 	
-	public abstract CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace, CompressedLongTraceBase otherCompressedTrace);
+	public abstract CompressedLongTraceBase newChildInstance(BufferedLongArrayQueue compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, int index);
 	
-	public abstract CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, int index);
+	public abstract CompressedLongTraceBase newChildInstance(BufferedLongArrayQueue trace, boolean log, int iteration);
 	
-	public abstract CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace, boolean log, int iteration);
-	
-	public int getMaxStoredValue() {
+	public long getMaxStoredValue() {
 		if (getChild() == null) {
-			int max = 0;
-			ReplaceableCloneableIntIterator iterator = getCompressedTrace().iterator();
+			long max = 0;
+			ReplaceableCloneableLongIterator iterator = getCompressedTrace().iterator();
 			while (iterator.hasNext()) {
 				max = Math.max(iterator.next(), max);
 			}
 			return max;
 		} else {
-			int max = getChild().getMaxStoredValue();
+			long max = getChild().getMaxStoredValue();
 			Iterator<Entry<Integer, int[]>> entrySetIterator = getRepetitionMarkers().entrySetIterator();
 			while (entrySetIterator.hasNext()) {
 				Entry<Integer, int[]> entry = entrySetIterator.next();
@@ -219,18 +207,18 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 //		}
 //	}
 
-	private BufferedIntArrayQueue extractRepetitions(BufferedIntArrayQueue trace, boolean log, boolean deleteOnExit) {
+	private BufferedLongArrayQueue extractRepetitions(BufferedLongArrayQueue trace, boolean log, boolean deleteOnExit) {
 		String filePrefix = "cpr_trace_" + UUID.randomUUID().toString();
-		BufferedIntArrayQueue traceWithoutRepetitions = 
-				new BufferedIntArrayQueue(trace.getOutputDir(), filePrefix, 
+		BufferedLongArrayQueue traceWithoutRepetitions = 
+				new BufferedLongArrayQueue(trace.getOutputDir(), filePrefix, 
 						trace.getNodeSize(), deleteOnExit);
 		BufferedMap<int[]> traceRepetitions = new BufferedMap<>(trace.getOutputDir(), 
 				"cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.arrayLength, deleteOnExit);
 		
 		// mapping from elements to their most recent positions in the result list
-		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
+		Map<Long,Integer> elementToPositionMap = new HashMap<>();
 		while (!trace.isEmpty()) {
-			int element = trace.remove();
+			long element = trace.remove();
 
 			// check for repetition of the current element
 			Integer position = elementToPositionMap.get(element);
@@ -245,8 +233,8 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 				// and this position is the same as the following sequence(s) in the input trace
 				int repetitionCounter = 0;
 				int lengthToRemove = 0;
-				ReplaceableCloneableIntIterator inputTraceIterator = trace.iterator();
-				ReplaceableCloneableIntIterator resultTraceIterator = traceWithoutRepetitions.iterator(position);
+				ReplaceableCloneableLongIterator inputTraceIterator = trace.iterator();
+				ReplaceableCloneableLongIterator resultTraceIterator = traceWithoutRepetitions.iterator(position);
 				resultTraceIterator.next();
 				// count the number of elements that need to be removed later with count variable;
 				// variable count can start at 0 here, since we already removed the very first element
@@ -267,8 +255,8 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 					}
 					
 					// check if elements are equal
-					int first = inputTraceIterator.next();
-					int second = resultTraceIterator.next();
+					long first = inputTraceIterator.next();
+					long second = resultTraceIterator.next();
 					if (first != second) {
 						break;
 					}
@@ -308,7 +296,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		return traceWithoutRepetitions;
 	}
 
-	public BufferedIntArrayQueue getCompressedTrace() {
+	public BufferedLongArrayQueue getCompressedTrace() {
 		if (child != null) {
 			return child.getCompressedTrace();
 		} else {
@@ -319,6 +307,8 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 	public BufferedMap<int[]> getRepetitionMarkers() {
 		return repetitionMarkers;
 	}
+	
+	
 	
 //	public T[] reconstructFullTrace() {
 //		return reconstructTrace();
@@ -374,22 +364,22 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 //
 //	public abstract T[] newArrayOfSize(int size);
 
-	public CompressedIntegerTraceBase getChild() {
+	public CompressedLongTraceBase getChild() {
 		return child;
 	}
 
-	public IntTraceIterator iterator() {
-		return new IntTraceIterator(this);
+	public LongTraceIterator iterator() {
+		return new LongTraceIterator(this);
 	}
 	
-	public Set<Integer> computeStartingElements() {
-		Set<Integer> set = new HashSet<>();
+	public Set<Long> computeStartingElements() {
+		Set<Long> set = new HashSet<>();
 		addStartingElementsToSet(set);
 		return set;
 	}
 	
-	public void addStartingElementsToSet(Set<Integer> set) {
-		IntTraceIterator iterator = iterator();
+	public void addStartingElementsToSet(Set<Long> set) {
+		LongTraceIterator iterator = iterator();
 		boolean lastElementWasSequenceEnd = false;
 		if (iterator.hasNext()) {
 			lastElementWasSequenceEnd = iterator.isEndOfRepetition();
@@ -416,7 +406,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 			compressedTrace.clear();
 		}
 	}
-	
+
 	public boolean isEmpty() {
 		return originalSize == 0;
 	}

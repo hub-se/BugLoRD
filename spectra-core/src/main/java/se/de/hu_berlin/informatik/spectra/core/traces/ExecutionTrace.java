@@ -7,6 +7,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntTraceIterator;
 
 /**
@@ -29,6 +30,10 @@ public class ExecutionTrace extends CompressedIntegerTraceBase implements Serial
 	public ExecutionTrace(BufferedIntArrayQueue trace, CompressedIntegerTraceBase otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
+	
+	public ExecutionTrace(BufferedIntArrayQueue trace, CompressedLongTraceBase otherCompressedTrace) {
+		super(trace, otherCompressedTrace);
+	}
 
 	public ExecutionTrace(BufferedIntArrayQueue compressedTrace, BufferedArrayQueue<int[]> repMarkerLists, int index) {
 		super(compressedTrace, repMarkerLists, index);
@@ -37,6 +42,12 @@ public class ExecutionTrace extends CompressedIntegerTraceBase implements Serial
 	@Override
 	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace,
 			CompressedIntegerTraceBase otherCompressedTrace) {
+		return new ExecutionTrace(trace, otherCompressedTrace);
+	}
+	
+	@Override
+	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace,
+			CompressedLongTraceBase otherCompressedTrace) {
 		return new ExecutionTrace(trace, otherCompressedTrace);
 	}
 
@@ -64,7 +75,7 @@ public class ExecutionTrace extends CompressedIntegerTraceBase implements Serial
 		return fullTrace.stream().mapToInt(i -> i).toArray();
 	}
 	
-	public Iterator<Integer> mappedIterator(SequenceIndexer indexer) {
+	public Iterator<Integer> mappedIterator(SequenceIndexerCompressed sequenceIndexer) {
 		return new Iterator<Integer>(){
 			
 			final IntTraceIterator iterator = ExecutionTrace.this.iterator();
@@ -74,7 +85,7 @@ public class ExecutionTrace extends CompressedIntegerTraceBase implements Serial
 			public boolean hasNext() {
 				if (currentSequence == null || !currentSequence.hasNext()) {
 					while (iterator.hasNext()) {
-						currentSequence = indexer.getFullSequenceIterator(iterator.next());
+						currentSequence = sequenceIndexer.getFullSequenceIterator(iterator.next());
 						if (currentSequence.hasNext()) {
 							// found a "good" sequence
 							break;

@@ -21,6 +21,10 @@ public class CompressedIntegerIdTrace extends CompressedIntegerTraceBase impleme
 	public CompressedIntegerIdTrace(BufferedIntArrayQueue trace, CompressedIntegerTraceBase otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
+	
+	public CompressedIntegerIdTrace(BufferedIntArrayQueue trace, CompressedLongTraceBase otherCompressedTrace) {
+		super(trace, otherCompressedTrace);
+	}
 
 	public CompressedIntegerIdTrace(BufferedIntArrayQueue compressedTrace, 
 			BufferedArrayQueue<int[]> repetitionMarkers, int index) {
@@ -30,6 +34,12 @@ public class CompressedIntegerIdTrace extends CompressedIntegerTraceBase impleme
 	@Override
 	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace,
 			CompressedIntegerTraceBase otherCompressedTrace) {
+		return new CompressedIntegerIdTrace(trace, otherCompressedTrace);
+	}
+	
+	@Override
+	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace,
+			CompressedLongTraceBase otherCompressedTrace) {
 		return new CompressedIntegerIdTrace(trace, otherCompressedTrace);
 	}
 

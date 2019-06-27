@@ -1,8 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -12,28 +10,33 @@ import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntTraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIntIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableLongIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 
-public class SimpleIntIndexer implements SequenceIndexer {
+public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 
 	// mapping: tree indexer sequence ID -> sequence of sub trace IDs
 	private int[][] subTraceIdSequences;
 	
 	// mapping: sub trace ID -> sequence of spectra node IDs
-	private int[][] nodeIdSequences;
+	private CompressedIntegerTraceBase[] nodeIdSequences;
 	
 	
-	public SimpleIntIndexer(int[][] subTraceIdSequences, int[][] nodeIdSequences) {
+	public SimpleIntIndexerCompressed(int[][] subTraceIdSequences, CompressedIntegerTraceBase[] nodeIdSequences) {
 		this.subTraceIdSequences = subTraceIdSequences;
 		this.nodeIdSequences = nodeIdSequences;
 	}
 	
-	public SimpleIntIndexer(
+	public SimpleIntIndexerCompressed(
 			IntArraySequenceIndexer intArraySequenceIndexer, 
-			Map<Integer, BufferedLongArrayQueue> idToSubTraceMap, 
+			Map<Integer, CompressedLongTraceBase> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		// map counter IDs to line numbers!
 		storeSubTraceIdSequences(Objects.requireNonNull(intArraySequenceIndexer));
@@ -55,19 +58,22 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		}
 	}
 
-	private void mapCounterIdsToSpectraNodeIds(Map<Integer, BufferedLongArrayQueue> idToSubTraceMap, 
+	private void mapCounterIdsToSpectraNodeIds(Map<Integer, CompressedLongTraceBase> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		String[] idToClassNameMap = Objects.requireNonNull(projectData.getIdToClassNameMap());
 		
 		// indexer.getSequences() will generate all sequences of sub trace IDs that exist in the GS tree
-		this.nodeIdSequences = new int[idToSubTraceMap.size()+1][];
+		this.nodeIdSequences = new CompressedIntegerTraceBase[idToSubTraceMap.size()+1];
 
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
-		this.nodeIdSequences[0] = new int[] {};
+		this.nodeIdSequences[0] = null; //new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			BufferedLongArrayQueue list = idToSubTraceMap.get(i);
-			ReplaceableCloneableLongIterator sequenceIterator = list.iterator();
-			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
+			CompressedLongTraceBase subTrace = idToSubTraceMap.get(i);
+			BufferedLongArrayQueue compressedTrace = subTrace.getCompressedTrace();
+			ReplaceableCloneableLongIterator sequenceIterator = compressedTrace.iterator();
+			
+			BufferedIntArrayQueue traceOfNodeIDs = new BufferedIntArrayQueue(
+					compressedTrace.getOutputDir(), "idx_" + compressedTrace.getFilePrefix(), compressedTrace.getNodeSize(), true);
 			
 			while (sequenceIterator.hasNext()) {
 				long encodedStatement = sequenceIterator.next();
@@ -160,19 +166,23 @@ public class SimpleIntIndexer implements SequenceIndexer {
 				}
 			}
 			
-			nodeIdSequences[i] = new int[traceOfNodeIDs.size()];
-			for (int j = 0; j < nodeIdSequences[i].length; ++j) {
-				nodeIdSequences[i][j] = traceOfNodeIDs.remove();
-			}
+//			nodeIdSequences[i] = new int[traceOfNodeIDs.size()];
+//			for (int j = 0; j < nodeIdSequences[i].length; ++j) {
+//				nodeIdSequences[i][j] = traceOfNodeIDs.remove();
+//			}
+			
+			nodeIdSequences[i] = new CompressedIntegerIdTrace(traceOfNodeIDs, subTrace);
 			
 			// delete any stored nodes from disk!
-			list.clear();
+			subTrace.getCompressedTrace().clear();
+			// this would also clear the repetition markers...
+//			subTrace.clear();
 		}
 	}
 	
 	
 //	// for testing purposes
-//	public SimpleIntIndexer(ArraySequenceIndexer<Integer, Integer> subTraceIdSequencesIndexer,
+//	public SimpleIntIndexerCompressed(ArraySequenceIndexer<Integer, Integer> subTraceIdSequencesIndexer,
 //			ArraySequenceIndexer<Integer, Integer> nodeIdSequencesIndexer) {
 //		mapSubTraceIds(Objects.requireNonNull(subTraceIdSequencesIndexer));
 //		mapNodeIds(Objects.requireNonNull(nodeIdSequencesIndexer));
@@ -263,7 +273,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 	}
 	
 	@Override
-	public int[][] getNodeIdSequences() {
+	public CompressedIntegerTraceBase[] getNodeIdSequences() {
 		return nodeIdSequences;
 	}
 	
@@ -276,7 +286,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 	}
 	
 	@Override
-	public int[] getNodeIdSequence(int subTraceIndex) {
+	public CompressedIntegerTraceBase getNodeIdSequence(int subTraceIndex) {
 		if (subTraceIndex >= nodeIdSequences.length) {
 			return null;
 		}
@@ -296,9 +306,12 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		// will return spectra node ids
 		return new Iterator<Integer>() {
 			private int outerPos = 0;
-			private int innerPos = 0;
+			IntTraceIterator subTraceIterator;
 
 			public boolean hasNext() {
+				if (subTraceIterator != null && subTraceIterator.hasNext()) {
+					return true;
+				}
 				if (index >= subTraceIdSequences.length) {
 					throw new IllegalStateException("index out of bounds: " + index);
 				}
@@ -306,39 +319,23 @@ public class SimpleIntIndexer implements SequenceIndexer {
 					if (nodeIdSequences == null) {
 						throw new IllegalStateException("meh");
 					}
-					if (innerPos < nodeIdSequences[subTraceIdSequences[index][outerPos]].length) {
-						return true;
-					}
+					
+					subTraceIterator = nodeIdSequences[subTraceIdSequences[index][outerPos++]].iterator();
+					return hasNext();
 				}
-				return outerPos < subTraceIdSequences[index].length 
-						&& innerPos < nodeIdSequences[subTraceIdSequences[index][outerPos]].length;
+				return false;
 			}
 
 			public Integer next() {
-				int temp = nodeIdSequences[subTraceIdSequences[index][outerPos]][innerPos++];
-				if (innerPos >= nodeIdSequences[subTraceIdSequences[index][outerPos]].length) {
-					innerPos = 0;
-					++outerPos;
-				}
-				return temp;
+				return subTraceIterator.next();
 			}
 		};
 	}
 	
 	@Override
-	public Iterator<Integer> getNodeIdSequenceIterator(final int index) {
+	public IntTraceIterator getNodeIdSequenceIterator(final int index) {
 		// will iterate over the subtrace with the specified index
-		return new Iterator<Integer>() {
-            private int pos = 0;
-
-            public boolean hasNext() {
-               return pos < nodeIdSequences[index].length;
-            }
-
-            public Integer next() {
-               return nodeIdSequences[index][pos++];
-            }
-        };
+		return nodeIdSequences[index].iterator();
 	}
 	
 	@Override
@@ -361,28 +358,34 @@ public class SimpleIntIndexer implements SequenceIndexer {
 	public void removeFromSequences(int nodeId) {
 		// iterate over all sub traces
 		for (int i = 0; i < nodeIdSequences.length; i++) {
-			int[] sequence = nodeIdSequences[i];
+			CompressedIntegerTraceBase sequence = nodeIdSequences[i];
+			ReplaceableCloneableIntIterator iterator = sequence.getCompressedTrace().iterator();
 			boolean found = false;
-            for (int i2 : sequence) {
-                if (i2 == nodeId) {
-                    // sequence contains the node at least once
+			while (iterator.hasNext()) {
+				if (iterator.next() == nodeId) {
+					// sequence contains the node at least once
                     found = true;
                     break;
-                }
-            }
+				}
+			}
 			if (found) {
 				// sequence contains the node, so generate a new sequence and replace the old
-				List<Integer> newSequence = new ArrayList<>(sequence.length - 1);
-                for (int i1 : sequence) {
-                    if (i1 != nodeId) {
-                        newSequence.add(i1);
-                    }
-                }
-				nodeIdSequences[i] = newSequence.stream().mapToInt(k -> k).toArray();
+				IntTraceIterator fullIterator = sequence.iterator();
+				BufferedIntArrayQueue compressedTrace = sequence.getCompressedTrace();
+				BufferedIntArrayQueue newSequence = new BufferedIntArrayQueue(
+						compressedTrace.getOutputDir(), "_" + compressedTrace.getFilePrefix(), 
+						compressedTrace.getNodeSize(), true);
+				while (fullIterator.hasNext()) {
+					int next = fullIterator.next();
+					if (next != nodeId) {
+						newSequence.add(next);
+					}
+				}
+				nodeIdSequences[i] = new CompressedIntegerIdTrace(newSequence, true);
 			}
 		}
 	}
-	
+
 //	@Override
 //	public int[] getSequenceForEndNode(GSTreeNode endNode) {
 //		throw new UnsupportedOperationException();

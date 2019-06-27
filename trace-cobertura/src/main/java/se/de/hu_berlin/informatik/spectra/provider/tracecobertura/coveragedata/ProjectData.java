@@ -9,6 +9,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocke
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
 
 import java.io.File;
 import java.io.Serializable;
@@ -29,7 +30,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	
 	private String[] idToClassName;
 	private Map<Long,CompressedIntegerIdTrace> executionTraces;
-	private Map<Integer, BufferedLongArrayQueue> idToSubtraceMap;
+	private Map<Integer, CompressedLongTraceBase> idToSubtraceMap;
 	
 	public ProjectData() {
 	}
@@ -59,7 +60,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 	
-	public void addIdToSubTraceMap(Map<Integer, BufferedLongArrayQueue> map) {
+	public void addIdToSubTraceMap(Map<Integer, CompressedLongTraceBase> map) {
 		lock.lock();
 		try {
 			this.idToSubtraceMap = map;
@@ -81,7 +82,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		return executionTraces;
 	}
 	
-	public Map<Integer, BufferedLongArrayQueue> getIdToSubtraceMap() {
+	public Map<Integer, CompressedLongTraceBase> getIdToSubtraceMap() {
 		return idToSubtraceMap;
 	}
 	
@@ -290,7 +291,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 //				// assume that the data to merge into this one is the relevant data
 //				idToSubtraceMap.putAll(projectData.getIdToSubtraceMap());
 				
-				for (Entry<Integer, BufferedLongArrayQueue> entry : projectData.getIdToSubtraceMap().entrySet()) {
+				for (Entry<Integer, CompressedLongTraceBase> entry : projectData.getIdToSubtraceMap().entrySet()) {
 					if (!idToSubtraceMap.containsKey(entry.getKey())) {
 						idToSubtraceMap.put(entry.getKey(), entry.getValue());
 					}
