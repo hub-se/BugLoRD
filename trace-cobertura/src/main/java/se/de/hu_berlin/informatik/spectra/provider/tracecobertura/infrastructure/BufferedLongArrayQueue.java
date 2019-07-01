@@ -596,29 +596,39 @@ public class BufferedLongArrayQueue implements Serializable {
 		}
     }
 
-	public long peekLast() {
-        final Node f = loadLast();
-        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.endIndex-1] : null));
+//	public long peekLast() {
+//        final Node f = loadLast();
+//        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.endIndex-1] : null));
+//    }
+    
+    public long lastElement() {
+    	final Node f = loadLast();
+        if (f == null || f.startIndex >= f.endIndex)
+            throw new NoSuchElementException();
+        return f.items[f.endIndex-1];
     }
     
     // Queue operations
 
-    public long peek() {
-        final Node f = loadFirst();
-        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.startIndex] : null));
-    }
+//    public long peek() {
+//        final Node f = loadFirst();
+//        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.startIndex] : null));
+//    }
 
     public long element() {
+    	if (size == 0) {
+    		throw new IllegalStateException("size is 0");
+    	}
     	final Node f = loadFirst();
         if (f == null || f.startIndex >= f.endIndex)
             throw new NoSuchElementException();
         return f.items[f.startIndex];
     }
 
-    public long poll() {
-        final Node f = loadFirst();
-        return (f == null) ? null : (f.startIndex < f.endIndex ? removeFirst(f) : null);
-    }
+//    public long poll() {
+//        final Node f = loadFirst();
+//        return (f == null) ? null : (f.startIndex < f.endIndex ? removeFirst(f) : null);
+//    }
 
     public long remove() {
     	final Node f = loadFirst();

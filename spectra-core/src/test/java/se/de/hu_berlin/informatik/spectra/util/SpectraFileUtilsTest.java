@@ -30,11 +30,17 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexer;
+import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongIdTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -90,13 +96,22 @@ public class SpectraFileUtilsTest extends TestSettings {
 		return result;
 	}
 	
-	private BufferedLongArrayQueue asList(Path outputDir, int[][] rt) {
+	private CompressedLongTraceBase asList(Path outputDir, int[][] rt) {
 		BufferedLongArrayQueue list = new BufferedLongArrayQueue(
 				outputDir.toFile(), String.valueOf(UUID.randomUUID()), rt.length);
 		for (int[] statement : rt) {
 			list.add(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(statement[0], statement[1], statement[2]));
 		}
-		return list;
+		return new CompressedLongIdTrace(list, true);
+	}
+	
+	private CompressedIntegerTraceBase c(Path outputDir, int... numbers) {
+		BufferedIntArrayQueue list = new BufferedIntArrayQueue(
+				outputDir.toFile(), String.valueOf(UUID.randomUUID()), numbers.length);
+		for (int id : numbers) {
+			list.add(id);
+		}
+		return new CompressedIntegerIdTrace(list, true);
 	}
 	
 	/**
@@ -146,20 +161,23 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertNotNull(trace);
         assertFalse(trace.isSuccessful());
         
+        Path outputDir = Paths.get(getStdTestDir());
+        
         // mapping: tree indexer sequence ID -> sequence of sub trace IDs
     	int[][] subTraceIdSequences = new int[][] {s(1,2,3)};
     	
     	// mapping: sub trace ID -> sequence of spectra node IDs
-    	int[][] nodeIdSequences = new int[][] {s(), s(1,2,3), s(4,5,6), s(7,8,9)};
+    	CompressedIntegerTraceBase[] nodeIdSequences = 
+    			new CompressedIntegerTraceBase[] {
+    					c(outputDir), c(outputDir, 1,2,3), c(outputDir, 4,5,6), c(outputDir, 7,8,9)};
     	
         // sub trace id array
     	int[] rawTrace = new int[] {1,2,3,1,2,3};
         
-        Path outputDir = Paths.get(getStdTestDir());
         RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
         
         // sub trace id -> sub trace
-        Map<Integer,BufferedLongArrayQueue> idToSubTraceMap = new HashMap<>();
+        Map<Integer, CompressedLongTraceBase> idToSubTraceMap = new HashMap<>();
         idToSubTraceMap.put(1,asList(outputDir, rt(5,6,7)));
         idToSubTraceMap.put(2,asList(outputDir, rt(8,9,10)));
         idToSubTraceMap.put(3,asList(outputDir, rt(11,12,13)));
@@ -176,7 +194,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         }
         assertFalse(trace.getExecutionTraces().isEmpty());
         
-        spectra.setIndexer(new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences));
+        spectra.setIndexer(new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences));
         
         int[] trace1 = executionTraces.get(0).reconstructFullMappedTrace(spectra.getIndexer());
         

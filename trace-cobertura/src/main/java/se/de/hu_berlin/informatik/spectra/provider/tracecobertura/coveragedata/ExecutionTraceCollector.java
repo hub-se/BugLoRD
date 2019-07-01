@@ -27,6 +27,7 @@ public class ExecutionTraceCollector {
 
 	public final static int EXECUTION_TRACE_CHUNK_SIZE = 5000000;
 	public final static int MAP_CHUNK_SIZE = 1000000;
+	public static final int SUBTRACE_ARRAY_SIZE = 500;
 	
 //	private static ExecutorService executorService = new ThreadPoolExecutor(1, 1,
 //			0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
@@ -147,7 +148,6 @@ public class ExecutionTraceCollector {
 //	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
 
 	private static int[][] classesToCounterArrayMap = new int[1024][];
-	private static final int SUBTRACE_ARRAY_SIZE = 500;
 	
 	private static Set<Thread> currentThreads = new HashSet<>();
 
@@ -203,6 +203,7 @@ public class ExecutionTraceCollector {
 			currentId = 0;
 //			existingSubTraces = null;
 			existingSubTraces = new ConcurrentHashMap<>();
+			existingCompressedSubTraces = new ConcurrentHashMap<>();
 			subTraceIdMap.clear();
 			return traceMap;
 		} finally {
@@ -448,6 +449,7 @@ public class ExecutionTraceCollector {
 			// reduce the size of sub traces that contain repetitions
 			for (Entry<Integer, BufferedLongArrayQueue> entry : existingSubTraces.entrySet()) {
 				CompressedLongIdTrace subTrace = new CompressedLongIdTrace(entry.getValue(), false);
+//				System.out.println(subTrace.toString());
 				subTrace.sleep();
 				existingCompressedSubTraces.put(entry.getKey(), subTrace);
 			}

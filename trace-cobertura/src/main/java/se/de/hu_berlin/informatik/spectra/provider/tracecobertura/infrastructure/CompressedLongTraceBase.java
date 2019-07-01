@@ -412,15 +412,24 @@ public abstract class CompressedLongTraceBase implements Serializable {
 	}
 
 	public long getFirstElement() {
-		return getCompressedTrace().peek();
+		return getCompressedTrace().element();
 	}
 
 	public long getLastElement() {
-		return getCompressedTrace().peekLast();
+		return getCompressedTrace().lastElement();
 	}
 
 	public void sleep() {
 		getCompressedTrace().sleep();
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder(originalSize + " ==> ");
+		LongTraceIterator eTraceIterator = iterator();
+		while (eTraceIterator.hasNext()) {
+			builder.append(eTraceIterator.next() + ", ");
+		}
+		return builder.toString();
+	}
 }

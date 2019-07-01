@@ -16,9 +16,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
@@ -95,26 +97,29 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		return subTraceIdSequences;
 	}
 	
-	private int[][] getNodeIdSequences(Map<Integer, CompressedLongTraceBase> idToSubTraceMap) {
+	private CompressedIntegerTraceBase[] getNodeIdSequences(Path outputDir, Map<Integer, CompressedLongTraceBase> idToSubTraceMap) {
 		// indexer.getSequences() will generate all sequences of sub trace IDs that exist in the GS tree
-		int[][] nodeIdSequences = new int[idToSubTraceMap.size()+1][];
+		CompressedIntegerTraceBase[] nodeIdSequences = new CompressedIntegerTraceBase[idToSubTraceMap.size()+1];
 
-		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
-		nodeIdSequences[0] = new int[] {};
+		// id 0 marks an empty sub trace... should not really happen... :/
+		nodeIdSequences[0] = null;
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
 			CompressedLongTraceBase list = idToSubTraceMap.get(i);
 			ReplaceableCloneableLongIterator sequenceIterator = list.iterator();
-			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
+			BufferedIntArrayQueue traceOfNodeIDs = new BufferedIntArrayQueue(outputDir.toFile(), 
+					String.valueOf(UUID.randomUUID()), 100);
 			
 			while (sequenceIterator.hasNext()) {
 				Long statement = sequenceIterator.next();
 				traceOfNodeIDs.add(CoberturaStatementEncoding.getCounterId(statement));
 			}
 			
-			nodeIdSequences[i] = new int[traceOfNodeIDs.size()];
-			for (int j = 0; j < nodeIdSequences[i].length; ++j) {
-				nodeIdSequences[i][j] = traceOfNodeIDs.remove();
-			}
+			nodeIdSequences[i] = new CompressedIntegerIdTrace(traceOfNodeIDs, false);
+			
+//			nodeIdSequences[i] = new int[traceOfNodeIDs.size()];
+//			for (int j = 0; j < nodeIdSequences[i].length; ++j) {
+//				nodeIdSequences[i][j] = traceOfNodeIDs.remove();
+//			}
 		}
 		
 		return nodeIdSequences;
@@ -212,8 +217,8 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
-		int[][] nodeIdSequences = getNodeIdSequences(idToSubTraceMap);
-		SimpleIntIndexer simpleIndexer = new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences);
+		CompressedIntegerTraceBase[] nodeIdSequences = getNodeIdSequences(outputDir, idToSubTraceMap);
+		SimpleIntIndexerCompressed simpleIndexer = new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences);
 		
 		
 		int[] fullMappedTrace = executionTrace.reconstructFullMappedTrace(simpleIndexer);
@@ -313,8 +318,8 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
-		int[][] nodeIdSequences = getNodeIdSequences(idToSubTraceMap);
-		SimpleIntIndexer simpleIndexer = new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences);
+		CompressedIntegerTraceBase[] nodeIdSequences = getNodeIdSequences(outputDir, idToSubTraceMap);
+		SimpleIntIndexerCompressed simpleIndexer = new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences);
 		
 		int[] fullMappedTrace = executionTrace.reconstructFullMappedTrace(simpleIndexer);
 		checkMappedTrace(traceArray, fullMappedTrace);
@@ -414,8 +419,8 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
-		int[][] nodeIdSequences = getNodeIdSequences(idToSubTraceMap);
-		SimpleIntIndexer simpleIndexer = new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences);
+		CompressedIntegerTraceBase[] nodeIdSequences = getNodeIdSequences(outputDir, idToSubTraceMap);
+		SimpleIntIndexerCompressed simpleIndexer = new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences);
 		
 		int[] fullMappedTrace = executionTrace.reconstructFullMappedTrace(simpleIndexer);
 		checkMappedTrace(traceArray, fullMappedTrace);
@@ -514,8 +519,8 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
-		int[][] nodeIdSequences = getNodeIdSequences(idToSubTraceMap);
-		SimpleIntIndexer simpleIndexer = new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences);
+		CompressedIntegerTraceBase[] nodeIdSequences = getNodeIdSequences(outputDir, idToSubTraceMap);
+		SimpleIntIndexerCompressed simpleIndexer = new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences);
 		
 		int[] fullMappedTrace = executionTrace.reconstructFullMappedTrace(simpleIndexer);
 		checkMappedTrace(traceArray, fullMappedTrace);
@@ -614,8 +619,8 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
-		int[][] nodeIdSequences = getNodeIdSequences(idToSubTraceMap);
-		SimpleIntIndexer simpleIndexer = new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences);
+		CompressedIntegerTraceBase[] nodeIdSequences = getNodeIdSequences(outputDir, idToSubTraceMap);
+		SimpleIntIndexerCompressed simpleIndexer = new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences);
 		
 		int[] fullMappedTrace = executionTrace.reconstructFullMappedTrace(simpleIndexer);
 		checkMappedTrace(traceArray, fullMappedTrace);
@@ -714,8 +719,8 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
-		int[][] nodeIdSequences = getNodeIdSequences(idToSubTraceMap);
-		SimpleIntIndexer simpleIndexer = new SimpleIntIndexer(subTraceIdSequences, nodeIdSequences);
+		CompressedIntegerTraceBase[] nodeIdSequences = getNodeIdSequences(outputDir, idToSubTraceMap);
+		SimpleIntIndexerCompressed simpleIndexer = new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences);
 		
 		int[] fullMappedTrace = executionTrace.reconstructFullMappedTrace(simpleIndexer);
 		checkMappedTrace(traceArray, fullMappedTrace);

@@ -596,17 +596,24 @@ public class BufferedIntArrayQueue implements Serializable {
 		}
     }
 
-	public int peekLast() {
-        final Node f = loadLast();
-        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.endIndex-1] : null));
+//	public int peekLast() {
+//        final Node f = loadLast();
+//        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.endIndex-1] : null));
+//    }
+    
+    public int lastElement() {
+    	final Node f = loadLast();
+        if (f == null || f.startIndex >= f.endIndex)
+            throw new NoSuchElementException();
+        return f.items[f.endIndex-1];
     }
     
     // Queue operations
 
-    public int peek() {
-        final Node f = loadFirst();
-        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.startIndex] : null));
-    }
+//    public int peek() {
+//        final Node f = loadFirst();
+//        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.startIndex] : null));
+//    }
 
     public int element() {
     	final Node f = loadFirst();
@@ -615,10 +622,10 @@ public class BufferedIntArrayQueue implements Serializable {
         return f.items[f.startIndex];
     }
 
-    public int poll() {
-        final Node f = loadFirst();
-        return (f == null) ? null : (f.startIndex < f.endIndex ? removeFirst(f) : null);
-    }
+//    public int poll() {
+//        final Node f = loadFirst();
+//        return (f == null) ? null : (f.startIndex < f.endIndex ? removeFirst(f) : null);
+//    }
 
     public int remove() {
     	final Node f = loadFirst();

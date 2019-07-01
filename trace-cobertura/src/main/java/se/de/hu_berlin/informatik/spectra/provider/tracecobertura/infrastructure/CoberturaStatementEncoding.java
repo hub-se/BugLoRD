@@ -48,9 +48,9 @@ public class CoberturaStatementEncoding {
 		if (subTrace.isEmpty()) {
 			return 0;
 		} else if (subTrace.size() == 1) {
-			return subTrace.peek() & UPPER_BITMASK;
+			return subTrace.element() & UPPER_BITMASK;
 		} else {
-			return (subTrace.peek() & UPPER_BITMASK) | (subTrace.peekLast() >> INTEGER_BITS);
+			return (subTrace.element() & UPPER_BITMASK) | (subTrace.lastElement() >> INTEGER_BITS);
 		}
 	}
 	

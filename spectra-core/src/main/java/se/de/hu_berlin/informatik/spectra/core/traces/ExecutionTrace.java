@@ -63,7 +63,7 @@ public class ExecutionTrace extends CompressedIntegerTraceBase implements Serial
 	}
 	
 
-	public int[] reconstructFullMappedTrace(SequenceIndexer indexer) {
+	public int[] reconstructFullMappedTrace(SequenceIndexerCompressed indexer) {
 		IntTraceIterator indexedFullTrace = iterator();
 		List<Integer> fullTrace = new ArrayList<>();
 		while (indexedFullTrace.hasNext()) {

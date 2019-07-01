@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import net.lingala.zip4j.model.FileHeader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
@@ -143,7 +142,7 @@ public class RawIntTraceCollector {
 		// avoid storing traces in memory...
 		// store the compressed trace
 		try {
-			SpectraFileUtils.storeCompressedTraceForRawTraceInZipFile(eTrace, output, traceFileName, repMarkerFileName);
+			SpectraFileUtils.storeCompressedIntegerTrace(eTrace, output, traceFileName, repMarkerFileName);
 		} catch (IOException e) {
 			Log.abort(this, e, "Could not store raw trace.");
 		}
@@ -205,6 +204,7 @@ public class RawIntTraceCollector {
 	
 	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
 	private int getOrCreateIdForSubTrace(CompressedLongTraceBase compressedLongTraceBase) {
+//		System.out.println(">> " + compressedLongTraceBase);
 		if (compressedLongTraceBase == null || compressedLongTraceBase.size() == 0) {
 			// id 0 indicates empty sub trace
 			return 0;
@@ -328,7 +328,7 @@ public class RawIntTraceCollector {
 			// avoid storing traces in memory...
 			// store the execution trace and repetition markers
 			try {
-				SpectraFileUtils.storeExecutionTrace(executionTrace, output, traceFileName, repMarkerFileName);
+				SpectraFileUtils.storeCompressedIntegerTrace(executionTrace, output, traceFileName, repMarkerFileName);
 			} catch (IOException e) {
 				Log.abort(this, e, "Could not store execution trace.");
 			}

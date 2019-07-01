@@ -422,11 +422,11 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 	}
 
 	public long getFirstElement() {
-		return getCompressedTrace().peek();
+		return getCompressedTrace().element();
 	}
 
 	public long getLastElement() {
-		return getCompressedTrace().peekLast();
+		return getCompressedTrace().lastElement();
 	}
 
 	public void sleep() {
