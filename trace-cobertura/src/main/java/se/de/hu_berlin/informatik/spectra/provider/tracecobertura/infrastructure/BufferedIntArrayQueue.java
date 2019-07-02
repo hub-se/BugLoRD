@@ -28,8 +28,8 @@ public class BufferedIntArrayQueue implements Serializable {
 	 */
 	private static final long serialVersionUID = -1777403971930917719L;
 
-	// keep at most 2 (+1 with the last node) nodes in memory
-    private static final int CACHE_SIZE = 2;
+	// keep at most 1 (+1 with the last node) nodes in memory
+    private static final int CACHE_SIZE = 1;
     
     private static final int ARRAY_SIZE = 1000;
 	
@@ -207,11 +207,11 @@ public class BufferedIntArrayQueue implements Serializable {
 //					buf.putInt(i);
 //				}
 				
-				ByteBuffer directBuf = ByteBuffer.allocateDirect(4 * node.items.length + 8);
+				ByteBuffer directBuf = ByteBuffer.allocateDirect(4 * (node.endIndex-node.startIndex) + 8);
 				directBuf.putInt(node.startIndex);
 				directBuf.putInt(node.endIndex);
-				for (int i : node.items) {
-					directBuf.putInt(i);
+				for (int i = node.startIndex; i < node.endIndex; ++i) {
+					directBuf.putInt(node.items[i]);
 				}
 				directBuf.flip();
 				file.write(directBuf);
@@ -385,9 +385,9 @@ public class BufferedIntArrayQueue implements Serializable {
 					int startIndex = directBuf.getInt();
 					int endIndex = directBuf.getInt();
 					
-					int arrayLength = (int)fileSize/4 - 2;
+//					int arrayLength = (int)fileSize/4 - 2;
 					int[] items = new int[arrayLength];
-					for (int i = 0; i < arrayLength; ++i) {
+					for (int i = startIndex; i < endIndex; ++i) {
 						items[i] = directBuf.getInt();
 					}
 					

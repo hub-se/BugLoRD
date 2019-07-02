@@ -83,7 +83,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		} else {
 			this.repetitionMarkers = constructFromArray(repetitionMarkers.get(index), 
 					compressedTrace.getOutputDir(), 
-					compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.arrayLength * 3,
+					compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.arrayLength,
 					compressedTrace.isDeleteOnExit());
 			this.child = newChildInstance(compressedTrace, repetitionMarkers, ++index);
 			this.originalSize = computeFullTraceLength();
@@ -200,7 +200,8 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		BufferedArrayQueue<T> traceWithoutRepetitions = 
 				new BufferedArrayQueue<>(trace.getOutputDir(), filePrefix, 
 						trace.getNodeSize(), deleteOnExit, trace.getSerializationType());
-		BufferedMap<int[]> traceRepetitions = new BufferedMap<>(trace.getOutputDir(), "cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.arrayLength * 3, deleteOnExit);
+		BufferedMap<int[]> traceRepetitions = new BufferedMap<>(trace.getOutputDir(), 
+				"cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.arrayLength, deleteOnExit);
 		
 		// mapping from elements to their most recent positions in the result list
 		Map<K,Integer> elementToPositionMap = new HashMap<>();

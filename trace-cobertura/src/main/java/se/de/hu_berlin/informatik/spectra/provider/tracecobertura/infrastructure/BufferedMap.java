@@ -32,8 +32,8 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	 */
 	private static final long serialVersionUID = 3786896457427890598L;
 
-	// keep at most 3 (+1 with the last node) nodes in memory
-    private static final int CACHE_SIZE = 3;
+	// keep at most 2 (+1 with the last node) nodes in memory
+    private static final int CACHE_SIZE = 2;
     
 	private File output;
 	private String filePrefix;
