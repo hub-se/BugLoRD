@@ -241,6 +241,9 @@ public class ExecutionTraceCollector {
 //					if (existingSubTraces == null) {
 //						existingSubTraces = new ConcurrentHashMap<>();
 //					}
+				} else {
+					subTrace.clear();
+					unusedSubTraceCache.add(subTrace);
 				}
 			} finally {
 				idLock.unlock();
@@ -413,16 +416,19 @@ public class ExecutionTraceCollector {
 			}
 			boolean done = false;
 			while (!done) {
-				try {
-					thread.join(30000); // wait 10 seconds for threads to die... TODO
-					if (thread.isAlive()) {
-						System.err.println("Thread " + thread.getId() + " is still alive...");
-//						thread.interrupt();
-						break;
+				if (thread.isAlive()) {
+					System.err.println("Thread " + thread.getId() + " is still alive...");
+					try {
+						thread.join(60000); // wait 60 seconds for threads to die... TODO
+						if (thread.isAlive()) {
+							System.err.println("Thread " + thread.getId() + " remains alive...");
+							//						thread.interrupt();
+							break;
+						}
+						done = true;
+					} catch (InterruptedException e) {
+						// try again
 					}
-					done = true;
-				} catch (InterruptedException e) {
-					// try again
 				}
 			}
 		}
