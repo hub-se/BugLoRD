@@ -241,16 +241,13 @@ public class ExecutionTraceCollector {
 //					if (existingSubTraces == null) {
 //						existingSubTraces = new ConcurrentHashMap<>();
 //					}
-				} else {
-					subTrace.clear();
-					unusedSubTraceCache.add(subTrace);
+//					System.out.println(currentId + ":" + subTrace.toString());
+					subTrace.sleep();
+					existingSubTraces.put(id, subTrace);
 				}
 			} finally {
 				idLock.unlock();
 			}
-			subTrace.sleep();
-			existingSubTraces.put(id, subTrace);
-			//				System.out.println(currentId + ":" + wrapper.toString());
 		} else {
 			subTrace.clear();
 			unusedSubTraceCache.add(subTrace);
@@ -417,11 +414,11 @@ public class ExecutionTraceCollector {
 			boolean done = false;
 			while (!done) {
 				if (thread.isAlive()) {
-					System.err.println("Thread " + thread.getId() + " is still alive...");
+					System.err.println("Thread " + thread.getId() + " is still alive. Waiting 60 seconds for it to die...");
 					try {
 						thread.join(60000); // wait 60 seconds for threads to die... TODO
 						if (thread.isAlive()) {
-							System.err.println("Thread " + thread.getId() + " remains alive...");
+							System.err.println("(At least) thread " + thread.getId() + " remains alive...");
 							//						thread.interrupt();
 							break;
 						}
@@ -429,6 +426,8 @@ public class ExecutionTraceCollector {
 					} catch (InterruptedException e) {
 						// try again
 					}
+				} else {
+					break;
 				}
 			}
 		}
@@ -454,9 +453,12 @@ public class ExecutionTraceCollector {
 			
 			// reduce the size of sub traces that contain repetitions
 			for (Entry<Integer, BufferedLongArrayQueue> entry : existingSubTraces.entrySet()) {
-				CompressedLongIdTrace subTrace = new CompressedLongIdTrace(entry.getValue(), false);
+				BufferedLongArrayQueue queue = entry.getValue();
+				queue.deleteOnExit();
+				CompressedLongIdTrace subTrace = new CompressedLongIdTrace(queue, false);
 //				System.out.println(subTrace.toString());
 				subTrace.sleep();
+				subTrace.lock();
 				existingCompressedSubTraces.put(entry.getKey(), subTrace);
 			}
 			

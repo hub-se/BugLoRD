@@ -189,6 +189,7 @@ public class RawIntTraceCollector {
 		Iterator<Entry<Integer, CompressedLongTraceBase>> iterator = map.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<Integer, CompressedLongTraceBase> entry = iterator.next();
+//			System.out.println(entry.getKey() + ">> " + entry.getValue());
 			int globalId = getOrCreateIdForSubTrace(entry.getValue());
 			subTraceIdMapping.put(entry.getKey(), globalId);
 		}
@@ -204,7 +205,6 @@ public class RawIntTraceCollector {
 	
 	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
 	private int getOrCreateIdForSubTrace(CompressedLongTraceBase compressedLongTraceBase) {
-//		System.out.println(">> " + compressedLongTraceBase);
 		if (compressedLongTraceBase == null || compressedLongTraceBase.size() == 0) {
 			// id 0 indicates empty sub trace
 			return 0;
@@ -221,11 +221,18 @@ public class RawIntTraceCollector {
 			subTraceGlobalIdMap.put(wrapper, currentId);
 			compressedLongTraceBase.sleep();
 			globalIdToSubTraceMap.put(currentId, compressedLongTraceBase);
-		} else {
-			// already got this sub trace in the global map!
-			// delete any stored nodes from disk!
-			compressedLongTraceBase.clear();
-		}
+		} 
+		// I want to throw away (delete) duplicate sub traces, but when there are multiple threads
+		// in a single test, it creates some issues... 
+//		else {
+//			if (!globalIdToSubTraceMap.get(id).equals(compressedLongTraceBase)) {
+//				// already got this sub trace in the global map!
+//				// (and it's not the exact same object!) 
+//				// delete any stored nodes from disk!
+//				compressedLongTraceBase.unlock();
+//				compressedLongTraceBase.clear();
+//			}
+//		}
 		
 		return id;
 

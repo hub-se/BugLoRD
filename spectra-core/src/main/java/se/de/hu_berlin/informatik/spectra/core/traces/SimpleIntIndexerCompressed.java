@@ -174,7 +174,10 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 			nodeIdSequences[i] = new CompressedIntegerIdTrace(traceOfNodeIDs, subTrace);
 			
 			// delete any stored nodes from disk!
+			subTrace.unlock();
 			subTrace.getCompressedTrace().clear();
+			// sub trace should not be touched anymore...
+			subTrace.lock();
 			// this would also clear the repetition markers...
 //			subTrace.clear();
 		}

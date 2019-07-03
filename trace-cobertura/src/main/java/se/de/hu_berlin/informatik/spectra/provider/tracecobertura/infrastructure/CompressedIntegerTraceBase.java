@@ -433,4 +433,22 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		getCompressedTrace().sleep();
 	}
 	
+	public void lock() {
+		getCompressedTrace().lock();
+	}
+	
+	public void unlock() {
+		getCompressedTrace().unlock();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder(originalSize + " ==> ");
+		IntTraceIterator eTraceIterator = iterator();
+		while (eTraceIterator.hasNext()) {
+			builder.append(eTraceIterator.next() + ", ");
+		}
+		return builder.toString();
+	}
+	
 }

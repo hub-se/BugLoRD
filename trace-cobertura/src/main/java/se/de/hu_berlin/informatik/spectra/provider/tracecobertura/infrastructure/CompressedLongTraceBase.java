@@ -423,6 +423,14 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		getCompressedTrace().sleep();
 	}
 	
+	public void lock() {
+		getCompressedTrace().lock();
+	}
+	
+	public void unlock() {
+		getCompressedTrace().unlock();
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder(originalSize + " ==> ");

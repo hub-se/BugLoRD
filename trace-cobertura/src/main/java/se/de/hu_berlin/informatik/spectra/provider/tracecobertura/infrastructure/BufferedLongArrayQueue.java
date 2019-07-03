@@ -67,6 +67,16 @@ public class BufferedLongArrayQueue implements Serializable {
         stream.writeInt(size);
         stream.writeInt(arrayLength);
     }
+	
+	private volatile transient boolean locked = false;
+	
+	public void lock() {
+		this.locked = true;
+	}
+	
+	public void unlock() {
+		this.locked = false;
+	}
 
 	// stores all nodes on disk
 	public void sleep() {
@@ -463,6 +473,9 @@ public class BufferedLongArrayQueue implements Serializable {
     }
 
     public boolean add(long e) {
+    	if (locked) {
+    		throw new IllegalStateException("Tried to add value " + e + " while being locked.");
+    	}
     	loadLast();
     	if (lastNode != null && lastNode.hasFreeSpace()) {
     		lastNode.add(e);
@@ -477,6 +490,9 @@ public class BufferedLongArrayQueue implements Serializable {
     }
 
     public void clear() {
+    	if (locked) {
+    		throw new IllegalStateException("Tried to clear queue while being locked.");
+    	}
     	lock.lock();
     	try {
     		cachedNodes.clear();
@@ -511,6 +527,9 @@ public class BufferedLongArrayQueue implements Serializable {
      * the number of elements to clear from the list
      */
     public void clear(int count) {
+    	if (locked) {
+    		throw new IllegalStateException("Tried to clear queue while being locked.");
+    	}
     	lock.lock();
     	try {
     		int i = 0;
@@ -617,6 +636,7 @@ public class BufferedLongArrayQueue implements Serializable {
 
     public long element() {
     	if (size == 0) {
+//    		System.err.println(this.toString());
     		throw new IllegalStateException("size is 0");
     	}
     	final Node f = loadFirst();
@@ -631,6 +651,9 @@ public class BufferedLongArrayQueue implements Serializable {
 //    }
 
     public long remove() {
+    	if (locked) {
+    		throw new IllegalStateException("Tried to remove element while being locked.");
+    	}
     	final Node f = loadFirst();
         if (f == null || f.startIndex >= f.endIndex)
             throw new NoSuchElementException();
@@ -861,6 +884,10 @@ public class BufferedLongArrayQueue implements Serializable {
 		public long get(int i) {
 			return items[i+startIndex];
 		}
+		
+		public void set(int i, long value) {
+			items[i+startIndex] = value;
+		}
 
 	}
 	
@@ -891,6 +918,27 @@ public class BufferedLongArrayQueue implements Serializable {
         return f.get(itemIndex);
 	}
 
+	private void set(int i, long value) {
+		if (locked) {
+    		throw new IllegalStateException("Tried to set value at index " + i + " to " + value + " while being locked.");
+    	}
+		// we can compute the store index using the size of the 
+		// first node and the constant size of each array node
+		if (i < firstNodeSize) {
+			final Node f = loadFirst();
+	        if (f == null || f.startIndex >= f.endIndex)
+	            throw new NoSuchElementException();
+	        f.set(i, value);
+		}
+		i -= firstNodeSize;
+		int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
+		int itemIndex = i % arrayLength;
+		final Node f = load(storeIndex);
+        if (f == null || itemIndex >= f.endIndex)
+            throw new NoSuchElementException();
+        f.set(itemIndex, value);
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("[ ");
@@ -905,6 +953,16 @@ public class BufferedLongArrayQueue implements Serializable {
 
 	public boolean isDeleteOnExit() {
 		return deleteOnExit;
+	}
+	
+	public long getAndReplaceWith(int i, Function<Long, Long> function) {
+		long previous = get(i);
+		set(i, function.apply(previous));
+		return previous;
+	}
+
+	public void deleteOnExit() {
+		deleteOnExit = true;
 	}
 	
 }
