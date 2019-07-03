@@ -488,6 +488,10 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //				traceCollector.addRawTraceToPool(traceCount, threadId, eTrace);
 //				traceOfNodeIDs = null;
 			}
+			
+			for (Entry<Integer, CompressedLongTraceBase> entry : projectData.getIdToSubtraceMap().entrySet()) {
+				entry.getValue().deleteIfMarked();
+			}
 		}
 		
 		return true;

@@ -28,6 +28,8 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 	private BufferedMap<int[]> repetitionMarkers;
 	
 	private CompressedIntegerTraceBase child;
+
+	private boolean markedForDeletion;
 	
 	/**
 	 * Adds the given queue's contents to the trace. 
@@ -449,6 +451,17 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 			builder.append(eTraceIterator.next() + ", ");
 		}
 		return builder.toString();
+	}
+	
+	public void markForDeletion() {
+		this.markedForDeletion = true;
+	}
+	
+	public void deleteIfMarked() {
+		if (markedForDeletion) {
+			this.unlock();
+			this.clear();
+		}
 	}
 	
 }

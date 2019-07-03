@@ -221,18 +221,15 @@ public class RawIntTraceCollector {
 			subTraceGlobalIdMap.put(wrapper, currentId);
 			compressedLongTraceBase.sleep();
 			globalIdToSubTraceMap.put(currentId, compressedLongTraceBase);
-		} 
-		// I want to throw away (delete) duplicate sub traces, but when there are multiple threads
-		// in a single test, it creates some issues... 
-//		else {
-//			if (!globalIdToSubTraceMap.get(id).equals(compressedLongTraceBase)) {
-//				// already got this sub trace in the global map!
-//				// (and it's not the exact same object!) 
-//				// delete any stored nodes from disk!
-//				compressedLongTraceBase.unlock();
+		} else {
+			if (!globalIdToSubTraceMap.get(id).equals(compressedLongTraceBase)) {
+				// already got this sub trace in the global map!
+				// (and it's not the exact same object!) 
+				// delete any stored nodes from disk after processing all threads' traces!
+				compressedLongTraceBase.markForDeletion();
 //				compressedLongTraceBase.clear();
-//			}
-//		}
+			}
+		}
 		
 		return id;
 
