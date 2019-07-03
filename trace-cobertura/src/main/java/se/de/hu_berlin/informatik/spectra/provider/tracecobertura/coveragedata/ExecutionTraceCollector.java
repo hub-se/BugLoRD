@@ -147,7 +147,7 @@ public class ExecutionTraceCollector {
 	
 //	public static final Map<Integer, int[]> classesToCounterArrayMap = new ConcurrentHashMap<>();
 
-	private static int[][] classesToCounterArrayMap = new int[1024][];
+	private static int[][] classesToCounterArrayMap = new int[2048][];
 	
 	private static Set<Thread> currentThreads = new HashSet<>();
 

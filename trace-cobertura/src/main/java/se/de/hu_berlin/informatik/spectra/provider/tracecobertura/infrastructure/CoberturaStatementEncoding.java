@@ -7,8 +7,8 @@ public class CoberturaStatementEncoding {
 	private static final int INTEGER_BITS = 32;
 	
 	// used for encoding (2) cobertura counters/class IDs into a single long value (4 ints -> 1 long)
-	// uses 11 bit for the class identifier (max 2048);
-	// uses 21 bit for the counter id (max 2,097,152);
+	// uses 11 bit for the class identifier (max 2048 classes);
+	// uses 21 bit for the counter id (max 2,097,152 counters per class);
 	public static final int CLASS_ID_BITS = 11;
 	public static final int COUNTER_ID_BITS = 21;
 
