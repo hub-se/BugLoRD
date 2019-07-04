@@ -454,7 +454,7 @@ public class ExecutionTraceCollector {
 			// reduce the size of sub traces that contain repetitions
 			for (Entry<Integer, BufferedLongArrayQueue> entry : existingSubTraces.entrySet()) {
 				BufferedLongArrayQueue queue = entry.getValue();
-				queue.deleteOnExit();
+//				queue.deleteOnExit();
 				CompressedLongIdTrace subTrace = new CompressedLongIdTrace(queue, false);
 //				System.out.println(subTrace.toString());
 				subTrace.sleep();

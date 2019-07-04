@@ -88,6 +88,8 @@ public class BufferedLongArrayQueue implements Serializable {
 					store(node);
 				}
 			}
+			cachedNodes.clear();
+			cacheSequence.clear();
 			// store the last node, too
 			if (lastNode != null && lastNode.modified) {
 				store(lastNode);

@@ -35,7 +35,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
  * @author Simon
  *
  */
-public class SingleLinkedBufferedArrayQueueTest {
+public class BufferedArrayQueueTest {
 
 	/*
 	 * @throws java.lang.Exception

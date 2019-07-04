@@ -19,8 +19,8 @@ public abstract class CompressedLongTraceBase implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 5903218865249529299L;
-	
+	private static final long serialVersionUID = 3678143596875267880L;
+
 	private static final int MAX_ITERATION_COUNT = 10;
 	
 	private int originalSize;
@@ -29,7 +29,7 @@ public abstract class CompressedLongTraceBase implements Serializable {
 	
 	private CompressedLongTraceBase child;
 
-	private boolean markedForDeletion;
+	private transient boolean markedForDeletion;
 	
 	/**
 	 * Adds the given queue's contents to the trace. 
@@ -399,10 +399,10 @@ public abstract class CompressedLongTraceBase implements Serializable {
 	}
 
 	public void clear() {
+		if (repetitionMarkers != null) {
+			repetitionMarkers.clear();
+		}
 		if (child != null) {
-			if (repetitionMarkers != null) {
-				repetitionMarkers.clear();
-			}
 			child.clear();
 		} else {
 			compressedTrace.clear();
@@ -451,6 +451,17 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		if (markedForDeletion) {
 			this.unlock();
 			this.clear();
+		}
+	}
+	
+	public void deleteOnExit() {
+		if (repetitionMarkers != null) {
+			repetitionMarkers.deleteOnExit();
+		}
+		if (child != null) {
+			child.deleteOnExit();
+		} else {
+			compressedTrace.deleteOnExit();
 		}
 	}
 }

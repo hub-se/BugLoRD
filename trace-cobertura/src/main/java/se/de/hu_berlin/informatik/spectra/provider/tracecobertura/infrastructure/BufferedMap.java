@@ -32,7 +32,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	 */
 	private static final long serialVersionUID = 3786896457427890598L;
 
-	// keep at most 2 (+1 with the last node) nodes in memory
+	// keep at most 2 nodes in memory
     private static final int CACHE_SIZE = 2;
     
 	private File output;
@@ -56,6 +56,15 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	
 	private void writeObject(java.io.ObjectOutputStream stream)
             throws IOException {
+		sleep();
+        stream.writeObject(output);
+        stream.writeObject(filePrefix);
+        stream.writeObject(existingNodes);
+        stream.writeInt(maxSubMapSize);
+        stream.writeInt(size);
+    }
+
+	public void sleep() {
 		lock.lock();
 		try {
 			for (Node<E> node : cachedNodes.values()) {
@@ -63,15 +72,12 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 				// empty nodes are removed from the set of existing nodes
 				store(node);
 			}
+			cachedNodes.clear();
+			cacheSequence.clear();
 		} finally {
 			lock.unlock();
 		}
-        stream.writeObject(output);
-        stream.writeObject(filePrefix);
-        stream.writeObject(existingNodes);
-        stream.writeInt(maxSubMapSize);
-        stream.writeInt(size);
-    }
+	}
 
     @SuppressWarnings("unchecked")
 	private void readObject(java.io.ObjectInputStream stream)
@@ -502,4 +508,9 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	public boolean isDeleteOnExit() {
 		return deleteOnExit;
 	}
+	
+	public void deleteOnExit() {
+		deleteOnExit = true;
+	}
+	
 }

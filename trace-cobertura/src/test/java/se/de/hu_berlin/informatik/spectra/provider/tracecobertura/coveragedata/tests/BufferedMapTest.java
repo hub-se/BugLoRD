@@ -58,8 +58,9 @@ public class BufferedMapTest {
 		BufferedMap<String> queue = new BufferedMap<>(outputDir, "test1", 5);
 		
 		for (int i = 0; i < 50; ++i) {
-			queue.put(i*10, "" + (i*10));
+			queue.put(i*10, String.valueOf(i*10));
 		}
+		queue.sleep();
 		
 //		Assert.assertEquals(2, queue.get(2).intValue());
 		Assert.assertEquals("30", queue.get(30));

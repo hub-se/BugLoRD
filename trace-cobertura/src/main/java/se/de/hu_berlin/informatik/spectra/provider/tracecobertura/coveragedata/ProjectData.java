@@ -42,7 +42,9 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 			for (Entry<Long, BufferedIntArrayQueue> entry : map.entrySet()) {
 				try {
 					// might run into heap exceptions, etc...
-					this.executionTraces.put(entry.getKey(), new CompressedIntegerIdTrace(entry.getValue(), true));
+					CompressedIntegerIdTrace trace = new CompressedIntegerIdTrace(entry.getValue(), true);
+					trace.sleep();
+					this.executionTraces.put(entry.getKey(), trace);
 				} catch (Throwable e) {
 					e.printStackTrace();
 					System.exit(404);

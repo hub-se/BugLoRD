@@ -458,6 +458,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				
 				// collect the raw trace for future compression, etc.
 				// this will, among others, extract common sequences for added traces
+				entry.getValue().deleteOnExit();
 				traceCollector.addRawTraceToPool(traceCount, threadId, 
 						entry.getValue(), projectData.getIdToSubtraceMap());
 				// processed and done with...
@@ -490,6 +491,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			}
 			
 			for (Entry<Integer, CompressedLongTraceBase> entry : projectData.getIdToSubtraceMap().entrySet()) {
+				entry.getValue().deleteOnExit();
 				entry.getValue().deleteIfMarked();
 			}
 		}

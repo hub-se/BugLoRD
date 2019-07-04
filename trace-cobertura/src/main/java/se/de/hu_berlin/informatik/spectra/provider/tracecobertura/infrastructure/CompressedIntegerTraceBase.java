@@ -29,7 +29,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 	
 	private CompressedIntegerTraceBase child;
 
-	private boolean markedForDeletion;
+	private transient boolean markedForDeletion;
 	
 	/**
 	 * Adds the given queue's contents to the trace. 
@@ -409,10 +409,10 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 	}
 
 	public void clear() {
+		if (repetitionMarkers != null) {
+			repetitionMarkers.clear();
+		}
 		if (child != null) {
-			if (repetitionMarkers != null) {
-				repetitionMarkers.clear();
-			}
 			child.clear();
 		} else {
 			compressedTrace.clear();
@@ -432,7 +432,14 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 	}
 
 	public void sleep() {
-		getCompressedTrace().sleep();
+		if (repetitionMarkers != null) {
+			repetitionMarkers.sleep();
+		}
+		if (child != null) {
+			child.sleep();
+		} else {
+			compressedTrace.sleep();
+		}
 	}
 	
 	public void lock() {
@@ -461,6 +468,17 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		if (markedForDeletion) {
 			this.unlock();
 			this.clear();
+		}
+	}
+	
+	public void deleteOnExit() {
+		if (repetitionMarkers != null) {
+			repetitionMarkers.deleteOnExit();
+		}
+		if (child != null) {
+			child.deleteOnExit();
+		} else {
+			compressedTrace.deleteOnExit();
 		}
 	}
 	
