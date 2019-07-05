@@ -293,6 +293,7 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		}
 
 		if (!traceRepetitions.isEmpty()) {
+			traceRepetitions.sleep();
 			this.repetitionMarkers = traceRepetitions;
 		}
 		return traceWithoutRepetitions;

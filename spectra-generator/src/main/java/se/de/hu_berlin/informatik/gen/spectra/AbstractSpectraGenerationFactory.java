@@ -25,6 +25,9 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  */
 public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R,S> {
 
+	public static final String MAX_HEAP = "-Xms2g";
+	public static final String INITIAL_HEAP = "-Xmx2g";
+	
 	/**
 	 * Defines which tool (or modified tool...) to use.
 	 * Add new tools as options here and update the switch statement

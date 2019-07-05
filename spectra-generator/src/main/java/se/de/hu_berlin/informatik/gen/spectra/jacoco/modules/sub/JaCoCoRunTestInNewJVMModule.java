@@ -18,6 +18,7 @@ import org.jacoco.core.runtime.RemoteControlReader;
 import org.jacoco.core.runtime.RemoteControlWriter;
 import org.jacoco.core.tools.ExecFileLoader;
 
+import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.JaCoCoSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.SerializableExecFileLoader;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoRunTestInNewJVMModule.TestRunner.CmdOptions;
@@ -63,8 +64,9 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
 					null, 
 					TestRunner.class,
 					instrumentedClassPath,
-					projectDir,
-					"-Xmx1024m", "-Xms1024m",
+					projectDir, 
+					AbstractSpectraGenerationFactory.INITIAL_HEAP, 
+					AbstractSpectraGenerationFactory.MAX_HEAP,
 					"-Djacoco-agent.dumponexit=false", 
 					"-Djacoco-agent.output=tcpserver",
 					"-Djacoco-agent.excludes=*",
@@ -85,8 +87,9 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
 					null, 
 					TestRunner.class,
 					instrumentedClassPath,
-					projectDir,
-					"-Xmx1024m", "-Xms1024m",
+					projectDir, 
+					AbstractSpectraGenerationFactory.INITIAL_HEAP, 
+					AbstractSpectraGenerationFactory.MAX_HEAP,
 					"-javaagent:" + Objects.requireNonNull(jacocoAgentJar).getAbsolutePath()
 					+ "=dumponexit=false,"
 					+ "output=tcpserver,"

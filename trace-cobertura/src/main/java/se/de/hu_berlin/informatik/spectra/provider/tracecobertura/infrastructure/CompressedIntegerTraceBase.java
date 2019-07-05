@@ -305,6 +305,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		}
 
 		if (!traceRepetitions.isEmpty()) {
+			traceRepetitions.sleep();
 			this.repetitionMarkers = traceRepetitions;
 		}
 		return traceWithoutRepetitions;

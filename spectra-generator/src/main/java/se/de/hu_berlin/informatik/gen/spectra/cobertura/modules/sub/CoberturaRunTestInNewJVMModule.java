@@ -3,6 +3,8 @@ package se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub;
 import java.io.File;
 import java.nio.file.Path;
 import org.apache.commons.cli.Option;
+
+import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoRunTestInNewJVMModule.TestRunner.CmdOptions;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithServer;
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
@@ -43,8 +45,9 @@ public class CoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVMModul
 				null, 
 				TestRunner.class,
 				instrumentedClassPath,
-				projectDir,
-				"-Xmx1024m", "-Xms1024m",
+				projectDir, 
+				AbstractSpectraGenerationFactory.INITIAL_HEAP, 
+				AbstractSpectraGenerationFactory.MAX_HEAP,
 				"-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString())
 				.setEnvVariable("LC_ALL","en_US.UTF-8")
 				.setEnvVariable("TZ", "America/Los_Angeles");
