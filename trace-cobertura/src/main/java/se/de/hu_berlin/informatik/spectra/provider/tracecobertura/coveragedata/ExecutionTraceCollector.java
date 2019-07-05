@@ -414,9 +414,9 @@ public class ExecutionTraceCollector {
 			boolean done = false;
 			while (!done) {
 				if (thread.isAlive()) {
-					System.err.println("Thread " + thread.getId() + " is still alive. Waiting 60 seconds for it to die...");
+					System.err.println("Thread " + thread.getId() + " is still alive. Waiting 20 seconds for it to die...");
 					try {
-						thread.join(60000); // wait 60 seconds for threads to die... TODO
+						thread.join(20000); // wait 20 seconds for threads to die... TODO
 						if (thread.isAlive()) {
 							System.err.println("(At least) thread " + thread.getId() + " remains alive...");
 							//						thread.interrupt();
