@@ -88,6 +88,7 @@ public class SpecialCompressedByteArrayToIntArrayQueueProcessor extends Abstract
 					if (currentSequence != null) {
 						result.add(currentSequence);
 					}
+					currentSequence = null;
 //					currentSequence = new ArrayList<>();
 				}
 

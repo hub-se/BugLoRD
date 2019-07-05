@@ -28,8 +28,8 @@ public class BufferedIntArrayQueue implements Serializable {
 	 */
 	private static final long serialVersionUID = -1777403971930917719L;
 
-	// keep at most 1 (+1 with the last node) nodes in memory
-    private static final int CACHE_SIZE = 1;
+	// keep at most 2 (+1 with the last node) nodes in memory
+    private static final int CACHE_SIZE = 2;
     
     private static final int ARRAY_SIZE = 1000;
 	

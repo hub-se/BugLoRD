@@ -130,6 +130,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 				max = Math.max(entry.getValue()[0], max);
 				max = Math.max(entry.getValue()[1], max);
 			}
+			max = Math.max(getRepetitionMarkers().size(), max);
 			return max;
 		}
 	}
