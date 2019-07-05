@@ -181,16 +181,27 @@ public class BufferedArrayQueueTest {
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
+		Assert.assertEquals(50, queue.size());
 		queue.sleep();
+		
+		queue.clear(100);
+		Assert.assertEquals(0, queue.size());
+		
+		for (int i = 0; i < 50; ++i) {
+			queue.add(i);
+		}
+		queue.sleep();
+//		
+		queue.clear(6);
 		
 //		Thread.sleep(5000);
 		ReplaceableCloneableIntIterator iterator = queue.iterator();
 		
-		int i = 0;
+		int i = 6;
 		while (iterator.hasNext()) {
 			Assert.assertEquals(i++, iterator.next());
 		}
-		
+		Assert.assertEquals(50,i);
 		queue.clear();
 	}
 	
@@ -259,15 +270,27 @@ public class BufferedArrayQueueTest {
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
+		Assert.assertEquals(50, queue.size());
 		queue.sleep();
+		
+		queue.clear(100);
+		Assert.assertEquals(0, queue.size());
+		
+		for (int i = 0; i < 50; ++i) {
+			queue.add(i);
+		}
+		queue.sleep();
+//		
+		queue.clear(6);
 		
 //		Thread.sleep(5000);
 		ReplaceableCloneableLongIterator iterator = queue.iterator();
 		
-		int i = 0;
+		int i = 6;
 		while (iterator.hasNext()) {
 			Assert.assertEquals(i++, iterator.next());
 		}
+		Assert.assertEquals(50,i);
 		
 		queue.clear();
 	}

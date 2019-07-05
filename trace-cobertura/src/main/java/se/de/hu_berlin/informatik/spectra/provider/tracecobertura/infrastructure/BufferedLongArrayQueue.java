@@ -529,89 +529,56 @@ public class BufferedLongArrayQueue implements Serializable {
      * the number of elements to clear from the list
      */
     public void clear(int count) {
+    	if (count >= size) {
+			clear();
+			return;
+		}
     	if (locked) {
     		throw new IllegalStateException("Tried to clear queue while being locked.");
     	}
     	lock.lock();
     	try {
-    		int i = 0;
     		Node x = null;
     		if (storedNodeExists()) {
-    			// do not load uncached nodes, if possible
+    			// do not load nodes, if possible
     			while (count >= firstNodeSize) {
-    				if (cachedNodes.containsKey(firstStoreIndex)) {
-    					x = load(firstStoreIndex);
-    					break;
+    				// we can just delete the file without looking at the node
+    				uncacheAndDelete(firstStoreIndex);
+    				++firstStoreIndex;
+    				count -= firstNodeSize;
+    				size -= firstNodeSize;
+    				// still a node on disk?
+    				if (storedNodeExists()) {
+    					firstNodeSize = arrayLength;
     				} else {
-    					// we can just delete the file without loading the node
-    					uncacheAndDelete(firstStoreIndex);
-    					++firstStoreIndex;
-    					count -= firstNodeSize;
-    					size -= firstNodeSize;
-    					// still a node on disk?
-    					if (storedNodeExists()) {
-    						firstNodeSize = arrayLength;
-    						// check next node from disk
-    						if (cachedNodes.containsKey(firstStoreIndex)) {
-    							x = load(firstStoreIndex);
-    							break;
-    						}
-
-    					} else {
-    						loadLast();
-    						// no node left on disk, so continue with the last node
-    						firstNodeSize = lastNode.endIndex - lastNode.startIndex;
-    						x = lastNode;
-    						break;
-    					}
+    					break;
     				}
     			}
 
-    			if (count < firstNodeSize) {
-    				x = load(firstStoreIndex);
+    			// still elements left to clear?
+    			if (count > 0) {
+    				if (storedNodeExists()) {
+    					x = load(firstStoreIndex);
+    				} else {
+    					loadLast();
+    					// no node left on disk, so continue with the last node
+    					firstNodeSize = lastNode.endIndex - lastNode.startIndex;
+    					x = lastNode;
+    				}
     			}
     		} else {
+    			loadLast();
     			x = lastNode;
     		}
-    		while (x != null && i < count) {
-    			for (int j = x.startIndex; j < x.endIndex && i < count; ++j, ++i) {
-//    				System.out.println(x.storeIndex + ", start: " + x.startIndex + ", next: " + x.items[j]);
-//    				x.items[j] = null;
-    				++x.startIndex;
-    				--firstNodeSize;
-    			}
-    			if (x.startIndex >= x.endIndex) {
-    				if (storedNodeExists()) {
-    					uncacheAndDelete(firstStoreIndex);
-    					++firstStoreIndex;
-
-    					x.items = null;
-    					// still a node on disk?
-    					if (storedNodeExists()) {
-    						// load next node from disk
-    						x = load(firstStoreIndex);
-    						firstNodeSize = arrayLength;
-    					} else {
-    						// no node left on disk, so continue with the last node
-    						x = lastNode;
-    						firstNodeSize = lastNode.endIndex - lastNode.startIndex;
-    					}
-    				} else if (x == lastNode) {
-//    					// keep one node/array to avoid having to allocate a new one
-//    					x.startIndex = 0;
-//    					x.endIndex = 0;
-    					initialize();
-    					break;
-    				}
-    			} else if (i >= count) {
-    				x.modified = true;
-    				break;
-    			}
+    		
+    		if (count > 0 && x != null) {
+    			// remove elements from first node
+    			x.startIndex += count;
+    			firstNodeSize -= count;
+    			x.modified = true;
     		}
+    		
     		size -= count;
-    		if (size < 0) {
-    			size = 0;
-    		}
     	} finally {
     		lock.unlock();
 		}
