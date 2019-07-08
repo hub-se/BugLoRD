@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue.MyBufferedLongIterator;
+
 import java.util.Set;
 import java.util.UUID;
 
@@ -217,6 +220,8 @@ public abstract class CompressedLongTraceBase implements Serializable {
 						trace.getNodeSize(), deleteOnExit);
 		BufferedMap<int[]> traceRepetitions = new BufferedMap<>(trace.getOutputDir(), 
 				"cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.arrayLength, deleteOnExit);
+		MyBufferedLongIterator resultTraceIterator = traceWithoutRepetitions.iterator();
+		MyBufferedLongIterator inputTraceIterator = trace.iterator();
 		
 		// mapping from elements to their most recent positions in the result list
 		Map<Long,Integer> elementToPositionMap = new HashMap<>();
@@ -236,9 +241,10 @@ public abstract class CompressedLongTraceBase implements Serializable {
 				// and this position is the same as the following sequence(s) in the input trace
 				int repetitionCounter = 0;
 				int lengthToRemove = 0;
-				ReplaceableCloneableLongIterator inputTraceIterator = trace.iterator();
-				ReplaceableCloneableLongIterator resultTraceIterator = traceWithoutRepetitions.iterator(position);
-				resultTraceIterator.next();
+				// avoid instantiating new iterators
+				inputTraceIterator.setToPosition(0);
+				resultTraceIterator.setToPosition(position+1);
+//				resultTraceIterator.next();
 				// count the number of elements that need to be removed later with count variable;
 				// variable count can start at 0 here, since we already removed the very first element
 				for (int count = 0; ; ++count) {
@@ -246,7 +252,7 @@ public abstract class CompressedLongTraceBase implements Serializable {
 						// at the end of the sequence
 						++repetitionCounter;
 						// start over
-						resultTraceIterator = traceWithoutRepetitions.iterator(position);
+						resultTraceIterator.setToPosition(position);
 						// later remove the processed nodes that have been repeated
 						lengthToRemove += count;
 						count = 0;
@@ -258,9 +264,7 @@ public abstract class CompressedLongTraceBase implements Serializable {
 					}
 					
 					// check if elements are equal
-					long first = inputTraceIterator.next();
-					long second = resultTraceIterator.next();
-					if (first != second) {
+					if (inputTraceIterator.next() != resultTraceIterator.next()) {
 						break;
 					}
 					

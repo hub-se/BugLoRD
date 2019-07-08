@@ -676,20 +676,24 @@ public class BufferedLongArrayQueue implements Serializable {
 		return size == 0;
 	}
 
-	public ReplaceableCloneableLongIterator iterator() {
+	public MyBufferedLongIterator iterator() {
 		return new MyBufferedLongIterator();
 	}
 	
-	public ReplaceableCloneableLongIterator iterator(final int position) {
+	public MyBufferedLongIterator iterator(final int position) {
 		return new MyBufferedLongIterator(position);
 	}
 
-	private final class MyBufferedLongIterator implements ReplaceableCloneableLongIterator {
+	public final class MyBufferedLongIterator implements ReplaceableCloneableLongIterator {
 
 		int storeIndex;
 		int index;
 
 		MyBufferedLongIterator(int i) {
+			setToPosition(i);
+		}
+		
+		public void setToPosition(int i) {
 			// we can compute the store index using the size of the 
 			// first node and the constant size of each array node
 			if (i < firstNodeSize) {

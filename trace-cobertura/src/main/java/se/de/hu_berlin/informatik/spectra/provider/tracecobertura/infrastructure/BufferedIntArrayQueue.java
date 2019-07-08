@@ -672,20 +672,24 @@ public class BufferedIntArrayQueue implements Serializable {
 		return size == 0;
 	}
 
-	public ReplaceableCloneableIntIterator iterator() {
+	public MyBufferedIntIterator iterator() {
 		return new MyBufferedIntIterator();
 	}
 	
-	public ReplaceableCloneableIntIterator iterator(final int position) {
+	public MyBufferedIntIterator iterator(final int position) {
 		return new MyBufferedIntIterator(position);
 	}
 
-	private final class MyBufferedIntIterator implements ReplaceableCloneableIntIterator {
+	public final class MyBufferedIntIterator implements ReplaceableCloneableIntIterator {
 
 		int storeIndex;
 		int index;
 
 		MyBufferedIntIterator(int i) {
+			setToPosition(i);
+		}
+		
+		public void setToPosition(int i) {
 			// we can compute the store index using the size of the 
 			// first node and the constant size of each array node
 			if (i < firstNodeSize) {
