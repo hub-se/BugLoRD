@@ -30,6 +30,7 @@ public final class Defects4J extends Defects4JBase {
 				"the projects in the Defects4J benchmark need Java 1.7 to work properly.",
 				"set the path to a proper JRE here."),
 		ONLY_RELEVANT_TESTS("only_relevant_tests", "true", "whether only relevant tests shall be considered"),
+		ALWAYS_USE_JAVA7("always_use_java7", "false", "whether tests shall always be run using a java 7 based test runner"),
 		PLOT_DIR("plot_dir", "/path/to/../plot_dir_for_specific_LM",
 				"specify the main directory to where the generated plot data shall be saved"),
 		SPECTRA_ARCHIVE_DIR("spectraArchive_dir", "/path/to/../spectraArchive",
