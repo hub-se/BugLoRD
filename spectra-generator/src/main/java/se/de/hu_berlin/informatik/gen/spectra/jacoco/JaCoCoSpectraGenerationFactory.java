@@ -86,7 +86,7 @@ public class JaCoCoSpectraGenerationFactory extends
 		}
 		String[] properties;
 		if (useSeparateJVM) {
-			properties = new String[] { "-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC", INITIAL_HEAP, MAX_HEAP };
+			properties = new String[] { "-XX:+UseNUMA", GC, INITIAL_HEAP, MAX_HEAP };
 		} else {
 			// get a port that is not yet used...
 			port = getFreePort(port);
@@ -98,12 +98,12 @@ public class JaCoCoSpectraGenerationFactory extends
 			if (OFFLINE_INSTRUMENTATION) {
 				properties = new String[] { "-Djacoco-agent.dumponexit=false", "-Djacoco-agent.output=tcpserver",
 						"-Djacoco-agent.excludes=*", "-Djacoco-agent.port=" + port, "-XX:+UseNUMA",
-						"-XX:+UseConcMarkSweepGC", INITIAL_HEAP, MAX_HEAP };
+						GC, INITIAL_HEAP, MAX_HEAP };
 			} else {
 				properties = new String[] {
 						"-javaagent:" + jacocoAgentJar.getAbsolutePath() + "=dumponexit=false," + "output=tcpserver,"
 								+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*," + "port=" + port,
-						"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC", INITIAL_HEAP, MAX_HEAP };
+						"-XX:+UseNUMA", GC, INITIAL_HEAP, MAX_HEAP };
 			}
 		}
 		return properties;

@@ -59,7 +59,7 @@ public class TraceCoberturaSpectraGenerationFactory
 	@Override
 	public String[] getPropertiesForMainTestRunner(Path projectDir, boolean useSeparateJVM) {
 		return new String[] { "-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath(),
-				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC", INITIAL_HEAP, MAX_HEAP };
+				"-XX:+UseNUMA", GC, INITIAL_HEAP, MAX_HEAP };
 	}
 
 	@Override

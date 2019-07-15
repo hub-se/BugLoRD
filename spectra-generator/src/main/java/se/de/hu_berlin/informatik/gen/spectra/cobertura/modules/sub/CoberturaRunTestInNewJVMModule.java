@@ -46,6 +46,7 @@ public class CoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVMModul
 				TestRunner.class,
 				instrumentedClassPath,
 				projectDir, 
+				AbstractSpectraGenerationFactory.GC,
 				AbstractSpectraGenerationFactory.INITIAL_HEAP, 
 				AbstractSpectraGenerationFactory.MAX_HEAP,
 				"-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString())

@@ -26,7 +26,7 @@ public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends Abstract
 			final boolean debugOutput, final Long timeout, final int repeatCount, 
 			String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir) {
 		super(testOutput, debugOutput, timeout, repeatCount, instrumentedClassPath, 
-				dataFile, javaHome, projectDir, 
+				dataFile, javaHome, projectDir, AbstractSpectraGenerationFactory.GC,
 				AbstractSpectraGenerationFactory.INITIAL_HEAP, AbstractSpectraGenerationFactory.MAX_HEAP,
 				"-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString());
 	}
