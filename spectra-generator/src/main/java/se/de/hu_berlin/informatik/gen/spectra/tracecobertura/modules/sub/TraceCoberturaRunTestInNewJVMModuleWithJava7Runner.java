@@ -27,7 +27,7 @@ public class TraceCoberturaRunTestInNewJVMModuleWithJava7Runner extends Abstract
 			String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir) {
 		super(testOutput, debugOutput, timeout, repeatCount, instrumentedClassPath, 
 				dataFile, javaHome, projectDir, 
-				AbstractSpectraGenerationFactory.INITIAL_HEAP, AbstractSpectraGenerationFactory.MAX_HEAP,
+				AbstractSpectraGenerationFactory.getInitialHeapOption(), AbstractSpectraGenerationFactory.getMaxHeapOption(),
 				"-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString());
 	}
 	

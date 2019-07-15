@@ -25,8 +25,28 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  */
 public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R,S> {
 
-	public static final String MAX_HEAP = "-Xms2g";
-	public static final String INITIAL_HEAP = "-Xmx2g";
+//	public static final String MAX_HEAP = "-Xmx2g";
+//	public static final String INITIAL_HEAP = "-Xms2g";
+	
+	public static String getMaxHeapOption() {
+		String property = System.getProperty("sun.arch.data.model");
+		switch (property) {
+		case "64":
+			return "-Xmx4g";
+		default:
+			return "-Xmx2g";
+		}
+	}
+	
+	public static String getInitialHeapOption() {
+		String property = System.getProperty("sun.arch.data.model");
+		switch (property) {
+		case "64":
+			return "-Xms4g";
+		default:
+			return "-Xms2g";
+		}
+	}
 	
 	/**
 	 * Defines which tool (or modified tool...) to use.
