@@ -30,9 +30,6 @@ public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R,
 	
 	public static String getMaxHeapOption() {
 		String property = System.getProperty("sun.arch.data.model");
-		if (property == null) {
-			return "-Xmx2g";
-		}
 		switch (property) {
 		case "64":
 			return "-Xmx4g";
@@ -43,9 +40,6 @@ public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R,
 	
 	public static String getInitialHeapOption() {
 		String property = System.getProperty("sun.arch.data.model");
-		if (property == null) {
-			return "-Xmx2g";
-		}
 		switch (property) {
 		case "64":
 			return "-Xms4g";

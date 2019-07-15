@@ -59,15 +59,13 @@ public class TraceCoberturaSpectraGenerationFactory
 	@Override
 	public String[] getPropertiesForMainTestRunner(Path projectDir, boolean useSeparateJVM) {
 		String property = System.getProperty("sun.arch.data.model");
-		if (property != null) {
-			switch (property) {
-			case "64":
-				System.out.println("Recognized 64 bit architecture...");
-				break;
-			default:
-				System.out.println("Using 32 bit architecture...");
-				break;
-			}
+		switch (property) {
+		case "64":
+			System.out.println("Recognized 64 bit architecture...");
+			break;
+		default:
+			System.out.println("Using 32 bit architecture...");
+			break;
 		}
 		return new String[] { "-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath(),
 				"-XX:+UseNUMA", "-XX:+UseConcMarkSweepGC", getInitialHeapOption(), getMaxHeapOption() };
