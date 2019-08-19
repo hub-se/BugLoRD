@@ -281,12 +281,11 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 					
 					// continue with the next node of the remaining sequence
 				}
-				// remove repeated elements
-				trace.clear(lengthToRemove);
-				
 
 				// are there any repetitions?
 				if (repetitionCounter > 0) {
+					// remove repeated elements
+					trace.clear(lengthToRemove);
 					// compute the length of one repetition
 					int length = (lengthToRemove+1)/repetitionCounter;
 					

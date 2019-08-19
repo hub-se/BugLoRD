@@ -166,6 +166,7 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			MethodVisitor nextMethodVisitor, int counterId, 
 			String className, int classId) {
 		if (collectExecutionTrace) {
+			generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
 			nextMethodVisitor.visitLdcInsn(counterId);
