@@ -388,7 +388,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 	/**
 	 * @throws IOException if
 	 */
-	@Test
+//	@Test
 	public void testBugMinerSpectraReadingAndWriting() throws IOException {	
 		Path spectraZipFile = Paths.get(getStdResourcesDir(), "28919-traces-compressed.zip");
 		ISpectra<SourceCodeBlock, HitTrace<SourceCodeBlock>> spectra = SpectraFileUtils.loadSpectraFromBugMinerZipFile2(spectraZipFile);
