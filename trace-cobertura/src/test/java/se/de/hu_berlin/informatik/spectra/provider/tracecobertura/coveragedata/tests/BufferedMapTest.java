@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.RepetitionMarkerBufferedMap;
 
 
 /**
@@ -64,6 +65,20 @@ public class BufferedMapTest {
 		
 //		Assert.assertEquals(2, queue.get(2).intValue());
 		Assert.assertEquals("30", queue.get(30));
+		
+	}
+	
+	@Test
+	public void testBufferedMapRepMarkers() throws Exception {
+		BufferedMap<int[]> queue = new RepetitionMarkerBufferedMap(outputDir, "test2", 5);
+		
+		for (int i = 0; i < 50; ++i) {
+			queue.put(i*10, new int[] {i,i+1});
+		}
+		queue.sleep();
+		
+//		Assert.assertEquals(2, queue.get(2).intValue());
+		Assert.assertArrayEquals(new int[] {3,4}, queue.get(30));
 		
 	}
 

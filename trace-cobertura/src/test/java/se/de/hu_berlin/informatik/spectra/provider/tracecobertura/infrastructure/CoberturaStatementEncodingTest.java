@@ -52,11 +52,18 @@ public class CoberturaStatementEncodingTest {
 	public void testGenerateUniqueRepresentationForStatement() throws Exception {
 		for (int classId = 0; classId < Math.pow(2,CoberturaStatementEncoding.CLASS_ID_BITS); classId += 11) {
 			for (int counterId = 0; counterId < Math.pow(2,CoberturaStatementEncoding.COUNTER_ID_BITS); counterId += 17) {
-				testEncodingAndDecoding(classId, counterId, CoberturaStatementEncoding.NORMAL_ID);
-				testEncodingAndDecoding(classId, counterId, CoberturaStatementEncoding.JUMP_ID);
-				testEncodingAndDecoding(classId, counterId, 12345678);
+				testEncodingAndDecoding(classId, counterId);
 			}
 		}
+		testEncodingAndDecoding(0, 0);
+		testEncodingAndDecoding((int)Math.pow(2,CoberturaStatementEncoding.CLASS_ID_BITS)-1,
+				(int)Math.pow(2,CoberturaStatementEncoding.COUNTER_ID_BITS)-1);
+	}
+
+	private void testEncodingAndDecoding(int classId, int counterId) {
+		testEncodingAndDecoding(classId, counterId, CoberturaStatementEncoding.NORMAL_ID);
+		testEncodingAndDecoding(classId, counterId, CoberturaStatementEncoding.JUMP_ID);
+		testEncodingAndDecoding(classId, counterId, 12345678);
 	}
 
 	private void testEncodingAndDecoding(int classId, int counterId, int specialIndicatorId) {

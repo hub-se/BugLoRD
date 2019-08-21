@@ -5,8 +5,8 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
+import java.util.zip.ZipException;
 
-import net.lingala.zip4j.model.FileHeader;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArrays
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
@@ -235,7 +236,7 @@ public class RawIntTraceCollector {
 
 	}
 
-	public List<CompressedIntegerTraceBase> getRawTraces(int traceIndex) {
+	public List<CompressedIntegerTraceBase> getRawTraces(int traceIndex) throws ZipException {
 		if (!output.toFile().exists()) {
 			return null;
 		}
@@ -281,7 +282,7 @@ public class RawIntTraceCollector {
 		}
 	}
 
-	public List<ExecutionTrace> getExecutionTraces(int traceIndex, boolean log) {
+	public List<ExecutionTrace> getExecutionTraces(int traceIndex, boolean log) throws ZipException {
 		// check if a stored execution trace exists
 		if (!output.toFile().exists()) {
 			return null;
@@ -376,12 +377,12 @@ public class RawIntTraceCollector {
 		try {
 			// retrieve the raw traces from the zip file
 			ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
-			List<FileHeader> rawTraceFiles = 
+			List<String> rawTraceFiles = 
 					zip.getFileHeadersContainingString(RAW_TRACE_FILE_EXTENSION);
-			for (FileHeader fileHeader : rawTraceFiles) {
-				tracker.track("processing " + fileHeader.getFileName());
+			for (String fileHeader : rawTraceFiles) {
+				tracker.track("processing " + fileHeader);
 				CompressedIntegerIdTrace rawTrace = SpectraFileUtils
-						.loadRawTraceFromZipFile(zip, fileHeader.getFileName(), fileHeader.getFileName()
+						.loadRawTraceFromZipFile(zip, fileHeader, fileHeader
 								.replace(RAW_TRACE_FILE_EXTENSION, REP_MARKER_FILE_EXTENSION));
 
 //				extractCommonSequencesFromRawTrace(executionTrace.iterator());
@@ -463,7 +464,7 @@ public class RawIntTraceCollector {
 	}
 
 	public boolean moveExecutionTraces(int traceIndex, Path outputFile, Supplier<String> traceFileNameSupplier,
-			Supplier<String> repMarkerFileNameSupplier) {
+			Supplier<String> repMarkerFileNameSupplier) throws ZipException, Abort {
 		// check if a stored execution trace exists
 		if (!output.toFile().exists()) {
 			return false;

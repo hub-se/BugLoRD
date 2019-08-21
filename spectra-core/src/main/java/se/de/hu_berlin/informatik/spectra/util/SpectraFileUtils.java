@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.zip.ZipException;
 import java.util.Map.Entry;
 
 import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReport;
@@ -58,6 +59,7 @@ import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
@@ -891,7 +893,7 @@ public class SpectraFileUtils {
 			List<T> lineArray, Supplier<D> hitSpectraSupplier,
 			Supplier<? extends CountSpectra<T>> countSpectraSupplier) {
 		// create a new spectra
-		D result;
+		D result = null;
 
 		// parse the file containing the involvement table
 		byte[] involvementTable = zip.get(INVOLVEMENT_TABLE_FILE_INDEX, false);
@@ -899,7 +901,11 @@ public class SpectraFileUtils {
 			result = loadFromOldSpectraFileFormat(
 					zip, involvementTable, status, lineArray, hitSpectraSupplier, countSpectraSupplier);
 		} else {
-			result = loadFromNewSpectraFileFormat(zip, status, lineArray, hitSpectraSupplier, countSpectraSupplier);
+			try {
+				result = loadFromNewSpectraFileFormat(zip, status, lineArray, hitSpectraSupplier, countSpectraSupplier);
+			} catch (ZipException e) {
+				Log.abort(SpectraFileUtils.class, e, "Could not load spectra.");
+			}
 		}
 
 		return result;
@@ -992,7 +998,7 @@ public class SpectraFileUtils {
 	@SuppressWarnings("unchecked")
 	private static <T, D extends ISpectra<T, ?>> D loadFromNewSpectraFileFormat(ZipFileWrapper zip, byte[] status,
 			List<T> lineArray, Supplier<D> hitSpectraSupplier,
-			Supplier<? extends CountSpectra<T>> countSpectraSupplier) {
+			Supplier<? extends CountSpectra<T>> countSpectraSupplier) throws ZipException {
 		D result;
 
 		// get the trace identifiers
@@ -1107,7 +1113,7 @@ public class SpectraFileUtils {
 		return result;
 	}
 
-	public static <T> Collection<ExecutionTrace> loadExecutionTraces(ZipFileWrapper zip, int traceCounter) {
+	public static <T> Collection<ExecutionTrace> loadExecutionTraces(ZipFileWrapper zip, int traceCounter) throws ZipException {
 		List<ExecutionTrace> traces = new ArrayList<>(1);
 		// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
 		// the stored IDs have to match the IDs of the node identifiers in the line array
@@ -1153,7 +1159,7 @@ public class SpectraFileUtils {
 	}
 	
 	public static boolean moveExecutionTraces(ZipFileWrapper zip, int traceCounter, 
-			Path outputFile, Supplier<String> traceFileNameSupplier, Supplier<String> repMarkerFileNameSupplier) {
+			Path outputFile, Supplier<String> traceFileNameSupplier, Supplier<String> repMarkerFileNameSupplier) throws ZipException, Abort {
 		// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
 		// the stored IDs have to match the IDs of the node identifiers in the line array
 		Module<Pair<String, String>, Boolean> module = new MoveNamedByteArraysBetweenZipFilesProcessor(zip.getzipFilePath(), outputFile).asModule();
@@ -1207,7 +1213,7 @@ public class SpectraFileUtils {
 //		return e;
 //	}
 	
-	public static ExecutionTrace loadExecutionTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) {
+	public static ExecutionTrace loadExecutionTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) throws ZipException {
 		BufferedIntArrayQueue compressedTrace = new BufferedIntArrayQueue(
 				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
 				UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
@@ -1246,7 +1252,7 @@ public class SpectraFileUtils {
 //		return e;
 //	}
 	
-	public static CompressedIntegerIdTrace loadRawTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) {
+	public static CompressedIntegerIdTrace loadRawTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) throws ZipException {
 		BufferedIntArrayQueue compressedTrace = new BufferedIntArrayQueue(
 				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
 				UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
@@ -1305,7 +1311,7 @@ public class SpectraFileUtils {
 //		}
 	}
 	
-	private static <T> void loadSequenceIndexer(ZipFileWrapper zip, ISpectra<T, ?> spectra) {
+	private static <T> void loadSequenceIndexer(ZipFileWrapper zip, ISpectra<T, ?> spectra) throws ZipException {
 		byte[] subTraceIDSequencesByteArray = zip.get(SUBTRACE_ID_SEQUENCES_FILE_NAME, false);
 
 		if (subTraceIDSequencesByteArray == null) {
@@ -1340,7 +1346,7 @@ public class SpectraFileUtils {
 		spectra.setIndexer(new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences));
 	}
 	
-	public static CompressedIntegerTraceBase[] loadNodeIdSequences(ZipFileWrapper zip) {
+	public static CompressedIntegerTraceBase[] loadNodeIdSequences(ZipFileWrapper zip) throws ZipException {
 		int counter = 0;
 		while (true) {
 			String file = (++counter) + SpectraFileUtils.NODE_ID_FILE_EXTENSION;
@@ -1363,7 +1369,7 @@ public class SpectraFileUtils {
 		return traces;
 	}
 	
-	public static CompressedIntegerIdTrace loadNodeIdSequenceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) {
+	public static CompressedIntegerIdTrace loadNodeIdSequenceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) throws ZipException {
 		BufferedIntArrayQueue compressedTrace = new BufferedIntArrayQueue(
 				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
 				UUID.randomUUID().toString(), ExecutionTraceCollector.SUBTRACE_ARRAY_SIZE);

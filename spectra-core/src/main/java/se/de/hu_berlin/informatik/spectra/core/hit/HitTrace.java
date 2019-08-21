@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.zip.ZipException;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -205,9 +206,18 @@ public class HitTrace<T> implements ITrace<T> {
 		// try to load execution traces directly from zip file, if possible (do not store them in memory)
 		if (executionTraces == null && spectra.getPathToSpectraZipFile() != null) {
 			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
-			return SpectraFileUtils.loadExecutionTraces(zip, this.getIndex());
+			try {
+				return SpectraFileUtils.loadExecutionTraces(zip, this.getIndex());
+			} catch (ZipException e) {
+				Log.abort(this, e, "Could not get execution traces from spectra zip file.");
+			}
 		} else if (executionTraces == null && spectra.getRawTraceCollector() != null) {
-			List<ExecutionTrace> traces = spectra.getRawTraceCollector().getExecutionTraces(this.getIndex(), false);
+			List<ExecutionTrace> traces = null;
+			try {
+				traces = spectra.getRawTraceCollector().getExecutionTraces(this.getIndex(), false);
+			} catch (ZipException e) {
+				Log.abort(this, e, "Could not get execution traces from raw trace collector.");
+			}
 			return traces == null ? Collections.emptyList() : traces;
 		}
 		// may be null
@@ -243,9 +253,19 @@ public class HitTrace<T> implements ITrace<T> {
 				return false;
 			}
 			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
-			return SpectraFileUtils.moveExecutionTraces(zip, this.getIndex(), outputFile, traceFileNameSupplier, repMarkerFileNameSupplier);
+			try {
+				return SpectraFileUtils.moveExecutionTraces(zip, this.getIndex(), 
+						outputFile, traceFileNameSupplier, repMarkerFileNameSupplier);
+			} catch (ZipException e) {
+				Log.abort(this, e, "Could not move execution traces.");
+			}
 		} else if (spectra.getRawTraceCollector() != null) {
-			return spectra.getRawTraceCollector().moveExecutionTraces(this.getIndex(), outputFile, traceFileNameSupplier, repMarkerFileNameSupplier);
+			try {
+				return spectra.getRawTraceCollector().moveExecutionTraces(this.getIndex(), 
+						outputFile, traceFileNameSupplier, repMarkerFileNameSupplier);
+			} catch (ZipException e) {
+				e.printStackTrace();
+			}
 		} else if (executionTraces != null) {
 			if (executionTraces.isEmpty()) {
 				return false;

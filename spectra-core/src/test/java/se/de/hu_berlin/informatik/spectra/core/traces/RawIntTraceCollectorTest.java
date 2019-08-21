@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.ZipException;
 import java.util.Map.Entry;
 
 import org.junit.After;
@@ -151,7 +152,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 	}
 
 	@Test
-	public void testAddRawTraceToPool() {
+	public void testAddRawTraceToPool() throws ZipException {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test1");
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
@@ -254,7 +255,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 	}
 
 	@Test
-	public void testAddRawTraceToPool2() {
+	public void testAddRawTraceToPool2() throws ZipException {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test2");
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
@@ -355,7 +356,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 	
 
 	@Test
-	public void testAddRawTraceToPool3() {
+	public void testAddRawTraceToPool3() throws ZipException {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test3");
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
@@ -455,7 +456,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 	}
 
 	@Test
-	public void testAddRawTraceToPool4() {
+	public void testAddRawTraceToPool4() throws ZipException {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test4");
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
@@ -555,7 +556,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 	}
 
 	@Test
-	public void testAddRawTraceToPool5() {
+	public void testAddRawTraceToPool5() throws ZipException {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test5");
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
@@ -655,7 +656,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 	}
 	
 	@Test
-	public void testAddRawTraceToPool6() {
+	public void testAddRawTraceToPool6() throws ZipException {
 		Path outputDir = Paths.get(getStdTestDir()).resolve("test6");
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		

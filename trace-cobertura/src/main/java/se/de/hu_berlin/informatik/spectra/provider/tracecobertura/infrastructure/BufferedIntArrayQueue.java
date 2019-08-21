@@ -207,6 +207,17 @@ public class BufferedIntArrayQueue implements Serializable {
         ++size;
     }
     
+    private transient ByteBuffer writeBuffer = null;
+    
+    private ByteBuffer getFreshBuffer() {
+    	// only (lazily) allocate ONE buffer per buffered queue object! allocation costs are potentially high...
+    	if (writeBuffer == null) {
+    		writeBuffer = ByteBuffer.allocateDirect(4 * arrayLength + 8);
+    	}
+    	writeBuffer.clear();
+    	return writeBuffer;
+    }
+    
     private void store(Node node) {
 		String filename = getFileName(node.storeIndex);
 		// apparently, this is faster than using an ObjectOutputStream...
@@ -219,7 +230,7 @@ public class BufferedIntArrayQueue implements Serializable {
 //					buf.putInt(i);
 //				}
 				
-				ByteBuffer directBuf = ByteBuffer.allocateDirect(4 * (node.endIndex-node.startIndex) + 8);
+				ByteBuffer directBuf = getFreshBuffer();
 				directBuf.putInt(node.startIndex);
 				directBuf.putInt(node.endIndex);
 				for (int i = node.startIndex; i < node.endIndex; ++i) {
@@ -390,7 +401,7 @@ public class BufferedIntArrayQueue implements Serializable {
 					if (fileSize > Integer.MAX_VALUE) {
 						throw new UnsupportedOperationException("File size too big!");
 					}
-					ByteBuffer directBuf = ByteBuffer.allocateDirect((int) fileSize);
+					ByteBuffer directBuf = getFreshBuffer();
 					file.read(directBuf);
 					directBuf.flip();
 					

@@ -38,19 +38,19 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	private File output;
 	private String filePrefix;
 	
-	private int maxSubMapSize = 500000;
+	protected int maxSubMapSize = 500000;
 	private int size = 0;
 	
-	private Set<Integer> existingNodes = new HashSet<>();
+	protected Set<Integer> existingNodes = new HashSet<>();
 
 	
-	private transient Lock lock = new ReentrantLock();
+	protected transient Lock lock = new ReentrantLock();
 	
 	// cache all other nodes, if necessary
-	private transient Map<Integer,Node<E>> cachedNodes = new HashMap<>();
+	protected transient Map<Integer,Node<E>> cachedNodes = new HashMap<>();
 	private transient List<Integer> cacheSequence = new LinkedList<>();
 
-	private transient boolean deleteOnExit;
+	protected transient boolean deleteOnExit;
 
 	
 	
@@ -133,7 +133,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		return filePrefix;
 	}
 
-	private String getFileName(int storeIndex) {
+	protected String getFileName(int storeIndex) {
 		return output.getAbsolutePath() + File.separator + filePrefix + "-" + storeIndex + ".rry";
 	}
 
@@ -298,7 +298,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		return node;
 	}
 	
-	private Node<E> load(int storeIndex) {
+	protected Node<E> load(int storeIndex) {
 		if (!existingNodes.contains(storeIndex)) {
 			return null;
 		}
@@ -327,7 +327,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		}
 	}
 
-	private void cacheNode(Node<E> node) {
+	protected void cacheNode(Node<E> node) {
 		lock.lock();
 		try {
 			// cache the node
@@ -347,7 +347,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		return load(storeIndex);
 	}
 
-	private void store(Node<E> node) {
+	protected void store(Node<E> node) {
 		if (node == null) {
 			return;
 		}
@@ -370,13 +370,13 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	}
 
 
-	private static class Node<E> implements Map<Integer, E> {
+	protected static class Node<E> implements Map<Integer, E> {
         
-		private transient boolean modified = false;
-		private final Map<Integer,E> subMap;
+		protected transient boolean modified = false;
+		protected final Map<Integer,E> subMap;
 
         // index to store/load this node
-        private final int storeIndex;
+		protected final int storeIndex;
 
         public Node(int storeIndex) {
         	this.storeIndex = storeIndex;

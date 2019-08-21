@@ -90,8 +90,8 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		}
 	}
 	
-	private BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePreix, int subMapSize, boolean deleteOnExit) {
-		BufferedMap<int[]> map = new BufferedMap<>(outputDir, filePreix, subMapSize, deleteOnExit);
+	private BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePrefix, int subMapSize, boolean deleteOnExit) {
+		BufferedMap<int[]> map = new RepetitionMarkerBufferedMap(outputDir, filePrefix, subMapSize, deleteOnExit);
 		for (int i = 0; i < repetitionMarkers.length; i += 3) {
 			map.put(repetitionMarkers[i], new int[] {repetitionMarkers[i+1], repetitionMarkers[i+2]});
 		}
@@ -218,7 +218,7 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		BufferedLongArrayQueue traceWithoutRepetitions = 
 				new BufferedLongArrayQueue(trace.getOutputDir(), filePrefix, 
 						trace.getNodeSize(), deleteOnExit);
-		BufferedMap<int[]> traceRepetitions = new BufferedMap<>(trace.getOutputDir(), 
+		BufferedMap<int[]> traceRepetitions = new RepetitionMarkerBufferedMap(trace.getOutputDir(), 
 				"cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.arrayLength, deleteOnExit);
 		MyBufferedLongIterator resultTraceIterator = traceWithoutRepetitions.iterator();
 		MyBufferedLongIterator inputTraceIterator = trace.iterator();

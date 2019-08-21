@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.ZipException;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -144,9 +145,10 @@ public class SpectraFileUtilsTest extends TestSettings {
 	}
 	
 	/**
+	 * @throws ZipException 
 	 */
 	@Test
-	public void testBlockSpectraReadingAndWriting() {
+	public void testBlockSpectraReadingAndWriting() throws ZipException {
 		final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large", true);
         c.addData(getStdResourcesDir() + "/fk/stardust/provider/large-coverage.xml", "large2", true);

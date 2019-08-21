@@ -8,10 +8,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
+import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -29,8 +26,7 @@ public class SpecialIntArrayMapsToCompressedByteArrayProcessor extends AbstractP
 
 	PipedOutputStream out;
 	
-	private ZipFile zipFile;
-	private ZipParameters parameters;
+	private ZipFileWrapper zipFile;
 	
 	public static final int DELIMITER = 1;
 
@@ -61,20 +57,8 @@ public class SpecialIntArrayMapsToCompressedByteArrayProcessor extends AbstractP
 			zipFilePath.getParent().toFile().mkdirs();
 		}
 		
-		try {
-			zipFile = new ZipFile(zipFilePath.toString());
-		} catch (ZipException e) {
-			Log.abort(this, e, "Could not initialize zip file '%s'.", zipFilePath);
-		}
-		
-		parameters = new ZipParameters();
-		parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-		parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_ULTRA);
-		
-		// we set this flag to true. If this flag is true, Zip4j identifies that
-		// the data will not be from a file but directly from a stream
-		parameters.setSourceExternalStream(true);
-		
+		zipFile = new ZipFileWrapper(zipFilePath);
+
 		PipedInputStream in = new PipedInputStream();
 		out = new PipedOutputStream(in);
 		
@@ -101,8 +85,6 @@ public class SpecialIntArrayMapsToCompressedByteArrayProcessor extends AbstractP
 			
 			@Override
 			public void run() {
-				// this sets the name of the file for this entry in the zip file, starting from '0.bin'
-				parameters.setFileNameInZip(fileName);
 
 				try {
 					int tries = 0;
@@ -111,18 +93,18 @@ public class SpecialIntArrayMapsToCompressedByteArrayProcessor extends AbstractP
 						++tries;
 						try {
 							// Creates a new entry in the zip file and adds the content to the zip file
-							zipFile.addStream(in, parameters);
+							zipFile.addStream(in, fileName);
 							worked = true;
-						} catch (ZipException e) {
+						} catch (IOException e) {
 							if (tries < 5) {
-								Log.warn(this, "Attempt %d - Error adding stream to zip file '%s'.", tries, zipFile.getFile());
+								Log.warn(this, "Attempt %d - Error adding stream to zip file '%s'.", tries, zipFile.getzipFilePath());
 								try {
 									Thread.sleep(5000);
 								} catch (InterruptedException e1) {
 									// do nothing
 								}
 							} else {
-								Log.abort(this, e, "Zip file '%s' does not exist.", zipFile.getFile());
+								Log.abort(this, e, "Zip file '%s' does not exist.", zipFile.getzipFilePath());
 							}
 						}
 					}
