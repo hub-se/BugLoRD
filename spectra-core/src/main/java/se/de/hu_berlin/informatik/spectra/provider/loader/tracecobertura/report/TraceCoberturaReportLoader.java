@@ -505,14 +505,14 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 
 	public void addExecutionTracesToSpectra(ISpectra<SourceCodeBlock, ? super K> spectra) {
 		// gets called after ALL tests have been processed
-		Log.out(SpectraFileUtils.class, "Generating sequence index...");
+		Log.out(TraceCoberturaReportLoader.class, "Generating sequence index...");
 		try {
 			traceCollector.getIndexer().getSequences();
 		} catch (UnsupportedOperationException e) {
 			traceCollector.getIndexer().getMappedSequences();
 		}
 		
-		Log.out(SpectraFileUtils.class, "Generating execution traces...");
+		Log.out(TraceCoberturaReportLoader.class, "Generating execution traces...");
 		
 		// generate execution traces from raw traces
 		spectra.setRawTraceCollector(traceCollector);
@@ -530,7 +530,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		}
 		
 		if (!traceCollector.getIndexer().isIndexed()) {
-			Log.out(SpectraFileUtils.class, "Generating sequence index (again, due to changes)...");
+			Log.out(TraceCoberturaReportLoader.class, "Generating sequence index (again, due to changes)...");
 			try {
 				traceCollector.getIndexer().getSequences();
 			} catch (UnsupportedOperationException e) {
@@ -538,7 +538,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			}
 		}
 		
-		Log.out(SpectraFileUtils.class, "Mapping counter IDs to line numbers...");
+		Log.out(TraceCoberturaReportLoader.class, "Mapping counter IDs to line numbers...");
 		
 		// generate mapping from statements to spectra nodes
 		SimpleIntIndexerCompressed simpleIndexer = new SimpleIntIndexerCompressed(

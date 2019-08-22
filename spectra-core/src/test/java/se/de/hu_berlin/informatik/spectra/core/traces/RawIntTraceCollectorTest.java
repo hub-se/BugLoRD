@@ -214,7 +214,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 //		}
 //		System.out.println();
 		
-		ExecutionTrace executionTrace = collector.getExecutionTraces(3, true).get(0);
+		ExecutionTrace executionTrace = collector.calculateExecutionTraces(3, true).get(0);
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
@@ -315,7 +315,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 //		}
 //		System.out.println();
 		
-		ExecutionTrace executionTrace = collector.getExecutionTraces(3, true).get(0);
+		ExecutionTrace executionTrace = collector.calculateExecutionTraces(3, true).get(0);
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
@@ -416,7 +416,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 //		}
 //		System.out.println();
 		
-		ExecutionTrace executionTrace = collector.getExecutionTraces(3, true).get(0);
+		ExecutionTrace executionTrace = collector.calculateExecutionTraces(3, true).get(0);
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
@@ -516,7 +516,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 //		}
 //		System.out.println();
 		
-		ExecutionTrace executionTrace = collector.getExecutionTraces(3, true).get(0);
+		ExecutionTrace executionTrace = collector.calculateExecutionTraces(3, true).get(0);
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
@@ -616,7 +616,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 //		}
 //		System.out.println();
 		
-		ExecutionTrace executionTrace = collector.getExecutionTraces(3, true).get(0);
+		ExecutionTrace executionTrace = collector.calculateExecutionTraces(3, true).get(0);
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);
@@ -716,7 +716,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 //		}
 //		System.out.println();
 		
-		ExecutionTrace executionTrace = collector.getExecutionTraces(3, true).get(0);
+		ExecutionTrace executionTrace = collector.calculateExecutionTraces(3, true).get(0);
 		collector.getIndexer().getSequences();
 		
 		int[][] subTraceIdSequences = getSubTraceIdSequences(collector);

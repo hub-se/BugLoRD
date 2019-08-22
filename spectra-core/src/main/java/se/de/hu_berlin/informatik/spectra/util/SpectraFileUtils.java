@@ -55,7 +55,6 @@ import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayTo
 import se.de.hu_berlin.informatik.utils.compression.single.IntSequenceToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
-import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
@@ -830,7 +829,7 @@ public class SpectraFileUtils {
 	 */
 	public static <T extends Indexable<T>> ISpectra<T, ?> loadSpectraFromZipFile(T dummy, Path zipFilePath)
 			throws NullPointerException {
-		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
+		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
 
 		byte[] status = getStatusByte(zip);
 
@@ -853,7 +852,7 @@ public class SpectraFileUtils {
 	 */
 	public static <T extends Indexable<T>> CountSpectra<T> loadCountSpectraFromZipFile(T dummy, Path zipFilePath)
 			throws NullPointerException {
-		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
+		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
 
 		byte[] status = getStatusByte(zip);
 
@@ -1473,7 +1472,7 @@ public class SpectraFileUtils {
 	 * the type of nodes in the spectra
 	 */
 	public static <T extends Indexable<T>> List<T> getNodeIdentifiersFromSpectraFile(T dummy, Path zipFilePath) {
-		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
+		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
 
 		byte[] status = getStatusByte(zip);
 
@@ -1518,7 +1517,7 @@ public class SpectraFileUtils {
 	 * @return the loaded Spectra object
 	 */
 	public static ISpectra<String, ?> loadStringSpectraFromZipFile(Path zipFilePath) {
-		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
+		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
 
 		byte[] status = getStatusByte(zip);
 
@@ -1568,7 +1567,7 @@ public class SpectraFileUtils {
 	 * @return a list of identifiers as Strings
 	 */
 	public static List<String> getIdentifiersFromSpectraFile(Path zipFilePath) {
-		ZipFileWrapper zip = new ZipFileReader().submit(zipFilePath).getResult();
+		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
 
 		return getIdentifiersFromZipFile(zip);
 	}

@@ -57,7 +57,7 @@ public class SpecialIntArrayMapsToCompressedByteArrayProcessor extends AbstractP
 			zipFilePath.getParent().toFile().mkdirs();
 		}
 		
-		zipFile = new ZipFileWrapper(zipFilePath);
+		zipFile = ZipFileWrapper.getZipFileWrapper(zipFilePath);
 
 		PipedInputStream in = new PipedInputStream();
 		out = new PipedOutputStream(in);

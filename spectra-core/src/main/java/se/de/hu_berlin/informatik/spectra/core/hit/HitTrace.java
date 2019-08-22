@@ -24,7 +24,6 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
-import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -205,7 +204,7 @@ public class HitTrace<T> implements ITrace<T> {
 	public Collection<ExecutionTrace> getExecutionTraces() {
 		// try to load execution traces directly from zip file, if possible (do not store them in memory)
 		if (executionTraces == null && spectra.getPathToSpectraZipFile() != null) {
-			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
+			ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(spectra.getPathToSpectraZipFile());
 			try {
 				return SpectraFileUtils.loadExecutionTraces(zip, this.getIndex());
 			} catch (ZipException e) {
@@ -214,7 +213,7 @@ public class HitTrace<T> implements ITrace<T> {
 		} else if (executionTraces == null && spectra.getRawTraceCollector() != null) {
 			List<ExecutionTrace> traces = null;
 			try {
-				traces = spectra.getRawTraceCollector().getExecutionTraces(this.getIndex(), false);
+				traces = spectra.getRawTraceCollector().calculateExecutionTraces(this.getIndex(), false);
 			} catch (ZipException e) {
 				Log.abort(this, e, "Could not get execution traces from raw trace collector.");
 			}
@@ -252,7 +251,7 @@ public class HitTrace<T> implements ITrace<T> {
 				Log.abort(this, "Trying to move execution traces to the same zip file...");
 				return false;
 			}
-			ZipFileWrapper zip = new ZipFileReader().submit(spectra.getPathToSpectraZipFile()).getResult();
+			ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(spectra.getPathToSpectraZipFile());
 			try {
 				return SpectraFileUtils.moveExecutionTraces(zip, this.getIndex(), 
 						outputFile, traceFileNameSupplier, repMarkerFileNameSupplier);

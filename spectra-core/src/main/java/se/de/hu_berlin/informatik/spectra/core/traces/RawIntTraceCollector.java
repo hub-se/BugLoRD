@@ -16,7 +16,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
-import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileReader;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
@@ -69,6 +68,7 @@ public class RawIntTraceCollector {
 		}
 		
 		this.output.toFile().deleteOnExit();
+		getExecutionTraceZipFilePath().toFile().deleteOnExit();
 //		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
 	}
 	
@@ -242,7 +242,7 @@ public class RawIntTraceCollector {
 		}
 		// retrieve the raw traces from the zip file
 		List<CompressedIntegerTraceBase> result = new ArrayList<>(1);
-		ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
+		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(output);
 
 		int traceCounter = -1;
 		// assume IDs to start at 0
@@ -267,7 +267,7 @@ public class RawIntTraceCollector {
 		}
 		// try to retrieve the execution traces from the zip file
 		List<byte[]> result = new ArrayList<>(1);
-		ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
+		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(output);
 		byte[] traceInvolvement;
 		int traceCounter = -1;
 		// assume IDs to start at 0
@@ -282,33 +282,33 @@ public class RawIntTraceCollector {
 		}
 	}
 
-	public List<ExecutionTrace> getExecutionTraces(int traceIndex, boolean log) throws ZipException {
+	public List<ExecutionTrace> calculateExecutionTraces(int traceIndex, boolean log) throws ZipException {
 		// check if a stored execution trace exists
 		if (!output.toFile().exists()) {
 			return null;
 		}
-		// try to retrieve the execution traces from the zip file
-		List<ExecutionTrace> result = new ArrayList<>(1);
-		ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
-
-		int traceCounter = -1;
-		// assume IDs to start at 0
-		while (true) {
-			String compressedTraceFile = traceIndex + "-" + (++traceCounter) + 
-					SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION;
-			if (zip.exists(compressedTraceFile)) {
-				String repetitionFile = traceIndex + "-" + (traceCounter) + 
-						SpectraFileUtils.EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION;
-				ExecutionTrace executionTrace = 
-						SpectraFileUtils.loadExecutionTraceFromZipFile(zip, compressedTraceFile, repetitionFile);
-				result.add(executionTrace);
-			} else {
-				break;
-			}
-		}
-		if (!result.isEmpty()) {
-			return result;
-		}
+//		// try to retrieve the execution traces from the zip file
+//		List<ExecutionTrace> result = new ArrayList<>(1);
+//		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(output);
+//
+//		int traceCounter = -1;
+//		// assume IDs to start at 0
+//		while (true) {
+//			String compressedTraceFile = traceIndex + "-" + (++traceCounter) + 
+//					SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION;
+//			if (zip.exists(compressedTraceFile)) {
+//				String repetitionFile = traceIndex + "-" + (traceCounter) + 
+//						SpectraFileUtils.EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION;
+//				ExecutionTrace executionTrace = 
+//						SpectraFileUtils.loadExecutionTraceFromZipFile(zip, compressedTraceFile, repetitionFile);
+//				result.add(executionTrace);
+//			} else {
+//				break;
+//			}
+//		}
+//		if (!result.isEmpty()) {
+//			return result;
+//		}
 
 		// generate execution trace from current GS tree
 		if (indexer == null) {
@@ -324,7 +324,7 @@ public class RawIntTraceCollector {
 		List<ExecutionTrace> executionTraces = generateExecutiontraceFromRawTraces(rawTraces, log);
 
 		// collect execution traces
-		traceCounter = -1;
+		int traceCounter = -1;
 		for (ExecutionTrace executionTrace : executionTraces) {
 			String traceFileName = traceIndex + "-" + (++traceCounter) + 
 					SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION;
@@ -333,13 +333,18 @@ public class RawIntTraceCollector {
 			// avoid storing traces in memory...
 			// store the execution trace and repetition markers
 			try {
-				SpectraFileUtils.storeCompressedIntegerTrace(executionTrace, output, traceFileName, repMarkerFileName);
+				SpectraFileUtils.storeCompressedIntegerTrace(executionTrace, 
+						getExecutionTraceZipFilePath(), traceFileName, repMarkerFileName);
 			} catch (IOException e) {
 				Log.abort(this, e, "Could not store execution trace.");
 			}
 		}
 		// may still be null?
 		return executionTraces;
+	}
+
+	public Path getExecutionTraceZipFilePath() {
+		return output.toAbsolutePath().getParent().resolve(output.getFileName() + "Exec.zip");
 	}
 
 	private List<ExecutionTrace> generateExecutiontraceFromRawTraces(List<CompressedIntegerTraceBase> rawTraces, boolean log) {
@@ -376,7 +381,7 @@ public class RawIntTraceCollector {
 		}
 		try {
 			// retrieve the raw traces from the zip file
-			ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
+			ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(output);
 			List<String> rawTraceFiles = 
 					zip.getFileHeadersContainingString(RAW_TRACE_FILE_EXTENSION);
 			for (String fileHeader : rawTraceFiles) {
@@ -466,12 +471,12 @@ public class RawIntTraceCollector {
 	public boolean moveExecutionTraces(int traceIndex, Path outputFile, Supplier<String> traceFileNameSupplier,
 			Supplier<String> repMarkerFileNameSupplier) throws ZipException, Abort {
 		// check if a stored execution trace exists
-		if (!output.toFile().exists()) {
+		if (!getExecutionTraceZipFilePath().toFile().exists()) {
 			return false;
 		}
-		ZipFileWrapper zip = new ZipFileReader().submit(output).getResult();
+		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(getExecutionTraceZipFilePath());
 		Module<Pair<String, String>, Boolean> module = 
-				new MoveNamedByteArraysBetweenZipFilesProcessor(output, outputFile).asModule();
+				new MoveNamedByteArraysBetweenZipFilesProcessor(getExecutionTraceZipFilePath(), outputFile).asModule();
 		int threadIndex = -1;
 		while (true) {
 			String traceFile = traceIndex + "-" + (++threadIndex) + 

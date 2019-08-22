@@ -188,7 +188,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         
 //        System.out.println(traceCollector.getGsTree());
         
-        List<ExecutionTrace> executionTraces = traceCollector.getExecutionTraces(trace.getIndex(), false);
+        List<ExecutionTrace> executionTraces = traceCollector.calculateExecutionTraces(trace.getIndex(), false);
         for (ExecutionTrace eTrace : executionTraces) {
         	System.out.println(eTrace.getCompressedTrace());
         	trace.addExecutionTrace(eTrace);
@@ -258,6 +258,54 @@ public class SpectraFileUtilsTest extends TestSettings {
 		assertEquals(output1.toFile().length(), output2.toFile().length());
 		assertTrue(output3.toFile().exists());
 		assertTrue(output3.toFile().length() > output2.toFile().length());
+	}
+	
+	@Test
+	public void testBlockSpectraReadingAndWriting2() throws ZipException {
+		Path output1 = Paths.get(getStdResourcesDir(), "Chart-22b.zip");
+		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
+		Log.out(this, "loaded...");
+		assertNotNull(spectra2.getIndexer());
+		Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra2.getFailingTraces();
+        assertNotNull(failingTraces);
+		assertEquals(6, failingTraces.size());
+//        trace = spectra2.getTrace("simple");
+//        assertNotNull(trace);
+//        assertFalse(trace.isSuccessful());
+//        // check the correct execution trace
+//        assertFalse(trace.getExecutionTraces().isEmpty());
+//        ExecutionTrace executionTrace1 = trace.getExecutionTraces().iterator().next();
+//        
+////        for (int i = 0; i < spectra2.getIndexer().getSequences().length; i++) {
+////        	Log.out(this, Arrays.toString(spectra2.getIndexer().getSequences()[i]));
+////		}
+//        
+//        trace1 = executionTrace1.reconstructFullMappedTrace(spectra2.getIndexer());
+//        assertEquals(18, trace1.length);
+//
+//        assertArrayEquals(s(1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9), trace1);
+//        
+//        assertEquals(spectra, spectra2);
+//		
+		Path output2 = Paths.get(getStdTestDir(), "Chart22_block.zip");
+		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, false, true);
+		Log.out(this, "saved indexed...");
+		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
+		Log.out(this, "loaded...");
+		assertEquals(spectra2, spectra3);
+//		 
+//		Path output3 = Paths.get(getStdTestDir(), "spectra3_block.zip");
+//		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, false);
+//		Log.out(this, "saved non-indexed...");
+//		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
+//		Log.out(this, "loaded...");
+//		assertEquals(spectra2, spectra4);
+//		
+//		assertTrue(output1.toFile().exists());
+//		assertTrue(output2.toFile().exists());
+//		assertEquals(output1.toFile().length(), output2.toFile().length());
+//		assertTrue(output3.toFile().exists());
+//		assertTrue(output3.toFile().length() > output2.toFile().length());
 	}
 
 	/**
