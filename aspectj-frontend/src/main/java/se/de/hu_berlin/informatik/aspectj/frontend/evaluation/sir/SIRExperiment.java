@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sir.SIRExperiment;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.SBFLRanking;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
@@ -89,7 +89,7 @@ public class SIRExperiment {
 
         // create ranking
         final SIRRankingProvider provider = new SIRRankingProvider(input);
-        final SBFLRanking<Integer> ranking = provider.getRanking();
+        final NodeRanking<Integer> ranking = provider.getRanking();
         ranking.save(OUTPUT_DIR + "/" + name + "-ranking.txt");
 
         // append to faults file
@@ -107,7 +107,7 @@ public class SIRExperiment {
         /** Holds the path to the block IF/IP/NF/NP file */
         private final File file;
         /** Contains the actual ranking */
-        private SBFLRanking<Integer> ranking;
+        private NodeRanking<Integer> ranking;
         /** Contains the node of the real fault location */
         private INode<Integer> fault;
 
@@ -122,7 +122,7 @@ public class SIRExperiment {
             final ISpectra<Integer,?> spectra = new HitSpectra<>(null);
             final Integer[] failedNode = { null };
             final int[] curNode = { 0 };
-            final SBFLRanking<Integer> rank = new SBFLRanking<>();
+            final NodeRanking<Integer> rank = new NodeRanking<>();
 
             // parse lines
             lines.forEachOrdered(line -> {
@@ -158,7 +158,7 @@ public class SIRExperiment {
             return part / (part + cIP / (double) (cIP + cNP));
         }
 
-        public SBFLRanking<Integer> getRanking() {
+        public NodeRanking<Integer> getRanking() {
             return this.ranking;
         }
 

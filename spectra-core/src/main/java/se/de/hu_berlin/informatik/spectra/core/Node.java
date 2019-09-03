@@ -140,4 +140,9 @@ public class Node<T> implements INode<T> {
 		return false;
 	}
 
+	@Override
+	public ISpectra<T, ? extends ITrace<T>> getSpectra() {
+		return spectra;
+	}
+
 }

@@ -186,7 +186,7 @@ public class ExperimentRunner {
 									options.getOptionValue(CmdOptions.SUFFIX, null),
 									options.hasOption(CmdOptions.FILTER), options.hasOption(CmdOptions.CONDENSE),
 									options.hasOption(CmdOptions.SIMILARITY_SBFL)
-											? ComputationStrategies.SIMILARITY_SBFL
+											? ComputationStrategies.SIMILARITY_FL
 											: ComputationStrategies.STANDARD_SBFL)));
 		}
 

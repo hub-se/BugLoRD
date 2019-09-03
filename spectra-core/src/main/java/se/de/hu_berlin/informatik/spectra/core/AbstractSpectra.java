@@ -60,7 +60,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     /** Holds all traces belonging to this spectra */
     private final Map<String,K> traces = new ConcurrentHashMap<>();
     
-    private Map<K, Map<K, Double>> similarities = null;
+    private Map<K, Map<K, TraceInfo>> similarities = null;
 
 	private LocalizerCache<T> localizer;
 	private SequenceIndexerCompressed indexer;
@@ -298,7 +298,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     
 	
 	@Override
-	public Map<K, Double> getSimilarityMap(ITrace<T> failingTrace) {
+	public Map<K, TraceInfo> getSimilarityMap(ITrace<T> failingTrace) {
 		//only is computed for failing traces right now!
 		if (failingTrace.isSuccessful()) {
 			return null;
@@ -313,19 +313,22 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 		similarities = new HashMap<>();
 		//have to compute a value for each failing trace
     	for (final K failingTrace : this.getFailingTraces()) {
-    		Map<K, Double> similarityScores = new HashMap<>();
+    		Map<K, TraceInfo> similarityScores = new HashMap<>();
     		similarities.put(failingTrace, similarityScores);
     		
-    		double failingTraceSize = failingTrace.getInvolvedNodes().size();
+//    		double failingTraceSize = failingTrace.getInvolvedNodes().size();
     		//for every trace, compute a similarity score to the current failing trace
     		for (final K trace : this.getTraces()) {
+    			TraceInfo info = new TraceInfo();
+    			
     			int equallyInvolvedNodes = 0;
                 for (final int index : failingTrace.getInvolvedNodes()) {
                 	if (trace.isInvolved(index)) {
                 		++equallyInvolvedNodes;
                 	}
                 }
-                similarityScores.put(trace, (double)equallyInvolvedNodes / failingTraceSize);
+                info.setSameHitCount(equallyInvolvedNodes);
+                similarityScores.put(trace, info);
             }
         }
 	}

@@ -10,7 +10,7 @@
 package se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking;
 
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.SBFLNormalizedRanking;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.SBFLRanking;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
@@ -38,7 +38,7 @@ public class SBFLNormalizedRankingTest {
 
     @Test
     public void getZeroOneNoModification() {
-        final SBFLRanking<String> ranking = new SBFLRanking<>();
+        final NodeRanking<String> ranking = new NodeRanking<>();
 
         ranking.add(this.data.getOrCreateNode("S1"), 0.0);
         ranking.add(this.data.getOrCreateNode("S2"), 0.2);
@@ -54,7 +54,7 @@ public class SBFLNormalizedRankingTest {
 
     @Test
     public void getZeroOneDivideByTwo() {
-        final SBFLRanking<String> ranking = new SBFLRanking<>();
+        final NodeRanking<String> ranking = new NodeRanking<>();
 
         ranking.add(this.data.getOrCreateNode("S1"), 0.0);
         ranking.add(this.data.getOrCreateNode("S2"), 0.5);
@@ -70,7 +70,7 @@ public class SBFLNormalizedRankingTest {
 
     @Test
     public void getZeroOneWithNegativeSusp() {
-        final SBFLRanking<String> ranking = new SBFLRanking<>();
+        final NodeRanking<String> ranking = new NodeRanking<>();
 
         ranking.add(this.data.getOrCreateNode("S1"), -1.0);
         ranking.add(this.data.getOrCreateNode("S2"), 0);
@@ -86,7 +86,7 @@ public class SBFLNormalizedRankingTest {
 
     @Test
     public void getZeroOneWithInfinity() {
-        final SBFLRanking<String> ranking = new SBFLRanking<>();
+        final NodeRanking<String> ranking = new NodeRanking<>();
 
         ranking.add(this.data.getOrCreateNode("S1"), Double.NEGATIVE_INFINITY);
         ranking.add(this.data.getOrCreateNode("S2"), 0);
@@ -102,7 +102,7 @@ public class SBFLNormalizedRankingTest {
 
     @Test
     public void getZeroOneWithMultipleInfinity() {
-        final SBFLRanking<String> ranking = new SBFLRanking<>();
+        final NodeRanking<String> ranking = new NodeRanking<>();
 
         ranking.add(this.data.getOrCreateNode("S1"), Double.NEGATIVE_INFINITY);
         ranking.add(this.data.getOrCreateNode("S2"), Double.NEGATIVE_INFINITY);
@@ -122,7 +122,7 @@ public class SBFLNormalizedRankingTest {
 
     @Test
     public void getReciprocalNoModification() {
-        final SBFLRanking<String> ranking = new SBFLRanking<>();
+        final NodeRanking<String> ranking = new NodeRanking<>();
 
         ranking.add(this.data.getOrCreateNode("S1"), 0.25);
         ranking.add(this.data.getOrCreateNode("S2"), 1.0d / 3.0d);
@@ -138,7 +138,7 @@ public class SBFLNormalizedRankingTest {
 
     @Test
     public void getReciprocalDivideByTwo() {
-        final SBFLRanking<String> ranking = new SBFLRanking<>();
+        final NodeRanking<String> ranking = new NodeRanking<>();
 
         ranking.add(this.data.getOrCreateNode("S1"), 0.0);
         ranking.add(this.data.getOrCreateNode("S2"), 0.5);
@@ -154,7 +154,7 @@ public class SBFLNormalizedRankingTest {
 
     @Test
     public void getReciprocalWithNegativeSusp() {
-        final SBFLRanking<String> ranking = new SBFLRanking<>();
+        final NodeRanking<String> ranking = new NodeRanking<>();
 
         ranking.add(this.data.getOrCreateNode("S1"), -1.0);
         ranking.add(this.data.getOrCreateNode("S2"), 0);
@@ -170,7 +170,7 @@ public class SBFLNormalizedRankingTest {
 
     @Test
     public void getReciprocalWithInfinity() {
-        final SBFLRanking<String> ranking = new SBFLRanking<>();
+        final NodeRanking<String> ranking = new NodeRanking<>();
 
         ranking.add(this.data.getOrCreateNode("S1"), Double.NEGATIVE_INFINITY);
         ranking.add(this.data.getOrCreateNode("S2"), 0);

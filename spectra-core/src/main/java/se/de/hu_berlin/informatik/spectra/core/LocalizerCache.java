@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-
 /**
  * @param <T>
  * type used to identify nodes in the system.
@@ -58,31 +56,32 @@ public class LocalizerCache<T> implements ILocalizerCache<T> {
 			}
 			return count;
 		}
-		case SIMILARITY_SBFL: {
-			Collection<? extends ITrace<T>> failingTraces = this.spectra.getFailingTraces();
-			int failingTracesCount = failingTraces.size();
-			if (failingTracesCount == 0) {
-				return 0; // reevaluate this
-			}
-
-			double count = 0.0;
-			// have to compute a value for each failing trace
-			for (final ITrace<T> failingTrace : failingTraces) {
-				for (final ITrace<T> trace : this.spectra.getTraces()) {
-					if (predicate.test(trace)) {
-						// get the similarity score (ranges from 0 to 1)
-						Double similarityScore = this.spectra.getSimilarityMap(failingTrace).get(trace);
-						if (similarityScore == null) {
-							Log.abort(this, "Similarity Score is null.");
-						}
-						count += similarityScore;
-					}
-				}
-			}
-			// average over all failing traces
-			count /= failingTracesCount;
-
-			return count;
+		case SIMILARITY_FL: {
+			throw new UnsupportedOperationException();
+//			Collection<? extends ITrace<T>> failingTraces = this.spectra.getFailingTraces();
+//			int failingTracesCount = failingTraces.size();
+//			if (failingTracesCount == 0) {
+//				return 0; // reevaluate this
+//			}
+//
+//			double count = 0.0;
+//			// have to compute a value for each failing trace
+//			for (final ITrace<T> failingTrace : failingTraces) {
+//				for (final ITrace<T> trace : this.spectra.getTraces()) {
+//					if (predicate.test(trace)) {
+//						// get the similarity score (ranges from 0 to 1)
+//						TraceInfo similarityScore = this.spectra.getSimilarityMap(failingTrace).get(trace);
+//						if (similarityScore == null) {
+//							Log.abort(this, "Similarity Score is null.");
+//						}
+//						count += similarityScore;
+//					}
+//				}
+//			}
+//			// average over all failing traces
+//			count /= failingTracesCount;
+//
+//			return count;
 		}
 		default:
 			throw new UnsupportedOperationException("Not yet implemented.");

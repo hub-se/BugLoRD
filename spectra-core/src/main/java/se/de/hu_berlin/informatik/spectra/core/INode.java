@@ -161,4 +161,6 @@ public interface INode<T> {
 	@Override
 	public String toString();
 
+	public ISpectra<T,? extends ITrace<T>> getSpectra();
+
 }

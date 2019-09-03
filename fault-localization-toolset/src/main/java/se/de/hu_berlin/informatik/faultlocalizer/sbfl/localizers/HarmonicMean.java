@@ -9,7 +9,7 @@
 
 package se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers;
 
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.AbstractSpectrumBasedFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.AbstractFaultLocalizer;
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 
@@ -21,7 +21,7 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
  * @param <T>
  *            type used to identify nodes in the system
  */
-public class HarmonicMean<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
+public class HarmonicMean<T> extends AbstractFaultLocalizer<T> {
 
     /**
      * Create fault localizer

@@ -27,7 +27,7 @@ public class ExecutionTraceCollector {
 
 	public final static int EXECUTION_TRACE_CHUNK_SIZE = 2000000;
 	public final static int MAP_CHUNK_SIZE = 500000;
-	public static final int SUBTRACE_ARRAY_SIZE = 500;
+	public static final int SUBTRACE_ARRAY_SIZE = 100;
 	
 //	private static ExecutorService executorService = new ThreadPoolExecutor(1, 1,
 //			0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
@@ -241,7 +241,9 @@ public class ExecutionTraceCollector {
 //					if (existingSubTraces == null) {
 //						existingSubTraces = new ConcurrentHashMap<>();
 //					}
-//					System.out.println(currentId + ":" + subTrace.toString());
+					System.out.println("new :" + currentId 
+							//+ ":" + subTrace.toString()
+							);
 					subTrace.sleep();
 					existingSubTraces.put(id, subTrace);
 				}
@@ -249,6 +251,9 @@ public class ExecutionTraceCollector {
 				idLock.unlock();
 			}
 		} else {
+			System.out.println("old: " + id
+					//+ ":" + subTrace.toString()
+					);
 			subTrace.clear();
 			unusedSubTraceCache.add(subTrace);
 		}

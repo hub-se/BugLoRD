@@ -156,7 +156,7 @@ public interface ISpectra<T, K extends ITrace<T>> {
 		return this;
     }
 
-	public Map<K, Double> getSimilarityMap(ITrace<T> failingTrace);
+	public Map<K, TraceInfo> getSimilarityMap(ITrace<T> failingTrace);
 	
 	public ILocalizerCache<T> getLocalizer();
 	

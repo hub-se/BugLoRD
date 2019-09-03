@@ -101,7 +101,7 @@ final public class Spectra2Ranking {
 				options.hasOption(CmdOptions.FILTER),
 				options.hasOption(CmdOptions.CONDENSE),
 				options.hasOption(CmdOptions.SIMILARITY_SBFL) 
-				? ComputationStrategies.SIMILARITY_SBFL : ComputationStrategies.STANDARD_SBFL,
+				? ComputationStrategies.SIMILARITY_FL : ComputationStrategies.STANDARD_SBFL,
 						null);
 		
 	}

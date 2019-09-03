@@ -219,6 +219,7 @@ public class BufferedLongArrayQueue implements Serializable {
     }
     
     private void store(Node node) {
+    	System.out.println("lmem: " + Runtime.getRuntime().freeMemory());
 		String filename = getFileName(node.storeIndex);
 		// apparently, this is faster than using an ObjectOutputStream...
 		try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {

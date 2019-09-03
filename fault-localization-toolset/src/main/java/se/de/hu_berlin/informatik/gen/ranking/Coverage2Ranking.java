@@ -111,7 +111,7 @@ final public class Coverage2Ranking {
 						Paths.get(outputDir, "spectraCompressed.zip")),
 				new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir), null),
 				new RankingModule<SourceCodeBlock>(options.hasOption(CmdOptions.SIMILARITY_SBFL)
-						? ComputationStrategies.SIMILARITY_SBFL : ComputationStrategies.STANDARD_SBFL, outputDir,
+						? ComputationStrategies.SIMILARITY_FL : ComputationStrategies.STANDARD_SBFL, outputDir,
 						localizers))
 				.submitAndShutdown(input);
 		// if we don't wait here for the pipe to shut down, then

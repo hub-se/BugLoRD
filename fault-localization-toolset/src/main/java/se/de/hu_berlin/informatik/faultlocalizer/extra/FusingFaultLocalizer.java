@@ -53,7 +53,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Zoltar;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.SBFLNormalizedRanking;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.SBFLRanking;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.spectra.core.ILocalizerCache;
 import se.de.hu_berlin.informatik.spectra.core.INode;
@@ -345,9 +345,9 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
      *            rankings of all techniques
      * @return new ranking
      */
-    protected SBFLRanking<T> fuseCombAnz(final ILocalizerCache<T> localizer, final List<IFaultLocalizer<T>> selected,
+    protected NodeRanking<T> fuseCombAnz(final ILocalizerCache<T> localizer, final List<IFaultLocalizer<T>> selected,
             final Map<IFaultLocalizer<T>, NormalizedRanking<INode<T>>> rankings) {
-        final SBFLRanking<T> finalRanking = new SBFLRanking<>();
+        final NodeRanking<T> finalRanking = new NodeRanking<>();
         for (final INode<T> node : localizer.getNodes()) {
             double sum = 0;
             int nonZero = 0;
@@ -381,9 +381,9 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
      *            rankings of all techniques
      * @return new ranking
      */
-    protected SBFLRanking<T> fuseCombSum(final ILocalizerCache<T> localizer, final List<IFaultLocalizer<T>> selected,
+    protected NodeRanking<T> fuseCombSum(final ILocalizerCache<T> localizer, final List<IFaultLocalizer<T>> selected,
             final Map<IFaultLocalizer<T>, NormalizedRanking<INode<T>>> rankings) {
-        final SBFLRanking<T> finalRanking = new SBFLRanking<>();
+        final NodeRanking<T> finalRanking = new NodeRanking<>();
         for (final INode<T> node : localizer.getNodes()) {
             double finalScore = 0;
             for (final IFaultLocalizer<T> fl : selected) {
@@ -395,8 +395,8 @@ public class FusingFaultLocalizer<T> implements IFaultLocalizer<T> {
     }
 
 
-    protected SBFLRanking<T> fuseCorrB(final ISpectra<T,?> spectra, final List<IFaultLocalizer<T>> selected,
-            final Map<IFaultLocalizer<T>, SBFLRanking<T>> rankings) {
+    protected NodeRanking<T> fuseCorrB(final ISpectra<T,?> spectra, final List<IFaultLocalizer<T>> selected,
+            final Map<IFaultLocalizer<T>, NodeRanking<T>> rankings) {
         return null;
     }
 

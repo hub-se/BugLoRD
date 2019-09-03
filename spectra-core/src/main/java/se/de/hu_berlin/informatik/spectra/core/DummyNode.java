@@ -113,4 +113,9 @@ public class DummyNode<T> implements INode<T> {
 		return false;
 	}
 
+	@Override
+	public ISpectra<T, ? extends ITrace<T>> getSpectra() {
+		throw new UnsupportedOperationException();
+	}
+
 }

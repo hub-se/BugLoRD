@@ -18,12 +18,12 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
  * @param <T>
  *            type used to identify nodes in the system
  */
-public class SBFLRanking<T> extends SimpleRanking<INode<T>> {
+public class NodeRanking<T> extends SimpleRanking<INode<T>> {
 
     /**
      * Create a new ranking.
      */
-    public SBFLRanking() {
+    public NodeRanking() {
         super(false);
     }
 

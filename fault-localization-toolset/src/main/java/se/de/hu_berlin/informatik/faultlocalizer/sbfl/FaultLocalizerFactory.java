@@ -33,6 +33,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Rogot1;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Rogot2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.RussellRao;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Scott;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimpleMatching;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Sokal;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SorensenDice;
@@ -43,7 +44,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Zoltar;
 
 /**
- * Generates new instances of available spectrum based fault localizers.
+ * Generates new instances of available (spectrum based) fault localizers.
  * 
  * @author Simon Heiden
  */
@@ -136,6 +137,8 @@ public class FaultLocalizerFactory {
 			return new Wong3<>();
 		case "zoltar":
 			return new Zoltar<>();
+		case "similarityfl":
+			return new SimilarityFL<>();
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 		}

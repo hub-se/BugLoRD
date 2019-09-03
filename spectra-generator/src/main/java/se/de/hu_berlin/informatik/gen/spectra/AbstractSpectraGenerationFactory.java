@@ -28,6 +28,7 @@ public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R,
 	public static final String MAX_HEAP = "-Xms2g";
 	public static final String INITIAL_HEAP = "-Xmx2g";
 	public static final String GC = "-XX:+UseParallelGC";
+	public static final String MAX_DIRECT_MEMORY = "-XX:MaxDirectMemorySize=512m";
 	
 	/**
 	 * Defines which tool (or modified tool...) to use.

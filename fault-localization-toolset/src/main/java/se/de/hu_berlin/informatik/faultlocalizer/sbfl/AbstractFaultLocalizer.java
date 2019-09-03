@@ -7,7 +7,7 @@
 package se.de.hu_berlin.informatik.faultlocalizer.sbfl;
 
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.SBFLRanking;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.spectra.core.ILocalizerCache;
 import se.de.hu_berlin.informatik.spectra.core.INode;
@@ -16,19 +16,19 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingValueReplacementStrategy;
 
 /**
- * Class is used to simplify the creation of spectrum based fault localizers.
+ * Class is used to simplify the creation of (spectrum based) fault localizers.
  *
  * @param <T>
  * type used to identify nodes in the system
  */
-public abstract class AbstractSpectrumBasedFaultLocalizer<T> implements IFaultLocalizer<T> {
+public abstract class AbstractFaultLocalizer<T> implements IFaultLocalizer<T> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Ranking<INode<T>> localize(final ISpectra<T,?> spectra, ComputationStrategies strategy) {
-		final Ranking<INode<T>> ranking = new SBFLRanking<>();
+		final Ranking<INode<T>> ranking = new NodeRanking<>();
 		for (final INode<T> node : spectra.getNodes()) {
 			final double suspiciousness = this.suspiciousness(node, strategy);
 			ranking.add(node, suspiciousness);
@@ -45,7 +45,7 @@ public abstract class AbstractSpectrumBasedFaultLocalizer<T> implements IFaultLo
 	 */
 	@Override
 	public Ranking<INode<T>> localize(final ILocalizerCache<T> localizer, ComputationStrategies strategy) {
-		final Ranking<INode<T>> ranking = new SBFLRanking<>();
+		final Ranking<INode<T>> ranking = new NodeRanking<>();
 		for (final INode<T> node : localizer.getNodes()) {
 			final double suspiciousness = this.suspiciousness(node, strategy);
 			ranking.add(node, suspiciousness);

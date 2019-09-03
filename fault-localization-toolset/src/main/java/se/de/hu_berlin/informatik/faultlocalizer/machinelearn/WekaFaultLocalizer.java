@@ -22,7 +22,7 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.SBFLRanking;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.spectra.core.ILocalizerCache;
 import se.de.hu_berlin.informatik.spectra.core.INode;
@@ -82,7 +82,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
     }
 
     @Override
-    public SBFLRanking<T> localize(final ILocalizerCache<T> localizer, ComputationStrategies strategy) {
+    public NodeRanking<T> localize(final ILocalizerCache<T> localizer, ComputationStrategies strategy) {
 
         // == 1. Create Weka training instance
 
@@ -131,7 +131,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
         try {
             final Classifier classifier = this
                     .buildClassifier(this.classifierName, this.classifierOptions, trainingSet);
-            final SBFLRanking<T> ranking = new SBFLRanking<>();
+            final NodeRanking<T> ranking = new NodeRanking<>();
 
             Log.out(this, "begin classifying");
             int classified = 0;

@@ -9,7 +9,7 @@
 
 package se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers;
 
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.AbstractSpectrumBasedFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.AbstractFaultLocalizer;
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 
@@ -22,7 +22,7 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
  * @param <T>
  *            type used to identify nodes in the system
  */
-public class Hyperbolic<T> extends AbstractSpectrumBasedFaultLocalizer<T> {
+public class Hyperbolic<T> extends AbstractFaultLocalizer<T> {
 
 	private static final double SMALL_DELTA = 1.0E-6;
     private final double k1;

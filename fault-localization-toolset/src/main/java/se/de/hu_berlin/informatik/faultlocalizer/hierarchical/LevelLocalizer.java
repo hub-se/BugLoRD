@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.SBFLRanking;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.hit.HierarchicalHitSpectra;
@@ -75,7 +75,7 @@ public class LevelLocalizer<P, C> implements IHierarchicalFaultLocalizer<P, C> {
         }
 
         // create ranking
-        final Ranking<? super INode<?>> ranking = new SBFLRanking();
+        final Ranking<? super INode<?>> ranking = new NodeRanking();
         this.addRecursive(ranking, spectra, new HashSet<>(spectra.getNodes()), levelRankings, 0.0d);
         return ranking;
     }

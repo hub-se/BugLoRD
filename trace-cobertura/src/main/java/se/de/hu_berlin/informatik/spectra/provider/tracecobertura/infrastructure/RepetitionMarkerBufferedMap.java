@@ -37,6 +37,7 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 	private ByteBuffer getFreshBuffer() {
     	// only (lazily) allocate ONE buffer per buffered map object! allocation costs are potentially high...
     	if (writeBuffer == null) {
+//    		System.err.println(Runtime.getRuntime().maxMemory() + ", " + (4 * (maxSubMapSize * 3)));
     		writeBuffer = ByteBuffer.allocateDirect(4 * (maxSubMapSize * 3));
     	}
     	writeBuffer.clear();
@@ -56,6 +57,7 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 			return;
 		}
 		if (node.modified) {
+			System.out.println("rmem: " + Runtime.getRuntime().freeMemory());
 			String filename = getFileName(node.storeIndex);
 			
 			try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {
