@@ -16,7 +16,6 @@ import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutFixAndCh
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCleanupEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRankingsFromSpectraEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsEH;
-import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
@@ -59,7 +58,8 @@ public class ExperimentRunner {
 				"Whether to compute rankings based on filtered spectra. " + "(Only for experiment 'computeSBFL'!)",
 				false),
 		SUFFIX("s", "suffix", true, "A suffix to append to the ranking directory.", false),
-		SIMILARITY_SBFL("sim", "similarity", false, "Whether the ranking should be based on similarity between traces.",
+		FORCE_LOAD_SPECTRA_FOR_FL("frc", "forceload", false, "Whether the spectra should always be loaded, regardless if a "
+				+ "trace file has previously been created that would usually be sufficient to compute SBFL rankings.",
 				false),
 		LM("lm", "globalLM", true, "Path to a language model binary (kenLM).", false);
 
@@ -185,9 +185,7 @@ public class ExperimentRunner {
 							new ERComputeSBFLRankingsFromSpectraEH(toolSpecific,
 									options.getOptionValue(CmdOptions.SUFFIX, null),
 									options.hasOption(CmdOptions.FILTER), options.hasOption(CmdOptions.CONDENSE),
-									options.hasOption(CmdOptions.SIMILARITY_SBFL)
-											? ComputationStrategies.SIMILARITY_FL
-											: ComputationStrategies.STANDARD_SBFL)));
+									options.hasOption(CmdOptions.FORCE_LOAD_SPECTRA_FOR_FL))));
 		}
 
 		if (toDoContains(toDo, "checkChanges") || toDoContains(toDo, "all")) {

@@ -24,7 +24,7 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 	final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
 	final private boolean removeIrrelevantNodes;
 	final private boolean condenseNodes;
-	final private ComputationStrategies strategy;
+	final private boolean forceLoadSpectra;
 	final private String suffix;
 	private final ToolSpecific toolSpecific;
 	
@@ -38,17 +38,18 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 	 * whether to remove nodes that were not touched by any failed traces
 	 * @param condenseNodes
 	 * whether to combine several lines with equal trace involvement
-	 * @param strategy
-	 * the strategy to use for computation of the rankings
+	 * @param forceLoadSpectra
+	 * whether the spectra file should be used regardless of whether a trace file exists
 	 */
 	public ERComputeSBFLRankingsFromSpectraEH(ToolSpecific toolSpecific,
-			String suffix, final boolean removeIrrelevantNodes, final boolean condenseNodes, ComputationStrategies strategy) {
+			String suffix, final boolean removeIrrelevantNodes, 
+			final boolean condenseNodes, boolean forceLoadSpectra) {
 		super();
 		this.toolSpecific = toolSpecific;
 		this.suffix = suffix;
 		this.removeIrrelevantNodes = removeIrrelevantNodes;
 		this.condenseNodes = condenseNodes;
-		this.strategy = strategy;
+		this.forceLoadSpectra = forceLoadSpectra;
 	}
 
 	@Override
@@ -83,26 +84,26 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 		Path traceFile = rankingDir.resolve(BugLoRDConstants.getTraceFileFileName(null));
 		Path metricsFile = rankingDir.resolve(BugLoRDConstants.getMetricsFileFileName(null));
 		
-		if (traceFile.toFile().exists() && metricsFile.toFile().exists()) {
+		if (!forceLoadSpectra && traceFile.toFile().exists() && metricsFile.toFile().exists()) {
 			// reuse computed data for repeated computations (don't need to load the spectra again)
 			Spectra2Ranking.generateRankingFromTraceFile(
 					traceFile.toAbsolutePath().toString(),
 					metricsFile.toAbsolutePath().toString(),
-					rankingDir.toString(), localizers, strategy);
+					rankingDir.toString(), localizers, ComputationStrategies.STANDARD_SBFL);
 		} else {
 			if (removeIrrelevantNodes) {
 				String compressedSpectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName).toString();
 
 				if (new File(compressedSpectraFileFiltered).exists()) {
 					Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 
-							localizers, false, condenseNodes, strategy, null);
+							localizers, false, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
 				} else {
 					Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-							localizers, true, condenseNodes, strategy, null);
+							localizers, true, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
 				}
 			} else {
 				Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-						localizers, false, condenseNodes, strategy, null);
+						localizers, false, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
 			}
 		}
 
