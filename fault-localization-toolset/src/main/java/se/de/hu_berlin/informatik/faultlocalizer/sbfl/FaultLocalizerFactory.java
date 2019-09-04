@@ -28,6 +28,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Op2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Overlap;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.RogersTanimoto;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Rogot1;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Rogot2;
@@ -35,6 +36,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.RussellRao;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Scott;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimpleMatching;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimpleSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Sokal;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SorensenDice;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Tarantula;
@@ -139,6 +141,10 @@ public class FaultLocalizerFactory {
 			return new Zoltar<>();
 		case "similarityfl":
 			return new SimilarityFL<>();
+		case "simplesimilarityfl":
+			return new SimpleSimilarityFL<>();
+		case "reversesimilarityfl":
+			return new ReverseSimilarityFL<>();
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 		}

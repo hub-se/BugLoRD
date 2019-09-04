@@ -22,12 +22,12 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * @param <T>
  * type used to identify nodes in the system
  */
-public class SimpleSimilarityFL<T> extends AbstractFaultLocalizer<T> {
+public class ReverseSimilarityFL<T> extends AbstractFaultLocalizer<T> {
 
 	/**
 	 * Create fault localizer
 	 */
-	public SimpleSimilarityFL() {
+	public ReverseSimilarityFL() {
 		super();
 	}
 
@@ -53,25 +53,25 @@ public class SimpleSimilarityFL<T> extends AbstractFaultLocalizer<T> {
 					if (similarityScore == null) {
 						Log.abort(this, "Similarity Score is null.");
 					}
-					
+
 					if (trace.getInvolvedNodes().size() <= 0) {
 						// skip traces that did not execute any nodes...
 						continue;
 					}
-
+					
 					if (trace.isSuccessful()) {
 						// this test case was successful -> bug is less likely to be here if covered!
 						if (trace.isInvolved(node)) {
 							// node is involved in the test case -> less suspicious
 							// -> lower suspiciousness if both traces share more hits
 							// (i.e. the failing trace shares a lot of functionality with the successful one)
-							count -= 1;
+							count -= (trace.getInvolvedNodes().size() - similarityScore.getSameHitCount()) / (double) trace.getInvolvedNodes().size();
 						} else {
 							// node is NOT involved in the test case -> more suspicious
 							// -> higher suspiciousness if both traces share more hits
 							// (i.e. the failing trace shares a lot of functionality with the successful one, 
 							// but on this node, there is an anomaly...)
-							count += 1;
+							count += (trace.getInvolvedNodes().size() - similarityScore.getSameHitCount()) / (double) trace.getInvolvedNodes().size();
 						}
 					} else {
 						// this test case failed -> bug is more likely to be here if covered!
@@ -79,14 +79,14 @@ public class SimpleSimilarityFL<T> extends AbstractFaultLocalizer<T> {
 							// node is involved in another failing trace -> more suspicious
 							// -> higher suspiciousness if both traces are more diverse
 							// (additional failing traces that are very similar don't provide a lot of new information)
-							count += 1;
+							count += similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size();
 						} else {
 							// node is NOT involved in another failing trace -> less suspicious
 							// -> lower suspiciousness if both traces are more diverse
 							// (i.e. the other failing trace covers a bit of the functionality of the failing one,
 							// but is more diverse. If the trace is more similar to the failing one,
 							// it doesn't have as much power...)
-							count -= 1;
+							count -= similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size();
 						}
 					}
 				}
