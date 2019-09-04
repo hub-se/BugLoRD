@@ -11,6 +11,8 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Cohen;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.DStar;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Dice;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Euclid;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ExtendedSimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ExtendedSimilarityFL2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Fleiss;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.GP13;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.GeometricMean;
@@ -28,13 +30,17 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Op2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Overlap;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseExtendedSimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseExtendedSimilarityFL2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseSimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseSimilarityFL2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.RogersTanimoto;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Rogot1;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Rogot2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.RussellRao;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Scott;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimilarityFL2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimpleMatching;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimpleSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Sokal;
@@ -141,10 +147,22 @@ public class FaultLocalizerFactory {
 			return new Zoltar<>();
 		case "similarityfl":
 			return new SimilarityFL<>();
+		case "similarityfl2":
+			return new SimilarityFL2<>();
 		case "simplesimilarityfl":
 			return new SimpleSimilarityFL<>();
+		case "extendedsimilarityfl":
+			return new ExtendedSimilarityFL<>();
+		case "extendedsimilarityfl2":
+			return new ExtendedSimilarityFL2<>();
 		case "reversesimilarityfl":
 			return new ReverseSimilarityFL<>();
+		case "reversesimilarityfl2":
+			return new ReverseSimilarityFL2<>();
+		case "reverseextendedsimilarityfl":
+			return new ReverseExtendedSimilarityFL<>();
+		case "reverseextendedsimilarityfl2":
+			return new ReverseExtendedSimilarityFL2<>();
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 		}
