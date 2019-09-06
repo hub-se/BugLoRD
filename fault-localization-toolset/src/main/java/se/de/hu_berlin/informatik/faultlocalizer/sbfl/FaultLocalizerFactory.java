@@ -6,6 +6,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ample;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Anderberg;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ArithmeticMean;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.AsymmetricSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Barinel;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Cohen;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.DStar;
@@ -13,6 +14,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Dice;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Euclid;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ExtendedSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ExtendedSimilarityFL2;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ExtendedSimilarityFL3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Fleiss;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.GP13;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.GeometricMean;
@@ -41,6 +43,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.RussellRao;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Scott;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimilarityFL2;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimilarityFL3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimpleMatching;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimpleSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Sokal;
@@ -149,6 +152,8 @@ public class FaultLocalizerFactory {
 			return new SimilarityFL<>();
 		case "similarityfl2":
 			return new SimilarityFL2<>();
+		case "similarityfl3":
+			return new SimilarityFL3<>();
 		case "simplesimilarityfl":
 			return new SimpleSimilarityFL<>();
 		case "extendedsimilarityfl":
@@ -163,6 +168,10 @@ public class FaultLocalizerFactory {
 			return new ReverseExtendedSimilarityFL<>();
 		case "reverseextendedsimilarityfl2":
 			return new ReverseExtendedSimilarityFL2<>();
+		case "extendedsimilarityfl3":
+			return new ExtendedSimilarityFL3<>();
+		case "asymmetricsimilarityfl":
+			return new AsymmetricSimilarityFL<>();
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 		}
