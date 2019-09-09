@@ -153,7 +153,7 @@ public class PwrExtSimilarityFL<T> extends AbstractFaultLocalizer<T> {
 
 	@Override
 	public String getName() {
-		return "SimilarityFL";
+		return this.getClass().getSimpleName() + String.format("%d-%d", (int)p, ((int)(p*10)) % 10);
 	}
-
+	
 }

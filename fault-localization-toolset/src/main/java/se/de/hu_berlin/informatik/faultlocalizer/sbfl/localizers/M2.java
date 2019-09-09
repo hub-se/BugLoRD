@@ -37,9 +37,4 @@ public class M2<T> extends AbstractFaultLocalizer<T> {
                 / (node.getEF(strategy) + node.getNP(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
     }
 
-    @Override
-    public String getName() {
-        return "M2";
-    }
-
 }

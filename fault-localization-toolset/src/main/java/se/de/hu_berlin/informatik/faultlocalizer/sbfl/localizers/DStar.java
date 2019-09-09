@@ -39,9 +39,4 @@ public class DStar<T> extends AbstractFaultLocalizer<T> {
         return Math.pow(node.getEF(strategy), star) / (node.getEP(strategy) + node.getNF(strategy));
     }
 
-    @Override
-    public String getName() {
-        return "dstar";
-    }
-
 }

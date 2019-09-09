@@ -67,7 +67,7 @@ public class RankingFromTraceFileModule extends AbstractProcessor<List<IFaultLoc
 		
 		//calculate the SBFL rankings, if any localizers are given
 		for (final IFaultLocalizer<SourceCodeBlock> localizer2 : localizers) {
-			final String className = localizer2.getClass().getSimpleName();
+			final String className = localizer2.getName();
 			tracker.track("...calculating " + className + " ranking.");
 			// Log.out(this, "...calculating " + className + " ranking.");
 			

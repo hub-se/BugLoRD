@@ -44,9 +44,4 @@ public class Cohen<T> extends AbstractFaultLocalizer<T> {
         return enu / denom;
     }
 
-    @Override
-    public String getName() {
-        return "Cohen";
-    }
-
 }

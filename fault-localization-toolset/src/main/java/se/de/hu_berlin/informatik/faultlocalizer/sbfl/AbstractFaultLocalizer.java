@@ -57,4 +57,9 @@ public abstract class AbstractFaultLocalizer<T> implements IFaultLocalizer<T> {
 				RankingValueReplacementStrategy.NEGATIVE_INFINITY);
 	}
 
+	@Override
+	public String getName() {
+		return this.getClass().getSimpleName();
+	}
+	
 }

@@ -49,9 +49,4 @@ public class HarmonicMean<T> extends AbstractFaultLocalizer<T> {
         return enu / denom;
     }
 
-    @Override
-    public String getName() {
-        return "HarmonicMean";
-    }
-
 }

@@ -37,9 +37,4 @@ public class Dice<T> extends AbstractFaultLocalizer<T> {
         return numerator / (node.getEF(strategy) + node.getNF(strategy) + node.getEP(strategy));
     }
 
-    @Override
-    public String getName() {
-        return "Dice";
-    }
-
 }

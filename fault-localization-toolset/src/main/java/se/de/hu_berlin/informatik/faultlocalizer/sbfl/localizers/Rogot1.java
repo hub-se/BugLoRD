@@ -41,9 +41,4 @@ public class Rogot1<T> extends AbstractFaultLocalizer<T> {
         return 0.5d * (left + right);
     }
 
-    @Override
-    public String getName() {
-        return "Rogot1";
-    }
-
 }

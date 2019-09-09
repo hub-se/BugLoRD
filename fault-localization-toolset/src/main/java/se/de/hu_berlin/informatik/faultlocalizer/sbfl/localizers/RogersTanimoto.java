@@ -37,9 +37,4 @@ public class RogersTanimoto<T> extends AbstractFaultLocalizer<T> {
         return  numerator / (node.getEF(strategy) + node.getNP(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
     }
 
-    @Override
-    public String getName() {
-        return "RogersTanimoto";
-    }
-
 }

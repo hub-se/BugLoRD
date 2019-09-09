@@ -33,9 +33,4 @@ public class Op2<T> extends AbstractFaultLocalizer<T> {
         return node.getEF(strategy) - node.getEP(strategy) / (node.getEP(strategy) + node.getNP(strategy) + 1);
     }
 
-    @Override
-    public String getName() {
-        return "op2";
-    }
-
 }

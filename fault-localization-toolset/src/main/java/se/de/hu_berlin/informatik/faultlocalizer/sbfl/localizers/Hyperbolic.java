@@ -48,9 +48,4 @@ public class Hyperbolic<T> extends AbstractFaultLocalizer<T> {
     			k3 / (k2 + SMALL_DELTA + (node.getEP(strategy) / (node.getEF(strategy) + node.getEP(strategy) + SMALL_DELTA)));
     }
 
-    @Override
-    public String getName() {
-        return "hyperbolic";
-    }
-
 }

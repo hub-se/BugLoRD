@@ -148,9 +148,4 @@ public class ExtendedSimilarityFL2<T> extends AbstractFaultLocalizer<T> {
 		return sum;
 	}
 
-	@Override
-	public String getName() {
-		return "SimilarityFL";
-	}
-
 }

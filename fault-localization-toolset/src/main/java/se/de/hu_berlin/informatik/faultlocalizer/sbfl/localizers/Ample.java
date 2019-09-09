@@ -38,9 +38,4 @@ public class Ample<T> extends AbstractFaultLocalizer<T> {
 		return Math.abs(left - right);
 	}
 
-	@Override
-	public String getName() {
-		return "Ample";
-	}
-
 }

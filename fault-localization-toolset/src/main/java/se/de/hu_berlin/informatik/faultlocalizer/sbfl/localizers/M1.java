@@ -37,9 +37,4 @@ public class M1<T> extends AbstractFaultLocalizer<T> {
         return  numerator / (node.getNF(strategy) + node.getEP(strategy));
     }
 
-    @Override
-    public String getName() {
-        return "M1";
-    }
-
 }

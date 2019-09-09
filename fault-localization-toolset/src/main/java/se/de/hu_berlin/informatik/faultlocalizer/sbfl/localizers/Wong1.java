@@ -33,9 +33,4 @@ public class Wong1<T> extends AbstractFaultLocalizer<T> {
         return node.getEF(strategy);
     }
 
-    @Override
-    public String getName() {
-        return "Wong1";
-    }
-
 }

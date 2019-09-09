@@ -36,9 +36,4 @@ public class Overlap<T> extends AbstractFaultLocalizer<T> {
     	return node.getEF(strategy) / Math.min(node.getEF(strategy), Math.min(node.getNF(strategy), node.getEP(strategy)));
     }
 
-    @Override
-    public String getName() {
-        return "Overlap";
-    }
-
 }

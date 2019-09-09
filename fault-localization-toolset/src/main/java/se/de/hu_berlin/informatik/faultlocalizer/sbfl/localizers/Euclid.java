@@ -33,9 +33,4 @@ public class Euclid<T> extends AbstractFaultLocalizer<T> {
         return Math.sqrt(node.getEF(strategy) + node.getNP(strategy));
     }
 
-    @Override
-    public String getName() {
-        return "Euclid";
-    }
-
 }

@@ -37,9 +37,4 @@ public class Sokal<T> extends AbstractFaultLocalizer<T> {
         return numerator / (2.0d * (node.getEF(strategy) + node.getNP(strategy)) + node.getNF(strategy) + node.getEP(strategy));
     }
 
-    @Override
-    public String getName() {
-        return "Sokal";
-    }
-
 }

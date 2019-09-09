@@ -36,9 +36,4 @@ public class GP13<T> extends AbstractFaultLocalizer<T> {
         return node.getEF(strategy) * (1.0 + 1.0 / (2*node.getEP(strategy) + node.getEF(strategy)));
     }
 
-    @Override
-    public String getName() {
-        return "gp13";
-    }
-
 }

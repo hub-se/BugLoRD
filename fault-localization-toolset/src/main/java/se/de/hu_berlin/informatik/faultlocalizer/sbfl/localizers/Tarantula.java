@@ -41,9 +41,4 @@ public class Tarantula<T> extends AbstractFaultLocalizer<T> {
         return part / (part + part2);
     }
 
-    @Override
-    public String getName() {
-        return "tarantula";
-    }
-
 }

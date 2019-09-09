@@ -45,9 +45,4 @@ public class Fleiss<T> extends AbstractFaultLocalizer<T> {
         return enu / denom;
     }
 
-    @Override
-    public String getName() {
-        return "Fleiss";
-    }
-
 }

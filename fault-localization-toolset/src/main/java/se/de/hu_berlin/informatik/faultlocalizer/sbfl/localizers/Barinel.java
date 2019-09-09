@@ -33,9 +33,4 @@ public class Barinel<T> extends AbstractFaultLocalizer<T> {
         return 1.0 - node.getEP(strategy) / (node.getEP(strategy) + node.getEF(strategy));
     }
 
-    @Override
-    public String getName() {
-        return "barinel";
-    }
-
 }

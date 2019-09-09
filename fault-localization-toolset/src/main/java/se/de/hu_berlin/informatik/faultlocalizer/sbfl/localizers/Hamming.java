@@ -33,9 +33,4 @@ public class Hamming<T> extends AbstractFaultLocalizer<T> {
         return (node.getEF(strategy) + node.getNP(strategy));
     }
 
-    @Override
-    public String getName() {
-        return "Hamming";
-    }
-
 }

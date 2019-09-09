@@ -42,9 +42,4 @@ public class Ochiai2<T> extends AbstractFaultLocalizer<T> {
         return numerator / Math.sqrt(denom1 * denom2 * denom3 * denom4);
     }
 
-    @Override
-    public String getName() {
-        return "Ochiai2";
-    }
-
 }

@@ -44,10 +44,5 @@ public class Scott<T> extends AbstractFaultLocalizer<T> {
     	}
         return enu / denom;
     }
-
-    @Override
-    public String getName() {
-        return "Scott";
-    }
-
+    
 }

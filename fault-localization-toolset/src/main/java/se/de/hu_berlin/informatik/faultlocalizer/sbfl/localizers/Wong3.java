@@ -45,9 +45,4 @@ public class Wong3<T> extends AbstractFaultLocalizer<T> {
         }
     }
 
-    @Override
-    public String getName() {
-        return "Wong3";
-    }
-
 }

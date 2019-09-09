@@ -68,7 +68,7 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T, ?>, ISpectra
 		
 		//calculate the SBFL rankings, if any localizers are given
 		for (final IFaultLocalizer<T> localizer : localizers) {
-			final String className = localizer.getClass().getSimpleName();
+			final String className = localizer.getName();
 			tracker.track("...calculating " + className + " ranking.");
 //			Log.out(this, "...calculating " + className + " ranking.");
 			generateRanking(spectra, localizer, className.toLowerCase(Locale.getDefault()));

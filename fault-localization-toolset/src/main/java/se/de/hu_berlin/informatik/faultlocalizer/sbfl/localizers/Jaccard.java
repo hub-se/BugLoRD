@@ -36,9 +36,4 @@ public class Jaccard<T> extends AbstractFaultLocalizer<T> {
         return node.getEF(strategy) / (node.getEF(strategy) + node.getNF(strategy) + node.getEP(strategy));
     }
 
-    @Override
-    public String getName() {
-        return "Jaccard";
-    }
-
 }
