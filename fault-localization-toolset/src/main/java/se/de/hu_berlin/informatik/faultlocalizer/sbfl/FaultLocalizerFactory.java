@@ -32,6 +32,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Op2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Overlap;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.PwrExtSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseExtendedSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseExtendedSimilarityFL2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseSimilarityFL;
@@ -172,6 +173,16 @@ public class FaultLocalizerFactory {
 			return new ExtendedSimilarityFL3<>();
 		case "asymmetricsimilarityfl":
 			return new AsymmetricSimilarityFL<>();
+		case "powersimilarityfl5":
+			return new PwrExtSimilarityFL<>(5);
+		case "powersimilarityfl4":
+			return new PwrExtSimilarityFL<>(4);
+		case "powersimilarityfl3":
+			return new PwrExtSimilarityFL<>(3);
+		case "powersimilarityfl2":
+			return new PwrExtSimilarityFL<>(2);
+		case "powersimilarityfl05":
+			return new PwrExtSimilarityFL<>(0.5);
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 		}
