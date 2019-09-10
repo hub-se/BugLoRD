@@ -193,37 +193,37 @@ public class FaultLocalizerFactory {
 			return new PwrExtSimilarityFL<>(0.2);
 		case "pwrextsimilarityfl0-1":
 			return new PwrExtSimilarityFL<>(0.1);
-		case "MethodFocusFL+DStar":
+		case "methodfocusfl+dstar":
 			return new MethodFocusFL<>(new DStar<>());
-		case "MethodFocusFL+pwrextsimilarityfl0-5":
+		case "methodfocusfl+pwrextsimilarityfl0-5":
 			return new MethodFocusFL<>(new PwrExtSimilarityFL<>(0.5));
-		case "MethodFocusFL+pwrextsimilarityfl0-1":
+		case "methodfocusfl+pwrextsimilarityfl0-1":
 			return new MethodFocusFL<>(new PwrExtSimilarityFL<>(0.1));
-		case "MethodFocusFL+extendedsimilarityfl2":
+		case "methodfocusfl+extendedsimilarityfl2":
 			return new MethodFocusFL<>(new ExtendedSimilarityFL2<>());
-		case "NeighborhoodFocusFL-BOTH2+DStar":
+		case "neighborhoodfocusfl-both2+dstar":
 			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BOTH);
-		case "NeighborhoodFocusFL-BOTH2+pwrextsimilarityfl0-5":
+		case "neighborhoodfocusfl-both2+pwrextsimilarityfl0-5":
 			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.BOTH);
-		case "NeighborhoodFocusFL-BOTH2+pwrextsimilarityfl0-1":
+		case "neighborhoodfocusfl-both2+pwrextsimilarityfl0-1":
 			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.BOTH);
-		case "NeighborhoodFocusFL-BOTH2+extendedsimilarityfl2":
+		case "neighborhoodfocusfl-both2+extendedsimilarityfl2":
 			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.BOTH);
-		case "NeighborhoodFocusFL-FORWARD2+DStar":
+		case "neighborhoodfocusfl-forward2+dstar":
 			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.FORWARD);
-		case "NeighborhoodFocusFL-FORWARD2+pwrextsimilarityfl0-5":
+		case "neighborhoodfocusfl-forward2+pwrextsimilarityfl0-5":
 			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.FORWARD);
-		case "NeighborhoodFocusFL-FORWARD2+pwrextsimilarityfl0-1":
+		case "neighborhoodfocusfl-forward2+pwrextsimilarityfl0-1":
 			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.FORWARD);
-		case "NeighborhoodFocusFL-FORWARD2+extendedsimilarityfl2":
+		case "neighborhoodfocusfl-forward2+extendedsimilarityfl2":
 			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.FORWARD);
-		case "NeighborhoodFocusFL-BACKWARD2+DStar":
+		case "neighborhoodfocusfl-backward2+dstar":
 			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BACKWARD);
-		case "NeighborhoodFocusFL-BACKWARD2+pwrextsimilarityfl0-5":
+		case "neighborhoodfocusfl-backward2+pwrextsimilarityfl0-5":
 			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.BACKWARD);
-		case "NeighborhoodFocusFL-BACKWARD2+pwrextsimilarityfl0-1":
+		case "neighborhoodfocusfl-backward2+pwrextsimilarityfl0-1":
 			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.BACKWARD);
-		case "NeighborhoodFocusFL-BACKWARD2+extendedsimilarityfl2":
+		case "neighborhoodfocusfl-backward2+extendedsimilarityfl2":
 			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.BACKWARD);
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
