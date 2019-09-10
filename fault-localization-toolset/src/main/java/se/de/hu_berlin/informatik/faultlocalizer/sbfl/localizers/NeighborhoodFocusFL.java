@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.AbstractFaultLocalizer;
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
@@ -84,7 +82,7 @@ public class NeighborhoodFocusFL<T> extends AbstractFaultLocalizer<T> {
 					}
 					break;
 				default:
-					throw new NotImplementedException("Neighborhood direction unknown!");
+					throw new UnsupportedOperationException("Neighborhood direction unknown!");
 				}
 					
 			}
