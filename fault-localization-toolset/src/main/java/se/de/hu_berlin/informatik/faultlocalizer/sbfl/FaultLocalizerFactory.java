@@ -28,6 +28,8 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Kulczynski1;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Kulczynski2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.M1;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.M2;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.MethodFocusFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.NeighborhoodFocusFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Op2;
@@ -54,6 +56,8 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong1;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Zoltar;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.NeighborhoodFocusFL.Direction;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 
 /**
  * Generates new instances of available (spectrum based) fault localizers.
@@ -183,6 +187,44 @@ public class FaultLocalizerFactory {
 			return new PwrExtSimilarityFL<>(2);
 		case "pwrextsimilarityfl0-5":
 			return new PwrExtSimilarityFL<>(0.5);
+		case "pwrextsimilarityfl0-7":
+			return new PwrExtSimilarityFL<>(0.7);
+		case "pwrextsimilarityfl0-2":
+			return new PwrExtSimilarityFL<>(0.2);
+		case "pwrextsimilarityfl0-1":
+			return new PwrExtSimilarityFL<>(0.1);
+		case "MethodFocusFL+DStar":
+			return new MethodFocusFL<>(new DStar<>());
+		case "MethodFocusFL+pwrextsimilarityfl0-5":
+			return new MethodFocusFL<>(new PwrExtSimilarityFL<>(0.5));
+		case "MethodFocusFL+pwrextsimilarityfl0-1":
+			return new MethodFocusFL<>(new PwrExtSimilarityFL<>(0.1));
+		case "MethodFocusFL+extendedsimilarityfl2":
+			return new MethodFocusFL<>(new ExtendedSimilarityFL2<>());
+		case "NeighborhoodFocusFL-BOTH2+DStar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BOTH);
+		case "NeighborhoodFocusFL-BOTH2+pwrextsimilarityfl0-5":
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.BOTH);
+		case "NeighborhoodFocusFL-BOTH2+pwrextsimilarityfl0-1":
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.BOTH);
+		case "NeighborhoodFocusFL-BOTH2+extendedsimilarityfl2":
+			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.BOTH);
+		case "NeighborhoodFocusFL-FORWARD2+DStar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.FORWARD);
+		case "NeighborhoodFocusFL-FORWARD2+pwrextsimilarityfl0-5":
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.FORWARD);
+		case "NeighborhoodFocusFL-FORWARD2+pwrextsimilarityfl0-1":
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.FORWARD);
+		case "NeighborhoodFocusFL-FORWARD2+extendedsimilarityfl2":
+			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.FORWARD);
+		case "NeighborhoodFocusFL-BACKWARD2+DStar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BACKWARD);
+		case "NeighborhoodFocusFL-BACKWARD2+pwrextsimilarityfl0-5":
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.BACKWARD);
+		case "NeighborhoodFocusFL-BACKWARD2+pwrextsimilarityfl0-1":
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.BACKWARD);
+		case "NeighborhoodFocusFL-BACKWARD2+extendedsimilarityfl2":
+			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.BACKWARD);
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 		}
