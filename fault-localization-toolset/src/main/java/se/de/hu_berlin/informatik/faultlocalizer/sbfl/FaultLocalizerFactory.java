@@ -173,15 +173,15 @@ public class FaultLocalizerFactory {
 			return new ExtendedSimilarityFL3<>();
 		case "asymmetricsimilarityfl":
 			return new AsymmetricSimilarityFL<>();
-		case "powersimilarityfl5":
+		case "pwrextsimilarityfl5-0":
 			return new PwrExtSimilarityFL<>(5);
-		case "powersimilarityfl4":
+		case "pwrextsimilarityfl4-0":
 			return new PwrExtSimilarityFL<>(4);
-		case "powersimilarityfl3":
+		case "pwrextsimilarityfl3-0":
 			return new PwrExtSimilarityFL<>(3);
-		case "powersimilarityfl2":
+		case "pwrextsimilarityfl2-0":
 			return new PwrExtSimilarityFL<>(2);
-		case "powersimilarityfl05":
+		case "pwrextsimilarityfl0-5":
 			return new PwrExtSimilarityFL<>(0.5);
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
