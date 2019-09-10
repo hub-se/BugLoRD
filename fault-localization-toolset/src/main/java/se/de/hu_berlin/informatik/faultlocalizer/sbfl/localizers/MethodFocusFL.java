@@ -9,6 +9,7 @@ package se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
@@ -24,6 +25,7 @@ public class MethodFocusFL<T> extends AbstractFaultLocalizer<T> {
 
 	private IFaultLocalizer<SourceCodeBlock> localizer;
 	private Map<Integer, Double> suspCache = new HashMap<>();
+	private Map<Integer, List<INode<SourceCodeBlock>>> methodMap = new HashMap<>();
 
 	/**
 	 * Create fault localizer
@@ -54,13 +56,19 @@ public class MethodFocusFL<T> extends AbstractFaultLocalizer<T> {
 		return suspiciousness;
 	}
 
-	private Collection<INode<SourceCodeBlock>> getNodesInSameMethod(INode<SourceCodeBlock> node) {
-		Collection<INode<SourceCodeBlock>> nodes = new ArrayList<>();
-		SourceCodeBlock identifier = node.getIdentifier();
-		for (INode<SourceCodeBlock> iNode : node.getSpectra().getNodes()) {
-			if (identifier.getMethodName().equals(iNode.getIdentifier().getMethodName()) &&
-					identifier.getFilePath().equals(iNode.getIdentifier().getFilePath())) {
-				nodes.add(iNode);
+	private List<INode<SourceCodeBlock>> getNodesInSameMethod(INode<SourceCodeBlock> node) {
+		List<INode<SourceCodeBlock>> nodes = methodMap.get(node.getIndex());
+		if (nodes == null) {
+			nodes = new ArrayList<>();
+			SourceCodeBlock identifier = node.getIdentifier();
+			for (INode<SourceCodeBlock> iNode : node.getSpectra().getNodes()) {
+				if (identifier.getMethodName().equals(iNode.getIdentifier().getMethodName()) &&
+						identifier.getFilePath().equals(iNode.getIdentifier().getFilePath())) {
+					nodes.add(iNode);
+				}
+			}
+			for (INode<SourceCodeBlock> nodeInMethod : nodes) {
+				methodMap.put(nodeInMethod.getIndex(), nodes);
 			}
 		}
 		return nodes;

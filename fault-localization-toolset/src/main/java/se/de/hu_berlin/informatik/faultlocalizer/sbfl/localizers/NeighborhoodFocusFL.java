@@ -33,6 +33,7 @@ public class NeighborhoodFocusFL<T> extends AbstractFaultLocalizer<T> {
 	
 	private IFaultLocalizer<SourceCodeBlock> localizer;
 	private Map<Integer, Double> suspCache = new HashMap<>();
+	private Map<Integer, List<INode<SourceCodeBlock>>> methodMap = new HashMap<>();
 	private int neighborHoodSize;
 	private Direction direction;
 
@@ -102,12 +103,18 @@ public class NeighborhoodFocusFL<T> extends AbstractFaultLocalizer<T> {
 	}
 
 	private List<INode<SourceCodeBlock>> getNodesInSameMethod(INode<SourceCodeBlock> node) {
-		List<INode<SourceCodeBlock>> nodes = new ArrayList<>();
-		SourceCodeBlock identifier = node.getIdentifier();
-		for (INode<SourceCodeBlock> iNode : node.getSpectra().getNodes()) {
-			if (identifier.getMethodName().equals(iNode.getIdentifier().getMethodName()) &&
-					identifier.getFilePath().equals(iNode.getIdentifier().getFilePath())) {
-				nodes.add(iNode);
+		List<INode<SourceCodeBlock>> nodes = methodMap.get(node.getIndex());
+		if (nodes == null) {
+			nodes = new ArrayList<>();
+			SourceCodeBlock identifier = node.getIdentifier();
+			for (INode<SourceCodeBlock> iNode : node.getSpectra().getNodes()) {
+				if (identifier.getMethodName().equals(iNode.getIdentifier().getMethodName()) &&
+						identifier.getFilePath().equals(iNode.getIdentifier().getFilePath())) {
+					nodes.add(iNode);
+				}
+			}
+			for (INode<SourceCodeBlock> nodeInMethod : nodes) {
+				methodMap.put(nodeInMethod.getIndex(), nodes);
 			}
 		}
 		return nodes;
