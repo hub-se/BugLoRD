@@ -4,7 +4,7 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers;
+package se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.depricated;
 
 import java.util.Collection;
 

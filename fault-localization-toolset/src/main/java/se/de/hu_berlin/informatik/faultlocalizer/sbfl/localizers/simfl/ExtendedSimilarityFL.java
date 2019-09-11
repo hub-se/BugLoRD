@@ -4,7 +4,7 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers;
+package se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl;
 
 import java.util.Collection;
 
@@ -22,12 +22,12 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * @param <T>
  * type used to identify nodes in the system
  */
-public class ExtendedSimilarityFL2<T> extends AbstractFaultLocalizer<T> {
+public class ExtendedSimilarityFL<T> extends AbstractFaultLocalizer<T> {
 
 	/**
 	 * Create fault localizer
 	 */
-	public ExtendedSimilarityFL2() {
+	public ExtendedSimilarityFL() {
 		super();
 	}
 
@@ -79,14 +79,14 @@ public class ExtendedSimilarityFL2<T> extends AbstractFaultLocalizer<T> {
 							// node is involved in another failing trace -> more suspicious
 							// -> higher suspiciousness if both traces are more diverse
 							// (additional failing traces that are very similar don't provide a lot of new information)
-							count += (1 - similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size());
+							count += (trace.getInvolvedNodes().size() - similarityScore.getSameHitCount()) / (double) trace.getInvolvedNodes().size();
 						} else {
 							// node is NOT involved in another failing trace -> less suspicious
 							// -> lower suspiciousness if both traces are more diverse
 							// (i.e. the other failing trace covers a bit of the functionality of the failing one,
 							// but is more diverse. If the trace is more similar to the failing one,
 							// it doesn't have as much power...)
-							count -= (1 - similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size());
+							count -= (trace.getInvolvedNodes().size() - similarityScore.getSameHitCount()) / (double) trace.getInvolvedNodes().size();
 						}
 					}
 				}
@@ -129,7 +129,7 @@ public class ExtendedSimilarityFL2<T> extends AbstractFaultLocalizer<T> {
 							// (i.e. the primary failing trace covers a bit of the functionality of the failing one,
 							// but is more diverse. If the trace is more similar to the failing one,
 							// it doesn't have as much power...)
-							count -= (1 - similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size());
+							count -= (trace.getInvolvedNodes().size() - similarityScore.getSameHitCount()) / (double) trace.getInvolvedNodes().size();
 						} else {
 							// node is NOT involved in another failing trace -> less suspicious
 							// (node is neither involved in the primary failing test case nor in this test case)

@@ -4,7 +4,7 @@
  * please view the LICENSE file that was distributed with this source code.
  */
 
-package se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers;
+package se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl;
 
 import java.util.Collection;
 
@@ -22,12 +22,12 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * @param <T>
  * type used to identify nodes in the system
  */
-public class ExtendedSimilarityFL3<T> extends AbstractFaultLocalizer<T> {
+public class ExtendedSimilarityFL2<T> extends AbstractFaultLocalizer<T> {
 
 	/**
 	 * Create fault localizer
 	 */
-	public ExtendedSimilarityFL3() {
+	public ExtendedSimilarityFL2() {
 		super();
 	}
 
@@ -44,11 +44,6 @@ public class ExtendedSimilarityFL3<T> extends AbstractFaultLocalizer<T> {
 		// have to compute a value for each failing trace (-> primary failing test case)
 		for (final ITrace<T> failingTrace : failingTraces) {
 			boolean nodeInvolvedInFailingTrace = failingTrace.isInvolved(node);
-			double failingTraceSize = failingTrace.getInvolvedNodes().size();
-			if (failingTraceSize <= 0) {
-				// skip traces that did not execute any nodes...
-				continue;
-			}
 			if (nodeInvolvedInFailingTrace) {
 				// the primary failing test case executed this node -> bug is more likely to be here!
 				double count = 0.0;
@@ -70,13 +65,13 @@ public class ExtendedSimilarityFL3<T> extends AbstractFaultLocalizer<T> {
 							// node is involved in the test case -> less suspicious
 							// -> lower suspiciousness if both traces share more hits
 							// (i.e. the failing trace shares a lot of functionality with the successful one)
-							count -= similarityScore.getSameHitCount() / failingTraceSize;
+							count -= similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size();
 						} else {
 							// node is NOT involved in the test case -> more suspicious
 							// -> higher suspiciousness if both traces share more hits
 							// (i.e. the failing trace shares a lot of functionality with the successful one, 
 							// but on this node, there is an anomaly...)
-							count += similarityScore.getSameHitCount() / failingTraceSize;
+							count += similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size();
 						}
 					} else {
 						// this test case failed -> bug is more likely to be here if covered!
@@ -84,14 +79,14 @@ public class ExtendedSimilarityFL3<T> extends AbstractFaultLocalizer<T> {
 							// node is involved in another failing trace -> more suspicious
 							// -> higher suspiciousness if both traces are more diverse
 							// (additional failing traces that are very similar don't provide a lot of new information)
-							count += (1 - similarityScore.getSameHitCount() / failingTraceSize);
+							count += (1 - similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size());
 						} else {
 							// node is NOT involved in another failing trace -> less suspicious
 							// -> lower suspiciousness if both traces are more diverse
 							// (i.e. the other failing trace covers a bit of the functionality of the failing one,
 							// but is more diverse. If the trace is more similar to the failing one,
 							// it doesn't have as much power...)
-							count -= (1 - similarityScore.getSameHitCount() / failingTraceSize);
+							count -= (1 - similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size());
 						}
 					}
 				}
@@ -120,7 +115,7 @@ public class ExtendedSimilarityFL3<T> extends AbstractFaultLocalizer<T> {
 							// -> higher suspiciousness if both traces share more hits
 							// (i.e. the failing trace shares a lot of functionality with the successful one)
 							// the idea is that there may be some functionality missing in the primary failing test case
-							count -= (1 - similarityScore.getSameHitCount() / failingTraceSize);
+							count -= (1 - similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size());
 						} else {
 							// node is NOT involved in the test case -> less suspicious (since not involved in the primary failing test case)
 							// (node is neither involved in the primary failing test case nor in this test case)
@@ -134,7 +129,7 @@ public class ExtendedSimilarityFL3<T> extends AbstractFaultLocalizer<T> {
 							// (i.e. the primary failing trace covers a bit of the functionality of the failing one,
 							// but is more diverse. If the trace is more similar to the failing one,
 							// it doesn't have as much power...)
-							count -= (1 - similarityScore.getSameHitCount() / failingTraceSize);
+							count -= (1 - similarityScore.getSameHitCount() / (double) trace.getInvolvedNodes().size());
 						} else {
 							// node is NOT involved in another failing trace -> less suspicious
 							// (node is neither involved in the primary failing test case nor in this test case)

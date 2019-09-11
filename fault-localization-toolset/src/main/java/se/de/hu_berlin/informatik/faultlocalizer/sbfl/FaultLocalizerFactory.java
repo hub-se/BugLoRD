@@ -6,15 +6,11 @@ import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ample;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Anderberg;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ArithmeticMean;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.AsymmetricSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Barinel;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Cohen;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.DStar;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Dice;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Euclid;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ExtendedSimilarityFL;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ExtendedSimilarityFL2;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ExtendedSimilarityFL3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Fleiss;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.GP13;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.GeometricMean;
@@ -28,27 +24,16 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Kulczynski1;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Kulczynski2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.M1;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.M2;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.MethodFocusFL;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.NeighborhoodFocusFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Op2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Overlap;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.PwrExtSimilarityFL;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseExtendedSimilarityFL;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseExtendedSimilarityFL2;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseSimilarityFL;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ReverseSimilarityFL2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.RogersTanimoto;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Rogot1;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Rogot2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.RussellRao;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Scott;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimilarityFL;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimilarityFL2;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimilarityFL3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimpleMatching;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimpleSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Sokal;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SorensenDice;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Tarantula;
@@ -56,7 +41,22 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong1;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Zoltar;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.NeighborhoodFocusFL.Direction;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.ExtendedSimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.ExtendedSimilarityFL2;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.ExtendedSimilarityFL3;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.MethodFocusFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.NeighborhoodFocusFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.PwrExtSimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.SimilarityFL3;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.SimpleSimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.NeighborhoodFocusFL.Direction;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.depricated.AsymmetricSimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.depricated.ReverseExtendedSimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.depricated.ReverseExtendedSimilarityFL2;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.depricated.ReverseSimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.depricated.ReverseSimilarityFL2;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.depricated.SimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.depricated.SimilarityFL2;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 
 /**
@@ -201,30 +201,52 @@ public class FaultLocalizerFactory {
 			return new MethodFocusFL<>(new PwrExtSimilarityFL<>(0.1));
 		case "methodfocusfl+extendedsimilarityfl2":
 			return new MethodFocusFL<>(new ExtendedSimilarityFL2<>());
+		case "neighborhoodfocusfl-both3+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 1);
+		case "neighborhoodfocusfl-both3-2+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 2);
+		case "neighborhoodfocusfl-both3-5+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 5);
+		case "neighborhoodfocusfl-both3-10+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10);
 		case "neighborhoodfocusfl-both2+dstar":
-			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BOTH);
+			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BOTH, 1);
+		case "neighborhoodfocusfl-both2-2+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BOTH, 2);
+		case "neighborhoodfocusfl-both2-5+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BOTH, 5);
+		case "neighborhoodfocusfl-both2-10+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BOTH, 10);
+		case "neighborhoodfocusfl-both1+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 1, Direction.BOTH, 1);
+		case "neighborhoodfocusfl-both1-2+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 1, Direction.BOTH, 2);
+		case "neighborhoodfocusfl-both1-5+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 1, Direction.BOTH, 5);
+		case "neighborhoodfocusfl-both1-10+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 1, Direction.BOTH, 10);
 		case "neighborhoodfocusfl-both2+pwrextsimilarityfl0-5":
-			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.BOTH);
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.BOTH, 1);
 		case "neighborhoodfocusfl-both2+pwrextsimilarityfl0-1":
-			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.BOTH);
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.BOTH, 1);
 		case "neighborhoodfocusfl-both2+extendedsimilarityfl2":
-			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.BOTH);
+			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.BOTH, 1);
 		case "neighborhoodfocusfl-forward2+dstar":
-			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.FORWARD);
+			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.FORWARD, 1);
 		case "neighborhoodfocusfl-forward2+pwrextsimilarityfl0-5":
-			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.FORWARD);
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.FORWARD, 1);
 		case "neighborhoodfocusfl-forward2+pwrextsimilarityfl0-1":
-			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.FORWARD);
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.FORWARD, 1);
 		case "neighborhoodfocusfl-forward2+extendedsimilarityfl2":
-			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.FORWARD);
+			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.FORWARD, 1);
 		case "neighborhoodfocusfl-backward2+dstar":
-			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BACKWARD);
+			return new NeighborhoodFocusFL<>(new DStar<>(), 2, Direction.BACKWARD, 1);
 		case "neighborhoodfocusfl-backward2+pwrextsimilarityfl0-5":
-			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.BACKWARD);
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.5), 2, Direction.BACKWARD, 1);
 		case "neighborhoodfocusfl-backward2+pwrextsimilarityfl0-1":
-			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.BACKWARD);
+			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.BACKWARD, 1);
 		case "neighborhoodfocusfl-backward2+extendedsimilarityfl2":
-			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.BACKWARD);
+			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.BACKWARD, 1);
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 		}
