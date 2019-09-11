@@ -2,13 +2,19 @@ package se.de.hu_berlin.informatik.spectra.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
@@ -327,6 +333,85 @@ public class SpectraUtils {
     	}
 
     	return spectra;
+	}
+    
+    /**
+     * Creates a method level spectra based on the given input spectra on statement level.
+     * @param iSpectra
+     * the input spectra
+     * @return
+     * a new spectra with method level program elements
+     */
+    public static HitSpectra<SourceCodeBlock> createMethodLevelSpectrum(ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> iSpectra) {
+    	HitSpectra<SourceCodeBlock> spectra = new HitSpectra<>(iSpectra.getPathToSpectraZipFile());
+    	Map<Integer, SourceCodeBlock> nodesToMethodMap = new HashMap<>();
+    	Map<SourceCodeBlock, List<Integer>> methodToNodesMap = new HashMap<>();
+    	
+    	//populate new spectra with nodes from input spectra
+    	for (INode<SourceCodeBlock> node : iSpectra.getNodes()) {
+    		spectra.getOrCreateNode(getMethodNode(nodesToMethodMap, methodToNodesMap, node));
+    	}
+
+    	//iterate over all traces of the spectra to invert
+    	for (ITrace<SourceCodeBlock> inputTrace : iSpectra.getTraces()) {
+    		//check whether the trace is successful
+    		boolean successful = inputTrace.isSuccessful();
+    		//create a new trace in the new spectra
+    		ITrace<SourceCodeBlock> addedTrace = spectra.addTrace(inputTrace.getIdentifier(), inputTrace.getIndex(), successful);
+    		//iterate over all (method level) nodes
+    		for (INode<SourceCodeBlock> methodNode : spectra.getNodes()) {
+    			//check for the involvement of the node in the input spectra
+    			List<Integer> nodes = methodToNodesMap.get(methodNode.getIdentifier());
+    			for (Integer index : nodes) {
+    				// if any of the statement level nodes is involved, then the entire method is involved
+    				if (inputTrace.isInvolved(index)) {
+    					addedTrace.setInvolvement(methodNode, true);
+    					break;
+    				}
+    			}
+    		}
+    	}
+
+    	return spectra;
+	}
+    
+    private static SourceCodeBlock getMethodNode(Map<Integer, SourceCodeBlock> nodesToMethodMap, 
+    		Map<SourceCodeBlock, List<Integer>> methodToNodesMap, INode<SourceCodeBlock> node) {
+    	SourceCodeBlock methodBlock = nodesToMethodMap.get(node.getIndex());
+		if (methodBlock == null) {
+			List<INode<SourceCodeBlock>> nodes = new ArrayList<>();
+			SourceCodeBlock identifier = node.getIdentifier();
+			for (INode<SourceCodeBlock> iNode : node.getSpectra().getNodes()) {
+				if (identifier.getMethodName().equals(iNode.getIdentifier().getMethodName()) &&
+						identifier.getFilePath().equals(iNode.getIdentifier().getFilePath())) {
+					nodes.add(iNode);
+				}
+			}
+			Collections.sort(nodes, new Comparator<INode<SourceCodeBlock>>() {
+				@Override
+				public int compare(INode<SourceCodeBlock> o1, INode<SourceCodeBlock> o2) {
+					return Integer.compare(o1.getIdentifier().getStartLineNumber(), o2.getIdentifier().getStartLineNumber());
+				}
+			});
+			
+			methodBlock = new SourceCodeBlock(node.getIdentifier().getPackageName(), 
+					node.getIdentifier().getFilePath(), 
+					node.getIdentifier().getMethodName(), 
+					nodes.get(0).getIdentifier().getStartLineNumber(), 
+					nodes.get(nodes.size()-1).getIdentifier().getEndLineNumber(), 
+					NodeType.NORMAL);
+			
+			for (INode<SourceCodeBlock> nodeInMethod : nodes) {
+				nodesToMethodMap.put(nodeInMethod.getIndex(), methodBlock);
+			}
+			
+			List<Integer> indexList = new ArrayList<>(nodes.size());
+			for (INode<SourceCodeBlock> nodeInList : nodes) {
+				indexList.add(nodeInList.getIndex());
+			}
+			methodToNodesMap.put(methodBlock, indexList);
+		}
+		return methodBlock;
 	}
     
     /**

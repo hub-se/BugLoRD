@@ -45,8 +45,10 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.ExtendedS
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.ExtendedSimilarityFL2;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.ExtendedSimilarityFL3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.MethodFocusFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.MethodLevelFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.NeighborhoodFocusFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.PwrExtSimilarityFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.ScoreCombinationFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.SimilarityFL3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.SimpleSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.NeighborhoodFocusFL.Direction;
@@ -247,6 +249,20 @@ public class FaultLocalizerFactory {
 			return new NeighborhoodFocusFL<>(new PwrExtSimilarityFL<>(0.1), 2, Direction.BACKWARD, 1);
 		case "neighborhoodfocusfl-backward2+extendedsimilarityfl2":
 			return new NeighborhoodFocusFL<>(new ExtendedSimilarityFL2<>(), 2, Direction.BACKWARD, 1);
+		case "methodlevelfl+dstar":
+			return new MethodLevelFL<>(new DStar<>());
+		case "scorecombinationfl(neighborhoodfocusfl-both3-10+dstar_methodlevelfl+dstar)":
+			return new ScoreCombinationFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, new MethodLevelFL<>(new DStar<>()), 1);
+		case "scorecombinationfl(neighborhoodfocusfl-both3-10+dstar_methodlevelfl+dstar-2)":
+			return new ScoreCombinationFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, new MethodLevelFL<>(new DStar<>()), 2);
+		case "scorecombinationfl(neighborhoodfocusfl-both3-10+dstar_methodlevelfl+dstar-5)":
+			return new ScoreCombinationFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, new MethodLevelFL<>(new DStar<>()), 5);
+		case "scorecombinationfl(neighborhoodfocusfl-both3-10+dstar_methodlevelfl+dstar-10)":
+			return new ScoreCombinationFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, new MethodLevelFL<>(new DStar<>()), 10);
+		case "neighborhoodfocusfl-both4-10+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 4, Direction.BOTH, 10);
+		case "neighborhoodfocusfl-both5-10+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 5, Direction.BOTH, 10);
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 		}
