@@ -263,6 +263,12 @@ public class FaultLocalizerFactory {
 			return new NeighborhoodFocusFL<>(new DStar<>(), 4, Direction.BOTH, 10);
 		case "neighborhoodfocusfl-both5-10+dstar":
 			return new NeighborhoodFocusFL<>(new DStar<>(), 5, Direction.BOTH, 10);
+		case "neighborhoodfocusfl-both3-20+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 20);
+		case "neighborhoodfocusfl-both3-50+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 50);
+		case "neighborhoodfocusfl-both3-100+dstar":
+			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 100);
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 		}
