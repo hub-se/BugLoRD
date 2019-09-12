@@ -49,6 +49,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.MethodLev
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.NeighborhoodFocusFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.PwrExtSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.ScoreCombinationFL;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.SimilarityBoostFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.SimilarityFL3;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.SimpleSimilarityFL;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.NeighborhoodFocusFL.Direction;
@@ -269,6 +270,14 @@ public class FaultLocalizerFactory {
 			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 50);
 		case "neighborhoodfocusfl-both3-100+dstar":
 			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 100);
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<2-0>)":
+			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 2.0);
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<1-0>)":
+			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 1.0);
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<0-5>)":
+			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 0.5);
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<0-1>)":
+			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 0.1);
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 		}
