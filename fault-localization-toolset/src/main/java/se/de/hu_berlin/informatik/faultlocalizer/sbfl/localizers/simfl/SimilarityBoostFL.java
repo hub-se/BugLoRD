@@ -20,14 +20,16 @@ public class SimilarityBoostFL<T> extends AbstractFaultLocalizer<T> {
 	private int divisor1;
 	private IFaultLocalizer<T> localizer2;
 	private double power;
+	private int divisor2;
 
 	/**
 	 * Create fault localizer
 	 */
-	public SimilarityBoostFL(IFaultLocalizer<T> localizer1, int divisor1, double power) {
+	public SimilarityBoostFL(IFaultLocalizer<T> localizer1, int divisor1, double power, int divisor2) {
 		super();
 		this.localizer1 = localizer1;
 		this.divisor1 = divisor1;
+		this.divisor2 = divisor2;
 		this.localizer2 = new PwrExtSimilarityFL<>(0.1);
 		this.power = power;
 
@@ -40,7 +42,7 @@ public class SimilarityBoostFL<T> extends AbstractFaultLocalizer<T> {
 		if (Double.isNaN(score1) || Double.isNaN(score2)) {
 			return Double.NaN;
 		} else {
-			return (score1 / divisor1) * Math.pow(score2 + 1, power);
+			return (score1 / divisor1) * (1 + Math.pow(score2 + 1, power) / divisor2);
 		}
 	}
 
@@ -48,7 +50,7 @@ public class SimilarityBoostFL<T> extends AbstractFaultLocalizer<T> {
 	public String getName() {
 		return this.getClass().getSimpleName() + 
 				"(" + localizer1.getName() + (divisor1 != 1 ? "-" + divisor1 : "") + "_" + 
-				String.format("pwr0-1<%d-%d>", (int)power, ((int)(power*10)) % 10) + ")";
+				String.format("pwr0-1<%d-%d>-%d", (int)power, ((int)(power*10)) % 10, divisor2) + ")";
 	}
 	
 }
