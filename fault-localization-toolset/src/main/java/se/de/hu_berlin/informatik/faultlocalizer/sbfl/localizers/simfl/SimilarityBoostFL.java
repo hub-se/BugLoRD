@@ -50,7 +50,7 @@ public class SimilarityBoostFL<T> extends AbstractFaultLocalizer<T> {
 	public String getName() {
 		return this.getClass().getSimpleName() + 
 				"(" + localizer1.getName() + (divisor1 != 1 ? "-" + divisor1 : "") + "_" + 
-				String.format("pwr0-1<%d-%d>-%d", (int)power, ((int)(power*10)) % 10, divisor2) + ")";
+				String.format("pwr0-1(%d-%d)-%d", (int)power, ((int)(power*10)) % 10, divisor2) + ")";
 	}
 	
 }

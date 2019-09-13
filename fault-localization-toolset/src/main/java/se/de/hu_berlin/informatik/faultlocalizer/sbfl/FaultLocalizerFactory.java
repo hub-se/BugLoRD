@@ -260,6 +260,14 @@ public class FaultLocalizerFactory {
 			return new ScoreCombinationFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, new MethodLevelFL<>(new DStar<>()), 5);
 		case "scorecombinationfl(neighborhoodfocusfl-both3-10+dstar_methodlevelfl+dstar-10)":
 			return new ScoreCombinationFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, new MethodLevelFL<>(new DStar<>()), 10);
+		case "scorecombinationfl(dstar_methodlevelfl+dstar)":
+			return new ScoreCombinationFL<>(new DStar<>(), 1, new MethodLevelFL<>(new DStar<>()), 1);
+		case "scorecombinationfl(dstar_methodlevelfl+dstar-2)":
+			return new ScoreCombinationFL<>(new DStar<>(), 1, new MethodLevelFL<>(new DStar<>()), 2);
+		case "scorecombinationfl(dstar_methodlevelfl+dstar-5)":
+			return new ScoreCombinationFL<>(new DStar<>(), 1, new MethodLevelFL<>(new DStar<>()), 5);
+		case "scorecombinationfl(dstar_methodlevelfl+dstar-10)":
+			return new ScoreCombinationFL<>(new DStar<>(), 1, new MethodLevelFL<>(new DStar<>()), 10);
 		case "neighborhoodfocusfl-both4-10+dstar":
 			return new NeighborhoodFocusFL<>(new DStar<>(), 4, Direction.BOTH, 10);
 		case "neighborhoodfocusfl-both5-10+dstar":
@@ -270,29 +278,29 @@ public class FaultLocalizerFactory {
 			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 50);
 		case "neighborhoodfocusfl-both3-100+dstar":
 			return new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 100);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<2-0>-10)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(2-0)-10)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 2.0, 10);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<1-0>-10)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(1-0)-10)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 1.0, 10);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<0-5>-10)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(0-5)-10)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 0.5, 10);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<0-1>-10)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(0-1)-10)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 0.1, 10);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<2-0>-100)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(2-0)-100)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 2.0, 100);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<1-0>-100)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(1-0)-100)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 1.0, 100);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<0-5>-100)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(0-5)-100)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 0.5, 100);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<0-1>-100)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(0-1)-100)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 0.1, 100);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<2-0>-1)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(2-0)-1)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 2.0, 1);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<1-0>-1)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(1-0)-1)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 1.0, 1);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<0-5>-1)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(0-5)-1)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 0.5, 1);
-		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr<0-1>-1)":
+		case "similarityboostfl(neighborhoodfocusfl-both3-10+dstar_pwr0-1(0-1)-1)":
 			return new SimilarityBoostFL<>(new NeighborhoodFocusFL<>(new DStar<>(), 3, Direction.BOTH, 10), 1, 0.1, 1);
 		default:
 			throw new IllegalArgumentException(localizer + " is not a valid localizer.");
