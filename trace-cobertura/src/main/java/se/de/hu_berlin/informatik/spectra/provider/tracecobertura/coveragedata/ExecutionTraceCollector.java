@@ -241,9 +241,9 @@ public class ExecutionTraceCollector {
 //					if (existingSubTraces == null) {
 //						existingSubTraces = new ConcurrentHashMap<>();
 //					}
-					System.out.println("new :" + currentId 
-							//+ ":" + subTrace.toString()
-							);
+//					System.out.println("new :" + currentId 
+//							//+ ":" + subTrace.toString()
+//							);
 					subTrace.sleep();
 					existingSubTraces.put(id, subTrace);
 				}
@@ -251,9 +251,9 @@ public class ExecutionTraceCollector {
 				idLock.unlock();
 			}
 		} else {
-			System.out.println("old: " + id
-					//+ ":" + subTrace.toString()
-					);
+//			System.out.println("old: " + id
+//					//+ ":" + subTrace.toString()
+//					);
 			subTrace.clear();
 			unusedSubTraceCache.add(subTrace);
 		}

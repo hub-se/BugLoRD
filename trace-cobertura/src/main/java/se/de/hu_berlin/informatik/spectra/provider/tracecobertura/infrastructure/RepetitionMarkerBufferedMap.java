@@ -57,7 +57,7 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 			return;
 		}
 		if (node.modified) {
-			System.out.println("rmem: " + Runtime.getRuntime().freeMemory());
+//			System.out.println("rmem: " + Runtime.getRuntime().freeMemory());
 			String filename = getFileName(node.storeIndex);
 			
 			try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {
