@@ -77,6 +77,16 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         stream.writeInt(arrayLength);
     }
 
+	private volatile transient boolean locked = false;
+
+	public void lock() {
+		this.locked = true;
+	}
+
+	public void unlock() {
+		this.locked = false;
+	}
+
 	// stores all nodes on disk
 	public void sleep() {
 		lock.lock();
@@ -457,6 +467,9 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 
     @Override
     public boolean add(E e) {
+    	if (locked) {
+    		throw new IllegalStateException("Tried to add value " + e + " while being locked.");
+    	}
     	loadLast();
     	if (lastNode != null && lastNode.hasFreeSpace()) {
     		lastNode.add(e);
@@ -472,6 +485,9 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 
     @Override
     public void clear() {
+    	if (locked) {
+    		throw new IllegalStateException("Tried to clear queue while being locked.");
+    	}
     	lock.lock();
     	try {
     		cachedNodes.clear();
@@ -506,6 +522,13 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
      * the number of elements to clear from the list
      */
     public void clear(int count) {
+    	if (count >= size) {
+			clear();
+			return;
+		}
+    	if (locked) {
+    		throw new IllegalStateException("Tried to clear queue while being locked.");
+    	}
     	lock.lock();
     	try {
     		int i = 0;
@@ -623,6 +646,9 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 
     @Override
     public E remove() {
+    	if (locked) {
+    		throw new IllegalStateException("Tried to remove element while being locked.");
+    	}
     	final Node<E> f = loadFirst();
         if (f == null || f.startIndex >= f.endIndex)
             throw new NoSuchElementException();
@@ -866,6 +892,10 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		public E get(int i) {
 			return (E) items[i+startIndex];
 		}
+		
+		public void set(int i, E value) {
+			items[i+startIndex] = value;
+		}
 
 	}
 	
@@ -895,6 +925,27 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
             throw new NoSuchElementException();
         return f.get(itemIndex);
 	}
+	
+	private void set(int i, E value) {
+		if (locked) {
+    		throw new IllegalStateException("Tried to set value at index " + i + " to " + value + " while being locked.");
+    	}
+		// we can compute the store index using the size of the 
+		// first node and the constant size of each array node
+		if (i < firstNodeSize) {
+			final Node<E> f = loadFirst();
+	        if (f == null || f.startIndex >= f.endIndex)
+	            throw new NoSuchElementException();
+	        f.set(i, value);
+		}
+		i -= firstNodeSize;
+		int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
+		int itemIndex = i % arrayLength;
+		final Node<E> f = load(storeIndex);
+        if (f == null || itemIndex >= f.endIndex)
+            throw new NoSuchElementException();
+        f.set(itemIndex, value);
+	}
 
 	@Override
 	public String toString() {
@@ -906,9 +957,19 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		builder.append(" ]");
 		return builder.toString();
 	}
+	
+	public E getAndReplaceWith(int i, Function<E, E> function) {
+		E previous = get(i);
+		set(i, function.apply(previous));
+		return previous;
+	}
 
 	public boolean isDeleteOnExit() {
 		return deleteOnExit;
+	}
+	
+	public void deleteOnExit() {
+		deleteOnExit = true;
 	}
 	
 }

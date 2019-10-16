@@ -1,6 +1,5 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,23 +15,18 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
  * An execution trace consists structurally of a list of executed nodes
  * and a list of tuples that mark repeated sequences in the trace.
  */
-public abstract class CompressedIntegerTraceBase implements Serializable {
+public abstract class CompressedIntegerTraceBase extends RepetitionMarkerBase implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5903218865249529299L;
 	
-	private static final int MAX_ITERATION_COUNT = 10;
-	
 	private int originalSize;
 	private BufferedIntArrayQueue compressedTrace;
-	private BufferedMap<int[]> repetitionMarkers;
-	
+
 	private CompressedIntegerTraceBase child;
 
-	private transient boolean markedForDeletion;
-	
 	/**
 	 * Adds the given queue's contents to the trace. 
 	 * ATTENTION: the queue's contents will be removed in the process! 
@@ -70,7 +64,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		if (otherCompressedTrace.getChild() == null) {
 			this.compressedTrace = traceOfNodeIDs;
 		} else {
-			this.repetitionMarkers = otherCompressedTrace.getRepetitionMarkers();
+			setRepetitionMarkers(otherCompressedTrace.getRepetitionMarkers());
 			this.child = newChildInstance(traceOfNodeIDs, otherCompressedTrace.getChild());
 			this.originalSize = computeFullTraceLength();
 		}
@@ -80,7 +74,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		if (otherCompressedTrace.getChild() == null) {
 			this.compressedTrace = traceOfNodeIDs;
 		} else {
-			this.repetitionMarkers = otherCompressedTrace.getRepetitionMarkers();
+			setRepetitionMarkers(otherCompressedTrace.getRepetitionMarkers());
 			this.child = newChildInstance(traceOfNodeIDs, otherCompressedTrace.getChild());
 			this.originalSize = computeFullTraceLength();
 		}
@@ -90,21 +84,13 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		if (repetitionMarkers == null || index >= repetitionMarkers.size()) {
 			this.compressedTrace = compressedTrace;
 		} else {
-			this.repetitionMarkers = constructFromArray(repetitionMarkers.get(index), 
+			setRepetitionMarkers(constructFromArray(repetitionMarkers.get(index), 
 					compressedTrace.getOutputDir(), 
 					compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.arrayLength,
-					compressedTrace.isDeleteOnExit());
+					compressedTrace.isDeleteOnExit()));
 			this.child = newChildInstance(compressedTrace, repetitionMarkers, ++index);
 			this.originalSize = computeFullTraceLength();
 		}
-	}
-	
-	private BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePrefix, int subMapSize, boolean deleteOnExit) {
-		BufferedMap<int[]> map = new RepetitionMarkerBufferedMap(outputDir, filePrefix, subMapSize, deleteOnExit);
-		for (int i = 0; i < repetitionMarkers.length; i += 3) {
-			map.put(repetitionMarkers[i], new int[] {repetitionMarkers[i+1], repetitionMarkers[i+2]});
-		}
-		return map;
 	}
 
 	public abstract CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace, CompressedIntegerTraceBase otherCompressedTrace);
@@ -144,7 +130,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		
 		int length = child.computeFullTraceLength();
 		
-		for (Iterator<Entry<Integer, int[]>> iterator = repetitionMarkers.entrySetIterator(); iterator.hasNext();) {
+		for (Iterator<Entry<Integer, int[]>> iterator = getRepetitionMarkers().entrySetIterator(); iterator.hasNext();) {
 			Entry<Integer, int[]> i = iterator.next();
 			// [length, repetitionCount]
 			length += (i.getValue()[0] * (i.getValue()[1]-1));
@@ -154,6 +140,10 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 	
 	public int size() {
 		return originalSize;
+	}
+	
+	public boolean isEmpty( ) {
+		return originalSize <= 0;
 	}
 	
 //	// mapping from elements to their most recent positions in the result list
@@ -309,7 +299,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 
 		if (!traceRepetitions.isEmpty()) {
 			traceRepetitions.sleep();
-			this.repetitionMarkers = traceRepetitions;
+			setRepetitionMarkers(traceRepetitions);
 		}
 		return traceWithoutRepetitions;
 	}
@@ -322,11 +312,7 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		}
 	}
 
-	public BufferedMap<int[]> getRepetitionMarkers() {
-		return repetitionMarkers;
-	}
-	
-//	public T[] reconstructFullTrace() {
+	//	public T[] reconstructFullTrace() {
 //		return reconstructTrace();
 //	}
 //
@@ -388,6 +374,10 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		return new IntTraceIterator(this);
 	}
 	
+	public IntTraceBackwardsIterator backwardsIterator() {
+		return new IntTraceBackwardsIterator(this);
+	}
+	
 	public Set<Integer> computeStartingElements() {
 		Set<Integer> set = new HashSet<>();
 		addStartingElementsToSet(set);
@@ -412,33 +402,27 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		}
 	}
 
+	@Override
 	public void clear() {
-		if (repetitionMarkers != null) {
-			repetitionMarkers.clear();
-		}
+		super.clear();
 		if (child != null) {
 			child.clear();
 		} else {
 			compressedTrace.clear();
 		}
 	}
-	
-	public boolean isEmpty() {
-		return originalSize == 0;
-	}
 
-	public long getFirstElement() {
+	public int getFirstElement() {
 		return getCompressedTrace().element();
 	}
 
-	public long getLastElement() {
+	public int getLastElement() {
 		return getCompressedTrace().lastElement();
 	}
 
+	@Override
 	public void sleep() {
-		if (repetitionMarkers != null) {
-			repetitionMarkers.sleep();
-		}
+		super.sleep();
 		if (child != null) {
 			child.sleep();
 		} else {
@@ -446,10 +430,12 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		}
 	}
 	
+	@Override
 	public void lock() {
 		getCompressedTrace().lock();
 	}
 	
+	@Override
 	public void unlock() {
 		getCompressedTrace().unlock();
 	}
@@ -464,21 +450,18 @@ public abstract class CompressedIntegerTraceBase implements Serializable {
 		return builder.toString();
 	}
 	
-	public void markForDeletion() {
-		this.markedForDeletion = true;
-	}
-	
+	@Override
 	public void deleteIfMarked() {
-		if (markedForDeletion) {
+		if (isMarkedForDeletion()) {
 			this.unlock();
+			super.clear();
 			this.clear();
 		}
 	}
 	
+	@Override
 	public void deleteOnExit() {
-		if (repetitionMarkers != null) {
-			repetitionMarkers.deleteOnExit();
-		}
+		super.deleteOnExit();
 		if (child != null) {
 			child.deleteOnExit();
 		} else {

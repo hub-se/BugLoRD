@@ -1,6 +1,5 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,23 +16,19 @@ import java.util.UUID;
  * An execution trace consists structurally of a list of executed nodes
  * and a list of tuples that mark repeated sequences in the trace.
  */
-public abstract class CompressedLongTraceBase implements Serializable {
+public abstract class CompressedLongTraceBase extends RepetitionMarkerBase implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3678143596875267880L;
 
-	private static final int MAX_ITERATION_COUNT = 10;
-	
+
 	private int originalSize;
 	private BufferedLongArrayQueue compressedTrace;
-	private BufferedMap<int[]> repetitionMarkers;
 	
 	private CompressedLongTraceBase child;
 
-	private transient boolean markedForDeletion;
-	
 	/**
 	 * Adds the given queue's contents to the trace. 
 	 * ATTENTION: the queue's contents will be removed in the process! 
@@ -71,7 +66,7 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		if (otherCompressedTrace.getChild() == null) {
 			this.compressedTrace = traceOfNodeIDs;
 		} else {
-			this.repetitionMarkers = otherCompressedTrace.getRepetitionMarkers();
+			setRepetitionMarkers(otherCompressedTrace.getRepetitionMarkers());
 			this.child = newChildInstance(traceOfNodeIDs, otherCompressedTrace.getChild());
 			this.originalSize = computeFullTraceLength();
 		}
@@ -81,21 +76,13 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		if (repetitionMarkers == null || index >= repetitionMarkers.size()) {
 			this.compressedTrace = compressedTrace;
 		} else {
-			this.repetitionMarkers = constructFromArray(repetitionMarkers.get(index), 
+			setRepetitionMarkers(constructFromArray(repetitionMarkers.get(index), 
 					compressedTrace.getOutputDir(), 
 					compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.arrayLength,
-					compressedTrace.isDeleteOnExit());
+					compressedTrace.isDeleteOnExit()));
 			this.child = newChildInstance(compressedTrace, repetitionMarkers, ++index);
 			this.originalSize = computeFullTraceLength();
 		}
-	}
-	
-	private BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePrefix, int subMapSize, boolean deleteOnExit) {
-		BufferedMap<int[]> map = new RepetitionMarkerBufferedMap(outputDir, filePrefix, subMapSize, deleteOnExit);
-		for (int i = 0; i < repetitionMarkers.length; i += 3) {
-			map.put(repetitionMarkers[i], new int[] {repetitionMarkers[i+1], repetitionMarkers[i+2]});
-		}
-		return map;
 	}
 
 	public abstract CompressedLongTraceBase newChildInstance(BufferedLongArrayQueue trace, CompressedLongTraceBase otherCompressedTrace);
@@ -133,7 +120,7 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		
 		int length = child.computeFullTraceLength();
 		
-		for (Iterator<Entry<Integer, int[]>> iterator = repetitionMarkers.entrySetIterator(); iterator.hasNext();) {
+		for (Iterator<Entry<Integer, int[]>> iterator = getRepetitionMarkers().entrySetIterator(); iterator.hasNext();) {
 			Entry<Integer, int[]> i = iterator.next();
 			// [length, repetitionCount]
 			length += (i.getValue()[0] * (i.getValue()[1]-1));
@@ -143,6 +130,10 @@ public abstract class CompressedLongTraceBase implements Serializable {
 	
 	public int size() {
 		return originalSize;
+	}
+	
+	public boolean isEmpty() {
+		return originalSize <= 0;
 	}
 	
 //	// mapping from elements to their most recent positions in the result list
@@ -298,7 +289,7 @@ public abstract class CompressedLongTraceBase implements Serializable {
 
 		if (!traceRepetitions.isEmpty()) {
 			traceRepetitions.sleep();
-			this.repetitionMarkers = traceRepetitions;
+			setRepetitionMarkers(traceRepetitions);
 		}
 		return traceWithoutRepetitions;
 	}
@@ -310,11 +301,6 @@ public abstract class CompressedLongTraceBase implements Serializable {
 			return compressedTrace;
 		}
 	}
-
-	public BufferedMap<int[]> getRepetitionMarkers() {
-		return repetitionMarkers;
-	}
-	
 	
 	
 //	public T[] reconstructFullTrace() {
@@ -379,6 +365,9 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		return new LongTraceIterator(this);
 	}
 	
+	public LongTraceBackwardsIterator backwardsIterator() {
+		return new LongTraceBackwardsIterator(this);
+	}
 	public Set<Long> computeStartingElements() {
 		Set<Long> set = new HashSet<>();
 		addStartingElementsToSet(set);
@@ -403,19 +392,14 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		}
 	}
 
+	@Override
 	public void clear() {
-		if (repetitionMarkers != null) {
-			repetitionMarkers.clear();
-		}
+		super.clear();
 		if (child != null) {
 			child.clear();
 		} else {
 			compressedTrace.clear();
 		}
-	}
-
-	public boolean isEmpty() {
-		return originalSize == 0;
 	}
 
 	public long getFirstElement() {
@@ -427,6 +411,7 @@ public abstract class CompressedLongTraceBase implements Serializable {
 	}
 
 	public void sleep() {
+		super.sleep();
 		getCompressedTrace().sleep();
 	}
 	
@@ -448,21 +433,17 @@ public abstract class CompressedLongTraceBase implements Serializable {
 		return builder.toString();
 	}
 
-	public void markForDeletion() {
-		this.markedForDeletion = true;
-	}
 	
 	public void deleteIfMarked() {
-		if (markedForDeletion) {
+		if (isMarkedForDeletion()) {
 			this.unlock();
+			super.clear();
 			this.clear();
 		}
 	}
 	
 	public void deleteOnExit() {
-		if (repetitionMarkers != null) {
-			repetitionMarkers.deleteOnExit();
-		}
+		super.deleteOnExit();
 		if (child != null) {
 			child.deleteOnExit();
 		} else {

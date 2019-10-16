@@ -25,7 +25,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
-	public final static int EXECUTION_TRACE_CHUNK_SIZE = 2000000;
+	public final static int EXECUTION_TRACE_CHUNK_SIZE = 1000000;
 	public final static int MAP_CHUNK_SIZE = 500000;
 	public static final int SUBTRACE_ARRAY_SIZE = 100;
 	

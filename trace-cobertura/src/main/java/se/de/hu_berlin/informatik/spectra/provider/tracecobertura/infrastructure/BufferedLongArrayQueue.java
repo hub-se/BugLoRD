@@ -912,7 +912,7 @@ public class BufferedLongArrayQueue implements Serializable {
 		if (i < firstNodeSize) {
 			final Node f = loadFirst();
 	        if (f == null || f.startIndex >= f.endIndex)
-	            throw new NoSuchElementException();
+	            throw new NoSuchElementException("index: " + i);
 	        f.set(i, value);
 		}
 		i -= firstNodeSize;

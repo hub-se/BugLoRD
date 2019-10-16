@@ -1,6 +1,5 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,18 +18,15 @@ import java.util.UUID;
  * @param <K>
  * type of a representation for storing elements in a map
  */
-public abstract class CompressedTraceBase<T, K> implements Serializable, Iterable<T> {
+public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase implements Serializable, Iterable<T> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5903218865249529299L;
 	
-	private static final int MAX_ITERATION_COUNT = 10;
-	
 	private int originalSize;
 	private BufferedArrayQueue<T> compressedTrace;
-	private BufferedMap<int[]> repetitionMarkers;
 	
 	private CompressedTraceBase<T,K> child;
 	
@@ -71,7 +67,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		if (otherCompressedTrace.getChild() == null) {
 			this.compressedTrace = traceOfNodeIDs;
 		} else {
-			this.repetitionMarkers = otherCompressedTrace.getRepetitionMarkers();
+			setRepetitionMarkers(otherCompressedTrace.getRepetitionMarkers());
 			this.child = newChildInstance(traceOfNodeIDs, otherCompressedTrace.getChild());
 			this.originalSize = computeFullTraceLength();
 		}
@@ -81,21 +77,13 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		if (repetitionMarkers == null || index >= repetitionMarkers.size()) {
 			this.compressedTrace = compressedTrace;
 		} else {
-			this.repetitionMarkers = constructFromArray(repetitionMarkers.get(index), 
+			setRepetitionMarkers(constructFromArray(repetitionMarkers.get(index), 
 					compressedTrace.getOutputDir(), 
 					compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.arrayLength,
-					compressedTrace.isDeleteOnExit());
+					compressedTrace.isDeleteOnExit()));
 			this.child = newChildInstance(compressedTrace, repetitionMarkers, ++index);
 			this.originalSize = computeFullTraceLength();
 		}
-	}
-	
-	private BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePreix, int subMapSize, boolean deleteOnExit) {
-		BufferedMap<int[]> map = new RepetitionMarkerBufferedMap(outputDir, filePreix, subMapSize, deleteOnExit);
-		for (int i = 0; i < repetitionMarkers.length; i += 3) {
-			map.put(repetitionMarkers[i], new int[] {repetitionMarkers[i+1], repetitionMarkers[i+2]});
-		}
-		return map;
 	}
 
 	public abstract CompressedTraceBase<T,K> newChildInstance(BufferedArrayQueue<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
@@ -115,7 +103,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		
 		int length = child.computeFullTraceLength();
 		
-		for (Iterator<Entry<Integer, int[]>> iterator = repetitionMarkers.entrySetIterator(); iterator.hasNext();) {
+		for (Iterator<Entry<Integer, int[]>> iterator = getRepetitionMarkers().entrySetIterator(); iterator.hasNext();) {
 			Entry<Integer, int[]> i = iterator.next();
 			// [length, repetitionCount]
 			length += (i.getValue()[0] * (i.getValue()[1]-1));
@@ -125,6 +113,10 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 	
 	public int size() {
 		return originalSize;
+	}
+	
+	public boolean isEmpty() {
+		return originalSize <= 0;
 	}
 	
 //	// mapping from elements to their most recent positions in the result list
@@ -280,7 +272,7 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 
 		if (!traceRepetitions.isEmpty()) {
-			this.repetitionMarkers = traceRepetitions;
+			setRepetitionMarkers(traceRepetitions);
 		}
 		return traceWithoutRepetitions;
 	}
@@ -295,10 +287,6 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		} else {
 			return compressedTrace;
 		}
-	}
-
-	public BufferedMap<int[]> getRepetitionMarkers() {
-		return repetitionMarkers;
 	}
 	
 //	public T[] reconstructFullTrace() {
@@ -388,14 +376,62 @@ public abstract class CompressedTraceBase<T, K> implements Serializable, Iterabl
 		}
 	}
 
+	@Override
 	public void clear() {
+		super.clear();
 		if (child != null) {
-			if (repetitionMarkers != null) {
-				repetitionMarkers.clear();
-			}
 			child.clear();
 		} else {
 			compressedTrace.clear();
+		}
+	}
+	
+	@Override
+	public void sleep() {
+		super.sleep();
+		if (child != null) {
+			child.sleep();
+		} else {
+			compressedTrace.sleep();
+		}
+	}
+	
+	@Override
+	public void lock() {
+		getCompressedTrace().lock();
+	}
+	
+	@Override
+	public void unlock() {
+		getCompressedTrace().unlock();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder(originalSize + " ==> ");
+		TraceIterator<T> eTraceIterator = iterator();
+		while (eTraceIterator.hasNext()) {
+			builder.append(eTraceIterator.next() + ", ");
+		}
+		return builder.toString();
+	}
+	
+	@Override
+	public void deleteIfMarked() {
+		if (isMarkedForDeletion()) {
+			this.unlock();
+			super.clear();
+			this.clear();
+		}
+	}
+	
+	@Override
+	public void deleteOnExit() {
+		super.deleteOnExit();
+		if (child != null) {
+			child.deleteOnExit();
+		} else {
+			compressedTrace.deleteOnExit();
 		}
 	}
 	
