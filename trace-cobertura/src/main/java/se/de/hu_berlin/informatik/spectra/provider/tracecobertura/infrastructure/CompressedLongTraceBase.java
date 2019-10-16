@@ -410,15 +410,18 @@ public abstract class CompressedLongTraceBase extends RepetitionMarkerBase imple
 		return getCompressedTrace().lastElement();
 	}
 
+	@Override
 	public void sleep() {
 		super.sleep();
 		getCompressedTrace().sleep();
 	}
 	
+	@Override
 	public void lock() {
 		getCompressedTrace().lock();
 	}
 	
+	@Override
 	public void unlock() {
 		getCompressedTrace().unlock();
 	}
@@ -433,7 +436,7 @@ public abstract class CompressedLongTraceBase extends RepetitionMarkerBase imple
 		return builder.toString();
 	}
 
-	
+	@Override
 	public void deleteIfMarked() {
 		if (isMarkedForDeletion()) {
 			this.unlock();
@@ -442,6 +445,7 @@ public abstract class CompressedLongTraceBase extends RepetitionMarkerBase imple
 		}
 	}
 	
+	@Override
 	public void deleteOnExit() {
 		super.deleteOnExit();
 		if (child != null) {

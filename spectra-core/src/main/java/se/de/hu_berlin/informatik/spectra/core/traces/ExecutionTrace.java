@@ -63,6 +63,14 @@ public class ExecutionTrace extends CompressedIntegerTraceBase implements Serial
 	}
 	
 
+	/**
+	 * Constructs the full execution trace. Usually, you should NOT be using this. Use an iterator instead!
+	 * @param indexer
+	 * indexer that is used to connect the element IDs in the execution trace to the respective sub traces
+	 * that contain node IDs
+	 * @return
+	 * array that contains all executed node IDs
+	 */
 	public int[] reconstructFullMappedTrace(SequenceIndexerCompressed indexer) {
 		IntTraceIterator indexedFullTrace = iterator();
 		List<Integer> fullTrace = new ArrayList<>();
@@ -75,6 +83,14 @@ public class ExecutionTrace extends CompressedIntegerTraceBase implements Serial
 		return fullTrace.stream().mapToInt(i -> i).toArray();
 	}
 	
+	/**
+	 * iterates over all node IDs in the execution trace.
+	 * @param sequenceIndexer
+	 * indexer that is used to connect the element IDs in the execution trace to the respective sub traces
+	 * that contain node IDs
+	 * @return
+	 * iterator
+	 */
 	public Iterator<Integer> mappedIterator(SequenceIndexerCompressed sequenceIndexer) {
 		return new Iterator<Integer>(){
 			
