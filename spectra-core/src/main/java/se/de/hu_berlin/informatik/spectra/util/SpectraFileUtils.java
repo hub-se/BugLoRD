@@ -611,7 +611,7 @@ public class SpectraFileUtils {
 		int maxStoredValue = eTrace.getMaxStoredValue();
 		BufferedIntegersToCompressedByteArrayProcessor module = new BufferedIntegersToCompressedByteArrayProcessor(
 				zipFilePath, traceFileName, false, maxStoredValue, true);
-        ReplaceableCloneableIntIterator iterator = eTrace.getCompressedTrace().iterator();
+        ReplaceableCloneableIntIterator iterator = eTrace.baseIterator();
         while (iterator.hasNext()) {
             module.submit(iterator.next());
         }

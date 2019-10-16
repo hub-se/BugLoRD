@@ -2,7 +2,6 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -94,7 +93,7 @@ public abstract class CompressedLongTraceBase extends RepetitionMarkerBase imple
 	public long getMaxStoredValue() {
 		if (getChild() == null) {
 			long max = 0;
-			ReplaceableCloneableLongIterator iterator = getCompressedTrace().iterator();
+			ReplaceableCloneableLongIterator iterator = baseIterator();
 			while (iterator.hasNext()) {
 				max = Math.max(iterator.next(), max);
 			}
@@ -361,18 +360,35 @@ public abstract class CompressedLongTraceBase extends RepetitionMarkerBase imple
 		return child;
 	}
 
+	/**
+	 * @return
+	 * iterator over the full trace
+	 */
 	public LongTraceIterator iterator() {
 		return new LongTraceIterator(this);
 	}
 	
-	public LongTraceBackwardsIterator backwardsIterator() {
-		return new LongTraceBackwardsIterator(this);
+	/**
+	 * @return
+	 * iterator over the compressed trace (ignores repetitions)
+	 */
+	public ReplaceableCloneableLongIterator baseIterator() {
+		return getCompressedTrace().iterator();
 	}
-	public Set<Long> computeStartingElements() {
-		Set<Long> set = new HashSet<>();
-		addStartingElementsToSet(set);
-		return set;
+	
+	/**
+	 * @return
+	 * reverse iterator over the full trace, starting at the end of the trace
+	 */
+	public LongTraceReverseIterator reverseIterator() {
+		return new LongTraceReverseIterator(this);
 	}
+	
+//	public Set<Long> computeStartingElements() {
+//		Set<Long> set = new HashSet<>();
+//		addStartingElementsToSet(set);
+//		return set;
+//	}
 	
 	public void addStartingElementsToSet(Set<Long> set) {
 		LongTraceIterator iterator = iterator();

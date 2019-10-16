@@ -214,10 +214,10 @@ public class CompressedTraceTest {
 //		Thread.sleep(5000);
 
 		printWithIterator(compressedIdTrace.iterator());
-		printWithIterator(compressedIdTrace.backwardsIterator());
+		printWithIterator(compressedIdTrace.reverseIterator());
 		
 		List<Integer> list = storeInList(compressedIdTrace.iterator());
-		List<Integer> reverseList = storeInList(compressedIdTrace.backwardsIterator());
+		List<Integer> reverseList = storeInList(compressedIdTrace.reverseIterator());
 		
 		Collections.reverse(reverseList);
 		
@@ -307,10 +307,10 @@ public class CompressedTraceTest {
 //		Thread.sleep(5000);
 
 		printWithIterator(compressedIdTrace.iterator());
-		printWithIterator(compressedIdTrace.backwardsIterator());
+		printWithIterator(compressedIdTrace.reverseIterator());
 		
 		List<Long> list = storeInList(compressedIdTrace.iterator());
-		List<Long> reverseList = storeInList(compressedIdTrace.backwardsIterator());
+		List<Long> reverseList = storeInList(compressedIdTrace.reverseIterator());
 		
 		Collections.reverse(reverseList);
 		
@@ -504,7 +504,7 @@ public class CompressedTraceTest {
 		Assert.assertEquals(4, iterator.next());
 		Assert.assertEquals(4, iterator.next());
 		
-		MyBufferedLongIterator iterator2 = compressedIdTrace.getCompressedTrace().iterator();
+		ReplaceableCloneableLongIterator iterator2 = compressedIdTrace.baseIterator();
 		
 		Assert.assertEquals(1, iterator2.next());
 		Assert.assertEquals(2, iterator2.next());

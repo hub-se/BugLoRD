@@ -2,7 +2,6 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -104,7 +103,7 @@ public abstract class CompressedIntegerTraceBase extends RepetitionMarkerBase im
 	public int getMaxStoredValue() {
 		if (getChild() == null) {
 			int max = 0;
-			ReplaceableCloneableIntIterator iterator = getCompressedTrace().iterator();
+			ReplaceableCloneableIntIterator iterator = baseIterator();
 			while (iterator.hasNext()) {
 				max = Math.max(iterator.next(), max);
 			}
@@ -370,19 +369,35 @@ public abstract class CompressedIntegerTraceBase extends RepetitionMarkerBase im
 		return child;
 	}
 
+	/**
+	 * @return
+	 * iterator over the full trace
+	 */
 	public IntTraceIterator iterator() {
 		return new IntTraceIterator(this);
 	}
 	
-	public IntTraceBackwardsIterator backwardsIterator() {
-		return new IntTraceBackwardsIterator(this);
+	/**
+	 * @return
+	 * iterator over the compressed trace (ignores repetitions)
+	 */
+	public ReplaceableCloneableIntIterator baseIterator() {
+		return getCompressedTrace().iterator();
 	}
 	
-	public Set<Integer> computeStartingElements() {
-		Set<Integer> set = new HashSet<>();
-		addStartingElementsToSet(set);
-		return set;
+	/**
+	 * @return
+	 * reverse iterator over the full trace, starting at the end of the trace
+	 */
+	public IntTraceReverseIterator reverseIterator() {
+		return new IntTraceReverseIterator(this);
 	}
+	
+//	public Set<Integer> computeStartingElements() {
+//		Set<Integer> set = new HashSet<>();
+//		addStartingElementsToSet(set);
+//		return set;
+//	}
 	
 	public void addStartingElementsToSet(Set<Integer> set) {
 		IntTraceIterator iterator = iterator();

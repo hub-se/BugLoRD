@@ -115,7 +115,7 @@ public class RawIntTraceCollector {
 			Map<Integer, CompressedLongTraceBase> map) {
 		
 		boolean error = false;
-		for (ReplaceableCloneableIntIterator iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
+		for (ReplaceableCloneableIntIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
 			// check if all IDs are actually stored in the map
 			Integer id = iterator.next();
 			if (!map.containsKey(id)) {
@@ -164,7 +164,7 @@ public class RawIntTraceCollector {
 	
 	private void globalizeTrace(CompressedIntegerTraceBase eTrace,
 			Map<Integer, Integer> localIdToGlobalIdMap) {
-		for (ReplaceableCloneableIntIterator iterator = eTrace.getCompressedTrace().iterator(); iterator.hasNext();) {
+		for (ReplaceableCloneableIntIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
 			// this should now replace all local sub trace ids with the respective global ids...
 			@SuppressWarnings("unused")
 			Integer previous = iterator.processNextAndReplaceWithResult(k -> {
@@ -393,7 +393,7 @@ public class RawIntTraceCollector {
 //				extractCommonSequencesFromRawTrace(executionTrace.iterator());
 				// it should suffice to only iterate over the compressed traces...
 				// (if not, we will try processing the entire sequence later, when generating the execution traces)
-				extractCommonSequencesFromRawTrace(rawTrace.getCompressedTrace().iterator());
+				extractCommonSequencesFromRawTrace(rawTrace.baseIterator());
 				rawTrace = null;
 			}
 		} catch (Exception e) {

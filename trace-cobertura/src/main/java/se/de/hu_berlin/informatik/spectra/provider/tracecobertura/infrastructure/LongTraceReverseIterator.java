@@ -5,10 +5,10 @@ import java.util.List;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
 
-public class LongTraceBackwardsIterator implements ReplaceableCloneableLongIterator {
+public class LongTraceReverseIterator implements ReplaceableCloneableLongIterator {
 	
 	private final CompressedLongTraceBase trace;
-	public final LongTraceBackwardsIterator childIterator;
+	public final LongTraceReverseIterator childIterator;
 	
 	public int index = 0;
 	private int repetitionIndex = -1;
@@ -18,9 +18,9 @@ public class LongTraceBackwardsIterator implements ReplaceableCloneableLongItera
 
 	private List<int[]> resetStateList;
 
-	public LongTraceBackwardsIterator(CompressedLongTraceBase trace) {
+	public LongTraceReverseIterator(CompressedLongTraceBase trace) {
 		this.trace = trace;
-		childIterator = (trace.getChild() == null ? null : new LongTraceBackwardsIterator(trace.getChild()));
+		childIterator = (trace.getChild() == null ? null : new LongTraceReverseIterator(trace.getChild()));
 		if (trace.getChild() != null) {
 			index = trace.getChild().size() - 1;
 		} else {
@@ -30,7 +30,7 @@ public class LongTraceBackwardsIterator implements ReplaceableCloneableLongItera
 	}
 	
 	// clone constructor
-	private LongTraceBackwardsIterator(LongTraceBackwardsIterator iterator) {
+	private LongTraceReverseIterator(LongTraceReverseIterator iterator) {
 		trace = iterator.trace;
 		childIterator = iterator.childIterator == null ? null : 
 			iterator.childIterator.clone();
@@ -43,8 +43,8 @@ public class LongTraceBackwardsIterator implements ReplaceableCloneableLongItera
 			new ArrayList<>(iterator.resetStateList);
 	}
 
-	public LongTraceBackwardsIterator clone() {
-		return new LongTraceBackwardsIterator(this);
+	public LongTraceReverseIterator clone() {
+		return new LongTraceReverseIterator(this);
 	}
 
 	private void setResetPoint() {

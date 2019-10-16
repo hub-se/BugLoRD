@@ -363,7 +363,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		// TODO: sub trace with id 0 is the empty sub trace. Should not exist, regularly
 		for (int i = 1; i < nodeIdSequences.length; i++) {
 			CompressedIntegerTraceBase sequence = nodeIdSequences[i];
-			ReplaceableCloneableIntIterator iterator = sequence.getCompressedTrace().iterator();
+			ReplaceableCloneableIntIterator iterator = sequence.baseIterator();
 			boolean found = false;
 			while (iterator.hasNext()) {
 				if (iterator.next() == nodeId) {

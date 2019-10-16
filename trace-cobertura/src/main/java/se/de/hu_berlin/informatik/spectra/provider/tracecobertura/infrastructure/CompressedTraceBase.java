@@ -2,7 +2,6 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -347,16 +346,28 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 		return child;
 	}
 
+	/**
+	 * @return
+	 * iterator over the full trace
+	 */
 	@Override
 	public TraceIterator<T> iterator() {
 		return new TraceIterator<>(this);
 	}
 	
-	public Set<K> computeStartingElements() {
-		Set<K> set = new HashSet<>();
-		addStartingElementsToSet(set);
-		return set;
+	/**
+	 * @return
+	 * iterator over the compressed trace (ignores repetitions)
+	 */
+	public ReplaceableCloneableIterator<T> baseIterator() {
+		return getCompressedTrace().iterator();
 	}
+	
+//	public Set<K> computeStartingElements() {
+//		Set<K> set = new HashSet<>();
+//		addStartingElementsToSet(set);
+//		return set;
+//	}
 	
 	public void addStartingElementsToSet(Set<K> set) {
 		TraceIterator<T> iterator = iterator();

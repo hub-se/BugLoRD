@@ -5,10 +5,10 @@ import java.util.List;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
 
-public class IntTraceBackwardsIterator implements ReplaceableCloneableIntIterator {
+public class IntTraceReverseIterator implements ReplaceableCloneableIntIterator {
 	
 	private final CompressedIntegerTraceBase trace;
-	public final IntTraceBackwardsIterator childIterator;
+	public final IntTraceReverseIterator childIterator;
 	
 	public int index = 0;
 	private int repetitionIndex = -1;
@@ -18,9 +18,9 @@ public class IntTraceBackwardsIterator implements ReplaceableCloneableIntIterato
 
 	private List<int[]> resetStateList;
 
-	public IntTraceBackwardsIterator(CompressedIntegerTraceBase trace) {
+	public IntTraceReverseIterator(CompressedIntegerTraceBase trace) {
 		this.trace = trace;
-		childIterator = (trace.getChild() == null ? null : new IntTraceBackwardsIterator(trace.getChild()));
+		childIterator = (trace.getChild() == null ? null : new IntTraceReverseIterator(trace.getChild()));
 		if (trace.getChild() != null) {
 			index = trace.getChild().size() - 1;
 		} else {
@@ -30,7 +30,7 @@ public class IntTraceBackwardsIterator implements ReplaceableCloneableIntIterato
 	}
 	
 	// clone constructor
-	private IntTraceBackwardsIterator(IntTraceBackwardsIterator iterator) {
+	private IntTraceReverseIterator(IntTraceReverseIterator iterator) {
 		trace = iterator.trace;
 		childIterator = iterator.childIterator == null ? null : 
 			iterator.childIterator.clone();
@@ -43,8 +43,8 @@ public class IntTraceBackwardsIterator implements ReplaceableCloneableIntIterato
 			new ArrayList<>(iterator.resetStateList);
 	}
 
-	public IntTraceBackwardsIterator clone() {
-		return new IntTraceBackwardsIterator(this);
+	public IntTraceReverseIterator clone() {
+		return new IntTraceReverseIterator(this);
 	}
 
 	private void setResetPoint() {
