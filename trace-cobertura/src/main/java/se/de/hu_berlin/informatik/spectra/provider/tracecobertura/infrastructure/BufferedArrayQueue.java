@@ -19,6 +19,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.ReplaceableCloneableIterator;
 
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
@@ -38,7 +39,12 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     
     private static final int ARRAY_SIZE = 1000;
 	
-	protected int arrayLength = ARRAY_SIZE;
+	private int arrayLength = ARRAY_SIZE;
+	
+	public int getArrayLength() {
+		return arrayLength;
+	}
+
 	private int size = 0;
 	
 	private File output;
@@ -627,6 +633,14 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     public E peek() {
         final Node<E> f = loadFirst();
         return ((f == null) ? null : (f.startIndex < f.endIndex ? (E) f.items[f.startIndex] : null));
+    }
+    
+    @SuppressWarnings("unchecked")
+	public E lastElement() {
+    	final Node<E> f = loadLast();
+        if (f == null || f.startIndex >= f.endIndex)
+            throw new NoSuchElementException();
+        return (E) f.items[f.endIndex-1];
     }
 
 	@SuppressWarnings("unchecked")

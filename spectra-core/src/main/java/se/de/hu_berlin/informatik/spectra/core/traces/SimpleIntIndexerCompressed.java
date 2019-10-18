@@ -13,12 +13,11 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIntIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableLongIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
 
 public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 
@@ -26,17 +25,17 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	private int[][] subTraceIdSequences;
 	
 	// mapping: sub trace ID -> sequence of spectra node IDs
-	private CompressedIntegerTraceBase[] nodeIdSequences;
+	private CompressedIntegerTrace[] nodeIdSequences;
 	
 	
-	public SimpleIntIndexerCompressed(int[][] subTraceIdSequences, CompressedIntegerTraceBase[] nodeIdSequences) {
+	public SimpleIntIndexerCompressed(int[][] subTraceIdSequences, CompressedIntegerTrace[] nodeIdSequences) {
 		this.subTraceIdSequences = subTraceIdSequences;
 		this.nodeIdSequences = nodeIdSequences;
 	}
 	
 	public SimpleIntIndexerCompressed(
 			IntArraySequenceIndexer intArraySequenceIndexer, 
-			Map<Integer, CompressedLongTraceBase> idToSubTraceMap, 
+			Map<Integer, CompressedLongTrace> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		// map counter IDs to line numbers!
 		storeSubTraceIdSequences(Objects.requireNonNull(intArraySequenceIndexer));
@@ -58,17 +57,17 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		}
 	}
 
-	private void mapCounterIdsToSpectraNodeIds(Map<Integer, CompressedLongTraceBase> idToSubTraceMap, 
+	private void mapCounterIdsToSpectraNodeIds(Map<Integer, CompressedLongTrace> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		String[] idToClassNameMap = Objects.requireNonNull(projectData.getIdToClassNameMap());
 		
 		// indexer.getSequences() will generate all sequences of sub trace IDs that exist in the GS tree
-		this.nodeIdSequences = new CompressedIntegerTraceBase[idToSubTraceMap.size()+1];
+		this.nodeIdSequences = new CompressedIntegerTrace[idToSubTraceMap.size()+1];
 
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = null; //new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			CompressedLongTraceBase subTrace = idToSubTraceMap.get(i);
+			CompressedLongTrace subTrace = idToSubTraceMap.get(i);
 			BufferedLongArrayQueue compressedTrace = subTrace.getCompressedTrace();
 			ReplaceableCloneableLongIterator sequenceIterator = compressedTrace.iterator();
 			
@@ -171,7 +170,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 //				nodeIdSequences[i][j] = traceOfNodeIDs.remove();
 //			}
 			
-			nodeIdSequences[i] = new CompressedIntegerIdTrace(traceOfNodeIDs, subTrace);
+			nodeIdSequences[i] = new CompressedIntegerTrace(traceOfNodeIDs, subTrace);
 			
 			// delete any stored nodes from disk!
 			subTrace.unlock();
@@ -276,7 +275,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	}
 	
 	@Override
-	public CompressedIntegerTraceBase[] getNodeIdSequences() {
+	public CompressedIntegerTrace[] getNodeIdSequences() {
 		return nodeIdSequences;
 	}
 	
@@ -289,7 +288,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	}
 	
 	@Override
-	public CompressedIntegerTraceBase getNodeIdSequence(int subTraceIndex) {
+	public CompressedIntegerTrace getNodeIdSequence(int subTraceIndex) {
 		if (subTraceIndex >= nodeIdSequences.length) {
 			return null;
 		}
@@ -362,7 +361,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		// iterate over all sub traces
 		// TODO: sub trace with id 0 is the empty sub trace. Should not exist, regularly
 		for (int i = 1; i < nodeIdSequences.length; i++) {
-			CompressedIntegerTraceBase sequence = nodeIdSequences[i];
+			CompressedIntegerTrace sequence = nodeIdSequences[i];
 			ReplaceableCloneableIntIterator iterator = sequence.baseIterator();
 			boolean found = false;
 			while (iterator.hasNext()) {
@@ -385,7 +384,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 						newSequence.add(next);
 					}
 				}
-				nodeIdSequences[i] = new CompressedIntegerIdTrace(newSequence, false);
+				nodeIdSequences[i] = new CompressedIntegerTrace(newSequence, false);
 			}
 		}
 	}

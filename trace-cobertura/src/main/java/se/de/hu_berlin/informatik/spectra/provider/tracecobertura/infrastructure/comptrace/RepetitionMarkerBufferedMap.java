@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
+package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
+
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 
 public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 
@@ -38,7 +40,7 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
     	// only (lazily) allocate ONE buffer per buffered map object! allocation costs are potentially high...
     	if (writeBuffer == null) {
 //    		System.err.println(Runtime.getRuntime().maxMemory() + ", " + (4 * (maxSubMapSize * 3)));
-    		writeBuffer = ByteBuffer.allocateDirect(4 * (maxSubMapSize * 3));
+    		writeBuffer = ByteBuffer.allocateDirect(4 * (getMaxSubMapSize() * 3));
     	}
     	writeBuffer.clear();
     	return writeBuffer;
@@ -53,18 +55,18 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 			return;
 		}
 		if (node.isEmpty()) {
-			existingNodes.remove(node.storeIndex);
+			existingNodes.remove(node.getStoreIndex());
 			return;
 		}
-		if (node.modified) {
+		if (node.isModified()) {
 //			System.out.println("rmem: " + Runtime.getRuntime().freeMemory());
-			String filename = getFileName(node.storeIndex);
+			String filename = getFileName(node.getStoreIndex());
 			
 			try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {
 				try (FileChannel file = raFile.getChannel()) {
 
 					ByteBuffer directBuf = getFreshBuffer();
-					for (Entry<Integer, int[]> entry : node.subMap.entrySet()) {
+					for (Entry<Integer, int[]> entry : node.getSubMap().entrySet()) {
 						directBuf.putInt(entry.getKey());
 						directBuf.putInt(entry.getValue()[0]);
 						directBuf.putInt(entry.getValue()[1]);

@@ -1,37 +1,50 @@
-package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
+package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
+
 /**
  * Stores/handles repetition markers for compressed traces.
  */
-public abstract class RepetitionMarkerBase implements Serializable {
+public class RepetitionMarkerWrapper implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5549208997766294856L;
 
-	protected static final int MAX_ITERATION_COUNT = 10;
-	
 	private BufferedMap<int[]> repetitionMarkers;
 	private BufferedMap<int[]> backwardsRepetitionMarkers;
 	
-	private transient boolean markedForDeletion;
+	private int traceSize;
 	
-	protected RepetitionMarkerBase() {
+	protected RepetitionMarkerWrapper() {
 		
 	}
 	
-	protected BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePreix, int subMapSize, boolean deleteOnExit) {
+	public RepetitionMarkerWrapper(BufferedMap<int[]> traceRepetitions, int originalTraceSize) {
+		this.repetitionMarkers = traceRepetitions;
+		this.traceSize = originalTraceSize;
+	}
+
+	protected static BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePreix, int subMapSize, boolean deleteOnExit) {
 		BufferedMap<int[]> map = new RepetitionMarkerBufferedMap(outputDir, filePreix, subMapSize, deleteOnExit);
 		for (int i = 0; i < repetitionMarkers.length; i += 3) {
 			map.put(repetitionMarkers[i], new int[] {repetitionMarkers[i+1], repetitionMarkers[i+2]});
 		}
 		return map;
+	}
+	
+	protected void setTraceSize(int size) {
+		this.traceSize = size;
+	}
+	
+	public int traceSize() {
+		return traceSize;
 	}
 	
 	protected void setRepetitionMarkers(BufferedMap<int[]> repetitionMarkers) {
@@ -59,7 +72,7 @@ public abstract class RepetitionMarkerBase implements Serializable {
 	
 	private void generateBackwardsRepetitionMarkers() {
 		backwardsRepetitionMarkers = new BufferedMap<>(repetitionMarkers.getOutputDir(), 
-				"rew_" + repetitionMarkers.getFilePrefix(), repetitionMarkers.maxSubMapSize, repetitionMarkers.deleteOnExit);
+				"rev_" + repetitionMarkers.getFilePrefix(), repetitionMarkers.getMaxSubMapSize(), repetitionMarkers.isDeleteOnExit());
 		Iterator<Entry<Integer, int[]>> entrySetIterator = repetitionMarkers.entrySetIterator();
 		while (entrySetIterator.hasNext()) {
 			Entry<Integer, int[]> next = entrySetIterator.next();
@@ -86,20 +99,6 @@ public abstract class RepetitionMarkerBase implements Serializable {
 		}
 	}
 	
-	abstract public void lock();
-	
-	abstract public void unlock();
-	
-	public void markForDeletion() {
-		this.markedForDeletion = true;
-	}
-	
-	public boolean isMarkedForDeletion() {
-		return markedForDeletion;
-	}
-	
-	abstract public void deleteIfMarked();
-	
 	public void deleteOnExit() {
 		if (repetitionMarkers != null) {
 			repetitionMarkers.deleteOnExit();
@@ -107,6 +106,33 @@ public abstract class RepetitionMarkerBase implements Serializable {
 		if (backwardsRepetitionMarkers != null) {
 			backwardsRepetitionMarkers.deleteOnExit();
 		}
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		if (repetitionMarkers != null) {
+			Iterator<Entry<Integer, int[]>> iterator = repetitionMarkers.entrySetIterator();
+			while (iterator.hasNext()) {
+				Entry<Integer, int[]> next = iterator.next();
+				builder.append("[")
+				.append(next.getKey()).append(",")
+				.append(next.getValue()[0]).append(",")
+				.append(next.getValue()[1]).append("]");
+			}
+		}
+		if (backwardsRepetitionMarkers != null) {
+			builder.append(System.lineSeparator()).append("rev: ");
+			Iterator<Entry<Integer, int[]>> iterator = backwardsRepetitionMarkers.entrySetIterator();
+			while (iterator.hasNext()) {
+				Entry<Integer, int[]> next = iterator.next();
+				builder.append("[")
+				.append(next.getKey()).append(",")
+				.append(next.getValue()[0]).append(",")
+				.append(next.getValue()[1]).append("]");
+			}
+		}
+		return builder.toString();
 	}
 	
 }

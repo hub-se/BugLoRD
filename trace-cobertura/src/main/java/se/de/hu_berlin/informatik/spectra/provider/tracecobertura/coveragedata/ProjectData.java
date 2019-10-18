@@ -7,9 +7,8 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageD
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocker;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
 
 import java.io.File;
 import java.io.Serializable;
@@ -29,8 +28,8 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	private static final transient Lock globalProjectDataLock = new ReentrantLock();
 	
 	private String[] idToClassName;
-	private Map<Long,CompressedIntegerIdTrace> executionTraces;
-	private Map<Integer, CompressedLongTraceBase> idToSubtraceMap;
+	private Map<Long,CompressedIntegerTrace> executionTraces;
+	private Map<Integer, CompressedLongTrace> idToSubtraceMap;
 	
 	public ProjectData() {
 	}
@@ -42,7 +41,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 			for (Entry<Long, BufferedIntArrayQueue> entry : map.entrySet()) {
 				try {
 					// might run into heap exceptions, etc...
-					CompressedIntegerIdTrace trace = new CompressedIntegerIdTrace(entry.getValue(), true);
+					CompressedIntegerTrace trace = new CompressedIntegerTrace(entry.getValue(), true);
 					trace.sleep();
 					this.executionTraces.put(entry.getKey(), trace);
 				} catch (Throwable e) {
@@ -62,7 +61,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 	
-	public void addIdToSubTraceMap(Map<Integer, CompressedLongTraceBase> map) {
+	public void addIdToSubTraceMap(Map<Integer, CompressedLongTrace> map) {
 		lock.lock();
 		try {
 			this.idToSubtraceMap = map;
@@ -80,11 +79,11 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	 * the collection of execution traces for all executed threads;
 	 * the statements in the traces are stored as "class_id:statement_counter"
 	 */
-	public Map<Long, CompressedIntegerIdTrace> getExecutionTraces() {
+	public Map<Long, CompressedIntegerTrace> getExecutionTraces() {
 		return executionTraces;
 	}
 	
-	public Map<Integer, CompressedLongTraceBase> getIdToSubtraceMap() {
+	public Map<Integer, CompressedLongTrace> getIdToSubtraceMap() {
 		return idToSubtraceMap;
 	}
 	
@@ -293,7 +292,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 //				// assume that the data to merge into this one is the relevant data
 //				idToSubtraceMap.putAll(projectData.getIdToSubtraceMap());
 				
-				for (Entry<Integer, CompressedLongTraceBase> entry : projectData.getIdToSubtraceMap().entrySet()) {
+				for (Entry<Integer, CompressedLongTrace> entry : projectData.getIdToSubtraceMap().entrySet()) {
 					if (!idToSubtraceMap.containsKey(entry.getKey())) {
 						idToSubtraceMap.put(entry.getKey(), entry.getValue());
 					}

@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
+package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
 

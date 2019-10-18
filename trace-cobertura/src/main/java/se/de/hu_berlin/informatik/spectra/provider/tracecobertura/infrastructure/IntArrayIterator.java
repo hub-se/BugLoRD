@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 
 public class IntArrayIterator implements ReplaceableCloneableIntIterator {
 	

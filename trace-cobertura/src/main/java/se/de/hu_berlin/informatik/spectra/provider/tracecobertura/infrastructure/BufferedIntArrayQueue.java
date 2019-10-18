@@ -17,6 +17,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
@@ -33,7 +34,12 @@ public class BufferedIntArrayQueue implements Serializable {
     
     private static final int ARRAY_SIZE = 1000;
 	
-	protected int arrayLength = ARRAY_SIZE;
+	private int arrayLength = ARRAY_SIZE;
+	
+	public int getArrayLength() {
+		return arrayLength;
+	}
+
 	private int size = 0;
 	
 	private File output;

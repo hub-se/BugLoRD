@@ -6,60 +6,36 @@ import java.util.Iterator;
 import java.util.List;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntTraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
 
 /**
  * An execution trace consists structurally of a list of executed nodes (or references to node lists)
  * and a list of tuples that mark repeated sequences in the trace.
  *
  */
-public class ExecutionTrace extends CompressedIntegerTraceBase implements Serializable {
-
+public class ExecutionTrace extends CompressedIntegerTrace implements Serializable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -7333694882324910595L;
+	private static final long serialVersionUID = 2574168436274883857L;
 
 	public ExecutionTrace(BufferedIntArrayQueue trace, boolean log) {
 		super(trace, log);
 	}
 	
-	public ExecutionTrace(BufferedIntArrayQueue trace, CompressedIntegerTraceBase otherCompressedTrace) {
+	public ExecutionTrace(BufferedIntArrayQueue trace, CompressedIntegerTrace otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
 	
-	public ExecutionTrace(BufferedIntArrayQueue trace, CompressedLongTraceBase otherCompressedTrace) {
+	public ExecutionTrace(BufferedIntArrayQueue trace, CompressedLongTrace otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
 
-	public ExecutionTrace(BufferedIntArrayQueue compressedTrace, BufferedArrayQueue<int[]> repMarkerLists, int index) {
-		super(compressedTrace, repMarkerLists, index);
-	}
-	
-	@Override
-	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace,
-			CompressedIntegerTraceBase otherCompressedTrace) {
-		return new ExecutionTrace(trace, otherCompressedTrace);
-	}
-	
-	@Override
-	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace,
-			CompressedLongTraceBase otherCompressedTrace) {
-		return new ExecutionTrace(trace, otherCompressedTrace);
-	}
-
-	@Override
-	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue compressedTrace, 
-			BufferedArrayQueue<int[]> repMarkerLists, int index) {
-		return new ExecutionTrace(compressedTrace, repMarkerLists, index);
-	}
-	
-	@Override
-	public CompressedIntegerTraceBase newChildInstance(BufferedIntArrayQueue trace, boolean log, int iteration) {
-		return new ExecutionTrace(trace, log);
+	public ExecutionTrace(BufferedIntArrayQueue compressedTrace, BufferedArrayQueue<int[]> repMarkerLists, boolean log) {
+		super(compressedTrace, repMarkerLists, log);
 	}
 	
 

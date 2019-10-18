@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.RepetitionMarkerBufferedMap;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerBufferedMap;
 
 
 /**

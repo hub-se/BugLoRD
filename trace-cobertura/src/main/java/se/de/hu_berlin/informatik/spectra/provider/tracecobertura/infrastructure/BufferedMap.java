@@ -38,7 +38,12 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	private File output;
 	private String filePrefix;
 	
-	protected int maxSubMapSize = 500000;
+	private int maxSubMapSize = 500000;
+	
+	public int getMaxSubMapSize() {
+		return maxSubMapSize;
+	}
+
 	private int size = 0;
 	
 	protected Set<Integer> existingNodes = new HashSet<>();
@@ -370,15 +375,30 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	}
 
 
-	protected static class Node<E> implements Map<Integer, E> {
+	public static class Node<E> implements Map<Integer, E> {
         
-		protected transient boolean modified = false;
-		protected final Map<Integer,E> subMap;
+		private transient boolean modified = false;
+		private final Map<Integer,E> subMap;
 
         // index to store/load this node
-		protected final int storeIndex;
+		private final int storeIndex;
 
-        public Node(int storeIndex) {
+        
+		public boolean isModified() {
+			return modified;
+		}
+
+		
+		public Map<Integer, E> getSubMap() {
+			return subMap;
+		}
+
+		
+		public int getStoreIndex() {
+			return storeIndex;
+		}
+
+		public Node(int storeIndex) {
         	this.storeIndex = storeIndex;
         	this.subMap = new HashMap<>();
         	// ensure that new nodes are stored (if not empty)

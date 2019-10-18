@@ -27,9 +27,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.S
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableLongIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
@@ -224,8 +224,8 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
 //			Map<Integer, CompressedLongTraceBase> idToSubtraceMap = projectData.getIdToSubtraceMap();
-			for (Iterator<Entry<Long, CompressedIntegerIdTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
-				Entry<Long, CompressedIntegerIdTrace> entry = iterator.next();
+			for (Iterator<Entry<Long, CompressedIntegerTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
+				Entry<Long, CompressedIntegerTrace> entry = iterator.next();
 				++threadId;
 				
 				
@@ -490,7 +490,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //				traceOfNodeIDs = null;
 			}
 			
-			for (Entry<Integer, CompressedLongTraceBase> entry : projectData.getIdToSubtraceMap().entrySet()) {
+			for (Entry<Integer, CompressedLongTrace> entry : projectData.getIdToSubtraceMap().entrySet()) {
 				entry.getValue().deleteOnExit();
 				entry.getValue().deleteIfMarked();
 			}

@@ -9,10 +9,9 @@ import java.util.zip.ZipException;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerIdTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
@@ -34,7 +33,7 @@ public class RawIntTraceCollector {
 	 * map from (global) sub trace ids to actual sub traces;
 	 * this stores all existing (and executed) sub traces!
 	 */
-	private Map<Integer,CompressedLongTraceBase> globalIdToSubTraceMap;
+	private Map<Integer,CompressedLongTrace> globalIdToSubTraceMap;
 
 	// stores (sub trace representation -> sub trace id) to retrieve subtrace ids
 	// the long value representation has to contain start and ending node of the sub trace
@@ -50,7 +49,7 @@ public class RawIntTraceCollector {
 	
 	private final Set<Integer> startElements = new HashSet<>();
 	
-	public Map<Integer,CompressedLongTraceBase> getGlobalIdToSubTraceMap() {
+	public Map<Integer,CompressedLongTrace> getGlobalIdToSubTraceMap() {
 		return globalIdToSubTraceMap;
 	}
 	
@@ -74,7 +73,7 @@ public class RawIntTraceCollector {
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			BufferedIntArrayQueue trace, boolean log,
-			Map<Integer,CompressedLongTraceBase> idToSubTraceMap) {
+			Map<Integer,CompressedLongTrace> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, trace, log, idToSubTraceMap);
 		return true;
 	}
@@ -82,7 +81,7 @@ public class RawIntTraceCollector {
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			int[] traceArray, boolean log, Path outputDir, String prefix,
-			Map<Integer,CompressedLongTraceBase> idToSubTraceMap) {
+			Map<Integer,CompressedLongTrace> idToSubTraceMap) {
 		BufferedIntArrayQueue trace = new BufferedIntArrayQueue(outputDir.toFile(), prefix, 100);
 //        trace.addAll(Arrays.asList(traceArray));
 		for (int i : traceArray) {
@@ -99,20 +98,20 @@ public class RawIntTraceCollector {
 
 	private void addTrace(int traceIndex, int threadId, 
 			BufferedIntArrayQueue trace, boolean log,
-			Map<Integer,CompressedLongTraceBase> idToSubTraceMap) {
-		addTrace(traceIndex, threadId, new CompressedIntegerIdTrace(trace, log), idToSubTraceMap);
+			Map<Integer,CompressedLongTrace> idToSubTraceMap) {
+		addTrace(traceIndex, threadId, new CompressedIntegerTrace(trace, log), idToSubTraceMap);
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
-			CompressedIntegerTraceBase eTrace,
-			Map<Integer, CompressedLongTraceBase> map) {
+			CompressedIntegerTrace eTrace,
+			Map<Integer, CompressedLongTrace> map) {
 		addTrace(traceIndex, threadId, eTrace, map);
 		return true;
 	}
 
 	private void addTrace(int traceIndex, int threadId, 
-			CompressedIntegerTraceBase eTrace,
-			Map<Integer, CompressedLongTraceBase> map) {
+			CompressedIntegerTrace eTrace,
+			Map<Integer, CompressedLongTrace> map) {
 		
 		boolean error = false;
 		for (ReplaceableCloneableIntIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
@@ -162,7 +161,7 @@ public class RawIntTraceCollector {
 		eTrace = null;
 	}
 	
-	private void globalizeTrace(CompressedIntegerTraceBase eTrace,
+	private void globalizeTrace(CompressedIntegerTrace eTrace,
 			Map<Integer, Integer> localIdToGlobalIdMap) {
 		for (ReplaceableCloneableIntIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
 			// this should now replace all local sub trace ids with the respective global ids...
@@ -180,16 +179,16 @@ public class RawIntTraceCollector {
 	}
 
 	private Map<Integer, Integer> getAndCreateSubTraceIdMapping(
-			Map<Integer, CompressedLongTraceBase> map, Path tempDir) {
+			Map<Integer, CompressedLongTrace> map, Path tempDir) {
 		if (globalIdToSubTraceMap == null) {
 			globalIdToSubTraceMap = getNewSubTraceMap(tempDir);
 		}
 		// should map local sub trace ids (parameter) to global ids (field),
 		// so that the ids in the submitted raw traces can be replaced.
 		Map<Integer, Integer> subTraceIdMapping = new HashMap<>();
-		Iterator<Entry<Integer, CompressedLongTraceBase>> iterator = map.entrySet().iterator();
+		Iterator<Entry<Integer, CompressedLongTrace>> iterator = map.entrySet().iterator();
 		while (iterator.hasNext()) {
-			Entry<Integer, CompressedLongTraceBase> entry = iterator.next();
+			Entry<Integer, CompressedLongTrace> entry = iterator.next();
 //			System.out.println(entry.getKey() + ">> " + entry.getValue());
 			int globalId = getOrCreateIdForSubTrace(entry.getValue());
 			subTraceIdMapping.put(entry.getKey(), globalId);
@@ -197,7 +196,7 @@ public class RawIntTraceCollector {
 		return subTraceIdMapping;
 	}
 	
-	private Map<Integer, CompressedLongTraceBase> getNewSubTraceMap(Path tempDir) {
+	private Map<Integer, CompressedLongTrace> getNewSubTraceMap(Path tempDir) {
 		return new HashMap<>();
 //		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
 //		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
@@ -205,7 +204,7 @@ public class RawIntTraceCollector {
 	}
 	
 	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
-	private int getOrCreateIdForSubTrace(CompressedLongTraceBase compressedLongTraceBase) {
+	private int getOrCreateIdForSubTrace(CompressedLongTrace compressedLongTraceBase) {
 		if (compressedLongTraceBase == null || compressedLongTraceBase.size() == 0) {
 			// id 0 indicates empty sub trace
 			return 0;
@@ -236,12 +235,12 @@ public class RawIntTraceCollector {
 
 	}
 
-	public List<CompressedIntegerTraceBase> getRawTraces(int traceIndex) throws ZipException {
+	public List<CompressedIntegerTrace> getRawTraces(int traceIndex) throws ZipException {
 		if (!output.toFile().exists()) {
 			return null;
 		}
 		// retrieve the raw traces from the zip file
-		List<CompressedIntegerTraceBase> result = new ArrayList<>(1);
+		List<CompressedIntegerTrace> result = new ArrayList<>(1);
 		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(output);
 
 		int traceCounter = -1;
@@ -250,7 +249,7 @@ public class RawIntTraceCollector {
 			String compressedTraceFile = traceIndex + "-" + (++traceCounter) + RAW_TRACE_FILE_EXTENSION;
 			if (zip.exists(compressedTraceFile)) {
 				String repetitionFile = traceIndex + "-" + (traceCounter) + REP_MARKER_FILE_EXTENSION;
-				CompressedIntegerTraceBase rawTrace = SpectraFileUtils
+				CompressedIntegerTrace rawTrace = SpectraFileUtils
 						.loadRawTraceFromZipFile(zip, compressedTraceFile, repetitionFile);
 				result.add(rawTrace);
 			} else {
@@ -317,7 +316,7 @@ public class RawIntTraceCollector {
 		}
 
 		// if at this point, try generating the execution traces from raw traces on the fly
-		List<CompressedIntegerTraceBase> rawTraces = getRawTraces(traceIndex);
+		List<CompressedIntegerTrace> rawTraces = getRawTraces(traceIndex);
 		if (rawTraces == null) {
 			return null;
 		}
@@ -347,10 +346,10 @@ public class RawIntTraceCollector {
 		return output.toAbsolutePath().getParent().resolve(output.getFileName() + "Exec.zip");
 	}
 
-	private List<ExecutionTrace> generateExecutiontraceFromRawTraces(List<CompressedIntegerTraceBase> rawTraces, boolean log) {
+	private List<ExecutionTrace> generateExecutiontraceFromRawTraces(List<CompressedIntegerTrace> rawTraces, boolean log) {
 		// replace sequences in the raw trace with indices
 		List<ExecutionTrace> traces = new ArrayList<>(rawTraces.size());
-		for (CompressedIntegerTraceBase rawTrace : rawTraces) {
+		for (CompressedIntegerTrace rawTrace : rawTraces) {
 			try {
 				ExecutionTrace trace = new ExecutionTrace(gsTree.generateIndexedTrace(rawTrace, indexer), log);
 				trace.sleep();
@@ -386,7 +385,7 @@ public class RawIntTraceCollector {
 					zip.getFileHeadersContainingString(RAW_TRACE_FILE_EXTENSION);
 			for (String fileHeader : rawTraceFiles) {
 				tracker.track("processing " + fileHeader);
-				CompressedIntegerIdTrace rawTrace = SpectraFileUtils
+				CompressedIntegerTrace rawTrace = SpectraFileUtils
 						.loadRawTraceFromZipFile(zip, fileHeader, fileHeader
 								.replace(RAW_TRACE_FILE_EXTENSION, REP_MARKER_FILE_EXTENSION));
 

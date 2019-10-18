@@ -19,8 +19,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongIdTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedLongTraceBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
 
 @CoverageIgnore
 public class ExecutionTraceCollector {
@@ -132,7 +131,7 @@ public class ExecutionTraceCollector {
 	private static Map<Long,BufferedIntArrayQueue> executionTraces = new ConcurrentHashMap<>();
 	// stores (sub trace id -> subTrace)
 	private static Map<Integer,BufferedLongArrayQueue> existingSubTraces = new ConcurrentHashMap<>();
-	private static Map<Integer,CompressedLongTraceBase> existingCompressedSubTraces = new ConcurrentHashMap<>();
+	private static Map<Integer,CompressedLongTrace> existingCompressedSubTraces = new ConcurrentHashMap<>();
 	// stores (sub trace wrapper -> sub trace id) to retrieve subtrace ids
 	// the integer array in the wrapper has to contain start and ending node of the sub trace
 	// if the sub trace is longer than one statement
@@ -192,13 +191,13 @@ public class ExecutionTraceCollector {
 	 * @return
 	 * The map of ids to actual sub traces; also resets the internal map
 	 */
-	public static Map<Integer, CompressedLongTraceBase> getAndResetIdToSubtraceMap() {
+	public static Map<Integer, CompressedLongTrace> getAndResetIdToSubtraceMap() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			// process all remaining sub traces. Just to be safe!
 			processAllRemainingSubTraces();
 			// sub trace ids that stay consistent throughout the entire time!!??? TODO
-			Map<Integer, CompressedLongTraceBase> traceMap = existingCompressedSubTraces;
+			Map<Integer, CompressedLongTrace> traceMap = existingCompressedSubTraces;
 			// reset id counter and map!
 			currentId = 0;
 //			existingSubTraces = null;
@@ -460,7 +459,7 @@ public class ExecutionTraceCollector {
 			for (Entry<Integer, BufferedLongArrayQueue> entry : existingSubTraces.entrySet()) {
 				BufferedLongArrayQueue queue = entry.getValue();
 //				queue.deleteOnExit();
-				CompressedLongIdTrace subTrace = new CompressedLongIdTrace(queue, false);
+				CompressedLongTrace subTrace = new CompressedLongTrace(queue, false);
 //				System.out.println(subTrace.toString());
 				subTrace.sleep();
 				subTrace.lock();

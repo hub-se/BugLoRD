@@ -11,9 +11,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.E
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ArrayIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.CompressedTrace;
 
 public abstract class GSArrayTree<T,K> {
 	
@@ -183,7 +183,7 @@ public abstract class GSArrayTree<T,K> {
 	}
 
 	public BufferedArrayQueue<Integer> generateIndexedTrace(
-			CompressedTraceBase<T, ?> rawTrace, ArraySequenceIndexer<T,K> indexer) {
+			CompressedTrace<T, ?> rawTrace, ArraySequenceIndexer<T,K> indexer) {
 		if (rawTrace == null) {
 			return null;
 		}

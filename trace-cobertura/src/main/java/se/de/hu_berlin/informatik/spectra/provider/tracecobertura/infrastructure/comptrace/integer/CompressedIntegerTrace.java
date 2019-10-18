@@ -1,6 +1,7 @@
-package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
+package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -8,27 +9,28 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue.MyBufferedIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerBase;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerBufferedMap;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerWrapper;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+
 /**
  * An execution trace consists structurally of a list of executed nodes
  * and a list of tuples that mark repeated sequences in the trace.
- *
- * @param <T>
- * type of elements in the trace
- * @param <K>
- * type of a representation for storing elements in a map
  */
-public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase implements Serializable, Iterable<T> {
+public class CompressedIntegerTrace extends RepetitionMarkerBase implements Serializable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 5903218865249529299L;
-	
+	private static final long serialVersionUID = 4016558848245480964L;
 	private int originalSize;
-	private BufferedArrayQueue<T> compressedTrace;
-	
-	private CompressedTraceBase<T,K> child;
-	
+	private BufferedIntArrayQueue compressedTrace;
+
 	/**
 	 * Adds the given queue's contents to the trace. 
 	 * ATTENTION: the queue's contents will be removed in the process! 
@@ -37,92 +39,124 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 	 * @param log
 	 * whether to log some status information
 	 */
-	public CompressedTraceBase(BufferedArrayQueue<T> trace, boolean log) {
-		this(trace, log, 0);
-	}
-	
-	private CompressedTraceBase(BufferedArrayQueue<T> trace, boolean log, int iteration) {
+	public CompressedIntegerTrace(BufferedIntArrayQueue trace, boolean log) {
 		this.originalSize = trace.size();
-		// inherit whether buffered trace files should be deleted on exit
-		BufferedArrayQueue<T> traceWithoutRepetitions = extractRepetitions(trace, log, trace.isDeleteOnExit());
-		trace = null;
-		// did something change?
-		if (originalSize == traceWithoutRepetitions.size() || ++iteration >= MAX_ITERATION_COUNT) {
-			if (log) {
-				System.out.println("=> " + originalSize);
+		int iteration = 0;
+		while (this.compressedTrace == null && iteration <= MAX_ITERATION_COUNT) {
+			int oldSize = trace.size();
+			// inherit whether buffered trace files should be deleted on exit
+			BufferedIntArrayQueue traceWithoutRepetitions = extractRepetitions(trace, log, trace.isDeleteOnExit());
+			trace = null;
+			// did the trace size remain the same or did we reach the upper bound of iterations?
+			if (oldSize == traceWithoutRepetitions.size() || ++iteration >= MAX_ITERATION_COUNT) {
+				if (log) {
+					System.out.println("=> " + traceWithoutRepetitions.size());
+				}
+				// no... then just store the compressed trace
+				this.compressedTrace = traceWithoutRepetitions;
+			} else {
+				if (log) {
+					System.out.println(oldSize + " -> " + traceWithoutRepetitions.size());
+				}
+				// yes... then try again recursively
+				trace = traceWithoutRepetitions;
 			}
-			// no... then just store the compressed trace
-			this.compressedTrace = traceWithoutRepetitions;
-		} else {
-			if (log) {
-				System.out.println(originalSize + " -> " + traceWithoutRepetitions.size());
-			}
-			// yes... then try again recursively
-			this.child = newChildInstance(traceWithoutRepetitions, log, iteration);
+		}
+		if (getRepetitionMarkers() != null) {
+			// reverse the order of repetition marker levels (smallest first)
+			Collections.reverse(getRepetitionMarkers());
 		}
 	}
 	
-	public CompressedTraceBase(BufferedArrayQueue<T> traceOfNodeIDs, CompressedTraceBase<?,?> otherCompressedTrace) {
-		if (otherCompressedTrace.getChild() == null) {
-			this.compressedTrace = traceOfNodeIDs;
-		} else {
-			setRepetitionMarkers(otherCompressedTrace.getRepetitionMarkers());
-			this.child = newChildInstance(traceOfNodeIDs, otherCompressedTrace.getChild());
-			this.originalSize = computeFullTraceLength();
-		}
+	public CompressedIntegerTrace(BufferedIntArrayQueue traceOfNodeIDs, CompressedIntegerTrace otherCompressedTrace) {
+		this.originalSize = otherCompressedTrace.size();
+		this.compressedTrace = traceOfNodeIDs;
+		setRepetitionMarkers(otherCompressedTrace.getRepetitionMarkers());
 	}
 	
-	public CompressedTraceBase(BufferedArrayQueue<T> compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, int index) {
-		if (repetitionMarkers == null || index >= repetitionMarkers.size()) {
-			this.compressedTrace = compressedTrace;
-		} else {
-			setRepetitionMarkers(constructFromArray(repetitionMarkers.get(index), 
-					compressedTrace.getOutputDir(), 
-					compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.arrayLength,
-					compressedTrace.isDeleteOnExit()));
-			this.child = newChildInstance(compressedTrace, repetitionMarkers, ++index);
-			this.originalSize = computeFullTraceLength();
-		}
+	public CompressedIntegerTrace(BufferedIntArrayQueue traceOfNodeIDs, CompressedLongTrace otherCompressedTrace) {
+		this.originalSize = otherCompressedTrace.size();
+		this.compressedTrace = traceOfNodeIDs;
+		setRepetitionMarkers(otherCompressedTrace.getRepetitionMarkers());
 	}
 
-	public abstract CompressedTraceBase<T,K> newChildInstance(BufferedArrayQueue<T> trace, CompressedTraceBase<?,?> otherCompressedTrace);
-	
-	public abstract CompressedTraceBase<T,K> newChildInstance(BufferedArrayQueue<T> compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, int index);
-	
-	public abstract CompressedTraceBase<T,K> newChildInstance(BufferedArrayQueue<T> trace, boolean log, int iteration);
-	
-	public long getMaxStoredValue() {
-		throw new UnsupportedOperationException("not implemented!");
+	public CompressedIntegerTrace(BufferedIntArrayQueue compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, boolean log) {
+		this.compressedTrace = compressedTrace;
+		if (repetitionMarkers != null) {
+			int size = compressedTrace.size();
+			int index = 0;
+			while (index < repetitionMarkers.size()) {
+				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromArray(repetitionMarkers.get(index++), 
+						compressedTrace.getOutputDir(), 
+						compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.getArrayLength(),
+						compressedTrace.isDeleteOnExit());
+				// calculate the trace's size on the current level
+				for (Iterator<Entry<Integer, int[]>> iterator = repMarkers.entrySetIterator(); iterator.hasNext();) {
+					Entry<Integer, int[]> repMarker = iterator.next();
+					// [length, repetitionCount]
+					size += (repMarker.getValue()[0] * (repMarker.getValue()[1]-1));
+				}
+				// add the level to the list
+				addRepetitionMarkers(repMarkers, size);
+			}
+			this.originalSize = size;
+		} else {
+			this.originalSize = compressedTrace.size();
+		}
 	}
 	
-	private int computeFullTraceLength() {
-		if (child == null) {
-			return compressedTrace.size();
-		}
-		
-		int length = child.computeFullTraceLength();
-		
-		for (Iterator<Entry<Integer, int[]>> iterator = getRepetitionMarkers().entrySetIterator(); iterator.hasNext();) {
-			Entry<Integer, int[]> i = iterator.next();
-			// [length, repetitionCount]
-			length += (i.getValue()[0] * (i.getValue()[1]-1));
-		}
-		return length;
-	}
+//	private int computeFullTraceLengths() {
+//		int size = compressedTrace.size();
+//		
+//		for (int i = getRepetitionMarkers().size() - 1; i >= 0; --i) {
+//			RepetitionMarkerWrapper repMarkerWrapper = getRepetitionMarkers().get(i);
+//			// calculate the trace's size on the current level
+//			for (Iterator<Entry<Integer, int[]>> iterator = repMarkerWrapper.getRepetitionMarkers().entrySetIterator(); iterator.hasNext();) {
+//				Entry<Integer, int[]> repMarker = iterator.next();
+//				// [length, repetitionCount]
+//				size += (repMarker.getValue()[0] * (repMarker.getValue()[1]-1));
+//			}
+//			repMarkerWrapper.setTraceSize(size);
+//		}
+//		
+//		return size;
+//	}
 	
+	public int getMaxStoredValue() {
+		int max = 0;
+		ReplaceableCloneableIntIterator iterator = baseIterator();
+		while (iterator.hasNext()) {
+			max = Math.max(iterator.next(), max);
+		}
+		if (getRepetitionMarkers() != null) {
+			for (RepetitionMarkerWrapper repMarkerWrapper : getRepetitionMarkers()) {
+				Iterator<Entry<Integer, int[]>> entrySetIterator = repMarkerWrapper.getRepetitionMarkers().entrySetIterator();
+				while (entrySetIterator.hasNext()) {
+					Entry<Integer, int[]> entry = entrySetIterator.next();
+					max = Math.max(entry.getKey(), max);
+					max = Math.max(entry.getValue()[0], max);
+					max = Math.max(entry.getValue()[1], max);
+				}
+				max = Math.max(repMarkerWrapper.getRepetitionMarkers().size(), max);
+			}
+		}
+		
+		return max;
+	}
+
 	public int size() {
 		return originalSize;
 	}
 	
-	public boolean isEmpty() {
+	public boolean isEmpty( ) {
 		return originalSize <= 0;
 	}
 	
 //	// mapping from elements to their most recent positions in the result list
 //	Map<K,Integer> elementToPositionMap = new HashMap<>();
-//	BufferedArrayQueue<T> traceWithoutRepetitions;
+//	BufferedIntArrayQueue traceWithoutRepetitions;
 //	BufferedMap<int[]> traceRepetitions;
-//	BufferedArrayQueue<T> bufferTrace;
+//	BufferedIntArrayQueue bufferTrace;
 //	
 //	boolean possibleRepetition = false;
 //	Integer position;
@@ -186,25 +220,27 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 //		}
 //	}
 
-	private BufferedArrayQueue<T> extractRepetitions(BufferedArrayQueue<T> trace, boolean log, boolean deleteOnExit) {
+	private BufferedIntArrayQueue extractRepetitions(BufferedIntArrayQueue trace, boolean log, boolean deleteOnExit) {
+		int originalTraceSize = trace.size();
 		String filePrefix = "cpr_trace_" + UUID.randomUUID().toString();
-		BufferedArrayQueue<T> traceWithoutRepetitions = 
-				new BufferedArrayQueue<>(trace.getOutputDir(), filePrefix, 
-						trace.getNodeSize(), deleteOnExit, trace.getSerializationType());
+		BufferedIntArrayQueue traceWithoutRepetitions = 
+				new BufferedIntArrayQueue(trace.getOutputDir(), filePrefix, 
+						trace.getNodeSize(), deleteOnExit);
 		BufferedMap<int[]> traceRepetitions = new RepetitionMarkerBufferedMap(trace.getOutputDir(), 
-				"cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.arrayLength, deleteOnExit);
+				"cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.getArrayLength(), deleteOnExit);
+		MyBufferedIntIterator resultTraceIterator = traceWithoutRepetitions.iterator();
+		MyBufferedIntIterator inputTraceIterator = trace.iterator();
 		
 		// mapping from elements to their most recent positions in the result list
-		Map<K,Integer> elementToPositionMap = new HashMap<>();
+		Map<Integer,Integer> elementToPositionMap = new HashMap<>();
 		while (!trace.isEmpty()) {
-			T element = trace.remove();
-			K repr = getRepresentation(element);
+			int element = trace.remove();
 
 			// check for repetition of the current element
-			Integer position = elementToPositionMap.get(repr);
+			Integer position = elementToPositionMap.get(element);
 			if (position == null) {
 				// no repetition: remember node containing the element
-				elementToPositionMap.put(repr, traceWithoutRepetitions.size());
+				elementToPositionMap.put(element, traceWithoutRepetitions.size());
 				// build up the result trace on the fly
 				traceWithoutRepetitions.add(element);
 			} else {
@@ -213,9 +249,10 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 				// and this position is the same as the following sequence(s) in the input trace
 				int repetitionCounter = 0;
 				int lengthToRemove = 0;
-				Iterator<T> inputTraceIterator = trace.iterator();
-				Iterator<T> resultTraceIterator = traceWithoutRepetitions.iterator(position);
-				resultTraceIterator.next();
+				// avoid instantiating new iterators
+				inputTraceIterator.setToPosition(0);
+				resultTraceIterator.setToPosition(position+1);
+//				resultTraceIterator.next();
 				// count the number of elements that need to be removed later with count variable;
 				// variable count can start at 0 here, since we already removed the very first element
 				for (int count = 0; ; ++count) {
@@ -223,7 +260,7 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 						// at the end of the sequence
 						++repetitionCounter;
 						// start over
-						resultTraceIterator = traceWithoutRepetitions.iterator(position);
+						resultTraceIterator.setToPosition(position);
 						// later remove the processed nodes that have been repeated
 						lengthToRemove += count;
 						count = 0;
@@ -235,20 +272,17 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 					}
 					
 					// check if elements are equal
-					T first = inputTraceIterator.next();
-					T second = resultTraceIterator.next();
-					if (!isEqual(first, second)) {
+					if (inputTraceIterator.next() != resultTraceIterator.next()) {
 						break;
 					}
 					
 					// continue with the next node of the remaining sequence
 				}
-				// remove repeated elements
-				trace.clear(lengthToRemove);
-				
 
 				// are there any repetitions?
 				if (repetitionCounter > 0) {
+					// remove repeated elements
+					trace.clear(lengthToRemove);
 					// compute the length of one repetition
 					int length = (lengthToRemove+1)/repetitionCounter;
 					
@@ -263,7 +297,7 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 				} else {
 					// no repetition found...
 					// no repetition: remember only the last node containing the element (update)
-					elementToPositionMap.put(repr, traceWithoutRepetitions.size());
+					elementToPositionMap.put(element, traceWithoutRepetitions.size());
 					// build up the result trace on the fly
 					traceWithoutRepetitions.add(element);
 				}
@@ -271,24 +305,17 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 		}
 
 		if (!traceRepetitions.isEmpty()) {
-			setRepetitionMarkers(traceRepetitions);
+			traceRepetitions.sleep();
+			addRepetitionMarkers(traceRepetitions, originalTraceSize);
 		}
 		return traceWithoutRepetitions;
 	}
 
-	public abstract boolean isEqual(T first, T second);
-
-	public abstract K getRepresentation(T element);
-
-	public BufferedArrayQueue<T> getCompressedTrace() {
-		if (child != null) {
-			return child.getCompressedTrace();
-		} else {
-			return compressedTrace;
-		}
+	public BufferedIntArrayQueue getCompressedTrace() {
+		return compressedTrace;
 	}
-	
-//	public T[] reconstructFullTrace() {
+
+	//	public T[] reconstructFullTrace() {
 //		return reconstructTrace();
 //	}
 //
@@ -342,44 +369,47 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 //
 //	public abstract T[] newArrayOfSize(int size);
 
-	public CompressedTraceBase<T,K> getChild() {
-		return child;
-	}
-
 	/**
 	 * @return
 	 * iterator over the full trace
 	 */
-	@Override
-	public TraceIterator<T> iterator() {
-		return new TraceIterator<>(this);
+	public IntTraceIterator iterator() {
+		return new IntTraceIterator(this);
 	}
 	
 	/**
 	 * @return
 	 * iterator over the compressed trace (ignores repetitions)
 	 */
-	public ReplaceableCloneableIterator<T> baseIterator() {
-		return getCompressedTrace().iterator();
+	public ReplaceableCloneableIntIterator baseIterator() {
+		return compressedTrace.iterator();
 	}
 	
-//	public Set<K> computeStartingElements() {
-//		Set<K> set = new HashSet<>();
+	/**
+	 * @return
+	 * reverse iterator over the full trace, starting at the end of the trace
+	 */
+	public IntTraceReverseIterator reverseIterator() {
+		return new IntTraceReverseIterator(this);
+	}
+	
+//	public Set<Integer> computeStartingElements() {
+//		Set<Integer> set = new HashSet<>();
 //		addStartingElementsToSet(set);
 //		return set;
 //	}
 	
-	public void addStartingElementsToSet(Set<K> set) {
-		TraceIterator<T> iterator = iterator();
+	public void addStartingElementsToSet(Set<Integer> set) {
+		IntTraceIterator iterator = iterator();
 		boolean lastElementWasSequenceEnd = false;
 		if (iterator.hasNext()) {
 			lastElementWasSequenceEnd = iterator.isEndOfRepetition();
-			set.add(getRepresentation(iterator.next()));
+			set.add(iterator.next());
 		}
 		while (iterator.hasNext()) {
 			if (lastElementWasSequenceEnd || iterator.isStartOfRepetition()) {
 				lastElementWasSequenceEnd = iterator.isEndOfRepetition();
-				set.add(getRepresentation(iterator.next()));
+				set.add(iterator.next());
 			} else {
 				lastElementWasSequenceEnd = iterator.isEndOfRepetition();
 				iterator.next();
@@ -390,21 +420,21 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 	@Override
 	public void clear() {
 		super.clear();
-		if (child != null) {
-			child.clear();
-		} else {
-			compressedTrace.clear();
-		}
+		compressedTrace.clear();
 	}
-	
+
+	public int getFirstElement() {
+		return getCompressedTrace().element();
+	}
+
+	public int getLastElement() {
+		return getCompressedTrace().lastElement();
+	}
+
 	@Override
 	public void sleep() {
 		super.sleep();
-		if (child != null) {
-			child.sleep();
-		} else {
-			compressedTrace.sleep();
-		}
+		compressedTrace.sleep();
 	}
 	
 	@Override
@@ -419,8 +449,11 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 	
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder(originalSize + " ==> ");
-		TraceIterator<T> eTraceIterator = iterator();
+		StringBuilder builder = new StringBuilder();
+		builder.append("lvl0, size: ").append(compressedTrace.size()).append(System.lineSeparator());
+		builder.append(super.toString());
+		builder.append("full trace: ");
+		IntTraceIterator eTraceIterator = iterator();
 		while (eTraceIterator.hasNext()) {
 			builder.append(eTraceIterator.next() + ", ");
 		}
@@ -439,11 +472,7 @@ public abstract class CompressedTraceBase<T, K> extends RepetitionMarkerBase imp
 	@Override
 	public void deleteOnExit() {
 		super.deleteOnExit();
-		if (child != null) {
-			child.deleteOnExit();
-		} else {
-			compressedTrace.deleteOnExit();
-		}
+		compressedTrace.deleteOnExit();
 	}
 	
 }

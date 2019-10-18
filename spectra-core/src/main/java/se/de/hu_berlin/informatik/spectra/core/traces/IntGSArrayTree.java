@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CompressedIntegerTraceBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntArrayIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 
 public class IntGSArrayTree {
@@ -183,7 +183,7 @@ public class IntGSArrayTree {
 	}
 
 	public BufferedIntArrayQueue generateIndexedTrace(
-			CompressedIntegerTraceBase rawTrace, IntArraySequenceIndexer indexer) {
+			CompressedIntegerTrace rawTrace, IntArraySequenceIndexer indexer) {
 		if (rawTrace == null) {
 			return null;
 		}
