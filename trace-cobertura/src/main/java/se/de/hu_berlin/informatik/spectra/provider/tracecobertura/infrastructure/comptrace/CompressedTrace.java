@@ -1,15 +1,16 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
-
 import java.util.Set;
 import java.util.UUID;
 
@@ -204,77 +205,92 @@ public abstract class CompressedTrace<T,K> extends RepetitionMarkerBase implemen
 						trace.getNodeSize(), deleteOnExit, trace.getSerializationType());
 		BufferedMap<int[]> traceRepetitions = new RepetitionMarkerBufferedMap(trace.getOutputDir(), 
 				"cpr_trace_rpt_" + UUID.randomUUID().toString(), trace.getArrayLength(), deleteOnExit);
+		ReplaceableCloneableIterator<T> resultTraceIterator = traceWithoutRepetitions.iterator();
+		ReplaceableCloneableIterator<T> inputTraceIterator = trace.iterator();
 		
 		// mapping from elements to their most recent positions in the result list
-		Map<K,Integer> elementToPositionMap = new HashMap<>();
+		Map<K,List<Integer>> elementToPositionMap = new HashMap<>();
 		while (!trace.isEmpty()) {
 			T element = trace.remove();
 			K repr = getRepresentation(element);
 
 			// check for repetition of the current element
-			Integer position = elementToPositionMap.get(repr);
-			if (position == null) {
+			List<Integer> positions = elementToPositionMap.get(repr);
+			if (positions == null) {
 				// no repetition: remember node containing the element
-				elementToPositionMap.put(repr, traceWithoutRepetitions.size());
+				List<Integer> list = new ArrayList<>();
+				list.add(traceWithoutRepetitions.size());
+				elementToPositionMap.put(repr, list);
 				// build up the result trace on the fly
 				traceWithoutRepetitions.add(element);
 			} else {
-				// element was repeated
-				// check if the sequence of elements between the last position of the element
-				// and this position is the same as the following sequence(s) in the input trace
-				int repetitionCounter = 0;
-				int lengthToRemove = 0;
-				Iterator<T> inputTraceIterator = trace.iterator();
-				Iterator<T> resultTraceIterator = traceWithoutRepetitions.iterator(position);
-				resultTraceIterator.next();
-				// count the number of elements that need to be removed later with count variable;
-				// variable count can start at 0 here, since we already removed the very first element
-				for (int count = 0; ; ++count) {
-					if (!resultTraceIterator.hasNext()) {
-						// at the end of the sequence
-						++repetitionCounter;
-						// start over
-						resultTraceIterator = traceWithoutRepetitions.iterator(position);
-						// later remove the processed nodes that have been repeated
-						lengthToRemove += count;
-						count = 0;
-					}
-					
-					if (!inputTraceIterator.hasNext()) {
-						// no further remaining sequence
-						break;
-					}
-					
-					// check if elements are equal
-					T first = inputTraceIterator.next();
-					T second = resultTraceIterator.next();
-					if (!isEqual(first, second)) {
-						break;
-					}
-					
-					// continue with the next node of the remaining sequence
-				}
-				// remove repeated elements
-				trace.clear(lengthToRemove);
-				
+				boolean foundRepetition = false;
+				// check for all remembered positions
+				for (int position : positions) {
+					// element was repeated
+					// check if the sequence of elements between the last position of the element
+					// and this position is the same as the following sequence(s) in the input trace
+					int repetitionCounter = 0;
+					int lengthToRemove = 0;
+					// avoid instantiating new iterators
+					inputTraceIterator.setToPosition(0);
+					resultTraceIterator.setToPosition(position+1);
+					//				resultTraceIterator.next();
+					// count the number of elements that need to be removed later with count variable;
+					// variable count can start at 0 here, since we already removed the very first element
+					for (int count = 0; ; ++count) {
+						if (!resultTraceIterator.hasNext()) {
+							// at the end of the sequence
+							++repetitionCounter;
+							// start over
+							resultTraceIterator.setToPosition(position);
+							// later remove the processed nodes that have been repeated
+							lengthToRemove += count;
+							count = 0;
+						}
 
-				// are there any repetitions?
-				if (repetitionCounter > 0) {
-					// compute the length of one repetition
-					int length = (lengthToRemove+1)/repetitionCounter;
-					
-					// add a triplet to the list
-					traceRepetitions.put(traceWithoutRepetitions.size() - length, new int[] { length, repetitionCounter + 1 });
-//					if (log) {
-//						System.out.println("idx: " + (traceWithoutRepetitions.size() - length) + ", len: " + length + ", rpt: " + (repetitionCounter+1));
-//					}
-					
-					// reset repetition recognition
-					elementToPositionMap.clear();
-				} else {
+						if (!inputTraceIterator.hasNext()) {
+							// no further remaining sequence
+							break;
+						}
+
+						// check if elements are equal
+						T first = inputTraceIterator.next();
+						T second = resultTraceIterator.next();
+						if (!isEqual(first, second)) {
+							break;
+						}
+
+						// continue with the next node of the remaining sequence
+					}
+
+					// are there any repetitions?
+					if (repetitionCounter > 0) {
+						foundRepetition = true;
+						// remove repeated elements
+						trace.clear(lengthToRemove);
+						// compute the length of one repetition
+						int length = (lengthToRemove+1)/repetitionCounter;
+
+						// add a triplet to the list
+						traceRepetitions.put(traceWithoutRepetitions.size() - length, new int[] { length, repetitionCounter + 1 });
+						//					if (log) {
+						//						System.out.println("idx: " + (traceWithoutRepetitions.size() - length) + ", len: " + length + ", rpt: " + (repetitionCounter+1));
+						//					}
+
+						// reset repetition recognition
+						elementToPositionMap.clear();
+						break;
+					}
+				}
+
+				if (!foundRepetition) {
 					// no repetition found...
-					// no repetition: remember only the last node containing the element (update)
-					elementToPositionMap.put(repr, traceWithoutRepetitions.size());
+					//							// no repetition: remember only the last node containing the element (update)
+					//							elementToPositionMap.put(repr, traceWithoutRepetitions.size());
+
+					// add the new position to the list of remembered positions
+					positions.add(traceWithoutRepetitions.size());
 					// build up the result trace on the fly
 					traceWithoutRepetitions.add(element);
 				}

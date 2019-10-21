@@ -74,11 +74,11 @@ public class CoberturaStatementEncoding {
 	}
 	
 	public static int getLastClassId(long encodedSubTrace) {
-		return getClassId(encodedSubTrace << 32);
+		return getClassId(encodedSubTrace << INTEGER_BITS);
 	}
 	
 	public static int getLastCounterId(long encodedSubTrace) {
-		return getCounterId(encodedSubTrace << 32);
+		return getCounterId(encodedSubTrace << INTEGER_BITS);
 	}
 
 	

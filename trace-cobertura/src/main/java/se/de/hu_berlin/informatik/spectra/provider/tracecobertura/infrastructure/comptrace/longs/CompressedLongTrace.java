@@ -1,9 +1,11 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -233,72 +235,85 @@ public class CompressedLongTrace extends RepetitionMarkerBase implements Seriali
 		MyBufferedLongIterator inputTraceIterator = trace.iterator();
 		
 		// mapping from elements to their most recent positions in the result list
-		Map<Long,Integer> elementToPositionMap = new HashMap<>();
+		Map<Long,List<Integer>> elementToPositionMap = new HashMap<>();
 		while (!trace.isEmpty()) {
 			long element = trace.remove();
 
 			// check for repetition of the current element
-			Integer position = elementToPositionMap.get(element);
-			if (position == null) {
+			List<Integer> positions = elementToPositionMap.get(element);
+			if (positions == null) {
 				// no repetition: remember node containing the element
-				elementToPositionMap.put(element, traceWithoutRepetitions.size());
+				List<Integer> list = new ArrayList<>();
+				list.add(traceWithoutRepetitions.size());
+				elementToPositionMap.put(element, list);
 				// build up the result trace on the fly
 				traceWithoutRepetitions.add(element);
 			} else {
-				// element was repeated
-				// check if the sequence of elements between the last position of the element
-				// and this position is the same as the following sequence(s) in the input trace
-				int repetitionCounter = 0;
-				int lengthToRemove = 0;
-				// avoid instantiating new iterators
-				inputTraceIterator.setToPosition(0);
-				resultTraceIterator.setToPosition(position+1);
-//				resultTraceIterator.next();
-				// count the number of elements that need to be removed later with count variable;
-				// variable count can start at 0 here, since we already removed the very first element
-				for (int count = 0; ; ++count) {
-					if (!resultTraceIterator.hasNext()) {
-						// at the end of the sequence
-						++repetitionCounter;
-						// start over
-						resultTraceIterator.setToPosition(position);
-						// later remove the processed nodes that have been repeated
-						lengthToRemove += count;
-						count = 0;
+				boolean foundRepetition = false;
+				// check for all remembered positions
+				for (int position : positions) {
+					// element was repeated
+					// check if the sequence of elements between the last position of the element
+					// and this position is the same as the following sequence(s) in the input trace
+					int repetitionCounter = 0;
+					int lengthToRemove = 0;
+					// avoid instantiating new iterators
+					inputTraceIterator.setToPosition(0);
+					resultTraceIterator.setToPosition(position+1);
+					//				resultTraceIterator.next();
+					// count the number of elements that need to be removed later with count variable;
+					// variable count can start at 0 here, since we already removed the very first element
+					for (int count = 0; ; ++count) {
+						if (!resultTraceIterator.hasNext()) {
+							// at the end of the sequence
+							++repetitionCounter;
+							// start over
+							resultTraceIterator.setToPosition(position);
+							// later remove the processed nodes that have been repeated
+							lengthToRemove += count;
+							count = 0;
+						}
+
+						if (!inputTraceIterator.hasNext()) {
+							// no further remaining sequence
+							break;
+						}
+
+						// check if elements are equal
+						if (inputTraceIterator.next() != resultTraceIterator.next()) {
+							break;
+						}
+
+						// continue with the next node of the remaining sequence
 					}
-					
-					if (!inputTraceIterator.hasNext()) {
-						// no further remaining sequence
+
+					// are there any repetitions?
+					if (repetitionCounter > 0) {
+						foundRepetition = true;
+						// remove repeated elements
+						trace.clear(lengthToRemove);
+						// compute the length of one repetition
+						int length = (lengthToRemove+1)/repetitionCounter;
+
+						// add a triplet to the list
+						traceRepetitions.put(traceWithoutRepetitions.size() - length, new int[] { length, repetitionCounter + 1 });
+						//					if (log) {
+						//						System.out.println("idx: " + (traceWithoutRepetitions.size() - length) + ", len: " + length + ", rpt: " + (repetitionCounter+1));
+						//					}
+
+						// reset repetition recognition
+						elementToPositionMap.clear();
 						break;
 					}
-					
-					// check if elements are equal
-					if (inputTraceIterator.next() != resultTraceIterator.next()) {
-						break;
-					}
-					
-					// continue with the next node of the remaining sequence
 				}
 
-				// are there any repetitions?
-				if (repetitionCounter > 0) {
-					// remove repeated elements
-					trace.clear(lengthToRemove);
-					// compute the length of one repetition
-					int length = (lengthToRemove+1)/repetitionCounter;
-					
-					// add a triplet to the list
-					traceRepetitions.put(traceWithoutRepetitions.size() - length, new int[] { length, repetitionCounter + 1 });
-//					if (log) {
-//						System.out.println("idx: " + (traceWithoutRepetitions.size() - length) + ", len: " + length + ", rpt: " + (repetitionCounter+1));
-//					}
-					
-					// reset repetition recognition
-					elementToPositionMap.clear();
-				} else {
+				if (!foundRepetition) {
 					// no repetition found...
-					// no repetition: remember only the last node containing the element (update)
-					elementToPositionMap.put(element, traceWithoutRepetitions.size());
+					//							// no repetition: remember only the last node containing the element (update)
+					//							elementToPositionMap.put(element, traceWithoutRepetitions.size());
+
+					// add the new position to the list of remembered positions
+					positions.add(traceWithoutRepetitions.size());
 					// build up the result trace on the fly
 					traceWithoutRepetitions.add(element);
 				}
@@ -450,7 +465,10 @@ public class CompressedLongTrace extends RepetitionMarkerBase implements Seriali
 	
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder(originalSize + " ==> ");
+		StringBuilder builder = new StringBuilder();
+		builder.append("lvl0, size: ").append(compressedTrace.size()).append(System.lineSeparator());
+		builder.append(super.toString());
+		builder.append("full trace: ");
 		LongTraceIterator eTraceIterator = iterator();
 		while (eTraceIterator.hasNext()) {
 			builder.append(eTraceIterator.next() + ", ");

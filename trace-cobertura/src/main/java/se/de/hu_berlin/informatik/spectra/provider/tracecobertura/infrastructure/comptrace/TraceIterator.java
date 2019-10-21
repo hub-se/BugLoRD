@@ -186,4 +186,9 @@ public class TraceIterator<T> implements ReplaceableCloneableIterator<T> {
 		}
 	}
 
+	@Override
+	public void setToPosition(int i) {
+		throw new UnsupportedOperationException();
+	}
+
 }

@@ -189,6 +189,162 @@ public class CompressedTraceTest {
 		
 		queue.clear();
 	}
+	
+	@Test
+	public void testBackwardsLongIterationWithAlternations() throws Exception {
+		BufferedLongArrayQueue queue = new BufferedLongArrayQueue(outputDir, "test2rAL", 5);
+		
+		for (int i = 0; i < 20; ++i) {
+			queue.add(1);
+			queue.add(i % 2 == 0 ? 0 : 2);
+		}
+		queue.add(99);
+		for (int i = 0; i < 20; ++i) {
+			queue.add(1);
+			queue.add(i % 2 == 0 ? 0 : 2);
+		}
+		for (int i = 0; i < 20; ++i) {
+			queue.add(i);
+			queue.add(i);
+			queue.add(i);
+		}
+		for (int i = 0; i < 10; ++i) {
+			queue.add(1);
+			queue.add(i % 2 == 0 ? 0 : 2);
+		}
+		queue.sleep();
+		
+		CompressedLongTrace compressedIdTrace = new CompressedLongTrace(queue, true);
+		
+		Assert.assertEquals(161, compressedIdTrace.size());
+		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
+		Assert.assertEquals(30, compressedIdTrace.getCompressedTrace().size());
+		
+//		Thread.sleep(5000);
+
+		printWithIterator(compressedIdTrace.iterator());
+		printWithIterator(compressedIdTrace.reverseIterator());
+		
+//		System.out.println(compressedIdTrace.toString());
+		
+		List<Long> list = storeInList(compressedIdTrace.iterator());
+		List<Long> reverseList = storeInList(compressedIdTrace.reverseIterator());
+		
+		Collections.reverse(reverseList);
+		
+		Assert.assertEquals(compressedIdTrace.size(), list.size());
+		Assert.assertEquals(compressedIdTrace.size(), reverseList.size());
+		
+		Iterator<Long> listIterator = list.iterator();
+		Iterator<Long> reverseListIterator = reverseList.iterator();
+		
+		while (listIterator.hasNext()) {
+			Assert.assertEquals(listIterator.next(), reverseListIterator.next());
+		}
+		
+//		int i = 0;
+//		while (iterator.hasNext() && i < 20) {
+//			Assert.assertEquals(i, iterator.next());
+//			Assert.assertEquals(i++, iterator.next());
+//		}
+//		Assert.assertEquals(99, iterator.next());
+//		i = 0;
+//		while (iterator.hasNext() && i < 20) {
+//			Assert.assertEquals(i, iterator.next());
+//			Assert.assertEquals(i++, iterator.next());
+//		}
+//		i = 0;
+//		while (iterator.hasNext() && i < 20) {
+//			Assert.assertEquals(i, iterator.next());
+//			Assert.assertEquals(i, iterator.next());
+//			Assert.assertEquals(i++, iterator.next());
+//		}
+//		i = 0;
+//		while (iterator.hasNext() && i < 10) {
+//			Assert.assertEquals(i, iterator.next());
+//			Assert.assertEquals(i++, iterator.next());
+//		}
+//		
+		queue.clear();
+	}
+	
+	@Test
+	public void testBackwardsIntegerIterationWithAlternations() throws Exception {
+		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test2rA", 5);
+		
+		for (int i = 0; i < 20; ++i) {
+			queue.add(1);
+			queue.add(i % 2 == 0 ? 0 : 2);
+		}
+		queue.add(99);
+		for (int i = 0; i < 20; ++i) {
+			queue.add(1);
+			queue.add(i % 2 == 0 ? 0 : 2);
+		}
+		for (int i = 0; i < 20; ++i) {
+			queue.add(i);
+			queue.add(i);
+			queue.add(i);
+		}
+		for (int i = 0; i < 10; ++i) {
+			queue.add(1);
+			queue.add(i % 2 == 0 ? 0 : 2);
+		}
+		queue.sleep();
+		
+		CompressedIntegerTrace compressedIdTrace = new CompressedIntegerTrace(queue, true);
+		
+		Assert.assertEquals(161, compressedIdTrace.size());
+		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
+		Assert.assertEquals(30, compressedIdTrace.getCompressedTrace().size());
+		
+//		Thread.sleep(5000);
+
+		printWithIterator(compressedIdTrace.iterator());
+		printWithIterator(compressedIdTrace.reverseIterator());
+		
+//		System.out.println(compressedIdTrace.toString());
+		
+		List<Integer> list = storeInList(compressedIdTrace.iterator());
+		List<Integer> reverseList = storeInList(compressedIdTrace.reverseIterator());
+		
+		Collections.reverse(reverseList);
+		
+		Assert.assertEquals(compressedIdTrace.size(), list.size());
+		Assert.assertEquals(compressedIdTrace.size(), reverseList.size());
+		
+		Iterator<Integer> listIterator = list.iterator();
+		Iterator<Integer> reverseListIterator = reverseList.iterator();
+		
+		while (listIterator.hasNext()) {
+			Assert.assertEquals(listIterator.next(), reverseListIterator.next());
+		}
+		
+//		int i = 0;
+//		while (iterator.hasNext() && i < 20) {
+//			Assert.assertEquals(i, iterator.next());
+//			Assert.assertEquals(i++, iterator.next());
+//		}
+//		Assert.assertEquals(99, iterator.next());
+//		i = 0;
+//		while (iterator.hasNext() && i < 20) {
+//			Assert.assertEquals(i, iterator.next());
+//			Assert.assertEquals(i++, iterator.next());
+//		}
+//		i = 0;
+//		while (iterator.hasNext() && i < 20) {
+//			Assert.assertEquals(i, iterator.next());
+//			Assert.assertEquals(i, iterator.next());
+//			Assert.assertEquals(i++, iterator.next());
+//		}
+//		i = 0;
+//		while (iterator.hasNext() && i < 10) {
+//			Assert.assertEquals(i, iterator.next());
+//			Assert.assertEquals(i++, iterator.next());
+//		}
+//		
+		queue.clear();
+	}
 
 	@Test
 	public void testBackwardsIntegerIteration() throws Exception {

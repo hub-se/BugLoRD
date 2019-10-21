@@ -719,7 +719,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	}
 
 	@Override
-	public ReplaceableCloneableIterator<E> iterator() {
+	public MyBufferedIterator iterator() {
 		return new MyBufferedIterator();
 	}
 	
@@ -727,12 +727,17 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		return new MyBufferedIterator(position);
 	}
 
-	private final class MyBufferedIterator implements ReplaceableCloneableIterator<E> {
+	public final class MyBufferedIterator implements ReplaceableCloneableIterator<E> {
 
 		int storeIndex;
 		int index;
 
 		MyBufferedIterator(int i) {
+			setToPosition(i);
+		}
+		
+		@Override
+		public void setToPosition(int i) {
 			// we can compute the store index using the size of the 
 			// first node and the constant size of each array node
 			if (i < firstNodeSize) {

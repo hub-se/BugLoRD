@@ -195,5 +195,10 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 			}
 		}
 	}
+	
+	@Override
+	public void setToPosition(int i) {
+		throw new UnsupportedOperationException();
+	}
 
 }

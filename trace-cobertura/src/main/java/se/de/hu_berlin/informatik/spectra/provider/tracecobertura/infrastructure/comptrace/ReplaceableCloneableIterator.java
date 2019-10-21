@@ -6,5 +6,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 public interface ReplaceableCloneableIterator<T> extends CloneableIterator<T> {
 
 	public T processNextAndReplaceWithResult(Function<T,T> function);
+
+	public void setToPosition(int i);
 	
 }
