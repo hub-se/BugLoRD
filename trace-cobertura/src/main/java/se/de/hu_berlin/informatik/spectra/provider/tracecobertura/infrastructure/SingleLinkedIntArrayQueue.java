@@ -8,9 +8,6 @@ import java.util.NoSuchElementException;
 
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
- * 
- * @param <E> 
- * the type of elements held in the queue
  */
 public class SingleLinkedIntArrayQueue extends AbstractQueue<Integer> implements Serializable {
 	
