@@ -31,6 +31,9 @@ $RECYCLE.BIN/
 # Thumbnails
 ._*
 
+#Intellij files
+*.iml
+
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
 .fseventsd
@@ -50,5 +53,5 @@ aspectj-frontend/aspectjProperties.ini
 /.project
 /.settings
 .classpath
-
+.idea
 jacoco.exec
