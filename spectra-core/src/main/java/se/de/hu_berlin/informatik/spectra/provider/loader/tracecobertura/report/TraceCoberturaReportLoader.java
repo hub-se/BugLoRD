@@ -8,8 +8,11 @@ package se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report
 
 import java.nio.file.Path;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
+
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
@@ -26,9 +29,12 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.S
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SwitchData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.LongTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
@@ -162,25 +168,25 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 										SwitchData switchData = (SwitchData) branchData;
 										
 										// add nodes for default branch of switch statements
-										lineIdentifier = getIdentifier(
-												packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber(), NodeType.FALSE_BRANCH);
-//										Log.out(this, "%s, F: %d", lineIdentifier.toString(), jumpData.getTrueHits());
-										onNewLine(
-												packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
-												fullSpectra, switchData.getDefaultHits());
-										
-//										long switchBranchHits = 0;
-//										for (int i = 0; i < switchData.getNumberOfValidBranches(); ++i) {
-//											switchBranchHits += switchData.getHits(i);
-//										}
-//										
-//										// add nodes for default branch of switch statements
 //										lineIdentifier = getIdentifier(
-//												packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber(), NodeType.SWITCH_BRANCH);
-////										Log.out(this, "%s, F: %d", lineIdentifier.toString(), jumpData.getTrueHits());
+//												packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber(), NodeType.FALSE_BRANCH);
+//										Log.out(this, "%s, SD: %d", lineIdentifier.toString(), switchData.getDefaultHits());
 //										onNewLine(
 //												packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
-//												fullSpectra, switchBranchHits);
+//												fullSpectra, switchData.getDefaultHits());
+										
+										long switchBranchHits = 0;
+										for (int i = 0; i < switchData.getNumberOfValidBranches(); ++i) {
+											switchBranchHits += (switchData.getHits(i) < 0 ? 0 : switchData.getHits(i));
+										}
+//										
+//										// add nodes for default branch of switch statements
+										lineIdentifier = getIdentifier(
+												packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber(), NodeType.FALSE_BRANCH);
+//										Log.out(this, "%s, SH: %d", lineIdentifier.toString(), switchBranchHits);
+										onNewLine(
+												packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
+												fullSpectra, switchBranchHits);
 									}
 								}
 							}
@@ -223,7 +229,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// }
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
-//			Map<Integer, CompressedLongTraceBase> idToSubtraceMap = projectData.getIdToSubtraceMap();
+//			Map<Integer, CompressedLongTrace> idToSubtraceMap = projectData.getIdToSubtraceMap();
 			for (Iterator<Entry<Long, CompressedIntegerTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
 				Entry<Long, CompressedIntegerTrace> entry = iterator.next();
 				++threadId;
@@ -235,12 +241,12 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //				String[] idToClassNameMap = projectData.getIdToClassNameMap();
 //				Log.out(true, this, "Thread: " + entry.getKey());
 //				// iterate over executed statements in the trace
-//				CloneableIterator<Integer> traceIterator = entry.getValue().iterator();
+//				IntTraceIterator traceIterator = entry.getValue().iterator();
 //				while (traceIterator.hasNext()) {
 //					Integer subTraceId = traceIterator.next();
-//					Queue<int[]> subTrace = null;
+//					CompressedLongTrace subTrace = null;
 //					if (subTraceId == 0) {
-//						subTrace = new LinkedList<>();
+//						subTrace = null;
 //					} else {
 //						subTrace = idToSubtraceMap.get(subTraceId);
 //						if (subTrace == null) {
@@ -248,17 +254,20 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //							return false;
 //						}
 //					}
+//					if (subTrace == null) {
+//						continue;
+//					}
 //					Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.size());
-////					if (subTraceId >= 0) {
-////						continue;
-////					}
-//					for (int[] statement : subTrace) {
+//
+//					LongTraceIterator longTraceIterator = subTrace.iterator();
+//					while (longTraceIterator.hasNext()) {
+//						long statement = longTraceIterator.next();
 //						//					 Log.out(true, this, "statement: " + Arrays.toString(statement));
 //						// TODO store the class names with '.' from the beginning, or use the '/' version?
-//						String classSourceFileName = idToClassNameMap[statement[0]];
+//						String classSourceFileName = idToClassNameMap[CoberturaStatementEncoding.getClassId(statement)];
 //						if (classSourceFileName == null) {
 //							//						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
-//							Log.err(this, "No class name found for class ID: " + statement[0]);
+//							Log.err(this, "No class name found for class ID: " + CoberturaStatementEncoding.getClassId(statement));
 //							return false;
 //						}
 //						ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
@@ -268,32 +277,30 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //								Log.err(this, "No counter ID to line number map for class " + classSourceFileName);
 //								return false;
 //							}
-//							int lineNumber = classData.getCounterId2LineNumbers()[statement[1]];
+//							int lineNumber = classData.getCounterId2LineNumbers()[CoberturaStatementEncoding.getCounterId(statement)];
 //
 //							NodeType nodeType = NodeType.NORMAL;
 //							// these following lines print out the execution trace
 //							String addendum = "";
-//							if (statement.length > 2) {
-//								switch (statement[2]) {
-//								case 0:
+//							if (CoberturaStatementEncoding.getSpecialIndicatorId(statement) != CoberturaStatementEncoding.NORMAL_ID) {
+//								switch (CoberturaStatementEncoding.getSpecialIndicatorId(statement)) {
+//								case CoberturaStatementEncoding.BRANCH_ID:
 //									addendum = " (from branch/'false' branch)";
 //									nodeType = NodeType.FALSE_BRANCH;
 //									break;
-//								case 1:
+//								case CoberturaStatementEncoding.JUMP_ID:
 //									addendum = " (after jump/'true' branch)";
 //									nodeType = NodeType.TRUE_BRANCH;
 //									break;
-//								case 2:
+//								case CoberturaStatementEncoding.SWITCH_ID:
 //									addendum = " (after switch label)";
-//									break;
-//								case 3:
-//									addendum = " (after decision)";
+//									nodeType = NodeType.FALSE_BRANCH;
 //									break;
 //								default:
 //									addendum = " (unknown)";
 //								}
 //							}
-//							Log.out(true, this, classSourceFileName + ", counter ID " + statement[1] +
+//							Log.out(true, this, classSourceFileName + ", counter ID " + CoberturaStatementEncoding.getCounterId(statement) +
 //									", line " + (lineNumber < 0 ? "(not set)" : String.valueOf(lineNumber)) +
 //									addendum);
 //
@@ -306,39 +313,36 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //								} else {
 //									// node index not correct...
 //									String throwAddendum = "";
-//									if (statement.length > 2) {
-//										switch (statement[2]) {
-//										case 0:
+//									if (CoberturaStatementEncoding.getSpecialIndicatorId(statement) != CoberturaStatementEncoding.NORMAL_ID) {
+//										switch (CoberturaStatementEncoding.getSpecialIndicatorId(statement)) {
+//										case CoberturaStatementEncoding.BRANCH_ID:
 //											throwAddendum = " (from branch/'false' branch)";
 //											break;
-//										case 1:
+//										case CoberturaStatementEncoding.JUMP_ID:
 //											throwAddendum = " (after jump/'true' branch)";
 //											break;
-//										case 2:
+//										case CoberturaStatementEncoding.SWITCH_ID:
 //											throwAddendum = " (after switch label)";
 //											break;
-//										case 3:
-//											throwAddendum = " (after decision)";
-//											break;
 //										default:
-//											throwAddendum = " (unknown)";
+//											addendum = " (unknown)";
 //										}
 //									}
 //									Log.err(this, "Node not found in spectra: "
 //											+ classData.getSourceFileName() + ":" + lineNumber 
-//											+ " from counter id " + statement[1] + throwAddendum);
+//											+ " from counter id " + CoberturaStatementEncoding.getCounterId(statement) + throwAddendum);
 //									return false;
 //								}
-//							} else if (statement.length <= 2 || statement[2] != 0) {
-//								// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
-//								// this should actually not be an issue anymore!
-//								//							throw new IllegalStateException("No line number found for counter ID: " + counterId
-//								//									+ " in class: " + classData.getName());
-//								Log.err(this, "No line number found for counter ID: " + statement[1]
-//										+ " in class: " + classData.getName());
-//								return false;
+////							} else if (statement.length <= 2 || statement[2] != 0) {
+////								// disregard counter ID 0 if it comes from an internal variable (fake jump?!)
+////								// this should actually not be an issue anymore!
+////								//							throw new IllegalStateException("No line number found for counter ID: " + counterId
+////								//									+ " in class: " + classData.getName());
+////								Log.err(this, "No line number found for counter ID: " + CoberturaStatementEncoding.getCounterId(statement)
+////										+ " in class: " + classData.getName());
+////								return false;
 //							} else {
-//								Log.err(this, "No line number found for counter ID: " + statement[1]
+//								Log.err(this, "No line number found for counter ID: " + CoberturaStatementEncoding.getCounterId(statement)
 //										+ " in class: " + classData.getName());
 //								return false;
 //								//							// we have to add a dummy node here to not mess up the repetition markers

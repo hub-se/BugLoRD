@@ -25,8 +25,8 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
  */
 public abstract class AbstractSpectraGenerationFactory<T extends Serializable,R,S> {
 
-	public static final String MAX_HEAP = "-Xms2g";
-	public static final String INITIAL_HEAP = "-Xmx2g";
+	public static final String MAX_HEAP = "-Xmx2g";
+	public static final String INITIAL_HEAP = "-Xms1g";
 	public static final String GC = "-XX:+UseParallelGC";
 	public static final String MAX_DIRECT_MEMORY = "-XX:MaxDirectMemorySize=512m";
 	

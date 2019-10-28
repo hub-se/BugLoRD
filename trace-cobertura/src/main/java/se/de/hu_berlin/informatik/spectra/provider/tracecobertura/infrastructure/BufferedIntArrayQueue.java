@@ -901,7 +901,7 @@ public class BufferedIntArrayQueue implements Serializable {
 		int itemIndex = i % arrayLength;
 		final Node f = load(storeIndex);
         if (f == null || itemIndex >= f.endIndex)
-            throw new NoSuchElementException("index: " + i);
+            throw new NoSuchElementException("index: " + (i + firstNodeSize) + ", size: " + size);
         return f.get(itemIndex);
 	}
 	

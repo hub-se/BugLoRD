@@ -109,6 +109,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	 * code that checks if the 'internal variable' is equal to id 
 	 * of considered switch and if so increments counterId connected to the switch. </p>
 	 */
+	@Override
 	public void afterLabel(int eventId, Label label, int currentLine,
 			MethodVisitor mv) {
 //		logger.debug("Looking for jumps going to event(" + eventId + "):"
@@ -209,7 +210,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //		// loop in a class that is not instrumented
 //		// (e.g. in test classes) that executes code without decision points (branches)
 //		// in it. This results in a very large sub trace, potentially...
-//		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 	}
 
 	// ------------------- ignored events -------------------------------	

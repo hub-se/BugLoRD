@@ -1,10 +1,14 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
+import java.util.Set;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 
 
 public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
@@ -12,8 +16,10 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			CodeProvider {
 
 	private final boolean collectExecutionTrace;
+	private Set<Integer> statementsToInstrument;
 
-	public ExecutionTracesOnlyCodeProvider(boolean collectExecutionTrace) {
+	public ExecutionTracesOnlyCodeProvider(Set<Integer> statementsToInstrument, boolean collectExecutionTrace) {
+		this.statementsToInstrument = statementsToInstrument;
 		this.collectExecutionTrace = collectExecutionTrace;
 	}
 
@@ -21,6 +27,9 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	public void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
 			String className, int classId) {
+		if (shouldNotBeInstrumented(classId, lastJumpIdVariableIndex)) {
+			return;
+		}
 		// false branch?! (we skipped the true branch jump and continue in 'else' construct or after if-statement)
 		if (collectExecutionTrace) {
 			// add the statement to the execution trace AND increment counter
@@ -40,6 +49,12 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 		}
 	}
 
+	private boolean shouldNotBeInstrumented(int classId, int lastJumpIdVariableIndex) {
+		return statementsToInstrument != null && 
+				statementsToInstrument.contains(CoberturaStatementEncoding
+						.generateUniqueRepresentationForStatement(classId, lastJumpIdVariableIndex));
+	}
+
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatProcessesLastSubtrace(
 			MethodVisitor nextMethodVisitor) {
@@ -48,79 +63,14 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 				"()V");
 	}
 	
-//	@SuppressWarnings("deprecation")
-//	public void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(
-//			MethodVisitor nextMethodVisitor, int counterId, int decisionIndicatorVariableIndex,
-//			String className, int classId) {
-//		if (collectExecutionTrace) {
-//			/*
-//			 * Injects code that behaves the same as such a code snippet:
-//			 * <pre>
-//			 * if (value('decisionIndicatorVariableIndex')){
-//			 * 	 processLastSubTrace();
-//			 *   unset_decision_indicator_variable('decisionIndicatorVariableIndex');
-//			 * }
-//			 * </pre>
-//			 */
-//			nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, decisionIndicatorVariableIndex);
-//			Label afterJump = new Label();
-//			// check if decision indicator variable is true
-//			nextMethodVisitor.visitJumpInsn(Opcodes.IFEQ, afterJump);
-//			// if so, end last segment, etc.
-//			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-//					.getInternalName(ExecutionTraceCollector.class), "processLastSubTrace",
-//					"()V");
-//			// reset decision indicator
-//			generateCodeThatUnsetsDecisionIndicatorVariable(nextMethodVisitor,
-//					decisionIndicatorVariableIndex);
-//			// else...
-//			nextMethodVisitor.visitLabel(afterJump);
-//			
-//			// add the statement to the execution trace AND increment counter
-//			nextMethodVisitor.visitLdcInsn(classId);
-//			nextMethodVisitor.visitLdcInsn(counterId);
-//			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-//					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTraceAndIncrementCounter",
-//					"(II)V");
-//		} else {
-//			// increment counter
-//			nextMethodVisitor.visitLdcInsn(classId);
-//			nextMethodVisitor.visitLdcInsn(counterId);
-//			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-//					.getInternalName(ExecutionTraceCollector.class), "incrementCounter",
-//					"(II)V");
-//		}
-//	}
-	
-//	@SuppressWarnings("deprecation")
-//	public void generateCodeThatMarksBeginningOfNewSubTrace(
-//			MethodVisitor nextMethodVisitor, int counterId, int decisionIndicatorVariableIndex,
-//			String className, int classId) {
-//		if (collectExecutionTrace) {
-//			/*
-//			 * Injects code that behaves the same as such a code snippet:
-//			 * <pre>
-//			 * do_whatever_to_do_after_decision_statement();
-//			 * unset_decision_indicator_variable('decisionIndicatorVariableIndex');
-//			 * </pre>
-//			 */
-//
-//			// end last segment, etc.
-//			nextMethodVisitor.visitLdcInsn(classId);
-//			nextMethodVisitor.visitLdcInsn(counterId);
-//			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-//					.getInternalName(ExecutionTraceCollector.class), "processSubTraceAfterDecision",
-//					"(II)V");
-//			// reset decision indicator
-//			generateCodeThatUnsetsDecisionIndicatorVariable(nextMethodVisitor,
-//					decisionIndicatorVariableIndex);
-//		}
-//	}
 	
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounter(
 			MethodVisitor nextMethodVisitor, int counterId, 
 			String className, int classId) {
+		if (shouldNotBeInstrumented(classId, counterId)) {
+			return;
+		}
 		if (collectExecutionTrace) {
 			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
@@ -142,6 +92,9 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	public void generateCodeThatIncrementsCoberturaCounterAfterJump(
 			MethodVisitor nextMethodVisitor, int counterId, 
 			String className, int classId) {
+		if (shouldNotBeInstrumented(classId, counterId)) {
+			return;
+		}
 		// true branch?! (jump to code in true branch)
 		if (collectExecutionTrace) {
 			// add the statement to the execution trace AND increment counter
@@ -165,6 +118,9 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	public void generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(
 			MethodVisitor nextMethodVisitor, int counterId, 
 			String className, int classId) {
+		if (shouldNotBeInstrumented(classId, counterId)) {
+			return;
+		}
 		if (collectExecutionTrace) {
 			generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 			// add the statement to the execution trace AND increment counter

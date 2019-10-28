@@ -562,7 +562,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void addStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		addStatementToExecutionTrace(classId, counterId);
+		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.NORMAL_ID);
 		incrementCounter(classId, counterId);
 	}
 
@@ -576,7 +576,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void variableAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		variableAddStatementToExecutionTrace(classId, counterId);
+		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.BRANCH_ID);
 		incrementCounter(classId, counterId);
 	}
 
@@ -590,7 +590,7 @@ public class ExecutionTraceCollector {
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
 	 */
 	public static void jumpAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		jumpAddStatementToExecutionTrace(classId, counterId);
+		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.JUMP_ID);
 		incrementCounter(classId, counterId);
 	}
 
@@ -605,65 +605,10 @@ public class ExecutionTraceCollector {
 	 */
 	public static void switchAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
 //		processLastSubTrace();
-		switchAddStatementToExecutionTrace(classId, counterId);
+		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.SWITCH_ID);
 		incrementCounter(classId, counterId);
 	}
-
-	/**
-	 * This method should be called for each executed statement. Therefore, 
-	 * access to this class has to be ensured for ALL instrumented classes.
-	 * 
-	 * @param classId
-	 * the unique id of the class, as used by cobertura
-	 * @param counterId
-	 * the cobertura counter id, necessary to retrieve the exact line in the class
-	 */
-	public static void addStatementToExecutionTrace(int classId, int counterId) {
-		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.NORMAL_ID);
-	}
-
-	/**
-	 * This method should be called for each executed statement. Therefore, 
-	 * access to this class has to be ensured for ALL instrumented classes.
-	 * 
-	 * Seems to mark false branches in if-statements...
-	 * 
-	 * @param classId
-	 * the unique id of the class, as used by cobertura
-	 * @param counterId
-	 * the cobertura counter id, necessary to retrieve the exact line in the class
-	 */
-	public static void variableAddStatementToExecutionTrace(int classId, int counterId) {
-		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.BRANCH_ID);
-	}
-
-	/**
-	 * This method should be called for each executed statement. Therefore, 
-	 * access to this class has to be ensured for ALL instrumented classes.
-	 * 
-	 * Seems to mark true branches in if-statements...
-	 * 
-	 * @param classId
-	 * the unique id of the class, as used by cobertura
-	 * @param counterId
-	 * the cobertura counter id, necessary to retrieve the exact line in the class
-	 */
-	public static void jumpAddStatementToExecutionTrace(int classId, int counterId) {
-		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.JUMP_ID);
-	}
-
-	/**
-	 * This method should be called for each executed statement. Therefore, 
-	 * access to this class has to be ensured for ALL instrumented classes.
-	 * 
-	 * @param classId
-	 * the unique id of the class, as used by cobertura
-	 * @param counterId
-	 * the cobertura counter id, necessary to retrieve the exact line in the class
-	 */
-	public static void switchAddStatementToExecutionTrace(int classId, int counterId) {
-		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.SWITCH_ID);
-	}
+	
 
 	private static void addStatementToExecutionTrace(int classId, int counterId, int specialIndicatorId) {
 		if (counterId == AbstractCodeProvider.FAKE_COUNTER_ID) {
@@ -681,12 +626,12 @@ public class ExecutionTraceCollector {
 			currentSubTraces.put(threadId, subTrace);
 		}
 
-		//				System.out.println("size: " + TouchCollector.registeredClasses.size());
-		//				for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
-		//					System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
-		//				}
-
-		//				System.out.println(classId + ":" + counterId);
+//		System.out.println("size: " + TouchCollector.registeredClasses.size());
+//		for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
+//			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
+//		}
+//
+//		System.out.println(classId + ":" + counterId);
 
 		// add the statement to the sub trace
 		subTrace.add(CoberturaStatementEncoding

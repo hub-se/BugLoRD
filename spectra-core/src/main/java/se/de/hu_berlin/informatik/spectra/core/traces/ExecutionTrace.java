@@ -76,6 +76,7 @@ public class ExecutionTrace extends CompressedIntegerTrace implements Serializab
 			@Override
 			public boolean hasNext() {
 				if (currentSequence == null || !currentSequence.hasNext()) {
+					currentSequence = null;
 					while (iterator.hasNext()) {
 						currentSequence = sequenceIndexer.getFullSequenceIterator(iterator.next());
 						if (currentSequence.hasNext()) {

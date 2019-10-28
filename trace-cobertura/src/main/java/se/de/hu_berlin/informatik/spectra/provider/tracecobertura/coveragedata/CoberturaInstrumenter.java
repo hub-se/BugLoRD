@@ -100,15 +100,16 @@ public class CoberturaInstrumenter {
 	 * <p>Also the {@link #projectData} structure is filled with information about the found touch-points</p>
 	 *
 	 * @param file - path to class that should be instrumented
+	 * @param statementsToInstrument - set of encoded statements that should actually be part of instrumentation
 	 *
 	 * @return instrumentation result structure or null in case of problems
 	 */
-	public InstrumentationResult instrumentClass(File file) {
+	public InstrumentationResult instrumentClass(File file, Set<Integer> statementsToInstrument) {
 		InputStream inputStream = null;
 		try {
 //			logger.debug("Working on file:" + file.getAbsolutePath());
 			inputStream = new FileInputStream(file);
-			return instrumentClass(inputStream);
+			return instrumentClass(inputStream, statementsToInstrument);
 		} catch (Throwable t) {
 			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
 					t);
@@ -128,14 +129,15 @@ public class CoberturaInstrumenter {
 	 * 
 	 * <p>Also the {@link #projectData} structure is filled with information about the found touch-points</p>
 	 *
-	 * @param inputStream - source of class to instrument	 *
+	 * @param inputStream - source of class to instrument
+	 * @param statementsToInstrument - set of encoded statements that should actually be part of instrumentation
 	 *
 	 * @return instrumentation result structure or null in case of problems
 	 *
 	 * @throws IOException
 	 * if anything happens
 	 */
-	public InstrumentationResult instrumentClass(InputStream inputStream)
+	public InstrumentationResult instrumentClass(InputStream inputStream, Set<Integer> statementsToInstrument)
 			throws IOException {
 		ClassReader cr0 = new ClassReader(inputStream);
 		ClassWriter cw0 = new ClassWriter(0);
@@ -201,7 +203,7 @@ public class CoberturaInstrumenter {
 					cw2, ignoreRegexes, threadsafeRigorous, cv.getClassMap(),
 					cv0.getDuplicatesLinesCollector(), detectIgnoredCv
 							.getIgnoredMethodNamesAndSignatures(),
-							collectExecutionTrace);
+							statementsToInstrument, collectExecutionTrace);
 			cr2.accept(new CheckClassAdapter(cv2), ClassReader.SKIP_FRAMES);
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
@@ -227,11 +229,12 @@ public class CoberturaInstrumenter {
 	 * <p>Also the {@link #projectData} structure is filled with information about the found touch-points</p>
 	 *
 	 * @param file - source of class to instrument
+	 * @param statementsToInstrument - set of encoded statements that should actually be part of instrumentation
 	 */
-	public void addInstrumentationToSingleClass(File file) {
+	public void addInstrumentationToSingleClass(File file, Set<Integer> statementsToInstrument) {
 //		logger.debug("Instrumenting class " + file.getAbsolutePath());
 
-		InstrumentationResult instrumentationResult = instrumentClass(file);
+		InstrumentationResult instrumentationResult = instrumentClass(file, statementsToInstrument);
 		if (instrumentationResult != null) {
 			OutputStream outputStream = null;
 			try {
