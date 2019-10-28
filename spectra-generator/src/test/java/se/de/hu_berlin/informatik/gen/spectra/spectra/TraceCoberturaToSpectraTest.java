@@ -10,7 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -21,9 +24,13 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.rules.ExpectedException;
 
+import java_cup.internal_error;
 import se.de.hu_berlin.informatik.gen.spectra.main.TraceCoberturaSpectraGenerator;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -105,11 +112,62 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
 			assertTrue(Files.exists(spectraZipFile));
+			checkTraceSpectra(spectraZipFile);
 		} else {
 			assertFalse(Files.exists(spectraZipFile));
 		}
 	}
 	
+	private void checkTraceSpectra(Path spectraZipFile) {
+		boolean debug = false;
+		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		assertNotNull(spectra);
+		// iterate over all test cases
+		for (ITrace<SourceCodeBlock> test : spectra.getTraces()) {
+			if (debug) {
+				// iterate over execution traces
+				for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
+					System.out.println(test.getIdentifier() + " -> eTrace:");
+					Iterator<Integer> nodeIdIterator = executionTrace.mappedIterator(spectra.getIndexer());
+					while (nodeIdIterator.hasNext()) {
+						int nodeIndex = nodeIdIterator.next();
+						System.out.println(nodeIndex + ": " + spectra.getNode(nodeIndex).getIdentifier());
+					}
+				}
+			}
+			Set<Integer> involvedInExecutionTraces = new HashSet<>();
+			// iterate over execution traces
+			for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
+				// iterate over the compressed trace (should contain all executed node IDs)
+				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
+				while (baseIterator.hasNext()) {
+					// execution trace is composed of indexed sequences of subtrace IDs
+					int subTraceSequenceIndex = baseIterator.next();
+					// iterate over the full node ID sequence using the indexer
+					Iterator<Integer> nodeIdIterator = spectra.getIndexer().getFullSequenceIterator(subTraceSequenceIndex);
+					while (nodeIdIterator.hasNext()) {
+						Integer nodeId = nodeIdIterator.next();
+						// check if all nodes in the execution trace are contained in the test case
+						assertTrue(test.getInvolvedNodes().contains(nodeId));
+						involvedInExecutionTraces.add(nodeId);
+					}
+				}
+			}
+			
+			for (Integer nodeIndex : test.getInvolvedNodes()) {
+				if (debug) {
+					if (!involvedInExecutionTraces.contains(nodeIndex)) {
+						System.out.println("node ID " + nodeIndex + " was not found in execution trace: " + spectra.getNode(nodeIndex).getIdentifier());
+					}	
+				} else {
+				// check if all nodes in the test case are contained in the execution trace
+				assertTrue("node ID " + nodeIndex + " was not found in execution trace: " + spectra.getNode(nodeIndex).getIdentifier(), 
+						involvedInExecutionTraces.contains(nodeIndex));
+				}
+			}
+		}
+	}
+
 	private void testOnProjectWithTestClassList(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful, String testClassListPath) {
@@ -132,6 +190,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
 			assertTrue(Files.exists(spectraZipFile));
+			checkTraceSpectra(spectraZipFile);
 		} else {
 			assertFalse(Files.exists(spectraZipFile));
 		}
@@ -159,6 +218,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
 			assertTrue(Files.exists(spectraZipFile));
+			checkTraceSpectra(spectraZipFile);
 		} else {
 			assertFalse(Files.exists(spectraZipFile));
 		}
@@ -186,6 +246,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
 			assertTrue(Files.exists(spectraZipFile));
+			checkTraceSpectra(spectraZipFile);
 		} else {
 			assertFalse(Files.exists(spectraZipFile));
 		}

@@ -62,13 +62,13 @@ public class InjectCodeClassInstrumenter
 			Collection<Pattern> ignoreRegexes, boolean threadsafeRigorous,
 			ClassMap classMap,
 			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,
-			Set<String> ignoredMethods, boolean collectExecutionTrace) {
+			Set<String> ignoredMethods, Set<Integer> statementsToInstrument, boolean collectExecutionTrace) {
 		super(cv, ignoreRegexes, duplicatedLinesMap);
 		this.classMap = classMap;
 		this.ignoredMethods = ignoredMethods;
 		codeProvider = threadsafeRigorous
-				? new ExecutionTracesOnlyCodeProvider(collectExecutionTrace)
-				: new ExecutionTracesOnlyCodeProvider(collectExecutionTrace);
+				? new ExecutionTracesOnlyCodeProvider(statementsToInstrument, collectExecutionTrace)
+				: new ExecutionTracesOnlyCodeProvider(statementsToInstrument, collectExecutionTrace);
 		touchPointListener = new InjectCodeTouchPointListener(classMap,
 				codeProvider);
 	}

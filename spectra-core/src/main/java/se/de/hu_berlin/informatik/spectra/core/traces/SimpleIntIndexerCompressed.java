@@ -116,6 +116,9 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 					
 					NodeType nodeType = NodeType.NORMAL;
 					switch (specialIndicatorId) {
+					case CoberturaStatementEncoding.SWITCH_ID:
+						nodeType = NodeType.FALSE_BRANCH;
+						break;
 					case CoberturaStatementEncoding.BRANCH_ID:
 						nodeType = NodeType.FALSE_BRANCH;
 						break;
@@ -321,8 +324,8 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 					if (nodeIdSequences == null) {
 						throw new IllegalStateException("meh");
 					}
-					
 					subTraceIterator = nodeIdSequences[subTraceIdSequences[index][outerPos++]].iterator();
+//					System.out.println(nodeIdSequences[subTraceIdSequences[index][outerPos-1]].toString());
 					return hasNext();
 				}
 				return false;

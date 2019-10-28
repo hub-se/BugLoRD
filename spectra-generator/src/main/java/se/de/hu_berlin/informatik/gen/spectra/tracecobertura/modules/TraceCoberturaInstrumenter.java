@@ -82,7 +82,9 @@ final public class TraceCoberturaInstrumenter extends AbstractInstrumenter {
 					+ "Will be appended to the regular class path if this option is set.", false),
 			INSTRUMENT_CLASSES(Option.builder("c").longOpt("classes").required()
 					.hasArgs().desc("A list of classes/directories to instrument with Cobertura.").build()),
-			OUTPUT("o", "output", true, "Path to output directory.", true);
+			OUTPUT("o", "output", true, "Path to output directory.", true),
+			SELECTIVE_INSTRUMENTATION("s", "selective", false, "if set, instruments only parts of the program "
+					+ "that have been executed in the previous run of tests.", false);
 
 			/* the following code blocks should not need to be changed */
 			final private OptionWrapper option;

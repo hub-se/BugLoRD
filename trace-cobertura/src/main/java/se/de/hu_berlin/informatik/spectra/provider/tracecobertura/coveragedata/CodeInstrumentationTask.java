@@ -89,7 +89,7 @@ public class CodeInstrumentationTask {
 			if (coberturaFile.isArchive()) {
 				addInstrumentationToArchive(coberturaFile);
 			} else {
-				addInstrumentation(coberturaFile);
+				addInstrumentation(coberturaFile, null);
 			}
 		}
 		
@@ -126,7 +126,7 @@ public class CodeInstrumentationTask {
 	}
 
 	private boolean addInstrumentationToArchive(CoberturaFile file,
-			ZipInputStream archive, ZipOutputStream output) throws Exception {
+			ZipInputStream archive, ZipOutputStream output, Set<Integer> statementsToInstrument) throws Exception {
 		/*
 		 * "modified" is returned and indicates that something was instrumented.
 		 * If nothing is instrumented, the original entry will be used by the
@@ -171,7 +171,7 @@ public class CodeInstrumentationTask {
 					try {
 						CoberturaInstrumenter.InstrumentationResult res = coberturaInstrumenter
 								.instrumentClass(new ByteArrayInputStream(
-										entryBytes));
+										entryBytes), statementsToInstrument);
 						if (res != null) {
 //							logger.debug("Putting instrumented entry: "
 //									+ entry.getName());
@@ -294,19 +294,19 @@ public class CodeInstrumentationTask {
 		}
 	}
 
-	private void addInstrumentationToSingleClass(File file) {
+	private void addInstrumentationToSingleClass(File file, Set<Integer> statementsToInstrument) {
 //		logger.info("Instrumenting: " + file.getAbsolutePath() + " to "
 //				+ destinationDirectory);
-		coberturaInstrumenter.addInstrumentationToSingleClass(file);
+		coberturaInstrumenter.addInstrumentationToSingleClass(file, statementsToInstrument);
 	}
 
 	// TODO: Don't attempt to instrument a file if the outputFile already
 	//       exists and is newer than the input file, and the output and
 	//       input file are in different locations?
-	private void addInstrumentation(CoberturaFile coberturaFile) {
+	private void addInstrumentation(CoberturaFile coberturaFile, Set<Integer> statementsToInstrument) {
 		if (coberturaFile.isClass()
 				&& classPattern.matches(coberturaFile.getPathname())) {
-			addInstrumentationToSingleClass(coberturaFile);
+			addInstrumentationToSingleClass(coberturaFile, statementsToInstrument);
 		} else if (coberturaFile.isDirectory()) {
 			String[] contents = coberturaFile.list();
 			for (String content : contents) {
@@ -315,7 +315,7 @@ public class CodeInstrumentationTask {
 				CoberturaFile relativeCoberturaFile = new CoberturaFile(
 						coberturaFile.getBaseDir(), relativeFile.toString());
 				//recursion!
-				addInstrumentation(relativeCoberturaFile);
+				addInstrumentation(relativeCoberturaFile, statementsToInstrument);
 			}
 		}
 	}

@@ -41,6 +41,27 @@ public class CoberturaStatementEncoding {
 		return (int) encodedStatement;
 	}
 
+	
+	
+	public static int generateUniqueRepresentationForStatement(int classId, int counterId) {
+		//        32 bits        
+		// class id | counter id
+		return (classId << COUNTER_ID_BITS) 
+				| counterId;
+	}
+	
+	public static int getClassId(int encodedStatement) {
+		// push everything to the right (fills up with 0s)
+		return (int) (encodedStatement >>> (COUNTER_ID_BITS));
+	}
+	
+	public static int getCounterId(int encodedStatement) {
+		// push out the class id and then push everything back (fills up with 0s)
+		return (int) ((encodedStatement << CLASS_ID_BITS) >>> (CLASS_ID_BITS));
+	}
+	
+	
+	
 
 	// store the starting and ending statements in a single long value!
 	// should represent a sub trace uniquely!

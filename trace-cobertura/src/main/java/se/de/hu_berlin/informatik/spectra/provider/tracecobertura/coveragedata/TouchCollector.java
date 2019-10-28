@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LightClassmapListener;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -175,12 +176,12 @@ public class TouchCollector {
 			throw new IllegalStateException("Execution traces are available, but sub trace map is empty.");
 		}
 		
-//		for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
-//			StringBuilder builder = new StringBuilder();
-//			for (String string : entry.getValue()) {
-//				builder.append(string).append(",");
-//			}
-//			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
+//		for (Entry<Long, CompressedIntegerTrace> entry : projectData.getExecutionTraces().entrySet()) {
+////			StringBuilder builder = new StringBuilder();
+////			for (String string : entry.getValue()) {
+////				builder.append(string).append(",");
+////			}
+//			logger.debug("trace " + entry.getKey() + ": " + entry.getValue().toString());
 //		}
 //		logger.debug("===================  END OF REPORT  ======================== ");
 	}
@@ -328,52 +329,6 @@ public class TouchCollector {
 
 	}
 	
-	
-//	public static synchronized void applyTouchesOnProjectData2(
-//			ProjectData projectData, boolean collectExecutionTraces) {
-//		for (Class<?> c : registeredClasses.keySet()) {
-//			ClassData cd = projectData.getOrCreateClassData(c.getName());
-//			applyTouchesToSingleClassOnProjectData2(cd, c);
-//		}
-//		
-//		if (collectExecutionTraces) {
-//			projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
-////		for (Entry<Long, List<String>> entry : projectData.getExecutionTraces().entrySet()) {
-////			StringBuilder builder = new StringBuilder();
-////			for (String string : entry.getValue()) {
-////				builder.append(string).append(",");
-////			}
-////			logger.debug("trace " + entry.getKey() + ": " + builder.toString());
-////		}
-//			projectData.addIdToClassNameMap(ExecutionTraceCollector.getAndResetIdToClassNameMap());
-//		}
-//	}
-
-//	private static void applyTouchesToSingleClassOnProjectData2(
-//			final ClassData classData, final Class<?> c) {
-//		try {
-//			Method m0 = c.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
-//			m0.setAccessible(true);
-//			if(!m0.isAccessible()) {
-//				throw new Exception("'get and reset counters' method not accessible.");
-//			}
-//			final int[] res = (int[]) m0.invoke(null, new Object[]{});
-//			
-//			LightClassmapListener lightClassmap = 
-//					new ApplyToClassDataLightClassmapListener(classData, res);
-//			Method m = c.getDeclaredMethod(
-//					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
-//					LightClassmapListener.class);
-//			m.setAccessible(true);
-//			if(!m.isAccessible()) {
-//				throw new Exception("'classmap' method not accessible.");
-//			}
-//			m.invoke(null, lightClassmap);
-//		} catch (Exception e) {
-////			Log.err(MyTouchCollector.class, e, "Cannot apply touches");
-//		}
-//	}
-	
 	public static synchronized boolean resetTouchesOnRegisteredClasses() {
 		boolean allWorked = true;
 		for (Entry<Class<?>, Integer> c : registeredClasses.entrySet()) {
@@ -437,71 +392,4 @@ public class TouchCollector {
 		}
 	}
 
-	
-//	private static class MyApplyToClassDataLightClassmapListener implements LightClassmapListener {
-//		//private AtomicInteger idProvider=new AtomicInteger(0);
-//		private final MyClassData classData;
-//		private final int[] res;
-//
-//		public MyApplyToClassDataLightClassmapListener(MyClassData cd, int[] res) {
-//			classData = (MyClassData) cd;
-//			this.res = res;
-//		}
-//
-//		@Override
-//		public void setSource(String source) {
-//			classData.setSourceFileName(source);
-//		}
-//
-//		@Override
-//		public void setClazz(Class<?> clazz) {
-//		}
-//
-//		@Override
-//		public void setClazz(String clazz) {
-//		}
-//
-//		@Override
-//		public void putLineTouchPoint(int classLine, int counterId,
-//				String methodName, String methodDescription) {
-//			MyLineData ld = classData.addLine(classLine, methodName,
-//					methodDescription, res[counterId]);
-//			classData.getCounterIdToMyLineDataMap().put(counterId, ld);
-//			classData.getLineNumberToMyLineDataMap().put(classLine, ld);
-//		}
-//
-//		@Override
-//		public void putSwitchTouchPoint(int classLine, int maxBranches,
-//				int... counterIds) {
-//			//do nothing? TODO
-//			int sum = 0;
-//			for (int i = 0; i < counterIds.length; i++) {
-//				sum += counterIds[i];
-//			}
-//			MyLineData ld = getOrCreateLine(classLine, sum);
-//			classData.getLineNumberToMyLineDataMap().put(classLine, ld);
-//			for (int i = 0; i < counterIds.length; i++) {
-//				classData.getCounterIdToMyLineDataMap().put(counterIds[i], ld);
-//			}
-//		}
-//
-//		@Override
-//		public void putJumpTouchPoint(int classLine, int trueCounterId,
-//				int falseCounterId) {
-//			//do nothing? TODO
-//			MyLineData ld = getOrCreateLine(classLine, res[trueCounterId] + res[falseCounterId]);
-//			classData.getLineNumberToMyLineDataMap().put(classLine, ld);
-//			classData.getCounterIdToMyLineDataMap().put(trueCounterId, ld);
-//			classData.getCounterIdToMyLineDataMap().put(falseCounterId, ld);
-//		}
-//
-//		private MyLineData getOrCreateLine(int classLine, int hitCount) {
-//			MyLineData ld = classData.getMyLineData(classLine);
-//			if (ld == null) {
-//				ld = classData.addLine(classLine, null, null, hitCount);
-//			}
-//			return ld;
-//		}
-//
-//	}
 }
