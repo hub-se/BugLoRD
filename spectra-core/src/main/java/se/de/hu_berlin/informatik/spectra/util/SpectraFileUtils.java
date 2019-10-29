@@ -187,10 +187,6 @@ public class SpectraFileUtils {
 
 	/**
 	 * Saves a Spectra object to hard drive.
-	 * @param dummy
-	 * a dummy object of type T that is used for obtaining indexed identifiers;
-	 * if the dummy is null, then no index can be created and the result is
-	 * equal to calling the non-indexable version of this method
 	 * @param spectra
 	 * the Spectra object to save
 	 * @param output
