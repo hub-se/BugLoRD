@@ -19,12 +19,10 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor<ISpectra<T,?>, ISpectra<T,?>> {
 	
 	final private Path output;
-	final private T dummy;
 
-	public SaveSpectraModule(T dummy, final Path output) {
+	public SaveSpectraModule(final Path output) {
 		super();
 		this.output = output;
-		this.dummy = dummy;
 	}
 
 	/* (non-Javadoc)
@@ -37,7 +35,7 @@ public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor
 //			return null;
 //		} else {
 			Log.out(this, "Saving spectra...");
-			SpectraFileUtils.saveSpectraToZipFile(dummy, input, output, true, true, true);
+			SpectraFileUtils.saveSpectraToZipFile(input, output, true, true, true);
 //		}
 		return input;
 	}

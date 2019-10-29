@@ -210,10 +210,10 @@ public class SpectraFileUtilsTest extends TestSettings {
 //		}
 
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
-		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);
+		SpectraFileUtils.saveSpectraToZipFile(spectra, output1, true, false, true);
 		Log.out(this, "saved...");
 		
-		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
+		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadBlockSpectraFromZipFile(output1);
 		Log.out(this, "loaded...");
 		assertNotNull(spectra2.getIndexer());
 		failingTraces = spectra2.getFailingTraces();
@@ -238,16 +238,16 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertEquals(spectra, spectra2);
 		
 		Path output2 = Paths.get(getStdTestDir(), "spectra2_block.zip");
-		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, false, true);
+		SpectraFileUtils.saveSpectraToZipFile(spectra2, output2, true, false, true);
 		Log.out(this, "saved indexed...");
-		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
+		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadBlockSpectraFromZipFile(output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra3);
 		 
 		Path output3 = Paths.get(getStdTestDir(), "spectra3_block.zip");
-		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, false);
+		SpectraFileUtils.saveSpectraToZipFile(spectra2, output3, true, false, false);
 		Log.out(this, "saved non-indexed...");
-		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
+		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadBlockSpectraFromZipFile(output3);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra4);
 		
@@ -261,7 +261,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 	@Test
 	public void testBlockSpectraReadingAndWriting2() throws ZipException {
 		Path output1 = Paths.get(getStdResourcesDir(), "Chart-22b.zip");
-		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
+		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadBlockSpectraFromZipFile(output1);
 		Log.out(this, "loaded...");
 		assertNotNull(spectra2.getIndexer());
 		Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra2.getFailingTraces();
@@ -286,9 +286,9 @@ public class SpectraFileUtilsTest extends TestSettings {
 //        assertEquals(spectra, spectra2);
 //		
 		Path output2 = Paths.get(getStdTestDir(), "Chart22_block.zip");
-		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, false, true);
+		SpectraFileUtils.saveSpectraToZipFile(spectra2, output2, true, false, true);
 		Log.out(this, "saved indexed...");
-		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
+		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadBlockSpectraFromZipFile(output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra3);
 //		 
@@ -325,10 +325,10 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertEquals(2, trace.getInvolvedNodes().size());
 		
 		Path output1 = Paths.get(getStdTestDir(), "count_spectra_block.zip");
-		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, false, true);
+		SpectraFileUtils.saveSpectraToZipFile(spectra, output1, true, false, true);
 		Log.out(this, "saved...");
 		
-		CountSpectra<SourceCodeBlock> spectra2 = SpectraFileUtils.loadCountSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
+		CountSpectra<SourceCodeBlock> spectra2 = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output1);
 		Log.out(this, "loaded...");
 		failingTraces = spectra2.getFailingTraces();
         assertNotNull(failingTraces);
@@ -340,16 +340,16 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertEquals(spectra, spectra2);
 		
 		Path output2 = Paths.get(getStdTestDir(), "count_spectra2_block.zip");
-		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, false, true);
+		SpectraFileUtils.saveSpectraToZipFile(spectra2, output2, true, false, true);
 		Log.out(this, "saved indexed...");
-		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
+		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadBlockSpectraFromZipFile(output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra3);
 		 
 		Path output3 = Paths.get(getStdTestDir(), "count_spectra3_block.zip");
-		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, false);
+		SpectraFileUtils.saveSpectraToZipFile(spectra2, output3, true, false, false);
 		Log.out(this, "saved non-indexed...");
-		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
+		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadBlockSpectraFromZipFile(output3);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra4);
 		
@@ -367,11 +367,11 @@ public class SpectraFileUtilsTest extends TestSettings {
         ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(Paths.get(getStdResourcesDir(), "spectra.zip"));
         
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block.csv");
-		SpectraFileUtils.saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output1, false, true);
+		SpectraFileUtils.saveSpectraToCsvFile(spectra, output1, false, true);
 		Log.out(this, "saved...");
 		
 		Path output2 = Paths.get(getStdTestDir(), "spectra2_block.csv");
-		SpectraFileUtils.saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output2, true, true);
+		SpectraFileUtils.saveSpectraToCsvFile(spectra, output2, true, true);
 		Log.out(this, "saved...");
 		
 		assertTrue(output1.toFile().exists());
@@ -397,10 +397,10 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertFalse(trace.isSuccessful());
 		
 		Path output1 = Paths.get(getStdTestDir(), "spectra_block_sp.zip");
-		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output1, true, true, true);
+		SpectraFileUtils.saveSpectraToZipFile(spectra, output1, true, true, true);
 		Log.out(this, "saved...");
 		
-		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
+		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadBlockSpectraFromZipFile(output1);
 		Log.out(this, "loaded...");
 		failingTraces = spectra2.getFailingTraces();
         assertNotNull(failingTraces);
@@ -412,16 +412,16 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertEquals(spectra, spectra2);
 		
 		Path output2 = Paths.get(getStdTestDir(), "spectra2_block_sp.zip");
-		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output2, true, true, true);
+		SpectraFileUtils.saveSpectraToZipFile(spectra2, output2, true, true, true);
 		Log.out(this, "saved indexed...");
-		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output2);
+		ISpectra<SourceCodeBlock, ?> spectra3 = SpectraFileUtils.loadBlockSpectraFromZipFile(output2);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra3);
 		
 		Path output3 = Paths.get(getStdTestDir(), "spectra3_block_sp.zip");
-		SpectraFileUtils.saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra2, output3, true, false, true);
+		SpectraFileUtils.saveSpectraToZipFile(spectra2, output3, true, false, true);
 		Log.out(this, "saved non-indexed...");
-		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output3);
+		ISpectra<SourceCodeBlock, ?> spectra4 = SpectraFileUtils.loadBlockSpectraFromZipFile(output3);
 		Log.out(this, "loaded...");
 		assertEquals(spectra2, spectra4);
 		

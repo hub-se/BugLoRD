@@ -25,12 +25,10 @@ public class SpectraSaveProcessor extends AbstractConsumingProcessor<ISpectra<So
 	public void consumeItem(ISpectra<SourceCodeBlock, ?> item) throws UnsupportedOperationException {
 		new ModuleLinker().append(
 				// new BuildCoherentSpectraModule(),
-                new SaveSpectraModule<>(SourceCodeBlock.DUMMY,
-                        Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
+                new SaveSpectraModule<>(Paths.get(outputDir, BugLoRDConstants.SPECTRA_FILE_NAME)),
 				// new TraceFileModule<SourceCodeBlock>(outputDir),
 				new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO),
-                new SaveSpectraModule<>(SourceCodeBlock.DUMMY,
-                        Paths.get(outputDir, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME)))
+                new SaveSpectraModule<>(Paths.get(outputDir, BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME)))
 				.submit(item);
 	}
 

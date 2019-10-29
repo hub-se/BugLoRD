@@ -107,8 +107,7 @@ final public class Coverage2Ranking {
 				new XMLCoverageWrapperModule(),
 				new AddXMLCoverageToProviderAndGenerateSpectraModule(null, true).asPipe().enableTracking(50)
 						.allowOnlyForcedTracks(),
-				new SaveSpectraModule<>(SourceCodeBlock.DUMMY,
-						Paths.get(outputDir, "spectraCompressed.zip")),
+				new SaveSpectraModule<>(Paths.get(outputDir, "spectraCompressed.zip")),
 				new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir), null),
 				new RankingModule<SourceCodeBlock>(options.hasOption(CmdOptions.SIMILARITY_SBFL)
 						? ComputationStrategies.SIMILARITY_FL : ComputationStrategies.STANDARD_SBFL, outputDir,
