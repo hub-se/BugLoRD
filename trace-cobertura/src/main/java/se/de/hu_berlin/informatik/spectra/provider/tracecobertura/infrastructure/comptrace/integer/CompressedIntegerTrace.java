@@ -234,7 +234,8 @@ public class CompressedIntegerTrace extends RepetitionMarkerBase implements Seri
 		MyBufferedIntIterator inputTraceIterator = trace.iterator();
 		
 		// mapping from elements to their most recent positions in the result list
-		Map<Integer,List<Integer>> elementToPositionMap = new HashMap<>();
+		BufferedMap<List<Integer>> elementToPositionMap = new BufferedMap<>(trace.getOutputDir(), 
+				"pos_" + UUID.randomUUID().toString(), 1000, true);
 		while (!trace.isEmpty()) {
 			int element = trace.remove();
 
@@ -319,6 +320,7 @@ public class CompressedIntegerTrace extends RepetitionMarkerBase implements Seri
 			}
 		}
 
+		elementToPositionMap.clear();
 		if (!traceRepetitions.isEmpty()) {
 			traceRepetitions.sleep();
 			addRepetitionMarkers(traceRepetitions, originalTraceSize);

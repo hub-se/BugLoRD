@@ -350,7 +350,7 @@ public class BufferedArrayQueueTest {
 		Assert.assertEquals(0, queue.size());
 	}
 	
-	private static final int NUM_INTS = 5000000;
+	private static final int NUM_INTS = 500000;
 	private static final int NUM_REPS = 100;
 
 	@Test
