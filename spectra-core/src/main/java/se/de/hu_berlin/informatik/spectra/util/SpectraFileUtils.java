@@ -180,10 +180,10 @@ public class SpectraFileUtils {
 		return buffer.toString();
 	}
 
-	public static void saveBlockSpectraToZipFile(ISpectra<SourceCodeBlock, ?> spectra, Path output, boolean compress,
-			boolean sparse, boolean index) {
-		saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output, compress, sparse, index);
-	}
+//	public static void saveBlockSpectraToZipFile(ISpectra<SourceCodeBlock, ?> spectra, Path output, boolean compress,
+//			boolean sparse, boolean index) {
+//		saveSpectraToZipFile(SourceCodeBlock.DUMMY, spectra, output, compress, sparse, index);
+//	}
 
 	/**
 	 * Saves a Spectra object to hard drive.
@@ -206,44 +206,53 @@ public class SpectraFileUtils {
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 */
-	public static <T extends Indexable<T>> void saveSpectraToZipFile(T dummy, ISpectra<T, ?> spectra, Path output,
+	public static <T> void saveSpectraToZipFile(ISpectra<T, ?> spectra, Path output,
 			boolean compress, boolean sparse, boolean index) {
-		if (dummy == null) {
+		
+		// check if identifier can be indexed
+		T identifier = null;
+		Iterator<INode<T>> iterator = spectra.getNodes().iterator();
+		if (iterator.hasNext()) {
+			identifier = iterator.next().getIdentifier();
+		}
+		
+		if (identifier instanceof Indexable) {
+			Log.out(SpectraFileUtils.class, "Saving spectra in '%s'", output);
+			
+			// if (spectra.getTraces().size() == 0 || spectra.getNodes().size() ==
+			// 0) {
+			// Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
+			// return;
+			// }
+
+			// (the following would not be necessary, as long as the ordering stays the same throughout processing)
+			// make sure that the nodes are ordered by index
+			List<INode<T>> nodes = spectra.getNodes().stream().sorted(comparingInt(INode::getIndex))
+					.collect(Collectors.toList());
+			
+//			Collection<INode<T>> nodes = spectra.getNodes();
+			
+			Map<String, Integer> map = new HashMap<>();
+
+			@SuppressWarnings("unchecked")
+			String nodeIdentifiers = getIdentifierString((Indexable<T>) identifier, index, nodes, map);
+			String traceIdentifiers = getTraceIdentifierListString(spectra.getTraces());
+
+			saveSpectraToZipFile(spectra, output, compress, sparse, index, nodes, map, nodeIdentifiers, traceIdentifiers);
+		} else {
 			saveSpectraToZipFile(spectra, output, compress, sparse);
 			return;
 		}
-
-		Log.out(SpectraFileUtils.class, "Saving spectra in '%s'", output);
-		
-		// if (spectra.getTraces().size() == 0 || spectra.getNodes().size() ==
-		// 0) {
-		// Log.err(SpectraFileUtils.class, "Can not save empty spectra...");
-		// return;
-		// }
-
-		// (the following would not be necessary, as long as the ordering stays the same throughout processing)
-		// make sure that the nodes are ordered by index
-		List<INode<T>> nodes = spectra.getNodes().stream().sorted(comparingInt(INode::getIndex))
-				.collect(Collectors.toList());
-		
-//		Collection<INode<T>> nodes = spectra.getNodes();
-		
-		Map<String, Integer> map = new HashMap<>();
-
-		String nodeIdentifiers = getIdentifierString(dummy, index, nodes, map);
-		String traceIdentifiers = getTraceIdentifierListString(spectra.getTraces());
-
-		saveSpectraToZipFile(spectra, output, compress, sparse, index, nodes, map, nodeIdentifiers, traceIdentifiers);
 	}
 
-	private static <T extends Indexable<T>> String getIdentifierString(T dummy, boolean index,
-			Collection<INode<T>> nodes, Map<String, Integer> map) {
+	private static <T> String getIdentifierString(Indexable<T> identifier, boolean index,
+			List<INode<T>> nodes, Map<String, Integer> map) {
 		StringBuilder buffer = new StringBuilder();
 		if (index) {
 			// store the identifiers in indexed (shorter) format (order is
 			// important)
 			for (INode<T> node : nodes) {
-				buffer.append(dummy.getIndexedIdentifier(node.getIdentifier(), map)).append(IDENTIFIER_DELIMITER);
+				buffer.append(identifier.getIndexedIdentifier(node.getIdentifier(), map)).append(IDENTIFIER_DELIMITER);
 			}
 		} else {
 			// store the identifiers (order is important)
@@ -840,6 +849,10 @@ public class SpectraFileUtils {
 		return loadSpectraFromZipFile(zip, status, lineArray);
 	}
 
+	public static CountSpectra<SourceCodeBlock> loadBlockCountSpectraFromZipFile(Path zipFilePath) {
+		return loadCountSpectraFromZipFile(SourceCodeBlock.DUMMY, zipFilePath);
+	}
+	
 	/**
 	 * Loads a Spectra object from a zip file.
 	 * @param dummy
@@ -1576,15 +1589,11 @@ public class SpectraFileUtils {
 
 	public static void saveBlockSpectraToCsvFile(ISpectra<SourceCodeBlock, ?> spectra, Path output,
 			boolean biclusterFormat, boolean shortened) {
-		saveSpectraToCsvFile(SourceCodeBlock.DUMMY, spectra, output, biclusterFormat, shortened);
+		saveSpectraToCsvFile(spectra, output, biclusterFormat, shortened);
 	}
 
 	/**
 	 * Saves a Spectra object to hard drive as a matrix.
-	 * @param dummy
-	 * a dummy object of type T that is used for obtaining indexed identifiers;
-	 * if the dummy is null, then no index can be created and the result is
-	 * equal to calling the non-indexable version of this method
 	 * @param spectra
 	 * the Spectra object to save
 	 * @param output
@@ -1596,7 +1605,7 @@ public class SpectraFileUtils {
 	 * @param <T>
 	 * the type of nodes in the spectra
 	 */
-	public static <T extends Comparable<T> & Shortened & Indexable<T>> void saveSpectraToCsvFile(T dummy,
+	public static <T extends Comparable<T> & Shortened & Indexable<T>> void saveSpectraToCsvFile(
 			ISpectra<T, ?> spectra, Path output, boolean biclusterFormat, boolean shortened) {
 		if (spectra.getTraces().size() == 0 || spectra.getNodes().size() == 0) {
 			Log.err(SpectraFileUtils.class, "Can not save empty spectra...");

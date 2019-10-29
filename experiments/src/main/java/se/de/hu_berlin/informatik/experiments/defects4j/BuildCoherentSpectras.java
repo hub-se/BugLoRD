@@ -148,7 +148,7 @@ public class BuildCoherentSpectras {
 			spectra = new BuildCoherentSpectraModule().submit(spectra).getResult();
 			
 			//save the coherent full spectra
-			new SaveSpectraModule<>(SourceCodeBlock.DUMMY, spectraFile).submit(spectra);
+			new SaveSpectraModule<>(spectraFile).submit(spectra);
 
 			//generate the filtered coherent spectra
 			//(building a coherent spectra from an already filtered spectra may yield wrong results
@@ -156,7 +156,7 @@ public class BuildCoherentSpectras {
 			spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
 			
 			//save the filtered spectra
-			new SaveSpectraModule<>(SourceCodeBlock.DUMMY, spectraFileFiltered).submit(spectra);
+			new SaveSpectraModule<>(spectraFileFiltered).submit(spectra);
 
 			return input;
 		}
