@@ -117,7 +117,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 					NodeType nodeType = NodeType.NORMAL;
 					switch (specialIndicatorId) {
 					case CoberturaStatementEncoding.SWITCH_ID:
-						nodeType = NodeType.FALSE_BRANCH;
+						nodeType = NodeType.SWITCH_BRANCH;
 						break;
 					case CoberturaStatementEncoding.BRANCH_ID:
 						nodeType = NodeType.FALSE_BRANCH;

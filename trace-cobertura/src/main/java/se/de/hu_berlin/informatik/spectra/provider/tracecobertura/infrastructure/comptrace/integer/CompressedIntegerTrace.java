@@ -8,12 +8,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue.MyBufferedIntIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerBase;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerBufferedMap;
@@ -234,16 +236,17 @@ public class CompressedIntegerTrace extends RepetitionMarkerBase implements Seri
 		MyBufferedIntIterator inputTraceIterator = trace.iterator();
 		
 		// mapping from elements to their most recent positions in the result list
-		BufferedMap<List<Integer>> elementToPositionMap = new BufferedMap<>(trace.getOutputDir(), 
-				"pos_" + UUID.randomUUID().toString(), 1000, true);
+		Map<Integer,Queue<Integer>> elementToPositionMap = new HashMap<>();
+		
+		System.out.println("compressing... (" + trace.size() + ")");
 		while (!trace.isEmpty()) {
 			int element = trace.remove();
 
 			// check for repetition of the current element
-			List<Integer> positions = elementToPositionMap.get(element);
+			Queue<Integer> positions = elementToPositionMap.get(element);
 			if (positions == null) {
 				// no repetition: remember node containing the element
-				List<Integer> list = new ArrayList<>();
+				Queue<Integer> list = new SingleLinkedArrayQueue<>(5);
 				list.add(traceWithoutRepetitions.size());
 				elementToPositionMap.put(element, list);
 				// build up the result trace on the fly
@@ -316,6 +319,8 @@ public class CompressedIntegerTrace extends RepetitionMarkerBase implements Seri
 					positions.add(traceWithoutRepetitions.size());
 					// build up the result trace on the fly
 					traceWithoutRepetitions.add(element);
+				} else {
+					positions.clear();
 				}
 			}
 		}

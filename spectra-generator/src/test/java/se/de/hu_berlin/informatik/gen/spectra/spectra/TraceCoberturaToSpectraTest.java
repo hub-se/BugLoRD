@@ -26,10 +26,13 @@ import org.junit.rules.ExpectedException;
 
 import java_cup.internal_error;
 import se.de.hu_berlin.informatik.gen.spectra.main.TraceCoberturaSpectraGenerator;
+import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -165,6 +168,39 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 						involvedInExecutionTraces.contains(nodeIndex));
 				}
 			}
+			
+			// iterate over execution traces
+			for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
+				// iterate over the compressed trace (should contain all executed node IDs)
+				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
+				while (baseIterator.hasNext()) {
+					// execution trace is composed of indexed sequences of subtrace IDs
+					int subTraceSequenceIndex = baseIterator.next();
+					// iterate over the sub trace ID sequences using the indexer
+					Iterator<Integer> subTraceIdIterator = spectra.getIndexer().getSubTraceIDSequenceIterator(subTraceSequenceIndex);
+					while (subTraceIdIterator.hasNext()) {
+						Integer subTraceId = subTraceIdIterator.next();
+						IntTraceIterator  nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
+						int special_counter = 0;
+						while (nodeIdIterator.hasNext()) {
+							int nodeId = nodeIdIterator.next();
+							INode<SourceCodeBlock> node = spectra.getNode(nodeId);
+							if (!node.getIdentifier().getNodeType().equals(NodeType.NORMAL)) {
+								++special_counter;
+							}
+						}
+						if (special_counter > 1) {
+							nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
+							while (nodeIdIterator.hasNext()) {
+								int nodeIndex = nodeIdIterator.next();
+								System.out.println(nodeIndex + ": " + spectra.getNode(nodeIndex).getIdentifier());
+							}
+						}
+						// check if all sub traces contain at most 1 special node (branch/switch/jump)
+						assertTrue("special node count: " + special_counter, special_counter <= 1);
+					}
+				}
+			}
 		}
 	}
 
@@ -282,6 +318,26 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 //	@Test
 	public void testGenerateRankingForLang8() {
 		testNormalExecution(new TestProjects.Lang8b(), "reportLang8b", true);
+	}
+	
+	/**
+	 * Test method for .
+	 */
+	@Test
+	public void testGenerateRankingForLang10() {
+		testNormalExecution(new TestProjects.Lang10b(), "reportLang10b", true);
+	}
+	
+	@Test
+	public void testGenerateRankingForLang10TestList() {
+		testOnProjectWithTestList(new TestProjects.Lang10b(), "reportLang10bTestList", 
+				10000L, 1, false, false, false, true, "lang10tests.txt");
+	}
+	
+	@Test
+	public void testGenerateRankingForLang10TestListSmall() {
+		testOnProjectWithTestList(new TestProjects.Lang10b(), "reportLang10bTestListSmall", 
+				10000L, 1, false, false, false, true, "lang10testsSmall.txt");
 	}
 	
 	/**

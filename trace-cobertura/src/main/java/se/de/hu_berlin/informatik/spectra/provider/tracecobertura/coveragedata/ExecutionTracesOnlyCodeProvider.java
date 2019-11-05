@@ -27,11 +27,20 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	public void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
 			String className, int classId) {
-		if (shouldNotBeInstrumented(classId, lastJumpIdVariableIndex)) {
+		if (shouldNotBeInstrumented(classId, lastJumpIdVariableIndex)) { //TODO
 			return;
 		}
 		// false branch?! (we skipped the true branch jump and continue in 'else' construct or after if-statement)
 		if (collectExecutionTrace) {
+//			if (lastJumpIdVariableIndex == 233) {
+//				System.out.println(classId + ":" + lastJumpIdVariableIndex);
+//			}
+
+			// check if value of jump variable is not 0 (fake jump)
+			nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
+			Label afterJump = new Label();
+			nextMethodVisitor.visitJumpInsn(Opcodes.IFEQ, afterJump);
+			
 			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
 			// load the counter id of the last stored/remembered branching statement (before jump)
@@ -39,6 +48,12 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "variableAddStatementToExecutionTraceAndIncrementCounter",
 					"(II)V");
+			
+			generateCodeThatZeroJumpCounterIdVariable(nextMethodVisitor,
+					lastJumpIdVariableIndex);
+			generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+			
+			nextMethodVisitor.visitLabel(afterJump);
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
@@ -122,13 +137,13 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			return;
 		}
 		if (collectExecutionTrace) {
-			generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
 			nextMethodVisitor.visitLdcInsn(counterId);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "switchAddStatementToExecutionTraceAndIncrementCounter",
 					"(II)V");
+			generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
