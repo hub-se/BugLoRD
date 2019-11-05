@@ -24,7 +24,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
-	public final static int EXECUTION_TRACE_CHUNK_SIZE = 1000000;
+	public final static int EXECUTION_TRACE_CHUNK_SIZE = 2000000;
 	public final static int MAP_CHUNK_SIZE = 500000;
 	public static final int SUBTRACE_ARRAY_SIZE = 100;
 	
@@ -630,8 +630,10 @@ public class ExecutionTraceCollector {
 //		for (Entry<String, Integer> entry : TouchCollector.registeredClassesStringsToIdMap.entrySet()) {
 //			System.out.println("key: " + entry.getKey() + ", id: " + entry.getValue());
 //		}
-//
-//		System.out.println(classId + ":" + counterId);
+
+//		if (classId == 142) {
+//		System.out.println(classId + ":" + counterId + ":" + specialIndicatorId);
+//		}
 
 		// add the statement to the sub trace
 		subTrace.add(CoberturaStatementEncoding

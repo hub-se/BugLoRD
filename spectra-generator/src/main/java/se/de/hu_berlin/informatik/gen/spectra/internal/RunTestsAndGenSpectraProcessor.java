@@ -28,6 +28,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ParentLastClassLoader;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
+import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
@@ -130,6 +131,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 		if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) { //has option "tc"
 			testFile = options.isFile(CmdOptions.TEST_CLASS_LIST, true);
 			
+			Path testOutputFile = Paths.get(outputDir, "minedTests.txt");
 			linker.append(
                     new FileLineProcessor<>(new StringProcessor<String>() {
                         private final Set<String> seenClasses = new HashSet<>();
@@ -160,7 +162,8 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
                             return temp;
                         }
                     }),
-					new TestMinerProcessor(testClassLoader, false));
+					new TestMinerProcessor(testClassLoader, false),
+					new StringsToFileWriter<TestWrapper>(testOutputFile , true));
 		} else { //has option "t"
 			testFile = options.isFile(CmdOptions.TEST_LIST, true);
 			
@@ -170,6 +173,9 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 
                         @Override
                         public boolean process(String testNameAndClass) {
+                        	if (testNameAndClass.startsWith("#")) {
+                        		return false;
+                        	}
                             //format: test.class::testName
                             final String[] test = testNameAndClass.split("::");
                             if (test.length != 2) {

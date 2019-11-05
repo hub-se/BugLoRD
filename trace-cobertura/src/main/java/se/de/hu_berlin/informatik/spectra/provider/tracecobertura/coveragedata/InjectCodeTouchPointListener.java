@@ -2,6 +2,9 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TouchPointListener;
 
 import java.util.Map;
@@ -13,8 +16,8 @@ import java.util.Map;
  * @author piotr.tabor@gmail.com
  */
 public class InjectCodeTouchPointListener implements TouchPointListener {
-//	private final static Logger logger = LoggerFactory
-//			.getLogger(InjectCodeTouchPointListener.class);
+	private final static Logger logger = LoggerFactory
+			.getLogger(InjectCodeTouchPointListener.class);
 	/**
 	 * Component that is responsible for generation of the snippets
 	 */
@@ -94,6 +97,10 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			int currentLine, MethodVisitor mv, String conditionType) {
 		Integer switchCounterId = classMap.getCounterIdForSwitch(eventId);
 		if (switchCounterId != null) {
+//			if (switchCounterId == 233) {
+//				logger.debug("switch going to event(" + eventId + "):"
+//						+ switchCounterId + ", line " + currentLine + ", counter id " + lastJumpIdVariableIndex);
+//				}
 			codeProvider.generateCodeThatSetsJumpCounterIdVariable(mv,
 					switchCounterId, lastJumpIdVariableIndex);
 		}
@@ -105,24 +112,14 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	 * This way we are incrementing the 'false' branch of the condition. </p>
 	 * 
 	 * <p>If the label is SWITCH destination, we check all switch 
-	 * instructions that have targets in the label we generate
+	 * instructions that have targets in the label. we generate
 	 * code that checks if the 'internal variable' is equal to id 
 	 * of considered switch and if so increments counterId connected to the switch. </p>
 	 */
 	@Override
 	public void afterLabel(int eventId, Label label, int currentLine,
 			MethodVisitor mv) {
-//		logger.debug("Looking for jumps going to event(" + eventId + "):"
-//				+ label + " ");
-		if (classMap.isJumpDestinationLabel(eventId)) {
-//			logger.debug("jump going to event(" + eventId + "):"
-//			+ label + ", line " + currentLine);
-			codeProvider
-					.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
-							mv, lastJumpIdVariableIndex, 
-							classMap.getClassName(), classMap.getClassId());
-			codeProvider.generateCodeThatProcessesLastSubtrace(mv);
-		}
+
 
 //		logger.debug("label to event(" + eventId + "):"
 //				+ label + ", line " + currentLine);
@@ -133,6 +130,10 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			/*map of counterId of a switch into counterId of the branch of the switch*/
 			for (Map.Entry<Integer, Integer> entry : branchTouchPoints
 					.entrySet()) {
+//				if (classMap.getClassId() == 142) {
+//					logger.debug("jumpswitch going to event(" + eventId + "):"
+//							+ label + ", line " + currentLine + ", counter id " + lastJumpIdVariableIndex);
+//				}
 				codeProvider
 						.generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
 								mv, entry.getKey(), entry.getValue(),
@@ -141,9 +142,30 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			}
 		}
 
+		// ATTENTION: moved the following code block from the start of the method to here.
+		// the idea is to first check if we came from a switch statement. after that,
+		// we can still check for jumps, if this was not the case.
+		// I'm not sure why this was done this way, but it leads to incrementing the
+		// counter assigned to the switch which has no further relevance other than
+		// to connect the case labels to the switch statement, apparently... 
+		
+		//		logger.debug("Looking for jumps going to event(" + eventId + "):"
+		//		+ label + " ");
 		if (classMap.isJumpDestinationLabel(eventId)) {
-			codeProvider.generateCodeThatZeroJumpCounterIdVariable(mv,
-					lastJumpIdVariableIndex);
+//			if (classMap.getClassId() == 142) {
+//				logger.debug("jump going to event(" + eventId + "):"
+//						+ label + ", line " + currentLine + ", counter id " + lastJumpIdVariableIndex);
+//			}
+			codeProvider
+			.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
+					mv, lastJumpIdVariableIndex, 
+					classMap.getClassName(), classMap.getClassId());
+//			codeProvider.generateCodeThatProcessesLastSubtrace(mv);
+//		}
+//
+//		if (classMap.isJumpDestinationLabel(eventId)) {
+//			codeProvider.generateCodeThatZeroJumpCounterIdVariable(mv,
+//					lastJumpIdVariableIndex);
 		}
 		
 		if (classMap.isCatchBlockLabel(eventId)) {

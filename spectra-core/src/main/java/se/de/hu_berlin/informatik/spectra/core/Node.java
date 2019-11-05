@@ -17,9 +17,10 @@ public class Node<T> implements INode<T> {
 	public static enum NodeType {
 		NORMAL("N"),
 		TRUE_BRANCH("T"),
-		FALSE_BRANCH("F");
-//		SWITCH_DEFAULT_BRANCH("D"),
-//		SWITCH_BRANCH("S");
+		FALSE_BRANCH("F"),
+		SWITCH_BRANCH("S");
+//		SWITCH_DEFAULT_BRANCH("D");
+		
 		
 		private String identifier;
 		private NodeType(String identifier) {

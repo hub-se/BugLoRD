@@ -316,6 +316,8 @@ public class CompressedLongTrace extends RepetitionMarkerBase implements Seriali
 					positions.add(traceWithoutRepetitions.size());
 					// build up the result trace on the fly
 					traceWithoutRepetitions.add(element);
+				} else {
+					positions.clear();
 				}
 			}
 		}

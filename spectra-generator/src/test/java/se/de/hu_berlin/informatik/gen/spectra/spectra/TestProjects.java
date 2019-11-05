@@ -95,6 +95,36 @@ public class TestProjects extends TestSettings {
 
 	}
 	
+	public static class Lang10b extends AbstractTestProject {
+
+		private static final String testCP = getStdResourcesDir() + File.separator + "Lang10b/target/classes" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang10b/target/tests" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang10b/lib/junit-4.11.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang10b/lib/easymock.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang10b/lib/commons-io.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang10b/lib/cglib.jar" + File.pathSeparator
+				+ getStdResourcesDir() + File.separator + "Lang10b/lib/asm.jar";
+
+		private final ArrayList<String> failingTests = new ArrayList<>();
+
+		public Lang10b() {
+			super(getStdResourcesDir() + File.separator + "Lang10b", 
+					"src", 
+					"target" + File.separator + "classes", 
+					"target" + File.separator + "tests", 
+					testCP,
+					"test_classes.txt");
+			failingTests.add("org.apache.commons.lang3.time.FastDateFormat_ParserTest::testLANG_831");
+			failingTests.add("org.apache.commons.lang3.time.FastDateParserTest::testLANG_831");
+		}
+
+		@Override
+		public ArrayList<String> getFailingTests() {
+			return failingTests;
+		}
+
+	}
+	
 	public static class Mockito12b  extends AbstractTestProject {
 
 		private static final String testCP = getStdResourcesDir() + File.separator + "Mockito12b/lib/junit-4.11.jar" + File.pathSeparator

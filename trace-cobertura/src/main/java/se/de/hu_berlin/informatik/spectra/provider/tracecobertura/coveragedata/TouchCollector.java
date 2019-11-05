@@ -299,7 +299,7 @@ public class TouchCollector {
 		public void putSwitchTouchPoint(int classLine, int maxBranches,
 				int... counterIds) {
 //			if (classData.getName().equals("com.google.javascript.jscomp.FunctionInjector$CallSiteType")) {
-//				logger.debug("put a switch touch point");
+//				logger.debug("put a switch touch point at " + classLine);
 //			}
 			updateLine(classLine);
 			LineData ld = classData.addLineWithNoMethodName(classLine);
@@ -308,6 +308,7 @@ public class TouchCollector {
 					counterIds.length - 2, maxBranches);
 			for (int i = 0; i < counterIds.length; i++) {
 				ld.touchSwitch(switchId, i - 1, res == null ? 0 : res[counterIds[i]]);
+//				System.out.print(counterIds[i]+ ",");
 //				classData.getCounterIdToLineNumberMap().put(counterIds[i], classLine);
 			}
 		}

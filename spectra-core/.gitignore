@@ -13,6 +13,7 @@ hs_err_pid*
 
 # temp directories
 target/
+execTraceTemp/
 test-output/
 logs/
 .idea/
