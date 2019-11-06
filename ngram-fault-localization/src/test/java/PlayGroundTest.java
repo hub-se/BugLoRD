@@ -17,6 +17,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
@@ -24,6 +25,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -112,20 +114,51 @@ public class PlayGroundTest extends TestSettings {
 	
 	@Test
 	public void testBlockSpectraReadingAndWriting2() throws ZipException {
-		Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed_filtered.zip");
+		Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
 
-		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, output1);
-		Log.out(this, "loaded...");
-		assertNotNull(spectra2.getIndexer());
-		Collection<? extends ITrace<SourceCodeBlock>> failingTraces = spectra2.getFailingTraces();
-		assertNotNull(failingTraces);
-		assertEquals(2, failingTraces.size());
-		for(ITrace<SourceCodeBlock> trace : failingTraces){
-			Log.out(this,"trace identifier= "+ trace.getIdentifier());
+		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output1);
+		Log.out(this, "spectra nodes count "+spectra.getNodes().size() +"\n \n");
+		Collection<INode<SourceCodeBlock>> nodes = spectra.getNodes();
+
+
+		for(ITrace<SourceCodeBlock> elem : spectra.getTraces()){
+			Log.out(this,"trace identifier = "+ elem.getIdentifier()+" and index nr = "+elem.getIndex()+" success? = "+ elem.isSuccessful()  +"\n");
+
+			Log.out(this,"involved nodes count = "+ elem.involvedNodesCount() +"\n"+Arrays.toString(elem.getInvolvedNodes().toArray()) +"\n");
+			Collection<ExecutionTrace> exes = elem.getExecutionTraces();
+			Log.out(this, "contains "+ exes.size() + " traces");
+			int sum = 0;
+			for (ExecutionTrace ex : exes){
+				System.out.println(elem.getIdentifier() + " -> eTrace:");
+				Iterator<Integer> nodeIdIterator = ex.mappedIterator(spectra.getIndexer());
+				int i = 0;
+				int m = 0;
+				int t = 0;
+				while (nodeIdIterator.hasNext()) {
+					t++;
+					int nodeIndex = nodeIdIterator.next();
+
+					if (spectra.getNode(nodeIndex) == null){
+//						System.out.println("nodeIndex "+ nodeIndex +" not found");
+						i++;
+					} else {
+						m++;
+						//System.out.println(nodeIndex + ": " + spectra.getNode(nodeIndex).getIdentifier().getShortIdentifier());
+					}
+
+				}
+				System.out.println(i +" nodeIDs of total "+ t +" not found! (ergo: "+ m +" found), trace.size() = "+ex.size());System.out.println();System.out.println();
+				sum+=t;
+			}
+			Log.out(this, "spectra nodes count "+spectra.getNodes().size() +" vs. "+ sum +" iterator steps");
 		}
-		// check the correct execution trace
-		//assertFalse(trace.getExecutionTraces().isEmpty());
-		//ExecutionTrace executionTrace1 = trace.getExecutionTraces().iterator().next();
+
+	}
+	@Test
+	public void testAccessSpectra() throws ZipException{
+		Path spectraZipFile = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
+
+		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 	}
 
 }

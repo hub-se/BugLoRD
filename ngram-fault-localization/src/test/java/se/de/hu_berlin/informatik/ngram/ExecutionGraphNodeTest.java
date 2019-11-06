@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings.getStdResourcesDir;
 
-class ExcGraphNodeTest {
+class ExecutionGraphNodeTest {
 
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
@@ -107,7 +107,8 @@ class ExcGraphNodeTest {
         ExecutionTrace trace;
         int i = 0;
         int count = 0;
-        ConcurrentHashMap<Integer, ExcGraphNode> nodeSeq = new ConcurrentHashMap<>();
+        long start = System.currentTimeMillis();
+        ConcurrentHashMap<Integer, ExecutionGraphNode> nodeSeq = new ConcurrentHashMap<>();
         HashSet<Integer> notInnerNodeInLEB = new HashSet<>();
         HashSet<Integer> loopLEB = new HashSet<>();
         HashSet<Integer> nodeInLEB = new HashSet<>();
@@ -125,7 +126,7 @@ class ExcGraphNodeTest {
 
                 while (nodeIdIterator.hasNext()) {
                     int nodeIndex = nodeIdIterator.next();
-                    nodeSeq.computeIfAbsent(nodeIndex, k -> new ExcGraphNode(nodeIndex));
+                    nodeSeq.computeIfAbsent(nodeIndex, k -> new ExecutionGraphNode(nodeIndex, spectra.getNode(nodeIndex).getIdentifier(), spectra));
                     //if not first node
                     if (lastId != 0) {
                         nodeSeq.get(nodeIndex).addInNode(lastId);
@@ -146,18 +147,24 @@ class ExcGraphNodeTest {
         }
         Log.out(this, "nodeSeq contains: "+nodeSeq.size() +" and # of steps: "+count);
         nodeSeq.forEach((integer, node) -> {
+
             if (node.checkInNode(integer)) {
-//                System.out.println("looped single LEB found: " + integer + " 's parents: "
-//                        + Arrays.toString(node.getInNodes().toArray())
-//                        + " and children: " + Arrays.toString(node.getOutNodes().toArray()));
+                System.out.println("looped single LEB found: " + integer + " 's parents: "
+                        + Arrays.toString(node.getInNodes().toArray())
+                        + " and children: " + Arrays.toString(node.getOutNodes().toArray()) +"\n\t" +
+                        " nodeEF = "+node.getEF());
                 loopLEB.add(integer);
             } else {
                 if (node.getInDegree() <= 1) {
 
-//                System.out.println("element of LEB found: " + integer + " 's parents: "
-//                        + Arrays.toString(node.getInNodes().toArray())
-//                        + " and children: " + Arrays.toString(node.getOutNodes().toArray()));
+
                     nodeInLEB.add(integer);
+
+                    if (node.getInDegree() == 0){
+                        System.out.println("starting node found: " + integer + " 's parents: "
+                                + Arrays.toString(node.getInNodes().toArray())
+                                + " and children: " + Arrays.toString(node.getOutNodes().toArray()));
+                    }
 
                 } else  {
 //                    System.out.println("single LEB with in and out degree > 1 found: " + integer + " 's parents: "
@@ -168,7 +175,9 @@ class ExcGraphNodeTest {
 
             }
         });
+        System.out.println("Time in total: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         Log.out(this,"there are "+notInnerNodeInLEB.size() +" not inner node of LEBs and "+loopLEB.size() +" looped and "+ nodeInLEB.size() + " inner nodes of LEBs");
+        System.out.println("bool = expression : " + (( 1 + 1 == 5)?3:4));
         assertEquals(nodeSeq.size(), notInnerNodeInLEB.size() + nodeInLEB.size() + loopLEB.size());
     }
 
