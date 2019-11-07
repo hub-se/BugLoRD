@@ -39,7 +39,7 @@ public class LinearExecutionBlock extends Node {
 
 
     public void adNodeToBlock(ExecutionGraphNode node){
-        blockSequence.add(node.getNodeId());
+        blockSequence.add(node.getIndex());
     }
     public int getSize(){
         return blockSequence.size();

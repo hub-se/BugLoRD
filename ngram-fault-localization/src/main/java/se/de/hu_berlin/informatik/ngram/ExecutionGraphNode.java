@@ -13,7 +13,7 @@ import java.util.HashSet;
 public class ExecutionGraphNode extends Node {
     private HashSet<Integer> InNodes = new HashSet<>();
     private HashSet<Integer> OutNodes = new HashSet<>();
-    private int nodeId;
+
 
     /**
      * Constructs the node
@@ -35,9 +35,6 @@ public class ExecutionGraphNode extends Node {
         return OutNodes;
     }
 
-    public int getNodeId() {
-        return nodeId;
-    }
 
     public boolean checkInNode(Integer n) {
         return InNodes.contains(n);
@@ -63,4 +60,14 @@ public class ExecutionGraphNode extends Node {
         return OutNodes.size();
     }
 
+    @Override
+    public String toString() {
+        return "ExecutionGraphNode{" +
+                "nodeId=" + getIndex() +
+                ", InNodes=" + InNodes +
+                ", OutNodes=" + OutNodes +
+                ", EF=" + getEF() +
+                ", EP=" + getEP() +
+                '}';
+    }
 }
