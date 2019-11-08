@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.ngram;
 
+import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.Node;
 
@@ -10,20 +11,29 @@ import java.util.HashSet;
  * The nodeId of this node in the spectra and two sets containing IDs
  * of other nodes that are executed before and after this node in the traces.
  */
-public class ExecutionGraphNode extends Node {
-    private HashSet<Integer> InNodes = new HashSet<>();
-    private HashSet<Integer> OutNodes = new HashSet<>();
+public class ExecutionGraphNode{
+    private HashSet<Integer> InNodes;
+    private HashSet<Integer> OutNodes;
+    private ISpectra spectra;
+
+    public int getIndex() {
+        return index;
+    }
+
+    private final int index;
 
 
     /**
      * Constructs the node
      *
      * @param index      the integer index of this node
-     * @param identifier the identifier of this node
      * @param spectra
      */
-    protected ExecutionGraphNode(int index, Object identifier, ISpectra spectra) {
-        super(index, identifier, spectra);
+    protected ExecutionGraphNode(int index,  ISpectra spectra) {
+        this.spectra = spectra;
+        this.index = index;
+        InNodes = new HashSet<>();
+        OutNodes = new HashSet<>();
     }
 
 
@@ -59,15 +69,18 @@ public class ExecutionGraphNode extends Node {
     public int getOutDegree() {
         return OutNodes.size();
     }
+    public INode getSpectraNode(){
+        return spectra.getNode(index);
+    }
 
     @Override
     public String toString() {
-        return "ExecutionGraphNode{" +
-                "nodeId=" + getIndex() +
+        return "{" +
+                "nodeId=" + index +
                 ", InNodes=" + InNodes +
                 ", OutNodes=" + OutNodes +
-                ", EF=" + getEF() +
-                ", EP=" + getEP() +
+                ", EF=" + spectra.getNode(index).getEF() +
+                ", EP=" + spectra.getNode(index).getEP() +
                 '}';
     }
 }

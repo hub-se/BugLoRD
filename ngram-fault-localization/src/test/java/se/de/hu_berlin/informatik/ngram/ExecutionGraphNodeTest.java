@@ -126,7 +126,7 @@ class ExecutionGraphNodeTest {
 
                 while (nodeIdIterator.hasNext()) {
                     int nodeIndex = nodeIdIterator.next();
-                    nodeSeq.computeIfAbsent(nodeIndex, k -> new ExecutionGraphNode(nodeIndex, spectra.getNode(nodeIndex).getIdentifier(), spectra));
+                    nodeSeq.computeIfAbsent(nodeIndex, k -> new ExecutionGraphNode(nodeIndex, spectra));
                     //if not first node
                     if (lastId != 0) {
                         nodeSeq.get(nodeIndex).addInNode(lastId);
@@ -152,7 +152,7 @@ class ExecutionGraphNodeTest {
                 System.out.println("looped single LEB found: " + integer + " 's parents: "
                         + Arrays.toString(node.getInNodes().toArray())
                         + " and children: " + Arrays.toString(node.getOutNodes().toArray()) +"\n\t" +
-                        " nodeEF = "+node.getEF());
+                        " nodeEF = "+node.getSpectraNode().getEF());
                 loopLEB.add(integer);
             } else {
                 if (node.getInDegree() <= 1) {

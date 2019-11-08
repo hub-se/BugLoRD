@@ -4,122 +4,127 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class GenerateLinearBlock extends AbstractProcessor<ISpectra<SourceCodeBlock,?>, ISpectra<SourceCodeBlock,?>> {
-    public GenerateLinearBlock() {
-        super();
+public class GenerateLinearBlock {
+    private GenerateLinearBlock() {
     }
-    @Override
-    public ISpectra<SourceCodeBlock,?> processItem(final ISpectra<SourceCodeBlock,?> input){
-        ConcurrentHashMap<Integer, ExecutionGraphNode> nodeSeq = new ConcurrentHashMap<>();
-        //first step is to initiate In- and Out-degree of the graph-nodes
-        for (ITrace<SourceCodeBlock> test : input.getTraces()){
-            for (ExecutionTrace executionTrace : test.getExecutionTraces()){
+    private static boolean hasMultiIn(ExecutionGraphNode node) {
+        return (node.getInDegree() > 1);
+    }
+
+    private static boolean hasMultiOut(ExecutionGraphNode node) {
+        return (node.getOutDegree() > 1);
+    }
+    private static boolean isLoop(ExecutionGraphNode node) {
+        return node.checkInNode(node.getIndex());
+    }
+    public static void initGraphNode(ISpectra<SourceCodeBlock, ?> input, ConcurrentHashMap<Integer, ExecutionGraphNode> nodeSeq) {
+        for (ITrace<SourceCodeBlock> test : input.getTraces()) {
+            int lastId = -1;
+            for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
                 Iterator<Integer> nodeIdIterator = executionTrace.mappedIterator(input.getIndexer());
-                int lastId = 0;
+
                 while (nodeIdIterator.hasNext()) {
                     int nodeIndex = nodeIdIterator.next();
-                    //nodeIndex is the first node
-                    nodeSeq.computeIfAbsent(nodeIndex,
+                    // nodeIndex is seen for the first time
+                    nodeSeq.computeIfAbsent(
+                            nodeIndex,
                             k -> new ExecutionGraphNode(
-                                    nodeIndex, input.getNode(nodeIndex).getIdentifier(), input));
-                    //if not first node
-                    if (lastId != 0) {
+                                    nodeIndex, input));
+                    //skip repetition
+                    if (nodeSeq.get(nodeIndex).checkInNode(nodeIndex)) continue;
+
+
+                    if (lastId == -1) {
+                        lastId = nodeIndex;
+
+                    } else {
                         nodeSeq.get(nodeIndex).addInNode(lastId);
                         nodeSeq.get(lastId).addOutNode(nodeIndex);
+                        lastId = nodeIndex;
                     }
-                    lastId = nodeIndex;
+
                 }
             }
         }
-        //second steps is to generate the linear execution blocks
-        //just for now, we dont use the half defined classes
-        class Block{
-            public List<Integer> nIds = new LinkedList<>();
-            public int blockId = -1;
-        }
-        class LEBInnerTrace{
-            public List<Block> blockSeq;
-            public int innerID;
+    }
+    public static void generateLinearBlockTrace(ISpectra<SourceCodeBlock, ?> input, ConcurrentHashMap<Integer, ExecutionGraphNode> nodeSeq, LinearExecutionHitTrace hitTrace){
 
-            public LEBInnerTrace() {
-                blockSeq = new LinkedList<>();
-            }
-        }
-        class LEBTrace{
-            public int testID;
-            public Collection<LEBInnerTrace> traces;
+        for(ITrace<SourceCodeBlock> test : input.getTraces()){
+            LinearExecutionTestTrace testTrace = new LinearExecutionTestTrace(test.getIndex(),input);
 
-        }
-        class LEBHitTrace{
-            public HashMap<Integer, LEBTrace> TestTrace = new HashMap<>();
-        }
-        // create new HitTrace
-        LEBHitTrace linearBlockTrace = new LEBHitTrace();
-        for (ITrace<SourceCodeBlock> test : input.getTraces()) {
-            //create linear execution trace for each test
-            LEBTrace testTrace = new LEBTrace();
-            testTrace.testID = test.getIndex();
-            int i = 0;
-            for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
-                // for each thread-trace of the test, create a block trace
-                LEBInnerTrace innerTrace = new LEBInnerTrace();
-                innerTrace.innerID = i;
+            for (ExecutionTrace executionTrace : test.getExecutionTraces()){
+                LinearBlockSequence innerTrace = new LinearBlockSequence(input);
                 Iterator<Integer> nodeIdIterator = executionTrace.mappedIterator(input.getIndexer());
                 HashSet<Integer> visited = new HashSet<>();
-                Block currentBlock = new Block();
-
-                boolean initBlock = false;
+                LinearExecutionBlock currentBlock = new LinearExecutionBlock(input);
+                int lastNode = -1;
                 while (nodeIdIterator.hasNext()) {
+
                     int nodeIndex = nodeIdIterator.next();
+                    //skip repetition
                     if (visited.contains(nodeIndex)) {
+                        // store current block if the index will be skipped and there is no other element left
+                        if (!nodeIdIterator.hasNext() && !currentBlock.isEmpty()) innerTrace.getBlockSeq().add(currentBlock);
                         continue;
                     } else visited.add(nodeIndex);
+
                     ExecutionGraphNode node = nodeSeq.get(nodeIndex);
-                    int inDegree = node.getInDegree();
-                    int outDegree = node.getOutDegree();
-                    boolean addToNewBlock = false;
-                    boolean closeThisBlock = false;
-                    boolean isLooped = node.checkInNode(nodeIndex);
+
+                    // Block is not empty, check if it can hold the current node
+                    // There are 4 scenarios:
+                    // 1) add node to the block as normal
+                    // 2) add node and close this block because this node has multiple outputs
+                    // 3) do not add this node but create a new block and then add it afterwards
+                    //    the reason is that this node has multiple inputs or it is a loop
+                    // 4) last node is not a direct predecessor, current node must be added to a new block
 
 
-                    if (isLooped) {
-                        addToNewBlock = true;
-                    }
-                    if (outDegree > 1) closeThisBlock = true;
-                    if (inDegree > 1) addToNewBlock = true;
+                    // check if node must be added in a new block
+                    // that is only the case if:
+                    // - node  has a loop or
+                    // - node has more than 1 inputs
+                    // - lastNode is not a direct predecessor
 
-
-                    if (addToNewBlock) {
-                        innerTrace.blockSeq.add(currentBlock);
-                        Block leb = new Block();
-                        leb.blockId = nodeIndex;
-                        leb.nIds.add(nodeIndex);
-                        currentBlock = leb;
-                    } else {
-                        currentBlock.nIds.add(nodeIndex);
-                        //init block if necessary
-                        currentBlock.blockId = currentBlock.blockId == -1 ? nodeIndex : -1;
-
-                        if (closeThisBlock) {
-                            innerTrace.blockSeq.add(currentBlock);
-                            Block leb = new Block();
-                            currentBlock = leb;
+                    if (isLoop(node) || hasMultiIn(node) || !node.checkInNode(lastNode)) {
+                        // if block is not empty, close block and create a new one
+                        if (!currentBlock.isEmpty()) {
+                            innerTrace.getBlockSeq().add(currentBlock);
+                            currentBlock = new LinearExecutionBlock(nodeIndex,input);
                         }
                     }
 
+                    //add node's data to the block
+                    if (currentBlock.isEmpty()) {
+                        currentBlock.setIndex(nodeIndex);
 
+                    }
+                    currentBlock.adNodeToBlock(nodeSeq.get(nodeIndex));
+                    lastNode = nodeIndex;
+
+                    //close block if it has more than 1 outputs
+                    if (hasMultiOut(node)) {
+                        //save and close current block
+                        innerTrace.getBlockSeq().add(currentBlock);
+                        //if there is a next node, create new block
+                        if (nodeIdIterator.hasNext()) {
+                            currentBlock = new LinearExecutionBlock(input);
+                        }
+                    }
+                    //save the block if there is no element left
+                    if (!nodeIdIterator.hasNext()) {
+                        innerTrace.getBlockSeq().add(currentBlock);
+                    }
 
                 }
-                i++;
-                linearBlockTrace.TestTrace.put(testTrace.testID, testTrace);
+                testTrace.getTraces().add(innerTrace);
+
             }
+            hitTrace.getTestTrace().put(testTrace.getTestID(), testTrace);
         }
-        return input;
     }
 }
