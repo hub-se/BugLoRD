@@ -54,6 +54,14 @@ public class LinearExecutionHitTrace {
         return spectra.getNode(index).getIdentifier().toString();
     }
 
+    public double getEF(int index) {
+        return spectra.getNode(index).getEF();
+    }
+
+    public double getEP(int index) {
+        return spectra.getNode(index).getEP();
+    }
+
     public ArrayList<LinearExecutionTestTrace> getTestTrace() {
         return TestTrace;
     }

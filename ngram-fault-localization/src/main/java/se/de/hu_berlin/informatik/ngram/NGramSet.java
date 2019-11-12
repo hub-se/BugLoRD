@@ -71,7 +71,7 @@ public class NGramSet {
                               ConcurrentHashMap<Integer, HashSet<Integer>> failedTest) {
         hitTrace.getTestTrace().forEach(testTrace -> {
             testTrace.getTraces().forEach(seq -> {
-                for (int i = 1; i <= maxLength; i++) {
+                for (int i = 2; i <= maxLength; i++) {
                     calcNGramStats(seq.getBlockSeq(), i, involvedTest, failedTest);
                 }
             });
@@ -89,7 +89,7 @@ public class NGramSet {
         int[] lastNGram = new int[nMax];
 
         //array to get EF/Support and ET/involvement values for each n-gram
-        int[] stats = new int[2];
+        double[] stats = new double[2];
 
         //distance to the node that was executed by all failed tests
         int distToLastFailedNode = nMax;
@@ -155,21 +155,30 @@ public class NGramSet {
     }
 
     private HashSet<Integer> initRelevantSet() {
-        HashSet<Integer> relevant = hitTrace.getAllBlocks();
+        HashSet<Integer> relevant = new HashSet<>();
+        int failedTestCount = hitTrace.getFailedTestCount();
+
         List<LinearExecutionTestTrace> failedTraces = hitTrace.getFailedTest();
         failedTraces.forEach(t -> {
             HashSet<Integer> blocks = t.getInvolvedBlocks();
-            relevant.retainAll(blocks);
+            blocks.forEach(n -> {
+                double EF, ET;
+                EF = hitTrace.getEF(n);
+                if (relevant.contains(n) || EF != (double) failedTestCount) return;
+                relevant.add(n);
+                ET = hitTrace.getEP(n) + EF;
+                nGramHashSet.add(new NGram(1, EF, ET, new int[]{n}));
+            });
         });
         return relevant;
     }
 
-    private int[] getEFAndET(int[] ngram, ConcurrentHashMap<Integer,
+    private double[] getEFAndET(int[] ngram, ConcurrentHashMap<Integer,
             HashSet<Integer>> involvement,
-                             ConcurrentHashMap<Integer, HashSet<Integer>> failedTest, int maxN) {
+                                ConcurrentHashMap<Integer, HashSet<Integer>> failedTest, int maxN) {
         HashSet<Integer> testTraceIds = involvement.get(ngram[0]);
         HashSet<Integer> failedID = failedTest.get(ngram[0]);
-        int EF = 0, ET = 0;
+        double EF = 0, ET = 0;
 
         for (int i = 1; i < maxN && failedID != null && testTraceIds != null; i++) {
             if (failedTest.get(ngram[i]) != null) {
@@ -185,7 +194,7 @@ public class NGramSet {
         if (failedID != null) EF = failedID.size();
         if (testTraceIds != null) ET = testTraceIds.size();
         double conf = ET == 0 ? 0 : (double) EF / ET;
-        return new int[]{EF, ET};
+        return new double[]{EF, ET};
 
     }
 }

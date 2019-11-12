@@ -6,6 +6,7 @@ import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import static se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings.getStdResourcesDir;
 
@@ -17,7 +18,7 @@ class NGramSetTest {
         ISpectra<SourceCodeBlock, ?> input = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output1);
         System.out.println("number of test: " + input.getTraces().size());
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace(input);
-        NGramSet nGrams = new NGramSet(hitTrace, 3, 0.9);
+        NGramSet nGrams = new NGramSet(hitTrace, 2, 0.9);
         System.out.println("ngram set size : " + nGrams.getResult().size());
 //        nGrams.getResult().forEach(e->{
 //            double EF = e.getEF();
