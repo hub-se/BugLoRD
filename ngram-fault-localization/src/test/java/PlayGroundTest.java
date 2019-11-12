@@ -159,6 +159,8 @@ public class PlayGroundTest extends TestSettings {
 		Path spectraZipFile = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
 
 		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
+		Collection<INode<SourceCodeBlock>> nodes = spectra.getNodes();
+		nodes.forEach(e -> System.out.println(e.getIndex()));
 	}
 
 }

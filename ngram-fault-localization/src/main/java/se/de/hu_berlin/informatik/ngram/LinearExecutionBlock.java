@@ -11,7 +11,7 @@ import java.util.Queue;
  * Structurally a LEB consists of a BlockSequenceID and a sequence of ExeGraphNode of the spectra.
  */
 public class LinearExecutionBlock {
-    private Queue<ExecutionGraphNode> nodeSequence;
+    private LinkedList<ExecutionGraphNode> nodeSequence;
     private int index;
     private ISpectra spectra;
 
@@ -36,8 +36,7 @@ public class LinearExecutionBlock {
     }
 
 
-
-    public Queue<ExecutionGraphNode> getNodeSequence() {
+    public LinkedList<ExecutionGraphNode> getNodeSequence() {
         return nodeSequence;
     }
 
@@ -50,7 +49,9 @@ public class LinearExecutionBlock {
     }
     @Override
     public String toString(){
-        return "\n\t\tBlockID: "+getIndex() + "\n\t\t\tNodeIDs: "+ getNodeSequence();
+        if (nodeSequence.size() > 0) {
+            return "\tBlockID: " + getIndex() + "\n\tNodeIDs: " + getNodeSequence();
+        } else return "\tBlock is empty!";
     }
 
     public int getIndex() {

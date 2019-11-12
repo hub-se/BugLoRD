@@ -75,12 +75,12 @@ public class ExecutionGraphNode{
 
     @Override
     public String toString() {
-        return "{" +
+        return "\n\t\t\t{" +
                 "nodeId=" + index +
                 ", InNodes=" + InNodes +
                 ", OutNodes=" + OutNodes +
                 ", EF=" + spectra.getNode(index).getEF() +
                 ", EP=" + spectra.getNode(index).getEP() +
-                '}';
+                "}";
     }
 }

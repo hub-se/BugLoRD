@@ -8,7 +8,7 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 
 public class LinearBlockSequence {
-    private Queue<LinearExecutionBlock> blockSeq;
+    private LinkedList<LinearExecutionBlock> blockSeq;
     private ISpectra spectra;
 
     public LinearBlockSequence(ISpectra spectra) {
@@ -16,13 +16,17 @@ public class LinearBlockSequence {
         this.spectra=spectra;
     }
 
-    public Queue<LinearExecutionBlock> getBlockSeq() {
+    public LinkedList<LinearExecutionBlock> getBlockSeq() {
         return blockSeq;
     }
 
     //counting all contained nodes
-    public int getSize(){
+    public int getAllNodeSize() {
         return blockSeq.stream().mapToInt(LinearExecutionBlock::getSize).sum();
+    }
+
+    public int getBlockSeqSize() {
+        return blockSeq.size();
     }
     public List<ExecutionGraphNode> allNodes(){
         return blockSeq.stream().
