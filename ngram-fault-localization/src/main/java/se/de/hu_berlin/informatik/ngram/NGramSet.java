@@ -176,25 +176,32 @@ public class NGramSet {
     private double[] getEFAndET(int[] ngram, ConcurrentHashMap<Integer,
             HashSet<Integer>> involvement,
                                 ConcurrentHashMap<Integer, HashSet<Integer>> failedTest, int maxN) {
-        HashSet<Integer> testTraceIds = involvement.get(ngram[0]);
-        HashSet<Integer> failedID = failedTest.get(ngram[0]);
+        HashSet<Integer> failedID = new HashSet<>();
+        HashSet<Integer> testTraceIds = new HashSet<>();
         double EF = 0, ET = 0;
+        failedID = getSetsIntersect(ngram, failedTest, maxN, failedID);
+        testTraceIds = getSetsIntersect(ngram, involvement, maxN, testTraceIds);
 
-        for (int i = 1; i < maxN && failedID != null && testTraceIds != null; i++) {
-            if (failedTest.get(ngram[i]) != null) {
-                failedID.retainAll(failedTest.get(ngram[i]));
-            } else break;
 
-            if (involvement.get(ngram[i]) == null) {
-                System.out.println("involvement is null. something is worng here, node: " + ngram[i]);
-                break;
-
-            } else testTraceIds.retainAll(involvement.get(ngram[i]));
-        }
         if (failedID != null) EF = failedID.size();
         if (testTraceIds != null) ET = testTraceIds.size();
-        double conf = ET == 0 ? 0 : (double) EF / ET;
+        //double conf = ET == 0 ? 0 : (double) EF / ET;
         return new double[]{EF, ET};
 
+    }
+
+    private HashSet<Integer> getSetsIntersect(int[] ngram, ConcurrentHashMap<Integer, HashSet<Integer>> failedTest, int maxN, HashSet<Integer> failedID) {
+        if (failedTest.get(ngram[0]) != null) {
+            failedID = (HashSet) failedTest.get(ngram[0]).clone();
+            for (int i = 1; i < maxN && failedID != null; i++) {
+                if (failedTest.get(ngram[i]) != null) {
+                    failedID.retainAll((HashSet) failedTest.get(ngram[i]).clone());
+                } else {
+                    failedID = null;
+                    break;
+                }
+            }
+        }
+        return failedID;
     }
 }
