@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 public class LinearExecutionHitTrace {
     private ArrayList<LinearExecutionTestTrace> TestTrace;
     private ISpectra<SourceCodeBlock, ?> spectra;
-    private ConcurrentHashMap<Integer, ExecutionGraphNode> nodeSeq;
-    private ConcurrentHashMap<Integer, LinkedHashSet<Integer>> blockMap;
+    private HashMap<Integer, ExecutionGraphNode> nodeSeq;
+    private HashMap<Integer, LinkedHashSet<Integer>> blockMap;
 
     public LinearExecutionHitTrace(ISpectra<SourceCodeBlock, ?> spectra) {
         TestTrace = new ArrayList<>();
-        nodeSeq = new ConcurrentHashMap<>();
-        blockMap = new ConcurrentHashMap<>();
+        nodeSeq = new HashMap<>();
+        blockMap = new HashMap<>();
         this.spectra = spectra;
         initGraphNode();
         generateLinearBlockTrace();
@@ -67,11 +67,11 @@ public class LinearExecutionHitTrace {
     }
 
 
-    public ConcurrentHashMap<Integer, ExecutionGraphNode> getNodeSeq() {
+    public HashMap<Integer, ExecutionGraphNode> getNodeSeq() {
         return nodeSeq;
     }
 
-    public ConcurrentHashMap<Integer, LinkedHashSet<Integer>> getBlockMap() {
+    public HashMap<Integer, LinkedHashSet<Integer>> getBlockMap() {
         return blockMap;
     }
 

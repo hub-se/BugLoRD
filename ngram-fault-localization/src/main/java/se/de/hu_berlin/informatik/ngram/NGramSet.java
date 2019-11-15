@@ -1,7 +1,6 @@
 package se.de.hu_berlin.informatik.ngram;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class NGramSet {
     private final int maxLength;
@@ -11,13 +10,14 @@ public class NGramSet {
     private List<NGram> result;
     private HashSet<Integer> relevant;
     private int minEF;
+    private double failedTestCount;
 
     public NGramSet(LinearExecutionHitTrace hitTrace, int maxLength, double minSupport) {
         this.hitTrace = hitTrace;
         this.maxLength = maxLength;
         this.minSupport = minSupport;
         minEF = (int) (minSupport * hitTrace.getFailedTestCount());
-
+        failedTestCount = hitTrace.getFailedTestCount();
         nGramHashSet = new HashSet<>();
         //first step is the build the relevant block set
         relevant = initRelevantSet();
@@ -33,7 +33,7 @@ public class NGramSet {
     public List<String> getResultAsText() {
         HashSet<Integer> visitedNode = new HashSet<>();
         List rText = new LinkedList();
-        ConcurrentHashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlockMap();
+        HashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlockMap();
         result.forEach(entry -> {
             int blockCount = entry.length;
             int[] blockIDs = entry.getBlockIDs();
@@ -45,7 +45,7 @@ public class NGramSet {
                 visitedNode.add(tmp);
                 LinkedHashSet<Integer> nodes = blockMap.get(tmp);
                 nodes.forEach(n -> {
-                    string.append(hitTrace.getIdentifier(n));
+                    string.append(hitTrace.getShortIdentifier(n));
                     string.append(" EF: " + entry.getEF() + ", ET: " + entry.getET() + ", Confidence: " + entry.getConfidence() + "\n");
                 });
             }
@@ -61,14 +61,14 @@ public class NGramSet {
     private void buildNGramSet() {
         //first step is to find the relevant 1-gram
         int failedTestCount = hitTrace.getFailedTestCount();
-        ConcurrentHashMap<Integer, HashSet<Integer>> involvedTest = new ConcurrentHashMap<>();
-        ConcurrentHashMap<Integer, HashSet<Integer>> failedTest = new ConcurrentHashMap<>();
+        HashMap<Integer, HashSet<Integer>> involvedTest = new HashMap<>();
+        HashMap<Integer, HashSet<Integer>> failedTest = new HashMap<>();
         initInvolvementMap(involvedTest, failedTest);
         createNGrams(involvedTest, failedTest);
     }
 
-    private void createNGrams(ConcurrentHashMap<Integer, HashSet<Integer>> involvedTest,
-                              ConcurrentHashMap<Integer, HashSet<Integer>> failedTest) {
+    private void createNGrams(HashMap<Integer, HashSet<Integer>> involvedTest,
+                              HashMap<Integer, HashSet<Integer>> failedTest) {
         hitTrace.getTestTrace().forEach(testTrace -> {
             testTrace.getTraces().forEach(seq -> {
                 for (int i = 2; i <= maxLength; i++) {
@@ -79,8 +79,8 @@ public class NGramSet {
     }
 
     private void calcNGramStats(LinkedList<LinearExecutionBlock> seq, int nMax,
-                                ConcurrentHashMap<Integer, HashSet<Integer>> involvedTest,
-                                ConcurrentHashMap<Integer, HashSet<Integer>> failedTest) {
+                                HashMap<Integer, HashSet<Integer>> involvedTest,
+                                HashMap<Integer, HashSet<Integer>> failedTest) {
 
         // stop is this sequence is too short
         if (seq.size() < nMax) return;
@@ -138,8 +138,8 @@ public class NGramSet {
         }
     }
 
-    private void initInvolvementMap(ConcurrentHashMap<Integer, HashSet<Integer>> involvedTest,
-                                    ConcurrentHashMap<Integer, HashSet<Integer>> failedTest) {
+    private void initInvolvementMap(HashMap<Integer, HashSet<Integer>> involvedTest,
+                                    HashMap<Integer, HashSet<Integer>> failedTest) {
         hitTrace.getTestTrace().forEach(t -> {
             boolean isFailed = !t.isSuccessful();
             int testId = t.getTestID();
@@ -173,35 +173,37 @@ public class NGramSet {
         return relevant;
     }
 
-    private double[] getEFAndET(int[] ngram, ConcurrentHashMap<Integer,
+    private double[] getEFAndET(int[] ngram, HashMap<Integer,
             HashSet<Integer>> involvement,
-                                ConcurrentHashMap<Integer, HashSet<Integer>> failedTest, int maxN) {
-        HashSet<Integer> failedID = new HashSet<>();
-        HashSet<Integer> testTraceIds = new HashSet<>();
-        double EF = 0, ET = 0;
-        failedID = getSetsIntersect(ngram, failedTest, maxN, failedID);
-        testTraceIds = getSetsIntersect(ngram, involvement, maxN, testTraceIds);
+                                HashMap<Integer, HashSet<Integer>> failedTest, int maxN) {
 
+        double EF = getSetsIntersectSize(ngram, failedTest, maxN);
+        double ET = getSetsIntersectSize(ngram, involvement, maxN);
 
-        if (failedID != null) EF = failedID.size();
-        if (testTraceIds != null) ET = testTraceIds.size();
-        //double conf = ET == 0 ? 0 : (double) EF / ET;
         return new double[]{EF, ET};
 
     }
 
-    private HashSet<Integer> getSetsIntersect(int[] ngram, ConcurrentHashMap<Integer, HashSet<Integer>> failedTest, int maxN, HashSet<Integer> failedID) {
-        if (failedTest.get(ngram[0]) != null) {
-            failedID = (HashSet) failedTest.get(ngram[0]).clone();
-            for (int i = 1; i < maxN && failedID != null; i++) {
-                if (failedTest.get(ngram[i]) != null) {
-                    failedID.retainAll((HashSet) failedTest.get(ngram[i]).clone());
-                } else {
-                    failedID = null;
-                    break;
-                }
-            }
+    private double getSetsIntersectSize(int[] ngram, HashMap<Integer, HashSet<Integer>> hashSetMap, int maxN) {
+
+        if (hashSetMap.get(ngram[0]) == null) return 0.0;
+        HashSet<Integer> intersect = (HashSet) hashSetMap.get(ngram[0]).clone();
+
+        for (int i = 1; i < maxN; i++) {
+            if (hashSetMap.get(ngram[i]) == null) return 0.0;
+            intersect.retainAll(hashSetMap.get(ngram[i]));
+            if (intersect.size() == 0) break;
         }
-        return failedID;
+
+        return intersect.size();
+    }
+
+
+    class SizeComparator implements Comparator<HashSet<?>> {
+
+        @Override
+        public int compare(HashSet<?> o1, HashSet<?> o2) {
+            return Integer.compare(o1.size(), o2.size());
+        }
     }
 }
