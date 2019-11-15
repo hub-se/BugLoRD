@@ -5,13 +5,13 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 
 public class LongTraceIterator implements ReplaceableCloneableLongIterator {
 	
-	private final CompressedLongTrace trace;
+	private final EfficientCompressedLongTrace trace;
 	private final LevelState[] levelStates;
 	
 	// level 0 is the lowest level
 	private int currentLevel = 0;
 	
-	public LongTraceIterator(CompressedLongTrace trace) {
+	public LongTraceIterator(EfficientCompressedLongTrace trace) {
 		this.trace = trace;
 		if (trace.getRepetitionMarkers() != null) {
 			levelStates = new LevelState[trace.getRepetitionMarkers().size() + 1];

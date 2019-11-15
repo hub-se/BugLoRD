@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 
 import java.util.Iterator;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
 
 public interface SequenceIndexerCompressed {
@@ -11,11 +11,11 @@ public interface SequenceIndexerCompressed {
 
 	int[][] getSubTraceIdSequences();
 
-	CompressedIntegerTrace[] getNodeIdSequences();
+	EfficientCompressedIntegerTrace[] getNodeIdSequences();
 
 	int[] getSubTraceIdSequence(int index);
 
-	CompressedIntegerTrace getNodeIdSequence(int subTraceIndex);
+	EfficientCompressedIntegerTrace getNodeIdSequence(int subTraceIndex);
 
 	/**
 	 * Iterates over the sequence of sub trace IDs 

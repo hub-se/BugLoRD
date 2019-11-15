@@ -1,6 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 
 public class CoberturaStatementEncoding {
 
@@ -76,7 +76,7 @@ public class CoberturaStatementEncoding {
 		}
 	}
 	
-	public static long generateUniqueRepresentationForSubTrace(CompressedLongTrace subTrace) {
+	public static long generateUniqueRepresentationForSubTrace(EfficientCompressedLongTrace subTrace) {
 		if (subTrace.isEmpty()) {
 			return 0;
 		} else if (subTrace.size() == 1) {

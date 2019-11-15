@@ -107,4 +107,7 @@ public interface TouchPointListener {
 
 	public void beforeTryCatchCatchBlock(int eventId, Label handler, int currentLine, MethodVisitor mv);
 
+	public void afterMethodCall(int eventId, int opcode, String owner, String method, String descr, 
+			int currentLine, MethodVisitor mv);
+
 }

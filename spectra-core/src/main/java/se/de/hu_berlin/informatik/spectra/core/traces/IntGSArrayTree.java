@@ -7,10 +7,9 @@ import java.util.UUID;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntArrayIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 
 public class IntGSArrayTree {
 	
@@ -182,25 +181,25 @@ public class IntGSArrayTree {
 		return branches;
 	}
 
-	public BufferedIntArrayQueue generateIndexedTrace(
-			CompressedIntegerTrace rawTrace, IntArraySequenceIndexer indexer) {
+	public ExecutionTrace generateIndexedTrace(
+			EfficientCompressedIntegerTrace rawTrace, IntArraySequenceIndexer indexer) {
 		if (rawTrace == null) {
 			return null;
 		}
 		
 		if (rawTrace.getCompressedTrace().isEmpty()) {
-			return new BufferedIntArrayQueue(
+			return new ExecutionTrace(
 					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
-					ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
+					ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
 		}
 		
 		if (!indexer.isIndexed()) {
 			indexer.generateSequenceIndex();
 		}
 		
-		BufferedIntArrayQueue indexedtrace = new BufferedIntArrayQueue(
+		ExecutionTrace indexedtrace = new ExecutionTrace(
 				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
-				ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
+				ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
 		
 		IntTraceIterator iterator = rawTrace.iterator();
 		int startElement = iterator.next();
@@ -216,7 +215,7 @@ public class IntGSArrayTree {
 	}
 	
 	public int addNextSequenceIndexToTrace(IntArraySequenceIndexer indexer, int firstElement, 
-			IntTraceIterator rawTraceIterator, BufferedIntArrayQueue indexedtrace) {
+			IntTraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
 		IntGSArrayTreeNode startingNode = branches.get(firstElement);
 		if (startingNode != null) {
 			// some sequence with this starting element exists in the tree

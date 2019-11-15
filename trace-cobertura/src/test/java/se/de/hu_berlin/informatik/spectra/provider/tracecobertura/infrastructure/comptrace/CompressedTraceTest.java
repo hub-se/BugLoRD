@@ -22,10 +22,10 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue.MyBufferedIntIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.CompressedIdTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.LongTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
 
@@ -99,6 +99,9 @@ public class CompressedTraceTest {
 		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
 		Assert.assertEquals(51, compressedIdTrace.getCompressedTrace().size());
 		
+		System.out.println(compressedIdTrace);
+//		printWithIterator(compressedIdTrace.baseIterator());
+		
 //		Thread.sleep(5000);
 		Iterator<Long> iterator = compressedIdTrace.iterator();
 		
@@ -155,39 +158,49 @@ public class CompressedTraceTest {
 		}
 		queue.sleep();
 		
-		CompressedIntegerTrace compressedIdTrace = new CompressedIntegerTrace(queue, true);
+		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, true);
 		
 		Assert.assertEquals(161, compressedIdTrace.size());
 		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
 		Assert.assertEquals(51, compressedIdTrace.getCompressedTrace().size());
 		
+		System.out.println(compressedIdTrace);
+		printWithIterator(compressedIdTrace.baseIterator());
+		
 //		Thread.sleep(5000);
 		IntTraceIterator iterator = compressedIdTrace.iterator();
 		
+		int counter = 0;
 		int i = 0;
 		while (iterator.hasNext() && i < 20) {
 			Assert.assertEquals(i, iterator.next());
 			Assert.assertEquals(i++, iterator.next());
+			counter += 2;
 		}
 		Assert.assertEquals(99, iterator.next());
+		++counter;
 		i = 0;
 		while (iterator.hasNext() && i < 20) {
 			Assert.assertEquals(i, iterator.next());
 			Assert.assertEquals(i++, iterator.next());
+			counter += 2;
 		}
 		i = 0;
 		while (iterator.hasNext() && i < 20) {
 			Assert.assertEquals(i, iterator.next());
 			Assert.assertEquals(i, iterator.next());
 			Assert.assertEquals(i++, iterator.next());
+			counter += 3;
 		}
 		i = 0;
 		while (iterator.hasNext() && i < 10) {
 			Assert.assertEquals(i, iterator.next());
 			Assert.assertEquals(i++, iterator.next());
+			counter += 2;
 		}
 		
 		queue.clear();
+		Assert.assertEquals(compressedIdTrace.size(), counter);
 	}
 	
 	@Test
@@ -214,11 +227,11 @@ public class CompressedTraceTest {
 		}
 		queue.sleep();
 		
-		CompressedLongTrace compressedIdTrace = new CompressedLongTrace(queue, true);
+		EfficientCompressedLongTrace compressedIdTrace = new EfficientCompressedLongTrace(queue, true);
 		
 		Assert.assertEquals(161, compressedIdTrace.size());
 		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
-		Assert.assertEquals(30, compressedIdTrace.getCompressedTrace().size());
+//		Assert.assertEquals(30, compressedIdTrace.getCompressedTrace().size());
 		
 //		Thread.sleep(5000);
 
@@ -292,18 +305,24 @@ public class CompressedTraceTest {
 		}
 		queue.sleep();
 		
-		CompressedIntegerTrace compressedIdTrace = new CompressedIntegerTrace(queue, true);
+		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, true);
+		
+		System.out.println(compressedIdTrace.toString());
+		printWithIterator(compressedIdTrace.baseIterator());
 		
 		Assert.assertEquals(161, compressedIdTrace.size());
 		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
-		Assert.assertEquals(30, compressedIdTrace.getCompressedTrace().size());
+//		Assert.assertEquals(30, compressedIdTrace.getCompressedTrace().size());
 		
 //		Thread.sleep(5000);
+		
+//		compressedIdTrace.sleep();
+//		Thread.sleep(15000);
 
 		printWithIterator(compressedIdTrace.iterator());
 		printWithIterator(compressedIdTrace.reverseIterator());
 		
-//		System.out.println(compressedIdTrace.toString());
+		System.out.println(compressedIdTrace.toString());
 		
 		List<Integer> list = storeInList(compressedIdTrace.iterator());
 		List<Integer> reverseList = storeInList(compressedIdTrace.reverseIterator());
@@ -370,7 +389,7 @@ public class CompressedTraceTest {
 		}
 		queue.sleep();
 		
-		CompressedIntegerTrace compressedIdTrace = new CompressedIntegerTrace(queue, true);
+		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, true);
 		
 		Assert.assertEquals(161, compressedIdTrace.size());
 		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
@@ -465,13 +484,16 @@ public class CompressedTraceTest {
 		}
 		queue.sleep();
 		
-		CompressedLongTrace compressedIdTrace = new CompressedLongTrace(queue, true);
+		EfficientCompressedLongTrace compressedIdTrace = new EfficientCompressedLongTrace(queue, true);
 		
 		Assert.assertEquals(161, compressedIdTrace.size());
 		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
 		Assert.assertEquals(51, compressedIdTrace.getCompressedTrace().size());
 		
 //		Thread.sleep(5000);
+		
+		System.out.println(compressedIdTrace);
+//		printWithIterator(compressedIdTrace.baseIterator());
 
 		printWithIterator(compressedIdTrace.iterator());
 		printWithIterator(compressedIdTrace.reverseIterator());
@@ -565,7 +587,7 @@ public class CompressedTraceTest {
 		
 		queue.sleep();
 		
-		CompressedIntegerTrace compressedIdTrace = new CompressedIntegerTrace(queue, true);
+		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, true);
 		
 		Assert.assertEquals(20, compressedIdTrace.size());
 		Assert.assertEquals(11, compressedIdTrace.getMaxStoredValue());
@@ -639,13 +661,14 @@ public class CompressedTraceTest {
 		
 		queue.sleep();
 		
-		CompressedLongTrace compressedIdTrace = new CompressedLongTrace(queue, true);
+		EfficientCompressedLongTrace compressedIdTrace = new EfficientCompressedLongTrace(queue, true);
 		
 		Assert.assertEquals(20, compressedIdTrace.size());
 		Assert.assertEquals(11, compressedIdTrace.getMaxStoredValue());
 		Assert.assertEquals(4, compressedIdTrace.getCompressedTrace().size());
 		
-//		Thread.sleep(5000);
+//		compressedIdTrace.sleep();
+//		Thread.sleep(15000);
 		LongTraceIterator iterator = compressedIdTrace.iterator();
 		
 		Assert.assertEquals(1, iterator.next());

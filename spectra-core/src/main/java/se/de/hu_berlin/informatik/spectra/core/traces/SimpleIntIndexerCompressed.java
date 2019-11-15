@@ -13,10 +13,10 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
 
 public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
@@ -25,17 +25,17 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	private int[][] subTraceIdSequences;
 	
 	// mapping: sub trace ID -> sequence of spectra node IDs
-	private CompressedIntegerTrace[] nodeIdSequences;
+	private EfficientCompressedIntegerTrace[] nodeIdSequences;
 	
 	
-	public SimpleIntIndexerCompressed(int[][] subTraceIdSequences, CompressedIntegerTrace[] nodeIdSequences) {
+	public SimpleIntIndexerCompressed(int[][] subTraceIdSequences, EfficientCompressedIntegerTrace[] nodeIdSequences) {
 		this.subTraceIdSequences = subTraceIdSequences;
 		this.nodeIdSequences = nodeIdSequences;
 	}
 	
 	public SimpleIntIndexerCompressed(
 			IntArraySequenceIndexer intArraySequenceIndexer, 
-			Map<Integer, CompressedLongTrace> idToSubTraceMap, 
+			Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		// map counter IDs to line numbers!
 		storeSubTraceIdSequences(Objects.requireNonNull(intArraySequenceIndexer));
@@ -57,17 +57,17 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		}
 	}
 
-	private void mapCounterIdsToSpectraNodeIds(Map<Integer, CompressedLongTrace> idToSubTraceMap, 
+	private void mapCounterIdsToSpectraNodeIds(Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		String[] idToClassNameMap = Objects.requireNonNull(projectData.getIdToClassNameMap());
 		
 		// indexer.getSequences() will generate all sequences of sub trace IDs that exist in the GS tree
-		this.nodeIdSequences = new CompressedIntegerTrace[idToSubTraceMap.size()+1];
+		this.nodeIdSequences = new EfficientCompressedIntegerTrace[idToSubTraceMap.size()+1];
 
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = null; //new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			CompressedLongTrace subTrace = idToSubTraceMap.get(i);
+			EfficientCompressedLongTrace subTrace = idToSubTraceMap.get(i);
 			BufferedLongArrayQueue compressedTrace = subTrace.getCompressedTrace();
 			ReplaceableCloneableLongIterator sequenceIterator = compressedTrace.iterator();
 			
@@ -173,7 +173,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 //				nodeIdSequences[i][j] = traceOfNodeIDs.remove();
 //			}
 			
-			nodeIdSequences[i] = new CompressedIntegerTrace(traceOfNodeIDs, subTrace);
+			nodeIdSequences[i] = new EfficientCompressedIntegerTrace(traceOfNodeIDs, subTrace);
 			
 			// delete any stored nodes from disk!
 			subTrace.unlock();
@@ -278,7 +278,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	}
 	
 	@Override
-	public CompressedIntegerTrace[] getNodeIdSequences() {
+	public EfficientCompressedIntegerTrace[] getNodeIdSequences() {
 		return nodeIdSequences;
 	}
 	
@@ -291,7 +291,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	}
 	
 	@Override
-	public CompressedIntegerTrace getNodeIdSequence(int subTraceIndex) {
+	public EfficientCompressedIntegerTrace getNodeIdSequence(int subTraceIndex) {
 		if (subTraceIndex >= nodeIdSequences.length) {
 			return null;
 		}
@@ -364,7 +364,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		// iterate over all sub traces
 		// TODO: sub trace with id 0 is the empty sub trace. Should not exist, regularly
 		for (int i = 1; i < nodeIdSequences.length; i++) {
-			CompressedIntegerTrace sequence = nodeIdSequences[i];
+			EfficientCompressedIntegerTrace sequence = nodeIdSequences[i];
 			ReplaceableCloneableIntIterator iterator = sequence.baseIterator();
 			boolean found = false;
 			while (iterator.hasNext()) {
@@ -378,16 +378,16 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 				// sequence contains the node, so generate a new sequence and replace the old
 				IntTraceIterator fullIterator = sequence.iterator();
 				BufferedIntArrayQueue compressedTrace = sequence.getCompressedTrace();
-				BufferedIntArrayQueue newSequence = new BufferedIntArrayQueue(
+				EfficientCompressedIntegerTrace newSequence = new EfficientCompressedIntegerTrace(
 						compressedTrace.getOutputDir(), "_" + compressedTrace.getFilePrefix(), 
-						compressedTrace.getNodeSize(), true);
+						compressedTrace.getNodeSize(), compressedTrace.getNodeSize(), true);
 				while (fullIterator.hasNext()) {
 					int next = fullIterator.next();
 					if (next != nodeId) {
 						newSequence.add(next);
 					}
 				}
-				nodeIdSequences[i] = new CompressedIntegerTrace(newSequence, false);
+				nodeIdSequences[i] = newSequence;
 			}
 		}
 	}

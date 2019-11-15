@@ -16,16 +16,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
-	public final static int EXECUTION_TRACE_CHUNK_SIZE = 2000000;
-	public final static int MAP_CHUNK_SIZE = 500000;
+	public final static int EXECUTION_TRACE_CHUNK_SIZE = 1000000;
+	public final static int MAP_CHUNK_SIZE = 1000000;
 	public static final int SUBTRACE_ARRAY_SIZE = 100;
 	
 //	private static ExecutorService executorService = new ThreadPoolExecutor(1, 1,
@@ -128,10 +128,10 @@ public class ExecutionTraceCollector {
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
-	private static Map<Long,BufferedIntArrayQueue> executionTraces = new ConcurrentHashMap<>();
+	private static Map<Long,EfficientCompressedIntegerTrace> executionTraces = new ConcurrentHashMap<>();
 	// stores (sub trace id -> subTrace)
 	private static Map<Integer,BufferedLongArrayQueue> existingSubTraces = new ConcurrentHashMap<>();
-	private static Map<Integer,CompressedLongTrace> existingCompressedSubTraces = new ConcurrentHashMap<>();
+	private static Map<Integer,EfficientCompressedLongTrace> existingCompressedSubTraces = new ConcurrentHashMap<>();
 	// stores (sub trace wrapper -> sub trace id) to retrieve subtrace ids
 	// the integer array in the wrapper has to contain start and ending node of the sub trace
 	// if the sub trace is longer than one statement
@@ -175,11 +175,11 @@ public class ExecutionTraceCollector {
 	 * the statements in the traces are stored as "class_id:statement_counter";
 	 * also resets the internal map and collects potentially remaining sub traces.
 	 */
-	public static Map<Long,BufferedIntArrayQueue> getAndResetExecutionTraces() {
+	public static Map<Long,EfficientCompressedIntegerTrace> getAndResetExecutionTraces() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			processAllRemainingSubTraces();
-			Map<Long, BufferedIntArrayQueue> traces = executionTraces;
+			Map<Long, EfficientCompressedIntegerTrace> traces = executionTraces;
 			executionTraces = new ConcurrentHashMap<>();
 			return traces;
 		} finally {
@@ -191,13 +191,13 @@ public class ExecutionTraceCollector {
 	 * @return
 	 * The map of ids to actual sub traces; also resets the internal map
 	 */
-	public static Map<Integer, CompressedLongTrace> getAndResetIdToSubtraceMap() {
+	public static Map<Integer, EfficientCompressedLongTrace> getAndResetIdToSubtraceMap() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			// process all remaining sub traces. Just to be safe!
 			processAllRemainingSubTraces();
 			// sub trace ids that stay consistent throughout the entire time!!??? TODO
-			Map<Integer, CompressedLongTrace> traceMap = existingCompressedSubTraces;
+			Map<Integer, EfficientCompressedLongTrace> traceMap = existingCompressedSubTraces;
 			// reset id counter and map!
 			currentId = 0;
 //			existingSubTraces = null;
@@ -210,11 +210,11 @@ public class ExecutionTraceCollector {
 		}
 	}
 	
-	private static BufferedIntArrayQueue getNewCollector(long threadId) {
+	private static EfficientCompressedIntegerTrace getNewCollector(long threadId) {
 		// do not delete buffered trace files on exit, due to possible necessary serialization
-		return new BufferedIntArrayQueue(tempDir.toAbsolutePath().toFile(), 
-				"exec_trc_" + threadId + "-" + String.valueOf(UUID.randomUUID()), 
-				EXECUTION_TRACE_CHUNK_SIZE, false);
+		return new EfficientCompressedIntegerTrace(tempDir.toAbsolutePath().toFile(), 
+				"exec_trc_" + threadId + "-", 
+				EXECUTION_TRACE_CHUNK_SIZE, MAP_CHUNK_SIZE, false);
 	}
 	
 	
@@ -321,7 +321,7 @@ public class ExecutionTraceCollector {
 //		return executorService.submit(new SubTraceProcessor(threadId, subTrace));
 		
 		// get the respective execution trace
-		BufferedIntArrayQueue trace = executionTraces.get(threadId);
+		EfficientCompressedIntegerTrace trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
@@ -451,7 +451,7 @@ public class ExecutionTraceCollector {
 				iterator.remove();
 			}
 
-			for (Entry<Long, BufferedIntArrayQueue> entry : executionTraces.entrySet()) {
+			for (Entry<Long, EfficientCompressedIntegerTrace> entry : executionTraces.entrySet()) {
 				entry.getValue().sleep();
 			}
 			
@@ -459,7 +459,7 @@ public class ExecutionTraceCollector {
 			for (Entry<Integer, BufferedLongArrayQueue> entry : existingSubTraces.entrySet()) {
 				BufferedLongArrayQueue queue = entry.getValue();
 //				queue.deleteOnExit();
-				CompressedLongTrace subTrace = new CompressedLongTrace(queue, false);
+				EfficientCompressedLongTrace subTrace = new EfficientCompressedLongTrace(queue, false);
 //				System.out.println(subTrace.toString());
 				subTrace.sleep();
 				subTrace.lock();

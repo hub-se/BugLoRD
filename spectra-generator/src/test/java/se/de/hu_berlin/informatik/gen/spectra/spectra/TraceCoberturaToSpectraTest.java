@@ -160,11 +160,13 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 			for (Integer nodeIndex : test.getInvolvedNodes()) {
 				if (debug) {
 					if (!involvedInExecutionTraces.contains(nodeIndex)) {
-						System.out.println("node ID " + nodeIndex + " was not found in execution trace: " + spectra.getNode(nodeIndex).getIdentifier());
+						System.out.println("test " + test.getIdentifier() + ": node ID " + nodeIndex + 
+								" was not found in execution trace: " + spectra.getNode(nodeIndex).getIdentifier());
 					}	
 				} else {
 				// check if all nodes in the test case are contained in the execution trace
-				assertTrue("node ID " + nodeIndex + " was not found in execution trace: " + spectra.getNode(nodeIndex).getIdentifier(), 
+				assertTrue("test " + test.getIdentifier() + ": node ID " + nodeIndex + 
+						" was not found in execution trace: " + spectra.getNode(nodeIndex).getIdentifier(), 
 						involvedInExecutionTraces.contains(nodeIndex));
 				}
 			}
@@ -323,19 +325,20 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	/**
 	 * Test method for .
 	 */
-	@Test
+//	@Test
 	public void testGenerateRankingForLang10() {
 		testNormalExecution(new TestProjects.Lang10b(), "reportLang10b", true);
 	}
 	
-	@Test
+//	@Test
 	public void testGenerateRankingForLang10TestList() {
 		testOnProjectWithTestList(new TestProjects.Lang10b(), "reportLang10bTestList", 
 				10000L, 1, false, false, false, true, "lang10tests.txt");
 	}
 	
-	@Test
+//	@Test
 	public void testGenerateRankingForLang10TestListSmall() {
+		// org.apache.commons.lang3.time.FastDateParser, counter ID 166, line 399
 		testOnProjectWithTestList(new TestProjects.Lang10b(), "reportLang10bTestListSmall", 
 				10000L, 1, false, false, false, true, "lang10testsSmall.txt");
 	}

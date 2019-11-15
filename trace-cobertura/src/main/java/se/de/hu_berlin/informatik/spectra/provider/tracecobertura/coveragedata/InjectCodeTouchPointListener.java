@@ -194,6 +194,11 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //				+ catchLabel + ", line " + currentLine);
 	}
 	
+	@Override
+	public void afterMethodCall(int eventId, int opcode, String owner, String method, String descr, int currentLine,
+			MethodVisitor nextMethodVisitor) {
+		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+	}
 	/*
 	 * After every 'linenumber' instruction we increments counter connected with the line number.
 	 * 
@@ -234,6 +239,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //		// in it. This results in a very large sub trace, potentially...
 		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 	}
+	
 
 	// ------------------- ignored events -------------------------------	
 

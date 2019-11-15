@@ -62,6 +62,9 @@ public class BuildClassMapTouchPointListener implements TouchPointListener {
 	public void afterMethodStart(MethodVisitor nextMethodVisitor) {
 	}
 
-	
+	@Override
+	public void afterMethodCall(int eventId, int opcode, String owner, String method, String descr, int currentLine,
+			MethodVisitor mv) {
+	}
 
 }

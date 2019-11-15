@@ -244,6 +244,8 @@ public class FindTouchPointsMethodAdapter
 		if (RegexUtil.matches(ignoreRegexp, owner)) {
 			touchPointListener.ignoreLine(getEventId(), currentLine);
 		}
+		// TODO: don't interrupt after EVERY method call....
+		touchPointListener.afterMethodCall(getEventId(), opcode, owner, method, descr, currentLine, mv);
 	}
 
 	@Override
