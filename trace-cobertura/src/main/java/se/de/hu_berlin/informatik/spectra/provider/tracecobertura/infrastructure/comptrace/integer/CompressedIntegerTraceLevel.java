@@ -183,7 +183,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 				// switch to repetition check mode
 				repetitionCheckMode = true;
 				// will continue from there...
-				return _addFromBuffer(recheckBuffer, endOfLine);
+				return null;
 			}
 		}
 	}
