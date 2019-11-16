@@ -40,17 +40,17 @@ public class BufferedLongArrayQueue implements Serializable {
 		return arrayLength;
 	}
 
-	private int size = 0;
+	private volatile int size = 0;
 	
 	private File output;
 	private String filePrefix;
-	private int firstStoreIndex = 0;
-	private int currentStoreIndex = -1;
-	private int lastStoreIndex = -1;
+	private volatile int firstStoreIndex = 0;
+	private volatile int currentStoreIndex = -1;
+	private volatile int lastStoreIndex = -1;
 	
-	private int firstNodeSize = 0;
+	private volatile int firstNodeSize = 0;
 	
-	private transient Node lastNode;
+	private volatile transient Node lastNode;
 	
 	private transient Lock lock = new ReentrantLock();
 	
@@ -489,24 +489,34 @@ public class BufferedLongArrayQueue implements Serializable {
 	}
 
     public int size() {
-        return size;
+    	lock.lock();
+    	try {
+    		return size;
+    	} finally {
+    		lock.unlock();
+    	}
     }
 
     public boolean add(long e) {
     	if (locked) {
     		throw new IllegalStateException("Tried to add value " + e + " while being locked.");
     	}
-    	loadLast();
-    	if (lastNode != null && lastNode.hasFreeSpace()) {
-    		lastNode.add(e);
-    		++size;
-    		if (firstStoreIndex == lastNode.storeIndex) {
-    			++firstNodeSize;
+    	lock.lock();
+    	try {
+    		loadLast();
+    		if (lastNode != null && lastNode.hasFreeSpace()) {
+    			lastNode.add(e);
+    			++size;
+    			if (firstStoreIndex == lastNode.storeIndex) {
+    				++firstNodeSize;
+    			}
+    		} else {
+    			linkLast(e);	
     		}
-    	} else {
-    		linkLast(e);	
-		}
-        return true;
+    		return true;
+    	} finally {
+    		lock.unlock();
+    	}
     }
 
     public void clear() {
@@ -537,7 +547,12 @@ public class BufferedLongArrayQueue implements Serializable {
     }
 
 	private boolean storedNodeExists() {
-		return firstStoreIndex <= lastStoreIndex;
+		lock.lock();
+		try {
+			return firstStoreIndex <= lastStoreIndex;
+		} finally {
+			lock.unlock();
+		}
 	}
     
     /**
@@ -608,13 +623,18 @@ public class BufferedLongArrayQueue implements Serializable {
 //    }
     
     public long lastElement() {
-    	final Node f = loadLast();
-        if (f == null || f.startIndex >= f.endIndex)
-        	if (f== null) 
-        		throw new NoSuchElementException("size: " + size);
-        	else
-        		throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
-        return f.items[f.endIndex-1];
+    	lock.lock();
+    	try {
+    		final Node f = loadLast();
+    		if (f == null || f.startIndex >= f.endIndex)
+    			if (f== null) 
+    				throw new NoSuchElementException("size: " + size);
+    			else
+    				throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
+    		return f.items[f.endIndex-1];
+    	} finally {
+    		lock.unlock();
+    	}
     }
     
     // Queue operations
@@ -625,17 +645,18 @@ public class BufferedLongArrayQueue implements Serializable {
 //    }
 
     public long element() {
-    	if (size == 0) {
-//    		System.err.println(this.toString());
-    		throw new IllegalStateException("size is 0");
+    	lock.lock();
+    	try {
+    		final Node f = loadFirst();
+    		if (f == null || f.startIndex >= f.endIndex)
+    			if (f== null) 
+    				throw new NoSuchElementException("size: " + size);
+    			else
+    				throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
+    		return f.items[f.startIndex];
+    	} finally {
+    		lock.unlock();
     	}
-    	final Node f = loadFirst();
-        if (f == null || f.startIndex >= f.endIndex)
-        	if (f== null) 
-        		throw new NoSuchElementException("size: " + size);
-        	else
-        		throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
-        return f.items[f.startIndex];
     }
 
 //    public long poll() {
@@ -645,15 +666,20 @@ public class BufferedLongArrayQueue implements Serializable {
 
     public long remove() {
     	if (locked) {
-    		throw new IllegalStateException("Tried to remove element while being locked.");
+			throw new IllegalStateException("Tried to remove element while being locked.");
+		}
+    	lock.lock();
+    	try {
+    		final Node f = loadFirst();
+    		if (f == null || f.startIndex >= f.endIndex)
+    			if (f== null) 
+    				throw new NoSuchElementException("size: " + size);
+    			else
+    				throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
+    		return removeFirst(f);
+    	} finally {
+    		lock.unlock();
     	}
-    	final Node f = loadFirst();
-        if (f == null || f.startIndex >= f.endIndex)
-        	if (f== null) 
-        		throw new NoSuchElementException("size: " + size);
-        	else
-        		throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
-        return removeFirst(f);
     }
     
     /*
@@ -700,7 +726,12 @@ public class BufferedLongArrayQueue implements Serializable {
 //    }
 
 	public boolean isEmpty() {
-		return size == 0;
+		lock.lock();
+    	try {
+    		return size == 0;
+    	} finally {
+			lock.unlock();
+		}
 	}
 
 	public MyBufferedLongIterator iterator() {
@@ -827,7 +858,7 @@ public class BufferedLongArrayQueue implements Serializable {
 	}
 
 	private static class Node implements Serializable {
-		private transient boolean modified = false;
+		private volatile transient boolean modified = false;
 
 		/**
 		 * 
@@ -835,13 +866,13 @@ public class BufferedLongArrayQueue implements Serializable {
 		private static final long serialVersionUID = 2511188925909568960L;
 
 		// index to store/load this node
-		private int storeIndex;
+		private volatile int storeIndex;
 		
 		private long[] items;
         // points to first actual item slot
-        private int startIndex = 0;
+        private volatile int startIndex = 0;
         // points to last free slot
-        private int endIndex = 1;
+        private volatile int endIndex = 1;
         // pointer to next array node
 
 		Node(long element, int arrayLength, int storeIndex) {
