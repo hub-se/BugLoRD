@@ -1,36 +1,38 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 
 /**
  * An execution trace consists structurally of a list of executed nodes (or references to node lists)
  * and a list of tuples that mark repeated sequences in the trace.
  *
  */
-public class ExecutionTrace extends CompressedIntegerTrace implements Serializable {
+public class ExecutionTrace extends EfficientCompressedIntegerTrace implements Serializable {
+
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2574168436274883857L;
+	private static final long serialVersionUID = -1586811553594468248L;
 
 	public ExecutionTrace(BufferedIntArrayQueue trace, boolean log) {
 		super(trace, log);
 	}
 	
-	public ExecutionTrace(BufferedIntArrayQueue trace, CompressedIntegerTrace otherCompressedTrace) {
+	public ExecutionTrace(BufferedIntArrayQueue trace, EfficientCompressedIntegerTrace otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
 	
-	public ExecutionTrace(BufferedIntArrayQueue trace, CompressedLongTrace otherCompressedTrace) {
+	public ExecutionTrace(BufferedIntArrayQueue trace, EfficientCompressedLongTrace otherCompressedTrace) {
 		super(trace, otherCompressedTrace);
 	}
 
@@ -38,6 +40,10 @@ public class ExecutionTrace extends CompressedIntegerTrace implements Serializab
 		super(compressedTrace, repMarkerLists, log);
 	}
 	
+
+	public ExecutionTrace(File outputDir, String prefix, int nodeSize, int mapSize, boolean deleteOnExit) {
+		super(outputDir, prefix, nodeSize, mapSize, deleteOnExit);
+	}
 
 	/**
 	 * Constructs the full execution trace. Usually, you should NOT be using this. Use an iterator instead!

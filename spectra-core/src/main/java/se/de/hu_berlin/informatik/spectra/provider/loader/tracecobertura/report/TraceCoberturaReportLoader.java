@@ -31,9 +31,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageD
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.LongTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
@@ -233,13 +233,15 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			// }
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 			int threadId = -1;
-			Map<Integer, CompressedLongTrace> idToSubtraceMap = projectData.getIdToSubtraceMap();
-			for (Iterator<Entry<Long, CompressedIntegerTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
-				Entry<Long, CompressedIntegerTrace> entry = iterator.next();
+			Map<Integer, EfficientCompressedLongTrace> idToSubtraceMap = projectData.getIdToSubtraceMap();
+			for (Iterator<Entry<Long, EfficientCompressedIntegerTrace>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
+				Entry<Long, EfficientCompressedIntegerTrace> entry = iterator.next();
 				++threadId;
 				
 				
-				boolean printTraces = false;
+				boolean printTraces = 
+						false;
+//						true;
 				if (printTraces) {
 					// only for testing... the arrays in a trace are composed of [ class id, counter id].
 					String[] idToClassNameMap = projectData.getIdToClassNameMap();
@@ -248,7 +250,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					IntTraceIterator traceIterator = entry.getValue().iterator();
 					while (traceIterator.hasNext()) {
 						Integer subTraceId = traceIterator.next();
-						CompressedLongTrace subTrace = null;
+						EfficientCompressedLongTrace subTrace = null;
 						if (subTraceId == 0) {
 							subTrace = null;
 						} else {
@@ -277,6 +279,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 								Log.err(this, "No class name found for class ID: " + CoberturaStatementEncoding.getClassId(statement));
 								return false;
 							}
+							if (!classSourceFileName.contains("FastDateParser")) {
+								continue;
+							}
 							ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
 
 							if (classData != null) {
@@ -285,6 +290,9 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 									return false;
 								}
 								int lineNumber = classData.getCounterId2LineNumbers()[CoberturaStatementEncoding.getCounterId(statement)];
+//								if (lineNumber != 398 && lineNumber != 399) {
+//									continue;
+//								}
 
 								NodeType nodeType = NodeType.NORMAL;
 								// these following lines print out the execution trace
@@ -502,7 +510,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //				traceOfNodeIDs = null;
 			}
 			
-			for (Entry<Integer, CompressedLongTrace> entry : projectData.getIdToSubtraceMap().entrySet()) {
+			for (Entry<Integer, EfficientCompressedLongTrace> entry : projectData.getIdToSubtraceMap().entrySet()) {
 				entry.getValue().deleteOnExit();
 				entry.getValue().deleteIfMarked();
 			}

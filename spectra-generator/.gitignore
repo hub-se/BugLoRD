@@ -50,4 +50,6 @@ Temporary Items
 .project
 /.settings
 
-execTraceTemp/
+/execTraceTemp/
+/execTracesTmp/
+execTracesTmp/

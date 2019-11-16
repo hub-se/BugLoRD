@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 
@@ -394,7 +394,7 @@ public class IntGSArrayTreeNode {
 	}
 
 	public int getNextSequenceIndex(IntArraySequenceIndexer indexer, 
-			IntTraceIterator rawTraceIterator, BufferedIntArrayQueue indexedtrace) {
+			IntTraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
 		// we are iterating through the raw trace until we find an element that is a starting element of the tree;
 		// this element is returned in the end to check the index of the following sequence, and so on;
 		// we start at the second element of the sequence to check

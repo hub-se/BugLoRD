@@ -6,9 +6,8 @@ import org.slf4j.LoggerFactory;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocker;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.CompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.CompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 
 import java.io.File;
 import java.io.Serializable;
@@ -28,32 +27,31 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	private static final transient Lock globalProjectDataLock = new ReentrantLock();
 	
 	private String[] idToClassName;
-	private Map<Long,CompressedIntegerTrace> executionTraces;
-	private Map<Integer, CompressedLongTrace> idToSubtraceMap;
+	private Map<Long, EfficientCompressedIntegerTrace> executionTraces;
+	private Map<Integer, EfficientCompressedLongTrace> idToSubtraceMap;
 	
 	public ProjectData() {
 	}
 	
-	public void addExecutionTraces(Map<Long, BufferedIntArrayQueue> map) {
+	public void addExecutionTraces(Map<Long, EfficientCompressedIntegerTrace> map) {
 		lock.lock();
 		try {
 			this.executionTraces = new HashMap<>();
-			for (Entry<Long, BufferedIntArrayQueue> entry : map.entrySet()) {
+			for (Entry<Long, EfficientCompressedIntegerTrace> entry : map.entrySet()) {
 				try {
-					// might run into heap exceptions, etc...
-					CompressedIntegerTrace trace = new CompressedIntegerTrace(entry.getValue(), true);
+					EfficientCompressedIntegerTrace trace = entry.getValue();
 					trace.sleep();
 					this.executionTraces.put(entry.getKey(), trace);
 				} catch (Throwable e) {
 					e.printStackTrace();
 					System.exit(404);
 				} finally {
-					try {
-						// delete any existing stored nodes (should not happen, but oh well...
-						entry.getValue().finalize();
-					} catch (Throwable e) {
-						e.printStackTrace();
-					}
+//					try {
+//						// delete any existing stored nodes (should not happen, but oh well...
+//						entry.getValue().finalize();
+//					} catch (Throwable e) {
+//						e.printStackTrace();
+//					}
 				}
 			}
 		} finally {
@@ -61,7 +59,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 	
-	public void addIdToSubTraceMap(Map<Integer, CompressedLongTrace> map) {
+	public void addIdToSubTraceMap(Map<Integer, EfficientCompressedLongTrace> map) {
 		lock.lock();
 		try {
 			this.idToSubtraceMap = map;
@@ -79,11 +77,11 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	 * the collection of execution traces for all executed threads;
 	 * the statements in the traces are stored as "class_id:statement_counter"
 	 */
-	public Map<Long, CompressedIntegerTrace> getExecutionTraces() {
+	public Map<Long, EfficientCompressedIntegerTrace> getExecutionTraces() {
 		return executionTraces;
 	}
 	
-	public Map<Integer, CompressedLongTrace> getIdToSubtraceMap() {
+	public Map<Integer, EfficientCompressedLongTrace> getIdToSubtraceMap() {
 		return idToSubtraceMap;
 	}
 	
@@ -292,7 +290,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 //				// assume that the data to merge into this one is the relevant data
 //				idToSubtraceMap.putAll(projectData.getIdToSubtraceMap());
 				
-				for (Entry<Integer, CompressedLongTrace> entry : projectData.getIdToSubtraceMap().entrySet()) {
+				for (Entry<Integer, EfficientCompressedLongTrace> entry : projectData.getIdToSubtraceMap().entrySet()) {
 					if (!idToSubtraceMap.containsKey(entry.getKey())) {
 						idToSubtraceMap.put(entry.getKey(), entry.getValue());
 					}

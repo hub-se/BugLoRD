@@ -79,9 +79,9 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 			
 			// iterate over all execution traces
 			for (ExecutionTrace executiontrace : trace.getExecutionTraces()) {
-				BufferedIntArrayQueue methodExecutionTrace = 
-						new BufferedIntArrayQueue(executiontrace.getCompressedTrace().getOutputDir(), 
-								"m_cpr_trace_" + UUID.randomUUID().toString(), 50000);
+				ExecutionTrace methodExecutionTrace = 
+						new ExecutionTrace(executiontrace.getCompressedTrace().getOutputDir(), 
+								"m_cpr_trace_" + UUID.randomUUID().toString(), 50000, 50000, true);
 				int lastNodeIndex = -1;
 				for (Iterator<Integer> iterator = executiontrace.mappedIterator(input.getIndexer()); iterator.hasNext();) {
 					int nodeIndex = lineToMethodMap.get(iterator.next());
@@ -92,8 +92,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 					}
 				}
 				// add method level execution trace
-				methodSpectraTrace.addExecutionTrace(
-						new ExecutionTrace(methodExecutionTrace, false));
+				methodSpectraTrace.addExecutionTrace(methodExecutionTrace);
 			}
 		}
 		

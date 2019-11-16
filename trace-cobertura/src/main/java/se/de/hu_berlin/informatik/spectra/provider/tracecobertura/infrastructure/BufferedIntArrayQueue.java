@@ -610,7 +610,10 @@ public class BufferedIntArrayQueue implements Serializable {
     public int lastElement() {
     	final Node f = loadLast();
         if (f == null || f.startIndex >= f.endIndex)
-            throw new NoSuchElementException();
+        	if (f== null) 
+        		throw new NoSuchElementException("size: " + size);
+        	else
+        		throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
         return f.items[f.endIndex-1];
     }
     
@@ -624,7 +627,10 @@ public class BufferedIntArrayQueue implements Serializable {
     public int element() {
     	final Node f = loadFirst();
         if (f == null || f.startIndex >= f.endIndex)
-            throw new NoSuchElementException();
+        	if (f== null) 
+        		throw new NoSuchElementException("size: " + size);
+        	else
+        		throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
         return f.items[f.startIndex];
     }
 
@@ -639,7 +645,10 @@ public class BufferedIntArrayQueue implements Serializable {
     	}
     	final Node f = loadFirst();
         if (f == null || f.startIndex >= f.endIndex)
-            throw new NoSuchElementException();
+        	if (f== null) 
+        		throw new NoSuchElementException("size: " + size);
+        	else
+        		throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
         return removeFirst(f);
     }
     

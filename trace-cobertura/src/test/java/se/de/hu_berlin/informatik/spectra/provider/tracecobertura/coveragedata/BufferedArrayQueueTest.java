@@ -205,6 +205,25 @@ public class BufferedArrayQueueTest {
 		queue.clear();
 	}
 	
+	@Test
+	public void testSingleLinkedBufferedIntArrayQueueBla() throws Exception {
+		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "testIntBla", 5);
+		
+		for (int i = 0; i < 25; i += 1) {
+			for (int k = 0; k <= i + 5; ++k) {
+				queue.clear();
+				for (int j = 0; j < 25; ++j) {
+					queue.add(i);
+				}
+				queue.sleep();
+				queue.clear(k);
+				Assert.assertEquals(25-k > 0 ? 25-k : 0, queue.size());
+			}
+		}
+		
+		queue.clear();
+	}
+	
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
