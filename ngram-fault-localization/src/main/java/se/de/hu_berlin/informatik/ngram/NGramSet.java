@@ -153,7 +153,8 @@ public class NGramSet {
                 distToLastFailedNode = i;
                 confOfLastRelNode = computeConfOfSingleBlock(involvedTest, failedTest, tmp);
                 if (dynaSup) {
-                    minEF = computeMinEF(1 / (1 + confOfLastRelNode));
+                    //minEF = computeMinEF(1 / (1 + confOfLastRelNode));
+                    minEF = computeMinEF(confOfLastRelNode / nMax);
                 }
             }
             lastNGram[i] = tmp;
@@ -184,7 +185,8 @@ public class NGramSet {
                 distToLastFailedNode = 0;
                 confOfLastRelNode = computeConfOfSingleBlock(involvedTest, failedTest, tmp);
                 if (dynaSup) {
-                    minEF = computeMinEF(1 / (1 + confOfLastRelNode));
+                    //minEF = computeMinEF(1 / (1 + confOfLastRelNode));
+                    minEF = computeMinEF(confOfLastRelNode / nMax);
                 }
             } else distToLastFailedNode++;
 
