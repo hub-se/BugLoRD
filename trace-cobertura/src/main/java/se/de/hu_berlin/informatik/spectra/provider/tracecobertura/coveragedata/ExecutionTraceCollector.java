@@ -451,24 +451,38 @@ public class ExecutionTraceCollector {
 				iterator.remove();
 			}
 
-			for (Entry<Long, EfficientCompressedIntegerTrace> entry : executionTraces.entrySet()) {
-				entry.getValue().sleep();
+			Iterator<Entry<Long, EfficientCompressedIntegerTrace>> iterator2 = executionTraces.entrySet().iterator();
+			while (iterator2.hasNext()) {
+				try {
+					iterator2.next().getValue().sleep();
+				} catch (Exception e) {
+					e.printStackTrace();
+					// something went wrong...
+					iterator2.remove();
+				}
 			}
 			
 			// reduce the size of sub traces that contain repetitions
-			for (Entry<Integer, BufferedLongArrayQueue> entry : existingSubTraces.entrySet()) {
+			Iterator<Entry<Integer, BufferedLongArrayQueue>> iterator3 = existingSubTraces.entrySet().iterator();
+			while (iterator3.hasNext()) {
+				Entry<Integer, BufferedLongArrayQueue> entry = iterator3.next();
 				BufferedLongArrayQueue queue = entry.getValue();
 //				queue.deleteOnExit();
-				EfficientCompressedLongTrace subTrace = new EfficientCompressedLongTrace(queue, false);
-//				System.out.println(subTrace.toString());
-				subTrace.sleep();
-				subTrace.lock();
-				existingCompressedSubTraces.put(entry.getKey(), subTrace);
+				try {
+					EfficientCompressedLongTrace subTrace = new EfficientCompressedLongTrace(queue, false);
+					//				System.out.println(subTrace.toString());
+					subTrace.sleep();
+					subTrace.lock();
+					existingCompressedSubTraces.put(entry.getKey(), subTrace);
+				} catch (Exception e) {
+					e.printStackTrace();
+					// something went wrong...
+					iterator3.remove();
+				}
 			}
 			
 			existingSubTraces.clear();
 			existingSubTraces = new ConcurrentHashMap<>();
-			
 		} finally {
 			globalExecutionTraceCollectorLock.unlock();
 		}
