@@ -22,13 +22,13 @@ class NGramSetTest {
         start = System.currentTimeMillis();
         System.out.println("number of test: " + input.getTraces().size());
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace(input);
-        NGramSet nGrams = new NGramSet(hitTrace, 3, 0.9);
+        NGramSet nGrams = new NGramSet(hitTrace, 3, true);
         System.out.println("ngram set size : " + nGrams.getResult().size());
 
         System.out.println("Total time for NGRAM methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         //playingAround(nGrams);
-        //printResult(nGrams);
-        printMap(nGrams.getConfidence());
+        printResult(nGrams);
+        //printMap(nGrams.getConfidence());
 
     }
 

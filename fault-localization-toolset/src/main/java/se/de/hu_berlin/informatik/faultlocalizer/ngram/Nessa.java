@@ -23,7 +23,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     public Ranking<INode<T>> localize(final ISpectra<T, ?> spectra, ComputationStrategies strategy) {
         final Ranking<INode<T>> ranking = new NodeRanking<>();
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace((ISpectra<SourceCodeBlock, ?>) spectra);
-        NGramSet nGrams = new NGramSet(hitTrace, 3, 0.9);
+        NGramSet nGrams = new NGramSet(hitTrace, 3, true);
         confidence = nGrams.getConfidence();
         confidence.forEach((key, value) -> {
                     //System.out.println(spectra.getNode(key).getIdentifier());
@@ -34,9 +34,10 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
             if (confidence.get(node) != null) continue;
             ranking.add(node, 0.0);
         }
+
         return Ranking.getRankingWithStrategies(
-                ranking, Ranking.RankingValueReplacementStrategy.NEGATIVE_INFINITY, Ranking.RankingValueReplacementStrategy.INFINITY,
-                Ranking.RankingValueReplacementStrategy.NEGATIVE_INFINITY);
+                ranking, Ranking.RankingValueReplacementStrategy.ZERO, Ranking.RankingValueReplacementStrategy.ZERO,
+                Ranking.RankingValueReplacementStrategy.ZERO);
     }
 
     @Override

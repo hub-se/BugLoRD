@@ -4,7 +4,7 @@ import java.util.*;
 
 public class NGramSet {
     private final int maxLength;
-    private final double minSupport;
+    private double minSupport;
     private LinearExecutionHitTrace hitTrace;
     private HashSet<NGram> nGramHashSet;
     private List<NGram> result;
@@ -12,12 +12,13 @@ public class NGramSet {
     private int minEF;
     private double failedTestCount;
     private LinkedHashMap<Integer, Double> confidence;
+    private boolean dynaSup;
 
     public NGramSet(LinearExecutionHitTrace hitTrace, int maxLength, double minSupport) {
         this.hitTrace = hitTrace;
         this.maxLength = maxLength;
         this.minSupport = minSupport;
-        minEF = (int) (minSupport * hitTrace.getFailedTestCount());
+        minEF = computeMinEF(minSupport);
         failedTestCount = hitTrace.getFailedTestCount();
         nGramHashSet = new HashSet<>();
         //first step is the build the relevant block set
@@ -26,6 +27,25 @@ public class NGramSet {
         result = new ArrayList<>(nGramHashSet);
         Collections.sort(result, Collections.reverseOrder());
         mapResult2Nodes();
+    }
+
+    public NGramSet(LinearExecutionHitTrace hitTrace, int maxLength, boolean dynaSup) {
+        this.hitTrace = hitTrace;
+        this.maxLength = maxLength;
+        this.dynaSup = dynaSup;
+        //minEF = computeMinEF(hitTrace, minSupport);
+        failedTestCount = hitTrace.getFailedTestCount();
+        nGramHashSet = new HashSet<>();
+        //first step is the build the relevant block set
+        relevant = initRelevantSet();
+        buildNGramSet();
+        result = new ArrayList<>(nGramHashSet);
+        Collections.sort(result, Collections.reverseOrder());
+        mapResult2Nodes();
+    }
+
+    private int computeMinEF(double minSupport) {
+        return (int) (minSupport * failedTestCount);
     }
 
     public double getConfidence(int nodeIndex) {
@@ -68,7 +88,6 @@ public class NGramSet {
             int blockCount = entry.length;
             int[] blockIDs = entry.getBlockIDs();
 
-            //string.append("SEQ: " + Arrays.toString(blockIDs) + "\n");
             for (int i = 0; i < blockCount; i++) {
                 int tmp = blockIDs[i];
                 if (visitedNode.contains(tmp)) continue;
@@ -125,11 +144,18 @@ public class NGramSet {
 
         //distance to the node that was executed by all failed tests
         int distToLastFailedNode = nMax;
+        double confOfLastRelNode = 0.0;
 
         //init the first nMax-Gram
         for (int i = 0; i < nMax; i++) {
             int tmp = blockIt.next().getIndex();
-            if (relevant.contains(tmp)) distToLastFailedNode = i;
+            if (relevant.contains(tmp)) {
+                distToLastFailedNode = i;
+                confOfLastRelNode = computeConfOfSingleBlock(involvedTest, failedTest, tmp);
+                if (dynaSup) {
+                    minEF = computeMinEF(1 / (1 + confOfLastRelNode));
+                }
+            }
             lastNGram[i] = tmp;
         }
 
@@ -139,6 +165,7 @@ public class NGramSet {
         if (distToLastFailedNode < nMax) {
             stats = getEFAndET(lastNGram, involvedTest, failedTest, nMax);
             //if minSup is fulfilled
+
             if (stats[0] >= minEF) {
                 nGramHashSet.add(new NGram(nMax, stats[0], stats[1], lastNGram));
             }
@@ -155,6 +182,10 @@ public class NGramSet {
             int tmp = blockIt.next().getIndex();
             if (relevant.contains(tmp)) {
                 distToLastFailedNode = 0;
+                confOfLastRelNode = computeConfOfSingleBlock(involvedTest, failedTest, tmp);
+                if (dynaSup) {
+                    minEF = computeMinEF(1 / (1 + confOfLastRelNode));
+                }
             } else distToLastFailedNode++;
 
             nGram[nMax - 1] = tmp;
@@ -169,6 +200,11 @@ public class NGramSet {
             }
             lastNGram = nGram;
         }
+    }
+
+    private double computeConfOfSingleBlock(HashMap<Integer, HashSet<Integer>> involvedTest, HashMap<Integer, HashSet<Integer>> failedTest, int tmp) {
+
+        return (double) failedTest.get(tmp).size() / involvedTest.get(tmp).size();
     }
 
 
