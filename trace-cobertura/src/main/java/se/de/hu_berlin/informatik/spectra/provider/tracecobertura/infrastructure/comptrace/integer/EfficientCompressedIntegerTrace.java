@@ -385,8 +385,8 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 
 	@Override
 	public void clear() {
-		super.clear();
 		getCompressedTrace().clear();
+		super.clear();
 	}
 
 	public int getFirstElement() {
@@ -399,8 +399,8 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 
 	@Override
 	public void sleep() {
-		super.sleep();
 		getCompressedTrace().sleep();
+		super.sleep();
 	}
 	
 	@Override
@@ -432,15 +432,14 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	public void deleteIfMarked() {
 		if (isMarkedForDeletion()) {
 			this.unlock();
-			super.clear();
 			this.clear();
 		}
 	}
 	
 	@Override
 	public void deleteOnExit() {
-		super.deleteOnExit();
 		getCompressedTrace().deleteOnExit();
+		super.deleteOnExit();
 	}
 	
 }

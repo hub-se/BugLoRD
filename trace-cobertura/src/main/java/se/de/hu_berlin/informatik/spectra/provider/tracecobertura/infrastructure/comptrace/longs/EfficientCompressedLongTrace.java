@@ -381,8 +381,8 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 
 	@Override
 	public void clear() {
-		super.clear();
 		getCompressedTrace().clear();
+		super.clear();
 	}
 
 	public long getFirstElement() {
@@ -395,8 +395,8 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 
 	@Override
 	public void sleep() {
-		super.sleep();
 		getCompressedTrace().sleep();
+		super.sleep();
 	}
 	
 	@Override
@@ -428,15 +428,14 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 	public void deleteIfMarked() {
 		if (isMarkedForDeletion()) {
 			this.unlock();
-			super.clear();
 			this.clear();
 		}
 	}
 	
 	@Override
 	public void deleteOnExit() {
-		super.deleteOnExit();
 		getCompressedTrace().deleteOnExit();
+		super.deleteOnExit();
 	}
 	
 }
