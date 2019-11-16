@@ -27,8 +27,8 @@ class NGramSetTest {
 
         System.out.println("Total time for NGRAM methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         //playingAround(nGrams);
-        printResult(nGrams);
-        //printMap(nGrams.getConfidence());
+        //printResult(nGrams);
+        printMap(nGrams.getConfidence());
 
     }
 

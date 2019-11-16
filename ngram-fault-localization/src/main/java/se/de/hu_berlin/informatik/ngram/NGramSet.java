@@ -11,7 +11,7 @@ public class NGramSet {
     private HashSet<Integer> relevant;
     private int minEF;
     private double failedTestCount;
-    private HashMap<Integer, Double> confidence;
+    private LinkedHashMap<Integer, Double> confidence;
 
     public NGramSet(LinearExecutionHitTrace hitTrace, int maxLength, double minSupport) {
         this.hitTrace = hitTrace;
@@ -38,7 +38,7 @@ public class NGramSet {
     }
 
     private void mapResult2Nodes() {
-        confidence = new HashMap<>();
+        confidence = new LinkedHashMap<>();
         HashSet<Integer> visitedNode = new HashSet<>();
         HashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlockMap();
         result.forEach(entry -> {
@@ -68,7 +68,6 @@ public class NGramSet {
             int blockCount = entry.length;
             int[] blockIDs = entry.getBlockIDs();
 
-            //string.append("SEQ: " + Arrays.toString(blockIDs) + "\n");
             for (int i = 0; i < blockCount; i++) {
                 int tmp = blockIDs[i];
                 if (visitedNode.contains(tmp)) continue;

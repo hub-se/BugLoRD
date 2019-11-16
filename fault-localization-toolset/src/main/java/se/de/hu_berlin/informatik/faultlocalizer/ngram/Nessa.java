@@ -9,13 +9,14 @@ import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Nessa<T> extends AbstractFaultLocalizer<T> {
     private HashMap<Integer, Double> confidence;
 
     public Nessa() {
         super();
-        confidence = new HashMap<>();
+        confidence = new LinkedHashMap<>();
     }
 
     @Override
@@ -24,9 +25,14 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace((ISpectra<SourceCodeBlock, ?>) spectra);
         NGramSet nGrams = new NGramSet(hitTrace, 3, 0.9);
         confidence = nGrams.getConfidence();
+        confidence.forEach((key, value) -> {
+                    //System.out.println(spectra.getNode(key).getIdentifier());
+                    ranking.add(spectra.getNode(key), value);
+                }
+        );
         for (final INode<T> node : spectra.getNodes()) {
-            final double suspiciousness = this.suspiciousness(node, strategy);
-            ranking.add(node, suspiciousness);
+            if (confidence.get(node) != null) continue;
+            ranking.add(node, 0.0);
         }
         return Ranking.getRankingWithStrategies(
                 ranking, Ranking.RankingValueReplacementStrategy.NEGATIVE_INFINITY, Ranking.RankingValueReplacementStrategy.INFINITY,
@@ -35,7 +41,6 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(INode<T> node, ComputationStrategies strategy) {
-        if (confidence.get(node.getIndex()) != null) return confidence.get(node.getIndex());
-        else return 0;
+        return 0;
     }
 }
