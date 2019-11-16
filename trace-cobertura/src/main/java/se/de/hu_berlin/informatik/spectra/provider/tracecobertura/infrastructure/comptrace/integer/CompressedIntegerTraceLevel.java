@@ -218,7 +218,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 			}
 
 			// are there any repetitions and are we not still inside of a repetition (potentially)?
-			if (inRepetitionFromPosition < 0 && repetitionCounter > 0) {
+			if ((endOfLine || inRepetitionFromPosition < 0) && repetitionCounter > 0) {
 				// add a marker for the the current (finished) repetition
 				addCurrentRepetitionMarker();
 				resetStateAndContinue();
