@@ -13,17 +13,35 @@ import java.util.LinkedHashMap;
 
 public class Nessa<T> extends AbstractFaultLocalizer<T> {
     private HashMap<Integer, Double> confidence;
+    private double minSup = 0.9;
+    private int maxN = 3;
+    private boolean dynSup;
 
     public Nessa() {
         super();
         confidence = new LinkedHashMap<>();
     }
 
+    public Nessa(int maxN, double minSup) {
+        super();
+        confidence = new LinkedHashMap<>();
+        this.maxN = maxN;
+        this.minSup = minSup;
+    }
+
+    public Nessa(int maxN, boolean dynSup) {
+        super();
+        confidence = new LinkedHashMap<>();
+        this.maxN = maxN;
+        this.dynSup = dynSup;
+    }
+
     @Override
     public Ranking<INode<T>> localize(final ISpectra<T, ?> spectra, ComputationStrategies strategy) {
         final Ranking<INode<T>> ranking = new NodeRanking<>();
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace((ISpectra<SourceCodeBlock, ?>) spectra);
-        NGramSet nGrams = new NGramSet(hitTrace, 3, true);
+        NGramSet nGrams = dynSup ?
+                new NGramSet(hitTrace, maxN, true) : new NGramSet(hitTrace, maxN, minSup);
         confidence = nGrams.getConfidence();
         confidence.forEach((key, value) -> {
                     //System.out.println(spectra.getNode(key).getIdentifier());

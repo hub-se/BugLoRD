@@ -21,6 +21,7 @@ class NGramSetTest {
         System.out.println("Time in total for loading the spectra: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         start = System.currentTimeMillis();
         System.out.println("number of test: " + input.getTraces().size());
+        System.out.println("number of failed test: " + input.getFailingTraces().size());
         System.out.println("number of nodes: " + input.getNodes().size());
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace(input);
         NGramSet nGrams = new NGramSet(hitTrace, 3, true);

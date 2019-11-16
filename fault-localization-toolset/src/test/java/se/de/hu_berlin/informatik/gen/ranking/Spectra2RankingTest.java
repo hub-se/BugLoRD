@@ -88,6 +88,71 @@ public class Spectra2RankingTest extends TestSettings {
 	 * Test method for {@link se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking#main(java.lang.String[])}.
 	 */
 	@Test
+	public void testNessa2true() {
+		String[] args = {
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.LOCALIZERS.asArg(), "nessa-2-true",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-2-true"};
+		Spectra2Ranking.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "nessa-2-true", "nessa", "ranking.rnk")));
+	}
+
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testNessa204() {
+		String[] args = {
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.LOCALIZERS.asArg(), "nessa-2-0.4",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-2-04"};
+		Spectra2Ranking.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "nessa-2-04", "nessa", "ranking.rnk")));
+	}
+
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testNessa304() {
+		String[] args = {
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.LOCALIZERS.asArg(), "nessa-3-0.4",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-3-04"};
+		Spectra2Ranking.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "nessa-3-04", "nessa", "ranking.rnk")));
+	}
+
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testNessa209() {
+		String[] args = {
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.LOCALIZERS.asArg(), "nessa-2-0.9",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-2-09"};
+		Spectra2Ranking.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "nessa-2-09", "nessa", "ranking.rnk")));
+	}
+
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testNessa3true() {
+		String[] args = {
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.LOCALIZERS.asArg(), "nessa-3-true",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-3-true"};
+		Spectra2Ranking.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "nessa-3-true", "nessa", "ranking.rnk")));
+	}
+
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking#main(java.lang.String[])}.
+	 */
+	@Test
 	public void testMainRankingGenerationSimilaritySBFL() {
 		String[] args = {
 				CmdOptions.SIMILARITY_SBFL.asArg(),
