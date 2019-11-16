@@ -25,8 +25,14 @@ class NGramSetTest {
         NGramSet nGrams = new NGramSet(hitTrace, 3, 0.9);
         System.out.println("ngram set size : " + nGrams.getResult().size());
 
-        System.out.println("Time in total for NGRAM methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
+        System.out.println("Total time for NGRAM methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         //playingAround(nGrams);
+        printResult(nGrams);
+        //printMap(nGrams.getConfidence());
+
+    }
+
+    private void printResult(NGramSet nGrams) {
         if (1 == 2) {
             nGrams.getResult().forEach(e -> {
                 double EF = e.getEF();
@@ -37,12 +43,10 @@ class NGramSetTest {
                 System.out.println("EF: " + EF + ", ET: " + ET + ", CONFIDENCE: " + conf);
             });
         } else nGrams.getResultAsText().forEach(e -> System.out.println(e));
-
-
     }
 
     private void playingAround(NGramSet nGrams) {
-        DecimalFormat df = new DecimalFormat("####,####.#####");
+
         HashMap<Double, Integer> freqs = new HashMap<>();
         for (NGram nGram : nGrams.getResult()) {
             if (freqs.containsKey(nGram.getConfidence())) {
@@ -56,7 +60,12 @@ class NGramSetTest {
         LinkedHashMap<Double, Double> sorted = new LinkedHashMap<>();
         weighted.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .forEachOrdered(x -> sorted.put(x.getKey(), x.getValue()));
-        sorted.forEach((key, value) -> System.out.println("[ " + key + ":\t" + df.format(value)));
+        printMap(sorted);
+    }
+
+    private void printMap(HashMap<?, ?> sorted) {
+        DecimalFormat df = new DecimalFormat("####,####.#####");
+        sorted.forEach((key, value) -> System.out.println("[ " + key + " : " + df.format(value).concat(" ]")));
     }
 
     @org.junit.jupiter.api.Test

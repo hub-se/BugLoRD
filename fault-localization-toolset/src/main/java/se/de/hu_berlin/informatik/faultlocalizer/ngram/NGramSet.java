@@ -1,4 +1,4 @@
-package se.de.hu_berlin.informatik.ngram;
+package se.de.hu_berlin.informatik.faultlocalizer.ngram;
 
 import java.util.*;
 

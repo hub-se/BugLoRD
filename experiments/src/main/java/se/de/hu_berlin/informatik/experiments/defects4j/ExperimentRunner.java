@@ -1,31 +1,24 @@
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
-import java.util.Locale;
-
 import org.apache.commons.cli.Option;
 import org.jacoco.core.runtime.AgentOptions;
-
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERGenerateSpectraEH;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutBugAndFixEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCheckoutFixAndCheckForChangesEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERCleanupEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERComputeSBFLRankingsFromSpectraEH;
-import se.de.hu_berlin.informatik.experiments.defects4j.calls.ERQueryLMRankingsEH;
+import se.de.hu_berlin.informatik.experiments.defects4j.calls.*;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.eh.EHWithInputAndReturn;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
-import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
 import se.de.hu_berlin.informatik.utils.threaded.SemaphoreThreadLimit;
+import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
+
+import java.util.Locale;
 
 /**
  * 

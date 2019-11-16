@@ -1,25 +1,18 @@
 package se.de.hu_berlin.informatik.gen.ranking;
 
-import static org.junit.Assert.*;
+import org.junit.*;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import org.junit.contrib.java.lang.system.SystemErrRule;
+import org.junit.rules.ExpectedException;
+import se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking.CmdOptions;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
+import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.rules.ExpectedException;
-
-import se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking;
-import se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking.CmdOptions;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
-import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Simon
@@ -75,7 +68,22 @@ public class Spectra2RankingTest extends TestSettings {
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "tarantula", "ranking.rnk")));
 		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankings", "jaccard", "ranking.rnk")));
 	}
-	
+
+	/**
+	 * Test method for {@link se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking#main(java.lang.String[])}.
+	 */
+	@Test
+	public void testNessaRankingGeneration() {
+		String[] args = {
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard", "nessa",
+				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankingsNGram"};
+		Spectra2Ranking.main(args);
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankingsNGram", "tarantula", "ranking.rnk")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankingsNGram", "jaccard", "ranking.rnk")));
+		assertTrue(Files.exists(Paths.get(getStdTestDir(), "rankingsNGram", "nessa", "ranking.rnk")));
+	}
+
 	/**
 	 * Test method for {@link se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking#main(java.lang.String[])}.
 	 */
