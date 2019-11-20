@@ -34,24 +34,18 @@ public class LinearExecutionTestTrace {
         return traces.get(index);
     }
 
-    public int getBlockCount() {
-        HashSet<Integer> counting = new HashSet<>();
-        traces.forEach(t -> {
-            t.getBlockSeq().forEach(b -> counting.add(b.getIndex()));
-        });
-        return counting.size();
-    }
-
-    public HashSet<Integer> getInvolvedBlocks() {
-        HashSet<Integer> nodes = new HashSet<>();
-        traces.forEach(t -> {
-            t.getBlockSeq().forEach(b -> nodes.add(b.getIndex()));
-        });
-        return nodes;
-    }
 
     @Override
     public String toString() {
         return "LEBTrace{" + "testID=" + testID + ", traces=" + traces + '}';
+    }
+
+    public HashSet<Integer> getInvolvedBlocks() {
+
+        HashSet<Integer> allBlocks = new HashSet<>();
+        traces.forEach(t -> {
+            allBlocks.addAll(t.involvedBlocks());
+        });
+        return allBlocks;
     }
 }

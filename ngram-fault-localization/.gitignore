@@ -49,3 +49,5 @@ Temporary Items
 .classpath
 .project
 /.settings
+/src/test/resources/Time-1b.zip
+/src/test/resources/execTraceTemp/

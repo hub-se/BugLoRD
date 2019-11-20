@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.faultlocalizer.ngram;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class NGramSet {
     private final int maxLength;
@@ -21,7 +22,7 @@ public class NGramSet {
 
         failedTestCount = hitTrace.getFailedTestCount();
         minEF = computeMinEF(minSupport);
-        nGramHashSet = new HashSet<>();
+        nGramHashSet = new HashSet<>(hitTrace.getBlockCount() * hitTrace.getFailedTestCount());
 
         //first step is the build the relevant block set
         relevant = initRelevantSet();
@@ -61,9 +62,9 @@ public class NGramSet {
     }
 
     private void mapResult2Nodes() {
-        confidence = new LinkedHashMap<>();
-        HashSet<Integer> visitedNode = new HashSet<>();
-        HashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlockMap();
+        confidence = new LinkedHashMap<>(result.size());
+        ConcurrentHashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlock2NodeMap();
+        HashSet<Integer> visitedNode = new HashSet<>(blockMap.size());
 
         result.forEach(entry -> {
             int blockCount = entry.length;
@@ -85,9 +86,9 @@ public class NGramSet {
     }
 
     public List<String> getResultAsText() {
-        HashSet<Integer> visitedNode = new HashSet<>();
+        ConcurrentHashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlock2NodeMap();
+        HashSet<Integer> visitedNode = new HashSet<>(blockMap.size());
         List rText = new LinkedList();
-        HashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlockMap();
         result.forEach(entry -> {
 
             int blockCount = entry.length;
@@ -120,8 +121,8 @@ public class NGramSet {
 
     private void buildNGramSet() {
         //first step is to find the relevant 1-gram
-        HashMap<Integer, HashSet<Integer>> involvedTest = new HashMap<>();
-        HashMap<Integer, HashSet<Integer>> failedTest = new HashMap<>();
+        HashMap<Integer, HashSet<Integer>> involvedTest = new HashMap<>(hitTrace.getBlockCount(), 1.0f);
+        HashMap<Integer, HashSet<Integer>> failedTest = new HashMap<>(hitTrace.getBlockCount(), 1.0f);
         initInvolvementMap(involvedTest, failedTest);
         createNGrams(involvedTest, failedTest);
     }
@@ -137,14 +138,14 @@ public class NGramSet {
         });
     }
 
-    private void calcNGramStats(LinkedList<LinearExecutionBlock> seq, int nMax,
+    private void calcNGramStats(LinkedList<Integer> seq, int nMax,
                                 HashMap<Integer, HashSet<Integer>> involvedTest,
                                 HashMap<Integer, HashSet<Integer>> failedTest) {
 
         // stop is this sequence is too short
         if (seq.size() < nMax) return;
 
-        Iterator<LinearExecutionBlock> blockIt = seq.iterator();
+        Iterator<Integer> blockIt = seq.iterator();
         int[] lastNGram = new int[nMax];
 
         //array to get EF/Support and ET/involvement values for each n-gram
@@ -156,7 +157,7 @@ public class NGramSet {
 
         //init the first nMax-Gram
         for (int i = 0; i < nMax; i++) {
-            int tmp = blockIt.next().getIndex();
+            int tmp = blockIt.next();
             if (relevant.contains(tmp)) {
                 distToLastFailedNode = i;
                 confOfLastRelNode = computeConfOfSingleBlock(involvedTest, failedTest, tmp);
@@ -171,7 +172,7 @@ public class NGramSet {
 
             stats = getEFAndET(lastNGram, involvedTest, failedTest, nMax);
             updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
-            checkThenAdd(nMax, lastNGram, stats, confOfLastRelNode);
+            checkThenAdd(nMax, lastNGram, stats, confOfLastRelNode, distToLastFailedNode);
         }
 
         while (blockIt.hasNext()) {
@@ -183,7 +184,7 @@ public class NGramSet {
             }
 
             //get the next element and reset the distance if a new failed node is found.
-            int tmp = blockIt.next().getIndex();
+            int tmp = blockIt.next();
 
             if (relevant.contains(tmp)) {
                 distToLastFailedNode = 0;
@@ -197,7 +198,7 @@ public class NGramSet {
             if (distToLastFailedNode < nMax) {
                 stats = getEFAndET(lastNGram, involvedTest, failedTest, nMax);
                 updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
-                checkThenAdd(nMax, lastNGram, stats, confOfLastRelNode);
+                checkThenAdd(nMax, lastNGram, stats, confOfLastRelNode, distToLastFailedNode);
             }
             lastNGram = nGram;
         }
@@ -209,11 +210,16 @@ public class NGramSet {
         }
     }
 
-    private void checkThenAdd(int nMax, int[] lastNGram, double[] stats, double confOfLastRelNode) {
+    private void checkThenAdd(int nMax, int[] lastNGram, double[] stats, double confOfLastRelNode, int distance) {
         //if minSup is fulfilled and the new confidence is big enough
-        if ((stats[0] / stats[1] >= confOfLastRelNode) && (stats[0] >= minEF)) {
-            nGramHashSet.add(new NGram(nMax, stats[0], stats[1], lastNGram));
+        if ((stats[0] > 0) && (stats[0] >= minEF)) {
+            if (!dynaSup) {
+                nGramHashSet.add(new NGram(nMax, stats[0], stats[1], lastNGram));
+            } else if ((stats[0] / stats[1]) >= Math.pow(confOfLastRelNode, distance + 1)) {
+                nGramHashSet.add(new NGram(nMax, stats[0], stats[1], lastNGram));
+            }
         }
+
     }
 
     private double computeConfOfSingleBlock(HashMap<Integer, HashSet<Integer>> involvedTest, HashMap<Integer, HashSet<Integer>> failedTest, int tmp) {

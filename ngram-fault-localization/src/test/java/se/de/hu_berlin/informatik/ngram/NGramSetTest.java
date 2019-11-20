@@ -16,15 +16,21 @@ class NGramSetTest {
     @org.junit.jupiter.api.Test
     void generateNGSet() {
         long start = System.currentTimeMillis();
-        Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
+        //Path output1 = Paths.get(getStdResourcesDir(), "Time-1b.zip");
+        Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
+        //Path output1 = Paths.get(getStdResourcesDir(), "Math-84b.zip");
         ISpectra<SourceCodeBlock, ?> input = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output1);
         System.out.println("Time in total for loading the spectra: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
-        start = System.currentTimeMillis();
         System.out.println("number of test: " + input.getTraces().size());
         System.out.println("number of failed test: " + input.getFailingTraces().size());
         System.out.println("number of nodes: " + input.getNodes().size());
+        start = System.currentTimeMillis();
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace(input);
+        System.out.println("Total time for init LEB methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
+        start = System.currentTimeMillis();
         NGramSet nGrams = new NGramSet(hitTrace, 3, true);
+
+
         System.out.println("ngram set size : " + nGrams.getResult().size());
         System.out.println("ranking list size : " + nGrams.getConfidence().size());
 

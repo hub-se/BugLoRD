@@ -75,7 +75,7 @@ public class Spectra2RankingTest extends TestSettings {
 	@Test
 	public void testNessaRankingGeneration() {
 		String[] args = {
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "Math-84b.zip",
 				CmdOptions.LOCALIZERS.asArg(), "tarantula", "jaccard", "nessa",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "rankingsNGram"};
 		Spectra2Ranking.main(args);
@@ -90,7 +90,7 @@ public class Spectra2RankingTest extends TestSettings {
 	@Test
 	public void testNessa2true() {
 		String[] args = {
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "Math-84b.zip",
 				CmdOptions.LOCALIZERS.asArg(), "nessa-2-true",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-2-true"};
 		Spectra2Ranking.main(args);
@@ -103,7 +103,7 @@ public class Spectra2RankingTest extends TestSettings {
 	@Test
 	public void testNessa204() {
 		String[] args = {
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "Math-84b.zip",
 				CmdOptions.LOCALIZERS.asArg(), "nessa-2-0.4",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-2-04"};
 		Spectra2Ranking.main(args);
@@ -116,7 +116,7 @@ public class Spectra2RankingTest extends TestSettings {
 	@Test
 	public void testNessa304() {
 		String[] args = {
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "Math-84b.zip",
 				CmdOptions.LOCALIZERS.asArg(), "nessa-3-0.4",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-3-04"};
 		Spectra2Ranking.main(args);
@@ -129,7 +129,7 @@ public class Spectra2RankingTest extends TestSettings {
 	@Test
 	public void testNessa209() {
 		String[] args = {
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "Math-84b.zip",
 				CmdOptions.LOCALIZERS.asArg(), "nessa-2-0.9",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-2-09"};
 		Spectra2Ranking.main(args);
@@ -142,7 +142,7 @@ public class Spectra2RankingTest extends TestSettings {
 	@Test
 	public void testNessa3true() {
 		String[] args = {
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "math84.zip",
+				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "Math-84b.zip",
 				CmdOptions.LOCALIZERS.asArg(), "nessa-3-true",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-3-true"};
 		Spectra2Ranking.main(args);

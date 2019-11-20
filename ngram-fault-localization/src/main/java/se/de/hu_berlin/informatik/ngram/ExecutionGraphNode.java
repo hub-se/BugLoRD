@@ -2,46 +2,54 @@ package se.de.hu_berlin.informatik.ngram;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
-import se.de.hu_berlin.informatik.spectra.core.Node;
 
-import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An execution graph node  consists structurally of three components.
  * The nodeId of this node in the spectra and two sets containing IDs
  * of other nodes that are executed before and after this node in the traces.
  */
-public class ExecutionGraphNode{
-    private HashSet<Integer> InNodes;
-    private HashSet<Integer> OutNodes;
+public class ExecutionGraphNode {
+    private final int index;
+    private Set<Integer> InNodes;
+    private Set<Integer> OutNodes;
     private ISpectra spectra;
+    private int blockID = -1;
+
+    /**
+     * Constructs the node
+     *
+     * @param index   the integer index of this node
+     * @param spectra
+     */
+    protected ExecutionGraphNode(int index, ISpectra spectra) {
+        this.spectra = spectra;
+        this.index = index;
+        ConcurrentHashMap<Integer, Integer> in = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Integer, Integer> out = new ConcurrentHashMap<>();
+        InNodes = in.keySet(index);
+        OutNodes = out.keySet(index);
+    }
+
+    public int getBlockID() {
+        return blockID;
+    }
+
+    public void setBlockID(int blockID) {
+        this.blockID = blockID;
+    }
 
     public int getIndex() {
         return index;
     }
 
-    private final int index;
-
-
-    /**
-     * Constructs the node
-     *
-     * @param index      the integer index of this node
-     * @param spectra
-     */
-    protected ExecutionGraphNode(int index,  ISpectra spectra) {
-        this.spectra = spectra;
-        this.index = index;
-        InNodes = new HashSet<>();
-        OutNodes = new HashSet<>();
-    }
-
-
-    public HashSet<Integer> getInNodes() {
+    public Set<Integer> getInNodes() {
         return InNodes;
     }
 
-    public HashSet<Integer> getOutNodes() {
+    public Set<Integer> getOutNodes() {
         return OutNodes;
     }
 
@@ -69,7 +77,8 @@ public class ExecutionGraphNode{
     public int getOutDegree() {
         return OutNodes.size();
     }
-    public INode getSpectraNode(){
+
+    public INode getSpectraNode() {
         return spectra.getNode(index);
     }
 
@@ -77,6 +86,7 @@ public class ExecutionGraphNode{
     public String toString() {
         return "\n\t\t\t{" +
                 "nodeId=" + index +
+                ", blockId=" + blockID +
                 ", InNodes=" + InNodes +
                 ", OutNodes=" + OutNodes +
                 ", EF=" + spectra.getNode(index).getEF() +
