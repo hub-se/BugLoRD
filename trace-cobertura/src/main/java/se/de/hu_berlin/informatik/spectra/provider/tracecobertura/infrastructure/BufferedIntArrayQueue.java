@@ -133,6 +133,29 @@ public class BufferedIntArrayQueue implements Serializable {
 		initialize();
     }
     
+    private void initialize() {
+		firstStoreIndex = 0;
+		lastStoreIndex = -1;
+		if (lastNode != null) {
+//			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
+//				lastNode.items[j] = null;
+//			}
+			uncacheAndDelete(lastNode.storeIndex);
+//			lastNode = null;
+		}
+		if (lastNode != null) {
+			lastNode.modified = false;
+			lastNode.storeIndex = 0;
+			lastNode.startIndex = 0;
+			lastNode.endIndex = 0;
+			currentStoreIndex = 0;
+		} else {
+			currentStoreIndex = -1;
+		}
+		firstNodeSize = 0;
+		size = 0;
+	}
+    
     public BufferedIntArrayQueue(File outputDir, String filePrefix) {
     	this(outputDir, filePrefix, true);
     }
@@ -155,28 +178,6 @@ public class BufferedIntArrayQueue implements Serializable {
 	public BufferedIntArrayQueue(File output, String filePrefix, int nodeArrayLength) {
     	this(output, filePrefix, nodeArrayLength, true);
     }
-	
-	private void initialize() {
-		firstStoreIndex = 0;
-		lastStoreIndex = -1;
-		if (lastNode != null) {
-//			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
-//				lastNode.items[j] = null;
-//			}
-			uncacheAndDelete(lastNode.storeIndex);
-//			lastNode = null;
-		}
-		if (lastNode != null) {
-			lastNode.storeIndex = 0;
-			lastNode.startIndex = 0;
-			lastNode.endIndex = 0;
-			currentStoreIndex = 0;
-		} else {
-			currentStoreIndex = -1;
-		}
-		firstNodeSize = 0;
-		size = 0;
-	}
 	
 	public int getNodeSize() {
 		return arrayLength;
@@ -416,12 +417,14 @@ public class BufferedIntArrayQueue implements Serializable {
 					int endIndex = directBuf.getInt();
 					
 //					int arrayLength = (int)fileSize/4 - 2;
-					int[] items = new int[arrayLength];
+					// actually only load an array of the size that's necessary;
+					// will be extended if there are new elements that are added
+					int[] items = new int[endIndex];
 					for (int i = startIndex; i < endIndex; ++i) {
 						items[i] = directBuf.getInt();
 					}
 					
-					loadedNode = new Node(items, startIndex, endIndex, storeIndex);
+					loadedNode = new Node(items, startIndex, endIndex, storeIndex, arrayLength);
 					
 					// file can not be removed, due to serialization! TODO
 					if (deleteOnExit) {
@@ -873,9 +876,12 @@ public class BufferedIntArrayQueue implements Serializable {
         private volatile int startIndex = 0;
         // points to last free slot
         private volatile int endIndex = 1;
+
+		private int arrayLength;
         // pointer to next array node
 
 		Node(int element, int arrayLength, int storeIndex) {
+			this.arrayLength = arrayLength;
 			if (arrayLength < 1) {
         		throw new IllegalStateException();
         	}
@@ -886,11 +892,12 @@ public class BufferedIntArrayQueue implements Serializable {
         	this.modified = true;
 		}
 
-		public Node(int[] items, int startIndex, int endIndex, int storeIndex) {
+		public Node(int[] items, int startIndex, int endIndex, int storeIndex, int arrayLength) {
 			this.items = items;
 			this.endIndex = endIndex;
 			this.startIndex = startIndex;
 			this.storeIndex = storeIndex;
+			this.arrayLength = arrayLength;
 		}
 		
 		// removes the first element
@@ -904,12 +911,21 @@ public class BufferedIntArrayQueue implements Serializable {
         // adds an element to the end
 		public void add(int e) {
 			this.modified = true;
+			if (items.length < arrayLength) {
+				extendArray();
+			}
 			items[endIndex++] = e;
+		}
+
+		private void extendArray() {
+			int[] temp = items;
+			items = new int[arrayLength];
+			System.arraycopy(temp, startIndex, items, startIndex, temp.length - startIndex);
 		}
 
 		// checks whether an element can be added to the node's array
 		boolean hasFreeSpace() {
-        	return endIndex < items.length;
+        	return endIndex < arrayLength;
         }
 
 		public int get(int i) {

@@ -182,24 +182,34 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 					Iterator<Integer> subTraceIdIterator = spectra.getIndexer().getSubTraceIDSequenceIterator(subTraceSequenceIndex);
 					while (subTraceIdIterator.hasNext()) {
 						Integer subTraceId = subTraceIdIterator.next();
-						IntTraceIterator  nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
 						int special_counter = 0;
+						int special_counter_at_pos = 0;
+						
+						boolean isFirst = true;
+						IntTraceIterator  nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
 						while (nodeIdIterator.hasNext()) {
 							int nodeId = nodeIdIterator.next();
 							INode<SourceCodeBlock> node = spectra.getNode(nodeId);
 							if (!node.getIdentifier().getNodeType().equals(NodeType.NORMAL)) {
 								++special_counter;
+								if (isFirst || !nodeIdIterator.hasNext()) {
+									++special_counter_at_pos;
+								}
 							}
+							isFirst = false;
 						}
-						if (special_counter > 1) {
+						if (special_counter > 2 || special_counter != special_counter_at_pos) {
 							nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
 							while (nodeIdIterator.hasNext()) {
 								int nodeIndex = nodeIdIterator.next();
 								System.out.println(nodeIndex + ": " + spectra.getNode(nodeIndex).getIdentifier());
 							}
 						}
-						// check if all sub traces contain at most 1 special node (branch/switch/jump)
-						assertTrue("special node count: " + special_counter, special_counter <= 1);
+						// check if all sub traces contain at most 2 special nodes (branch/switch/jump)
+						assertTrue("special node count: " + special_counter, special_counter <= 2);
+						
+						// check if all sub traces contain at most 2 special nodes (branch/switch/jump)
+						assertEquals("special nodes not at the start or the end.", special_counter, special_counter_at_pos);
 					}
 				}
 			}
@@ -336,7 +346,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 				10000L, 1, false, false, false, true, "lang10tests.txt");
 	}
 	
-//	@Test
+	@Test
 	public void testGenerateRankingForLang10TestListSmall() {
 		// org.apache.commons.lang3.time.FastDateParser, counter ID 166, line 399
 		testOnProjectWithTestList(new TestProjects.Lang10b(), "reportLang10bTestListSmall", 

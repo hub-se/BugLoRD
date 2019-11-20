@@ -34,12 +34,18 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	private int nodeSize;
 	private int mapSize;
 	private boolean deleteOnExit;
+	private boolean log;
 	
 	private boolean locked = false;
 
 	private String prefix;
 
 	public EfficientCompressedIntegerTrace(File outputDir, String prefix, int nodeSize, int mapSize, boolean deleteOnExit) {
+		this(outputDir, prefix, nodeSize, mapSize, deleteOnExit, false);
+	}
+	
+	public EfficientCompressedIntegerTrace(File outputDir, String prefix, int nodeSize, int mapSize, boolean deleteOnExit, boolean log) {
+		this.log = log;
 		this.outputDir = outputDir;
 		this.prefix = prefix;
 		this.nodeSize = nodeSize;
@@ -48,6 +54,12 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		String uuid = UUID.randomUUID().toString();
 		this.compressedTrace = new BufferedIntArrayQueue(outputDir, 
 				prefix + "cpr_trace_" + uuid, nodeSize, deleteOnExit);
+		initialize();
+	}
+	
+	private void initialize() {
+		this.originalSize = 0;
+		this.locked = false;
 		addNewLevel();
 	}
 	
@@ -60,7 +72,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	 * whether to log some status information
 	 */
 	public EfficientCompressedIntegerTrace(BufferedIntArrayQueue trace, boolean log) {
-		this(trace.getOutputDir(), trace.getFilePrefix(), trace.getNodeSize(), trace.getNodeSize(), trace.isDeleteOnExit());
+		this(trace.getOutputDir(), trace.getFilePrefix(), trace.getNodeSize(), trace.getNodeSize(), trace.isDeleteOnExit(), log);
 		while (!trace.isEmpty()) {
 			add(trace.remove());
 		}
@@ -166,10 +178,12 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 			throw new IllegalStateException("Can not add element to already locked trace.");
 		}
 		++originalSize;
-		if (originalSize % 10000 == 0)
-			System.out.print('.');
-		if (originalSize % 1000000 == 0)
-			System.out.println(originalSize);
+		if (log) {
+			if (originalSize % 10000 == 0)
+				System.out.print('.');
+			if (originalSize % 1000000 == 0)
+				System.out.println(originalSize);
+		}
 		CompressedIntegerTraceLevel level = levels.get(0);
 		boolean endOfRepetition = level.add(element, 0 < MAX_ITERATION_COUNT);
 
@@ -310,7 +324,9 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 				compressedTrace = levels.get(levels.size() - 1).getCompressedTrace();
 			}
 			builder.append(String.format("full size: %d, compressed size: %d (%.2f%%)", originalSize, compressedTrace.size(), -100.00+100.0*(double)compressedTrace.size()/(double)originalSize));
-			System.out.println(builder.toString());
+			if (log) {
+				System.out.println(builder.toString());
+			}
 
 			// don't need the levels anymore now
 			levels.clear();
@@ -387,6 +403,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	public void clear() {
 		getCompressedTrace().clear();
 		super.clear();
+		initialize();
 	}
 
 	public int getFirstElement() {

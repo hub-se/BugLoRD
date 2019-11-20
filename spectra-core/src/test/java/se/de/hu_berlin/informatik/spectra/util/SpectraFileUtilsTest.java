@@ -35,10 +35,8 @@ import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraPro
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -94,13 +92,13 @@ public class SpectraFileUtilsTest extends TestSettings {
 		return result;
 	}
 	
-	private EfficientCompressedLongTrace asList(Path outputDir, int[][] rt) {
-		BufferedLongArrayQueue list = new BufferedLongArrayQueue(
+	private EfficientCompressedIntegerTrace asList(Path outputDir, int[][] rt) {
+		BufferedIntArrayQueue list = new BufferedIntArrayQueue(
 				outputDir.toFile(), String.valueOf(UUID.randomUUID()), rt.length);
 		for (int[] statement : rt) {
-			list.add(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(statement[0], statement[1], statement[2]));
+			list.add(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(statement[0], statement[1]));
 		}
-		return new EfficientCompressedLongTrace(list, true);
+		return new EfficientCompressedIntegerTrace(list, true);
 	}
 	
 	private EfficientCompressedIntegerTrace c(Path outputDir, int... numbers) {
@@ -176,7 +174,7 @@ public class SpectraFileUtilsTest extends TestSettings {
         RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
         
         // sub trace id -> sub trace
-        Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap = new HashMap<>();
+        Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap = new HashMap<>();
         idToSubTraceMap.put(1,asList(outputDir, rt(5,6,7)));
         idToSubTraceMap.put(2,asList(outputDir, rt(8,9,10)));
         idToSubTraceMap.put(3,asList(outputDir, rt(11,12,13)));

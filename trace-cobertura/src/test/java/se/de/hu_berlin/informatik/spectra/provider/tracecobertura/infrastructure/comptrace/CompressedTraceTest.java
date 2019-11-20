@@ -559,6 +559,40 @@ public class CompressedTraceTest {
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
 	@Test
+	public void testSingleLinkedBufferedArrayQueue() throws Exception {
+		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test17", 5);
+		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, false);
+		
+		for (int i = 0; i < 50; ++i) {
+			for (int j = 0; j < i; ++j) {
+				compressedIdTrace.add(j);
+			}	
+			compressedIdTrace.clear();
+			Assert.assertTrue(String.format("i: %d, size: %d", i, compressedIdTrace.size()), compressedIdTrace.isEmpty());
+		}
+	}
+	
+	/*
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
+	 */
+	@Test
+	public void testSingleLinkedBufferedArrayQueueLong() throws Exception {
+		BufferedLongArrayQueue queue = new BufferedLongArrayQueue(outputDir, "test18", 5);
+		EfficientCompressedLongTrace compressedIdTrace = new EfficientCompressedLongTrace(queue, false);
+		
+		for (int i = 0; i < 50; ++i) {
+			for (int j = 0; j < i; ++j) {
+				compressedIdTrace.add(j);
+			}	
+			compressedIdTrace.clear();
+			Assert.assertTrue(String.format("i: %d, size: %d", i, compressedIdTrace.size()), compressedIdTrace.isEmpty());
+		}
+	}
+	
+	/*
+	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
+	 */
+	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt2() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test3", 5);
 		

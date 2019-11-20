@@ -18,14 +18,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 
@@ -96,20 +94,20 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		return subTraceIdSequences;
 	}
 	
-	private EfficientCompressedIntegerTrace[] getNodeIdSequences(Path outputDir, Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap) {
+	private EfficientCompressedIntegerTrace[] getNodeIdSequences(Path outputDir, Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap) {
 		// indexer.getSequences() will generate all sequences of sub trace IDs that exist in the GS tree
 		EfficientCompressedIntegerTrace[] nodeIdSequences = new EfficientCompressedIntegerTrace[idToSubTraceMap.size()+1];
 
 		// id 0 marks an empty sub trace... should not really happen... :/
 		nodeIdSequences[0] = null;
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			EfficientCompressedLongTrace list = idToSubTraceMap.get(i);
-			ReplaceableCloneableLongIterator sequenceIterator = list.iterator();
+			EfficientCompressedIntegerTrace list = idToSubTraceMap.get(i);
+			ReplaceableCloneableIntIterator sequenceIterator = list.iterator();
 			BufferedIntArrayQueue traceOfNodeIDs = new BufferedIntArrayQueue(outputDir.toFile(), 
 					String.valueOf(UUID.randomUUID()), 100);
 			
 			while (sequenceIterator.hasNext()) {
-				Long statement = sequenceIterator.next();
+				int statement = sequenceIterator.next();
 				traceOfNodeIDs.add(CoberturaStatementEncoding.getCounterId(statement));
 			}
 			
@@ -124,22 +122,22 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		return nodeIdSequences;
 	}
 	
-	private Map<Integer,EfficientCompressedLongTrace> generateIdToSubtraceMap(Path outputDir, int max, String filePrefix) {
+	private Map<Integer,EfficientCompressedIntegerTrace> generateIdToSubtraceMap(Path outputDir, int max, String filePrefix) {
 //		Map<Integer,BufferedArrayQueue<int[]>> idToSubTraceMap = new BufferedMap<>(outputDir.toFile(), filePrefix);
-		Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap = new HashMap<>();
+		Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap = new HashMap<>();
         for (int i = 1; i <= max; ++i) {
         	idToSubTraceMap.put(i,asList(outputDir, rt(i+10)));
         }
 		return idToSubTraceMap;
 	}
 	
-	private EfficientCompressedLongTrace asList(Path outputDir, int[][] rt) {
-		BufferedLongArrayQueue list = new BufferedLongArrayQueue(outputDir.toFile(), 
+	private EfficientCompressedIntegerTrace asList(Path outputDir, int[][] rt) {
+		BufferedIntArrayQueue list = new BufferedIntArrayQueue(outputDir.toFile(), 
 				String.valueOf(UUID.randomUUID()), rt.length);
 		for (int[] statement : rt) {
-			list.add(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(statement[0], statement[1], statement[2]));
+			list.add(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(statement[0], statement[1]));
 		}
-		return new EfficientCompressedLongTrace(list, false);
+		return new EfficientCompressedIntegerTrace(list, false);
 	}
 
 	private void checkMappedTrace(int[] traceArray, int[] fullMappedTrace) {
@@ -155,7 +153,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-        Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test1");
+        Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test1");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test1"));
@@ -258,7 +256,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-		Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test2");
+		Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test2");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test2"));
@@ -359,7 +357,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-		Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test3");
+		Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test3");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test3"));
@@ -459,7 +457,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-		Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test4");
+		Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 8, "test4");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 8, "test4"));
@@ -559,7 +557,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-		Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 9, "test5");
+		Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 9, "test5");
         
 		collector.addRawTraceToPool(1, 0, s(1,2, 3,4,5,6, 3,4,5,6, 3,4,5,6,7,8), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 9, "test5"));
@@ -659,7 +657,7 @@ public class RawIntTraceCollectorTest extends TestSettings {
 		RawIntTraceCollector collector = new RawIntTraceCollector(outputDir);
 		
 		// sub trace id -> sub trace
-		Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 3, "test6");
+		Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap = generateIdToSubtraceMap(outputDir, 3, "test6");
         
 		collector.addRawTraceToPool(1, 0, s(1,2,3, 1,2,3, 1,2,3), true, outputDir, "t1", 
 				generateIdToSubtraceMap(outputDir, 3, "test6"));

@@ -45,10 +45,10 @@ public class ClassData extends CoverageDataContainer
 //		return counterIdToLineNumberMap;
 //	}
 	
-	protected int[] counterId2LineNumbers;
+	protected int[][] counterId2LineNumbers;
 
-	public void setCounterId2LineNumbers(int[] counterId2LineNumbers) {
-		this.counterId2LineNumbers = counterId2LineNumbers;
+	public void setCounterId2LineNumbers(int[][] counterIDs2LineNumbers) {
+		this.counterId2LineNumbers = counterIDs2LineNumbers;
 	}
 	
 	/**
@@ -56,7 +56,7 @@ public class ClassData extends CoverageDataContainer
 	 * array that maps counter IDs to actual line numbers;
 	 * will be set once (and only) during instrumentation and stored in data file
 	 */
-	public int[] getCounterId2LineNumbers() {
+	public int[][] getCounterId2LineNumbers() {
 		return counterId2LineNumbers;
 	}
 	
@@ -320,6 +320,16 @@ public class ClassData extends CoverageDataContainer
 			return lines;
 //			Set<CoverageData> set = coverageMap.get(methodNameAndDescriptor);
 //			return set == null ? new ArrayList<CoverageData>(0) : set;
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	public String getMethodNameAndDescriptor(int lineNumber) {
+		lock.lock();
+		try {
+			LineData next = (LineData) children.get(lineNumber);
+			return next.getMethodName() + next.getMethodDescriptor();
 		} finally {
 			lock.unlock();
 		}
