@@ -29,8 +29,8 @@ public class BufferedIntArrayQueue implements Serializable {
 	 */
 	private static final long serialVersionUID = -1777403971930917719L;
 
-	// keep at most 2 (+1 with the last node) nodes in memory
-    private static final int CACHE_SIZE = 2;
+	// keep at most 3 (+1 with the last node) nodes in memory
+    private static final int CACHE_SIZE = 3;
     
     private static final int ARRAY_SIZE = 1000;
 	
@@ -207,9 +207,10 @@ public class BufferedIntArrayQueue implements Serializable {
         	// we don't actually use pointers!
 //            l.next = newNode;
         	++lastStoreIndex;
-        	store(l);
-        	// we can now remove the node from memory
-        	l.items = null;
+        	putInCache(l.storeIndex, l);
+//        	store(l);
+//        	// we can now remove the node from memory
+//        	l.items = null;
         }
         ++size;
     }
@@ -271,6 +272,25 @@ public class BufferedIntArrayQueue implements Serializable {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
+	}
+    
+    private void putInCache(int storeIndex, Node node) {
+    	lock.lock();
+    	try {
+    		// already in the cache?
+    		if (cachedNodes.containsKey(storeIndex)) {
+    			return;
+    		}
+    		// remove a cached node if the cache is full
+    		if (cachedNodes.size() >= CACHE_SIZE) {
+    			// remove the node from the cache that has been added first
+    			uncache(cacheSequence.remove(0));
+    		}
+    		cachedNodes.put(storeIndex, node);
+    		cacheSequence.add(storeIndex);
+    	} finally {
+    		lock.unlock();
+    	}
 	}
 
 	/**
@@ -382,24 +402,21 @@ public class BufferedIntArrayQueue implements Serializable {
 //		if (storeIndex > lastStoreIndex) {
 //			return null;
 //		}
-		String filename = getFileName(storeIndex);
-		if (!(new File(filename).exists())) {
-			return null;
-		}
 		
 		lock.lock();
 		try {
 			// only cache nodes that are not the last node
-			if (storeIndex <= lastStoreIndex) {
-				if (cachedNodes.containsKey(storeIndex)) {
-					// already cached
-					return cachedNodes.get(storeIndex);
-				}
-				// cache the node
-				if (cachedNodes.size() >= CACHE_SIZE) {
-					// remove the node from the cache that has been added first
-					uncache(cacheSequence.remove(0));
-				}
+//			if (storeIndex <= lastStoreIndex) {
+			if (cachedNodes.containsKey(storeIndex)) {
+				// already cached
+				return cachedNodes.get(storeIndex);
+			}
+//			}
+			
+			String filename = getFileName(storeIndex);
+			if (!(new File(filename).exists())) {
+				return null;
+//				throw new IllegalStateException("Node " + storeIndex + " was neither found in the cache or as a file.");
 			}
 			
 			Node loadedNode;
@@ -467,8 +484,7 @@ public class BufferedIntArrayQueue implements Serializable {
 //			}
 			
 			if (storeIndex <= lastStoreIndex) {
-				cachedNodes.put(storeIndex, loadedNode);
-				cacheSequence.add(storeIndex);
+				putInCache(storeIndex, loadedNode);
 			}
 			return loadedNode;
 		} finally {
@@ -513,8 +529,10 @@ public class BufferedIntArrayQueue implements Serializable {
     			if (firstStoreIndex == lastNode.storeIndex) {
     				++firstNodeSize;
     			}
+//    			System.out.println(e + " -> added " + lastNode.storeIndex + ", " + lastNode.endIndex);
     		} else {
-    			linkLast(e);	
+    			linkLast(e);
+//    			System.out.println(e + " -> linked " + lastNode.storeIndex + ", " + lastNode.endIndex);
     		}
     		return true;
     	} finally {
@@ -615,6 +633,140 @@ public class BufferedIntArrayQueue implements Serializable {
     		}
     		
     		size -= count;
+    	} finally {
+    		lock.unlock();
+		}
+    }
+    
+    /**
+     * Same as {@link #clear()}, but only removes the last {@code count} elements.
+     * 
+     * @param count
+     * the number of elements to clear from the list
+     */
+    public void clearLast(int count) {
+    	if (count >= size) {
+			clear();
+			return;
+		}
+    	if (locked) {
+    		throw new IllegalStateException("Tried to clear queue while being locked.");
+    	}
+    	lock.lock();
+    	try {
+    		loadLast();
+    		int removedElements = lastNode.size();
+			int storeIndex = lastNode.storeIndex;
+
+			if (count >= removedElements) {
+				// we can delete the last node's file
+				uncacheAndDelete(storeIndex);
+				--lastStoreIndex;
+				--currentStoreIndex;
+				count -= removedElements;
+				size -= removedElements;
+				lastNode = null;
+			}
+
+			// check if we can delete entire nodes without actually loading the respective nodes
+			while (count >= arrayLength) {
+				// we can just delete the respective file
+				uncacheAndDelete(--storeIndex);
+				--lastStoreIndex;
+				--currentStoreIndex;
+				count -= arrayLength;
+				size -= arrayLength;
+			}
+
+			// still elements left to clear?
+			if (count > 0) {
+				// it holds that count < arrayLength
+				loadLast();
+	    		lastNode.modified = true;
+	    		lastNode.endIndex -= count;
+				if (!storedNodeExists()) {
+					// no node left on disk, so continue with the last node
+					firstNodeSize = lastNode.endIndex - lastNode.startIndex;
+				}
+			}
+
+    		size -= count;
+    	} finally {
+    		lock.unlock();
+		}
+    }
+    
+    /**
+     * Same as {@link #clear()}, but removes {@code count} elements, 
+     * starting from {@code startIndex}.
+     * 
+     * @param startIndex
+     * the index to start clearing from
+     * @param count
+     * the number of elements to clear from the list
+     */
+    public void clearFrom(int startIndex, int count) {
+    	if (count == 0) {
+    		return;
+    	}
+    	if (count >= size) {
+			clear();
+			return;
+		}
+    	if (startIndex + count >= size) {
+			clearLast(size - startIndex);
+			return;
+		}
+    	if (locked) {
+    		throw new IllegalStateException("Tried to clear queue while being locked.");
+    	}
+    	lock.lock();
+    	try {
+    		int startNodeIndex = -1;
+    		int startItemIndex = startIndex;
+    		Node startNode = null;
+    		// we can compute the store index using the size of the 
+    		// first node and the constant size of each array node
+    		if (startIndex < firstNodeSize) {
+    			startNode = loadFirst();
+    	        if (startNode == null || startNode.startIndex >= startNode.endIndex)
+    	            throw new NoSuchElementException();
+    	        startNodeIndex = startNode.storeIndex;
+    		} else {
+    			int i = startIndex - firstNodeSize;
+    			startNodeIndex = firstStoreIndex + 1 + (i / arrayLength);
+    			startItemIndex = i % arrayLength;
+    			startNode = load(startNodeIndex);
+    		}
+
+    		int endItemIndex = startIndex + count;
+
+    		// shift the remaining elements to the left
+    		MyBufferedIntIterator iterator = iterator(endItemIndex);
+    		while (iterator.hasNext()) {
+    			// since we keep a reference to the node here, we might make changes to it,
+    			// but we might also have remove the node from the cache earlier
+    			startNode.set(startItemIndex++, iterator.next());
+    			if (startNode.startIndex + startItemIndex >= startNode.endIndex) {
+    				// ensure that the node is in the cache after being modified
+    				putInCache(startNode.storeIndex, startNode);
+    				startItemIndex = 0;
+    				startNode = load(++startNodeIndex);
+    			}
+    		}
+    		// ensure that the node is in the cache after being modified
+			putInCache(startNode.storeIndex, startNode);
+    		
+    		// now just remove the duplicate entries at the end
+    		clearLast(count);
+    		
+//    		System.out.println();
+//    		MyBufferedIntIterator iterator2 = iterator(0);
+//    		while (iterator2.hasNext()) {
+//    			System.out.print(iterator2.next() + ",");
+//    		}
+//    		System.out.println();
+    		
     	} finally {
     		lock.unlock();
 		}
@@ -892,6 +1044,10 @@ public class BufferedIntArrayQueue implements Serializable {
         	this.modified = true;
 		}
 
+		public int size() {
+			return endIndex - startIndex;
+		}
+
 		public Node(int[] items, int startIndex, int endIndex, int storeIndex, int arrayLength) {
 			this.items = items;
 			this.endIndex = endIndex;
@@ -933,6 +1089,10 @@ public class BufferedIntArrayQueue implements Serializable {
 		}
 		
 		public void set(int i, int value) {
+			this.modified = true;
+			if (items.length <= i + startIndex) {
+				extendArray();
+			}
 			items[i+startIndex] = value;
 		}
 
@@ -955,14 +1115,15 @@ public class BufferedIntArrayQueue implements Serializable {
 	        if (f == null || f.startIndex >= f.endIndex)
 	            throw new NoSuchElementException();
 	        return f.get(i);
+		} else {
+			i -= firstNodeSize;
+			int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
+			int itemIndex = i % arrayLength;
+			final Node f = load(storeIndex);
+			if (f == null || itemIndex >= f.endIndex)
+				throw new NoSuchElementException("index: " + (i + firstNodeSize) + ", size: " + size);
+			return f.get(itemIndex);
 		}
-		i -= firstNodeSize;
-		int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
-		int itemIndex = i % arrayLength;
-		final Node f = load(storeIndex);
-        if (f == null || itemIndex >= f.endIndex)
-            throw new NoSuchElementException("index: " + (i + firstNodeSize) + ", size: " + size);
-        return f.get(itemIndex);
 	}
 	
 	private void set(int i, int value) {
@@ -976,14 +1137,15 @@ public class BufferedIntArrayQueue implements Serializable {
 	        if (f == null || f.startIndex >= f.endIndex)
 	            throw new NoSuchElementException();
 	        f.set(i, value);
+		} else {
+			i -= firstNodeSize;
+			int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
+			int itemIndex = i % arrayLength;
+			final Node f = load(storeIndex);
+			if (f == null || itemIndex >= f.endIndex)
+				throw new NoSuchElementException();
+			f.set(itemIndex, value);
 		}
-		i -= firstNodeSize;
-		int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
-		int itemIndex = i % arrayLength;
-		final Node f = load(storeIndex);
-        if (f == null || itemIndex >= f.endIndex)
-            throw new NoSuchElementException();
-        f.set(itemIndex, value);
 	}
 
 	@Override

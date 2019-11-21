@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.rules.ExpectedException;
 
-import java_cup.internal_error;
 import se.de.hu_berlin.informatik.gen.spectra.main.TraceCoberturaSpectraGenerator;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -144,6 +143,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 				// iterate over the compressed trace (should contain all executed node IDs)
 				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
 				while (baseIterator.hasNext()) {
+					System.out.print(".");
 					// execution trace is composed of indexed sequences of subtrace IDs
 					int subTraceSequenceIndex = baseIterator.next();
 					// iterate over the full node ID sequence using the indexer
@@ -170,12 +170,14 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 						involvedInExecutionTraces.contains(nodeIndex));
 				}
 			}
+			System.out.println("!");
 			
 			// iterate over execution traces
 			for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
 				// iterate over the compressed trace (should contain all executed node IDs)
 				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
 				while (baseIterator.hasNext()) {
+					System.out.print(".");
 					// execution trace is composed of indexed sequences of subtrace IDs
 					int subTraceSequenceIndex = baseIterator.next();
 					// iterate over the sub trace ID sequences using the indexer

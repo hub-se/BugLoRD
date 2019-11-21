@@ -542,18 +542,12 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		IntTraceIterator traceIterator = trace.iterator();
 		
 		EfficientCompressedIntegerTrace currentSubTrace = getNewSubTrace(trace);
-		String lastMethod = "";
-		NodeType lastNodeType = NodeType.NORMAL;
+		String emptyString = "";
+		String lastMethod = emptyString;
+		String lastClass = emptyString;
+		int lastNodeType = CoberturaStatementEncoding.NORMAL_ID;
 		while (traceIterator.hasNext()) {
 			int statement = traceIterator.next();
-			
-//			// check if the current statement indicates a catch block entry
-//			if (traceIterator.hasNext() && traceIterator.peek() == ExecutionTraceCollector.CATCH_BLOCK_ID && !currentSubTrace.isEmpty()) {
-//				// skip the indicator
-//				traceIterator.next();
-//				// cut the trace **before** each catch block entry
-//				currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace);
-//			}
 			
 			// check if the current statement indicates a catch block entry
 			if (statement == ExecutionTraceCollector.CATCH_BLOCK_ID) {
@@ -583,43 +577,35 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					return null;
 				}
 				int[] lineNumber = classData.getCounterId2LineNumbers()[CoberturaStatementEncoding.getCounterId(statement)];
-				//			if (lineNumber != 398 && lineNumber != 399) {
-				//				continue;
-				//			}
 
-				// check if we switched to a different method than we were in before;
-				// this should allow for the sub traces to be uniquely determined by first and last statement
-				String currentMethod = classData.getMethodNameAndDescriptor(lineNumber[0]);
-				if (!currentMethod.equals(lastMethod) && !currentSubTrace.isEmpty()) {
-					// cut the trace after each change in methods
-					currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
+				// check if we switched to a different class than before
+				if (classSourceFileName.equals(lastClass)) {
+					// check if we switched to a different method than we were in before;
+					// this should allow for the sub traces to be uniquely determined by first and last statement
+					String currentMethod = classData.getMethodNameAndDescriptor(lineNumber[0]);
+					if (!currentMethod.equals(lastMethod) && !currentSubTrace.isEmpty()) {
+						// cut the trace after each change in methods
+						currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
+					}
+					lastMethod = currentMethod;
+				} else {
+					if (!currentSubTrace.isEmpty()) {
+						// cut the trace after each change in classes
+						currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
+					}
+					lastMethod = classData.getMethodNameAndDescriptor(lineNumber[0]);
+					lastClass = classSourceFileName;
 				}
-				lastMethod = currentMethod;
 				
 				// add the current statement to the current sub trace
 				currentSubTrace.add(statement);
-				
-				NodeType nodeType = NodeType.NORMAL;
-				if (lineNumber[1] != CoberturaStatementEncoding.NORMAL_ID) {
-					switch (lineNumber[1]) {
-					case CoberturaStatementEncoding.BRANCH_ID:
-						nodeType = NodeType.FALSE_BRANCH;
-						break;
-					case CoberturaStatementEncoding.JUMP_ID:
-						nodeType = NodeType.TRUE_BRANCH;
-						break;
-					case CoberturaStatementEncoding.SWITCH_ID:
-						nodeType = NodeType.SWITCH_BRANCH;
-						break;
-					default:
-					}
-				}
 
-				lastNodeType = nodeType;
 				
-				if (!nodeType.equals(NodeType.NORMAL) && !currentSubTrace.isEmpty()) {
+				lastNodeType = lineNumber[1];
+				
+				if (lastNodeType != CoberturaStatementEncoding.NORMAL_ID && !currentSubTrace.isEmpty()) {
 					// cut the trace after each branching statement
-					currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, nodeType);
+					currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
 				}
 
 			} else {
@@ -639,7 +625,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 	}
 
 	private EfficientCompressedIntegerTrace processLastSubTrace(EfficientCompressedIntegerTrace trace,
-			EfficientCompressedIntegerTrace resultTrace, EfficientCompressedIntegerTrace currentSubTrace, NodeType lastNodeType) {
+			EfficientCompressedIntegerTrace resultTrace, EfficientCompressedIntegerTrace currentSubTrace, int lastNodeType) {
 		// get a representation id for the subtrace (unique for sub traces that start and end within the same method!)
 		long subTraceId = CoberturaStatementEncoding.generateRepresentationForSubTrace(currentSubTrace);
 		Integer id = idToSubtraceIdMap.get(subTraceId);
@@ -653,7 +639,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //		}
 		
 		Integer lastExecutedStatement = null;
-		if (!currentSubTrace.isEmpty() && !lastNodeType.equals(NodeType.NORMAL)) {
+		if (!currentSubTrace.isEmpty() && lastNodeType != CoberturaStatementEncoding.NORMAL_ID) {
 			lastExecutedStatement = currentSubTrace.getLastElement();
 		}
 		
@@ -702,9 +688,10 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //	}
 
 	private EfficientCompressedIntegerTrace getNewSubTrace(EfficientCompressedIntegerTrace trace) {
+		// returns a flat trace (no checks for repetitions)
 		return new EfficientCompressedIntegerTrace(
 				trace.getCompressedTrace().getOutputDir(), trace.getCompressedTrace().getFilePrefix(),
-				ExecutionTraceCollector.SUBTRACE_ARRAY_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
+				ExecutionTraceCollector.SUBTRACE_ARRAY_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true, false, true);
 	}
 
 	public void addExecutionTracesToSpectra(ISpectra<SourceCodeBlock, ? super K> spectra) {

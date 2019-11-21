@@ -136,7 +136,7 @@ public class CompressedTraceTest {
 	 */
 	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt() throws Exception {
-		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test2", 5);
+		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test2", 4);
 		
 		for (int i = 0; i < 20; ++i) {
 			queue.add(i);
@@ -163,6 +163,75 @@ public class CompressedTraceTest {
 		Assert.assertEquals(161, compressedIdTrace.size());
 		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
 		Assert.assertEquals(51, compressedIdTrace.getCompressedTrace().size());
+		
+		System.out.println(compressedIdTrace);
+		printWithIterator(compressedIdTrace.baseIterator());
+		
+//		Thread.sleep(5000);
+		IntTraceIterator iterator = compressedIdTrace.iterator();
+		
+		int counter = 0;
+		int i = 0;
+		while (iterator.hasNext() && i < 20) {
+			Assert.assertEquals(i, iterator.next());
+			Assert.assertEquals(i++, iterator.next());
+			counter += 2;
+		}
+		Assert.assertEquals(99, iterator.next());
+		++counter;
+		i = 0;
+		while (iterator.hasNext() && i < 20) {
+			Assert.assertEquals(i, iterator.next());
+			Assert.assertEquals(i++, iterator.next());
+			counter += 2;
+		}
+		i = 0;
+		while (iterator.hasNext() && i < 20) {
+			Assert.assertEquals(i, iterator.next());
+			Assert.assertEquals(i, iterator.next());
+			Assert.assertEquals(i++, iterator.next());
+			counter += 3;
+		}
+		i = 0;
+		while (iterator.hasNext() && i < 10) {
+			Assert.assertEquals(i, iterator.next());
+			Assert.assertEquals(i++, iterator.next());
+			counter += 2;
+		}
+		
+		queue.clear();
+		Assert.assertEquals(compressedIdTrace.size(), counter);
+	}
+	
+	@Test
+	public void testSingleLinkedBufferedArrayQueueFlat() throws Exception {
+		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test222", 4);
+		
+		for (int i = 0; i < 20; ++i) {
+			queue.add(i);
+			queue.add(i);
+		}
+		queue.add(99);
+		for (int i = 0; i < 20; ++i) {
+			queue.add(i);
+			queue.add(i);
+		}
+		for (int i = 0; i < 20; ++i) {
+			queue.add(i);
+			queue.add(i);
+			queue.add(i);
+		}
+		for (int i = 0; i < 10; ++i) {
+			queue.add(i);
+			queue.add(i);
+		}
+		queue.sleep();
+		
+		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, true, true);
+		
+		Assert.assertEquals(161, compressedIdTrace.size());
+		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
+		Assert.assertEquals(161, compressedIdTrace.getCompressedTrace().size());
 		
 		System.out.println(compressedIdTrace);
 		printWithIterator(compressedIdTrace.baseIterator());
@@ -561,14 +630,89 @@ public class CompressedTraceTest {
 	@Test
 	public void testSingleLinkedBufferedArrayQueue() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test17", 5);
-		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, false);
+//		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, false);
 		
-		for (int i = 0; i < 50; ++i) {
-			for (int j = 0; j < i; ++j) {
-				compressedIdTrace.add(j);
-			}	
-			compressedIdTrace.clear();
-			Assert.assertTrue(String.format("i: %d, size: %d", i, compressedIdTrace.size()), compressedIdTrace.isEmpty());
+//		for (int i = 0; i < 20; ++i) {
+//			for (int j = 0; j < i; ++j) {
+//				compressedIdTrace.add(j);
+//			}	
+//			compressedIdTrace.clear();
+//			Assert.assertTrue(String.format("i: %d, size: %d", i, compressedIdTrace.size()), compressedIdTrace.isEmpty());
+//		}
+		
+		for (int k = 0; k < 22; k += 3) {
+			checkDeletionIteration(queue, k);
+		}
+		
+//		compressedIdTrace.clear();
+	}
+
+	private void checkDeletionIteration(BufferedIntArrayQueue queue, int bound) throws Exception {
+		for (int k = 0; k < bound; ++k) {
+			for (int j = 0; j < bound; ++j) {
+				queue.add(j);
+			}
+			try {
+				queue.clearLast(k);
+			} catch (Exception e) {
+				System.out.println(String.format("k: %d, size: %d", k, queue.size()));
+				throw e;
+			}
+			Assert.assertEquals(String.format("size: %d", queue.size()), bound-k, queue.size());
+			for (int j = 0; j < bound-k; ++j) {
+				MyBufferedIntIterator iterator = queue.iterator(j);
+				int count = 0;
+				while (iterator.hasNext()) {
+					Assert.assertEquals(String.format("j: %d, k: %d, size: %d", j, k, queue.size()), j + count, iterator.next());
+					++count;
+				}
+				Assert.assertEquals(String.format("size: %d", queue.size()), queue.size() - j, count);
+			}
+			for (int j = 0; j < bound-k; ++j) {
+				Assert.assertEquals(String.format("j: %d, k: %d, size: %d", j, k, queue.size()), j, queue.remove());
+			}
+			queue.clear();
+		}
+		
+		for (int i = 0; i < bound; i += 3) {
+			for (int k = 0; k < bound; ++k) {
+				for (int j = 0; j < bound; ++j) {
+					queue.add(j);
+				}
+				try {
+					queue.clearFrom(i, k);
+				} catch (Exception e) {
+					System.out.println(String.format("i: %d, k: %d, size: %d", i, k, queue.size()));
+					throw e;
+				}
+				Assert.assertEquals(String.format("i: %d, k: %d, size: %d", i, k, queue.size()), i+k > bound ? i : bound-k, queue.size());
+				checkWithIterator(queue, 0, i, k, bound);
+				for (int j = 0; j < i; ++j) {
+					Assert.assertEquals(String.format("i: %d, j: %d, k: %d, size: %d", i, j, k, queue.size()), j, queue.remove());
+					checkWithIterator(queue, j+1, i, k, bound);
+				}
+				for (int j = i; j < bound-k; ++j) {
+					Assert.assertEquals(String.format("i: %d, j: %d, k: %d, size: %d", i, j, k, queue.size()), j+k, queue.remove());
+					checkWithIterator(queue, j+1, i, k, bound);
+				}
+				queue.clear();
+			}
+		}
+	}
+
+	private void checkWithIterator(BufferedIntArrayQueue queue, int removed, int i, int k, int bound) {
+		for (int j = 0; j < bound-k-removed; ++j) {
+			MyBufferedIntIterator iterator = queue.iterator(j);
+			int count = 0;
+			while (iterator.hasNext() && j + count + removed < i) {
+				Assert.assertEquals(String.format("j: %d, k: %d, size: %d", j, k, queue.size()), j + count + removed, iterator.next());
+				++count;
+			}
+			while (iterator.hasNext() && j + count + removed < bound-k) {
+				Assert.assertEquals(String.format("j: %d, k: %d, size: %d", j, k, queue.size()), j + k + count + removed, iterator.next());
+				++count;
+			}
+			Assert.assertEquals(String.format("size: %d", queue.size()), queue.size() - j, count);
 		}
 	}
 	
