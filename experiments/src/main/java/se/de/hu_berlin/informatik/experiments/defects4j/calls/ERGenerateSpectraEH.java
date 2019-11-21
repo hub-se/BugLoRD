@@ -137,136 +137,138 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		 * # if not found a spectra, then run all the tests and build a new one
 		 * #==================================================================================== */
 		if (!foundSpectra) {
+			return null;
 			/* #====================================================================================
 			 * # checkout buggy version if necessary
 			 * #==================================================================================== */
-			buggyEntity.requireBug(true);
-			
-			/* #====================================================================================
-			 * # collect paths
-			 * #==================================================================================== */
-			String buggyMainSrcDir = bug.getMainSourceDir(true).toString();
-			String buggyMainBinDir = bug.getMainBinDir(true).toString();
-			String buggyTestBinDir = bug.getTestBinDir(true).toString();
-			String buggyTestCP = bug.getTestClassPath(true);
-
-			/* #====================================================================================
-			 * # compile buggy version
-			 * #==================================================================================== */
-			bug.compile(true);
-
-			/* #====================================================================================
-			 * # generate coverage traces and calculate spectra
-			 * #==================================================================================== */
-			String testClasses = Misc.listToString(bug.getTestClasses(true), System.lineSeparator(), "", "");
-
-			String testClassesFile = bug.getWorkDir(true).resolve(BugLoRDConstants.FILENAME_TEST_CLASSES).toString();
-			FileUtils.delete(new File(testClassesFile));
-			try {
-				FileUtils.writeString2File(testClasses, new File(testClassesFile));
-			} catch (IOException e) {
-				Log.err(this, "IOException while trying to write to file '%s'.", testClassesFile);
-				Log.err(this, "Error while checking out or generating rankings. Skipping '"
-						+ buggyEntity + "'.");
-				bug.tryDeleteExecutionDirectory(false);
-				return null;
-			}
-			
-			List<String> failingTests = bug.getFailingTests(true);
-
-//			boolean useSeparateJVM = false;
-//			if (buggyEntity.toString().contains("Mockito")) {
-//				useSeparateJVM = true;
+//			buggyEntity.requireBug(true);
+//
+//			/* #====================================================================================
+//			 * # collect paths
+//			 * #==================================================================================== */
+//			String buggyMainSrcDir = bug.getMainSourceDir(true).toString();
+//			String buggyMainBinDir = bug.getMainBinDir(true).toString();
+//			String buggyTestBinDir = bug.getTestBinDir(true).toString();
+//			String buggyTestCP = bug.getTestClassPath(true);
+//
+//			/* #====================================================================================
+//			 * # compile buggy version
+//			 * #==================================================================================== */
+//			bug.compile(true);
+//
+//			/* #====================================================================================
+//			 * # generate coverage traces and calculate spectra
+//			 * #==================================================================================== */
+//			String testClasses = Misc.listToString(bug.getTestClasses(true), System.lineSeparator(), "", "");
+//
+//			String testClassesFile = bug.getWorkDir(true).resolve(BugLoRDConstants.FILENAME_TEST_CLASSES).toString();
+//			FileUtils.delete(new File(testClassesFile));
+//			try {
+//				FileUtils.writeString2File(testClasses, new File(testClassesFile));
+//			} catch (IOException e) {
+//				Log.err(this, "IOException while trying to write to file '%s'.", testClassesFile);
+//				Log.err(this, "Error while checking out or generating rankings. Skipping '"
+//						+ buggyEntity + "'.");
+//				bug.tryDeleteExecutionDirectory(false);
+//				return null;
 //			}
-
-			Path rankingDir = bug.getWorkDir(true).resolve(suffix == null ? 
-					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
-			Path statsDirData = bug.getWorkDataDir().resolve(suffix == null ? 
-					BugLoRDConstants.DIR_NAME_STATS : BugLoRDConstants.DIR_NAME_STATS + "_" + suffix);
-			
-			// generate tool specific spectra
-			createMajoritySpectra(1, buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir, 
-					buggyTestBinDir, buggyTestCP, testClassesFile,
-					rankingDir.resolve(subDirName), failingTests);
-
-			
-			
-			File spectraFile = rankingDir.resolve(subDirName)
-			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();
-			File spectraFileFiltered = rankingDir.resolve(subDirName)
-					.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile();
-			
-			if (!spectraFile.exists()) {
-				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
-				return null;
-			}
-			
-			try {
-				FileUtils.copyFileOrDir(
-						spectraFile, 
-						bug.getWorkDataDir().resolve(subDirName)
-						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(), 
-						StandardCopyOption.REPLACE_EXISTING);
-				FileUtils.delete(spectraFile);
-			} catch (IOException e) {
-				Log.err(this, e, "Could not copy the spectra to the data directory.");
-			}
-			
-			try {
-				FileUtils.copyFileOrDir(
-						spectraFileFiltered, 
-						bug.getWorkDataDir().resolve(subDirName)
-						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile(), 
-						StandardCopyOption.REPLACE_EXISTING);
-				FileUtils.delete(spectraFileFiltered);
-			} catch (IOException e) {
-				Log.err(this, e, "Could not copy the filtered spectra to the data directory.");
-			}
-			
-			try {
-				List<Path> result = new SearchFileOrDirToListProcessor("**cobertura.ser", true)
-						.searchForFiles().submit(rankingDir).getResult();
-				for (Path file : result) {
-					FileUtils.delete(file);
-				}
-				List<Path> result2 = new SearchFileOrDirToListProcessor("**" + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME, true)
-						.searchForFiles().submit(rankingDir).getResult();
-				for (Path file : result2) {
-					FileUtils.delete(file);
-				}
-				List<Path> result3 = new SearchFileOrDirToListProcessor("**instrumented", true)
-						.searchForDirectories().skipSubTreeAfterMatch().submit(rankingDir).getResult();
-				for (Path dir : result3) {
-					FileUtils.delete(dir);
-				}
-				
-//				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
-				//delete old stats data directory
-				FileUtils.delete(statsDirData);
-				FileUtils.copyFileOrDir(
-						rankingDir.toFile(), 
-						statsDirData.toFile());
-//				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
-			} catch (IOException e) {
-				Log.err(this, e, "Could not clean up...");
-			}
-			
+//
+//			List<String> failingTests = bug.getFailingTests(true);
+//
+////			boolean useSeparateJVM = false;
+////			if (buggyEntity.toString().contains("Mockito")) {
+////				useSeparateJVM = true;
+////			}
+//
+//			Path rankingDir = bug.getWorkDir(true).resolve(suffix == null ?
+//					BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
+//			Path statsDirData = bug.getWorkDataDir().resolve(suffix == null ?
+//					BugLoRDConstants.DIR_NAME_STATS : BugLoRDConstants.DIR_NAME_STATS + "_" + suffix);
+//
+//			// generate tool specific spectra
+//			createMajoritySpectra(1, buggyEntity, bug, buggyMainSrcDir, buggyMainBinDir,
+//					buggyTestBinDir, buggyTestCP, testClassesFile,
+//					rankingDir.resolve(subDirName), failingTests);
+//
+//
+//
+//			File spectraFile = rankingDir.resolve(subDirName)
+//			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();
+//			File spectraFileFiltered = rankingDir.resolve(subDirName)
+//					.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile();
+//
+//			if (!spectraFile.exists()) {
+//				Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
+//				return null;
+//			}
+//
 //			try {
 //				FileUtils.copyFileOrDir(
-//						rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile(), 
-//						rankingDirData.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile());
-//				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
+//						spectraFile,
+//						bug.getWorkDataDir().resolve(subDirName)
+//						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(),
+//						StandardCopyOption.REPLACE_EXISTING);
+//				FileUtils.delete(spectraFile);
 //			} catch (IOException e) {
-//				Log.err(this, e, "Could not copy the trace file to the data directory.");
+//				Log.err(this, e, "Could not copy the spectra to the data directory.");
 //			}
-			
-			/* #====================================================================================
-			 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
-			 * #==================================================================================== */
-			bug.removeUnnecessaryFiles(true);
+//
+//			try {
+//				FileUtils.copyFileOrDir(
+//						spectraFileFiltered,
+//						bug.getWorkDataDir().resolve(subDirName)
+//						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile(),
+//						StandardCopyOption.REPLACE_EXISTING);
+//				FileUtils.delete(spectraFileFiltered);
+//			} catch (IOException e) {
+//				Log.err(this, e, "Could not copy the filtered spectra to the data directory.");
+//			}
+//
+//			try {
+//				List<Path> result = new SearchFileOrDirToListProcessor("**cobertura.ser", true)
+//						.searchForFiles().submit(rankingDir).getResult();
+//				for (Path file : result) {
+//					FileUtils.delete(file);
+//				}
+//				List<Path> result2 = new SearchFileOrDirToListProcessor("**" + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME, true)
+//						.searchForFiles().submit(rankingDir).getResult();
+//				for (Path file : result2) {
+//					FileUtils.delete(file);
+//				}
+//				List<Path> result3 = new SearchFileOrDirToListProcessor("**instrumented", true)
+//						.searchForDirectories().skipSubTreeAfterMatch().submit(rankingDir).getResult();
+//				for (Path dir : result3) {
+//					FileUtils.delete(dir);
+//				}
+//
+////				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
+//				//delete old stats data directory
+//				FileUtils.delete(statsDirData);
+//				FileUtils.copyFileOrDir(
+//						rankingDir.toFile(),
+//						statsDirData.toFile());
+////				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME));
+//			} catch (IOException e) {
+//				Log.err(this, e, "Could not clean up...");
+//			}
+//
+////			try {
+////				FileUtils.copyFileOrDir(
+////						rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile(),
+////						rankingDirData.resolve(BugLoRDConstants.FILENAME_TRACE_FILE).toFile());
+////				FileUtils.delete(rankingDir.resolve(BugLoRDConstants.FILENAME_TRACE_FILE));
+////			} catch (IOException e) {
+////				Log.err(this, e, "Could not copy the trace file to the data directory.");
+////			}
+//
+//			/* #====================================================================================
+//			 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
+//			 * #==================================================================================== */
+//			bug.removeUnnecessaryFiles(true);
 
 		} else if (!foundFilteredSpectra) {
-			computeFilteredSpectraFromFoundSpectra(bug);
+			return null;
+//			computeFilteredSpectraFromFoundSpectra(bug);
 		}
 		
 //		/* #====================================================================================

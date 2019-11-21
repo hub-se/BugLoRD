@@ -2,10 +2,7 @@ package se.de.hu_berlin.informatik.faultlocalizer.ngram;
 
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.AbstractFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
-import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
-import se.de.hu_berlin.informatik.spectra.core.INode;
-import se.de.hu_berlin.informatik.spectra.core.ISpectra;
-import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.*;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 import java.util.HashMap;
@@ -56,6 +53,12 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         return Ranking.getRankingWithStrategies(
                 ranking, Ranking.RankingValueReplacementStrategy.ZERO, Ranking.RankingValueReplacementStrategy.ZERO,
                 Ranking.RankingValueReplacementStrategy.ZERO);
+    }
+
+    @Override
+    public Ranking<INode<T>> localize(final ILocalizerCache<T> localizer, ComputationStrategies strategy) {
+        return localize((ISpectra<T, ?>) localizer, strategy);
+
     }
 
     @Override
