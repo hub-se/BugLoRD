@@ -348,7 +348,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 				10000L, 1, false, false, false, true, "lang10tests.txt");
 	}
 	
-	@Test
+//	@Test
 	public void testGenerateRankingForLang10TestListSmall() {
 		// org.apache.commons.lang3.time.FastDateParser, counter ID 166, line 399
 		testOnProjectWithTestList(new TestProjects.Lang10b(), "reportLang10bTestListSmall", 
