@@ -20,8 +20,8 @@ class LinearExecutionHitTraceTest {
         long start = System.currentTimeMillis();
         //Path output1 = Paths.get(getStdResourcesDir(), "Math-84b.zip");
         //Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
-        //Path output1 = Paths.get(getStdResourcesDir(), "Time-1b.zip");
-        Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
+        Path output1 = Paths.get(getStdResourcesDir(), "Time-1b.zip");
+        //Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
         ISpectra<SourceCodeBlock, ?> input = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output1);
         System.out.println("Time in total for loading the spectra: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         System.out.println("number of test: " + input.getTraces().size());
@@ -33,13 +33,13 @@ class LinearExecutionHitTraceTest {
         System.out.println("Total time for init LEB methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         System.out.println("# of Blocks: " + hitTrace.getBlockCount() + " blockMap-size: " + hitTrace.getBlock2NodeMap().size());
         //System.out.println(hitTrace.getBlock2NodeMap());
-        System.out.println(hitTrace.getNodeSeq().get(15469));
-        System.out.println(hitTrace.getBlock2NodeMap().get(15442));
-        System.out.println(hitTrace.getNodeSeq().get(15442));
+//        System.out.println(hitTrace.getNodeSeq().get(1720));
+//        System.out.println(hitTrace.getBlock2NodeMap().get(1720));
+//        System.out.println(hitTrace.getNodeSeq().get(54690));
 //        System.out.println(hitTrace.getBlock2NodeMap().get(44746));
-        System.out.println(hitTrace.getNodeSeq().get(16856));
+//        System.out.println(hitTrace.getNodeSeq().get(15361));
 //        System.out.println(hitTrace.getBlock2NodeMap().get(6264));
-        System.out.println(hitTrace.getNodeSeq().get(15443));
+//        System.out.println(hitTrace.getNodeSeq().get(46324));
 //        System.out.println(hitTrace.getNodeSeq().get(12085));
 //        System.out.println(hitTrace.getNodeSeq().get(12067));
 

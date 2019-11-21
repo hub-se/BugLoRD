@@ -142,7 +142,7 @@ public class Spectra2RankingTest extends TestSettings {
 	@Test
 	public void testNessa3true() {
 		String[] args = {
-				CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "Math-84b.zip",
+                CmdOptions.INPUT.asArg(), getStdResourcesDir() + File.separator + "Chart-26b.zip",
 				CmdOptions.LOCALIZERS.asArg(), "nessa-3-true",
 				CmdOptions.OUTPUT.asArg(), getStdTestDir() + File.separator + "nessa-3-true"};
 		Spectra2Ranking.main(args);

@@ -7,12 +7,14 @@ import java.util.HashSet;
 
 public class LinearExecutionTestTrace {
     private int testID;
+    private String idString;
     private ISpectra spectra;
     private ArrayList<LinearBlockSequence> traces;
     private boolean isSuccessful;
 
-    public LinearExecutionTestTrace(int testID, ISpectra spectra, boolean isSuccessful) {
+    public LinearExecutionTestTrace(int testID, String idString, ISpectra spectra, boolean isSuccessful) {
         this.testID = testID;
+        this.idString = idString;
         this.spectra = spectra;
         this.isSuccessful = isSuccessful;
         traces = new ArrayList<>();
@@ -42,7 +44,7 @@ public class LinearExecutionTestTrace {
 
     public HashSet<Integer> getInvolvedBlocks() {
 
-        HashSet<Integer> allBlocks = new HashSet<>();
+        HashSet<Integer> allBlocks = new HashSet<>(spectra.getTrace(idString).involvedNodesCount());
         traces.forEach(t -> {
             allBlocks.addAll(t.involvedBlocks());
         });
