@@ -5,6 +5,7 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * An execution graph node  consists structurally of three components.
@@ -13,10 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ExecutionGraphNode {
     private final int index;
-    private Set<Integer> InNodes;
-    private Set<Integer> OutNodes;
+    private ConcurrentHashMap<Integer, Integer> InNodes;
+    private ConcurrentHashMap<Integer, Integer> OutNodes;
     private ISpectra spectra;
-    private int blockID = -1;
+    private AtomicInteger blockID;
 
     /**
      * Constructs the node
@@ -27,18 +28,17 @@ public class ExecutionGraphNode {
     protected ExecutionGraphNode(int index, ISpectra spectra) {
         this.spectra = spectra;
         this.index = index;
-        ConcurrentHashMap<Integer, Integer> in = new ConcurrentHashMap<>();
-        ConcurrentHashMap<Integer, Integer> out = new ConcurrentHashMap<>();
-        InNodes = in.keySet(index);
-        OutNodes = out.keySet(index);
+        InNodes = new ConcurrentHashMap<>();
+        OutNodes = new ConcurrentHashMap<>();
+        blockID = new AtomicInteger(-1);
     }
 
-    public int getBlockID() {
-        return blockID;
+    synchronized int getBlockID() {
+        return blockID.intValue();
     }
 
     public void setBlockID(int blockID) {
-        this.blockID = blockID;
+        this.blockID.compareAndSet(-1, blockID);
     }
 
     public int getIndex() {
@@ -46,11 +46,11 @@ public class ExecutionGraphNode {
     }
 
     public Set<Integer> getInNodes() {
-        return InNodes;
+        return InNodes.keySet(index);
     }
 
     public Set<Integer> getOutNodes() {
-        return OutNodes;
+        return OutNodes.keySet(index);
     }
 
 
@@ -58,8 +58,8 @@ public class ExecutionGraphNode {
         return InNodes.contains(n);
     }
 
-    public boolean addInNode(Integer n) {
-        return InNodes.add(n);
+    public void addInNode(Integer n) {
+        InNodes.computeIfAbsent(n, v -> new Integer(index));
     }
 
     public int getInDegree() {
@@ -70,8 +70,8 @@ public class ExecutionGraphNode {
         return OutNodes.contains(n);
     }
 
-    public boolean addOutNode(Integer n) {
-        return OutNodes.add(n);
+    public void addOutNode(Integer n) {
+        OutNodes.computeIfAbsent(n, v -> new Integer(index));
     }
 
     public int getOutDegree() {
@@ -86,9 +86,9 @@ public class ExecutionGraphNode {
     public String toString() {
         return "\n\t\t\t{" +
                 "nodeId=" + index +
-                ", blockId=" + blockID +
-                ", InNodes=" + InNodes +
-                ", OutNodes=" + OutNodes +
+                ", blockId=" + blockID.intValue() +
+                ", InNodes=" + InNodes.keySet(index) +
+                ", OutNodes=" + OutNodes.keySet(index) +
                 ", EF=" + spectra.getNode(index).getEF() +
                 ", EP=" + spectra.getNode(index).getEP() +
                 "}";

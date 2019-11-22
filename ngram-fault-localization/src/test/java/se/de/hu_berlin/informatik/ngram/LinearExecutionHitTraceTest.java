@@ -20,9 +20,10 @@ class LinearExecutionHitTraceTest {
         long start = System.currentTimeMillis();
         //Path output1 = Paths.get(getStdResourcesDir(), "Math-84b.zip");
         //Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
-        Path output1 = Paths.get(getStdResourcesDir(), "Time-1b.zip");
         //Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
+        Path output1 = Paths.get(getStdResourcesDir(), "Chart-4b.zip");
         ISpectra<SourceCodeBlock, ?> input = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output1);
+        //checkSpectra(input);
         System.out.println("Time in total for loading the spectra: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         System.out.println("number of test: " + input.getTraces().size());
         System.out.println("number of failed test: " + input.getFailingTraces().size());
@@ -32,8 +33,10 @@ class LinearExecutionHitTraceTest {
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace(input);
         System.out.println("Total time for init LEB methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         System.out.println("# of Blocks: " + hitTrace.getBlockCount() + " blockMap-size: " + hitTrace.getBlock2NodeMap().size());
+        System.out.println("# of nodes in nodeseq: " + hitTrace.getNodeSeq().size());
+//        System.out.println(input.getNode(33166).getEF() + " "+input.getNode(33166).getEP());
         //System.out.println(hitTrace.getBlock2NodeMap());
-//        System.out.println(hitTrace.getNodeSeq().get(1720));
+        //       System.out.println(hitTrace.getNodeSeq().get(33947));
 //        System.out.println(hitTrace.getBlock2NodeMap().get(1720));
 //        System.out.println(hitTrace.getNodeSeq().get(54690));
 //        System.out.println(hitTrace.getBlock2NodeMap().get(44746));
@@ -43,9 +46,9 @@ class LinearExecutionHitTraceTest {
 //        System.out.println(hitTrace.getNodeSeq().get(12085));
 //        System.out.println(hitTrace.getNodeSeq().get(12067));
 
-
-        getDiff(input, hitTrace);
-        //checkNodes(hitTrace);
+        getDiffFromNodeSeq(input, hitTrace);
+        getDiffFromBlockMap(input, hitTrace);
+        //checkNodes(input, hitTrace);
         isBlockMissing(hitTrace);
         checkMultiUsedNode(hitTrace);
         checkCorruption(hitTrace);
@@ -74,30 +77,74 @@ class LinearExecutionHitTraceTest {
         });
     }
 
-    private void getDiff(ISpectra<SourceCodeBlock, ?> input, LinearExecutionHitTrace hitTrace) {
+    private void getDiffFromBlockMap(ISpectra<SourceCodeBlock, ?> input, LinearExecutionHitTrace hitTrace) {
         HashSet<Integer> allNodes = new HashSet<>();
         hitTrace.getAllBlocks().forEach(b -> {
             hitTrace.getBlock2NodeMap().get(b).forEach(n -> {
                 allNodes.add(n);
             });
         });
-        System.out.println(hitTrace.getNodeSeq().size());
-        input.getNodes();
+        System.out.println("getDiffFromBlockMap: Is-Nodes count: " + allNodes.size());
+
         HashSet<Integer> diff = new HashSet<>();
         input.getTraces().forEach(t -> t.getInvolvedNodes().forEach(n -> diff.add(n)));
+        System.out.println("Should-Nodes count: " + diff.size());
         diff.removeAll(allNodes);
-        System.out.println(diff.size());
-        System.out.println(diff);
+        System.out.println("diff count: " + diff.size());
+        if (diff.size() != 0) {
+            System.out.println("Diff: ");
+            System.out.println(diff);
+        }
     }
 
-    private void checkNodes(LinearExecutionHitTrace hitTrace) {
+    private void getDiffFromNodeSeq(ISpectra<SourceCodeBlock, ?> input, LinearExecutionHitTrace hitTrace) {
         HashSet<Integer> allNodes = new HashSet<>();
-        hitTrace.getAllBlocks().forEach(b -> {
-            hitTrace.getBlock2NodeMap().get(b).forEach(n -> {
-                allNodes.add(n);
-            });
+        hitTrace.getNodeSeq().forEach((k, v) -> allNodes.add(k));
+        System.out.println("getDiffFromNodeSeq: Is-Nodes count: " + hitTrace.getNodeSeq().size());
+
+        HashSet<Integer> diff = new HashSet<>();
+        input.getTraces().forEach(t -> t.getInvolvedNodes().forEach(n -> diff.add(n)));
+        System.out.println("Should-Nodes count: " + diff.size());
+        diff.removeAll(allNodes);
+        System.out.println("diff count: " + diff.size());
+        if (diff.size() != 0) {
+            System.out.println("Diff: ");
+            System.out.println(diff);
+        }
+    }
+
+    private void checkSpectra(ISpectra<SourceCodeBlock, ?> input) {
+        HashSet<Integer> allNodes = new HashSet<>();
+        input.getTraces().forEach(t -> t.getInvolvedNodes().forEach(n -> allNodes.add(n)));
+        System.out.println("checSpectra: Is-Nodes count from traces: " + allNodes.size());
+
+        HashSet<Integer> diff = new HashSet<>();
+        input.getNodes().forEach(n -> {
+            diff.add(n.getIndex());
         });
-        assertTrue(allNodes.size() == hitTrace.getSpectra().getNodes().size(), "wrong node count: allnode: " + allNodes.size() + " vs. " + hitTrace.getSpectra().getNodes().size());
+        System.out.println("Should-Nodes count from getnodes(): " + diff.size());
+        diff.removeAll(allNodes);
+        System.out.println("diff count: " + diff.size());
+        if (diff.size() != 0) {
+            System.out.println("Diff: ");
+            System.out.println(diff);
+        }
+
+    }
+
+    private void checkNodes(ISpectra<SourceCodeBlock, ?> input, LinearExecutionHitTrace hitTrace) {
+        HashSet<Integer> allNodes = new HashSet<>();
+        hitTrace.getNodeSeq().forEach((k, v) -> allNodes.add(k));
+        System.out.println("checkNodes: Is-Nodes count: " + hitTrace.getNodeSeq().size());
+        HashSet<Integer> diff = new HashSet<>();
+        input.getNodes().forEach(e -> diff.add(e.getIndex()));
+        System.out.println("Should-Nodes count: " + diff.size());
+        diff.removeAll(allNodes);
+        System.out.println("diff count: " + diff.size());
+        if (diff.size() != 0) {
+            System.out.println("Diff: ");
+            System.out.println(diff);
+        }
     }
 
     private void checkStats(ISpectra<SourceCodeBlock, ?> input, LinearExecutionHitTrace hitTrace) {
