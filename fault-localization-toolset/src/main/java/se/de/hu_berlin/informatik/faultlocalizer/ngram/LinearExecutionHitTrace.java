@@ -121,7 +121,6 @@ public class LinearExecutionHitTrace {
     }
 
     private void initGraphNode() throws InterruptedException {
-        long start = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(numOfCores);
         //CountDownLatch latch = new CountDownLatch(traceCount);
         for (ITrace<SourceCodeBlock> test : spectra.getTraces()) {
@@ -138,15 +137,15 @@ public class LinearExecutionHitTrace {
                                 nodeIndex,
                                 k -> new ExecutionGraphNode(nodeIndex, spectra));
                         current = getNodeSeq().get(nodeIndex);
-                        if (lastId != -1) {
-                            last = getNodeSeq().get(lastId);
+                        synchronized (current) {
+                            if (lastId != -1) {
+                                last = getNodeSeq().get(lastId);
 
-                            last.addOutNode(nodeIndex);
+                                last.addOutNode(nodeIndex);
+                            }
+                            // fix for cases where the same node doesn't is always the starting one
+                            current.addInNode(lastId);
                         }
-
-                        // fix for cases where the same node doesn't is always the starting one
-                        current.addInNode(lastId);
-
                         lastId = nodeIndex;
                     }
                 }
@@ -189,36 +188,38 @@ public class LinearExecutionHitTrace {
 
                 int nodeIndex = nodeIdIterator.next();
                 ExecutionGraphNode node = nodeSeq.get(nodeIndex);
-
-                // check if we have a globally new node
-                if (node.getBlockID() == -1) {
-                    //check if we have to create a new block
-                    if ((currentBlock == -2) || hasMultiIn(node) || isLoop(node)) {
-                        //add to block2NodeMap if not exists
-                        synchronized (block2NodeMap) {
+                synchronized (node) {
+                    // check if we have a globally new node
+                    if (node.getBlockID() == -1) {
+                        //check if we have to create a new block
+                        if ((currentBlock == -2) || hasMultiIn(node) || isLoop(node)) {
+                            //add to block2NodeMap if not exists
                             block2NodeMap.computeIfAbsent(nodeIndex, v -> new LinkedHashSet<>());
-                            block2NodeMap.get(nodeIndex).add(nodeIndex);
-                        }
-                        // init block and add to block sequence
-                        node.setBlockID(nodeIndex);
-                        innerTrace.addBlock(nodeIndex);
-                        currentBlock = nodeIndex;
-                        lastBlock = nodeIndex;
+                            synchronized (block2NodeMap) {
+                                block2NodeMap.get(nodeIndex).add(nodeIndex);
+                            }
+                            // init block and add to block sequence
+                            node.setBlockID(nodeIndex);
+                            innerTrace.addBlock(nodeIndex);
+                            currentBlock = nodeIndex;
+                            lastBlock = nodeIndex;
 
-                    } else {
-                        //add this node to the current block
-                        synchronized (block2NodeMap) {
-                            block2NodeMap.get(currentBlock).add(nodeIndex);
+                        } else {
+                            //add this node to the current block
+                            synchronized (block2NodeMap) {
+                                block2NodeMap.get(currentBlock).add(nodeIndex);
+                            }
+                            node.setBlockID(currentBlock);
                         }
-                        node.setBlockID(currentBlock);
+                        //check if we have to close this block
+                        if (hasMultiOut(node)) {
+                            currentBlock = -2;
+                        }
+                        continue;
                     }
-                    //check if we have to close this block
-                    if (hasMultiOut(node)) {
-                        currentBlock = -2;
-                    }
-                    continue;
+
+
                 }
-
 
                 //we have seen this node some where
 
