@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -506,7 +507,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		public MyBufferedIterator(boolean sortNodeEntries) {
 			this.sortNodeEntries = sortNodeEntries;
 			List<Integer> list = new ArrayList<>(existingNodes);
-			list.sort(null);
+			Collections.sort(list);
 			storeIndexIterator = list.iterator();
 		}
 				
@@ -524,7 +525,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 					}
 					if (sortNodeEntries) {
 						List<Entry<Integer,E>> list = new ArrayList<>(node.entrySet());
-						list.sort(new KeyComp());
+						Collections.sort(list, new KeyComp());
 						entrySetIterator = list.iterator();
 					} else {
 						entrySetIterator = node.entrySet().iterator();
