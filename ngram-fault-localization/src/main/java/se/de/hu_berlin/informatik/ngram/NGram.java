@@ -1,15 +1,15 @@
 package se.de.hu_berlin.informatik.ngram;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class NGram implements Comparable<NGram> {
     final int length;
-    private int[] blockIDs;
+    private ArrayList<Integer> blockIDs;
     private double EF;
     private double ET;
     private double confidence;
 
-    public NGram(int length, double EF, double ET, int[] blockIDs) {
+    public NGram(int length, double EF, double ET, ArrayList<Integer> blockIDs) {
         this.length = length;
         this.blockIDs = blockIDs;
         this.EF = EF;
@@ -27,7 +27,7 @@ public class NGram implements Comparable<NGram> {
     }
 
 
-    public int[] getBlockIDs() {
+    public ArrayList<Integer> getBlockIDs() {
         return blockIDs;
     }
 
@@ -58,9 +58,9 @@ public class NGram implements Comparable<NGram> {
         if (confidence > o.getConfidence()) out = 1;
         if (confidence < o.getConfidence()) out = -1;
         if (confidence == o.getConfidence()) {
-            if (blockIDs.length > o.blockIDs.length) out = 1;
-            if (blockIDs.length < o.blockIDs.length) out = -1;
-            if (blockIDs.length == o.blockIDs.length) {
+            if (blockIDs.size() > o.blockIDs.size()) out = 1;
+            if (blockIDs.size() < o.blockIDs.size()) out = -1;
+            if (blockIDs.size() == o.blockIDs.size()) {
                 if (EF > o.EF) out = -1;
                 if (EF < o.EF) out = 1;
                 if (EF == o.EF) out = 0;
@@ -76,14 +76,14 @@ public class NGram implements Comparable<NGram> {
             return false;
         }
         NGram dummy = (NGram) obj;
-        return Arrays.equals(blockIDs, dummy.blockIDs);
+        return blockIDs.equals(dummy.getBlockIDs());
     }
 
     @Override
     public int hashCode() {
         int result = 17;
         result = 31 * result + length;
-        result = 31 * result + Arrays.hashCode(blockIDs);
+        result = 31 * result + blockIDs.hashCode();
         return result;
     }
 

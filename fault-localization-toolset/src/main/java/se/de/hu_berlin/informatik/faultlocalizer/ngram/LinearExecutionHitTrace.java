@@ -29,8 +29,6 @@ public class LinearExecutionHitTrace {
         nodeSeq = new ConcurrentHashMap<>(spectra.getNodes().size());
 
         this.spectra = spectra;
-        long start = System.currentTimeMillis();
-
         try {
             initGraphNode();
         } catch (InterruptedException e) {
@@ -38,13 +36,11 @@ public class LinearExecutionHitTrace {
         }
 
         block2NodeMap = new ConcurrentHashMap<>(nodeSeq.size());
-
         try {
             generateLinearBlockTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -125,13 +121,12 @@ public class LinearExecutionHitTrace {
     }
 
     private void initGraphNode() throws InterruptedException {
-
+        long start = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(numOfCores);
         //CountDownLatch latch = new CountDownLatch(traceCount);
         for (ITrace<SourceCodeBlock> test : spectra.getTraces()) {
             executorService.submit(() -> {
                 for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
-
                     Iterator<Integer> nodeIdIterator = executionTrace.mappedIterator(spectra.getIndexer());
                     ExecutionGraphNode current, last;
                     int lastId = -1;
@@ -145,17 +140,17 @@ public class LinearExecutionHitTrace {
                         current = getNodeSeq().get(nodeIndex);
                         if (lastId != -1) {
                             last = getNodeSeq().get(lastId);
+
                             last.addOutNode(nodeIndex);
                         }
+
                         // fix for cases where the same node doesn't is always the starting one
                         current.addInNode(lastId);
+
                         lastId = nodeIndex;
-
                     }
-
                 }
                 //latch.countDown();
-
             });
         }
 
@@ -165,7 +160,6 @@ public class LinearExecutionHitTrace {
     }
 
     private void generateLinearBlockTrace() throws InterruptedException {
-        long start = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(numOfCores);
         //CountDownLatch latch = new CountDownLatch(traceCount);
         for (ITrace<SourceCodeBlock> test : spectra.getTraces()) {
@@ -198,13 +192,13 @@ public class LinearExecutionHitTrace {
 
                 // check if we have a globally new node
                 if (node.getBlockID() == -1) {
-
                     //check if we have to create a new block
                     if ((currentBlock == -2) || hasMultiIn(node) || isLoop(node)) {
                         //add to block2NodeMap if not exists
-                        block2NodeMap.computeIfAbsent(nodeIndex, v -> new LinkedHashSet<>());
-                        block2NodeMap.get(nodeIndex).add(nodeIndex);
-
+                        synchronized (block2NodeMap) {
+                            block2NodeMap.computeIfAbsent(nodeIndex, v -> new LinkedHashSet<>());
+                            block2NodeMap.get(nodeIndex).add(nodeIndex);
+                        }
                         // init block and add to block sequence
                         node.setBlockID(nodeIndex);
                         innerTrace.addBlock(nodeIndex);
@@ -213,22 +207,30 @@ public class LinearExecutionHitTrace {
 
                     } else {
                         //add this node to the current block
-                        block2NodeMap.get(currentBlock).add(nodeIndex);
+                        synchronized (block2NodeMap) {
+                            block2NodeMap.get(currentBlock).add(nodeIndex);
+                        }
                         node.setBlockID(currentBlock);
                     }
-
-                } else {
-                    //we have seen this node some where
-
-                    //check if we are at the beginning of a block
-                    if (node.getBlockID() == nodeIndex || (currentBlock == -2)) {
-                        //check for repetition
-                        if (lastBlock != nodeIndex) innerTrace.addBlock(nodeIndex);
-                        currentBlock = nodeIndex;
-                        lastBlock = nodeIndex;
+                    //check if we have to close this block
+                    if (hasMultiOut(node)) {
+                        currentBlock = -2;
                     }
-                    // otherwise, just a inner node, keep on  skipping
+                    continue;
                 }
+
+
+                //we have seen this node some where
+
+                //check if we are at the beginning of a block
+                if ((currentBlock == -2)) {
+                    //check for repetition
+                    if (lastBlock != nodeIndex) innerTrace.addBlock(nodeIndex);
+                    currentBlock = nodeIndex;
+                    lastBlock = nodeIndex;
+                }
+                // otherwise, just a inner node, keep on  skipping
+
                 //check if we have to close this block
                 if (hasMultiOut(node)) {
                     currentBlock = -2;

@@ -8,15 +8,15 @@ import java.util.concurrent.TimeUnit;
 
 public class NGramSet {
     private final int maxLength;
+    final private int numOfCores = Runtime.getRuntime().availableProcessors();
     private double minSupport;
     private LinearExecutionHitTrace hitTrace;
-    final private int numOfCores = Runtime.getRuntime().availableProcessors();
     private List<NGram> result;
     private int minEF;
     private double failedTestCount;
     private LinkedHashMap<Integer, Double> confidence;
     private boolean dynaSup;
-    private Set<NGram> nGramHashSet;
+    private ConcurrentHashMap<ArrayList<Integer>, NGram> nGramHashSet;
     private HashMap<Integer, HashSet<Integer>> involvedTest;
     private HashMap<Integer, HashSet<Integer>> failedTest;
     private HashSet<Integer> relevant;
@@ -39,7 +39,7 @@ public class NGramSet {
 
     private void startNgramSet(LinearExecutionHitTrace hitTrace) {
         failedTestCount = hitTrace.getFailedTestCount();
-        nGramHashSet = ConcurrentHashMap.newKeySet();
+        nGramHashSet = new ConcurrentHashMap<>(hitTrace.getBlockCount());
         involvedTest = new HashMap<>(hitTrace.getBlockCount(), 1.0f);
         failedTest = new HashMap<>(hitTrace.getBlockCount(), 1.0f);
         relevant = new HashSet<>();
@@ -49,7 +49,7 @@ public class NGramSet {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        result = new ArrayList<>(nGramHashSet);
+        result = new ArrayList<>(nGramHashSet.values());
         Collections.sort(result, Collections.reverseOrder());
         mapResult2Nodes();
     }
@@ -74,9 +74,9 @@ public class NGramSet {
 
         result.forEach(entry -> {
             int blockCount = entry.length;
-            int[] blockIDs = entry.getBlockIDs();
+            ArrayList<Integer> blockIDs = entry.getBlockIDs();
             for (int i = 0; i < blockCount; i++) {
-                int tmp = blockIDs[i];
+                int tmp = blockIDs.get(i);
                 if (visitedNode.contains(tmp)) continue;
                 visitedNode.add(tmp);
                 LinkedHashSet<Integer> nodes = blockMap.get(tmp);
@@ -98,10 +98,10 @@ public class NGramSet {
         result.forEach(entry -> {
 
             int blockCount = entry.length;
-            int[] blockIDs = entry.getBlockIDs();
+            ArrayList<Integer> blockIDs = entry.getBlockIDs();
 
             for (int i = 0; i < blockCount; i++) {
-                int tmp = blockIDs[i];
+                int tmp = blockIDs.get(i);
 
                 if (visitedNode.contains(tmp)) continue;
 
@@ -156,14 +156,12 @@ public class NGramSet {
         if (seq.size() < nMax) return;
 
         Iterator<Integer> blockIt = seq.iterator();
-        int[] lastNGram = new int[nMax];
-
-        //array to get EF/Support and ET/involvement values for each n-gram
-        double[] stats = new double[2];
+        ArrayList<Integer> lastNGram = new ArrayList<>(nMax);
 
         //distance to the node that was executed by all failed tests
         int distToLastFailedNode = nMax + 1;
         double confOfLastRelNode = 0.0;
+
 
         //init the first nMax-Gram
         for (int i = 0; i < nMax; i++) {
@@ -172,7 +170,7 @@ public class NGramSet {
                 distToLastFailedNode = i;
                 confOfLastRelNode = computeConfOfSingleBlock(tmp);
             }
-            lastNGram[i] = tmp;
+            lastNGram.add(i, tmp);
         }
 
         // beginning to create additional n-gram by transition  of 1 element at a time.
@@ -180,17 +178,16 @@ public class NGramSet {
         // that means that "distToLastFailedNode" must be smaller than "nMax".
         if (distToLastFailedNode < nMax) {
 
-            stats = getEFAndET(lastNGram, nMax);
             updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
-            checkThenAdd(nMax, lastNGram, stats, confOfLastRelNode, distToLastFailedNode);
+            checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode);
         }
 
         while (blockIt.hasNext()) {
-            int[] nGram = new int[nMax];
+            ArrayList<Integer> nGram = new ArrayList<>(nMax);
 
             // copy the tail of the last n-gram
             for (int j = 0; j < nMax - 1; j++) {
-                nGram[j] = lastNGram[j + 1];
+                nGram.add(j, lastNGram.get(j + 1));
             }
 
             //get the next element and reset the distance if a new failed node is found.
@@ -202,13 +199,12 @@ public class NGramSet {
 
             } else distToLastFailedNode++;
 
-            nGram[nMax - 1] = tmp;
+            nGram.add(nMax - 1, tmp);
 
             // again, we only save this ngram if it contains a relevant block
             if (distToLastFailedNode < nMax) {
-                stats = getEFAndET(lastNGram, nMax);
                 updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
-                checkThenAdd(nMax, lastNGram, stats, confOfLastRelNode, distToLastFailedNode);
+                checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode);
             }
             lastNGram = nGram;
         }
@@ -216,19 +212,25 @@ public class NGramSet {
 
     private void updateMinSup(int nMax, int distToLastFailedNode, double confOfLastRelNode) {
         if (dynaSup) {
-            minEF = computeMinEF(1.0 - Math.pow(confOfLastRelNode, nMax - distToLastFailedNode + 1));
+            minEF = computeMinEF(1.0 - (confOfLastRelNode / (nMax - distToLastFailedNode + 1)));
         }
     }
 
-    private void checkThenAdd(int nMax, int[] lastNGram, double[] stats, double confOfLastRelNode, int distance) {
-        //if minSup is fulfilled and the new confidence is big enough
-        if ((stats[0] > 0) && (stats[0] >= minEF)) {
-            if (!dynaSup) {
-                nGramHashSet.add(new NGram(nMax, stats[0], stats[1], lastNGram));
-            } else if ((stats[0] / stats[1]) >= Math.pow(confOfLastRelNode, distance + 1)) {
-                nGramHashSet.add(new NGram(nMax, stats[0], stats[1], lastNGram));
+    private void checkThenAdd(int nMax, ArrayList<Integer> lastNGram, double confOfLastRelNode, int distance) {
+
+        if (nGramHashSet.get(lastNGram) == null) {
+            double EF = getIntersectionCount2(lastNGram, failedTest, nMax);
+            //if minSup is fulfilled and the new confidence is big enough
+            if ((EF > 0) && (EF >= minEF)) {
+                double ET = getIntersectionCount2(lastNGram, involvedTest, nMax);
+                if (!dynaSup) {
+                    nGramHashSet.computeIfAbsent(lastNGram, v -> new NGram(nMax, EF, ET, lastNGram));
+                } else if ((EF / ET) >= Math.pow(confOfLastRelNode, distance + 1)) {
+                    nGramHashSet.computeIfAbsent(lastNGram, v -> new NGram(nMax, EF, ET, lastNGram));
+                }
             }
         }
+
 
     }
 
@@ -236,6 +238,7 @@ public class NGramSet {
 
         return (double) failedTest.get(tmp).size() / involvedTest.get(tmp).size();
     }
+
 
 
     private void initInvolvementMap() {
@@ -252,7 +255,9 @@ public class NGramSet {
                         if (!relevant.contains(b)) {
                             relevant.add(b);
                             ET = hitTrace.getEP(b) + EF;
-                            nGramHashSet.add(new NGram(1, EF, ET, new int[]{b}));
+                            ArrayList<Integer> tmp = new ArrayList<>(1);
+                            tmp.add(b);
+                            nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, tmp));
                         }
                     }
                 }
@@ -262,51 +267,54 @@ public class NGramSet {
         });
     }
 
-
-    private double[] getEFAndET(int[] ngram, int maxN) {
-
-        double EF = getSetsIntersectSize(ngram, true, maxN);
-        double ET = getSetsIntersectSize(ngram, false, maxN);
-
-        return new double[]{EF, ET};
-
-    }
-
-    private double getSetsIntersectSize(int[] ngram, boolean isEF, int maxN) {
+    private double getIntersectionCount(ArrayList<Integer> ngram, HashMap<Integer, HashSet<Integer>> map, int maxN) {
         ArrayList<HashSet<Integer>> allSet = new ArrayList<>(maxN);
         HashSet<Integer> intersect;
-        if (isEF) {
-            for (int i : ngram
-            ) {
-                if (failedTest.get(i) == null) return 0.0;
-                allSet.add(failedTest.get(i));
-            }
-            allSet.sort(new SizeComparator());
 
-            intersect = (HashSet) allSet.get(0).clone();
+        for (int i = 0; i < maxN; i++) {
+            if (map.get(ngram.get(i)) == null) return 0.0;
+            allSet.add(map.get(ngram.get(i)));
+        }
+        allSet.sort(new SizeComparator());
 
-            for (int i = 1; i < maxN; i++) {
-                intersect.retainAll(failedTest.get(ngram[i]));
-                if (intersect.size() == 0) break;
-            }
-        } else {
-            for (int i : ngram
-            ) {
-                if (involvedTest.get(i) == null) return 0.0;
-                allSet.add(involvedTest.get(i));
-            }
-            allSet.sort(new SizeComparator());
+        intersect = (HashSet) allSet.get(0).clone();
 
-            intersect = (HashSet) allSet.get(0).clone();
-
-            for (int i = 1; i < maxN; i++) {
-                intersect.retainAll(involvedTest.get(ngram[i]));
-                if (intersect.size() == 0) break;
-            }
+        for (int i = 1; i < maxN; i++) {
+            intersect.retainAll(allSet.get(i));
+            if (intersect.size() == 0) break;
         }
 
 
         return intersect.size();
+    }
+
+    private double getIntersectionCount2(ArrayList<Integer> ngram, HashMap<Integer, HashSet<Integer>> map, int maxN) {
+        ArrayList<HashSet<Integer>> allSet = new ArrayList<>(maxN);
+        for (int i = 0; i < maxN; i++) {
+            if (map.get(ngram.get(i)) == null) return 0.0;
+            allSet.add(map.get(ngram.get(i)));
+        }
+        allSet.sort(new SizeComparator());
+        final int length = allSet.get(0).size();
+        if (length == 0) return 0;
+        final int[] tmp = new int[length];
+        final int[] i = new int[1];
+
+
+        allSet.get(0).forEach(e -> {
+            tmp[i[0]] = e;
+            i[0]++;
+        });
+        for (int j = 1; j < maxN; j++) {
+            for (int n = 0; n < length; n++) {
+                if (!allSet.get(j).contains(tmp[n])) tmp[n] = -1;
+            }
+        }
+        double count = 0;
+        for (int n = 0; n < length; n++) {
+            if (tmp[n] != -1) count++;
+        }
+        return count;
     }
 
 

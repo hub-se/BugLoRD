@@ -18,7 +18,8 @@ class NGramSetTest {
         long start = System.currentTimeMillis();
         //Path output1 = Paths.get(getStdResourcesDir(), "Math-84b.zip");
         //Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
-        Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
+        //Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
+        Path output1 = Paths.get(getStdResourcesDir(), "Closure-93b.zip");
         //Path output1 = Paths.get(getStdResourcesDir(), "Chart-4b.zip");
         ISpectra<SourceCodeBlock, ?> input = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output1);
         System.out.println("Time in total for loading the spectra: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
@@ -29,6 +30,7 @@ class NGramSetTest {
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace(input);
         System.out.println("Total time for init LEB methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         start = System.currentTimeMillis();
+
         NGramSet nGrams = new NGramSet(hitTrace, 3, true);
 
 
@@ -43,13 +45,13 @@ class NGramSetTest {
     }
 
     private void printResult(NGramSet nGrams) {
-        if (1 == 1) {
+        if (1 == 2) {
             nGrams.getResult().forEach(e -> {
                 double EF = e.getEF();
                 double ET = e.getET();
                 double conf = e.getConfidence();
 
-                System.out.print("[" + Arrays.toString(e.getBlockIDs()) + "] ");
+                System.out.print("[" + e.getBlockIDs().toString() + "] ");
                 System.out.println("EF: " + EF + ", ET: " + ET + ", CONFIDENCE: " + conf);
             });
         } else nGrams.getResultAsText().forEach(e -> System.out.println(e));

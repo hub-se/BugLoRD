@@ -33,12 +33,12 @@ public class ExecutionGraphNode {
         blockID = new AtomicInteger(-1);
     }
 
-    synchronized int getBlockID() {
+    int getBlockID() {
         return blockID.intValue();
     }
 
     public void setBlockID(int blockID) {
-        this.blockID.compareAndSet(-1, blockID);
+        this.blockID.lazySet(blockID);
     }
 
     public int getIndex() {
