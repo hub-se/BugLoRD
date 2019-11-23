@@ -1,23 +1,9 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -502,7 +488,8 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		private final Iterator<Integer> storeIndexIterator;
 		private Iterator<java.util.Map.Entry<Integer,E>> entrySetIterator;
 		private boolean sortNodeEntries;
-		
+
+		@IgnoreJRERequirement
 		public MyBufferedIterator(boolean sortNodeEntries) {
 			this.sortNodeEntries = sortNodeEntries;
 			List<Integer> list = new ArrayList<>(existingNodes);
@@ -515,6 +502,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			return check();
 		}
 
+		@IgnoreJRERequirement
 		private boolean check() {
 			while (entrySetIterator == null || !entrySetIterator.hasNext()) {
 				if (storeIndexIterator.hasNext()) {
