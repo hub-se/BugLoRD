@@ -18,8 +18,8 @@ class NGramSetTest {
         long start = System.currentTimeMillis();
         //Path output1 = Paths.get(getStdResourcesDir(), "Math-84b.zip");
         //Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
-        //Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
-        Path output1 = Paths.get(getStdResourcesDir(), "Chart-4b.zip");
+        Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
+        //Path output1 = Paths.get(getStdResourcesDir(), "Chart-4b.zip");
         ISpectra<SourceCodeBlock, ?> input = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output1);
         System.out.println("Time in total for loading the spectra: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         System.out.println("number of test: " + input.getTraces().size());
@@ -43,7 +43,7 @@ class NGramSetTest {
     }
 
     private void printResult(NGramSet nGrams) {
-        if (1 == 2) {
+        if (1 == 1) {
             nGrams.getResult().forEach(e -> {
                 double EF = e.getEF();
                 double ET = e.getET();

@@ -5,17 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class NGramTest {
-
-    @Test
-    void getConfidence() {
-        NGram dummy = new NGram(1);
-        System.out.println(dummy.getConfidence());
-        NGram dummy2 = new NGram(1, 2.0, 3.0, new int[]{3, 3});
-        System.out.println(dummy2.getConfidence());
-    }
 
 
     @Test

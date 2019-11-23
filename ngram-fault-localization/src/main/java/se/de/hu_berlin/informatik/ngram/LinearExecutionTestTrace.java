@@ -3,7 +3,7 @@ package se.de.hu_berlin.informatik.ngram;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 
 public class LinearExecutionTestTrace {
     private int testID;
@@ -42,9 +42,9 @@ public class LinearExecutionTestTrace {
         return "LEBTrace{" + "testID=" + testID + ", traces=" + traces + '}';
     }
 
-    public HashSet<Integer> getInvolvedBlocks() {
+    public List<Integer> getInvolvedBlocks() {
 
-        HashSet<Integer> allBlocks = new HashSet<>(spectra.getTrace(idString).involvedNodesCount());
+        List<Integer> allBlocks = new ArrayList<>(spectra.getTrace(idString).involvedNodesCount());
         traces.forEach(t -> {
             allBlocks.addAll(t.involvedBlocks());
         });

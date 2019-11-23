@@ -9,18 +9,17 @@ public class NGram implements Comparable<NGram> {
     private double ET;
     private double confidence;
 
-
-    public NGram(int length) {
-        this.length = length;
-        blockIDs = new int[length];
-    }
-
     public NGram(int length, double EF, double ET, int[] blockIDs) {
         this.length = length;
         this.blockIDs = blockIDs;
         this.EF = EF;
         this.ET = ET;
         confidence = (ET > 0) ? EF / ET : 0.0;
+
+    }
+
+    public int getLength() {
+        return length;
     }
 
     public double getConfidence() {
