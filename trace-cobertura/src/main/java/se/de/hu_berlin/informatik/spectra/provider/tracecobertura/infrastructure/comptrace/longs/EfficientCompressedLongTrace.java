@@ -34,12 +34,18 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 	private int nodeSize;
 	private int mapSize;
 	private boolean deleteOnExit;
+	private boolean log;
 	
 	private boolean locked = false;
 
 	private String prefix;
 
 	public EfficientCompressedLongTrace(File outputDir, String prefix, int nodeSize, int mapSize, boolean deleteOnExit) {
+		this(outputDir, prefix, nodeSize, mapSize, deleteOnExit, false);
+	}
+	
+	public EfficientCompressedLongTrace(File outputDir, String prefix, int nodeSize, int mapSize, boolean deleteOnExit, boolean log) {
+		this.log = log;
 		this.outputDir = outputDir;
 		this.prefix = prefix;
 		this.nodeSize = nodeSize;
@@ -48,6 +54,12 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 		String uuid = UUID.randomUUID().toString();
 		this.compressedTrace = new BufferedLongArrayQueue(outputDir, 
 				prefix + "cpr_trace_" + uuid, nodeSize, deleteOnExit);
+		initialize();
+	}
+	
+	private void initialize() {
+		this.originalSize = 0;
+		this.locked = false;
 		addNewLevel();
 	}
 	
@@ -60,7 +72,7 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 	 * whether to log some status information
 	 */
 	public EfficientCompressedLongTrace(BufferedLongArrayQueue trace, boolean log) {
-		this(trace.getOutputDir(), trace.getFilePrefix(), trace.getNodeSize(), trace.getNodeSize(), trace.isDeleteOnExit());
+		this(trace.getOutputDir(), trace.getFilePrefix(), trace.getNodeSize(), trace.getNodeSize(), trace.isDeleteOnExit(), log);
 		while (!trace.isEmpty()) {
 			add(trace.remove());
 		}
@@ -291,11 +303,11 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 			int level = 0;
 			feedToHigherLevel(0, true);
 			
-//			StringBuilder builder = new StringBuilder();
+			StringBuilder builder = new StringBuilder();
 			for (level = levels.size() - 1; level >= 0; --level) {
 				CompressedLongTraceLevel trace = levels.get(level);
 				if (!trace.getRepetitionMarkers().isEmpty()) {
-//					builder.append(String.format("level %d: max buffer size: %d, max trace size: %d%n", level, trace.maxBufferSize, trace.maxTraceSize));
+					builder.append(String.format("level %d: max buffer size: %d, max trace size: %d%n", level, trace.maxBufferSize, trace.maxTraceSize));
 					addRepetitionMarkers(trace.getRepetitionMarkers(), trace.size());
 				}
 			}
@@ -305,8 +317,10 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 			if (compressedTrace.isEmpty()) {
 				compressedTrace = levels.get(levels.size() - 1).getCompressedTrace();
 			}
-//			builder.append(String.format("full size: %d, compressed size: %d (%.2f%%)", originalSize, compressedTrace.size(), -100.00+100.0*(double)compressedTrace.size()/(double)originalSize));
-//			System.out.println(builder.toString());
+			builder.append(String.format("full size: %d, compressed size: %d (%.2f%%)", originalSize, compressedTrace.size(), -100.00+100.0*(double)compressedTrace.size()/(double)originalSize));
+			if (log) {
+				System.out.println(builder.toString());
+			}
 
 			// don't need the levels anymore now
 			levels.clear();
@@ -383,6 +397,7 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 	public void clear() {
 		getCompressedTrace().clear();
 		super.clear();
+		initialize();
 	}
 
 	public long getFirstElement() {

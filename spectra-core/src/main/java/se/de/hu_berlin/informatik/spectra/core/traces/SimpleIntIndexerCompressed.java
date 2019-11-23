@@ -9,15 +9,13 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
 
 public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 
@@ -35,7 +33,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	
 	public SimpleIntIndexerCompressed(
 			IntArraySequenceIndexer intArraySequenceIndexer, 
-			Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap, 
+			Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		// map counter IDs to line numbers!
 		storeSubTraceIdSequences(Objects.requireNonNull(intArraySequenceIndexer));
@@ -57,7 +55,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		}
 	}
 
-	private void mapCounterIdsToSpectraNodeIds(Map<Integer, EfficientCompressedLongTrace> idToSubTraceMap, 
+	private void mapCounterIdsToSpectraNodeIds(Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		String[] idToClassNameMap = Objects.requireNonNull(projectData.getIdToClassNameMap());
 		
@@ -67,18 +65,19 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = null; //new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			EfficientCompressedLongTrace subTrace = idToSubTraceMap.get(i);
-			BufferedLongArrayQueue compressedTrace = subTrace.getCompressedTrace();
-			ReplaceableCloneableLongIterator sequenceIterator = compressedTrace.iterator();
+			EfficientCompressedIntegerTrace subTrace = idToSubTraceMap.get(i);
+			BufferedIntArrayQueue compressedTrace = subTrace.getCompressedTrace();
+			ReplaceableCloneableIntIterator sequenceIterator = compressedTrace.iterator();
 			
-			BufferedIntArrayQueue traceOfNodeIDs = new BufferedIntArrayQueue(
-					compressedTrace.getOutputDir(), "idx_" + compressedTrace.getFilePrefix(), compressedTrace.getNodeSize(), true);
+			EfficientCompressedIntegerTrace traceOfNodeIDs = new EfficientCompressedIntegerTrace(
+					compressedTrace.getOutputDir(), "idx_" + compressedTrace.getFilePrefix(), 
+					compressedTrace.getNodeSize(), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
 			
 			while (sequenceIterator.hasNext()) {
-				long encodedStatement = sequenceIterator.next();
+				int encodedStatement = sequenceIterator.next();
 				int classId = CoberturaStatementEncoding.getClassId(encodedStatement);
 				int counterId = CoberturaStatementEncoding.getCounterId(encodedStatement);
-				int specialIndicatorId = CoberturaStatementEncoding.getSpecialIndicatorId(encodedStatement);
+				
 				//			 Log.out(true, this, "statement: " + Arrays.toString(statement));
 				// TODO store the class names with '.' from the beginning, or use the '/' version?
 				String classSourceFileName = idToClassNameMap[classId];
@@ -91,7 +90,8 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 					if (classData.getCounterId2LineNumbers() == null) {
 						throw new IllegalStateException("No counter ID to line number map for class " + classSourceFileName);
 					}
-					int lineNumber = classData.getCounterId2LineNumbers()[counterId];
+					int[] lineNumber = classData.getCounterId2LineNumbers()[counterId];
+					int specialIndicatorId = lineNumber[1];
 
 					//				// these following lines print out the execution trace
 					//				String addendum = "";
@@ -130,8 +130,8 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 					}
 
 					// the array is initially set to -1 to indicate counter IDs that were not set, if any
-					if (lineNumber >= 0) {
-						int nodeIndex = getNodeIndex(lineSpectra, classData.getSourceFileName(), lineNumber, nodeType);
+					if (lineNumber[0] >= 0) {
+						int nodeIndex = getNodeIndex(lineSpectra, classData.getSourceFileName(), lineNumber[0], nodeType);
 						if (nodeIndex >= 0) {
 							traceOfNodeIDs.add(nodeIndex);
 						} else {
@@ -151,7 +151,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 							}
 //							if (nodeType.equals(NodeType.NORMAL)) {
 							throw new IllegalStateException("Node not found in spectra: "
-									+ classData.getSourceFileName() + ":" + lineNumber 
+									+ classData.getSourceFileName() + ":" + lineNumber[0] 
 									+ " from counter id " + counterId + throwAddendum);
 //							} else {
 //								System.err.println("Node not found in spectra: "
@@ -173,11 +173,11 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 //				nodeIdSequences[i][j] = traceOfNodeIDs.remove();
 //			}
 			
-			nodeIdSequences[i] = new EfficientCompressedIntegerTrace(traceOfNodeIDs, subTrace);
+			nodeIdSequences[i] = traceOfNodeIDs;
 			
 			// delete any stored nodes from disk!
 			subTrace.unlock();
-			subTrace.getCompressedTrace().clear();
+			subTrace.clear();
 			// sub trace should not be touched anymore...
 			subTrace.lock();
 			// this would also clear the repetition markers...

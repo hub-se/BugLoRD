@@ -11,7 +11,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
@@ -29,17 +28,17 @@ public class RawIntTraceCollector {
 	private static final String REP_MARKER_FILE_EXTENSION = ".rep";
 //	private static final String EXEC_TRACE_FILE_EXTENSION = ".exec";
 
-	/**
-	 * map from (global) sub trace ids to actual sub traces;
-	 * this stores all existing (and executed) sub traces!
-	 */
-	private Map<Integer,EfficientCompressedLongTrace> globalIdToSubTraceMap;
+//	/**
+//	 * map from (global) sub trace ids to actual sub traces;
+//	 * this stores all existing (and executed) sub traces!
+//	 */
+//	private Map<Integer,EfficientCompressedIntegerTrace> globalIdToSubTraceMap;
 
 	// stores (sub trace representation -> sub trace id) to retrieve subtrace ids
 	// the long value representation has to contain start and ending node of the sub trace
 	// if the sub trace is longer than one statement(s)
-	private  Map<Long,Integer> subTraceGlobalIdMap = new HashMap<>();
-	private int currentId = 0; 
+//	private  Map<Long,Integer> subTraceGlobalIdMap = new HashMap<>();
+//	private int currentId = 0; 
 	
 	private final Path output;
 
@@ -49,9 +48,9 @@ public class RawIntTraceCollector {
 	
 	private final Set<Integer> startElements = new HashSet<>();
 	
-	public Map<Integer,EfficientCompressedLongTrace> getGlobalIdToSubTraceMap() {
-		return globalIdToSubTraceMap;
-	}
+//	public Map<Integer,EfficientCompressedIntegerTrace> getGlobalIdToSubTraceMap() {
+//		return globalIdToSubTraceMap;
+//	}
 	
 //	public RawTraceCollector() {
 //		this(null);
@@ -62,9 +61,9 @@ public class RawIntTraceCollector {
 		outputDir.toFile().mkdirs();
 		this.output = outputDir.resolve("rawTraces.zip");
 		new AddNamedByteArrayToZipFileProcessor(this.output, true).asModule();
-		if (globalIdToSubTraceMap == null) {
-			globalIdToSubTraceMap = getNewSubTraceMap(output.getParent());
-		}
+//		if (globalIdToSubTraceMap == null) {
+//			globalIdToSubTraceMap = getNewSubTraceMap(output.getParent());
+//		}
 		
 		this.output.toFile().deleteOnExit();
 		getExecutionTraceZipFilePath().toFile().deleteOnExit();
@@ -73,7 +72,7 @@ public class RawIntTraceCollector {
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			BufferedIntArrayQueue trace, boolean log,
-			Map<Integer,EfficientCompressedLongTrace> idToSubTraceMap) {
+			Map<Integer,EfficientCompressedIntegerTrace> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, trace, log, idToSubTraceMap);
 		return true;
 	}
@@ -81,7 +80,7 @@ public class RawIntTraceCollector {
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			int[] traceArray, boolean log, Path outputDir, String prefix,
-			Map<Integer,EfficientCompressedLongTrace> idToSubTraceMap) {
+			Map<Integer,EfficientCompressedIntegerTrace> idToSubTraceMap) {
 		BufferedIntArrayQueue trace = new BufferedIntArrayQueue(outputDir.toFile(), prefix, 100);
 //        trace.addAll(Arrays.asList(traceArray));
 		for (int i : traceArray) {
@@ -98,20 +97,20 @@ public class RawIntTraceCollector {
 
 	private void addTrace(int traceIndex, int threadId, 
 			BufferedIntArrayQueue trace, boolean log,
-			Map<Integer,EfficientCompressedLongTrace> idToSubTraceMap) {
+			Map<Integer,EfficientCompressedIntegerTrace> idToSubTraceMap) {
 		addTrace(traceIndex, threadId, new EfficientCompressedIntegerTrace(trace, log), idToSubTraceMap);
 	}
 	
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			EfficientCompressedIntegerTrace eTrace,
-			Map<Integer, EfficientCompressedLongTrace> map) {
+			Map<Integer, EfficientCompressedIntegerTrace> map) {
 		addTrace(traceIndex, threadId, eTrace, map);
 		return true;
 	}
 
 	private void addTrace(int traceIndex, int threadId, 
 			EfficientCompressedIntegerTrace eTrace,
-			Map<Integer, EfficientCompressedLongTrace> map) {
+			Map<Integer, EfficientCompressedIntegerTrace> map) {
 		
 		boolean error = false;
 		for (ReplaceableCloneableIntIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
@@ -128,13 +127,13 @@ public class RawIntTraceCollector {
 			throw new IllegalStateException("No sub trace mapping found for some ID(s).");
 		}
 		
-		// the next few commands are necessary to ensure consistency in sub trace ids!!!
-		// each project data comes potentially with its own mapping from ids to sub traces...
-		// so we need to get the respective ids for existing sub traces and produce 
-		// new ones for newly added sub traces.
-		Map<Integer,Integer> localIdToGlobalIdMap = getAndCreateSubTraceIdMapping(map, output.getParent());
-		// and then replace all local ids with the global ones...
-		globalizeTrace(eTrace, localIdToGlobalIdMap);
+//		// the next few commands are necessary to ensure consistency in sub trace ids!!!
+//		// each project data comes potentially with its own mapping from ids to sub traces...
+//		// so we need to get the respective ids for existing sub traces and produce 
+//		// new ones for newly added sub traces.
+//		Map<Integer,Integer> localIdToGlobalIdMap = getAndCreateSubTraceIdMapping(map, output.getParent());
+//		// and then replace all local ids with the global ones...
+//		globalizeTrace(eTrace, localIdToGlobalIdMap);
 		
 		// collect raw trace
 		String traceFileName = traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION;
@@ -161,79 +160,79 @@ public class RawIntTraceCollector {
 		eTrace = null;
 	}
 	
-	private void globalizeTrace(EfficientCompressedIntegerTrace eTrace,
-			Map<Integer, Integer> localIdToGlobalIdMap) {
-		for (ReplaceableCloneableIntIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
-			// this should now replace all local sub trace ids with the respective global ids...
-			@SuppressWarnings("unused")
-			Integer previous = iterator.processNextAndReplaceWithResult(k -> {
-				Integer globalId = localIdToGlobalIdMap.get(k);
-				if (globalId == null) {
-					// this should definitely not happen!
-					throw new IllegalStateException("No global id found for local id " + k);
-				}
-				return globalId;
-			});
-		}
-		
-	}
-
-	private Map<Integer, Integer> getAndCreateSubTraceIdMapping(
-			Map<Integer, EfficientCompressedLongTrace> map, Path tempDir) {
-		if (globalIdToSubTraceMap == null) {
-			globalIdToSubTraceMap = getNewSubTraceMap(tempDir);
-		}
-		// should map local sub trace ids (parameter) to global ids (field),
-		// so that the ids in the submitted raw traces can be replaced.
-		Map<Integer, Integer> subTraceIdMapping = new HashMap<>();
-		Iterator<Entry<Integer, EfficientCompressedLongTrace>> iterator = map.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry<Integer, EfficientCompressedLongTrace> entry = iterator.next();
-//			System.out.println(entry.getKey() + ">> " + entry.getValue());
-			int globalId = getOrCreateIdForSubTrace(entry.getValue());
-			subTraceIdMapping.put(entry.getKey(), globalId);
-		}
-		return subTraceIdMapping;
-	}
+//	private void globalizeTrace(EfficientCompressedIntegerTrace eTrace,
+//			Map<Integer, Integer> localIdToGlobalIdMap) {
+//		for (ReplaceableCloneableIntIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
+//			// this should now replace all local sub trace ids with the respective global ids...
+//			@SuppressWarnings("unused")
+//			Integer previous = iterator.processNextAndReplaceWithResult(k -> {
+//				Integer globalId = localIdToGlobalIdMap.get(k);
+//				if (globalId == null) {
+//					// this should definitely not happen!
+//					throw new IllegalStateException("No global id found for local id " + k);
+//				}
+//				return globalId;
+//			});
+//		}
+//		
+//	}
+//
+//	private Map<Integer, Integer> getAndCreateSubTraceIdMapping(
+//			Map<Integer, EfficientCompressedIntegerTrace> map, Path tempDir) {
+//		if (globalIdToSubTraceMap == null) {
+//			globalIdToSubTraceMap = getNewSubTraceMap(tempDir);
+//		}
+//		// should map local sub trace ids (parameter) to global ids (field),
+//		// so that the ids in the submitted raw traces can be replaced.
+//		Map<Integer, Integer> subTraceIdMapping = new HashMap<>();
+//		Iterator<Entry<Integer, EfficientCompressedIntegerTrace>> iterator = map.entrySet().iterator();
+//		while (iterator.hasNext()) {
+//			Entry<Integer, EfficientCompressedIntegerTrace> entry = iterator.next();
+////			System.out.println(entry.getKey() + ">> " + entry.getValue());
+//			int globalId = getOrCreateIdForSubTrace(entry.getValue());
+//			subTraceIdMapping.put(entry.getKey(), globalId);
+//		}
+//		return subTraceIdMapping;
+//	}
 	
-	private Map<Integer, EfficientCompressedLongTrace> getNewSubTraceMap(Path tempDir) {
+	private Map<Integer, EfficientCompressedIntegerTrace> getNewSubTraceMap(Path tempDir) {
 		return new HashMap<>();
 //		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
 //		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
 //				String.valueOf(UUID.randomUUID()), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
 	}
 	
-	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
-	private int getOrCreateIdForSubTrace(EfficientCompressedLongTrace compressedLongTraceBase) {
-		if (compressedLongTraceBase == null || compressedLongTraceBase.size() == 0) {
-			// id 0 indicates empty sub trace
-			return 0;
-		}
-
-		long wrapper = CoberturaStatementEncoding.generateUniqueRepresentationForSubTrace(compressedLongTraceBase);
-		Integer id = subTraceGlobalIdMap.get(wrapper);
-		if (id == null) {
-			// sub trace is not yet part of the global sub trace map
-			// starts with id 1
-			id = ++currentId;
-
-			// new sub trace, so store new id and store sub trace
-			subTraceGlobalIdMap.put(wrapper, currentId);
-			compressedLongTraceBase.sleep();
-			globalIdToSubTraceMap.put(currentId, compressedLongTraceBase);
-		} else {
-			if (!globalIdToSubTraceMap.get(id).equals(compressedLongTraceBase)) {
-				// already got this sub trace in the global map!
-				// (and it's not the exact same object!) 
-				// delete any stored nodes from disk after processing all threads' traces!
-				compressedLongTraceBase.markForDeletion();
-//				compressedLongTraceBase.clear();
-			}
-		}
-		
-		return id;
-
-	}
+//	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
+//	private int getOrCreateIdForSubTrace(EfficientCompressedIntegerTrace compressedLongTraceBase) {
+//		if (compressedLongTraceBase == null || compressedLongTraceBase.size() == 0) {
+//			// id 0 indicates empty sub trace
+//			return 0;
+//		}
+//
+//		long wrapper = CoberturaStatementEncoding.generateRepresentationForSubTrace(compressedLongTraceBase);
+//		Integer id = subTraceGlobalIdMap.get(wrapper);
+//		if (id == null) {
+//			// sub trace is not yet part of the global sub trace map
+//			// starts with id 1
+//			id = ++currentId;
+//
+//			// new sub trace, so store new id and store sub trace
+//			subTraceGlobalIdMap.put(wrapper, currentId);
+//			compressedLongTraceBase.sleep();
+//			globalIdToSubTraceMap.put(currentId, compressedLongTraceBase);
+//		} else {
+//			if (!globalIdToSubTraceMap.get(id).equals(compressedLongTraceBase)) {
+//				// already got this sub trace in the global map!
+//				// (and it's not the exact same object!) 
+//				// delete any stored nodes from disk after processing all threads' traces!
+//				compressedLongTraceBase.markForDeletion();
+////				compressedLongTraceBase.clear();
+//			}
+//		}
+//		
+//		return id;
+//
+//	}
 
 	public List<EfficientCompressedIntegerTrace> getRawTraces(int traceIndex) throws ZipException {
 		if (!output.toFile().exists()) {

@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.rules.ExpectedException;
 
-import java_cup.internal_error;
 import se.de.hu_berlin.informatik.gen.spectra.main.TraceCoberturaSpectraGenerator;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -144,6 +143,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 				// iterate over the compressed trace (should contain all executed node IDs)
 				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
 				while (baseIterator.hasNext()) {
+					System.out.print(".");
 					// execution trace is composed of indexed sequences of subtrace IDs
 					int subTraceSequenceIndex = baseIterator.next();
 					// iterate over the full node ID sequence using the indexer
@@ -170,36 +170,48 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 						involvedInExecutionTraces.contains(nodeIndex));
 				}
 			}
+			System.out.println("!");
 			
 			// iterate over execution traces
 			for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
 				// iterate over the compressed trace (should contain all executed node IDs)
 				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
 				while (baseIterator.hasNext()) {
+					System.out.print(".");
 					// execution trace is composed of indexed sequences of subtrace IDs
 					int subTraceSequenceIndex = baseIterator.next();
 					// iterate over the sub trace ID sequences using the indexer
 					Iterator<Integer> subTraceIdIterator = spectra.getIndexer().getSubTraceIDSequenceIterator(subTraceSequenceIndex);
 					while (subTraceIdIterator.hasNext()) {
 						Integer subTraceId = subTraceIdIterator.next();
-						IntTraceIterator  nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
 						int special_counter = 0;
+						int special_counter_at_pos = 0;
+						
+						boolean isFirst = true;
+						IntTraceIterator  nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
 						while (nodeIdIterator.hasNext()) {
 							int nodeId = nodeIdIterator.next();
 							INode<SourceCodeBlock> node = spectra.getNode(nodeId);
 							if (!node.getIdentifier().getNodeType().equals(NodeType.NORMAL)) {
 								++special_counter;
+								if (isFirst || !nodeIdIterator.hasNext()) {
+									++special_counter_at_pos;
+								}
 							}
+							isFirst = false;
 						}
-						if (special_counter > 1) {
+						if (special_counter > 2 || special_counter != special_counter_at_pos) {
 							nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
 							while (nodeIdIterator.hasNext()) {
 								int nodeIndex = nodeIdIterator.next();
 								System.out.println(nodeIndex + ": " + spectra.getNode(nodeIndex).getIdentifier());
 							}
 						}
-						// check if all sub traces contain at most 1 special node (branch/switch/jump)
-						assertTrue("special node count: " + special_counter, special_counter <= 1);
+						// check if all sub traces contain at most 2 special nodes (branch/switch/jump)
+						assertTrue("special node count: " + special_counter, special_counter <= 2);
+						
+						// check if all sub traces contain at most 2 special nodes (branch/switch/jump)
+						assertEquals("special nodes not at the start or the end.", special_counter, special_counter_at_pos);
 					}
 				}
 			}

@@ -2,9 +2,6 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TouchPointListener;
 
 import java.util.Map;
@@ -16,8 +13,8 @@ import java.util.Map;
  * @author piotr.tabor@gmail.com
  */
 public class InjectCodeTouchPointListener implements TouchPointListener {
-	private final static Logger logger = LoggerFactory
-			.getLogger(InjectCodeTouchPointListener.class);
+//	private final static Logger logger = LoggerFactory
+//			.getLogger(InjectCodeTouchPointListener.class);
 	/**
 	 * Component that is responsible for generation of the snippets
 	 */
@@ -30,12 +27,12 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 
 	private int lastJumpIdVariableIndex;
 	
-	/**
-	 * This variable should indicate that a decision statement has been processed last.
-	 * If this is set to true, the next processed statement/line is part of a new segment
-	 * of an execution trace.
-	 */
-	private int decisionIndicatorVariableIndex;
+//	/**
+//	 * This variable should indicate that a decision statement has been processed last.
+//	 * If this is set to true, the next processed statement/line is part of a new segment
+//	 * of an execution trace.
+//	 */
+//	private int decisionIndicatorVariableIndex;
 
 	public InjectCodeTouchPointListener(ClassMap classMap,
 			CodeProvider codeProvider) {
@@ -85,7 +82,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 					nextMethodVisitor, lastJumpIdVariableIndex);
 			
-			codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+//			codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 		}
 	}
 
@@ -174,7 +171,9 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			// indicate a decision... TODO maybe needs to be moved? idk...
 //			codeProvider.generateCodeThatSetsDecisionIndicatorVariable(
 //					mv, decisionIndicatorVariableIndex);
+			
 			codeProvider.generateCodeThatProcessesLastSubtrace(mv);
+			
 		}
 	}
 	
@@ -197,7 +196,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	@Override
 	public void afterMethodCall(int eventId, int opcode, String owner, String method, String descr, int currentLine,
 			MethodVisitor nextMethodVisitor) {
-		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+//		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 	}
 	/*
 	 * After every 'linenumber' instruction we increments counter connected with the line number.
@@ -237,7 +236,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //		// loop in a class that is not instrumented
 //		// (e.g. in test classes) that executes code without decision points (branches)
 //		// in it. This results in a very large sub trace, potentially...
-		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+		
+//		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 	}
 	
 
@@ -260,9 +260,9 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		this.lastJumpIdVariableIndex = lastJumpIdVariableIndex;
 	}
 	
-	public void setDecisionIndicatorVariableIndex(int decisionIndicatorVariableIndex) {
-		this.decisionIndicatorVariableIndex = decisionIndicatorVariableIndex;
-	}
+//	public void setDecisionIndicatorVariableIndex(int decisionIndicatorVariableIndex) {
+//		this.decisionIndicatorVariableIndex = decisionIndicatorVariableIndex;
+//	}
 
 	
 }

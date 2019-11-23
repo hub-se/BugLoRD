@@ -169,11 +169,11 @@ public class TouchCollector {
 		}
 		
 		projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
-		projectData.addIdToSubTraceMap(ExecutionTraceCollector.getAndResetIdToSubtraceMap());
+//		projectData.addIdToSubTraceMap(ExecutionTraceCollector.getAndResetIdToSubtraceMap());
 		
-		if (!projectData.getExecutionTraces().isEmpty() && projectData.getIdToSubtraceMap().isEmpty()) {
-			throw new IllegalStateException("Execution traces are available, but sub trace map is empty.");
-		}
+//		if (!projectData.getExecutionTraces().isEmpty() && projectData.getIdToSubtraceMap().isEmpty()) {
+//			throw new IllegalStateException("Execution traces are available, but sub trace map is empty.");
+//		}
 		
 //		for (Entry<Long, CompressedIntegerTrace> entry : projectData.getExecutionTraces().entrySet()) {
 ////			StringBuilder builder = new StringBuilder();

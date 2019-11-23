@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,8 +34,8 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	 */
 	private static final long serialVersionUID = 3786896457427890598L;
 
-	// keep at most 3 nodes in memory
-    private static final int CACHE_SIZE = 2;
+	// keep at most 4 nodes in memory
+    private static final int CACHE_SIZE = 4;
     
 	private File output;
 	private String filePrefix;
@@ -481,16 +483,31 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
     }
 	
 	public Iterator<java.util.Map.Entry<Integer,E>> entrySetIterator() {
-		return new MyBufferedIterator();
+		return new MyBufferedIterator(false);
+	}
+	
+	public Iterator<java.util.Map.Entry<Integer,E>> entrySetIterator(boolean sortNodeEntries) {
+		return new MyBufferedIterator(sortNodeEntries);
 	}
 	
 	private final class MyBufferedIterator implements Iterator<java.util.Map.Entry<Integer,E>> {
+		
+		private class KeyComp implements Comparator<Entry<Integer,E>> {
+			@Override
+			public int compare(Entry<Integer, E> o1, Entry<Integer, E> o2) {
+				return Integer.compare(o1.getKey(), o2.getKey());
+			}
+		}
 
 		private final Iterator<Integer> storeIndexIterator;
 		private Iterator<java.util.Map.Entry<Integer,E>> entrySetIterator;
+		private boolean sortNodeEntries;
 		
-		public MyBufferedIterator() {
-			storeIndexIterator = existingNodes.iterator();
+		public MyBufferedIterator(boolean sortNodeEntries) {
+			this.sortNodeEntries = sortNodeEntries;
+			List<Integer> list = new ArrayList<>(existingNodes);
+			list.sort(null);
+			storeIndexIterator = list.iterator();
 		}
 				
 		@Override
@@ -505,7 +522,13 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 					if (node == null) {
 						throw new IllegalStateException();
 					}
-					entrySetIterator = node.entrySet().iterator();
+					if (sortNodeEntries) {
+						List<Entry<Integer,E>> list = new ArrayList<>(node.entrySet());
+						list.sort(new KeyComp());
+						entrySetIterator = list.iterator();
+					} else {
+						entrySetIterator = node.entrySet().iterator();
+					}
 				} else {
 					return false;
 				}

@@ -193,7 +193,7 @@ public class CoberturaInstrumenter {
 			ClassWriter cw2 = new CoberturaClassWriter(
 					ClassWriter.COMPUTE_FRAMES);
 			// assigns counter IDs to touch points
-			int[] counterIDs2LineNumbers = cv.getClassMap().assignCounterIds();
+			int[][] counterIDs2LineNumbers = cv.getClassMap().assignCounterIds();
 			// set a mapping structure in the class data to map counter IDs to actual line numbers
 			classData.setCounterId2LineNumbers(counterIDs2LineNumbers);
 			

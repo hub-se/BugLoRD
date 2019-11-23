@@ -7,8 +7,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageD
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocker;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
@@ -28,7 +26,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	
 	private String[] idToClassName;
 	private Map<Long, EfficientCompressedIntegerTrace> executionTraces;
-	private Map<Integer, EfficientCompressedLongTrace> idToSubtraceMap;
+//	private Map<Integer, EfficientCompressedIntegerTrace> idToSubtraceMap;
 	
 	public ProjectData() {
 	}
@@ -59,14 +57,14 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		}
 	}
 	
-	public void addIdToSubTraceMap(Map<Integer, EfficientCompressedLongTrace> map) {
-		lock.lock();
-		try {
-			this.idToSubtraceMap = map;
-		} finally {
-			lock.unlock();
-		}
-	}
+//	public void addIdToSubTraceMap(Map<Integer, EfficientCompressedIntegerTrace> map) {
+//		lock.lock();
+//		try {
+//			this.idToSubtraceMap = map;
+//		} finally {
+//			lock.unlock();
+//		}
+//	}
 	
 //	public void addIdToClassNameMap(Map<Integer,String> idToClassNameMap) {
 //		this.idToClassNameMap = idToClassNameMap;
@@ -81,9 +79,9 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 		return executionTraces;
 	}
 	
-	public Map<Integer, EfficientCompressedLongTrace> getIdToSubtraceMap() {
-		return idToSubtraceMap;
-	}
+//	public Map<Integer, EfficientCompressedIntegerTrace> getIdToSubtraceMap() {
+//		return idToSubtraceMap;
+//	}
 	
 	/**
 	 * @return
@@ -266,36 +264,36 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 				executionTraces.putAll(projectData.getExecutionTraces());
 			}
 			
-			// TODO check if that makes sense at all... hacked in for now...
-			if (idToSubtraceMap == null || idToSubtraceMap.isEmpty()) {
-				if (projectData.getIdToSubtraceMap() != null) {
-					// just take whatever the other end has
-					idToSubtraceMap = projectData.getIdToSubtraceMap();
-				}
-			} else if (projectData.getIdToSubtraceMap() != null && !projectData.getIdToSubtraceMap().isEmpty()) {
-				// both contain execution traces
-//				// iterate over all entries in the id to class map
-//				for (Entry<Integer, String> entry : projectData.getIdToClassNameMap().entrySet()) {
-//					String className = idToClassNameMap.get(entry.getKey());
-//					if (className == null) {
-//						for (Entry<Integer, String> entry2 : idToClassNameMap.entrySet()) {
-//							if (entry2.getValue().equals(className)) {
-//								// found the same class name with a different index
-//							}
-//						}
-//						idToClassNameMap.put(entry.getKey(), entry.getValue());
+//			// TODO check if that makes sense at all... hacked in for now...
+//			if (idToSubtraceMap == null || idToSubtraceMap.isEmpty()) {
+//				if (projectData.getIdToSubtraceMap() != null) {
+//					// just take whatever the other end has
+//					idToSubtraceMap = projectData.getIdToSubtraceMap();
+//				}
+//			} else if (projectData.getIdToSubtraceMap() != null && !projectData.getIdToSubtraceMap().isEmpty()) {
+//				// both contain execution traces
+////				// iterate over all entries in the id to class map
+////				for (Entry<Integer, String> entry : projectData.getIdToClassNameMap().entrySet()) {
+////					String className = idToClassNameMap.get(entry.getKey());
+////					if (className == null) {
+////						for (Entry<Integer, String> entry2 : idToClassNameMap.entrySet()) {
+////							if (entry2.getValue().equals(className)) {
+////								// found the same class name with a different index
+////							}
+////						}
+////						idToClassNameMap.put(entry.getKey(), entry.getValue());
+////					}
+////				}
+//				
+////				// assume that the data to merge into this one is the relevant data
+////				idToSubtraceMap.putAll(projectData.getIdToSubtraceMap());
+//				
+//				for (Entry<Integer, EfficientCompressedIntegerTrace> entry : projectData.getIdToSubtraceMap().entrySet()) {
+//					if (!idToSubtraceMap.containsKey(entry.getKey())) {
+//						idToSubtraceMap.put(entry.getKey(), entry.getValue());
 //					}
 //				}
-				
-//				// assume that the data to merge into this one is the relevant data
-//				idToSubtraceMap.putAll(projectData.getIdToSubtraceMap());
-				
-				for (Entry<Integer, EfficientCompressedLongTrace> entry : projectData.getIdToSubtraceMap().entrySet()) {
-					if (!idToSubtraceMap.containsKey(entry.getKey())) {
-						idToSubtraceMap.put(entry.getKey(), entry.getValue());
-					}
-				}
-			}
+//			}
 
             for (String key : projectData.classes.keySet()) {
                 if (!this.classes.containsKey(key)) {

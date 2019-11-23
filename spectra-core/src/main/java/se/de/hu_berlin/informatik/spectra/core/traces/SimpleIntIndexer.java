@@ -12,10 +12,10 @@ import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 
 public class SimpleIntIndexer implements SequenceIndexer {
 
@@ -33,7 +33,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 	
 	public SimpleIntIndexer(
 			IntArraySequenceIndexer intArraySequenceIndexer, 
-			Map<Integer, BufferedLongArrayQueue> idToSubTraceMap, 
+			Map<Integer, BufferedIntArrayQueue> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		// map counter IDs to line numbers!
 		storeSubTraceIdSequences(Objects.requireNonNull(intArraySequenceIndexer));
@@ -55,7 +55,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		}
 	}
 
-	private void mapCounterIdsToSpectraNodeIds(Map<Integer, BufferedLongArrayQueue> idToSubTraceMap, 
+	private void mapCounterIdsToSpectraNodeIds(Map<Integer, BufferedIntArrayQueue> idToSubTraceMap, 
 			final ISpectra<SourceCodeBlock, ?> lineSpectra, ProjectData projectData) {
 		String[] idToClassNameMap = Objects.requireNonNull(projectData.getIdToClassNameMap());
 		
@@ -65,15 +65,15 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			BufferedLongArrayQueue list = idToSubTraceMap.get(i);
-			ReplaceableCloneableLongIterator sequenceIterator = list.iterator();
+			BufferedIntArrayQueue subTrace = idToSubTraceMap.get(i);
+			ReplaceableCloneableIntIterator sequenceIterator = subTrace.iterator();
 			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
 			
 			while (sequenceIterator.hasNext()) {
-				long encodedStatement = sequenceIterator.next();
+				int encodedStatement = sequenceIterator.next();
 				int classId = CoberturaStatementEncoding.getClassId(encodedStatement);
 				int counterId = CoberturaStatementEncoding.getCounterId(encodedStatement);
-				int specialIndicatorId = CoberturaStatementEncoding.getSpecialIndicatorId(encodedStatement);
+				
 				//			 Log.out(true, this, "statement: " + Arrays.toString(statement));
 				// TODO store the class names with '.' from the beginning, or use the '/' version?
 				String classSourceFileName = idToClassNameMap[classId];
@@ -86,7 +86,8 @@ public class SimpleIntIndexer implements SequenceIndexer {
 					if (classData.getCounterId2LineNumbers() == null) {
 						throw new IllegalStateException("No counter ID to line number map for class " + classSourceFileName);
 					}
-					int lineNumber = classData.getCounterId2LineNumbers()[counterId];
+					int[] lineNumber = classData.getCounterId2LineNumbers()[counterId];
+					int specialIndicatorId = lineNumber[1];
 
 					//				// these following lines print out the execution trace
 					//				String addendum = "";
@@ -125,8 +126,8 @@ public class SimpleIntIndexer implements SequenceIndexer {
 					}
 
 					// the array is initially set to -1 to indicate counter IDs that were not set, if any
-					if (lineNumber >= 0) {
-						int nodeIndex = getNodeIndex(lineSpectra, classData.getSourceFileName(), lineNumber, nodeType);
+					if (lineNumber[0] >= 0) {
+						int nodeIndex = getNodeIndex(lineSpectra, classData.getSourceFileName(), lineNumber[0], nodeType);
 						if (nodeIndex >= 0) {
 							traceOfNodeIDs.add(nodeIndex);
 						} else {
@@ -146,7 +147,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 							}
 //							if (nodeType.equals(NodeType.NORMAL)) {
 							throw new IllegalStateException("Node not found in spectra: "
-									+ classData.getSourceFileName() + ":" + lineNumber 
+									+ classData.getSourceFileName() + ":" + lineNumber[0] 
 									+ " from counter id " + counterId + throwAddendum);
 //							} else {
 //								System.err.println("Node not found in spectra: "
@@ -169,7 +170,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 			}
 			
 			// delete any stored nodes from disk!
-			list.clear();
+			subTrace.clear();
 		}
 	}
 	

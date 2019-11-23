@@ -51,7 +51,7 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			
 			generateCodeThatZeroJumpCounterIdVariable(nextMethodVisitor,
 					lastJumpIdVariableIndex);
-			generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+//			generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 			
 			nextMethodVisitor.visitLabel(afterJump);
 		} else {
@@ -73,9 +73,12 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatProcessesLastSubtrace(
 			MethodVisitor nextMethodVisitor) {
+//		nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+//				.getInternalName(ExecutionTraceCollector.class), "processLastSubTrace",
+//				"()V");
 		nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-				.getInternalName(ExecutionTraceCollector.class), "processLastSubTrace",
-				"()V");
+		.getInternalName(ExecutionTraceCollector.class), "visitedCatchBlock",
+		"()V");
 	}
 	
 	
@@ -143,7 +146,7 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "switchAddStatementToExecutionTraceAndIncrementCounter",
 					"(II)V");
-			generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+//			generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(classId);

@@ -7,6 +7,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LineTouch
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.SwitchTouchPointDescriptor;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TouchPointDescriptor;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TryCatchTouchPointDescriptor;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -344,7 +345,7 @@ public class ClassMap {
 	 * @return 
 	 * an array that maps counter IDs to actual line numbers
 	 */
-	public int[] assignCounterIds() {
+	public int[][] assignCounterIds() {
 		AtomicInteger idGenerator = new AtomicInteger(0);
 		for (List<TouchPointDescriptor> tpd : line2touchPoints.values()) {
 			for (TouchPointDescriptor t : tpd) {
@@ -353,23 +354,33 @@ public class ClassMap {
 		}
 		maxCounterId = idGenerator.get();
 		
-		int[] result = new int[maxCounterId+1];
+		int[][] result = new int[maxCounterId+1][2];
 		// set to -1
 		for (int i = 0; i < result.length; i++) {
-			result[i] = -1;
+			result[i][0] = -1;
+			result[i][1] = -1;
 		}
 		
 		// map counter IDs to actual line numbers
 		for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {
 			if (tpd instanceof LineTouchPointDescriptor) {
-				result[((LineTouchPointDescriptor) tpd).getCounterId()] = tpd.getLineNumber();
+				Integer id = ((LineTouchPointDescriptor) tpd).getCounterId();
+				result[id][0] = tpd.getLineNumber();
+				result[id][1] = CoberturaStatementEncoding.NORMAL_ID;
 			} else if (tpd instanceof JumpTouchPointDescriptor) {
-				result[((JumpTouchPointDescriptor) tpd).getCounterIdForTrue()] = tpd.getLineNumber();
-				result[((JumpTouchPointDescriptor) tpd).getCounterIdForFalse()] = tpd.getLineNumber();
+				int idForTrue = ((JumpTouchPointDescriptor) tpd).getCounterIdForTrue();
+				result[idForTrue][0] = tpd.getLineNumber();
+				result[idForTrue][1] = CoberturaStatementEncoding.BRANCH_ID;
+				int idForFalse = ((JumpTouchPointDescriptor) tpd).getCounterIdForFalse();
+				result[idForFalse][0] = tpd.getLineNumber();
+				result[idForFalse][1] = CoberturaStatementEncoding.JUMP_ID;
 			} else if (tpd instanceof SwitchTouchPointDescriptor) {
-				result[((SwitchTouchPointDescriptor) tpd).getCounterId()] = tpd.getLineNumber();
+				Integer switchId = ((SwitchTouchPointDescriptor) tpd).getCounterId();
+				result[switchId][0] = tpd.getLineNumber();
+				result[switchId][1] = CoberturaStatementEncoding.SWITCH_ID;
 				for (int id : ((SwitchTouchPointDescriptor) tpd).getCountersForLabels()) {
-					result[id] = tpd.getLineNumber();
+					result[id][0] = tpd.getLineNumber();
+					result[id][1] = CoberturaStatementEncoding.SWITCH_ID;
 				}
 			}
 		}
