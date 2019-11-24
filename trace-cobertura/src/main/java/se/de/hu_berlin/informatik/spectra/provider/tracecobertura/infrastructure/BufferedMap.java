@@ -1,7 +1,5 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
-import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
-
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -489,11 +487,10 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		private Iterator<java.util.Map.Entry<Integer,E>> entrySetIterator;
 		private boolean sortNodeEntries;
 
-		@IgnoreJRERequirement
 		public MyBufferedIterator(boolean sortNodeEntries) {
 			this.sortNodeEntries = sortNodeEntries;
 			List<Integer> list = new ArrayList<>(existingNodes);
-			list.sort(null);
+			Collections.sort(list);
 			storeIndexIterator = list.iterator();
 		}
 				
@@ -502,7 +499,6 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			return check();
 		}
 
-		@IgnoreJRERequirement
 		private boolean check() {
 			while (entrySetIterator == null || !entrySetIterator.hasNext()) {
 				if (storeIndexIterator.hasNext()) {
@@ -512,7 +508,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 					}
 					if (sortNodeEntries) {
 						List<Entry<Integer,E>> list = new ArrayList<>(node.entrySet());
-						list.sort(new KeyComp());
+						Collections.sort(list, new KeyComp());
 						entrySetIterator = list.iterator();
 					} else {
 						entrySetIterator = node.entrySet().iterator();
