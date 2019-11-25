@@ -80,10 +80,14 @@ public class FaultLocalizerFactory {
                 return new Nessa<>(2, 0.9);
             case "nessa-3-0.4":
                 return new Nessa<>(3, 0.4);
-            case "nessa-2-true":
-                return new Nessa<>(2, true);
-            case "nessa-3-true":
-                return new Nessa<>(3, true);
+			case "nessa-2-04-true":
+				return new Nessa<>(2, 0.4, true);
+			case "nessa-3-04-true":
+				return new Nessa<>(3, 0.4, true);
+			case "nessa-2-09-true":
+				return new Nessa<>(2, 0.9, true);
+			case "nessa-3-09-true":
+				return new Nessa<>(3, 0.9, true);
 			case "ochiai2":
 				return new Ochiai2<>();
 			case "overlap":

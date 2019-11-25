@@ -36,8 +36,26 @@ public class LinearBlockSequence {
     public void addBlock(int blockID) {
         blockSeq.add(blockID);
     }
+
     @Override
     public String toString() {
         return "\t" + blockSeq;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof LinearBlockSequence)) {
+            return false;
+        }
+        LinearBlockSequence dummy = (LinearBlockSequence) obj;
+        return blockSeq.equals(dummy.blockSeq);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + blockSeq.hashCode();
+        return result;
     }
 }

@@ -5,30 +5,29 @@ import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class LinearExecutionHitTrace {
-    final private int numOfCores = 16;
+    final private int numOfCores = Runtime.getRuntime().availableProcessors();
     private ArrayList<LinearExecutionTestTrace> TestTrace;
     private ISpectra<SourceCodeBlock, ?> spectra;
     private ConcurrentHashMap<Integer, ExecutionGraphNode> nodeSeq;
     private ConcurrentHashMap<Integer, LinkedHashSet<Integer>> block2NodeMap;
-    private int traceCount;
+    private AtomicInteger traceCount;
 
     public LinearExecutionHitTrace(ISpectra<SourceCodeBlock, ?> spectra) {
-        traceCount = spectra.getTraces().size();
-        TestTrace = new ArrayList<>(traceCount);
-        nodeSeq = new ConcurrentHashMap<>(spectra.getNodes().size());
 
+        nodeSeq = new ConcurrentHashMap<>(spectra.getNodes().size());
+        traceCount = new AtomicInteger(0);
         this.spectra = spectra;
+        TestTrace = new ArrayList<>(spectra.getTraces().size());
+
         try {
             initGraphNode();
         } catch (InterruptedException e) {
@@ -36,11 +35,17 @@ public class LinearExecutionHitTrace {
         }
 
         block2NodeMap = new ConcurrentHashMap<>(nodeSeq.size());
+
         try {
             generateLinearBlockTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public int getTraceCount() {
+        return traceCount.get();
     }
 
 
@@ -52,6 +57,14 @@ public class LinearExecutionHitTrace {
         return (node.getOutDegree() > 1);
     }
 
+    private boolean isLoop(ExecutionGraphNode node) {
+        try {
+            return node.checkInNode(node.getIndex());
+        } catch (NullPointerException e) {
+            System.out.println("IsLoop:  Input-Node is NULL!");
+            return false;
+        }
+    }
 
     public ISpectra getSpectra() {
         return spectra;
@@ -90,6 +103,7 @@ public class LinearExecutionHitTrace {
         return block2NodeMap.size();
     }
 
+
     public LinearExecutionTestTrace getTrace(int index) {
         Iterator it = TestTrace.iterator();
         return TestTrace.get(index);
@@ -114,12 +128,14 @@ public class LinearExecutionHitTrace {
 
     private void initGraphNode() throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(numOfCores);
-        //CountDownLatch latch = new CountDownLatch(traceCount);
+
+
         for (ITrace<SourceCodeBlock> test : spectra.getTraces()) {
             executorService.submit(() -> {
                 for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
+                    traceCount.getAndIncrement();
                     Iterator<Integer> nodeIdIterator = executionTrace.mappedIterator(spectra.getIndexer());
-                    ExecutionGraphNode current, last;
+                    ExecutionGraphNode current, last = null;
                     int lastId = -1;
                     while (nodeIdIterator.hasNext()) {
                         int nodeIndex = nodeIdIterator.next();
@@ -129,42 +145,37 @@ public class LinearExecutionHitTrace {
                                 nodeIndex,
                                 k -> new ExecutionGraphNode(nodeIndex, spectra));
                         current = getNodeSeq().get(nodeIndex);
-                        synchronized (current) {
-                            if (lastId != -1) {
-                                last = getNodeSeq().get(lastId);
 
-                                last.addOutNode(nodeIndex);
-                            }
-                            // fix for cases where the same node doesn't is always the starting one
-                            current.addInNode(lastId);
+                        if (last != null) {
+                            last.addOutNode(nodeIndex);
                         }
+                        // fix for cases where the same node doesn't is always the starting one
+                        current.addInNode(lastId);
                         lastId = nodeIndex;
+                        last = current;
                     }
                 }
-                //latch.countDown();
             });
         }
 
         executorService.shutdown();
-        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-        //latch.await();
+        executorService.awaitTermination(2, TimeUnit.HOURS);
+
     }
 
     private void generateLinearBlockTrace() throws InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(numOfCores);
-        //CountDownLatch latch = new CountDownLatch(traceCount);
         for (ITrace<SourceCodeBlock> test : spectra.getTraces()) {
             executorService.submit(() -> {
                 LinearExecutionTestTrace testTrace = new LinearExecutionTestTrace(test.getIndex(), test.getIdentifier(), spectra, test.isSuccessful());
                 generateLEBFromExeTrace(test, testTrace);
                 getTestTrace().add(testTrace);
-                //latch.countDown();
             });
 
         }
         executorService.shutdown();
-        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-        //latch.await();
+        executorService.awaitTermination(2, TimeUnit.HOURS);
+
     }
 
     private void generateLEBFromExeTrace(ITrace<SourceCodeBlock> test, LinearExecutionTestTrace testTrace) {
@@ -172,7 +183,7 @@ public class LinearExecutionHitTrace {
 
             LinearBlockSequence innerTrace = new LinearBlockSequence();
             Iterator<Integer> nodeIdIterator = executionTrace.mappedIterator(spectra.getIndexer());
-
+            HashMap<Integer, HashSet<Integer>> predessor = new HashMap<>();
             int currentBlock = -2;
             int lastBlock = -2;
 
@@ -180,17 +191,20 @@ public class LinearExecutionHitTrace {
 
                 int nodeIndex = nodeIdIterator.next();
                 ExecutionGraphNode node = nodeSeq.get(nodeIndex);
+
                 synchronized (node) {
                     // check if we have a globally new node
                     if (node.getBlockID() == -1) {
                         //check if we have to create a new block
-                        if ((currentBlock == -2) || hasMultiIn(node)) {
+                        if ((currentBlock == -2) || hasMultiIn(node) || isLoop(node)) {
                             //add to block2NodeMap if not exists
                             block2NodeMap.computeIfAbsent(nodeIndex, v -> new LinkedHashSet<>());
                             synchronized (block2NodeMap) {
                                 block2NodeMap.get(nodeIndex).add(nodeIndex);
                             }
                             // init block and add to block sequence
+                            predessor.computeIfAbsent(nodeIndex, v -> new HashSet<>());
+                            predessor.get(nodeIndex).add(lastBlock);
                             node.setBlockID(nodeIndex);
                             innerTrace.addBlock(nodeIndex);
                             currentBlock = nodeIndex;
@@ -209,16 +223,17 @@ public class LinearExecutionHitTrace {
                         }
                         continue;
                     }
-
-
                 }
 
                 //we have seen this node some where
 
                 //check if we are at the beginning of a block
-                if ((currentBlock == -2)) {
+                if ((currentBlock == -2) || (node.getBlockID() == nodeIndex)) {
                     //check for repetition
-                    if (lastBlock != nodeIndex) innerTrace.addBlock(nodeIndex);
+                    predessor.computeIfAbsent(nodeIndex, v -> new HashSet<>());
+                    if ((lastBlock != nodeIndex) && (!predessor.get(nodeIndex).contains(lastBlock)))
+                        innerTrace.addBlock(nodeIndex);
+                    predessor.get(nodeIndex).add(lastBlock);
                     currentBlock = nodeIndex;
                     lastBlock = nodeIndex;
                 }

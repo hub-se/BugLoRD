@@ -7,6 +7,7 @@ import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,9 +20,9 @@ class LinearExecutionHitTraceTest {
     void generateLinearExecutionHitTraceTest() {
         long start = System.currentTimeMillis();
         //Path output1 = Paths.get(getStdResourcesDir(), "Math-84b.zip");
-        //Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
+        Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
         //Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
-        Path output1 = Paths.get(getStdResourcesDir(), "Chart-4b.zip");
+        //Path output1 = Paths.get(getStdResourcesDir(), "Chart-4b.zip");
         ISpectra<SourceCodeBlock, ?> input = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output1);
         //checkSpectra(input);
         System.out.println("Time in total for loading the spectra: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
@@ -31,7 +32,7 @@ class LinearExecutionHitTraceTest {
         start = System.currentTimeMillis();
         //checkOutSlowPart(input);
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace(input);
-        System.out.println("Total time for init LEB methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
+        System.out.println("\nTotal time for init LEB methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
         System.out.println("# of Blocks: " + hitTrace.getBlockCount() + " blockMap-size: " + hitTrace.getBlock2NodeMap().size());
         System.out.println("# of nodes in nodeseq: " + hitTrace.getNodeSeq().size());
 //        System.out.println(input.getNode(33166).getEF() + " "+input.getNode(33166).getEP());
@@ -53,9 +54,53 @@ class LinearExecutionHitTraceTest {
         checkMultiUsedNode(hitTrace);
         checkCorruption(hitTrace);
         checkStats(input, hitTrace);
+//        System.out.println(hitTrace.getNodeSeq().get(9490));
+//        System.out.println(hitTrace.getNodeSeq().get(9550));
+//        System.out.println(hitTrace.getNodeSeq().get(9552));
 
     }
 
+    @org.junit.jupiter.api.Test
+    void checkConsistency() {
+        checkBlockTrace("Chart-26b.zip", 10);
+        //checkBlockTrace("Math-84b.zip", 20);
+        //checkBlockTrace("Chart-4b.zip", 10);
+        //checkBlockTrace("spectraCompressed.zip", 10);;
+    }
+
+    private void checkBlockTrace(String file, int maxIteration) {
+        Path output = Paths.get(getStdResourcesDir(), file);
+        long start = System.currentTimeMillis();
+        ISpectra<SourceCodeBlock, ?> input = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output);
+        System.out.println("Time in total for loading the spectra: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
+        System.out.println("number of test: " + input.getTraces().size());
+        System.out.println("number of failed test: " + input.getFailingTraces().size());
+        System.out.println("number of nodes: " + input.getNodes().size());
+        int blockCount = 0;
+        start = System.currentTimeMillis();
+        LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace(input);
+        System.out.println("Total time for init LEB methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
+        blockCount = hitTrace.getBlock2NodeMap().size();
+        System.out.println("number of blocks: " + blockCount);
+        HashSet<ArrayList<LinearBlockSequence>> allTraces = new HashSet<>();
+        hitTrace.getTestTrace().forEach(t -> allTraces.add(t.getTraces()));
+        //allTraces.forEach(t->System.out.println(t));
+        for (int i = 1; i <= maxIteration; i++) {
+            System.out.println("\niteration: " + i);
+            LinearExecutionHitTrace hitTrace2 = new LinearExecutionHitTrace(input);
+            HashSet<ArrayList<LinearBlockSequence>> allT = new HashSet<>();
+            hitTrace2.getTestTrace().forEach(t -> allT.add(t.getTraces()));
+            allT.removeAll(allTraces);
+            if (allT.size() > 0) {
+                System.out.println("block seq was genereated differently in " + file + ", number of diff set: "
+                        + allT.size() + " from total: " + allTraces.size() + " traces,  iteration = " + i);
+                allT.forEach(t -> System.out.println(t));
+            }
+
+        }
+    }
+
+    @org.junit.jupiter.api.Test
     private void checkOutSlowPart(ISpectra<SourceCodeBlock, ?> input) {
         input.getTraces().forEach(t -> {
             int i = t.getIndex();

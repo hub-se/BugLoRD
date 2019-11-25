@@ -26,10 +26,11 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         this.minSup = minSup;
     }
 
-    public Nessa(int maxN, boolean dynSup) {
+    public Nessa(int maxN, double minSup, boolean dynSup) {
         super();
         confidence = new LinkedHashMap<>();
         this.maxN = maxN;
+        this.minSup = minSup;
         this.dynSup = dynSup;
     }
 
@@ -38,7 +39,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         final Ranking<INode<T>> ranking = new NodeRanking<>();
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace((ISpectra<SourceCodeBlock, ?>) spectra);
         NGramSet nGrams = dynSup ?
-                new NGramSet(hitTrace, maxN, true) : new NGramSet(hitTrace, maxN, minSup);
+                new NGramSet(hitTrace, maxN, minSup, true) : new NGramSet(hitTrace, maxN, minSup);
         confidence = nGrams.getConfidence();
         confidence.forEach((key, value) -> {
                     //System.out.println(spectra.getNode(key).getIdentifier());

@@ -17,9 +17,9 @@ class NGramSetTest {
     void generateNGSet() {
         long start = System.currentTimeMillis();
         //Path output1 = Paths.get(getStdResourcesDir(), "Math-84b.zip");
-        //Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
-        //Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
-        Path output1 = Paths.get(getStdResourcesDir(), "Closure-93b.zip");
+        Path output1 = Paths.get(getStdResourcesDir(), "spectraCompressed.zip");
+        // Path output1 = Paths.get(getStdResourcesDir(), "Chart-26b.zip");
+        //Path output1 = Paths.get(getStdResourcesDir(), "Closure-93b.zip");
         //Path output1 = Paths.get(getStdResourcesDir(), "Chart-4b.zip");
         ISpectra<SourceCodeBlock, ?> input = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output1);
         System.out.println("Time in total for loading the spectra: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
@@ -29,9 +29,10 @@ class NGramSetTest {
         start = System.currentTimeMillis();
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace(input);
         System.out.println("Total time for init LEB methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
+        System.out.println("number of blocks: " + hitTrace.getBlock2NodeMap().size());
         start = System.currentTimeMillis();
 
-        NGramSet nGrams = new NGramSet(hitTrace, 3, true);
+        NGramSet nGrams = new NGramSet(hitTrace, 3, 0.4, true);
 
 
         System.out.println("ngram set size : " + nGrams.getResult().size());
@@ -41,6 +42,68 @@ class NGramSetTest {
         //playingAround(nGrams);
         printResult(nGrams);
         //printMap(nGrams.getConfidence());
+
+    }
+
+    @org.junit.jupiter.api.Test
+    void checkCons() {
+        checkConsistency("Chart-26b.zip", 4);
+        //checkConsistency("Math-84b.zip", 10);
+        //checkConsistency("Chart-4b.zip", 10);
+        //checkConsistency("spectraCompressed.zip", 10);
+    }
+
+    private void checkConsistency(String file, int max) {
+        Path output = Paths.get(getStdResourcesDir(), file);
+        long start = System.currentTimeMillis();
+        ISpectra<SourceCodeBlock, ?> input = SpectraFileUtils.loadBlockCountSpectraFromZipFile(output);
+        System.out.println("Time in total for loading the spectra: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
+        System.out.println("number of test: " + input.getTraces().size());
+        System.out.println("number of failed test: " + input.getFailingTraces().size());
+        System.out.println("number of nodes: " + input.getNodes().size());
+        int blockCount = 0, nGramCount = 0;
+        start = System.currentTimeMillis();
+        LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace(input);
+        System.out.println("Total time for init LEB methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
+        System.out.println("number of blocks: " + hitTrace.getBlock2NodeMap().size());
+        start = System.currentTimeMillis();
+
+        NGramSet nGrams = new NGramSet(hitTrace, 3, 0.4, true);
+
+
+        System.out.println("ngram set size : " + nGrams.getResult().size());
+        System.out.println("ranking list size : " + nGrams.getConfidence().size());
+
+        System.out.println("Total time for NGRAM methods: " + ((System.currentTimeMillis() - start) / 1000.0) + "s");
+        blockCount = hitTrace.getBlock2NodeMap().size();
+        nGramCount = nGrams.getResult().size();
+        System.out.println("the number of " + file + ", blockCount: "
+                + blockCount + ", NgramCount: " + nGramCount);
+
+
+        for (int i = 1; i <= max; i++) {
+            List<NGram> tmp = new LinkedList<>();
+
+            System.out.println("\niteration: " + i);
+            NGramSet nGrams2 = new NGramSet(hitTrace, 3, 0.4, true);
+            int newCount = nGrams2.getResult().size();
+            if (nGramCount > newCount) {
+                tmp = nGrams.getResult();
+                tmp.removeAll(nGrams2.getResult());
+            } else {
+                if (nGramCount < newCount) {
+                    tmp = nGrams2.getResult();
+                    tmp.removeAll(nGrams.getResult());
+                }
+            }
+
+            if (tmp.size() > 0) {
+                System.out.println("the Ngram set was changing in " + file + ", old size: " + nGramCount + " new size: " + newCount + " vs diff size: "
+                        + tmp.size() + " iteration = " + i);
+                tmp.forEach(nGram -> System.out.println("\t" + nGram.toString()));
+            }
+
+        }
 
     }
 
@@ -136,6 +199,18 @@ class NGramSetTest {
         System.out.println("is left after filtering: " + d1);
         System.out.println("allset: " + allSet);
         System.out.println("sset: " + sSet);
+    }
+
+    @org.junit.jupiter.api.Test
+    void TestHasHMap() {
+        HashMap<ArrayList<Integer>, String> map = new HashMap<>();
+        ArrayList<Integer> a = new ArrayList<>();
+        ArrayList<Integer> b = new ArrayList<>();
+        a.add(1);
+        b.add(1);
+        map.put(a, "A");
+        System.out.println(map.containsKey(b));
+
     }
 
     class SizeComparator implements Comparator<HashSet<?>> {

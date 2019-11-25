@@ -87,4 +87,13 @@ public class NGram implements Comparable<NGram> {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "NGram{" +
+                "blockIDs=" + blockIDs +
+                ", EF=" + EF +
+                ", ET=" + ET +
+                ", confidence=" + confidence +
+                '}';
+    }
 }

@@ -1,10 +1,7 @@
 package se.de.hu_berlin.informatik.ngram;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class NGramSet {
     private final int maxLength;
@@ -30,10 +27,11 @@ public class NGramSet {
     }
 
 
-    public NGramSet(LinearExecutionHitTrace hitTrace, int maxLength, boolean dynaSup) {
+    public NGramSet(LinearExecutionHitTrace hitTrace, int maxLength, double minSupport, boolean dynaSup) {
         this.hitTrace = hitTrace;
         this.maxLength = maxLength;
         this.dynaSup = dynaSup;
+        minEF = computeMinEF(minSupport);
         startNgramSet(hitTrace);
     }
 
@@ -44,8 +42,10 @@ public class NGramSet {
         failedTest = new HashMap<>(hitTrace.getBlockCount(), 1.0f);
         relevant = new HashSet<>();
         //first step is the build the relevant block set
+        CountDownLatch isReady = new CountDownLatch(1);
+        buildNGramSet(isReady);
         try {
-            buildNGramSet();
+            isReady.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -125,7 +125,7 @@ public class NGramSet {
         return minEF;
     }
 
-    private void buildNGramSet() throws InterruptedException {
+    private void buildNGramSet(CountDownLatch isReady) {
         //first step is to find the relevant 1-gram
         long start = System.currentTimeMillis();
         initInvolvementMap();
@@ -133,9 +133,10 @@ public class NGramSet {
         start = System.currentTimeMillis();
         createNGrams();
         System.out.println("create ngramSet done in: " + (System.currentTimeMillis() - start) / 1000.0 + " s");
+        isReady.countDown();
     }
 
-    private void createNGrams() throws InterruptedException {
+    private void createNGrams() {
         ExecutorService executorService = Executors.newFixedThreadPool(numOfCores);
         hitTrace.getTestTrace().forEach(testTrace -> {
             testTrace.getTraces().forEach(seq -> {
@@ -147,13 +148,19 @@ public class NGramSet {
             });
         });
         executorService.shutdown();
-        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        try {
+            executorService.awaitTermination(2, TimeUnit.HOURS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void calcNGramStats(LinkedList<Integer> seq, int nMax) {
 
         // stop is this sequence is too short
-        if (seq.size() < nMax) return;
+        if (seq.size() < nMax) {
+            return;
+        }
 
         Iterator<Integer> blockIt = seq.iterator();
         ArrayList<Integer> lastNGram = new ArrayList<>(nMax);
@@ -161,7 +168,7 @@ public class NGramSet {
         //distance to the node that was executed by all failed tests
         int distToLastFailedNode = nMax + 1;
         double confOfLastRelNode = 0.0;
-
+        int lastRelNode = -1;
 
         //init the first nMax-Gram
         for (int i = 0; i < nMax; i++) {
@@ -169,6 +176,7 @@ public class NGramSet {
             if (relevant.contains(tmp)) {
                 distToLastFailedNode = i;
                 confOfLastRelNode = computeConfOfSingleBlock(tmp);
+                lastRelNode = tmp;
             }
             lastNGram.add(i, tmp);
         }
@@ -178,10 +186,10 @@ public class NGramSet {
         // that means that "distToLastFailedNode" must be smaller than "nMax".
         if (distToLastFailedNode < nMax) {
 
-            updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
+            //updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
             checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode);
         }
-
+        ;
         while (blockIt.hasNext()) {
             ArrayList<Integer> nGram = new ArrayList<>(nMax);
 
@@ -203,34 +211,35 @@ public class NGramSet {
 
             // again, we only save this ngram if it contains a relevant block
             if (distToLastFailedNode < nMax) {
-                updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
-                checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode);
+                //updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
+                checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode);
             }
             lastNGram = nGram;
         }
     }
 
-    private void updateMinSup(int nMax, int distToLastFailedNode, double confOfLastRelNode) {
+    private void checkThenAdd(int nMax, ArrayList<Integer> ngram, double confOfLastRelNode, int distance) {
+        double EF = getIntersectionCount2(ngram, failedTest, nMax);
         if (dynaSup) {
-            minEF = computeMinEF(1.0 - (confOfLastRelNode / (nMax - distToLastFailedNode + 1)));
-        }
-    }
-
-    private void checkThenAdd(int nMax, ArrayList<Integer> lastNGram, double confOfLastRelNode, int distance) {
-
-        if (nGramHashSet.get(lastNGram) == null) {
-            double EF = getIntersectionCount2(lastNGram, failedTest, nMax);
-            //if minSup is fulfilled and the new confidence is big enough
-            if ((EF > 0) && (EF >= minEF)) {
-                double ET = getIntersectionCount2(lastNGram, involvedTest, nMax);
-                if (!dynaSup) {
-                    nGramHashSet.computeIfAbsent(lastNGram, v -> new NGram(nMax, EF, ET, lastNGram));
-                } else if ((EF / ET) >= Math.pow(confOfLastRelNode, distance + 1)) {
-                    nGramHashSet.computeIfAbsent(lastNGram, v -> new NGram(nMax, EF, ET, lastNGram));
-                }
+            if (distance == 0) {
+                // current block has EF factor = 1.0 -> the EF factor will not change
+                // confidence will be equal or bigger as before
+                double ET = getIntersectionCount2(ngram, involvedTest, nMax);
+                double newConf = EF / ET;
+                if (newConf > confOfLastRelNode)
+                    nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, ET, ngram));
+                return;
+            } else {
+                // current block may lower the EF factor
+                // confidence will also be lower or equal
+                minEF = computeMinEF(confOfLastRelNode);
             }
         }
 
+        if ((EF > 0) && (EF >= minEF)) {
+            double ET = getIntersectionCount2(ngram, involvedTest, nMax);
+            nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, ET, ngram));
+        }
 
     }
 
@@ -240,31 +249,32 @@ public class NGramSet {
     }
 
 
-
     private void initInvolvementMap() {
-        hitTrace.getTestTrace().forEach(t -> {
-            boolean isFailed = !t.isSuccessful();
-            int testId = t.getTestID();
-            t.getInvolvedBlocks().forEach(b -> {
-                if (isFailed) {
-                    failedTest.computeIfAbsent(b, v -> new HashSet<>());
-                    failedTest.get(b).add(testId);
-                    double EF, ET;
-                    EF = hitTrace.getEF(b);
-                    if (EF == failedTestCount) {
-                        if (!relevant.contains(b)) {
-                            relevant.add(b);
-                            ET = hitTrace.getEP(b) + EF;
-                            ArrayList<Integer> tmp = new ArrayList<>(1);
-                            tmp.add(b);
-                            nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, tmp));
-                        }
-                    }
-                }
-                involvedTest.computeIfAbsent(b, v -> new HashSet<>());
-                involvedTest.get(b).add(testId);
-            });
-        });
+        hitTrace.getTestTrace().
+                forEach(t -> {
+                    boolean isFailed = !t.isSuccessful();
+                    int testId = t.getTestID();
+                    t.getInvolvedBlocks().
+                            forEach(b -> {
+                                if (isFailed) {
+                                    failedTest.computeIfAbsent(b, v -> new HashSet<>());
+                                    failedTest.get(b).add(testId);
+                                    double EF, ET;
+                                    EF = hitTrace.getEF(b);
+                                    if (EF == failedTestCount) {
+                                        if (!relevant.contains(b)) {
+                                            relevant.add(b);
+                                            ET = hitTrace.getEP(b) + EF;
+                                            ArrayList<Integer> tmp = new ArrayList<>(1);
+                                            tmp.add(b);
+                                            nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, tmp));
+                                        }
+                                    }
+                                }
+                                involvedTest.computeIfAbsent(b, v -> new HashSet<>());
+                                involvedTest.get(b).add(testId);
+                            });
+                });
     }
 
     private double getIntersectionCount(ArrayList<Integer> ngram, HashMap<Integer, HashSet<Integer>> map, int maxN) {
