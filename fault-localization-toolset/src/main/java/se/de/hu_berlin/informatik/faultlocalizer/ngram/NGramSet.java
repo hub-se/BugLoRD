@@ -8,7 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 public class NGramSet {
     private final int maxLength;
-    final private int numOfCores = Runtime.getRuntime().availableProcessors();
+    //final private int numOfCores = Runtime.getRuntime().availableProcessors();
+    final private int numOfCores = 16;
     private double minSupport;
     private LinearExecutionHitTrace hitTrace;
     private List<NGram> result;

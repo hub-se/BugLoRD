@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class LinearExecutionHitTrace {
-    final private int numOfCores = Runtime.getRuntime().availableProcessors();
+    final private int numOfCores = 16;
     private ArrayList<LinearExecutionTestTrace> TestTrace;
     private ISpectra<SourceCodeBlock, ?> spectra;
     private ConcurrentHashMap<Integer, ExecutionGraphNode> nodeSeq;
@@ -52,14 +52,6 @@ public class LinearExecutionHitTrace {
         return (node.getOutDegree() > 1);
     }
 
-    private boolean isLoop(ExecutionGraphNode node) {
-        try {
-            return node.checkInNode(node.getIndex());
-        } catch (NullPointerException e) {
-            System.out.println("IsLoop:  Input-Node is NULL!");
-            return false;
-        }
-    }
 
     public ISpectra getSpectra() {
         return spectra;
@@ -192,7 +184,7 @@ public class LinearExecutionHitTrace {
                     // check if we have a globally new node
                     if (node.getBlockID() == -1) {
                         //check if we have to create a new block
-                        if ((currentBlock == -2) || hasMultiIn(node) || isLoop(node)) {
+                        if ((currentBlock == -2) || hasMultiIn(node)) {
                             //add to block2NodeMap if not exists
                             block2NodeMap.computeIfAbsent(nodeIndex, v -> new LinkedHashSet<>());
                             synchronized (block2NodeMap) {
