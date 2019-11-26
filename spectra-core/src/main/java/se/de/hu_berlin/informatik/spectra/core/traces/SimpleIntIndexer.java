@@ -80,7 +80,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 				if (classSourceFileName == null) {
 					throw new IllegalStateException("No class name found for class ID: " + classId);
 				}
-				ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+				ClassData classData = projectData.getClassData(classSourceFileName);
 
 				if (classData != null) {
 					if (classData.getCounterId2LineNumbers() == null) {

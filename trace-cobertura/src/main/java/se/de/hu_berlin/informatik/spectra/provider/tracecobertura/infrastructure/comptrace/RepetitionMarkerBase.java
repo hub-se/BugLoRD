@@ -36,7 +36,7 @@ public abstract class RepetitionMarkerBase implements Serializable {
 		return map;
 	}
 	
-	protected void addRepetitionMarkers(BufferedMap<int[]> repetitionMarkers, int traceSize) {
+	protected void addRepetitionMarkers(BufferedMap<int[]> repetitionMarkers, long traceSize) {
 		if (repetitionMarkerWrappers == null) {
 			this.repetitionMarkerWrappers = new ArrayList<>(MAX_ITERATION_COUNT);
 		}

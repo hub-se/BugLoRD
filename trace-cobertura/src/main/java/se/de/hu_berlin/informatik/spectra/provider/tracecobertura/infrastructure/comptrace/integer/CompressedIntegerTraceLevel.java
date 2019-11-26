@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 import java.util.UUID;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue.MyBufferedIntIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerBufferedMap;
 
@@ -24,7 +22,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 	 */
 	private static final long serialVersionUID = -4785567973646428932L;
 
-	private int originalSize = 0;
+	private long originalSize = 0;
 
 //	BufferedIntArrayQueue bufferTrace;
 	private BufferedIntArrayQueue traceWithoutRepetitions;
@@ -37,13 +35,16 @@ public class CompressedIntegerTraceLevel implements Serializable {
 	MyBufferedIntIterator inputTraceIterator;
 	
 	// mapping from elements to their most recent positions in the result list
-	Map<Integer,Queue<Integer>> elementToPositionMap = new HashMap<>();
+	Map<Integer,Integer> elementToPositionMap;
+	
 	// current positions
-	Queue<Integer> positions = null;
+	Integer position = null;
 	
 
 	int maxBufferSize = 0;
 	int maxTraceSize = 0;
+
+	
 	
 	public CompressedIntegerTraceLevel(File outputDir, String prefix, int nodeSize, int mapSize, boolean deleteOnExit, boolean flat) {
 		String uuid = UUID.randomUUID().toString();
@@ -60,7 +61,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 		}
 	}
 	
-	public int size() {
+	public long size() {
 		return originalSize;
 	}
 	
@@ -106,12 +107,12 @@ public class CompressedIntegerTraceLevel implements Serializable {
 			// no repetition check mode!
 			// we will only get to here when the buffer is empty!
 			// check for repetition of the current element
-			positions = elementToPositionMap.get(element);
-			if (positions == null) {
+			position = elementToPositionMap.get(element);
+			if (position == null) {
 				// no repetition possible; remember node containing the element
-				Queue<Integer> list = new SingleLinkedArrayQueue<>(5);
-				list.add(bufferStartIndex);
-				elementToPositionMap.put(element, list);
+//				Queue<Integer> list = getNewQueue();
+//				list.add(bufferStartIndex);
+				elementToPositionMap.put(element, bufferStartIndex);
 //				System.out.println("norm add: " + element + ", pos: " + bufferStartIndex + ", bs: " + currentBufferSize());
 				// build up the result trace on the fly
 				traceWithoutRepetitions.add(element);
@@ -175,12 +176,12 @@ public class CompressedIntegerTraceLevel implements Serializable {
 			// no repetition check mode!
 			// check for repetition of the current element
 			int firstBufferElement = traceWithoutRepetitions.get(bufferStartIndex);
-			positions = elementToPositionMap.get(firstBufferElement);
-			if (positions == null) {
+			position = elementToPositionMap.get(firstBufferElement);
+			if (position == null) {
 				// no repetition possible; remember node containing the element
-				Queue<Integer> list = new SingleLinkedArrayQueue<>(5);
-				list.add(bufferStartIndex);
-				elementToPositionMap.put(firstBufferElement, list);
+//				Queue<Integer> list = getNewQueue();
+//				list.add(bufferStartIndex);
+				elementToPositionMap.put(firstBufferElement, bufferStartIndex);
 //				System.out.println("norm buf: " + traceWithoutRepetitions.get(bufferStartIndex) + ", pos: " + bufferStartIndex + ", bs: " + currentBufferSize());
 				// build up the result trace on the fly
 //				traceWithoutRepetitions.add(firstBufferElement);
@@ -198,13 +199,17 @@ public class CompressedIntegerTraceLevel implements Serializable {
 		}
 	}
 
+//	private SingleLinkedArrayQueue<Integer> getNewQueue() {
+//		return new SingleLinkedArrayQueue<>(3);
+//	}
+
 	private Boolean checkForRepetitions(boolean recheckBuffer, boolean endOfLine) {
 		// are we in a (potentially) ongoing repetition?
 		if (inRepetitionFromPosition < 0) {
 			// no: potential (new) repetition from the last stored positions...
 
-			// check for all remembered positions
-			for (int position : positions) {
+//			// check for all remembered positions
+//			for (int position : positions) {
 				// enough space for a repetition? (only check if there can be exactly one repetition)
 				if (currentBufferSize() >= bufferStartIndex - position) {
 					// element was repeated
@@ -215,17 +220,17 @@ public class CompressedIntegerTraceLevel implements Serializable {
 					// repeated elements from the start of the buffer trace
 					checkForRepetitionsFromPosition(position);
 //					System.out.println("1idx: " + (originalSize - repetitionLength) + ", len: " + repetitionLength + ", rpt: " + (repetitionCounter+1));
-					// found some repetition...
-					if (repetitionCounter > 0) {
-						break;
-					}
+//					// found some repetition...
+//					if (repetitionCounter > 0) {
+//						break;
+//					}
 				}
 
-				if (!recheckBuffer && currentBufferSize() >= bufferStartIndex - position) {
-					// may stop looking (already checked smaller parts)
-					break;
-				}
-			}
+//				if (!recheckBuffer && currentBufferSize() >= bufferStartIndex - position) {
+//					// may stop looking (already checked smaller parts)
+//					break;
+//				}
+//			}
 
 			// are there any repetitions and are we not still inside of a repetition (potentially)?
 			if ((endOfLine || inRepetitionFromPosition < 0) && repetitionCounter > 0) {
@@ -236,12 +241,14 @@ public class CompressedIntegerTraceLevel implements Serializable {
 				// after we return true, we expect the supervising method to work through the remaining buffer
 				// after feeding the finished part of the trace to the next level
 				return true;
-			} else if (endOfLine || (inRepetitionFromPosition < 0 && currentBufferSize() >= bufferStartIndex - positions.peek())) {
+			} else if (endOfLine || (inRepetitionFromPosition < 0 && currentBufferSize() >= bufferStartIndex - position)) {
 				// no repetition found with a sufficiently large buffer trace...
 				// add the new position to the list of remembered positions
-				positions.clear();
-				positions.add(bufferStartIndex);
-//				System.out.println("check sec add: " + traceWithoutRepetitions.get(bufferStartIndex) + ", pos: " + traceWithoutRepetitions.size() + ", bs: " + currentBufferSize());
+//				positions.clear();
+//				positions.add(bufferStartIndex);
+				elementToPositionMap.put(traceWithoutRepetitions.get(bufferStartIndex), bufferStartIndex);
+//				position = bufferStartIndex;
+//				System.out.println("check sec add: " + traceWithoutRepetitions.get(bufferStartIndex) + ", pos: " + bufferStartIndex + ", bs: " + currentBufferSize());
 				// build up the result trace on the fly
 //				traceWithoutRepetitions.add(traceWithoutRepetitions.get(bufferStartIndex));
 				++bufferStartIndex;
@@ -285,23 +292,29 @@ public class CompressedIntegerTraceLevel implements Serializable {
 	}
 
 	private int currentBufferSize() {
-		return traceWithoutRepetitions.size() - bufferStartIndex;
+		long size = traceWithoutRepetitions.size() - bufferStartIndex;
+		if (size > Integer.MAX_VALUE) {
+			throw new IllegalStateException("Buffer size too large: " + size);
+		}
+		return (int) size;
 	}
 
 	private void addCurrentRepetitionMarker() {
 		if (repetitionCounter > 0) {
 			// add a marker to the list: (key: start index, value: { length, #repetitions})
-			traceRepetitions.put(
-					originalSize - repetitionLength, 
-					new int[] { repetitionLength, repetitionCounter + 1 });
+			long index = originalSize - repetitionLength;
+			if (index > Integer.MAX_VALUE) {
+				throw new IllegalStateException("Repetition index too large: " + index);
+			}
+			traceRepetitions.put((int) index, new int[] { repetitionLength, repetitionCounter + 1 });
 //			if (log) {
 //			System.out.println(this + "new idx: " + (originalSize - repetitionLength) + ", len: " + repetitionLength + ", rpt: " + (repetitionCounter+1));
 //			}
 
 			// reset repetition recognition
 			elementToPositionMap.clear();
-			positions.clear();
-			positions = null;
+//			positions.clear();
+			position = null;
 			
 			// may feed the already processed part of the trace to the next compression level
 		}

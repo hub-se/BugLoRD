@@ -237,7 +237,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //		// (e.g. in test classes) that executes code without decision points (branches)
 //		// in it. This results in a very large sub trace, potentially...
 		
-//		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 	}
 	
 

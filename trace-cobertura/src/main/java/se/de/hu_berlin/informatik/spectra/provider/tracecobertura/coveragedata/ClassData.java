@@ -334,6 +334,16 @@ public class ClassData extends CoverageDataContainer
 			lock.unlock();
 		}
 	}
+	
+	public String getMethodName(int lineNumber) {
+		lock.lock();
+		try {
+			LineData next = (LineData) children.get(lineNumber);
+			return next.getMethodName();
+		} finally {
+			lock.unlock();
+		}
+	}
 
 	/**
 	 * @return The method name and descriptor of each method found in the

@@ -102,12 +102,12 @@ public class CoberturaStatementEncoding {
 //	}
 	
 	public static long generateRepresentationForSubTrace(EfficientCompressedIntegerTrace subTrace) {
-		if (subTrace.isEmpty()) {
-			return 0;
+		if (subTrace.size() > 1) {
+			return ((subTrace.getFirstElement() & LOWER_BITMASK) << INTEGER_BITS) | (subTrace.getLastElement() & LOWER_BITMASK);
 		} else if (subTrace.size() == 1) {
 			return (subTrace.getFirstElement() & LOWER_BITMASK) << INTEGER_BITS;
 		} else {
-			return ((subTrace.getFirstElement() & LOWER_BITMASK) << INTEGER_BITS) | (subTrace.getLastElement() & LOWER_BITMASK);
+			return 0;
 		}
 	}
 	

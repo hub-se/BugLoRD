@@ -27,7 +27,7 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 	 */
 	private static final long serialVersionUID = -2317087167299034730L;
 	
-	private int originalSize = 0;
+	private long originalSize = 0;
 	private BufferedLongArrayQueue compressedTrace;
 	
 	private File outputDir;
@@ -162,7 +162,7 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 		return max;
 	}
 
-	public int size() {
+	public long size() {
 		return originalSize;
 	}
 	

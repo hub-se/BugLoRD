@@ -160,11 +160,13 @@ public class CompressedTraceTest {
 		
 		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, true);
 		
+		System.out.println(compressedIdTrace);
+		
 		Assert.assertEquals(161, compressedIdTrace.size());
 		Assert.assertEquals(99, compressedIdTrace.getMaxStoredValue());
 		Assert.assertEquals(51, compressedIdTrace.getCompressedTrace().size());
 		
-		System.out.println(compressedIdTrace);
+		
 		printWithIterator(compressedIdTrace.baseIterator());
 		
 //		Thread.sleep(5000);
@@ -469,7 +471,7 @@ public class CompressedTraceTest {
 		printWithIterator(compressedIdTrace.iterator());
 		printWithIterator(compressedIdTrace.reverseIterator());
 		
-//		System.out.println(compressedIdTrace.toString());
+		System.out.println(compressedIdTrace.toString());
 		
 		List<Integer> list = storeInList(compressedIdTrace.iterator());
 		List<Integer> reverseList = storeInList(compressedIdTrace.reverseIterator());

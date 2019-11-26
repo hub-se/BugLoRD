@@ -10,10 +10,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -95,6 +97,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	private void testOnProject(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful) {
+		long startTime = new Date().getTime();
 		new TraceCoberturaSpectraGenerator.Builder()
 		.setProjectDir(project.getProjectMainDir())
 		.setSourceDir(project.getSrcDir())
@@ -110,6 +113,9 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		.setTimeout(timeout)
 		.setTestRepeatCount(testrepeatCount)
 		.run();
+		long endTime = new Date().getTime();
+		
+		System.out.println("Execution time: " + getFormattedTimerString(endTime - startTime));
 
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
@@ -143,7 +149,6 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 				// iterate over the compressed trace (should contain all executed node IDs)
 				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
 				while (baseIterator.hasNext()) {
-					System.out.print(".");
 					// execution trace is composed of indexed sequences of subtrace IDs
 					int subTraceSequenceIndex = baseIterator.next();
 					// iterate over the full node ID sequence using the indexer
@@ -170,14 +175,12 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 						involvedInExecutionTraces.contains(nodeIndex));
 				}
 			}
-			System.out.println("!");
 			
 			// iterate over execution traces
 			for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
 				// iterate over the compressed trace (should contain all executed node IDs)
 				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
 				while (baseIterator.hasNext()) {
-					System.out.print(".");
 					// execution trace is composed of indexed sequences of subtrace IDs
 					int subTraceSequenceIndex = baseIterator.next();
 					// iterate over the sub trace ID sequences using the indexer
@@ -221,6 +224,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	private void testOnProjectWithTestClassList(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful, String testClassListPath) {
+		long startTime = new Date().getTime();
 		new TraceCoberturaSpectraGenerator.Builder()
 		.setProjectDir(project.getProjectMainDir())
 		.setSourceDir(project.getSrcDir())
@@ -236,6 +240,9 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		.setTimeout(timeout)
 		.setTestRepeatCount(testrepeatCount)
 		.run();
+		long endTime = new Date().getTime();
+		
+		System.out.println("Execution time: " + getFormattedTimerString(endTime - startTime));
 
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
@@ -249,6 +256,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	private void testOnProjectWithTestList(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful, String testListPath) {
+		long startTime = new Date().getTime();
 		new TraceCoberturaSpectraGenerator.Builder()
 		.setProjectDir(project.getProjectMainDir())
 		.setSourceDir(project.getSrcDir())
@@ -264,7 +272,10 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		.setTimeout(timeout)
 		.setTestRepeatCount(testrepeatCount)
 		.run();
-
+		long endTime = new Date().getTime();
+		
+		System.out.println("Execution time: " + getFormattedTimerString(endTime - startTime));
+		
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
 			assertTrue(Files.exists(spectraZipFile));
@@ -277,6 +288,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	private void testOnProjectWithFailedtests(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful, List<String> failedtests) {
+		long startTime = new Date().getTime();
 		new TraceCoberturaSpectraGenerator.Builder()
 		.setProjectDir(project.getProjectMainDir())
 		.setSourceDir(project.getSrcDir())
@@ -292,6 +304,9 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		.setTimeout(timeout)
 		.setTestRepeatCount(testrepeatCount)
 		.run();
+		long endTime = new Date().getTime();
+		
+		System.out.println("Execution time: " + getFormattedTimerString(endTime - startTime));
 
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
@@ -299,6 +314,32 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 			checkTraceSpectra(spectraZipFile);
 		} else {
 			assertFalse(Files.exists(spectraZipFile));
+		}
+	}
+	
+	private static String getFormattedTimerString(long timeInMilliSeconds) {
+		long days = TimeUnit.MILLISECONDS.toDays(timeInMilliSeconds);
+		long hours = TimeUnit.MILLISECONDS.toHours(timeInMilliSeconds);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(timeInMilliSeconds);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(timeInMilliSeconds);
+		if (days > 0) {
+			return String.format("%dd:%02dh:%02dm:%02ds", 
+					days,
+					hours % 24,
+					minutes % 60,
+					seconds % 60
+					);
+		} else if (hours > 0) {
+			return String.format("%02dh:%02dm:%02ds", 
+					hours,
+					minutes % 60,
+					seconds % 60
+					);
+		} else {
+			return String.format("%02dm:%02ds", 
+					minutes,
+					seconds % 60
+					);
 		}
 	}
 	

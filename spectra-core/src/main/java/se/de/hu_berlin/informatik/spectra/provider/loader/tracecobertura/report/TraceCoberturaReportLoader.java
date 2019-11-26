@@ -291,7 +291,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //							if (!classSourceFileName.contains("FastDateParser")) {
 //								continue;
 //							}
-							ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+							ClassData classData = projectData.getClassData(classSourceFileName);
 
 							if (classData != null) {
 								if (classData.getCounterId2LineNumbers() == null) {
@@ -324,7 +324,8 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 										addendum = " (unknown)";
 									}
 								}
-								Log.out(true, this, classSourceFileName + ", counter ID " + CoberturaStatementEncoding.getCounterId(statement) +
+								Log.out(true, this, classSourceFileName + ":" + classData.getMethodName(lineNumber[0]) +
+										", counter ID " + CoberturaStatementEncoding.getCounterId(statement) +
 										", line " + (lineNumber[0] < 0 ? "(not set)" : String.valueOf(lineNumber[0])) +
 										addendum);
 
@@ -536,23 +537,24 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		EfficientCompressedIntegerTrace resultTrace = new EfficientCompressedIntegerTrace(
 				trace.getCompressedTrace().getOutputDir(), trace.getCompressedTrace().getFilePrefix(),
 				ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true, true);
-		String[] idToClassNameMap = projectData.getIdToClassNameMap();
+//		String[] idToClassNameMap = projectData.getIdToClassNameMap();
 		// iterate over trace and generate new trace based on seen sub traces
 		// iterate over executed statements in the trace
 		IntTraceIterator traceIterator = trace.iterator();
 		
 		EfficientCompressedIntegerTrace currentSubTrace = getNewSubTrace(trace);
-		String emptyString = "";
-		String lastMethod = emptyString;
-		String lastClass = emptyString;
+		int lastMethod = -1;
+		int lastClass = -1;
 		int lastNodeType = CoberturaStatementEncoding.NORMAL_ID;
 		while (traceIterator.hasNext()) {
 			int statement = traceIterator.next();
 			
-			// check if the current statement indicates a catch block entry
-			if (statement == ExecutionTraceCollector.CATCH_BLOCK_ID) {
-				// cut the trace **before** each catch block entry
-				currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
+			// check if the current statement indicates the start of a new sub trace
+			if (statement == ExecutionTraceCollector.NEW_SUBTRACE_ID) {
+				// cut the trace **before** each catch block entry or new method start
+				if (!currentSubTrace.isEmpty()) {
+					currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
+				}
 				// skip the indicator
 				if (traceIterator.hasNext()) {
 					statement = traceIterator.next();
@@ -563,38 +565,40 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 
 //			Log.out(true, this, "statement: " + Arrays.toString(statement));
 			// TODO store the class names with '.' from the beginning, or use the '/' version?
-			String classSourceFileName = idToClassNameMap[CoberturaStatementEncoding.getClassId(statement)];
-			if (classSourceFileName == null) {
-//				throw new IllegalStateException("No class name found for class ID: " + statement[0]);
-				Log.err(this, "No class name found for class ID: " + CoberturaStatementEncoding.getClassId(statement));
-				return null;
-			}
-			ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+			int classId = CoberturaStatementEncoding.getClassId(statement);
+//			String classSourceFileName = idToClassNameMap[classId];
+//			if (classSourceFileName == null) {
+////				throw new IllegalStateException("No class name found for class ID: " + statement[0]);
+//				Log.err(this, "No class name found for class ID: " + CoberturaStatementEncoding.getClassId(statement));
+//				return null;
+//			}
+			ClassData classData = projectData.getClassData(classId);
 
 			if (classData != null) {
-				if (classData.getCounterId2LineNumbers() == null) {
-					Log.err(this, "No counter ID to line number map for class " + classSourceFileName);
-					return null;
-				}
+//				if (classData.getCounterId2LineNumbers() == null) {
+//					Log.err(this, "No counter ID to line number map for class " + classData.getSourceFileName());
+//					return null;
+//				}
 				int[] lineNumber = classData.getCounterId2LineNumbers()[CoberturaStatementEncoding.getCounterId(statement)];
 
 				// check if we switched to a different class than before
-				if (classSourceFileName.equals(lastClass)) {
+				if (classId == lastClass) {
 					// check if we switched to a different method than we were in before;
 					// this should allow for the sub traces to be uniquely determined by first and last statement
-					String currentMethod = classData.getMethodNameAndDescriptor(lineNumber[0]);
-					if (!currentMethod.equals(lastMethod) && !currentSubTrace.isEmpty()) {
+					int currentMethod = lineNumber[2] < 0 ? lastMethod : lineNumber[2];
+					if (currentMethod != lastMethod && !currentSubTrace.isEmpty()) {
 						// cut the trace after each change in methods
 						currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
 					}
 					lastMethod = currentMethod;
 				} else {
+					// change in classes!
 					if (!currentSubTrace.isEmpty()) {
 						// cut the trace after each change in classes
 						currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
 					}
-					lastMethod = classData.getMethodNameAndDescriptor(lineNumber[0]);
-					lastClass = classSourceFileName;
+					lastMethod = lineNumber[2];
+					lastClass = classId;
 				}
 				
 				// add the current statement to the current sub trace
@@ -609,7 +613,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				}
 
 			} else {
-				throw new IllegalStateException("Class data for '" + classSourceFileName + "' not found.");
+				throw new IllegalStateException("Class data for class '" + classId + "' not found.");
 			}
 		}
 		
@@ -639,7 +643,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //		}
 		
 		Integer lastExecutedStatement = null;
-		if (!currentSubTrace.isEmpty() && lastNodeType != CoberturaStatementEncoding.NORMAL_ID) {
+		if (lastNodeType != CoberturaStatementEncoding.NORMAL_ID) {
 			lastExecutedStatement = currentSubTrace.getLastElement();
 		}
 		

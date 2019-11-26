@@ -354,11 +354,25 @@ public class ClassMap {
 		}
 		maxCounterId = idGenerator.get();
 		
-		int[][] result = new int[maxCounterId+1][2];
+		int[][] result = new int[maxCounterId+1][3];
 		// set to -1
 		for (int i = 0; i < result.length; i++) {
 			result[i][0] = -1;
 			result[i][1] = -1;
+			result[i][2] = -1;
+		}
+		
+		int currentMethodId = 0;
+		Map<String, Integer> methodToIdMap = new HashMap<>();
+		for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {
+			if (tpd instanceof LineTouchPointDescriptor) {
+				String methodName = ((LineTouchPointDescriptor) tpd).getMethodName() 
+						+ ((LineTouchPointDescriptor) tpd).getMethodSignature();
+				Integer id = methodToIdMap.get(methodName);
+				if (id == null) {
+					methodToIdMap.put(methodName, ++currentMethodId);
+				}
+			}
 		}
 		
 		// map counter IDs to actual line numbers
@@ -367,6 +381,8 @@ public class ClassMap {
 				Integer id = ((LineTouchPointDescriptor) tpd).getCounterId();
 				result[id][0] = tpd.getLineNumber();
 				result[id][1] = CoberturaStatementEncoding.NORMAL_ID;
+				result[id][2] = methodToIdMap.get(((LineTouchPointDescriptor) tpd).getMethodName() 
+						+ ((LineTouchPointDescriptor) tpd).getMethodSignature());
 			} else if (tpd instanceof JumpTouchPointDescriptor) {
 				int idForTrue = ((JumpTouchPointDescriptor) tpd).getCounterIdForTrue();
 				result[idForTrue][0] = tpd.getLineNumber();

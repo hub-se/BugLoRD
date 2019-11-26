@@ -28,7 +28,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	 */
 	private static final long serialVersionUID = -1663120246473002672L;
 	
-	private int originalSize = 0;
+	private long originalSize = 0;
 	private BufferedIntArrayQueue compressedTrace;
 	
 	private File outputDir;
@@ -70,7 +70,9 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	private void initialize() {
 		this.originalSize = 0;
 		this.locked = false;
-		addNewLevel();
+		if (!flat) {
+			addNewLevel();
+		}
 	}
 	
 	/**
@@ -123,7 +125,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	public EfficientCompressedIntegerTrace(BufferedIntArrayQueue compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, boolean log) {
 		this.compressedTrace = compressedTrace;
 		if (repetitionMarkers != null) {
-			int size = compressedTrace.size();
+			long size = compressedTrace.size();
 			int index = 0;
 			while (index < repetitionMarkers.size()) {
 				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromArray(repetitionMarkers.get(index++), 
@@ -186,7 +188,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		return max;
 	}
 
-	public int size() {
+	public long size() {
 		return originalSize;
 	}
 	
@@ -203,16 +205,20 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		}
 		++originalSize;
 		if (log) {
-			if (originalSize % 10000 == 0)
+			if (originalSize % 100000 == 0)
 				System.out.print('.');
-			if (originalSize % 1000000 == 0)
+			if (originalSize % 10000000 == 0)
 				System.out.println(originalSize);
 		}
-		CompressedIntegerTraceLevel level = levels.get(0);
-		boolean endOfRepetition = level.add(element, !flat && 0 < MAX_ITERATION_COUNT);
+		if (flat) {
+			compressedTrace.add(element);
+		} else {
+			CompressedIntegerTraceLevel level = levels.get(0);
+			boolean endOfRepetition = level.add(element, 0 < MAX_ITERATION_COUNT);
 
-		if (endOfRepetition) {
-			feedToHigherLevel(0, false);
+			if (endOfRepetition) {
+				feedToHigherLevel(0, false);
+			}
 		}
 	}
 
@@ -329,9 +335,9 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 
 	private void endOfLine() {
 		if (!locked) {
-			StringBuilder builder = new StringBuilder();
-			
 			if (!flat) {
+				StringBuilder builder = new StringBuilder();
+
 				// add lingering elements to higher levels
 				feedToHigherLevel(0, true);
 
@@ -344,29 +350,33 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 								level, trace.maxBufferSize, trace.maxTraceSize, trace.getRepetitionMarkers().size()));
 						addRepetitionMarkers(trace.getRepetitionMarkers(), trace.size());
 					}
+//					System.out.println("level: " + level + ", stats: " + trace.elementToPositionMap.stats().toString());
 				}
-			}
-			
-//			// grab the last level's compressed trace (should be filled already, though...)
-			// end of line
-			if (compressedTrace.isEmpty()) {
-				compressedTrace = levels.get(levels.size() - 1).getCompressedTrace();
-			}
-			
-			int markerSize = 0;
-			for (RepetitionMarkerWrapper repetitionMarkerWrapper : getRepetitionMarkers()) {
-				markerSize += repetitionMarkerWrapper.getRepetitionMarkers().size() * 3;
-			}
-			
-			builder.append(String.format("full size: %,d, compressed size: %,d + %,d (%.2f%%)", 
-					originalSize, compressedTrace.size(), markerSize, -100.00+100.0*(double)(compressedTrace.size() + markerSize)/(double)originalSize));
-			if (log) {
-				System.out.println(builder.toString());
-			}
 
-			// don't need the levels anymore now
-			levels.clear();
-			// TODO: need to clean up each level?
+				// grab the last level's compressed trace (should be filled already, though...)
+				// end of line
+				if (compressedTrace.isEmpty()) {
+					compressedTrace = levels.get(levels.size() - 1).getCompressedTrace();
+				}
+
+				int markerSize = 0;
+				for (RepetitionMarkerWrapper repetitionMarkerWrapper : getRepetitionMarkers()) {
+					markerSize += repetitionMarkerWrapper.getRepetitionMarkers().size() * 3;
+				}
+
+				builder.append(String.format("full size: %,d, compressed size: %,d + %,d (%.2f%%)", 
+						originalSize, compressedTrace.size(), markerSize, 
+						-100.00+100.0*(double)(compressedTrace.size() + markerSize)/(double)originalSize));
+				if (log) {
+					System.out.println(builder.toString());
+				}
+
+				// don't need the levels anymore now
+				levels.clear();
+
+				// TODO: need to clean up each level?
+
+			}
 
 			// disallow addition of new elements
 			locked = true;

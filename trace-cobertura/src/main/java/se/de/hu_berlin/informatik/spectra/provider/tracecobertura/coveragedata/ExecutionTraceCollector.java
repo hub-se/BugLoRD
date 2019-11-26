@@ -23,7 +23,7 @@ public class ExecutionTraceCollector {
 	public final static int MAP_CHUNK_SIZE = 300000;
 	public static final int SUBTRACE_ARRAY_SIZE = 200;
 	
-	public static final int CATCH_BLOCK_ID = 0;
+	public static final int NEW_SUBTRACE_ID = 0;
 	
 //	private static ExecutorService executorService = new ThreadPoolExecutor(1, 1,
 //			0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
@@ -310,7 +310,7 @@ public class ExecutionTraceCollector {
 		}
 
 		// add an indicator to the trace that represents a visited catch block
-		trace.add(CATCH_BLOCK_ID);
+		trace.add(NEW_SUBTRACE_ID);
 
 	}
 

@@ -40,7 +40,7 @@ public class BufferedIntArrayQueue implements Serializable {
 		return arrayLength;
 	}
 
-	private volatile int size = 0;
+	private volatile long size = 0;
 	
 	private File output;
 	private String filePrefix;
@@ -70,7 +70,7 @@ public class BufferedIntArrayQueue implements Serializable {
         stream.writeInt(currentStoreIndex);
         stream.writeInt(lastStoreIndex);
         stream.writeInt(firstNodeSize);
-        stream.writeInt(size);
+        stream.writeLong(size);
         stream.writeInt(arrayLength);
     }
 	
@@ -311,7 +311,7 @@ public class BufferedIntArrayQueue implements Serializable {
             if (storedNodeExists()) {
             	firstNodeSize = arrayLength;
             } else {
-            	firstNodeSize = size;
+            	firstNodeSize = (int)size;
             }
         } else {
 //        	// there exists only the last node
@@ -507,7 +507,7 @@ public class BufferedIntArrayQueue implements Serializable {
     	}
 	}
 
-    public int size() {
+    public long size() {
     	lock.lock();
     	try {
     		return size;
@@ -644,7 +644,7 @@ public class BufferedIntArrayQueue implements Serializable {
      * @param count
      * the number of elements to clear from the list
      */
-    public void clearLast(int count) {
+    public void clearLast(long count) {
     	if (count >= size) {
 			clear();
 			return;
@@ -705,7 +705,7 @@ public class BufferedIntArrayQueue implements Serializable {
      * @param count
      * the number of elements to clear from the list
      */
-    public void clearFrom(int startIndex, int count) {
+    public void clearFrom(long startIndex, long count) {
     	if (count == 0) {
     		return;
     	}
@@ -723,7 +723,7 @@ public class BufferedIntArrayQueue implements Serializable {
     	lock.lock();
     	try {
     		int startNodeIndex = -1;
-    		int startItemIndex = startIndex;
+    		int startItemIndex = (int) startIndex;
     		Node startNode = null;
     		// we can compute the store index using the size of the 
     		// first node and the constant size of each array node
@@ -733,13 +733,13 @@ public class BufferedIntArrayQueue implements Serializable {
     	            throw new NoSuchElementException();
     	        startNodeIndex = startNode.storeIndex;
     		} else {
-    			int i = startIndex - firstNodeSize;
+    			int i = (int) (startIndex - firstNodeSize);
     			startNodeIndex = firstStoreIndex + 1 + (i / arrayLength);
     			startItemIndex = i % arrayLength;
     			startNode = load(startNodeIndex);
     		}
 
-    		int endItemIndex = startIndex + count;
+    		long endItemIndex = startIndex + count;
 
     		// shift the remaining elements to the left
     		MyBufferedIntIterator iterator = iterator(endItemIndex);
@@ -893,7 +893,7 @@ public class BufferedIntArrayQueue implements Serializable {
 		return new MyBufferedIntIterator();
 	}
 	
-	public MyBufferedIntIterator iterator(final int position) {
+	public MyBufferedIntIterator iterator(final long position) {
 		return new MyBufferedIntIterator(position);
 	}
 
@@ -902,21 +902,21 @@ public class BufferedIntArrayQueue implements Serializable {
 		int storeIndex;
 		int index;
 
-		MyBufferedIntIterator(int i) {
+		MyBufferedIntIterator(long i) {
 			setToPosition(i);
 		}
 		
-		public void setToPosition(int i) {
+		public void setToPosition(long i) {
 			// we can compute the store index using the size of the 
 			// first node and the constant size of each array node
 			if (i < firstNodeSize) {
 				storeIndex = firstStoreIndex;
 				Node node = load(storeIndex);
-				index = i+node.startIndex;
+				index = (int) (i+node.startIndex);
 			} else {
 				i -= firstNodeSize;
-				storeIndex = firstStoreIndex + 1 + (i / arrayLength);
-				index = i % arrayLength;
+				storeIndex = (int) (firstStoreIndex + 1 + (i / arrayLength));
+				index = (int) (i % arrayLength);
 			}
 		}
 		
@@ -1107,18 +1107,18 @@ public class BufferedIntArrayQueue implements Serializable {
 		super.finalize();
 	}
 
-	public int get(int i) {
+	public int get(long i) {
 		// we can compute the store index using the size of the 
 		// first node and the constant size of each array node
 		if (i < firstNodeSize) {
 			final Node f = loadFirst();
 	        if (f == null || f.startIndex >= f.endIndex)
 	            throw new NoSuchElementException();
-	        return f.get(i);
+	        return f.get((int) i);
 		} else {
 			i -= firstNodeSize;
-			int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
-			int itemIndex = i % arrayLength;
+			int storeIndex = (int) (firstStoreIndex + 1 + (i / arrayLength));
+			int itemIndex = (int) (i % arrayLength);
 			final Node f = load(storeIndex);
 			if (f == null || itemIndex >= f.endIndex)
 				throw new NoSuchElementException("index: " + (i + firstNodeSize) + ", size: " + size);
@@ -1126,7 +1126,7 @@ public class BufferedIntArrayQueue implements Serializable {
 		}
 	}
 	
-	private void set(int i, int value) {
+	private void set(long i, int value) {
 		if (locked) {
     		throw new IllegalStateException("Tried to set value at index " + i + " to " + value + " while being locked.");
     	}
@@ -1136,11 +1136,11 @@ public class BufferedIntArrayQueue implements Serializable {
 			final Node f = loadFirst();
 	        if (f == null || f.startIndex >= f.endIndex)
 	            throw new NoSuchElementException();
-	        f.set(i, value);
+	        f.set((int) i, value);
 		} else {
 			i -= firstNodeSize;
-			int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
-			int itemIndex = i % arrayLength;
+			int storeIndex = (int) (firstStoreIndex + 1 + (i / arrayLength));
+			int itemIndex = (int) (i % arrayLength);
 			final Node f = load(storeIndex);
 			if (f == null || itemIndex >= f.endIndex)
 				throw new NoSuchElementException();
@@ -1164,7 +1164,7 @@ public class BufferedIntArrayQueue implements Serializable {
 		return deleteOnExit;
 	}
 
-	public int getAndReplaceWith(int i, Function<Integer, Integer> function) {
+	public int getAndReplaceWith(long i, Function<Integer, Integer> function) {
 		int previous = get(i);
 		set(i, function.apply(previous));
 		return previous;

@@ -98,6 +98,11 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	 * This collection is used for quicker access to the list of classes.
 	 */
 	private final Map<String, ClassData> classes = new HashMap<>();
+	
+	/**
+	 * This collection is used for quicker access to the list of classes.
+	 */
+	private final Map<Integer, ClassData> classes2 = new HashMap<>();
 
 	public void addClassData(ClassData classData) {
 		lock.lock();
@@ -112,6 +117,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 			}
 			packageData.addClassData(classData);
 			this.classes.put(classData.getName(), classData);
+			this.classes2.put(classData.getClassId(), classData);
 		} finally {
 			lock.unlock();
 		}
@@ -119,6 +125,10 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 
 	public ClassData getClassData(String name) {
 		return this.classes.get(name);
+	}
+	
+	public ClassData getClassData(int classId) {
+		return this.classes2.get(classId);
 	}
 
 	/*
@@ -297,7 +307,9 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 
             for (String key : projectData.classes.keySet()) {
                 if (!this.classes.containsKey(key)) {
-                    this.classes.put(key, projectData.classes.get(key));
+                    ClassData data = projectData.classes.get(key);
+					this.classes.put(key, data);
+                    this.classes2.put(data.getClassId(), data);
                 }
             }
 		} finally {
@@ -644,7 +656,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 			idToClassName = new String[getMaxClassId()+1];
 			
 			for (ClassData classData : getClasses()) {
-				idToClassName[classData.getClassId()] = classData.getName();
+				idToClassName[classData.getClassId()] = classData.getName().replace('/', '.');
 			}
 		} finally {
 			lock.unlock();

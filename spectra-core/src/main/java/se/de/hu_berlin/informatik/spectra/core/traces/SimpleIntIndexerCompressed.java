@@ -67,11 +67,11 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
 			EfficientCompressedIntegerTrace subTrace = idToSubTraceMap.get(i);
 			BufferedIntArrayQueue compressedTrace = subTrace.getCompressedTrace();
-			ReplaceableCloneableIntIterator sequenceIterator = compressedTrace.iterator();
+			ReplaceableCloneableIntIterator sequenceIterator = subTrace.iterator();
 			
 			EfficientCompressedIntegerTrace traceOfNodeIDs = new EfficientCompressedIntegerTrace(
 					compressedTrace.getOutputDir(), "idx_" + compressedTrace.getFilePrefix(), 
-					compressedTrace.getNodeSize(), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
+					compressedTrace.getNodeSize(), ExecutionTraceCollector.MAP_CHUNK_SIZE, true, false, true);
 			
 			while (sequenceIterator.hasNext()) {
 				int encodedStatement = sequenceIterator.next();
@@ -84,7 +84,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 				if (classSourceFileName == null) {
 					throw new IllegalStateException("No class name found for class ID: " + classId);
 				}
-				ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+				ClassData classData = projectData.getClassData(classSourceFileName);
 
 				if (classData != null) {
 					if (classData.getCounterId2LineNumbers() == null) {
@@ -380,7 +380,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 				BufferedIntArrayQueue compressedTrace = sequence.getCompressedTrace();
 				EfficientCompressedIntegerTrace newSequence = new EfficientCompressedIntegerTrace(
 						compressedTrace.getOutputDir(), "_" + compressedTrace.getFilePrefix(), 
-						compressedTrace.getNodeSize(), compressedTrace.getNodeSize(), true);
+						compressedTrace.getNodeSize(), compressedTrace.getNodeSize(), true, false, true);
 				while (fullIterator.hasNext()) {
 					int next = fullIterator.next();
 					if (next != nodeId) {
