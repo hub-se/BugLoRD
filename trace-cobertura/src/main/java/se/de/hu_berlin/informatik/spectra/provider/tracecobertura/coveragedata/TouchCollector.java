@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LightClassmapListener;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -169,6 +170,7 @@ public class TouchCollector {
 		}
 		
 		projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
+		
 //		projectData.addIdToSubTraceMap(ExecutionTraceCollector.getAndResetIdToSubtraceMap());
 		
 //		if (!projectData.getExecutionTraces().isEmpty() && projectData.getIdToSubtraceMap().isEmpty()) {

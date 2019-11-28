@@ -2,10 +2,6 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 
 /**
@@ -18,9 +14,10 @@ public abstract class RepetitionMarkerBase implements Serializable {
 	 */
 	private static final long serialVersionUID = 3743380720924000714L;
 
-	protected static final int MAX_ITERATION_COUNT = 10;
+	protected static final int MAX_ITERATION_COUNT = 5;
 	
-	private List<RepetitionMarkerWrapper> repetitionMarkerWrappers;
+	private RepetitionMarkerWrapper[] repetitionMarkerWrappers;
+	private int currentIndex = 0;
 	
 	private transient boolean markedForDeletion;
 	
@@ -38,24 +35,24 @@ public abstract class RepetitionMarkerBase implements Serializable {
 	
 	protected void addRepetitionMarkers(BufferedMap<int[]> repetitionMarkers, long traceSize) {
 		if (repetitionMarkerWrappers == null) {
-			this.repetitionMarkerWrappers = new ArrayList<>(MAX_ITERATION_COUNT);
+			this.repetitionMarkerWrappers = new RepetitionMarkerWrapper[MAX_ITERATION_COUNT];
 		}
-		this.repetitionMarkerWrappers.add(new RepetitionMarkerWrapper(repetitionMarkers, traceSize));
+		this.repetitionMarkerWrappers[currentIndex++] = new RepetitionMarkerWrapper(repetitionMarkers, traceSize);
 	}
 	
-	protected void setRepetitionMarkers(List<RepetitionMarkerWrapper> repetitionMarkerWrappers) {
+	protected void setRepetitionMarkers(RepetitionMarkerWrapper[] repetitionMarkerWrappers) {
 		this.repetitionMarkerWrappers = repetitionMarkerWrappers;
 	}
 	
-	public List<RepetitionMarkerWrapper> getRepetitionMarkers() {
+	public RepetitionMarkerWrapper[] getRepetitionMarkers() {
 		if (repetitionMarkerWrappers == null) {
-			return Collections.emptyList();
+			return new RepetitionMarkerWrapper[0];
 		}
 		return repetitionMarkerWrappers;
 	}
 
 	public BufferedMap<int[]> getRepetitionMarkers(int level) {
-		return this.repetitionMarkerWrappers.get(level).getRepetitionMarkers();
+		return this.repetitionMarkerWrappers[level].getRepetitionMarkers();
 	}
 	
 //	protected void setBackwardsRepetitionMarkers(BufferedMap<int[]> backwardsRepetitionMarkers) {
@@ -63,27 +60,32 @@ public abstract class RepetitionMarkerBase implements Serializable {
 //	}
 	
 	public BufferedMap<int[]> getBackwardsRepetitionMarkers(int level) {
-		if (repetitionMarkerWrappers == null || level >= repetitionMarkerWrappers.size()) {
+		if (repetitionMarkerWrappers == null || level >= currentIndex) {
 			return null;
 		}
 		
-		return repetitionMarkerWrappers.get(level).getBackwardsRepetitionMarkers();
+		return repetitionMarkerWrappers[level].getBackwardsRepetitionMarkers();
 	}
 	
+	public int levelCount() {
+		return currentIndex;
+	}
 	
 	public void clear() {
 		if (repetitionMarkerWrappers != null) {
-			for (RepetitionMarkerWrapper wrapper : repetitionMarkerWrappers) {
-				wrapper.clear();
+			for (int i = 0; i < currentIndex; i++) {
+				repetitionMarkerWrappers[i].clear();
+				repetitionMarkerWrappers[i] = null;
 			}
-			repetitionMarkerWrappers.clear();
+			repetitionMarkerWrappers = null;
+			currentIndex = 0;
 		}
 	}
 
 	public void sleep() {
 		if (repetitionMarkerWrappers != null) {
-			for (RepetitionMarkerWrapper wrapper : repetitionMarkerWrappers) {
-				wrapper.sleep();
+			for (int i = 0; i < currentIndex; i++) {
+				repetitionMarkerWrappers[i].sleep();
 			}
 		}
 	}
@@ -104,8 +106,8 @@ public abstract class RepetitionMarkerBase implements Serializable {
 	
 	public void deleteOnExit() {
 		if (repetitionMarkerWrappers != null) {
-			for (RepetitionMarkerWrapper wrapper : repetitionMarkerWrappers) {
-				wrapper.deleteOnExit();
+			for (int i = 0; i < currentIndex; i++) {
+				repetitionMarkerWrappers[i].deleteOnExit();
 			}
 		}
 	}
@@ -115,7 +117,8 @@ public abstract class RepetitionMarkerBase implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		int level = 1;
 		if (repetitionMarkerWrappers != null) {
-			for (RepetitionMarkerWrapper wrapper : repetitionMarkerWrappers) {
+			for (int i = 0; i < currentIndex; i++) {
+				RepetitionMarkerWrapper wrapper = repetitionMarkerWrappers[i];
 				builder.append("lvl").append(level++).append(", size: ").append(wrapper.traceSize()).append(" -> ")
 				.append(wrapper.toString()).append(System.lineSeparator());
 			}

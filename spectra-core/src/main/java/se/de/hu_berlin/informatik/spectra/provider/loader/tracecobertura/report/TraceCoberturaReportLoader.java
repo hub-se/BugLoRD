@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.AbstractCodeProvider;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.JumpData;
@@ -546,7 +547,14 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		int lastMethod = -1;
 		int lastClass = -1;
 		int lastNodeType = CoberturaStatementEncoding.NORMAL_ID;
+		int counter = 0;
 		while (traceIterator.hasNext()) {
+			++counter;
+			if (counter % 100000 == 0)
+				System.out.print('.');
+			if (counter % 10000000 == 0)
+				System.out.println(counter);
+			
 			int statement = traceIterator.next();
 			
 			// check if the current statement indicates the start of a new sub trace
@@ -555,31 +563,37 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				if (!currentSubTrace.isEmpty()) {
 					currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
 				}
-				// skip the indicator
-				if (traceIterator.hasNext()) {
-					statement = traceIterator.next();
-				} else {
-					continue;
+				
+				while (statement == ExecutionTraceCollector.NEW_SUBTRACE_ID) {
+					// skip the indicator
+					if (traceIterator.hasNext()) {
+						statement = traceIterator.next();
+					} else {
+						break;
+					}
+				}
+				
+				if (statement == ExecutionTraceCollector.NEW_SUBTRACE_ID) {
+					// we're at the end of the trace!
+					break;
 				}
 			}
 
 //			Log.out(true, this, "statement: " + Arrays.toString(statement));
 			// TODO store the class names with '.' from the beginning, or use the '/' version?
 			int classId = CoberturaStatementEncoding.getClassId(statement);
-//			String classSourceFileName = idToClassNameMap[classId];
-//			if (classSourceFileName == null) {
-////				throw new IllegalStateException("No class name found for class ID: " + statement[0]);
-//				Log.err(this, "No class name found for class ID: " + CoberturaStatementEncoding.getClassId(statement));
-//				return null;
-//			}
+			int counterId = CoberturaStatementEncoding.getCounterId(statement);
+			
 			ClassData classData = projectData.getClassData(classId);
 
 			if (classData != null) {
-//				if (classData.getCounterId2LineNumbers() == null) {
-//					Log.err(this, "No counter ID to line number map for class " + classData.getSourceFileName());
-//					return null;
-//				}
-				int[] lineNumber = classData.getCounterId2LineNumbers()[CoberturaStatementEncoding.getCounterId(statement)];
+				
+				if (counterId == AbstractCodeProvider.FAKE_COUNTER_ID) {
+					// this marks a fake jump! we should not be here...
+					throw new IllegalStateException("Illegal counter ID 0 in class " + classId + ". (" + classData.getName() + ")");
+				}
+
+				int[] lineNumber = classData.getCounterId2LineNumbers()[counterId];
 
 				// check if we switched to a different class than before
 				if (classId == lastClass) {

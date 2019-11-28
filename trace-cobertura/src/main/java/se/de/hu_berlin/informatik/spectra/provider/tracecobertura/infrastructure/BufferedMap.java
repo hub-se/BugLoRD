@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+
 /**
  * Disk buffered Map implementation.
  * 
@@ -51,7 +52,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	
 	protected Set<Integer> existingNodes = new HashSet<>();
 
-	
+	private transient int lastStoreIndex = -1;
 	protected transient Lock lock = new ReentrantLock();
 	
 	// cache all other nodes, if necessary
@@ -78,13 +79,18 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			for (Node<E> node : cachedNodes.values()) {
 				// stores nodes, if nodes were modified
 				// empty nodes are removed from the set of existing nodes
-				store(node);
+				sleep(node);
 			}
 			cachedNodes.clear();
 			cacheSequence.clear();
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	private void sleep(Node<E> node) {
+		store(node);
+		node.clear();
 	}
 
     @SuppressWarnings("unchecked")
@@ -154,8 +160,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
     public void clear() {
     	lock.lock();
     	try {
-    		cachedNodes.clear();
-    		cacheSequence.clear();
+    		clearCache();
     		// delete possibly stored nodes
     		for (Integer storeIndex : existingNodes) {
 				delete(storeIndex);
@@ -168,16 +173,28 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
     }
 
 
+	private void clearCache() {
+		lock.lock();
+		try {
+			for (Node<E> node : cachedNodes.values()) {
+				node.clear();
+			}
+			cachedNodes.clear();
+			cacheSequence.clear();
+		} finally {
+			lock.unlock();
+		}
+	}
+
 	private void delete(Integer storeIndex) {
 		lock.lock();
 		try {
 			String filename = getFileName(storeIndex);
-//			if (cachedNodes.containsKey(storeIndex)) {
-//				cachedNodes.remove(storeIndex);
-//				cacheSequence.remove((Object)storeIndex);
-//			}
 			// stored node should be deleted
-			new File(filename).delete();
+			File file = new File(filename);
+			if (file.exists()) {
+				file.delete();
+			}
 		} finally {
 			lock.unlock();
 		}
@@ -231,6 +248,17 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			throw new IllegalStateException("Must not add null values to buffered map.");
 		}
 		int storeIndex = getStoreindex(key);
+		
+		// write last written node to disk if we go to the next one
+		if (lastStoreIndex > -1 && storeIndex != lastStoreIndex) {
+			Node<E> node = getNode(lastStoreIndex);
+			if (node != null) {
+				uncache(lastStoreIndex);
+				sleep(node);
+			}
+		}
+		lastStoreIndex = storeIndex;
+		
 		Node<E> node = getOrCreateNode(storeIndex);
 		E element = node.put(key, value);
 		if (element == null) {
@@ -238,6 +266,18 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		}
 		return element;
 	}
+	
+	// should check for modifications and possibly write to the disk
+    private void uncache(int storeIndex) {
+    	lock.lock();
+    	try {
+    		Node<E> node = cachedNodes.remove(storeIndex);
+    		cacheSequence.remove((Integer)storeIndex);
+    		store(node);
+    	} finally {
+    		lock.unlock();
+    	}
+    }
 
 	@Override
 	public E remove(Object key) {
@@ -254,6 +294,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			if (element != null) {
 				--size;
 				if (node.isEmpty()) {
+					uncacheNoStore(node.storeIndex);
 					delete(node.storeIndex);
 					existingNodes.remove(node.storeIndex);
 				}
@@ -261,6 +302,16 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			return element;
 		}
 	}
+	
+	private void uncacheNoStore(int storeIndex) {
+    	lock.lock();
+    	try {
+    		cachedNodes.remove(storeIndex);
+    		cacheSequence.remove((Integer)storeIndex);
+    	} finally {
+    		lock.unlock();
+    	}
+    }
 
 	@Override
 	public void putAll(Map<? extends Integer, ? extends E> m) {
@@ -359,21 +410,27 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		if (node == null) {
 			return;
 		}
-		if (node.isEmpty()) {
-			existingNodes.remove(node.storeIndex);
-			return;
-		}
-		if (node.modified) {
-			String filename = getFileName(node.storeIndex);
-			try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-				outputStream.writeObject(node.subMap);
-				// do not delete on exit, due to serialization! TODO
-				if (deleteOnExit) {
-					new File(filename).deleteOnExit();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+		lock.lock();
+		try {
+			if (node.isEmpty()) {
+				existingNodes.remove(node.storeIndex);
+				return;
 			}
+			if (node.modified) {
+				String filename = getFileName(node.storeIndex);
+				try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+					outputStream.writeObject(node.subMap);
+					node.modified = false;
+					// do not delete on exit, due to serialization! TODO
+					if (deleteOnExit) {
+						new File(filename).deleteOnExit();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
 

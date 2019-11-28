@@ -2,7 +2,7 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -65,7 +65,11 @@ public abstract class CompressedTrace<T,K> extends RepetitionMarkerBase implemen
 		}
 		if (getRepetitionMarkers() != null) {
 			// reverse the order of repetition marker levels (smallest first)
-			Collections.reverse(getRepetitionMarkers());
+			RepetitionMarkerWrapper[] temp = Arrays.copyOf(getRepetitionMarkers(), levelCount());
+			int j = temp.length-1;
+			for (int i = 0; i < temp.length; i++, --j) {
+				getRepetitionMarkers()[i] = temp[j];
+			}
 		}
 	}
 	

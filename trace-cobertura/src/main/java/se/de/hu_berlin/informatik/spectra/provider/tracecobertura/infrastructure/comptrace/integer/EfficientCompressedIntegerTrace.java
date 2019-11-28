@@ -31,6 +31,8 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	private long originalSize = 0;
 	private BufferedIntArrayQueue compressedTrace;
 	
+	private List<CompressedIntegerTraceLevel> levels = new ArrayList<>(MAX_ITERATION_COUNT + 1);
+	
 	private File outputDir;
 	private int nodeSize;
 	private int mapSize;
@@ -70,9 +72,6 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	private void initialize() {
 		this.originalSize = 0;
 		this.locked = false;
-		if (!flat) {
-			addNewLevel();
-		}
 	}
 	
 	/**
@@ -174,6 +173,9 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		}
 		if (getRepetitionMarkers() != null) {
 			for (RepetitionMarkerWrapper repMarkerWrapper : getRepetitionMarkers()) {
+				if (repMarkerWrapper == null) {
+					break;
+				}
 				Iterator<Entry<Integer, int[]>> entrySetIterator = repMarkerWrapper.getRepetitionMarkers().entrySetIterator();
 				while (entrySetIterator.hasNext()) {
 					Entry<Integer, int[]> entry = entrySetIterator.next();
@@ -196,23 +198,23 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		return originalSize <= 0;
 	}
 	
-	private List<CompressedIntegerTraceLevel> levels = new ArrayList<>(MAX_ITERATION_COUNT + 1);
-	
-	
 	public void add(int element) {
 		if (locked) {
 			throw new IllegalStateException("Can not add element to already locked trace.");
 		}
 		++originalSize;
-		if (log) {
-			if (originalSize % 100000 == 0)
-				System.out.print('.');
-			if (originalSize % 10000000 == 0)
-				System.out.println(originalSize);
-		}
+//		if (log) {
+//			if (originalSize % 100000 == 0)
+//				System.out.print('.');
+//			if (originalSize % 10000000 == 0)
+//				System.out.println(originalSize);
+//		}
 		if (flat) {
 			compressedTrace.add(element);
 		} else {
+			if (levels.isEmpty()) {
+				addNewLevel();
+			}
 			CompressedIntegerTraceLevel level = levels.get(0);
 			boolean endOfRepetition = level.add(element, 0 < MAX_ITERATION_COUNT);
 
@@ -346,8 +348,8 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 				for (level = levels.size() - 1; level >= 0; --level) {
 					CompressedIntegerTraceLevel trace = levels.get(level);
 					if (!trace.getRepetitionMarkers().isEmpty()) {
-						builder.append(String.format("level %d: max buffer: %,d, max trace: %,d, map: %,d*3%n", 
-								level, trace.maxBufferSize, trace.maxTraceSize, trace.getRepetitionMarkers().size()));
+						builder.append(String.format("level %d: size: %,d, max buffer: %,d, max trace: %,d, map: %,d*3%n", 
+								level, trace.size(), trace.maxBufferSize, trace.maxTraceSize, trace.getRepetitionMarkers().size()));
 						addRepetitionMarkers(trace.getRepetitionMarkers(), trace.size());
 					}
 //					System.out.println("level: " + level + ", stats: " + trace.elementToPositionMap.stats().toString());
@@ -361,6 +363,9 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 
 				int markerSize = 0;
 				for (RepetitionMarkerWrapper repetitionMarkerWrapper : getRepetitionMarkers()) {
+					if (repetitionMarkerWrapper == null) {
+						break;
+					}
 					markerSize += repetitionMarkerWrapper.getRepetitionMarkers().size() * 3;
 				}
 

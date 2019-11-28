@@ -29,8 +29,8 @@ public class BufferedIntArrayQueue implements Serializable {
 	 */
 	private static final long serialVersionUID = -1777403971930917719L;
 
-	// keep at most 3 (+1 with the last node) nodes in memory
-    private static final int CACHE_SIZE = 3;
+	// keep at most 5 (+1 with the last node) nodes in memory
+    private static final int CACHE_SIZE = 5;
     
     private static final int ARRAY_SIZE = 1000;
 	
@@ -93,6 +93,7 @@ public class BufferedIntArrayQueue implements Serializable {
 				if (node.modified) {
 					store(node);
 				}
+				node.clear();
 			}
 			cachedNodes.clear();
 			cacheSequence.clear();
@@ -140,10 +141,8 @@ public class BufferedIntArrayQueue implements Serializable {
 //			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
 //				lastNode.items[j] = null;
 //			}
-			uncacheAndDelete(lastNode.storeIndex);
+			delete(lastNode.storeIndex);
 //			lastNode = null;
-		}
-		if (lastNode != null) {
 			lastNode.modified = false;
 			lastNode.storeIndex = 0;
 			lastNode.startIndex = 0;
@@ -292,6 +291,21 @@ public class BufferedIntArrayQueue implements Serializable {
     		lock.unlock();
     	}
 	}
+    
+    // should check for modifications and possibly write to the disk
+    private void uncache(int storeIndex) {
+    	lock.lock();
+    	try {
+    		Node node = cachedNodes.remove(storeIndex);
+    		if (node != null) {
+    			if (node.modified) {
+    				store(node);
+    			}
+    		}
+    	} finally {
+    		lock.unlock();
+    	}
+    }
 
 	/**
      * Removes the first node, if it only contains one item.
@@ -327,11 +341,31 @@ public class BufferedIntArrayQueue implements Serializable {
 	private void uncacheAndDelete(int storeIndex) {
 		lock.lock();
 		try {
-			String filename = getFileName(storeIndex);
+			uncacheNoStore(storeIndex);
+			delete(storeIndex);
+		} finally {
+			lock.unlock();
+		}
+	}
+    
+	private void uncacheNoStore(int storeIndex) {
+		lock.lock();
+		try {
 			if (cachedNodes.containsKey(storeIndex)) {
+				Node node = cachedNodes.get(storeIndex);
+				node.clear();
 				cachedNodes.remove(storeIndex);
 				cacheSequence.remove((Integer)storeIndex);
 			}
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	private void delete(int storeIndex) {
+		lock.lock();
+		try {
+			String filename = getFileName(storeIndex);
 			// stored node should be deleted
 			File file = new File(filename);
 			if (file.exists()) {
@@ -492,20 +526,7 @@ public class BufferedIntArrayQueue implements Serializable {
 		}
 	}
 
-	// should check for modifications and possibly write to the disk
-    private void uncache(int storeIndex) {
-    	lock.lock();
-    	try {
-    		Node node = cachedNodes.remove(storeIndex);
-    		if (node != null) {
-    			if (node.modified) {
-    				store(node);
-    			}
-    		}
-    	} finally {
-    		lock.unlock();
-    	}
-	}
+	
 
     public long size() {
     	lock.lock();
@@ -540,18 +561,32 @@ public class BufferedIntArrayQueue implements Serializable {
     	}
     }
 
+    private void clearCache() {
+		lock.lock();
+		try {
+			for (Node node : cachedNodes.values()) {
+				node.clear();
+			}
+			cachedNodes.clear();
+			cacheSequence.clear();
+		} finally {
+			lock.unlock();
+		}
+	}
+    
     public void clear() {
     	if (locked) {
     		throw new IllegalStateException("Tried to clear queue while being locked.");
     	}
     	lock.lock();
     	try {
-    		cachedNodes.clear();
-    		cacheSequence.clear();
+    		clearCache();
     		// delete possibly stored nodes
     		for (; storedNodeExists(); ++firstStoreIndex) {
-    			uncacheAndDelete(firstStoreIndex);
+    			delete(firstStoreIndex);
     		}
+    		// delete potentially stored last node
+    		delete(lastStoreIndex+1);
 //    		// empty last (and now also first) node
 //    		if (lastNode != null) {
 //    			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
@@ -678,10 +713,13 @@ public class BufferedIntArrayQueue implements Serializable {
 				size -= arrayLength;
 			}
 
+			// ensure that the last node is not cached
+			loadLast();
+			removeFromCache(lastNode.storeIndex);
+			
 			// still elements left to clear?
 			if (count > 0) {
 				// it holds that count < arrayLength
-				loadLast();
 	    		lastNode.modified = true;
 	    		lastNode.endIndex -= count;
 				if (!storedNodeExists()) {
@@ -696,7 +734,19 @@ public class BufferedIntArrayQueue implements Serializable {
 		}
     }
     
-    /**
+    private void removeFromCache(int storeIndex) {
+    	lock.lock();
+		try {
+			if (cachedNodes.containsKey(storeIndex)) {
+				cachedNodes.remove(storeIndex);
+				cacheSequence.remove((Integer)storeIndex);
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	/**
      * Same as {@link #clear()}, but removes {@code count} elements, 
      * starting from {@code startIndex}.
      * 
@@ -1042,6 +1092,10 @@ public class BufferedIntArrayQueue implements Serializable {
 			this.storeIndex = storeIndex;
 			// ensure that new nodes are stored (if not empty)
         	this.modified = true;
+		}
+
+		public void clear() {
+			this.items = null;
 		}
 
 		public int size() {

@@ -13,8 +13,8 @@ public class TraceIterator<T> implements ReplaceableCloneableIterator<T> {
 	public TraceIterator(CompressedTrace<T,?> trace) {
 		this.trace = trace;
 		if (trace.getRepetitionMarkers() != null) {
-			levelStates = new LevelState[trace.getRepetitionMarkers().size() + 1];
-			for (int i = 0; i < trace.getRepetitionMarkers().size() + 1; ++i) {
+			levelStates = new LevelState[trace.levelCount() + 1];
+			for (int i = 0; i < trace.levelCount() + 1; ++i) {
 				levelStates[i] = new LevelState(i);
 			}
 		} else {
@@ -74,7 +74,7 @@ public class TraceIterator<T> implements ReplaceableCloneableIterator<T> {
 				}
 			} else {
 				// check if we are in a repeated sequence
-				int[] repMarker = trace.getRepetitionMarkers().get(currentLevel-1).getRepetitionMarkers().get(levelStates[currentLevel].state[0]);
+				int[] repMarker = trace.getRepetitionMarkers()[currentLevel-1].getRepetitionMarkers().get(levelStates[currentLevel].state[0]);
 				if (repMarker != null) {
 					// we are in a new repeated sequence!
 					// [length, repeat_count]
@@ -107,7 +107,7 @@ public class TraceIterator<T> implements ReplaceableCloneableIterator<T> {
 	public boolean isStartOfRepetition() {
 		for (int level = levelStates.length - 1; level > 0; --level) {
 			// check if we are in a repeated sequence
-			if (trace.getRepetitionMarkers().get(level-1).getRepetitionMarkers().containsKey(levelStates[level].state[0])) {
+			if (trace.getRepetitionMarkers()[level-1].getRepetitionMarkers().containsKey(levelStates[level].state[0])) {
 				return true;
 			}
 		}
@@ -164,7 +164,7 @@ public class TraceIterator<T> implements ReplaceableCloneableIterator<T> {
 				}
 			} else {
 				// check if we are in a repeated sequence
-				int[] repMarker = trace.getRepetitionMarkers().get(currentLevel-1).getRepetitionMarkers().get(levelStates[currentLevel].state[0]);
+				int[] repMarker = trace.getRepetitionMarkers()[currentLevel-1].getRepetitionMarkers().get(levelStates[currentLevel].state[0]);
 				if (repMarker != null) {
 					// we are in a new repeated sequence!
 					// [length, repeat_count]

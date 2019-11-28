@@ -14,12 +14,12 @@ public class LongTraceReverseIterator implements ReplaceableCloneableLongIterato
 	public LongTraceReverseIterator(EfficientCompressedLongTrace trace) {
 		this.trace = trace;
 		if (trace.getRepetitionMarkers() != null) {
-			levelStates = new LevelState[trace.getRepetitionMarkers().size() + 1];
-			for (int i = 0; i < trace.getRepetitionMarkers().size() + 1; ++i) {
+			levelStates = new LevelState[trace.levelCount() + 1];
+			for (int i = 0; i < trace.levelCount() + 1; ++i) {
 				levelStates[i] = new LevelState(i);
 			}
 			for (int i = 1; i < levelStates.length; i++) {
-				levelStates[i].state[0] = trace.getRepetitionMarkers().get(i-1).traceSize() - 1;
+				levelStates[i].state[0] = trace.getRepetitionMarkers()[i-1].traceSize() - 1;
 //				System.out.println(i + ": " + levelStates[i].state[0]);
 			}
 //			levelStates[1].state[0] = trace.getCompressedTrace().size() - 1;
@@ -83,7 +83,7 @@ public class LongTraceReverseIterator implements ReplaceableCloneableLongIterato
 				}
 			} else {
 				// check if we are in a repeated sequence
-				int[] repMarker = trace.getRepetitionMarkers().get(currentLevel-1).getBackwardsRepetitionMarkers().get(levelStates[currentLevel].state[0]);
+				int[] repMarker = trace.getRepetitionMarkers()[currentLevel-1].getBackwardsRepetitionMarkers().get(levelStates[currentLevel].state[0]);
 //				System.out.println("s: " + currentLevel + ", " + levelStates[currentLevel].state[0]);
 				if (repMarker != null) {
 //					System.out.println(currentLevel + ", " + levelStates[currentLevel].state[0]);
@@ -118,7 +118,7 @@ public class LongTraceReverseIterator implements ReplaceableCloneableLongIterato
 	public boolean isStartOfRepetition() {
 		for (int level = levelStates.length - 1; level > 0; --level) {
 			// check if we are in a repeated sequence
-			if (trace.getRepetitionMarkers().get(level-1).getBackwardsRepetitionMarkers().containsKey(levelStates[level].state[0])) {
+			if (trace.getRepetitionMarkers()[level-1].getBackwardsRepetitionMarkers().containsKey(levelStates[level].state[0])) {
 				return true;
 			}
 		}
@@ -175,7 +175,7 @@ public class LongTraceReverseIterator implements ReplaceableCloneableLongIterato
 				}
 			} else {
 				// check if we are in a repeated sequence
-				int[] repMarker = trace.getRepetitionMarkers().get(currentLevel-1).getBackwardsRepetitionMarkers().get(levelStates[currentLevel].state[0]);
+				int[] repMarker = trace.getRepetitionMarkers()[currentLevel-1].getBackwardsRepetitionMarkers().get(levelStates[currentLevel].state[0]);
 				if (repMarker != null) {
 					// we are in a new repeated sequence!
 					// [length, repeat_count]

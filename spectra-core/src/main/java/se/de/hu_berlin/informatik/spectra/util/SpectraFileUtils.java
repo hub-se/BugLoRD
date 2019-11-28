@@ -632,9 +632,12 @@ public class SpectraFileUtils {
 	
 	private static void storeRepetitionMarkers(EfficientCompressedIntegerTrace rawTrace,
 			SpecialIntArrayMapsToCompressedByteArrayProcessor module) {
-		List<RepetitionMarkerWrapper> repetitionMarkerWrappers = rawTrace.getRepetitionMarkers();
+		RepetitionMarkerWrapper[] repetitionMarkerWrappers = rawTrace.getRepetitionMarkers();
 		if (repetitionMarkerWrappers != null) {
 			for (RepetitionMarkerWrapper wrapper : repetitionMarkerWrappers) {
+				if (wrapper == null) {
+					break;
+				}
 				BufferedMap<int[]> repetitionMarkers = wrapper.getRepetitionMarkers();
 				int[] result = new int[1 + repetitionMarkers.size() * 3];
 				result[0] = repetitionMarkers.size();

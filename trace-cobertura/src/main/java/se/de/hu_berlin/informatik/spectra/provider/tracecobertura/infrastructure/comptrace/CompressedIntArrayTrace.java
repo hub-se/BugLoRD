@@ -53,6 +53,9 @@ public class CompressedIntArrayTrace extends CompressedTrace<int[],IntArrayWrapp
 		}
 		if (getRepetitionMarkers() != null) {
 			for (RepetitionMarkerWrapper repMarkerWrapper : getRepetitionMarkers()) {
+				if (repMarkerWrapper == null) {
+					break;
+				}
 				Iterator<Entry<Integer, int[]>> entrySetIterator = repMarkerWrapper.getRepetitionMarkers().entrySetIterator();
 				while (entrySetIterator.hasNext()) {
 					Entry<Integer, int[]> entry = entrySetIterator.next();

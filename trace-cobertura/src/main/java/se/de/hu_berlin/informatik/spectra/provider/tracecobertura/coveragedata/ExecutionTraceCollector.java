@@ -19,9 +19,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
-	public final static int EXECUTION_TRACE_CHUNK_SIZE = 50000;
-	public final static int MAP_CHUNK_SIZE = 300000;
-	public static final int SUBTRACE_ARRAY_SIZE = 200;
+	public final static int EXECUTION_TRACE_CHUNK_SIZE = 100000;
+	public final static int MAP_CHUNK_SIZE = 500000;
+	public static final int SUBTRACE_ARRAY_SIZE = 300;
 	
 	public static final int NEW_SUBTRACE_ID = 0;
 	
@@ -297,6 +297,7 @@ public class ExecutionTraceCollector {
 	/**
 	 * This method is called after we visited a catch block, 
 	 * indicating a thrown (and caught) exception.
+	 * TODO this description is not correct
 	 */
 	public static void visitedCatchBlock() {
 		// get an id for the current thread

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 
 /**
  * <p>
@@ -533,6 +534,18 @@ public class ClassData extends CoverageDataContainer
 			if (this.counterId2LineNumbers == null) {
 				this.counterId2LineNumbers = classData.counterId2LineNumbers;
 			}
+			
+			if (this.counterId2LineNumbers != null && 
+					this.counterId2LineNumbers.length > Math.pow(2,CoberturaStatementEncoding.COUNTER_ID_BITS)) {
+				throw new IllegalStateException("Counter ID too high! Encoding error: " + (this.counterId2LineNumbers.length - 1));
+			}
+			
+			if (this.classId > Math.pow(2,CoberturaStatementEncoding.CLASS_ID_BITS) - 1) {
+				throw new IllegalStateException("Class ID too high! Encoding error: " + this.classId);
+			}
+			
+//			System.out.println("max counter ID: " + (this.counterId2LineNumbers.length - 1) + ", class ID: " + this.classId);
+			
 //			this.counterIdToLineNumberMap.putAll(classData.counterIdToLineNumberMap);
 			this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
 			this.methodNamesAndDescriptors.addAll(classData
