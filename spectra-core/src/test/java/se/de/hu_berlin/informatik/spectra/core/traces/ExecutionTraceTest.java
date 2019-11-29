@@ -13,7 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 
@@ -62,7 +62,7 @@ public class ExecutionTraceTest extends TestSettings {
 		rawTrace.add(1);
 		ExecutionTrace shortTrace = new ExecutionTrace(rawTrace, true);
 		
-		IntTraceIterator traceIterator = shortTrace.iterator();
+		TraceIterator traceIterator = shortTrace.iterator();
 		int count = 0;
 		while (traceIterator.hasNext()) {
 			Assert.assertEquals(1, traceIterator.next());
@@ -88,7 +88,7 @@ public class ExecutionTraceTest extends TestSettings {
 
 		ExecutionTrace eTrace = new ExecutionTrace(rawTrace, true);
 		
-		IntTraceIterator traceIterator = eTrace.iterator();
+		TraceIterator traceIterator = eTrace.iterator();
 		int count = 0;
 		for (int repCount = 0; repCount < REPETITIONS; ++repCount) {
 			for (int i = 0; i < 10; ++i) {

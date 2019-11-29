@@ -25,8 +25,6 @@ import org.junit.Test;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 
@@ -195,7 +193,7 @@ public class BufferedArrayQueueTest {
 		queue.clear(6);
 		
 //		Thread.sleep(5000);
-		ReplaceableCloneableIntIterator iterator = queue.iterator();
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator iterator = queue.iterator();
 		
 		int i = 6;
 		while (iterator.hasNext()) {
@@ -259,7 +257,7 @@ public class BufferedArrayQueueTest {
 		Assert.assertEquals(40, queue.get(17));
 		queue.sleep();
 		
-		ReplaceableCloneableIntIterator iterator = queue.iterator();
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator iterator = queue.iterator();
 		
 		int i = 23;
 		while (iterator.hasNext()) {
@@ -303,7 +301,7 @@ public class BufferedArrayQueueTest {
 		queue.clear(6);
 		
 //		Thread.sleep(5000);
-		ReplaceableCloneableLongIterator iterator = queue.iterator();
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableIterator iterator = queue.iterator();
 		
 		int i = 6;
 		while (iterator.hasNext()) {
@@ -349,7 +347,7 @@ public class BufferedArrayQueueTest {
 		Assert.assertEquals(40, queue.get(17));
 		queue.sleep();
 		
-		ReplaceableCloneableLongIterator iterator = queue.iterator();
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableIterator iterator = queue.iterator();
 		
 		int i = 23;
 		while (iterator.hasNext()) {

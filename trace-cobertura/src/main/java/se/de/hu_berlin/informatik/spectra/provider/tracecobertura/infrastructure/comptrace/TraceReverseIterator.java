@@ -18,15 +18,15 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 				levelStates[i] = new LevelState(i);
 			}
 			for (int i = 2; i < levelStates.length; i++) {
-				levelStates[i].state[0] = trace.getRepetitionMarkers()[i-2].traceSize() - 1;
-//				System.out.println(i + ": " + levelStates[i].state[0]);
+				levelStates[i].indexState[0] = trace.getRepetitionMarkers()[i-2].traceSize() - 1;
+//				System.out.println(i + ": " + levelStates[i].indexState[0]);
 			}
-			levelStates[1].state[0] = trace.getCompressedTrace().size() - 1;
-//			System.out.println(1 + ": " + levelStates[1].state[0]);
+			levelStates[1].indexState[0] = trace.getCompressedTrace().size() - 1;
+//			System.out.println(1 + ": " + levelStates[1].indexState[0]);
 		} else {
 			levelStates = new LevelState[] { new LevelState(0) };
 		}
-		levelStates[0].state[0] = trace.getCompressedTrace().size() - 1;
+		levelStates[0].indexState[0] = trace.getCompressedTrace().size() - 1;
 		resetCurrentLevel();
 	}
 	
@@ -43,24 +43,24 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 
 	@Override
 	public boolean hasNext() {
-		return levelStates[0].state[0] > -1;
+		return levelStates[0].indexState[0] > -1;
 	}
 
 	@Override
 	public T next() {
 		if (currentLevel <= 0) {
 			resetCurrentLevel();
-//			System.out.println("s: 0, " + levelStates[0].state[0]);
-			return trace.getCompressedTrace().get(levelStates[0].state[0]--);
+//			System.out.println("s: 0, " + levelStates[0].indexState[0]);
+			return trace.getCompressedTrace().get(levelStates[0].indexState[0]--);
 		} else {
 			// prioritize repetitions in parent 
 			// (parent repetitions should be contained in child repetitions)
-			if (levelStates[currentLevel].state[1] >= 0) {
+			if (levelStates[currentLevel].indexState[1] >= 0) {
 				// inside of a repeated sequence
-				if (levelStates[currentLevel].state[0] == levelStates[currentLevel].state[1] - levelStates[currentLevel].state[2] + 1) {
+				if (levelStates[currentLevel].indexState[0] == levelStates[currentLevel].indexState[1] - levelStates[currentLevel].repetitionState[0] + 1) {
 					// right at the end of the repeated sequence
-					++levelStates[currentLevel].state[4];
-					if (levelStates[currentLevel].state[4] < levelStates[currentLevel].state[3]) {
+					++levelStates[currentLevel].repetitionState[2];
+					if (levelStates[currentLevel].repetitionState[2] < levelStates[currentLevel].repetitionState[1]) {
 						// still an iteration to go
 						T lastElementOfRepetition = peek();
 						// reset to previous reset point
@@ -69,36 +69,37 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 						return lastElementOfRepetition;
 					} else {
 						// no further iteration
-						levelStates[currentLevel].state[1] = -1;
-						--levelStates[currentLevel].state[0];
+						levelStates[currentLevel].indexState[1] = -1;
+						--levelStates[currentLevel].indexState[0];
 						--currentLevel;
 						return next();
 					}
 				} else {
 					// still inside of the repeated sequence
-					--levelStates[currentLevel].state[0];
+					--levelStates[currentLevel].indexState[0];
 					--currentLevel;
 					return next();
 				}
 			} else {
 				// check if we are in a repeated sequence
-				int[] repMarker = trace.getRepetitionMarkers()[currentLevel-1].getBackwardsRepetitionMarkers().get(levelStates[currentLevel].state[0]);
-//				System.out.println("s: " + currentLevel + ", " + levelStates[currentLevel].state[0]);
+				int[] repMarker = (levelStates[currentLevel].indexState[0] <= Integer.MAX_VALUE ? 
+						trace.getRepetitionMarkers()[currentLevel-1].getBackwardsRepetitionMarkers().get((int) levelStates[currentLevel].indexState[0]) : null);
+//				System.out.println("s: " + currentLevel + ", " + levelStates[currentLevel].indexState[0]);
 				if (repMarker != null) {
-//					System.out.println(currentLevel + ", " + levelStates[currentLevel].state[0]);
+//					System.out.println(currentLevel + ", " + levelStates[currentLevel].indexState[0]);
 					// we are in a new repeated sequence!
 					// [length, repeat_count]
-					levelStates[currentLevel].state[1] = levelStates[currentLevel].state[0];
-					levelStates[currentLevel].state[2] = repMarker[0];
-					levelStates[currentLevel].state[3] = repMarker[1];
-					levelStates[currentLevel].state[4] = 0;
+					levelStates[currentLevel].indexState[1] = levelStates[currentLevel].indexState[0];
+					levelStates[currentLevel].repetitionState[0] = repMarker[0];
+					levelStates[currentLevel].repetitionState[1] = repMarker[1];
+					levelStates[currentLevel].repetitionState[2] = 0;
 					// set the reset point to this exact point
 					LevelState.setResetPoint(levelStates, currentLevel);
 					// stay on the same level!
 					return next();
 				} else {
 					// not in a repeated sequence!
-					--levelStates[currentLevel].state[0];
+					--levelStates[currentLevel].indexState[0];
 					--currentLevel;
 					return next();
 				}
@@ -111,13 +112,14 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 	}
 
 	public T peek() {
-		return trace.getCompressedTrace().get(levelStates[0].state[0]);
+		return trace.getCompressedTrace().get(levelStates[0].indexState[0]);
 	}
 
 	public boolean isStartOfRepetition() {
 		for (int level = levelStates.length - 1; level > 0; --level) {
 			// check if we are in a repeated sequence
-			if (trace.getRepetitionMarkers()[level-1].getBackwardsRepetitionMarkers().containsKey(levelStates[level].state[0])) {
+			if (levelStates[level].indexState[0] <= Integer.MAX_VALUE && 
+					trace.getRepetitionMarkers()[level-1].getBackwardsRepetitionMarkers().containsKey((int) levelStates[level].indexState[0])) {
 				return true;
 			}
 		}
@@ -128,9 +130,9 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 		for (int level = levelStates.length - 1; level > 0; --level) {
 			// prioritize repetitions in parent 
 			// (parent repetitions should be contained in child repetitions)
-			if (levelStates[level].state[1] >= 0) {
+			if (levelStates[level].indexState[1] >= 0) {
 				// inside of a repeated sequence
-				if (levelStates[level].state[0] == levelStates[level].state[1] - levelStates[level].state[2] + 1) {
+				if (levelStates[level].indexState[0] == levelStates[level].indexState[1] - levelStates[level].repetitionState[0] + 1) {
 					// at the end of the repeated sequence
 					return true;
 				}
@@ -143,16 +145,16 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 	public T processNextAndReplaceWithResult(Function<T, T> function) {
 		if (currentLevel <= 0) {
 			resetCurrentLevel();
-			return trace.getCompressedTrace().getAndReplaceWith(levelStates[0].state[0]--, function);
+			return trace.getCompressedTrace().getAndReplaceWith(levelStates[0].indexState[0]--, function);
 		} else {
 			// prioritize repetitions in parent 
 			// (parent repetitions should be contained in child repetitions)
-			if (levelStates[currentLevel].state[1] >= 0) {
+			if (levelStates[currentLevel].indexState[1] >= 0) {
 				// inside of a repeated sequence
-				if (levelStates[currentLevel].state[0] == levelStates[currentLevel].state[1] - levelStates[currentLevel].state[2] + 1) {
+				if (levelStates[currentLevel].indexState[0] == levelStates[currentLevel].indexState[1] - levelStates[currentLevel].repetitionState[0] + 1) {
 					// right at the end of the repeated sequence
-					++levelStates[currentLevel].state[4];
-					if (levelStates[currentLevel].state[4] < levelStates[currentLevel].state[3]) {
+					++levelStates[currentLevel].repetitionState[2];
+					if (levelStates[currentLevel].repetitionState[2] < levelStates[currentLevel].repetitionState[1]) {
 						// still an iteration to go
 						T lastElementOfRepetition = peek();
 						// reset to previous reset point
@@ -161,34 +163,35 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 						return lastElementOfRepetition;
 					} else {
 						// no further iteration
-						levelStates[currentLevel].state[1] = -1;
-						--levelStates[currentLevel].state[0];
+						levelStates[currentLevel].indexState[1] = -1;
+						--levelStates[currentLevel].indexState[0];
 						--currentLevel;
 						return next();
 					}
 				} else {
 					// still inside of the repeated sequence
-					--levelStates[currentLevel].state[0];
+					--levelStates[currentLevel].indexState[0];
 					--currentLevel;
 					return next();
 				}
 			} else {
 				// check if we are in a repeated sequence
-				int[] repMarker = trace.getRepetitionMarkers()[currentLevel-1].getBackwardsRepetitionMarkers().get(levelStates[currentLevel].state[0]);
+				int[] repMarker = (levelStates[currentLevel].indexState[0] <= Integer.MAX_VALUE ? 
+						trace.getRepetitionMarkers()[currentLevel-1].getBackwardsRepetitionMarkers().get((int) levelStates[currentLevel].indexState[0]) : null);
 				if (repMarker != null) {
 					// we are in a new repeated sequence!
 					// [length, repeat_count]
-					levelStates[currentLevel].state[1] = levelStates[currentLevel].state[0];
-					levelStates[currentLevel].state[2] = repMarker[0];
-					levelStates[currentLevel].state[3] = repMarker[1];
-					levelStates[currentLevel].state[4] = 0;
+					levelStates[currentLevel].indexState[1] = levelStates[currentLevel].indexState[0];
+					levelStates[currentLevel].repetitionState[0] = repMarker[0];
+					levelStates[currentLevel].repetitionState[1] = repMarker[1];
+					levelStates[currentLevel].repetitionState[2] = 0;
 					// set the reset point to this exact point
 					LevelState.setResetPoint(levelStates, currentLevel);
 					// stay on the same level!
 					return next();
 				} else {
 					// not in a repeated sequence!
-					--levelStates[currentLevel].state[0];
+					--levelStates[currentLevel].indexState[0];
 					--currentLevel;
 					return next();
 				}

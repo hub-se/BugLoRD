@@ -40,7 +40,7 @@ import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToIntArraysProcessor;
@@ -614,7 +614,7 @@ public class SpectraFileUtils {
 		int maxStoredValue = eTrace.getMaxStoredValue();
 		BufferedIntegersToCompressedByteArrayProcessor module = new BufferedIntegersToCompressedByteArrayProcessor(
 				zipFilePath, traceFileName, false, maxStoredValue, true);
-        ReplaceableCloneableIntIterator iterator = eTrace.baseIterator();
+        ReplaceableCloneableIterator iterator = eTrace.baseIterator();
         while (iterator.hasNext()) {
             module.submit(iterator.next());
         }

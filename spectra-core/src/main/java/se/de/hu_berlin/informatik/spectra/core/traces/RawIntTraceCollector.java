@@ -8,7 +8,7 @@ import java.util.zip.ZipException;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
@@ -111,7 +111,7 @@ public class RawIntTraceCollector {
 			Map<Integer, EfficientCompressedIntegerTrace> map) {
 		
 		boolean error = false;
-		for (ReplaceableCloneableIntIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
+		for (ReplaceableCloneableIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
 			// check if all IDs are actually stored in the map
 			Integer id = iterator.next();
 			if (!map.containsKey(id)) {
@@ -397,12 +397,12 @@ public class RawIntTraceCollector {
 		}
 	}
 
-	private void extractCommonSequencesFromRawTrace(ReplaceableCloneableIntIterator replaceableCloneableIntIterator) {
+	private void extractCommonSequencesFromRawTrace(ReplaceableCloneableIterator replaceableCloneableIntIterator) {
 		if (indexer != null) {
 			indexer.reset();
 		}
 		// remember starting position
-		ReplaceableCloneableIntIterator unprocessedIterator = replaceableCloneableIntIterator.clone();
+		ReplaceableCloneableIterator unprocessedIterator = replaceableCloneableIntIterator.clone();
 		int processedElements = 0;
 		while (replaceableCloneableIntIterator.hasNext()) {
 			Integer element = replaceableCloneableIntIterator.peek();

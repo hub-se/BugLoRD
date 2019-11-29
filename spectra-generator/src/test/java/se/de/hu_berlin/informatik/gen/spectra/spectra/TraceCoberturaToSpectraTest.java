@@ -33,8 +33,8 @@ import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -147,7 +147,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 			// iterate over execution traces
 			for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
 				// iterate over the compressed trace (should contain all executed node IDs)
-				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
+				ReplaceableCloneableIterator baseIterator = executionTrace.baseIterator();
 				while (baseIterator.hasNext()) {
 					// execution trace is composed of indexed sequences of subtrace IDs
 					int subTraceSequenceIndex = baseIterator.next();
@@ -179,7 +179,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 			// iterate over execution traces
 			for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
 				// iterate over the compressed trace (should contain all executed node IDs)
-				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
+				ReplaceableCloneableIterator baseIterator = executionTrace.baseIterator();
 				while (baseIterator.hasNext()) {
 					// execution trace is composed of indexed sequences of subtrace IDs
 					int subTraceSequenceIndex = baseIterator.next();
@@ -191,7 +191,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 						int special_counter_at_pos = 0;
 						
 						boolean isFirst = true;
-						IntTraceIterator  nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
+						TraceIterator  nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
 						while (nodeIdIterator.hasNext()) {
 							int nodeId = nodeIdIterator.next();
 							INode<SourceCodeBlock> node = spectra.getNode(nodeId);

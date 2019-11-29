@@ -15,7 +15,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 
 public class SimpleIntIndexer implements SequenceIndexer {
 
@@ -66,7 +66,7 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		this.nodeIdSequences[0] = new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
 			BufferedIntArrayQueue subTrace = idToSubTraceMap.get(i);
-			ReplaceableCloneableIntIterator sequenceIterator = subTrace.iterator();
+			ReplaceableCloneableIterator sequenceIterator = subTrace.iterator();
 			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
 			
 			while (sequenceIterator.hasNext()) {

@@ -8,13 +8,10 @@ import java.util.UUID;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue.MyBufferedIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue.MyBufferedIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerBufferedMap;
 
-/**
- * An execution trace consists structurally of a list of executed nodes
- * and a list of tuples that mark repeated sequences in the trace.
- */
+
 public class CompressedIntegerTraceLevel implements Serializable {
 
 	/**
@@ -37,13 +34,13 @@ public class CompressedIntegerTraceLevel implements Serializable {
 	// should indicate up to which index the trace has been checked for repetitions
 	private int bufferStartIndex = 0;
 	
-	MyBufferedIntIterator resultTraceIterator;
-	MyBufferedIntIterator inputTraceIterator;
+	MyBufferedIterator resultTraceIterator;
+	MyBufferedIterator inputTraceIterator;
 	
 	// mapping from elements to their most recent positions in the result list
 	Map<Integer,Integer> elementToPositionMap;
 	
-	// current positions
+	// current position
 	Integer position = null;
 	
 

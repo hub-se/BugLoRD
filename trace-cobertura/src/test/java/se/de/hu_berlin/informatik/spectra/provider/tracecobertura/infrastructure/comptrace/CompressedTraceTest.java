@@ -19,16 +19,10 @@ import org.junit.Test;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.MyBufferedIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue.MyBufferedIntIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.CompressedIdTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.LongTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
 
 
 /**
@@ -171,7 +165,7 @@ public class CompressedTraceTest {
 		printWithIterator(compressedIdTrace.baseIterator());
 		
 //		Thread.sleep(5000);
-		IntTraceIterator iterator = compressedIdTrace.iterator();
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator iterator = compressedIdTrace.iterator();
 		
 		int counter = 0;
 		int i = 0;
@@ -240,7 +234,7 @@ public class CompressedTraceTest {
 		printWithIterator(compressedIdTrace.baseIterator());
 		
 //		Thread.sleep(5000);
-		IntTraceIterator iterator = compressedIdTrace.iterator();
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator iterator = compressedIdTrace.iterator();
 		
 		int counter = 0;
 		int i = 0;
@@ -515,7 +509,7 @@ public class CompressedTraceTest {
 		queue.clear();
 	}
 	
-	private static void printWithIterator(ReplaceableCloneableIntIterator iterator) {
+	private static void printWithIterator(se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator iterator) {
 		StringBuilder builder = new StringBuilder();
 		while (iterator.hasNext()) {
 			builder.append(iterator.next() + ", ");
@@ -523,7 +517,7 @@ public class CompressedTraceTest {
 		System.out.println(builder.toString());
 	}
 	
-	private static List<Integer> storeInList(ReplaceableCloneableIntIterator iterator) {
+	private static List<Integer> storeInList(se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator iterator) {
 		List<Integer> result = new ArrayList<>();
 		while (iterator.hasNext()) {
 			result.add(iterator.next());
@@ -611,7 +605,7 @@ public class CompressedTraceTest {
 		queue.clear();
 	}
 	
-	private static void printWithIterator(ReplaceableCloneableLongIterator iterator) {
+	private static void printWithIterator(se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableIterator iterator) {
 		StringBuilder builder = new StringBuilder();
 		while (iterator.hasNext()) {
 			builder.append(iterator.next() + ", ");
@@ -619,7 +613,7 @@ public class CompressedTraceTest {
 		System.out.println(builder.toString());
 	}
 	
-	private static List<Long> storeInList(ReplaceableCloneableLongIterator iterator) {
+	private static List<Long> storeInList(se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableIterator iterator) {
 		List<Long> result = new ArrayList<>();
 		while (iterator.hasNext()) {
 			result.add(iterator.next());
@@ -663,7 +657,7 @@ public class CompressedTraceTest {
 			}
 			Assert.assertEquals(String.format("size: %d", queue.size()), bound-k, queue.size());
 			for (int j = 0; j < bound-k; ++j) {
-				MyBufferedIntIterator iterator = queue.iterator(j);
+				BufferedIntArrayQueue.MyBufferedIterator iterator = queue.iterator(j);
 				int count = 0;
 				while (iterator.hasNext()) {
 					Assert.assertEquals(String.format("j: %d, k: %d, size: %d", j, k, queue.size()), j + count, iterator.next());
@@ -705,7 +699,7 @@ public class CompressedTraceTest {
 
 	private void checkWithIterator(BufferedIntArrayQueue queue, int removed, int i, int k, int bound) {
 		for (int j = 0; j < bound-k-removed; ++j) {
-			MyBufferedIntIterator iterator = queue.iterator(j);
+			BufferedIntArrayQueue.MyBufferedIterator iterator = queue.iterator(j);
 			int count = 0;
 			while (iterator.hasNext() && j + count + removed < i) {
 				Assert.assertEquals(String.format("j: %d, k: %d, size: %d", j, k, queue.size()), j + count + removed, iterator.next());
@@ -864,7 +858,7 @@ public class CompressedTraceTest {
 		Assert.assertEquals(4, compressedIdTrace.getCompressedTrace().size());
 		
 //		Thread.sleep(5000);
-		IntTraceIterator iterator = compressedIdTrace.iterator();
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator iterator = compressedIdTrace.iterator();
 		
 		Assert.assertEquals(1, iterator.next());
 		Assert.assertEquals(2, iterator.next());
@@ -889,7 +883,7 @@ public class CompressedTraceTest {
 		Assert.assertEquals(4, iterator.next());
 		Assert.assertEquals(4, iterator.next());
 		
-		MyBufferedIntIterator iterator2 = compressedIdTrace.getCompressedTrace().iterator();
+		BufferedIntArrayQueue.MyBufferedIterator iterator2 = compressedIdTrace.getCompressedTrace().iterator();
 		
 		Assert.assertEquals(1, iterator2.next());
 		Assert.assertEquals(2, iterator2.next());
@@ -939,7 +933,7 @@ public class CompressedTraceTest {
 		
 //		compressedIdTrace.sleep();
 //		Thread.sleep(15000);
-		LongTraceIterator iterator = compressedIdTrace.iterator();
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.TraceIterator iterator = compressedIdTrace.iterator();
 		
 		Assert.assertEquals(1, iterator.next());
 		Assert.assertEquals(2, iterator.next());
@@ -964,7 +958,7 @@ public class CompressedTraceTest {
 		Assert.assertEquals(4, iterator.next());
 		Assert.assertEquals(4, iterator.next());
 		
-		ReplaceableCloneableLongIterator iterator2 = compressedIdTrace.baseIterator();
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableIterator iterator2 = compressedIdTrace.baseIterator();
 		
 		Assert.assertEquals(1, iterator2.next());
 		Assert.assertEquals(2, iterator2.next());

@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 
 public class IntGSArrayTreeNode {
 	
@@ -26,9 +26,9 @@ public class IntGSArrayTreeNode {
 		this.edges = existingEdges;
 	}
 
-	public IntGSArrayTreeNode(IntGSArrayTree treeReference, ReplaceableCloneableIntIterator sequence, int length) {
+	public IntGSArrayTreeNode(IntGSArrayTree treeReference, ReplaceableCloneableIterator sequence, int length) {
 		this.treeReference = treeReference;
-		ReplaceableCloneableIntIterator iterator = sequence.clone();
+		ReplaceableCloneableIterator iterator = sequence.clone();
 		iterator.next();
 		// check if an element in the sequence has already been identified as a starting element
 		for (int i = 1; i < length; ++i) {
@@ -74,7 +74,7 @@ public class IntGSArrayTreeNode {
 		this.edges = edges;
 	}
 	
-	public void addSequence(ReplaceableCloneableIntIterator unprocessedIterator, int length) {
+	public void addSequence(ReplaceableCloneableIterator unprocessedIterator, int length) {
 		// check how much of this node's sequence is identical to the sequence to add;
 		// we can start from index 1 (and posIndex + 1), since the first elements 
 		// are guaranteed to be identical
@@ -322,7 +322,7 @@ public class IntGSArrayTreeNode {
 	}
 	
 	
-	public int getSequenceIndex(IntArraySequenceIndexer indexer, IntTraceIterator iterator, int remainingLength) {
+	public int getSequenceIndex(IntArraySequenceIndexer indexer, TraceIterator iterator, int remainingLength) {
 		// check how much of this node's sequence is identical to the sequence to check;
 		// we can start from index 1, since the first elements 
 		// are guaranteed to be identical (has been checked previously);
@@ -394,7 +394,7 @@ public class IntGSArrayTreeNode {
 	}
 
 	public int getNextSequenceIndex(IntArraySequenceIndexer indexer, 
-			IntTraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
+			TraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
 		// we are iterating through the raw trace until we find an element that is a starting element of the tree;
 		// this element is returned in the end to check the index of the following sequence, and so on;
 		// we start at the second element of the sequence to check

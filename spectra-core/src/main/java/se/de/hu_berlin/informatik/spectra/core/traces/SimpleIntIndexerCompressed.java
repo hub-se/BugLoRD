@@ -14,8 +14,8 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 
 public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 
@@ -67,7 +67,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
 			EfficientCompressedIntegerTrace subTrace = idToSubTraceMap.get(i);
 			BufferedIntArrayQueue compressedTrace = subTrace.getCompressedTrace();
-			ReplaceableCloneableIntIterator sequenceIterator = subTrace.iterator();
+			ReplaceableCloneableIterator sequenceIterator = subTrace.iterator();
 			
 			EfficientCompressedIntegerTrace traceOfNodeIDs = new EfficientCompressedIntegerTrace(
 					compressedTrace.getOutputDir(), "idx_" + compressedTrace.getFilePrefix(), 
@@ -311,7 +311,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		// will return spectra node ids
 		return new Iterator<Integer>() {
 			private int outerPos = 0;
-			IntTraceIterator subTraceIterator;
+			TraceIterator subTraceIterator;
 
 			public boolean hasNext() {
 				if (subTraceIterator != null && subTraceIterator.hasNext()) {
@@ -338,7 +338,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	}
 	
 	@Override
-	public IntTraceIterator getNodeIdSequenceIterator(final int index) {
+	public TraceIterator getNodeIdSequenceIterator(final int index) {
 		// will iterate over the subtrace with the specified index
 		return nodeIdSequences[index].iterator();
 	}
@@ -365,7 +365,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		// TODO: sub trace with id 0 is the empty sub trace. Should not exist, regularly
 		for (int i = 1; i < nodeIdSequences.length; i++) {
 			EfficientCompressedIntegerTrace sequence = nodeIdSequences[i];
-			ReplaceableCloneableIntIterator iterator = sequence.baseIterator();
+			ReplaceableCloneableIterator iterator = sequence.baseIterator();
 			boolean found = false;
 			while (iterator.hasNext()) {
 				if (iterator.next() == nodeId) {
@@ -376,7 +376,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 			}
 			if (found) {
 				// sequence contains the node, so generate a new sequence and replace the old
-				IntTraceIterator fullIterator = sequence.iterator();
+				TraceIterator fullIterator = sequence.iterator();
 				BufferedIntArrayQueue compressedTrace = sequence.getCompressedTrace();
 				EfficientCompressedIntegerTrace newSequence = new EfficientCompressedIntegerTrace(
 						compressedTrace.getOutputDir(), "_" + compressedTrace.getFilePrefix(), 

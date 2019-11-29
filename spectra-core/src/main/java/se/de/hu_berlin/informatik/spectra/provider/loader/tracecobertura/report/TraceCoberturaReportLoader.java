@@ -29,7 +29,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.S
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -257,7 +257,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					String[] idToClassNameMap = projectData.getIdToClassNameMap();
 					Log.out(true, this, "Thread: " + entry.getKey());
 					// iterate over executed statements in the trace
-					IntTraceIterator traceIterator = entry.getValue().iterator();
+					TraceIterator traceIterator = entry.getValue().iterator();
 					while (traceIterator.hasNext()) {
 						Integer subTraceId = traceIterator.next();
 						EfficientCompressedIntegerTrace subTrace = null;
@@ -275,7 +275,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 						}
 						Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.size());
 
-						IntTraceIterator longTraceIterator = subTrace.iterator();
+						TraceIterator longTraceIterator = subTrace.iterator();
 						while (longTraceIterator.hasNext()) {
 							int statement = longTraceIterator.next();
 //							if (CoberturaStatementEncoding.getClassId(statement) != 142) {
@@ -541,7 +541,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //		String[] idToClassNameMap = projectData.getIdToClassNameMap();
 		// iterate over trace and generate new trace based on seen sub traces
 		// iterate over executed statements in the trace
-		IntTraceIterator traceIterator = trace.iterator();
+		TraceIterator traceIterator = trace.iterator();
 		
 		EfficientCompressedIntegerTrace currentSubTrace = getNewSubTrace(trace);
 		int lastMethod = -1;

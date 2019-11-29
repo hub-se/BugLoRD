@@ -2,25 +2,29 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 public class LevelState {
 	
-//	public int index = 0;
+//	public long index = 0;
+	
 //	public int repetitionIndex = -1;
 //	public int repetitionLength = 0;
 //	public int repetitionCount = 0;
 //	public int repetitionCounter = 0;
 	
 	// stores the current level's state and the state of levels below to restore, if necessary
-	// format: index, repetitionIndex, length, count, counter
-	public int[] state; // = new int[] {0, -1, 0, 0, 0};
+	// format: index, repetitionIndex ; length, count, counter
+	public long[] indexState; // = new long[] {0, -1};
+	public int[] repetitionState; // = new int[] {0, 0, 0};
 
 //	public List<int[]> resetStateList;
 
 	public LevelState(int level) {
-		this.state = new int[5 + level * 5];
-		this.state[1] = -1;
+		this.indexState = new long[2 + level * 2];
+		this.repetitionState = new int[3 + level * 3];
+		this.indexState[1] = -1;
 	}
 
 	public LevelState(LevelState state) {
-		this.state = state.state.clone();
+		this.indexState = state.indexState.clone();
+		this.repetitionState = state.repetitionState.clone();
 	}
 	
 	public static LevelState[] copy(LevelState[] levelStates) {
@@ -35,17 +39,20 @@ public class LevelState {
 		int counter = 0;
 		for (int i = currentLevel - 1; i >= 0; --i) {
 			++counter;
-			System.arraycopy(levelStates[i].state, 0, levelStates[currentLevel].state, counter * 5, 5);
+			System.arraycopy(levelStates[i].indexState, 0, levelStates[currentLevel].indexState, counter * 2, 2);
+			System.arraycopy(levelStates[i].repetitionState, 0, levelStates[currentLevel].repetitionState, counter * 3, 3);
 		}
 	}
 
 	public static void resetState(LevelState[] levelStates, int currentLevel) {
-		levelStates[currentLevel].state[0] = levelStates[currentLevel].state[1];
+		// reset index to stored repetition index
+		levelStates[currentLevel].indexState[0] = levelStates[currentLevel].indexState[1];
 
 		int counter = 0;
 		for (int i = currentLevel - 1; i >= 0; --i) {
 			++counter;
-			System.arraycopy(levelStates[currentLevel].state, counter * 5, levelStates[i].state, 0, 5);
+			System.arraycopy(levelStates[currentLevel].indexState, counter * 2, levelStates[i].indexState, 0, 2);
+			System.arraycopy(levelStates[currentLevel].repetitionState, counter * 3, levelStates[i].repetitionState, 0, 3);
 		}
 	}
 

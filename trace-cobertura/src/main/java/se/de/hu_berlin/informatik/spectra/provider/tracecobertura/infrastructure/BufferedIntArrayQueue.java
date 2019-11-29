@@ -17,7 +17,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
@@ -790,7 +790,7 @@ public class BufferedIntArrayQueue implements Serializable {
     		long endItemIndex = startIndex + count;
 
     		// shift the remaining elements to the left
-    		MyBufferedIntIterator iterator = iterator(endItemIndex);
+    		MyBufferedIterator iterator = iterator(endItemIndex);
     		while (iterator.hasNext()) {
     			// since we keep a reference to the node here, we might make changes to it,
     			// but we might also have remove the node from the cache earlier
@@ -937,20 +937,20 @@ public class BufferedIntArrayQueue implements Serializable {
 		}
 	}
 
-	public MyBufferedIntIterator iterator() {
-		return new MyBufferedIntIterator();
+	public MyBufferedIterator iterator() {
+		return new MyBufferedIterator();
 	}
 	
-	public MyBufferedIntIterator iterator(final long position) {
-		return new MyBufferedIntIterator(position);
+	public MyBufferedIterator iterator(final long position) {
+		return new MyBufferedIterator(position);
 	}
 
-	public final class MyBufferedIntIterator implements ReplaceableCloneableIntIterator {
+	public final class MyBufferedIterator implements ReplaceableCloneableIterator {
 
 		int storeIndex;
 		int index;
 
-		MyBufferedIntIterator(long i) {
+		MyBufferedIterator(long i) {
 			setToPosition(i);
 		}
 		
@@ -968,7 +968,7 @@ public class BufferedIntArrayQueue implements Serializable {
 			}
 		}
 		
-		MyBufferedIntIterator() {
+		MyBufferedIterator() {
 			if (storedNodeExists()) {
 				storeIndex = firstStoreIndex;
 				Node node = load(storeIndex);
@@ -983,13 +983,13 @@ public class BufferedIntArrayQueue implements Serializable {
 		}
 		
 		// clone constructor
-		private MyBufferedIntIterator(MyBufferedIntIterator iterator) {
+		private MyBufferedIterator(MyBufferedIterator iterator) {
 			storeIndex = iterator.storeIndex;
 			index = iterator.index;
 		}
 
-		public MyBufferedIntIterator clone() {
-			return new MyBufferedIntIterator(this);
+		public MyBufferedIterator clone() {
+			return new MyBufferedIterator(this);
 		}
 		
 		public boolean hasNext() {
@@ -1213,7 +1213,7 @@ public class BufferedIntArrayQueue implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("[ ");
-		ReplaceableCloneableIntIterator iterator = iterator();
+		ReplaceableCloneableIterator iterator = iterator();
 		while (iterator.hasNext()) {
 			builder.append(iterator.next()).append(", ");
 		}

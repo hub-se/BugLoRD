@@ -8,8 +8,8 @@ import java.util.UUID;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntArrayIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 
 public class IntGSArrayTree {
 	
@@ -26,7 +26,7 @@ public class IntGSArrayTree {
 	}
 
 	IntGSArrayTreeNode newTreeNode(IntGSArrayTree treeReference,
-			ReplaceableCloneableIntIterator unprocessedIterator, int i) {
+			ReplaceableCloneableIterator unprocessedIterator, int i) {
 		return new IntGSArrayTreeNode(treeReference, unprocessedIterator, i);
 	}
 
@@ -58,7 +58,7 @@ public class IntGSArrayTree {
 		return __addSequence(new IntArrayIterator(sequence), sequence.length);
 	}
 	
-	public boolean addSequence(ReplaceableCloneableIntIterator unprocessedIterator, int length) {
+	public boolean addSequence(ReplaceableCloneableIterator unprocessedIterator, int length) {
 		if (unprocessedIterator == null) {
 			return false;
 		}
@@ -66,7 +66,7 @@ public class IntGSArrayTree {
 		return __addSequence(unprocessedIterator, length);
 	}
 	
-	boolean __addSequence(ReplaceableCloneableIntIterator unprocessedIterator, int length) {
+	boolean __addSequence(ReplaceableCloneableIterator unprocessedIterator, int length) {
 		if (length == 0) {
 			System.out.println("adding empty sequence..."); // this should not occur, normally
 			if (!branches.containsKey(END_NODE)) {
@@ -79,7 +79,7 @@ public class IntGSArrayTree {
 		return __addSequence(unprocessedIterator, length, firstElement);
 	}
 	
-	boolean __addSequence(ReplaceableCloneableIntIterator unprocessedIterator, int length, int firstElement) {
+	boolean __addSequence(ReplaceableCloneableIterator unprocessedIterator, int length, int firstElement) {
 		IntGSArrayTreeNode startingNode = branches.get(firstElement);
 		if (startingNode == null) {
 			return addSequenceInNewBranch(unprocessedIterator, length, firstElement);
@@ -91,7 +91,7 @@ public class IntGSArrayTree {
 		}
 	}
 
-	public boolean addSequenceInNewBranch(ReplaceableCloneableIntIterator unprocessedIterator, int length,
+	public boolean addSequenceInNewBranch(ReplaceableCloneableIterator unprocessedIterator, int length,
 			int firstElement) {
 		// new starting element
 //			System.out.println("new start: " + firstElement);
@@ -201,7 +201,7 @@ public class IntGSArrayTree {
 				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
 				ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
 		
-		IntTraceIterator iterator = rawTrace.iterator();
+		TraceIterator iterator = rawTrace.iterator();
 		int startElement = iterator.next();
 		while (startElement != SUCC_END) {
 			startElement = addNextSequenceIndexToTrace(indexer, startElement, iterator, indexedtrace);
@@ -215,7 +215,7 @@ public class IntGSArrayTree {
 	}
 	
 	public int addNextSequenceIndexToTrace(IntArraySequenceIndexer indexer, int firstElement, 
-			IntTraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
+			TraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
 		IntGSArrayTreeNode startingNode = branches.get(firstElement);
 		if (startingNode != null) {
 			// some sequence with this starting element exists in the tree

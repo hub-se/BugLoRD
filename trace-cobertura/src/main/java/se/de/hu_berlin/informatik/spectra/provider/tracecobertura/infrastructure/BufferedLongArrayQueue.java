@@ -17,7 +17,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableIterator;
 
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
@@ -27,10 +27,10 @@ public class BufferedLongArrayQueue implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -9027487159232780112L;
+	private static final long serialVersionUID = 3684150499665589360L;
 
-	// keep at most 2 (+1 with the last node) nodes in memory
-    private static final int CACHE_SIZE = 2;
+	// keep at most 5 (+1 with the last node) nodes in memory
+    private static final int CACHE_SIZE = 5;
     
     private static final int ARRAY_SIZE = 1000;
 	
@@ -40,7 +40,7 @@ public class BufferedLongArrayQueue implements Serializable {
 		return arrayLength;
 	}
 
-	private volatile int size = 0;
+	private volatile long size = 0;
 	
 	private File output;
 	private String filePrefix;
@@ -70,7 +70,7 @@ public class BufferedLongArrayQueue implements Serializable {
         stream.writeInt(currentStoreIndex);
         stream.writeInt(lastStoreIndex);
         stream.writeInt(firstNodeSize);
-        stream.writeInt(size);
+        stream.writeLong(size);
         stream.writeInt(arrayLength);
     }
 	
@@ -93,6 +93,7 @@ public class BufferedLongArrayQueue implements Serializable {
 				if (node.modified) {
 					store(node);
 				}
+				node.cleanup();
 			}
 			cachedNodes.clear();
 			cacheSequence.clear();
@@ -133,6 +134,27 @@ public class BufferedLongArrayQueue implements Serializable {
 		initialize();
     }
     
+    private void initialize() {
+		firstStoreIndex = 0;
+		lastStoreIndex = -1;
+		if (lastNode != null) {
+//			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
+//				lastNode.items[j] = null;
+//			}
+			delete(lastNode.storeIndex);
+//			lastNode = null;
+			lastNode.modified = false;
+			lastNode.storeIndex = 0;
+			lastNode.startIndex = 0;
+			lastNode.endIndex = 0;
+			currentStoreIndex = 0;
+		} else {
+			currentStoreIndex = -1;
+		}
+		firstNodeSize = 0;
+		size = 0;
+	}
+    
     public BufferedLongArrayQueue(File outputDir, String filePrefix) {
     	this(outputDir, filePrefix, true);
     }
@@ -155,28 +177,6 @@ public class BufferedLongArrayQueue implements Serializable {
 	public BufferedLongArrayQueue(File output, String filePrefix, int nodeArrayLength) {
     	this(output, filePrefix, nodeArrayLength, true);
     }
-	
-	private void initialize() {
-		firstStoreIndex = 0;
-		lastStoreIndex = -1;
-		if (lastNode != null) {
-//			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
-//				lastNode.items[j] = null;
-//			}
-			uncacheAndDelete(lastNode.storeIndex);
-//			lastNode = null;
-		}
-		if (lastNode != null) {
-			lastNode.storeIndex = 0;
-			lastNode.startIndex = 0;
-			lastNode.endIndex = 0;
-			currentStoreIndex = 0;
-		} else {
-			currentStoreIndex = -1;
-		}
-		firstNodeSize = 0;
-		size = 0;
-	}
 	
 	public int getNodeSize() {
 		return arrayLength;
@@ -206,9 +206,10 @@ public class BufferedLongArrayQueue implements Serializable {
         	// we don't actually use pointers!
 //            l.next = newNode;
         	++lastStoreIndex;
-        	store(l);
-        	// we can now remove the node from memory
-        	l.items = null;
+        	putInCache(l.storeIndex, l);
+//        	store(l);
+//        	// we can now remove the node from memory
+//        	l.items = null;
         }
         ++size;
     }
@@ -225,7 +226,7 @@ public class BufferedLongArrayQueue implements Serializable {
     }
     
     private void store(Node node) {
-//    	System.out.println("lmem: " + Runtime.getRuntime().freeMemory());
+//    	System.out.println("imem: " + Runtime.getRuntime().freeMemory());
 		String filename = getFileName(node.storeIndex);
 		// apparently, this is faster than using an ObjectOutputStream...
 		try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {
@@ -271,6 +272,40 @@ public class BufferedLongArrayQueue implements Serializable {
 //			e.printStackTrace();
 //		}
 	}
+    
+    private void putInCache(int storeIndex, Node node) {
+    	lock.lock();
+    	try {
+    		// already in the cache?
+    		if (cachedNodes.containsKey(storeIndex)) {
+    			return;
+    		}
+    		// remove a cached node if the cache is full
+    		if (cachedNodes.size() >= CACHE_SIZE) {
+    			// remove the node from the cache that has been added first
+    			uncache(cacheSequence.remove(0));
+    		}
+    		cachedNodes.put(storeIndex, node);
+    		cacheSequence.add(storeIndex);
+    	} finally {
+    		lock.unlock();
+    	}
+	}
+    
+    // should check for modifications and possibly write to the disk
+    private void uncache(int storeIndex) {
+    	lock.lock();
+    	try {
+    		Node node = cachedNodes.remove(storeIndex);
+    		if (node != null) {
+    			if (node.modified) {
+    				store(node);
+    			}
+    		}
+    	} finally {
+    		lock.unlock();
+    	}
+    }
 
 	/**
      * Removes the first node, if it only contains one item.
@@ -290,7 +325,7 @@ public class BufferedLongArrayQueue implements Serializable {
             if (storedNodeExists()) {
             	firstNodeSize = arrayLength;
             } else {
-            	firstNodeSize = size;
+            	firstNodeSize = (int)size;
             }
         } else {
 //        	// there exists only the last node
@@ -306,11 +341,31 @@ public class BufferedLongArrayQueue implements Serializable {
 	private void uncacheAndDelete(int storeIndex) {
 		lock.lock();
 		try {
-			String filename = getFileName(storeIndex);
+			uncacheNoStore(storeIndex);
+			delete(storeIndex);
+		} finally {
+			lock.unlock();
+		}
+	}
+    
+	private void uncacheNoStore(int storeIndex) {
+		lock.lock();
+		try {
 			if (cachedNodes.containsKey(storeIndex)) {
+				Node node = cachedNodes.get(storeIndex);
+				node.cleanup();
 				cachedNodes.remove(storeIndex);
 				cacheSequence.remove((Integer)storeIndex);
 			}
+		} finally {
+			lock.unlock();
+		}
+	}
+	
+	private void delete(int storeIndex) {
+		lock.lock();
+		try {
+			String filename = getFileName(storeIndex);
 			// stored node should be deleted
 			File file = new File(filename);
 			if (file.exists()) {
@@ -381,24 +436,21 @@ public class BufferedLongArrayQueue implements Serializable {
 //		if (storeIndex > lastStoreIndex) {
 //			return null;
 //		}
-		String filename = getFileName(storeIndex);
-		if (!(new File(filename).exists())) {
-			return null;
-		}
 		
 		lock.lock();
 		try {
 			// only cache nodes that are not the last node
-			if (storeIndex <= lastStoreIndex) {
-				if (cachedNodes.containsKey(storeIndex)) {
-					// already cached
-					return cachedNodes.get(storeIndex);
-				}
-				// cache the node
-				if (cachedNodes.size() >= CACHE_SIZE) {
-					// remove the node from the cache that has been added first
-					uncache(cacheSequence.remove(0));
-				}
+//			if (storeIndex <= lastStoreIndex) {
+			if (cachedNodes.containsKey(storeIndex)) {
+				// already cached
+				return cachedNodes.get(storeIndex);
+			}
+//			}
+			
+			String filename = getFileName(storeIndex);
+			if (!(new File(filename).exists())) {
+				return null;
+//				throw new IllegalStateException("Node " + storeIndex + " was neither found in the cache or as a file.");
 			}
 			
 			Node loadedNode;
@@ -415,13 +467,15 @@ public class BufferedLongArrayQueue implements Serializable {
 					int startIndex = directBuf.getInt();
 					int endIndex = directBuf.getInt();
 					
-//					int arrayLength = (int)(fileSize-8)/8;
-					long[] items = new long[arrayLength];
+//					int arrayLength = (int)fileSize/4 - 2;
+					// actually only load an array of the size that's necessary;
+					// will be extended if there are new elements that are added
+					long[] items = new long[endIndex];
 					for (int i = startIndex; i < endIndex; ++i) {
 						items[i] = directBuf.getLong();
 					}
 					
-					loadedNode = new Node(items, startIndex, endIndex, storeIndex);
+					loadedNode = new Node(items, startIndex, endIndex, storeIndex, arrayLength);
 					
 					// file can not be removed, due to serialization! TODO
 					if (deleteOnExit) {
@@ -464,8 +518,7 @@ public class BufferedLongArrayQueue implements Serializable {
 //			}
 			
 			if (storeIndex <= lastStoreIndex) {
-				cachedNodes.put(storeIndex, loadedNode);
-				cacheSequence.add(storeIndex);
+				putInCache(storeIndex, loadedNode);
 			}
 			return loadedNode;
 		} finally {
@@ -473,22 +526,9 @@ public class BufferedLongArrayQueue implements Serializable {
 		}
 	}
 
-	// should check for modifications and possibly write to the disk
-    private void uncache(int storeIndex) {
-    	lock.lock();
-    	try {
-    		Node node = cachedNodes.remove(storeIndex);
-    		if (node != null) {
-    			if (node.modified) {
-    				store(node);
-    			}
-    		}
-    	} finally {
-    		lock.unlock();
-    	}
-	}
+	
 
-    public int size() {
+    public long size() {
     	lock.lock();
     	try {
     		return size;
@@ -510,8 +550,10 @@ public class BufferedLongArrayQueue implements Serializable {
     			if (firstStoreIndex == lastNode.storeIndex) {
     				++firstNodeSize;
     			}
+//    			System.out.println(e + " -> added " + lastNode.storeIndex + ", " + lastNode.endIndex);
     		} else {
-    			linkLast(e);	
+    			linkLast(e);
+//    			System.out.println(e + " -> linked " + lastNode.storeIndex + ", " + lastNode.endIndex);
     		}
     		return true;
     	} finally {
@@ -519,18 +561,32 @@ public class BufferedLongArrayQueue implements Serializable {
     	}
     }
 
+    private void clearCache() {
+		lock.lock();
+		try {
+			for (Node node : cachedNodes.values()) {
+				node.cleanup();
+			}
+			cachedNodes.clear();
+			cacheSequence.clear();
+		} finally {
+			lock.unlock();
+		}
+	}
+    
     public void clear() {
     	if (locked) {
     		throw new IllegalStateException("Tried to clear queue while being locked.");
     	}
     	lock.lock();
     	try {
-    		cachedNodes.clear();
-    		cacheSequence.clear();
+    		clearCache();
     		// delete possibly stored nodes
     		for (; storedNodeExists(); ++firstStoreIndex) {
-    			uncacheAndDelete(firstStoreIndex);
+    			delete(firstStoreIndex);
     		}
+    		// delete potentially stored last node
+    		delete(lastStoreIndex+1);
 //    		// empty last (and now also first) node
 //    		if (lastNode != null) {
 //    			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
@@ -561,7 +617,7 @@ public class BufferedLongArrayQueue implements Serializable {
      * @param count
      * the number of elements to clear from the list
      */
-    public void clear(int count) {
+    public void clear(long count) {
     	if (count >= size) {
 			clear();
 			return;
@@ -606,9 +662,8 @@ public class BufferedLongArrayQueue implements Serializable {
     		
     		if (count > 0 && x != null) {
     			// remove elements from first node
-    			x.startIndex += count;
+    			x.clear((int) count);
     			firstNodeSize -= count;
-    			x.modified = true;
     		}
     		
     		size -= count;
@@ -616,8 +671,156 @@ public class BufferedLongArrayQueue implements Serializable {
     		lock.unlock();
 		}
     }
+    
+    /**
+     * Same as {@link #clear()}, but only removes the last {@code count} elements.
+     * 
+     * @param count
+     * the number of elements to clear from the list
+     */
+    public void clearLast(long count) {
+    	if (count >= size) {
+			clear();
+			return;
+		}
+    	if (locked) {
+    		throw new IllegalStateException("Tried to clear queue while being locked.");
+    	}
+    	lock.lock();
+    	try {
+    		loadLast();
+    		int removedElements = lastNode.size();
+			int storeIndex = lastNode.storeIndex;
 
-//	public long peekLast() {
+			if (count >= removedElements) {
+				// we can delete the last node's file
+				uncacheAndDelete(storeIndex);
+				--lastStoreIndex;
+				--currentStoreIndex;
+				count -= removedElements;
+				size -= removedElements;
+				lastNode = null;
+			}
+
+			// check if we can delete entire nodes without actually loading the respective nodes
+			while (count >= arrayLength) {
+				// we can just delete the respective file
+				uncacheAndDelete(--storeIndex);
+				--lastStoreIndex;
+				--currentStoreIndex;
+				count -= arrayLength;
+				size -= arrayLength;
+			}
+
+			// ensure that the last node is not cached
+			loadLast();
+			removeFromCache(lastNode.storeIndex);
+			
+			// still elements left to clear?
+			if (count > 0) {
+				// it holds that count < arrayLength
+	    		lastNode.clearLast((int) count);
+				if (!storedNodeExists()) {
+					// no node left on disk, so continue with the last node
+					firstNodeSize = lastNode.endIndex - lastNode.startIndex;
+				}
+			}
+
+    		size -= count;
+    	} finally {
+    		lock.unlock();
+		}
+    }
+    
+    private void removeFromCache(int storeIndex) {
+    	lock.lock();
+		try {
+			if (cachedNodes.containsKey(storeIndex)) {
+				cachedNodes.remove(storeIndex);
+				cacheSequence.remove((Integer)storeIndex);
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	/**
+     * Same as {@link #clear()}, but removes {@code count} elements, 
+     * starting from {@code startIndex}.
+     * 
+     * @param startIndex
+     * the index to start clearing from
+     * @param count
+     * the number of elements to clear from the list
+     */
+    public void clearFrom(long startIndex, long count) {
+    	if (count == 0) {
+    		return;
+    	}
+    	if (count >= size) {
+			clear();
+			return;
+		}
+    	if (startIndex + count >= size) {
+			clearLast(size - startIndex);
+			return;
+		}
+    	if (locked) {
+    		throw new IllegalStateException("Tried to clear queue while being locked.");
+    	}
+    	lock.lock();
+    	try {
+    		int startNodeIndex = -1;
+    		int startItemIndex = (int) startIndex;
+    		Node startNode = null;
+    		// we can compute the store index using the size of the 
+    		// first node and the constant size of each array node
+    		if (startIndex < firstNodeSize) {
+    			startNode = loadFirst();
+    	        if (startNode == null || startNode.startIndex >= startNode.endIndex)
+    	            throw new NoSuchElementException();
+    	        startNodeIndex = startNode.storeIndex;
+    		} else {
+    			int i = (int) (startIndex - firstNodeSize);
+    			startNodeIndex = firstStoreIndex + 1 + (i / arrayLength);
+    			startItemIndex = i % arrayLength;
+    			startNode = load(startNodeIndex);
+    		}
+
+    		long endItemIndex = startIndex + count;
+
+    		// shift the remaining elements to the left
+    		MyBufferedIterator iterator = iterator(endItemIndex);
+    		while (iterator.hasNext()) {
+    			// since we keep a reference to the node here, we might make changes to it,
+    			// but we might also have remove the node from the cache earlier
+    			startNode.set(startItemIndex++, iterator.next());
+    			if (startNode.startIndex + startItemIndex >= startNode.endIndex) {
+    				// ensure that the node is in the cache after being modified
+    				putInCache(startNode.storeIndex, startNode);
+    				startItemIndex = 0;
+    				startNode = load(++startNodeIndex);
+    			}
+    		}
+    		// ensure that the node is in the cache after being modified
+			putInCache(startNode.storeIndex, startNode);
+    		
+    		// now just remove the duplicate entries at the end
+    		clearLast(count);
+    		
+//    		System.out.println();
+//    		MyBufferedIntIterator iterator2 = iterator(0);
+//    		while (iterator2.hasNext()) {
+//    			System.out.print(iterator2.next() + ",");
+//    		}
+//    		System.out.println();
+    		
+    	} finally {
+    		lock.unlock();
+		}
+    }
+
+//	public int peekLast() {
 //        final Node f = loadLast();
 //        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.endIndex-1] : null));
 //    }
@@ -639,7 +842,7 @@ public class BufferedLongArrayQueue implements Serializable {
     
     // Queue operations
 
-//    public long peek() {
+//    public int peek() {
 //        final Node f = loadFirst();
 //        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.startIndex] : null));
 //    }
@@ -659,7 +862,7 @@ public class BufferedLongArrayQueue implements Serializable {
     	}
     }
 
-//    public long poll() {
+//    public int poll() {
 //        final Node f = loadFirst();
 //        return (f == null) ? null : (f.startIndex < f.endIndex ? removeFirst(f) : null);
 //    }
@@ -695,7 +898,7 @@ public class BufferedLongArrayQueue implements Serializable {
 		}
     }
 
-    public boolean offer(int e) {
+    public boolean offer(long e) {
         return add(e);
     }
 
@@ -734,38 +937,38 @@ public class BufferedLongArrayQueue implements Serializable {
 		}
 	}
 
-	public MyBufferedLongIterator iterator() {
-		return new MyBufferedLongIterator();
+	public MyBufferedIterator iterator() {
+		return new MyBufferedIterator();
 	}
 	
-	public MyBufferedLongIterator iterator(final int position) {
-		return new MyBufferedLongIterator(position);
+	public MyBufferedIterator iterator(final long position) {
+		return new MyBufferedIterator(position);
 	}
 
-	public final class MyBufferedLongIterator implements ReplaceableCloneableLongIterator {
+	public final class MyBufferedIterator implements ReplaceableCloneableIterator {
 
 		int storeIndex;
 		int index;
 
-		MyBufferedLongIterator(int i) {
+		MyBufferedIterator(long i) {
 			setToPosition(i);
 		}
 		
-		public void setToPosition(int i) {
+		public void setToPosition(long i) {
 			// we can compute the store index using the size of the 
 			// first node and the constant size of each array node
 			if (i < firstNodeSize) {
 				storeIndex = firstStoreIndex;
 				Node node = load(storeIndex);
-				index = i+node.startIndex;
+				index = (int) (i+node.startIndex);
 			} else {
 				i -= firstNodeSize;
-				storeIndex = firstStoreIndex + 1 + (i / arrayLength);
-				index = i % arrayLength;
+				storeIndex = (int) (firstStoreIndex + 1 + (i / arrayLength));
+				index = (int) (i % arrayLength);
 			}
 		}
 		
-		MyBufferedLongIterator() {
+		MyBufferedIterator() {
 			if (storedNodeExists()) {
 				storeIndex = firstStoreIndex;
 				Node node = load(storeIndex);
@@ -780,13 +983,13 @@ public class BufferedLongArrayQueue implements Serializable {
 		}
 		
 		// clone constructor
-		private MyBufferedLongIterator(MyBufferedLongIterator iterator) {
+		private MyBufferedIterator(MyBufferedIterator iterator) {
 			storeIndex = iterator.storeIndex;
 			index = iterator.index;
 		}
 
-		public MyBufferedLongIterator clone() {
-			return new MyBufferedLongIterator(this);
+		public MyBufferedIterator clone() {
+			return new MyBufferedIterator(this);
 		}
 		
 		public boolean hasNext() {
@@ -858,12 +1061,12 @@ public class BufferedLongArrayQueue implements Serializable {
 	}
 
 	private static class Node implements Serializable {
-		private volatile transient boolean modified = false;
-
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 2511188925909568960L;
+		private static final long serialVersionUID = -3971374141799106835L;
+
+		private volatile transient boolean modified = false;
 
 		// index to store/load this node
 		private volatile int storeIndex;
@@ -873,9 +1076,12 @@ public class BufferedLongArrayQueue implements Serializable {
         private volatile int startIndex = 0;
         // points to last free slot
         private volatile int endIndex = 1;
+
+		private int arrayLength;
         // pointer to next array node
 
 		Node(long element, int arrayLength, int storeIndex) {
+			this.arrayLength = arrayLength;
 			if (arrayLength < 1) {
         		throw new IllegalStateException();
         	}
@@ -885,12 +1091,31 @@ public class BufferedLongArrayQueue implements Serializable {
 			// ensure that new nodes are stored (if not empty)
         	this.modified = true;
 		}
+		
+		public void clearLast(int count) {
+			this.endIndex -= count;
+			this.modified = true;
+		}
 
-		public Node(long[] items, int startIndex, int endIndex, int storeIndex) {
+		public void clear(int count) {
+			this.startIndex += count;
+			this.modified = true;
+		}
+
+		public void cleanup() {
+			this.items = null;
+		}
+
+		public int size() {
+			return endIndex - startIndex;
+		}
+
+		public Node(long[] items, int startIndex, int endIndex, int storeIndex, int arrayLength) {
 			this.items = items;
 			this.endIndex = endIndex;
 			this.startIndex = startIndex;
 			this.storeIndex = storeIndex;
+			this.arrayLength = arrayLength;
 		}
 		
 		// removes the first element
@@ -904,12 +1129,21 @@ public class BufferedLongArrayQueue implements Serializable {
         // adds an element to the end
 		public void add(long e) {
 			this.modified = true;
+			if (items.length < arrayLength) {
+				extendArray();
+			}
 			items[endIndex++] = e;
+		}
+
+		private void extendArray() {
+			long[] temp = items;
+			items = new long[arrayLength];
+			System.arraycopy(temp, startIndex, items, startIndex, temp.length - startIndex);
 		}
 
 		// checks whether an element can be added to the node's array
 		boolean hasFreeSpace() {
-        	return endIndex < items.length;
+        	return endIndex < arrayLength;
         }
 
 		public long get(int i) {
@@ -917,6 +1151,10 @@ public class BufferedLongArrayQueue implements Serializable {
 		}
 		
 		public void set(int i, long value) {
+			this.modified = true;
+			if (items.length <= i + startIndex) {
+				extendArray();
+			}
 			items[i+startIndex] = value;
 		}
 
@@ -931,25 +1169,26 @@ public class BufferedLongArrayQueue implements Serializable {
 		super.finalize();
 	}
 
-	public long get(int i) {
+	public long get(long i) {
 		// we can compute the store index using the size of the 
 		// first node and the constant size of each array node
 		if (i < firstNodeSize) {
 			final Node f = loadFirst();
 	        if (f == null || f.startIndex >= f.endIndex)
 	            throw new NoSuchElementException();
-	        return f.get(i);
+	        return f.get((int) i);
+		} else {
+			i -= firstNodeSize;
+			int storeIndex = (int) (firstStoreIndex + 1 + (i / arrayLength));
+			int itemIndex = (int) (i % arrayLength);
+			final Node f = load(storeIndex);
+			if (f == null || itemIndex >= f.endIndex)
+				throw new NoSuchElementException("index: " + (i + firstNodeSize) + ", size: " + size);
+			return f.get(itemIndex);
 		}
-		i -= firstNodeSize;
-		int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
-		int itemIndex = i % arrayLength;
-		final Node f = load(storeIndex);
-        if (f == null || itemIndex >= f.endIndex)
-            throw new NoSuchElementException();
-        return f.get(itemIndex);
 	}
-
-	private void set(int i, long value) {
+	
+	private void set(long i, long value) {
 		if (locked) {
     		throw new IllegalStateException("Tried to set value at index " + i + " to " + value + " while being locked.");
     	}
@@ -958,22 +1197,23 @@ public class BufferedLongArrayQueue implements Serializable {
 		if (i < firstNodeSize) {
 			final Node f = loadFirst();
 	        if (f == null || f.startIndex >= f.endIndex)
-	            throw new NoSuchElementException("index: " + i);
-	        f.set(i, value);
+	            throw new NoSuchElementException();
+	        f.set((int) i, value);
+		} else {
+			i -= firstNodeSize;
+			int storeIndex = (int) (firstStoreIndex + 1 + (i / arrayLength));
+			int itemIndex = (int) (i % arrayLength);
+			final Node f = load(storeIndex);
+			if (f == null || itemIndex >= f.endIndex)
+				throw new NoSuchElementException();
+			f.set(itemIndex, value);
 		}
-		i -= firstNodeSize;
-		int storeIndex = firstStoreIndex + 1 + (i / arrayLength);
-		int itemIndex = i % arrayLength;
-		final Node f = load(storeIndex);
-        if (f == null || itemIndex >= f.endIndex)
-            throw new NoSuchElementException();
-        f.set(itemIndex, value);
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("[ ");
-		ReplaceableCloneableLongIterator iterator = iterator();
+		ReplaceableCloneableIterator iterator = iterator();
 		while (iterator.hasNext()) {
 			builder.append(iterator.next()).append(", ");
 		}
@@ -985,13 +1225,13 @@ public class BufferedLongArrayQueue implements Serializable {
 	public boolean isDeleteOnExit() {
 		return deleteOnExit;
 	}
-	
-	public long getAndReplaceWith(int i, Function<Long, Long> function) {
+
+	public long getAndReplaceWith(long i, Function<Long, Long> function) {
 		long previous = get(i);
 		set(i, function.apply(previous));
 		return previous;
 	}
-
+	
 	public void deleteOnExit() {
 		deleteOnExit = true;
 	}

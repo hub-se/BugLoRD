@@ -8,7 +8,7 @@ import java.util.List;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 
 /**
@@ -54,7 +54,7 @@ public class ExecutionTrace extends EfficientCompressedIntegerTrace implements S
 	 * array that contains all executed node IDs
 	 */
 	public int[] reconstructFullMappedTrace(SequenceIndexerCompressed indexer) {
-		IntTraceIterator indexedFullTrace = iterator();
+		TraceIterator indexedFullTrace = iterator();
 		List<Integer> fullTrace = new ArrayList<>();
 		while (indexedFullTrace.hasNext()) {
 			Iterator<Integer> sequence = indexer.getFullSequenceIterator(indexedFullTrace.next());
@@ -76,7 +76,7 @@ public class ExecutionTrace extends EfficientCompressedIntegerTrace implements S
 	public Iterator<Integer> mappedIterator(SequenceIndexerCompressed sequenceIndexer) {
 		return new Iterator<Integer>(){
 			
-			final IntTraceIterator iterator = ExecutionTrace.this.iterator();
+			final TraceIterator iterator = ExecutionTrace.this.iterator();
 			Iterator<Integer> currentSequence;
 
 			@Override

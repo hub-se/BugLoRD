@@ -2,11 +2,11 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
 
-public interface ReplaceableCloneableLongIterator {
+public interface ReplaceableCloneableIterator {
 
 	public long processNextAndReplaceWithResult(Function<Long,Long> function);
 	
-	public ReplaceableCloneableLongIterator clone();
+	public ReplaceableCloneableIterator clone();
 	
 	public long peek();
 	

@@ -167,7 +167,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	
 	public int getMaxStoredValue() {
 		int max = 0;
-		ReplaceableCloneableIntIterator iterator = baseIterator();
+		ReplaceableCloneableIterator iterator = baseIterator();
 		while (iterator.hasNext()) {
 			max = Math.max(iterator.next(), max);
 		}
@@ -407,16 +407,16 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	 * @return
 	 * iterator over the full trace
 	 */
-	public IntTraceIterator iterator() {
+	public TraceIterator iterator() {
 		endOfLine();
-		return new IntTraceIterator(this);
+		return new TraceIterator(this);
 	}
 	
 	/**
 	 * @return
 	 * iterator over the compressed trace (ignores repetitions)
 	 */
-	public ReplaceableCloneableIntIterator baseIterator() {
+	public ReplaceableCloneableIterator baseIterator() {
 		endOfLine();
 		return compressedTrace.iterator();
 	}
@@ -425,9 +425,9 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	 * @return
 	 * reverse iterator over the full trace, starting at the end of the trace
 	 */
-	public IntTraceReverseIterator reverseIterator() {
+	public TraceReverseIterator reverseIterator() {
 		endOfLine();
-		return new IntTraceReverseIterator(this);
+		return new TraceReverseIterator(this);
 	}
 	
 //	public Set<Integer> computeStartingElements() {
@@ -437,7 +437,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 //	}
 	
 	public void addStartingElementsToSet(Set<Integer> set) {
-		IntTraceIterator iterator = iterator();
+		TraceIterator iterator = iterator();
 		boolean lastElementWasSequenceEnd = false;
 		if (iterator.hasNext()) {
 			lastElementWasSequenceEnd = iterator.isEndOfRepetition();
@@ -493,7 +493,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		builder.append(super.toString());
 		builder.append("full, size: ").append(originalSize).append(System.lineSeparator());
 		builder.append("full trace: ");
-		IntTraceIterator eTraceIterator = iterator();
+		TraceIterator eTraceIterator = iterator();
 		while (eTraceIterator.hasNext()) {
 			builder.append(eTraceIterator.next() + ", ");
 		}
