@@ -93,7 +93,7 @@ public class BufferedIntArrayQueue implements Serializable {
 				if (node.modified) {
 					store(node);
 				}
-				node.clear();
+				node.cleanup();
 			}
 			cachedNodes.clear();
 			cacheSequence.clear();
@@ -353,7 +353,7 @@ public class BufferedIntArrayQueue implements Serializable {
 		try {
 			if (cachedNodes.containsKey(storeIndex)) {
 				Node node = cachedNodes.get(storeIndex);
-				node.clear();
+				node.cleanup();
 				cachedNodes.remove(storeIndex);
 				cacheSequence.remove((Integer)storeIndex);
 			}
@@ -565,7 +565,7 @@ public class BufferedIntArrayQueue implements Serializable {
 		lock.lock();
 		try {
 			for (Node node : cachedNodes.values()) {
-				node.clear();
+				node.cleanup();
 			}
 			cachedNodes.clear();
 			cacheSequence.clear();
@@ -617,7 +617,7 @@ public class BufferedIntArrayQueue implements Serializable {
      * @param count
      * the number of elements to clear from the list
      */
-    public void clear(int count) {
+    public void clear(long count) {
     	if (count >= size) {
 			clear();
 			return;
@@ -662,9 +662,8 @@ public class BufferedIntArrayQueue implements Serializable {
     		
     		if (count > 0 && x != null) {
     			// remove elements from first node
-    			x.startIndex += count;
+    			x.clear((int) count);
     			firstNodeSize -= count;
-    			x.modified = true;
     		}
     		
     		size -= count;
@@ -720,8 +719,7 @@ public class BufferedIntArrayQueue implements Serializable {
 			// still elements left to clear?
 			if (count > 0) {
 				// it holds that count < arrayLength
-	    		lastNode.modified = true;
-	    		lastNode.endIndex -= count;
+	    		lastNode.clearLast((int) count);
 				if (!storedNodeExists()) {
 					// no node left on disk, so continue with the last node
 					firstNodeSize = lastNode.endIndex - lastNode.startIndex;
@@ -1093,8 +1091,18 @@ public class BufferedIntArrayQueue implements Serializable {
 			// ensure that new nodes are stored (if not empty)
         	this.modified = true;
 		}
+		
+		public void clearLast(int count) {
+			this.endIndex -= count;
+			this.modified = true;
+		}
 
-		public void clear() {
+		public void clear(int count) {
+			this.startIndex += count;
+			this.modified = true;
+		}
+
+		public void cleanup() {
 			this.items = null;
 		}
 

@@ -8,7 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import java.util.Set;
@@ -79,15 +81,15 @@ public abstract class CompressedTrace<T,K> extends RepetitionMarkerBase implemen
 		setRepetitionMarkers(otherCompressedTrace.getRepetitionMarkers());
 	}
 
-	public CompressedTrace(BufferedArrayQueue<T> compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers) {
+	public CompressedTrace(BufferedArrayQueue<T> compressedTrace, List<Queue<Integer>> repetitionMarkers) {
 		this.compressedTrace = compressedTrace;
 		if (repetitionMarkers != null) {
 			int size = compressedTrace.size();
 			int index = 0;
 			while (index < repetitionMarkers.size()) {
-				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromArray(repetitionMarkers.get(index++), 
+				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromIntegerQueue(repetitionMarkers.get(index++), 
 						compressedTrace.getOutputDir(), 
-						compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.getArrayLength(),
+						compressedTrace.getFilePrefix() + "-map-" + index, ExecutionTraceCollector.MAP_CHUNK_SIZE,
 						compressedTrace.isDeleteOnExit());
 				// calculate the trace's size on the current level
 				for (Iterator<Entry<Integer, int[]>> iterator = repMarkers.entrySetIterator(); iterator.hasNext();) {
@@ -99,6 +101,7 @@ public abstract class CompressedTrace<T,K> extends RepetitionMarkerBase implemen
 				addRepetitionMarkers(repMarkers, size);
 			}
 			this.originalSize = size;
+			repetitionMarkers.clear();
 		} else {
 			this.originalSize = compressedTrace.size();
 		}

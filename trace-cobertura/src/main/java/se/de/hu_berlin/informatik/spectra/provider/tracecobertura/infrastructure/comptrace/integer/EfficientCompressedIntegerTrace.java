@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerBase;
@@ -121,16 +119,17 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		locked = true;
 	}
 
-	public EfficientCompressedIntegerTrace(BufferedIntArrayQueue compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, boolean log) {
+	public EfficientCompressedIntegerTrace(BufferedIntArrayQueue compressedTrace, List<BufferedMap<int[]>> repetitionMarkers, boolean log) {
 		this.compressedTrace = compressedTrace;
 		if (repetitionMarkers != null) {
 			long size = compressedTrace.size();
 			int index = 0;
 			while (index < repetitionMarkers.size()) {
-				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromArray(repetitionMarkers.get(index++), 
-						compressedTrace.getOutputDir(), 
-						compressedTrace.getFilePrefix() + "-map-" + index, ExecutionTraceCollector.MAP_CHUNK_SIZE,
-						compressedTrace.isDeleteOnExit());
+				BufferedMap<int[]> repMarkers = repetitionMarkers.get(index++);
+//				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromIntegerQueue(repetitionMarkers.get(index++), 
+//						compressedTrace.getOutputDir(), 
+//						compressedTrace.getFilePrefix() + "-map-" + index, ExecutionTraceCollector.MAP_CHUNK_SIZE,
+//						compressedTrace.isDeleteOnExit());
 				// calculate the trace's size on the current level
 				for (Iterator<Entry<Integer, int[]>> iterator = repMarkers.entrySetIterator(); iterator.hasNext();) {
 					Entry<Integer, int[]> repMarker = iterator.next();
@@ -141,6 +140,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 				addRepetitionMarkers(repMarkers, size);
 			}
 			this.originalSize = size;
+			repetitionMarkers.clear();
 		} else {
 			this.originalSize = compressedTrace.size();
 		}

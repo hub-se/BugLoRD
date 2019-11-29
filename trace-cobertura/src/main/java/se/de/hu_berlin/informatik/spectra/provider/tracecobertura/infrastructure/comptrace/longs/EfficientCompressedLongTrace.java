@@ -5,11 +5,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerBase;
@@ -96,15 +97,15 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 		locked = true;
 	}
 
-	public EfficientCompressedLongTrace(BufferedLongArrayQueue compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers, boolean log) {
+	public EfficientCompressedLongTrace(BufferedLongArrayQueue compressedTrace, List<Queue<Integer>> repetitionMarkers, boolean log) {
 		this.compressedTrace = compressedTrace;
 		if (repetitionMarkers != null) {
 			int size = compressedTrace.size();
 			int index = 0;
 			while (index < repetitionMarkers.size()) {
-				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromArray(repetitionMarkers.get(index++), 
+				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromIntegerQueue(repetitionMarkers.get(index++), 
 						compressedTrace.getOutputDir(), 
-						compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.getArrayLength(),
+						compressedTrace.getFilePrefix() + "-map-" + index, ExecutionTraceCollector.MAP_CHUNK_SIZE,
 						compressedTrace.isDeleteOnExit());
 				// calculate the trace's size on the current level
 				for (Iterator<Entry<Integer, int[]>> iterator = repMarkers.entrySetIterator(); iterator.hasNext();) {
@@ -116,6 +117,7 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 				addRepetitionMarkers(repMarkers, size);
 			}
 			this.originalSize = size;
+			repetitionMarkers.clear();
 		} else {
 			this.originalSize = compressedTrace.size();
 		}

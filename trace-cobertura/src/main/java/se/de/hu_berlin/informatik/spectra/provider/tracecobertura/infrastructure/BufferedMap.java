@@ -357,7 +357,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		return node;
 	}
 	
-	protected Node<E> load(int storeIndex) {
+	private Node<E> load(int storeIndex) {
 		if (!existingNodes.contains(storeIndex)) {
 			return null;
 		}
@@ -369,21 +369,27 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			}
 			
 			String filename = getFileName(storeIndex);
-			Node<E> loadedNode;
-			try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
-				@SuppressWarnings("unchecked")
-				Map<Integer, E> map = (Map<Integer, E>)inputStream.readObject();
-				loadedNode = new Node<>(storeIndex, map);
-			} catch (ClassNotFoundException | IOException e) {
-				e.printStackTrace();
-				throw new IllegalStateException();
-			}
+			
+			Node<E> loadedNode = load(storeIndex, filename);
 
 			cacheNode(loadedNode);
 			return loadedNode;
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	protected Node<E> load(int storeIndex, String filename) throws IllegalStateException {
+		Node<E> loadedNode;
+		try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
+			@SuppressWarnings("unchecked")
+			Map<Integer, E> map = (Map<Integer, E>)inputStream.readObject();
+			loadedNode = new Node<>(storeIndex, map);
+		} catch (ClassNotFoundException | IOException e) {
+			e.printStackTrace();
+			throw new IllegalStateException();
+		}
+		return loadedNode;
 	}
 
 	protected void cacheNode(Node<E> node) {
@@ -406,7 +412,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		return load(storeIndex);
 	}
 
-	protected void store(Node<E> node) {
+	private void store(Node<E> node) {
 		if (node == null) {
 			return;
 		}
@@ -418,19 +424,23 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			}
 			if (node.modified) {
 				String filename = getFileName(node.storeIndex);
-				try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-					outputStream.writeObject(node.subMap);
-					node.modified = false;
-					// do not delete on exit, due to serialization! TODO
-					if (deleteOnExit) {
-						new File(filename).deleteOnExit();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				store(node, filename);
+				node.modified = false;
 			}
 		} finally {
 			lock.unlock();
+		}
+	}
+
+	protected void store(Node<E> node, String filename) {
+		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+			outputStream.writeObject(node.subMap);
+			// do not delete on exit, due to serialization! TODO
+			if (deleteOnExit) {
+				new File(filename).deleteOnExit();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

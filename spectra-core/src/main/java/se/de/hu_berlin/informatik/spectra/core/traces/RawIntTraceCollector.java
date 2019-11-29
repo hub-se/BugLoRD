@@ -3,12 +3,10 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.zip.ZipException;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
@@ -195,12 +193,12 @@ public class RawIntTraceCollector {
 //		return subTraceIdMapping;
 //	}
 	
-	private Map<Integer, EfficientCompressedIntegerTrace> getNewSubTraceMap(Path tempDir) {
-		return new HashMap<>();
-//		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
-//		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
-//				String.valueOf(UUID.randomUUID()), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
-	}
+//	private Map<Integer, EfficientCompressedIntegerTrace> getNewSubTraceMap(Path tempDir) {
+//		return new HashMap<>();
+////		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
+////		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
+////				String.valueOf(UUID.randomUUID()), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
+//	}
 	
 //	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
 //	private int getOrCreateIdForSubTrace(EfficientCompressedIntegerTrace compressedLongTraceBase) {

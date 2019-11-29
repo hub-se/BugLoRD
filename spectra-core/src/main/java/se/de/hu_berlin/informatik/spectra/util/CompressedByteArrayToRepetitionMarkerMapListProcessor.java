@@ -5,56 +5,50 @@ package se.de.hu_berlin.informatik.spectra.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
- * Decodes...
+ * Special processer to directly populate repetition marker maps from a compressed byte array. 
  * 
  * @author Simon Heiden
  */
-public class SpecialCompressedByteArrayToIntArrayQueueProcessor extends AbstractProcessor<String,Queue<int[]>> {
+public class CompressedByteArrayToRepetitionMarkerMapListProcessor extends AbstractProcessor<String,List<BufferedMap<int[]>>> {
 	
 	// same buffer that is used in zip utils
-	private static final int BUFER_SIZE = 4096;
-	private byte[] buffer = new byte[BUFER_SIZE];
+	private static final int BUFFER_SIZE = 4096;
+	private byte[] buffer = new byte[BUFFER_SIZE];
 		
-	public static final int DELIMITER = 1;
-	public static final int TOTAL_END_MARKER = 0;
+	public static final int DELIMITER = 0;
 	
 	private byte usedBits;
-	private int sequenceLength;
 	private int arrayPos;
 
 	private boolean containsZero;
 	private ZipFileWrapper zipFileWrapper;
-	private Queue<int[]> result;
+	private Supplier<BufferedMap<int[]>> supplier;
 	
-	public SpecialCompressedByteArrayToIntArrayQueueProcessor(ZipFileWrapper zipFileWrapper, 
-			int sequenceLength, boolean containsZero, Queue<int[]> result) {
+	public CompressedByteArrayToRepetitionMarkerMapListProcessor(ZipFileWrapper zipFileWrapper, 
+			boolean containsZero, Supplier<BufferedMap<int[]>> supplier) {
 		super();
 		this.containsZero = containsZero;
 		this.zipFileWrapper = zipFileWrapper;
-		this.result = result;
-		this.sequenceLength = sequenceLength;
-	}
-	
-	public SpecialCompressedByteArrayToIntArrayQueueProcessor(ZipFileWrapper zipFileWrapper, 
-			boolean containsZero, Queue<int[]> result) {
-		this(zipFileWrapper, 0, containsZero, result);
+		this.supplier = supplier;
 	}
 	
 	/* (non-Javadoc)
 	 * @see se.de.hu_berlin.informatik.utils.tm.ITransmitter#processItem(java.lang.Object)
 	 */
 	@Override
-	public Queue<int[]> processItem(String fileName) {
+	public List<BufferedMap<int[]>> processItem(String fileName) {
 		
 		InputStream inputStream = null;
 		try (ZipFile zipFile = new ZipFile(zipFileWrapper.getzipFilePath().toFile())) {
@@ -68,12 +62,19 @@ public class SpecialCompressedByteArrayToIntArrayQueueProcessor extends Abstract
 
 			byte currentByte = 0;
 			int currentInt = 0;
+			
+			int[] currentMarker = new int[2];
+			int currentIndex = 0;
+			
 			byte remainingBits = 0;
 			byte bitsLeft = 0;
-			int[] currentSequence = null;
+			BufferedMap<int[]> currentMap = null;
+			List<BufferedMap<int[]>> result = new ArrayList<>();
 
 			int intCounter = 0;
 
+			boolean lastElementWasDelimiter = false;
+			
 			//get all the encoded integers
 			while (arrayPos < len) {
 				//for each number, the number of bits to get is equal
@@ -86,10 +87,10 @@ public class SpecialCompressedByteArrayToIntArrayQueueProcessor extends Abstract
 
 				//if intCounter is zero, then we are at the start of a new sequence
 				if (intCounter == 0) {
-					if (currentSequence != null) {
-						result.add(currentSequence);
+					if (currentMap != null) {
+						result.add(currentMap);
 					}
-					currentSequence = null;
+					currentMap = null;
 //					currentSequence = new ArrayList<>();
 				}
 
@@ -114,37 +115,33 @@ public class SpecialCompressedByteArrayToIntArrayQueueProcessor extends Abstract
 					}
 				}
 
-				if (currentInt == TOTAL_END_MARKER) {
+				if (currentInt == DELIMITER && lastElementWasDelimiter) {
 					atTotalEnd = true;
 					break;
 				} else {
-					if (sequenceLength == 0) {
-						if (currentInt == DELIMITER) {
-							//reset the counter (start of new sequence)
-							intCounter = 0;
-						} else {
-							if (currentSequence == null) {
-								// first stored integer is always the size of the map to be constructed later
-								currentSequence = new int[3*(containsZero ? currentInt-2 : currentInt-1)];
-							} else {
-								//add the next integer to the current sequence
-								currentSequence[intCounter-1] = (containsZero ? currentInt-2 : currentInt-1);
-							}
-							++intCounter;
-						}
+					if (currentInt == DELIMITER) {
+						lastElementWasDelimiter = true;
+						//reset the counter (start of new sequence)
+						intCounter = 0;
 					} else {
-						if (currentSequence == null) {
-							// first stored integer is always the size of the map to be constructed later
-							currentSequence = new int[3*(containsZero ? currentInt-1 : currentInt)];
+						lastElementWasDelimiter = false;
+						if (currentMap == null) {
+							currentMap = supplier.get();
+						}
+						
+						// add/process the next integer
+						// assumes that the sequence of storing key/value pairs is:
+						// [repetition length, repetition count], start index
+						if (currentIndex < 2) {
+							currentMarker[currentIndex++] = (containsZero ? currentInt-1 : currentInt);
 						} else {
-							//add the next integer to the current sequence
-							currentSequence[intCounter-1] = (containsZero ? currentInt-1 : currentInt);
+//							System.out.println((containsZero ? currentInt-1 : currentInt) + " -> [" + currentMarker[0] + ", " + currentMarker[1] + "]");
+							currentMap.put(containsZero ? currentInt-1 : currentInt, currentMarker);
+							currentMarker = new int[2];
+							currentIndex = 0;
 						}
+
 						++intCounter;
-						//if the sequence ends here, reset the counter
-						if (intCounter >= sequenceLength) {
-							intCounter = 0;
-						}
 					}
 				}
 				//reset the current integer to all zeroes
@@ -181,19 +178,14 @@ public class SpecialCompressedByteArrayToIntArrayQueueProcessor extends Abstract
 	}
 
 	private void readHeader(int len) {
-		// header should be 5 bytes:
-		// | number of bits used for one element (1 byte) | sequence length (4 bytes) - 0 for delimiter mode |
-		if (len < 5) {
+		// header should be 1 byte:
+		// | number of bits used for one element (1 byte) |
+		if (len < 1) {
 			Log.abort(this, "Could not read header from input stream.");
 		}
 		usedBits = buffer[0];
 		
-		byte[] smallArray = { buffer[1], buffer[2], buffer[3], buffer[4] };
-		ByteBuffer b = ByteBuffer.wrap(smallArray);
-		//b.order(ByteOrder.BIG_ENDIAN); // optional, the initial order of a byte buffer is always BIG_ENDIAN.
-		sequenceLength = b.getInt();
-		
-		arrayPos = 5;
+		arrayPos = 1;
 	}
 	
 	// returns the length of available bytes

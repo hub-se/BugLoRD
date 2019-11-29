@@ -2,6 +2,8 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
@@ -27,7 +29,7 @@ public class CompressedIntArrayTrace extends CompressedTrace<int[],IntArrayWrapp
 		super(trace, otherCompressedTrace);
 	}
 
-	public CompressedIntArrayTrace(BufferedArrayQueue<int[]> compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers) {
+	public CompressedIntArrayTrace(BufferedArrayQueue<int[]> compressedTrace, List<Queue<Integer>> repetitionMarkers) {
 		super(compressedTrace, repetitionMarkers);
 	}
 

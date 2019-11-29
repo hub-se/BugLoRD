@@ -45,98 +45,66 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
     	writeBuffer.clear();
     	return writeBuffer;
     }
-
+	
 	@Override
-	protected void store(Node<int[]> node) {
-		// we know that the values stored here are always arrays of size 2:
-		// position -> [ length, repetitionCount ]
-		
-		if (node == null) {
-			return;
-		}
-		if (node.isEmpty()) {
-			existingNodes.remove(node.getStoreIndex());
-			return;
-		}
-		if (node.isModified()) {
-//			System.out.println("rmem: " + Runtime.getRuntime().freeMemory());
-			String filename = getFileName(node.getStoreIndex());
-			
-			try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {
-				try (FileChannel file = raFile.getChannel()) {
+	protected void store(Node<int[]> node, String filename) {
+		try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {
+			try (FileChannel file = raFile.getChannel()) {
 
-					ByteBuffer directBuf = getFreshBuffer();
-					for (Entry<Integer, int[]> entry : node.getSubMap().entrySet()) {
-						directBuf.putInt(entry.getKey());
-						directBuf.putInt(entry.getValue()[0]);
-						directBuf.putInt(entry.getValue()[1]);
-					}
-					directBuf.flip();
-					file.write(directBuf);
+				ByteBuffer directBuf = getFreshBuffer();
+				for (Entry<Integer, int[]> entry : node.getSubMap().entrySet()) {
+					directBuf.putInt(entry.getKey());
+					directBuf.putInt(entry.getValue()[0]);
+					directBuf.putInt(entry.getValue()[1]);
+				}
+				directBuf.flip();
+				file.write(directBuf);
 
-					// file can not be removed, due to serialization! TODO
-					if (deleteOnExit) {
-						new File(filename).deleteOnExit();
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
+				// file can not be removed, due to serialization! TODO
+				if (deleteOnExit) {
+					new File(filename).deleteOnExit();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
-	protected Node<int[]> load(int storeIndex) {
-		if (!existingNodes.contains(storeIndex)) {
-			return null;
-		}
-		lock.lock();
-		try {
-			if (cachedNodes.containsKey(storeIndex)) {
-				// already cached
-				return cachedNodes.get(storeIndex);
-			}
-			
-			String filename = getFileName(storeIndex);
-			
-			Node<int[]> loadedNode;
-			try (FileInputStream in = new FileInputStream(filename)) {
-				try (FileChannel file = in.getChannel()) {
-					long fileSize = file.size();
-					if (fileSize > Integer.MAX_VALUE) {
-						throw new UnsupportedOperationException("File size too big!");
-					}
-					ByteBuffer directBuf = getFreshBuffer();
-					file.read(directBuf);
-					directBuf.flip();
-					
-					Map<Integer, int[]> map = new HashMap<>();
-					
-					
-					int count = (int)fileSize/12; // size/4/3
-					// fill sub map
-					for (int i = 0; i < count; ++i) {
-						map.put(directBuf.getInt(), new int[] { directBuf.getInt(), directBuf.getInt()});
-					}
-					
-					loadedNode = new Node<>(storeIndex, map);
-
-					// file can not be removed, due to serialization! TODO
-					if (deleteOnExit) {
-						new File(filename).deleteOnExit();
-					}
+	protected Node<int[]> load(int storeIndex, String filename) throws IllegalStateException {
+		Node<int[]> loadedNode;
+		try (FileInputStream in = new FileInputStream(filename)) {
+			try (FileChannel file = in.getChannel()) {
+				long fileSize = file.size();
+				if (fileSize > Integer.MAX_VALUE) {
+					throw new UnsupportedOperationException("File size too big!");
 				}
-			} catch (IOException | IndexOutOfBoundsException e) {
-				e.printStackTrace();
-				throw new IllegalStateException();
-			}
+				ByteBuffer directBuf = getFreshBuffer();
+				file.read(directBuf);
+				directBuf.flip();
+				
+				Map<Integer, int[]> map = new HashMap<>();
+				
+				
+				int count = (int)fileSize/12; // size/4/3
+				// fill sub map
+				for (int i = 0; i < count; ++i) {
+					map.put(directBuf.getInt(), new int[] { directBuf.getInt(), directBuf.getInt()});
+				}
+				
+				loadedNode = new Node<>(storeIndex, map);
 
-			cacheNode(loadedNode);
-			return loadedNode;
-		} finally {
-			lock.unlock();
+				// file can not be removed, due to serialization! TODO
+				if (deleteOnExit) {
+					new File(filename).deleteOnExit();
+				}
+			}
+		} catch (IOException | IndexOutOfBoundsException e) {
+			e.printStackTrace();
+			throw new IllegalStateException();
 		}
+		return loadedNode;
 	}
 }

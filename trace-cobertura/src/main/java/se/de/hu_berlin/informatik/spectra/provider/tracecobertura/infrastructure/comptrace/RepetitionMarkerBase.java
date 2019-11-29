@@ -2,6 +2,8 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Queue;
+
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 
 /**
@@ -25,10 +27,13 @@ public abstract class RepetitionMarkerBase implements Serializable {
 		
 	}
 	
-	protected static BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePreix, int subMapSize, boolean deleteOnExit) {
-		BufferedMap<int[]> map = new RepetitionMarkerBufferedMap(outputDir, filePreix, subMapSize, deleteOnExit);
-		for (int i = 0; i < repetitionMarkers.length; i += 3) {
-			map.put(repetitionMarkers[i], new int[] {repetitionMarkers[i+1], repetitionMarkers[i+2]});
+	protected static BufferedMap<int[]> constructFromIntegerQueue(Queue<Integer> repetitionMarkers, File outputDir, String filePrefix, int subMapSize, boolean deleteOnExit) {
+		BufferedMap<int[]> map = new RepetitionMarkerBufferedMap(outputDir, filePrefix, subMapSize, deleteOnExit);
+		while (repetitionMarkers.size() >= 3) {
+			map.put(repetitionMarkers.remove(), new int[] {repetitionMarkers.remove(), repetitionMarkers.remove()});
+		}
+		if (!repetitionMarkers.isEmpty()) {
+			throw new IllegalStateException("Queue with repetition markers is in an incorrect state!");
 		}
 		return map;
 	}
