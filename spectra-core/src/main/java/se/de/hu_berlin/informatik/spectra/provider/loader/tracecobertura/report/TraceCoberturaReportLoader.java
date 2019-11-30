@@ -547,7 +547,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		int lastMethod = -1;
 		int lastClass = -1;
 		int lastNodeType = CoberturaStatementEncoding.NORMAL_ID;
-		int counter = 0;
+		long counter = 0;
 		while (traceIterator.hasNext()) {
 			++counter;
 			if (counter % 100000 == 0)

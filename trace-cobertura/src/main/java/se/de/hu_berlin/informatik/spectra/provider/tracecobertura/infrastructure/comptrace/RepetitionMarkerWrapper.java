@@ -20,18 +20,18 @@ public class RepetitionMarkerWrapper implements Serializable {
 	private BufferedMap<int[]> repetitionMarkers;
 	private BufferedMap<int[]> backwardsRepetitionMarkers;
 	
-	private int traceSize;
+	private long traceSize;
 	
 	protected RepetitionMarkerWrapper() {
 		
 	}
 	
 	public RepetitionMarkerWrapper(BufferedMap<int[]> traceRepetitions, long originalTraceSize) {
-		if (originalTraceSize > Integer.MAX_VALUE) {
-			throw new IllegalStateException("Trace size too large: " + originalTraceSize);
-		}
+//		if (originalTraceSize > Integer.MAX_VALUE) {
+//			throw new IllegalStateException("Trace size too large: " + originalTraceSize);
+//		}
 		this.repetitionMarkers = traceRepetitions;
-		this.traceSize = (int) originalTraceSize;
+		this.traceSize = originalTraceSize;
 	}
 	
 	protected static BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePreix, int subMapSize, boolean deleteOnExit) {
@@ -46,7 +46,7 @@ public class RepetitionMarkerWrapper implements Serializable {
 		this.traceSize = size;
 	}
 	
-	public int traceSize() {
+	public long traceSize() {
 		return traceSize;
 	}
 	
