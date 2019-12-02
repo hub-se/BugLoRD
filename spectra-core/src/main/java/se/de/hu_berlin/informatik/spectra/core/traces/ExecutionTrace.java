@@ -9,6 +9,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceReverseIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
 
 /**
@@ -85,6 +86,46 @@ public class ExecutionTrace extends EfficientCompressedIntegerTrace implements S
 					currentSequence = null;
 					while (iterator.hasNext()) {
 						currentSequence = sequenceIndexer.getFullSequenceIterator(iterator.next());
+						if (currentSequence.hasNext()) {
+							// found a "good" sequence
+							break;
+						}
+						currentSequence = null;
+					}
+					
+					// found no sequence?
+                    return currentSequence != null;
+				}
+				
+				return true;
+			}
+
+			@Override
+			public Integer next() {
+				return currentSequence.next();
+			}};
+	}
+	
+	/**
+	 * iterates over all node IDs in the execution trace, starting from the end of the trace.
+	 * @param sequenceIndexer
+	 * indexer that is used to connect the element IDs in the execution trace to the respective sub traces
+	 * that contain node IDs
+	 * @return
+	 * iterator
+	 */
+	public Iterator<Integer> mappedReverseIterator(SequenceIndexerCompressed sequenceIndexer) {
+		return new Iterator<Integer>(){
+			
+			final TraceReverseIterator iterator = ExecutionTrace.this.reverseIterator();
+			Iterator<Integer> currentSequence;
+
+			@Override
+			public boolean hasNext() {
+				if (currentSequence == null || !currentSequence.hasNext()) {
+					currentSequence = null;
+					while (iterator.hasNext()) {
+						currentSequence = sequenceIndexer.getFullSequenceReverseIterator(iterator.next());
 						if (currentSequence.hasNext()) {
 							// found a "good" sequence
 							break;

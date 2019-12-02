@@ -15,6 +15,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceReverseIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 
 public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
@@ -305,7 +306,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	
 
 	@Override
-	public Iterator<Integer> getFullSequenceIterator(final int index) {
+	public Iterator<Integer> getFullSequenceIterator(final int subTraceSequenceIndex) {
 		// will iterate over (potentially) multiple sub traces, indexed
 		// by the sequence of sub trace ids in the specified sequence;
 		// will return spectra node ids
@@ -317,14 +318,14 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 				if (subTraceIterator != null && subTraceIterator.hasNext()) {
 					return true;
 				}
-				if (index >= subTraceIdSequences.length) {
-					throw new IllegalStateException("index out of bounds: " + index);
+				if (subTraceSequenceIndex >= subTraceIdSequences.length) {
+					throw new IllegalStateException("index out of bounds: " + subTraceSequenceIndex);
 				}
-				if (outerPos < subTraceIdSequences[index].length) {
+				if (outerPos < subTraceIdSequences[subTraceSequenceIndex].length) {
 					if (nodeIdSequences == null) {
 						throw new IllegalStateException("meh");
 					}
-					subTraceIterator = nodeIdSequences[subTraceIdSequences[index][outerPos++]].iterator();
+					subTraceIterator = nodeIdSequences[subTraceIdSequences[subTraceSequenceIndex][outerPos++]].iterator();
 //					System.out.println(nodeIdSequences[subTraceIdSequences[index][outerPos-1]].toString());
 					return hasNext();
 				}
@@ -338,23 +339,78 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	}
 	
 	@Override
-	public TraceIterator getNodeIdSequenceIterator(final int index) {
-		// will iterate over the subtrace with the specified index
-		return nodeIdSequences[index].iterator();
+	public Iterator<Integer> getFullSequenceReverseIterator(final int subTraceSequenceIndex) {
+		// will iterate over (potentially) multiple sub traces, indexed
+		// by the sequence of sub trace ids in the specified sequence;
+		// will return spectra node ids
+		return new Iterator<Integer>() {
+			private int outerPos = subTraceIdSequences[subTraceSequenceIndex].length - 1;
+			TraceReverseIterator subTraceIterator;
+
+			public boolean hasNext() {
+				if (subTraceIterator != null && subTraceIterator.hasNext()) {
+					return true;
+				}
+				if (subTraceSequenceIndex >= subTraceIdSequences.length) {
+					throw new IllegalStateException("index out of bounds: " + subTraceSequenceIndex);
+				}
+				if (outerPos >= 0) {
+					if (nodeIdSequences == null) {
+						throw new IllegalStateException("meh");
+					}
+					subTraceIterator = nodeIdSequences[subTraceIdSequences[subTraceSequenceIndex][outerPos--]].reverseIterator();
+//					System.out.println(nodeIdSequences[subTraceIdSequences[index][outerPos-1]].toString());
+					return hasNext();
+				}
+				return false;
+			}
+
+			public Integer next() {
+				return subTraceIterator.next();
+			}
+		};
 	}
 	
 	@Override
-	public Iterator<Integer> getSubTraceIDSequenceIterator(final int index) {
+	public TraceIterator getNodeIdSequenceIterator(final int subTraceIndex) {
+		// will iterate over the subtrace with the specified index
+		return nodeIdSequences[subTraceIndex].iterator();
+	}
+	
+	@Override
+	public TraceReverseIterator getNodeIdSequenceReverseIterator(final int subTraceIndex) {
+		// will iterate over the subtrace with the specified index
+		return nodeIdSequences[subTraceIndex].reverseIterator();
+	}
+	
+	@Override
+	public Iterator<Integer> getSubTraceIDSequenceIterator(final int subTraceSequenceIndex) {
 		// will iterate over the subtrace id sequence with the specified index
 		return new Iterator<Integer>() {
             private int pos = 0;
 
             public boolean hasNext() {
-               return pos < subTraceIdSequences[index].length;
+               return pos < subTraceIdSequences[subTraceSequenceIndex].length;
             }
 
             public Integer next() {
-               return subTraceIdSequences[index][pos++];
+               return subTraceIdSequences[subTraceSequenceIndex][pos++];
+            }
+        };
+	}
+	
+	@Override
+	public Iterator<Integer> getSubTraceIDSequenceReverseIterator(final int subTraceSequenceIndex) {
+		// will iterate over the subtrace id sequence with the specified index
+		return new Iterator<Integer>() {
+            private int pos = subTraceIdSequences[subTraceSequenceIndex].length - 1;
+
+            public boolean hasNext() {
+               return pos >= 0;
+            }
+
+            public Integer next() {
+               return subTraceIdSequences[subTraceSequenceIndex][pos--];
             }
         };
 	}

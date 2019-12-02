@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -191,13 +192,29 @@ public class SpectraFileUtilsTest extends TestSettings {
         }
         assertFalse(trace.getExecutionTraces().isEmpty());
         
-        spectra.setIndexer(new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences));
+        SimpleIntIndexerCompressed indexer = new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences);
+		spectra.setIndexer(indexer);
         
-        int[] trace1 = executionTraces.get(0).reconstructFullMappedTrace(spectra.getIndexer());
+        ExecutionTrace executionTrace = executionTraces.get(0);
+		int[] trace1 = executionTrace.reconstructFullMappedTrace(spectra.getIndexer());
         
         Log.out(this, Arrays.toString(trace1));
         assertEquals(18, trace1.length);
-
+        
+        Iterator<Integer> iterator = executionTrace.mappedIterator(indexer);
+        int count = 0;
+        while (iterator.hasNext()) {
+        	assertEquals(trace1[count++], iterator.next().intValue());
+        }
+        assertEquals(trace1.length, count);
+        
+        Iterator<Integer> iterator2 = executionTrace.mappedReverseIterator(indexer);
+        count = 18;
+        while (iterator2.hasNext()) {
+        	assertEquals(trace1[--count], iterator2.next().intValue());
+        }
+        assertEquals(0, count);
+        
         assertArrayEquals(s(1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9), trace1);
         
 //        try {
