@@ -553,7 +553,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			if (counter % 100000 == 0)
 				System.out.print('.');
 			if (counter % 10000000 == 0)
-				System.out.println(counter);
+				System.out.println(String.format("%,d", counter));
 			
 			int statement = traceIterator.next();
 			

@@ -27,10 +27,10 @@ public class TraceReverseIterator implements ReplaceableCloneableIterator {
 		} else {
 			levelStates = new LevelState[] { new LevelState(0) };
 		}
-		if (trace.getCompressedTrace().size() - 1 > Integer.MAX_VALUE) {
-			throw new IllegalStateException("Size of trace too large: " + trace.getCompressedTrace().size());
-		}
-		levelStates[0].indexState[0] = (int)(trace.getCompressedTrace().size() - 1);
+//		if (trace.getCompressedTrace().size() - 1 > Integer.MAX_VALUE) {
+//			throw new IllegalStateException("Size of trace too large: " + trace.getCompressedTrace().size());
+//		}
+		levelStates[0].indexState[0] = trace.getCompressedTrace().size() - 1;
 		resetCurrentLevel();
 	}
 	

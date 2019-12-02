@@ -17,7 +17,6 @@ import java.util.Set;
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.CmdOptions;
-import se.de.hu_berlin.informatik.gen.spectra.main.JaCoCoSpectraGenerator;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.testlister.mining.TestMinerProcessor;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -74,7 +73,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 				try {
 					cpURLs.add(new File(cpElement).getAbsoluteFile().toURI().toURL());
 				} catch (MalformedURLException e) {
-					Log.err(RunAllTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
+					Log.err(this, e, "Could not parse URL from '%s'.", cpElement);
 				}
 //				break;
 			}
@@ -130,9 +129,11 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 		// collect the tests
 		if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) { //has option "tc"
 			testFile = options.isFile(CmdOptions.TEST_CLASS_LIST, true);
+			Log.out(this, "Mining tests from test class file: %s", testFile);
 			
 			Path testOutputFile = Paths.get(outputDir, "minedTests.txt");
-			linker.append(
+			
+			linker.append(1,
                     new FileLineProcessor<>(new StringProcessor<String>() {
                         private final Set<String> seenClasses = new HashSet<>();
                         private String clazz = null;
@@ -166,8 +167,9 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 					new StringsToFileWriter<TestWrapper>(testOutputFile , true));
 		} else { //has option "t"
 			testFile = options.isFile(CmdOptions.TEST_LIST, true);
+			Log.out(this, "Mining tests from test file: %s", testFile);
 			
-			linker.append(
+			linker.append(1,
                     new FileLineProcessor<>(testClassLoader, new StringProcessor<TestWrapper>() {
                         private TestWrapper testWrapper;
 
@@ -179,7 +181,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
                             //format: test.class::testName
                             final String[] test = testNameAndClass.split("::");
                             if (test.length != 2) {
-                                Log.err(JaCoCoSpectraGenerator.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
+                                Log.err(RunTestsAndGenSpectraProcessor.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
                                 return false;
                             } else {
                                 testWrapper = new TestWrapper(test[0], test[1], testClassLoader);
@@ -200,10 +202,10 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 		ClassLoader testAndInstrumentClassLoader = testClassLoader;
 		
 		// run tests and collect reports based on used coverage tool
-		linker.append(
+		linker.append(1,
 				factory.getTestRunnerModule(options, testAndInstrumentClassLoader, changedTestClassPath, statisticsContainer)
 //				.asPipe(instrumentedClassesLoader)
-				.asPipe().enableTracking().allowOnlyForcedTracks(),
+				.asPipe(1).enableTracking().allowOnlyForcedTracks(),
 				factory.getReportToSpectraProcessor(options, statisticsContainer),
 				// save the resulting spectra + reduced/filtered spectra
 				factory.getSpectraProcessor(options))
@@ -221,7 +223,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 		try {
 			FileUtils.writeStrings2File(Paths.get(outputDir, testFile.getFileName() + "_stats").toFile(), statsWithoutStringData, stats);
 		} catch (IOException e) {
-			Log.err(JaCoCoSpectraGenerator.class, "Can not write statistics to '%s'.", Paths.get(outputDir, testFile.getFileName() + "_stats"));
+			Log.err(this, "Can not write statistics to '%s'.", Paths.get(outputDir, testFile.getFileName() + "_stats"));
 		}
 	}
 	
@@ -233,10 +235,10 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 				if (path.toFile().exists()) {
 					cpURLs.add(path.toFile().toURI().toURL());
 				} else {
-					Log.err(RunAllTestsAndGenSpectra.class, "Path '%s' does not exist and will not be added to the class loader.", path);
+					Log.err(RunTestsAndGenSpectraProcessor.class, "Path '%s' does not exist and will not be added to the class loader.", path);
 				}
 			} catch (MalformedURLException e) {
-				Log.err(RunAllTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", stringPath);
+				Log.err(RunTestsAndGenSpectraProcessor.class, e, "Could not parse URL from '%s'.", stringPath);
 			}
 		}
 		return path;

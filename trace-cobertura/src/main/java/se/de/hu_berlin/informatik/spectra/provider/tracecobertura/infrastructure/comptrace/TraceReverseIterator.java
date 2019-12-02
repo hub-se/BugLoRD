@@ -17,11 +17,11 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 			for (int i = 0; i < trace.levelCount() + 1; ++i) {
 				levelStates[i] = new LevelState(i);
 			}
-			for (int i = 2; i < levelStates.length; i++) {
-				levelStates[i].indexState[0] = trace.getRepetitionMarkers()[i-2].traceSize() - 1;
+			for (int i = 1; i < levelStates.length; i++) {
+				levelStates[i].indexState[0] = trace.getRepetitionMarkers()[i-1].traceSize() - 1;
 //				System.out.println(i + ": " + levelStates[i].indexState[0]);
 			}
-			levelStates[1].indexState[0] = trace.getCompressedTrace().size() - 1;
+//			levelStates[1].indexState[0] = trace.getCompressedTrace().size() - 1;
 //			System.out.println(1 + ": " + levelStates[1].indexState[0]);
 		} else {
 			levelStates = new LevelState[] { new LevelState(0) };

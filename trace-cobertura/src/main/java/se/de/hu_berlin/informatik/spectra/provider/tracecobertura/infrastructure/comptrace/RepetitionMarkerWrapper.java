@@ -42,7 +42,7 @@ public class RepetitionMarkerWrapper implements Serializable {
 		return map;
 	}
 	
-	protected void setTraceSize(int size) {
+	protected void setTraceSize(long size) {
 		this.traceSize = size;
 	}
 	
