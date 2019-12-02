@@ -326,7 +326,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		//~139h
 		.setTimeout(500000L)
 		.setTestRepeatCount(1)
-		.setMaxErrors(2);
+		.setMaxErrors(0);
 
 		builder
 		.run();
