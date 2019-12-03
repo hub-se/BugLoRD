@@ -84,6 +84,33 @@ public interface ISpectra<T, K extends ITrace<T>> {
      * @return true if successful, false otherwise
      */
     public boolean removeNode(T identifier);
+    
+    /**
+     * Removes (deletes) a node from the spectra.
+     *
+     * @param index
+     *            index
+     * @return true if successful, false otherwise
+     */
+    public boolean removeNode(int index);
+    
+    /**
+     * Removes (deletes) the given nodes from the spectra.
+     *
+     * @param identifiers
+     *            identifiers
+     * @return true if successful, false otherwise
+     */
+    public boolean removeNodes(Collection<T> identifiers);
+    
+    /**
+     * Removes (deletes) the given nodes from the spectra.
+     *
+     * @param indices
+     *            indices
+     * @return true if successful, false otherwise
+     */
+    public boolean removeNodesByIndex(Collection<Integer> indices);
 
     /**
      * Checks whether the node with the given identifier is present in the current spectra.

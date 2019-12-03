@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -440,6 +441,39 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 				while (fullIterator.hasNext()) {
 					int next = fullIterator.next();
 					if (next != nodeId) {
+						newSequence.add(next);
+					}
+				}
+				nodeIdSequences[i] = newSequence;
+			}
+		}
+	}
+
+	@Override
+	public void removeFromSequences(Collection<Integer> nodeIndicesToRemove) {
+		// iterate over all sub traces
+		// TODO: sub trace with id 0 is the empty sub trace. Should not exist, regularly
+		for (int i = 1; i < nodeIdSequences.length; i++) {
+			EfficientCompressedIntegerTrace sequence = nodeIdSequences[i];
+			ReplaceableCloneableIterator iterator = sequence.baseIterator();
+			boolean found = false;
+			while (iterator.hasNext()) {
+				if (nodeIndicesToRemove.contains(iterator.next())) {
+					// sequence contains at least one of the nodes
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				// sequence contains the node, so generate a new sequence and replace the old
+				TraceIterator fullIterator = sequence.iterator();
+				BufferedIntArrayQueue compressedTrace = sequence.getCompressedTrace();
+				EfficientCompressedIntegerTrace newSequence = new EfficientCompressedIntegerTrace(
+						compressedTrace.getOutputDir(), "_" + compressedTrace.getFilePrefix(), 
+						compressedTrace.getNodeSize(), compressedTrace.getNodeSize(), true, false, true);
+				while (fullIterator.hasNext()) {
+					int next = fullIterator.next();
+					if (!nodeIndicesToRemove.contains(next)) {
 						newSequence.add(next);
 					}
 				}

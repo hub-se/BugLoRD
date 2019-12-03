@@ -212,47 +212,47 @@ public class SpectraUtils {
     
     
 	private static <T> void removeNodesInvolvedInATrace(ISpectra<T,?> spectra, Collection<? extends ITrace<T>> traces) {
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
-		for (INode<T> node : nodes) {
+		Collection<Integer> nodesToRemove = new HashSet<>();
+		for (INode<T> node : spectra.getNodes()) {
 			boolean isInvolvedInTrace = isNodeInvolvedInATrace(traces, node);
 			if (isInvolvedInTrace) {
-				spectra.removeNode(node.getIdentifier());
+				nodesToRemove.add(node.getIndex());
 			}
 		}
+		spectra.removeNodesByIndex(nodesToRemove);
 	}
 	
 	private static <T> void removeNodesInvolvedInAllTraces(ISpectra<T,?> spectra, Collection<? extends ITrace<T>> traces) {
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
-		for (INode<T> node : nodes) {
+		Collection<Integer> nodesToRemove = new HashSet<>();
+		for (INode<T> node : spectra.getNodes()) {
 			boolean isNotInvolvedInTrace = isNodeNotInvolvedInATrace(traces, node);
 			if (!isNotInvolvedInTrace) {
-				spectra.removeNode(node.getIdentifier());
+				nodesToRemove.add(node.getIndex());
 			}
 		}
+		spectra.removeNodesByIndex(nodesToRemove);
 	}
     
     private static <T> void removeNodesNotInvolvedInATrace(ISpectra<T,?> spectra, Collection<? extends ITrace<T>> traces) {
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
-		for (INode<T> node : nodes) {
+		Collection<Integer> nodesToRemove = new HashSet<>();
+		for (INode<T> node : spectra.getNodes()) {
 			boolean isNotInvolvedInTrace = isNodeNotInvolvedInATrace(traces, node);
 			if (isNotInvolvedInTrace) {
-				spectra.removeNode(node.getIdentifier());
+				nodesToRemove.add(node.getIndex());
 			}
 		}
+		spectra.removeNodesByIndex(nodesToRemove);
 	}
     
     private static <T> void removeNodesNotInvolvedInAllTraces(ISpectra<T,?> spectra, Collection<? extends ITrace<T>> traces) {
-		//get a copy of the current set of nodes, since we will be removing nodes
-		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
-		for (INode<T> node : nodes) {
+		Collection<Integer> nodesToRemove = new HashSet<>();
+		for (INode<T> node : spectra.getNodes()) {
 			boolean isInvolvedInTrace = isNodeInvolvedInATrace(traces, node);
 			if (!isInvolvedInTrace) {
-				spectra.removeNode(node.getIdentifier());
+				nodesToRemove.add(node.getIndex());
 			}
 		}
+		spectra.removeNodesByIndex(nodesToRemove);
 	}
     
 

@@ -490,7 +490,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				}
 				
 				// add the current statement to the current sub trace
-				currentSubTrace.add(statement);
+				currentSubTrace.addNoAutoBoxing(statement);
 
 				
 				lastNodeType = lineNumber[1];
@@ -532,7 +532,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		
 		Integer lastExecutedStatement = null;
 		if (lastNodeType != CoberturaStatementEncoding.NORMAL_ID) {
-			lastExecutedStatement = currentSubTrace.peekLast();
+			lastExecutedStatement = currentSubTrace.peekLastNoCheck();
 		}
 		
 		if (id == null) {
@@ -544,7 +544,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 			idToSubtraceIdMap.put(subTraceId, id);
 			EfficientCompressedIntegerTrace subTrace = getNewSubTrace(trace, currentSubTrace.size());
 			while (!currentSubTrace.isEmpty()) {
-				subTrace.add(currentSubTrace.remove());
+				subTrace.add(currentSubTrace.removeNoAutoBoxing());
 			}
 			// add sub trace to the list of existing sub traces (together with the id)
 			existingSubTraces.put(id, subTrace);

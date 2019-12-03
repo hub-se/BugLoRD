@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -166,6 +167,77 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     private void removeNodeFromSequences(INode<T> node) {
 		if (indexer != null) {
 			indexer.removeFromSequences(node.getIndex());
+		}
+	}
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean removeNode(final int index) {
+    	INode<T> node = nodesByIndex.remove(index);
+    	if (node != null) {
+    		//remove node from identifier map
+    		nodesByIdentifier.remove(node.getIdentifier());
+    		//remove node from traces
+    		for (K trace : traces.values()) {
+    			trace.setInvolvement(node, false);
+    		}
+    		removeNodeFromSequences(node);
+    	}
+    	invalidateCachedValues();
+    	return true;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean removeNodes(final Collection<T> identifiers) {
+    	Collection<Integer> nodesToRemove = new HashSet<>();
+    	for (T identifier : identifiers) {
+    		INode<T> node = nodesByIdentifier.remove(identifier);
+    		if (node != null) {
+    			//remove node from index map
+    			nodesByIndex.remove(node.getIndex());
+    			//remove node from traces
+    			for (K trace : traces.values()) {
+    				trace.setInvolvement(node, false);
+    			}
+    		}
+    		nodesToRemove.add(node.getIndex());
+    	}
+    	removeNodesFromSequences(nodesToRemove);
+    	invalidateCachedValues();
+    	return true;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean removeNodesByIndex(final Collection<Integer> indices) {
+    	Collection<Integer> nodesToRemove = new HashSet<>();
+    	for (Integer index : indices) {
+    		INode<T> node = nodesByIndex.remove(index);
+    		if (node != null) {
+    			//remove node from index map
+    			nodesByIdentifier.remove(node.getIdentifier());
+    			//remove node from traces
+    			for (K trace : traces.values()) {
+    				trace.setInvolvement(node, false);
+    			}
+    		}
+    		nodesToRemove.add(node.getIndex());
+    	}
+    	removeNodesFromSequences(nodesToRemove);
+    	invalidateCachedValues();
+    	return true;
+    }
+    
+    private void removeNodesFromSequences(Collection<Integer> nodesToRemove) {
+		if (indexer != null) {
+			indexer.removeFromSequences(nodesToRemove);
 		}
 	}
 

@@ -113,6 +113,16 @@ public class SingleLinkedIntArrayQueue extends AbstractQueue<Integer> implements
 		}
         return true;
     }
+    
+    public boolean addNoAutoBoxing(int e) {
+    	if (last != null && last.hasFreeSpace()) {
+    		last.add(e);
+    		++size;
+    	} else {
+    		linkLast(e);	
+		}
+        return true;
+    }
 
     @Override
     public void clear() {
@@ -221,6 +231,13 @@ public class SingleLinkedIntArrayQueue extends AbstractQueue<Integer> implements
 
     @Override
     public Integer remove() {
+    	final Node f = first;
+        if (f == null || f.startIndex >= f.endIndex)
+            throw new NoSuchElementException();
+        return removeFirst(f);
+    }
+    
+    public int removeNoAutoBoxing() {
     	final Node f = first;
         if (f == null || f.startIndex >= f.endIndex)
             throw new NoSuchElementException();

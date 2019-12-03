@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
@@ -9,6 +10,8 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 public interface SequenceIndexerCompressed {
 
 	public void removeFromSequences(int index);
+	
+	public void removeFromSequences(Collection<Integer> nodeIndicesToRemove);
 
 	int[][] getSubTraceIdSequences();
 
