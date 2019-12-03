@@ -28,6 +28,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.S
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SwitchData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
@@ -259,7 +260,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					// iterate over executed statements in the trace
 					TraceIterator traceIterator = entry.getValue().iterator();
 					while (traceIterator.hasNext()) {
-						Integer subTraceId = traceIterator.next();
+						int subTraceId = traceIterator.next();
 						EfficientCompressedIntegerTrace subTrace = null;
 						if (subTraceId == 0) {
 							subTrace = null;
@@ -387,105 +388,6 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					// testing done!....
 				}
 				
-//				// only for testing... the arrays in a trace are composed of [ class id, counter id].
-//				String[] idToClassNameMap = projectData.getIdToClassNameMap();
-////				Log.out(true, this, "Thread: " + entry.getKey());
-//				// iterate over statements in the sub traces
-//				for (Iterator<Entry<Integer, CompressedLongTraceBase>> subTraceIterator = idToSubtraceMap.entrySet().iterator(); 
-//						subTraceIterator.hasNext();) {
-//					
-//					CompressedLongTraceBase subTrace = subTraceIterator.next().getValue();
-////					Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.size());
-////					if (subTraceId >= 0) {
-////						continue;
-////					}
-//					ReplaceableCloneableLongIterator statementIterator = subTrace.getCompressedTrace().iterator();
-//					while (statementIterator.hasNext()) {
-//						long encodedStatement = statementIterator.next();
-//						int classId = CoberturaStatementEncoding.getClassId(encodedStatement);
-//						int counterId = CoberturaStatementEncoding.getCounterId(encodedStatement);
-//						int specialIndicatorId = CoberturaStatementEncoding.getSpecialIndicatorId(encodedStatement);
-//						//					 Log.out(true, this, "statement: " + Arrays.toString(statement));
-//						// TODO store the class names with '.' from the beginning, or use the '/' version?
-//						String classSourceFileName = idToClassNameMap[classId];
-//						if (classSourceFileName == null) {
-//							//						throw new IllegalStateException("No class name found for class ID: " + classId);
-//							Log.err(this, "No class name found for class ID: " + classId);
-//							return false;
-//						}
-//						ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
-//
-//						if (classData != null) {
-//							if (classData.getCounterId2LineNumbers() == null) {
-//								Log.err(this, "No counter ID to line number map for class " + classSourceFileName);
-//								return false;
-//							}
-//							int lineNumber = classData.getCounterId2LineNumbers()[counterId];
-//
-//							NodeType nodeType = NodeType.NORMAL;
-//							// these following lines print out the execution trace
-//							switch (specialIndicatorId) {
-//							case CoberturaStatementEncoding.BRANCH_ID:
-//								nodeType = NodeType.FALSE_BRANCH;
-//								break;
-//							case CoberturaStatementEncoding.JUMP_ID:
-//								nodeType = NodeType.TRUE_BRANCH;
-//								break;
-//							default:
-//								// ignore switch statements...
-//							}
-////							Log.out(true, this, classSourceFileName + ", counter ID " + statement[1] +
-////									", line " + (lineNumber < 0 ? "(not set)" : String.valueOf(lineNumber)) +
-////									addendum);
-//
-//							// the array is initially set to -1 to indicate counter IDs that were not set, if any
-//							if (lineNumber >= 0) {
-//								int nodeIndex = getNodeIndex(classData.getSourceFileName(), lineNumber, nodeType);
-//								if (nodeIndex >= 0) {
-//									// everything's fine; the below statement is from an earlier version
-//									//traceOfNodeIDs.add(nodeIndex);
-//								} else {
-//									// node index not correct...
-//									String throwAddendum = "";
-//									switch (specialIndicatorId) {
-//									case CoberturaStatementEncoding.BRANCH_ID:
-//										throwAddendum = " (from branch/'false' branch)";
-//										break;
-//									case CoberturaStatementEncoding.JUMP_ID:
-//										throwAddendum = " (after jump/'true' branch)";
-//										break;
-//									case CoberturaStatementEncoding.SWITCH_ID:
-//										throwAddendum = " (after switch label)";
-//										break;
-//									default:
-//										// ?
-//									}
-//									Log.err(this, testId +": Node not found in spectra: "
-//											+ classData.getSourceFileName() + ":" + lineNumber 
-//											+ " from counter id " + counterId + throwAddendum);
-//									return false;
-////									if (nodeType.equals(NodeType.NORMAL)) {
-////										// ignore branch nodes that are erroneous for some reason...
-////										return false;
-////									}
-//								}
-//							} else {
-//								Log.err(this, "No line number found for counter ID: " + counterId
-//										+ " in class: " + classData.getName());
-//								return false;
-//								//							// we have to add a dummy node here to not mess up the repetition markers
-//								//							traceOfNodeIDs.add(-1);
-//								//							Log.out(this, "Ignoring counter ID: " + statement[1]
-//								//									+ " in class: " + classData.getName());
-//							}
-//						} else {
-//							throw new IllegalStateException("Class data for '" + classSourceFileName + "' not found.");
-//						}
-//					}
-//				}
-//				System.out.flush();
-//				//Thread.sleep(1000);
-//				//
 				
 				// collect the raw trace for future compression, etc.
 				// this will, among others, extract common sequences for added traces
@@ -495,36 +397,8 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				// processed and done with...
 				iterator.remove();
 				
-				
-//
-//				compressedTrace = null;
-//				// this only takes the compressed trace array that was based on the original input trace;
-//				// multiple statements/touch points in the input trace may be mapped to the same node!
-//				// we reuse the repetition markers from the input trace here!
-//				ExecutionTrace eTrace = new ExecutionTrace(traceOfNodeIDs, entry.getValue());
-//				// throw away not needed input traces (memory...)
-//				iterator.remove();
-//				
-////				Log.out(this, "Test: " + testId);
-////				Log.out(this, Arrays.toString(eTrace.reconstructFullTrace()));
-////				Log.out(this, Arrays.toString(eTrace.getCompressedTrace()));
-////				Log.out(this, Arrays.toString(eTrace.getRepetitionMarkers()));
-////				if (eTrace.getChild() != null) {
-////					Log.out(this, Arrays.toString(eTrace.getChild().getRepetitionMarkers()));
-////				}
-//				
-//				// add the execution trace to the coverage trace and, thus, to the spectra
-////				 trace.addExecutionTrace(traceOfNodeIDs);
-//				// collect the raw trace for future compression, etc.
-//				// this will, among others, extract common sequences for added traces
-//				traceCollector.addRawTraceToPool(traceCount, threadId, eTrace);
-//				traceOfNodeIDs = null;
 			}
 			
-//			for (Entry<Integer, EfficientCompressedIntegerTrace> entry : existingSubTraces.entrySet()) {
-//				entry.getValue().deleteOnExit();
-//				entry.getValue().deleteIfMarked();
-//			}
 		}
 		
 		return true;
@@ -543,7 +417,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		// iterate over executed statements in the trace
 		TraceIterator traceIterator = trace.iterator();
 		
-		EfficientCompressedIntegerTrace currentSubTrace = getNewSubTrace(trace);
+		SingleLinkedIntArrayQueue currentSubTrace = new SingleLinkedIntArrayQueue(100);
 		int lastMethod = -1;
 		int lastClass = -1;
 		int lastNodeType = CoberturaStatementEncoding.NORMAL_ID;
@@ -642,8 +516,8 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		return resultTrace;
 	}
 
-	private EfficientCompressedIntegerTrace processLastSubTrace(EfficientCompressedIntegerTrace trace,
-			EfficientCompressedIntegerTrace resultTrace, EfficientCompressedIntegerTrace currentSubTrace, int lastNodeType) {
+	private SingleLinkedIntArrayQueue processLastSubTrace(EfficientCompressedIntegerTrace trace,
+			EfficientCompressedIntegerTrace resultTrace, SingleLinkedIntArrayQueue currentSubTrace, int lastNodeType) {
 		// get a representation id for the subtrace (unique for sub traces that start and end within the same method!)
 		long subTraceId = CoberturaStatementEncoding.generateRepresentationForSubTrace(currentSubTrace);
 		Integer id = idToSubtraceIdMap.get(subTraceId);
@@ -658,7 +532,7 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		
 		Integer lastExecutedStatement = null;
 		if (lastNodeType != CoberturaStatementEncoding.NORMAL_ID) {
-			lastExecutedStatement = currentSubTrace.getLastElement();
+			lastExecutedStatement = currentSubTrace.peekLast();
 		}
 		
 		if (id == null) {
@@ -668,11 +542,15 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 
 			// add id to the map
 			idToSubtraceIdMap.put(subTraceId, id);
+			EfficientCompressedIntegerTrace subTrace = getNewSubTrace(trace, currentSubTrace.size());
+			while (!currentSubTrace.isEmpty()) {
+				subTrace.add(currentSubTrace.remove());
+			}
 			// add sub trace to the list of existing sub traces (together with the id)
-			existingSubTraces.put(id, currentSubTrace);
-			currentSubTrace.sleep();
+			existingSubTraces.put(id, subTrace);
+			subTrace.sleep();
 			
-			currentSubTrace = getNewSubTrace(trace);
+			currentSubTrace.clear();
 		} else {
 			// already seen, so reuse the sub trace
 			currentSubTrace.clear();
@@ -705,11 +583,12 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 //		return true;
 //	}
 
-	private EfficientCompressedIntegerTrace getNewSubTrace(EfficientCompressedIntegerTrace trace) {
+	private EfficientCompressedIntegerTrace getNewSubTrace(EfficientCompressedIntegerTrace trace, int size) {
 		// returns a flat trace (no checks for repetitions)
 		return new EfficientCompressedIntegerTrace(
 				trace.getCompressedTrace().getOutputDir(), trace.getCompressedTrace().getFilePrefix(),
-				ExecutionTraceCollector.SUBTRACE_ARRAY_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true, false, true);
+				size < ExecutionTraceCollector.SUBTRACE_ARRAY_SIZE ? size : ExecutionTraceCollector.SUBTRACE_ARRAY_SIZE, 
+						ExecutionTraceCollector.MAP_CHUNK_SIZE, true, false, true);
 	}
 
 	public void addExecutionTracesToSpectra(ISpectra<SourceCodeBlock, ? super K> spectra) {

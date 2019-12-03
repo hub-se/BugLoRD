@@ -27,13 +27,6 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 
 	private int lastJumpIdVariableIndex;
 	
-//	/**
-//	 * This variable should indicate that a decision statement has been processed last.
-//	 * If this is set to true, the next processed statement/line is part of a new segment
-//	 * of an execution trace.
-//	 */
-//	private int decisionIndicatorVariableIndex;
-
 	public InjectCodeTouchPointListener(ClassMap classMap,
 			CodeProvider codeProvider) {
 		this.classMap = classMap;
@@ -52,12 +45,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //			logger.debug("jump false counter:" + jumpFalseCounterId + ", " + currentLine + "(" + eventId + ") to: "
 //					+ label);
 			codeProvider.generateCodeThatSetsJumpCounterIdVariable(
-					nextMethodVisitor, jumpFalseCounterId,
-					lastJumpIdVariableIndex);
-//			// indicate a decision... TODO maybe this has to be moved to after the jump?...
-//			codeProvider.generateCodeThatSetsDecisionIndicatorVariable(
-//					nextMethodVisitor, decisionIndicatorVariableIndex);
-//			codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+					nextMethodVisitor, jumpFalseCounterId, lastJumpIdVariableIndex);
 		}
 	}
 
@@ -81,8 +69,6 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 							.getClassName(), classMap.getClassId());
 			codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 					nextMethodVisitor, lastJumpIdVariableIndex);
-			
-//			codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 		}
 	}
 
@@ -116,8 +102,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	@Override
 	public void afterLabel(int eventId, Label label, int currentLine,
 			MethodVisitor mv) {
-
-
+		
 //		logger.debug("label to event(" + eventId + "):"
 //				+ label + ", line " + currentLine);
 		
@@ -134,8 +119,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 				codeProvider
 						.generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
 								mv, entry.getKey(), entry.getValue(),
-								lastJumpIdVariableIndex, 
-								classMap.getClassName(), classMap.getClassId());
+								lastJumpIdVariableIndex, classMap.getClassName(), classMap.getClassId());
 			}
 		}
 
@@ -157,36 +141,16 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
 					mv, lastJumpIdVariableIndex, 
 					classMap.getClassName(), classMap.getClassId());
-//			codeProvider.generateCodeThatProcessesLastSubtrace(mv);
-//		}
-//
-//		if (classMap.isJumpDestinationLabel(eventId)) {
-//			codeProvider.generateCodeThatZeroJumpCounterIdVariable(mv,
-//					lastJumpIdVariableIndex);
 		}
 		
 		if (classMap.isCatchBlockLabel(eventId)) {
 //			logger.debug("Catch block label for event(" + eventId + "):"
-//					+ label + ", line " + currentLine);
-			// indicate a decision... TODO maybe needs to be moved? idk...
-//			codeProvider.generateCodeThatSetsDecisionIndicatorVariable(
-//					mv, decisionIndicatorVariableIndex);
-			
+//					+ label + ", line " + currentLine);		
 			codeProvider.generateCodeThatProcessesLastSubtrace(mv);
 			
 		}
 	}
 	
-	/*
-	 * <p>If the label is JUMP destination, we will increment 
-	 * the counter stored inside the 'internal variable'. 
-	 * This way we are incrementing the 'false' branch of the condition. </p>
-	 * 
-	 * <p>If the label is SWITCH destination, we check all switch 
-	 * instructions that have targets in the label we generate
-	 * code that checks if the 'internal variable' is equal to id 
-	 * of considered switch and if so increments counterId connected to the switch. </p>
-	 */
 	public void beforeTryCatchCatchBlock(int eventId, Label catchLabel, int currentLine,
 			MethodVisitor mv) {
 //		logger.debug("CATCH label to event(" + eventId + "):"
@@ -198,11 +162,9 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			MethodVisitor nextMethodVisitor) {
 //		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 	}
+	
 	/*
-	 * After every 'linenumber' instruction we increments counter connected with the line number.
-	 * 
-	 * We also need to check if there was a decision processed as the very last instruction.
-	 * If so, then we need to start a new segment and add the last segment's ID to the execution trace, if any...
+	 * After every 'linenumber' instruction, we increment the counter connected with the line number.
 	 */
 	public void afterLineNumber(int eventId, Label label, int currentLine,
 			MethodVisitor nextMethodVisitor, String methodName,
@@ -213,9 +175,6 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 			codeProvider.generateCodeThatIncrementsCoberturaCounter(
 					nextMethodVisitor, lineCounterId, 
 					classMap.getClassName(), classMap.getClassId());
-//			codeProvider.generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(
-//					nextMethodVisitor, lineCounterId, decisionIndicatorVariableIndex,
-//					classMap.getClassName(), classMap.getClassId());
 		}
 	}
 
@@ -228,9 +187,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		// setup variables
 		codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 				nextMethodVisitor, lastJumpIdVariableIndex);
-//		codeProvider.generateCodeThatUnsetsDecisionIndicatorVariable(
-//				nextMethodVisitor, decisionIndicatorVariableIndex);
-		
+	
 //		// this starts a new sub trace whenever we reach the start of a method...
 //		// it serves mainly to avoid problems due to having a 
 //		// loop in a class that is not instrumented
@@ -259,11 +216,6 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	public void setLastJumpIdVariableIndex(int lastJumpIdVariableIndex) {
 		this.lastJumpIdVariableIndex = lastJumpIdVariableIndex;
 	}
-	
-//	public void setDecisionIndicatorVariableIndex(int decisionIndicatorVariableIndex) {
-//		this.decisionIndicatorVariableIndex = decisionIndicatorVariableIndex;
-//	}
 
-	
 }
 

@@ -77,7 +77,7 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 //				.getInternalName(ExecutionTraceCollector.class), "processLastSubTrace",
 //				"()V");
 		nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-		.getInternalName(ExecutionTraceCollector.class), "visitedCatchBlock",
+		.getInternalName(ExecutionTraceCollector.class), "startNewSubTrace",
 		"()V");
 	}
 	

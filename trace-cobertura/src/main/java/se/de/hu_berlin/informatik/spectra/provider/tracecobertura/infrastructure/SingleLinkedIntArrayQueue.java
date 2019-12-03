@@ -184,6 +184,14 @@ public class SingleLinkedIntArrayQueue extends AbstractQueue<Integer> implements
         }
     }
     
+    public int peekLastNoCheck() {
+        return last.items[last.endIndex-1];
+    }
+    
+    public int peekNoCheck() {
+        return first.items[first.startIndex];
+    }
+    
 	public Integer peekLast() {
         final Node f = last;
         return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.endIndex-1] : null));

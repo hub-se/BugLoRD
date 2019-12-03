@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 import java.util.List;
 
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
@@ -328,6 +329,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		.setTestRepeatCount(1)
 		.setMaxErrors(0);
 
+		long startTime = new Date().getTime();
+		
 		builder
 		.run();
 
@@ -338,6 +341,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		} else {
 			Log.out(this, "%s: Generating spectra was successful!", buggyEntity);
 		}
+		long endTime = new Date().getTime();
+		
+		Log.out(this, "%s: Execution time: %s", buggyEntity, Misc.getFormattedTimerString(endTime - startTime));
 		
 		// filtering is already done beforehand
 //		Log.out(this, "%s: Reloading spectra for filtering...", buggyEntity);

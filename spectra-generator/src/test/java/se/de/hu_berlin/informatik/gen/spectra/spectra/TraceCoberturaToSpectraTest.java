@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -36,6 +35,7 @@ import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -115,7 +115,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		.run();
 		long endTime = new Date().getTime();
 		
-		System.out.println("Execution time: " + getFormattedTimerString(endTime - startTime));
+		System.out.println("Execution time: " + Misc.getFormattedTimerString(endTime - startTime));
 
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
@@ -242,7 +242,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		.run();
 		long endTime = new Date().getTime();
 		
-		System.out.println("Execution time: " + getFormattedTimerString(endTime - startTime));
+		System.out.println("Execution time: " + Misc.getFormattedTimerString(endTime - startTime));
 
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
@@ -274,7 +274,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		.run();
 		long endTime = new Date().getTime();
 		
-		System.out.println("Execution time: " + getFormattedTimerString(endTime - startTime));
+		System.out.println("Execution time: " + Misc.getFormattedTimerString(endTime - startTime));
 		
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
@@ -306,7 +306,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		.run();
 		long endTime = new Date().getTime();
 		
-		System.out.println("Execution time: " + getFormattedTimerString(endTime - startTime));
+		System.out.println("Execution time: " + Misc.getFormattedTimerString(endTime - startTime));
 
 		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
@@ -314,32 +314,6 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 			checkTraceSpectra(spectraZipFile);
 		} else {
 			assertFalse(Files.exists(spectraZipFile));
-		}
-	}
-	
-	private static String getFormattedTimerString(long timeInMilliSeconds) {
-		long days = TimeUnit.MILLISECONDS.toDays(timeInMilliSeconds);
-		long hours = TimeUnit.MILLISECONDS.toHours(timeInMilliSeconds);
-		long minutes = TimeUnit.MILLISECONDS.toMinutes(timeInMilliSeconds);
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(timeInMilliSeconds);
-		if (days > 0) {
-			return String.format("%dd:%02dh:%02dm:%02ds", 
-					days,
-					hours % 24,
-					minutes % 60,
-					seconds % 60
-					);
-		} else if (hours > 0) {
-			return String.format("%02dh:%02dm:%02ds", 
-					hours,
-					minutes % 60,
-					seconds % 60
-					);
-		} else {
-			return String.format("%02dm:%02ds", 
-					minutes,
-					seconds % 60
-					);
 		}
 	}
 	

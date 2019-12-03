@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LightClassmapListener;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,9 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @CoverageIgnore
 public class TouchCollector {
-	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
+	
 	/*In fact - concurrentHashset*/
 	public static final Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<>();
+	
+	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
 	
 	static {
 		ProjectData.getGlobalProjectData(); // To call ProjectData.initialize();

@@ -111,6 +111,16 @@ public class CoberturaStatementEncoding {
 		}
 	}
 	
+	public static long generateRepresentationForSubTrace(SingleLinkedIntArrayQueue subTrace) {
+		if (subTrace.size() > 1) {
+			return ((subTrace.peekNoCheck() & LOWER_BITMASK) << INTEGER_BITS) | (subTrace.peekLastNoCheck() & LOWER_BITMASK);
+		} else if (subTrace.size() == 1) {
+			return (subTrace.peekNoCheck() & LOWER_BITMASK) << INTEGER_BITS;
+		} else {
+			return 0;
+		}
+	}
+	
 	public static long generateUniqueRepresentationForTwoStatements(int encodedStatement1, int encodedStatement2) {
 		return ((encodedStatement1 & LOWER_BITMASK) << INTEGER_BITS) | (encodedStatement2 & LOWER_BITMASK);
 	}
