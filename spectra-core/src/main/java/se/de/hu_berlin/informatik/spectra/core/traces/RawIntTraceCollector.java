@@ -139,7 +139,7 @@ public class RawIntTraceCollector {
 		// avoid storing traces in memory...
 		// store the compressed trace
 		try {
-			SpectraFileUtils.storeCompressedIntegerTrace(eTrace, output, traceFileName, repMarkerFileName);
+			SpectraFileUtils.storeCompressedIntegerTrace(eTrace, output, traceFileName, repMarkerFileName, false);
 		} catch (IOException e) {
 			Log.abort(this, e, "Could not store raw trace.");
 		}
@@ -330,7 +330,7 @@ public class RawIntTraceCollector {
 			// store the execution trace and repetition markers
 			try {
 				SpectraFileUtils.storeCompressedIntegerTrace(executionTrace, 
-						getExecutionTraceZipFilePath(), traceFileName, repMarkerFileName);
+						getExecutionTraceZipFilePath(), traceFileName, repMarkerFileName, true);
 			} catch (IOException e) {
 				Log.abort(this, e, "Could not store execution trace.");
 			}

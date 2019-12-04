@@ -528,7 +528,7 @@ public class SpectraFileUtils {
 							for (int i = 1; i < indexer.getNodeIdSequences().length; i++) {
 								storeCompressedIntegerTrace(indexer.getNodeIdSequences()[i], outputFile, 
 										i + NODE_ID_FILE_EXTENSION, 
-										i + NODE_ID_REPETITIONS_FILE_EXTENSION);
+										i + NODE_ID_REPETITIONS_FILE_EXTENSION, true);
 							}
 							
 //							for (int i = 0; i < indexer.getNodeIdSequences().length; i++) {
@@ -611,7 +611,7 @@ public class SpectraFileUtils {
 	}
 	
 	public static void storeCompressedIntegerTrace(EfficientCompressedIntegerTrace eTrace, 
-			Path zipFilePath, String traceFileName, String repMarkerFileName) throws IOException {
+			Path zipFilePath, String traceFileName, String repMarkerFileName, boolean sleepAfterUse) throws IOException {
 		int maxStoredValue = eTrace.getMaxStoredValue();
 		BufferedIntegersToCompressedByteArrayProcessor module = new BufferedIntegersToCompressedByteArrayProcessor(
 				zipFilePath, traceFileName, false, maxStoredValue, true);
@@ -626,6 +626,10 @@ public class SpectraFileUtils {
 					new BufferedIntegersToCompressedByteArrayProcessor(zipFilePath, repMarkerFileName, false, maxStoredValue, true);
 			storeRepetitionMarkers(eTrace, module2);
 			module2.finalShutdown();
+		}
+		
+		if (sleepAfterUse) {
+			eTrace.sleep();
 		}
 	}
 	
@@ -1260,6 +1264,7 @@ public class SpectraFileUtils {
 		} else {
 			e = new ExecutionTrace(compressedTrace, null, false);
 		}
+		e.sleep();
 		return e;
 	}
 	
@@ -1297,6 +1302,7 @@ public class SpectraFileUtils {
 		} else {
 			e = new EfficientCompressedIntegerTrace(compressedTrace, null, false);
 		}
+		e.sleep();
 		return e;
 	}
 	

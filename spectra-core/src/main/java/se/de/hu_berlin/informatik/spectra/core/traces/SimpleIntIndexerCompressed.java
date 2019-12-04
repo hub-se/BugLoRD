@@ -175,6 +175,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 //				nodeIdSequences[i][j] = traceOfNodeIDs.remove();
 //			}
 			
+			traceOfNodeIDs.sleep();
 			nodeIdSequences[i] = traceOfNodeIDs;
 			
 			// delete any stored nodes from disk!
