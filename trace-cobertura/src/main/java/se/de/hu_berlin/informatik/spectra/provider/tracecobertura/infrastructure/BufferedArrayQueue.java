@@ -32,7 +32,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	private static final long serialVersionUID = 2334531021193748807L;
 
 	// keep at most 4 (+1 with the last node) nodes in memory
-    private static final int CACHE_SIZE = 4;
+    private static final int CACHE_SIZE = 3;
     
     private static final int ARRAY_SIZE = 1000;
 	

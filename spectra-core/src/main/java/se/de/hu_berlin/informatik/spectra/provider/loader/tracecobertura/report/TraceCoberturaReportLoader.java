@@ -388,14 +388,14 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					// testing done!....
 				}
 				
+				// processed and done with...
+				iterator.remove();
 				
 				// collect the raw trace for future compression, etc.
 				// this will, among others, extract common sequences for added traces
 				entry.getValue().deleteOnExit();
 				traceCollector.addRawTraceToPool(traceCount, threadId, 
 						entry.getValue(), existingSubTraces);
-				// processed and done with...
-				iterator.remove();
 				
 			}
 			
@@ -423,11 +423,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 		int lastNodeType = CoberturaStatementEncoding.NORMAL_ID;
 		long counter = 0;
 		while (traceIterator.hasNext()) {
-			++counter;
-			if (counter % 100000 == 0)
-				System.out.print('.');
-			if (counter % 10000000 == 0)
-				System.out.println(String.format("%,d", counter));
+//			++counter;
+//			if (counter % 100000 == 0)
+//				System.out.print('.');
+//			if (counter % 10000000 == 0)
+//				System.out.println(String.format("%,d", counter));
 			
 			int statement = traceIterator.next();
 			
@@ -436,6 +436,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				// cut the trace **before** each catch block entry or new method start
 				if (!currentSubTrace.isEmpty()) {
 					currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
+					++counter;
+					if (counter % 100000 == 0)
+						System.out.print('.');
+					if (counter % 10000000 == 0)
+						System.out.println(String.format("%,d", counter));
 				}
 				
 				while (statement == ExecutionTraceCollector.NEW_SUBTRACE_ID) {
@@ -477,6 +482,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					if (currentMethod != lastMethod && !currentSubTrace.isEmpty()) {
 						// cut the trace after each change in methods
 						currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
+						++counter;
+						if (counter % 100000 == 0)
+							System.out.print('.');
+						if (counter % 10000000 == 0)
+							System.out.println(String.format("%,d", counter));
 					}
 					lastMethod = currentMethod;
 				} else {
@@ -484,6 +494,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 					if (!currentSubTrace.isEmpty()) {
 						// cut the trace after each change in classes
 						currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
+						++counter;
+						if (counter % 100000 == 0)
+							System.out.print('.');
+						if (counter % 10000000 == 0)
+							System.out.println(String.format("%,d", counter));
 					}
 					lastMethod = lineNumber[2];
 					lastClass = classId;
@@ -498,6 +513,11 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 				if (lastNodeType != CoberturaStatementEncoding.NORMAL_ID && !currentSubTrace.isEmpty()) {
 					// cut the trace after each branching statement
 					currentSubTrace = processLastSubTrace(trace, resultTrace, currentSubTrace, lastNodeType);
+					++counter;
+					if (counter % 100000 == 0)
+						System.out.print('.');
+					if (counter % 10000000 == 0)
+						System.out.println(String.format("%,d", counter));
 				}
 
 			} else {
