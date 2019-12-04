@@ -74,7 +74,7 @@ public class RepetitionMarkerWrapper implements Serializable {
 	}
 	
 	private void generateBackwardsRepetitionMarkers() {
-		backwardsRepetitionMarkers = new BufferedMap<>(repetitionMarkers.getOutputDir(), 
+		backwardsRepetitionMarkers = new RepetitionMarkerBufferedMap(repetitionMarkers.getOutputDir(), 
 				"rev_" + repetitionMarkers.getFilePrefix(), repetitionMarkers.getMaxSubMapSize(), repetitionMarkers.isDeleteOnExit());
 		Iterator<Entry<Integer, int[]>> entrySetIterator = repetitionMarkers.entrySetIterator();
 		while (entrySetIterator.hasNext()) {

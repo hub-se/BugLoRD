@@ -349,8 +349,8 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 					for (level = levels.size() - 1; level >= 0; --level) {
 						CompressedIntegerTraceLevel trace = levels.get(level);
 						if (!trace.getRepetitionMarkers().isEmpty()) {
-							builder.append(String.format("level %d: size: %,d, max buffer: %,d, max trace: %,d, map: %,d*3%n", 
-									level, trace.size(), trace.maxBufferSize, trace.maxTraceSize, trace.getRepetitionMarkers().size()));
+							builder.append(String.format("level %d: size: %,d, max position map: %,d, max buffer: %,d, max trace: %,d, map: %,d*3%n", 
+									level, trace.size(), trace.maxPosMapSize, trace.maxBufferSize, trace.maxTraceSize, trace.getRepetitionMarkers().size()));
 							addRepetitionMarkers(trace.getRepetitionMarkers(), trace.size());
 						}
 						//					System.out.println("level: " + level + ", stats: " + trace.elementToPositionMap.stats().toString());

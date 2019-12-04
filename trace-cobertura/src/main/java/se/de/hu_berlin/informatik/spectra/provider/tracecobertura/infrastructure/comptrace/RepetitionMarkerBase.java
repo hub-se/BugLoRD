@@ -16,7 +16,7 @@ public abstract class RepetitionMarkerBase implements Serializable {
 	 */
 	private static final long serialVersionUID = 3743380720924000714L;
 
-	protected static final int MAX_ITERATION_COUNT = 5;
+	protected static final int MAX_ITERATION_COUNT = 10;
 	
 	private RepetitionMarkerWrapper[] repetitionMarkerWrappers;
 	private int currentIndex = 0;

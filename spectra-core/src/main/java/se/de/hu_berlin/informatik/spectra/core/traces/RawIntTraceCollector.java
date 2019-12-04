@@ -110,20 +110,20 @@ public class RawIntTraceCollector {
 			EfficientCompressedIntegerTrace eTrace,
 			Map<Integer, EfficientCompressedIntegerTrace> map) {
 		
-		boolean error = false;
-		for (ReplaceableCloneableIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
-			// check if all IDs are actually stored in the map
-			Integer id = iterator.next();
-			if (!map.containsKey(id)) {
-				// this should definitely not happen!
-				error = true;
-				System.err.println(traceIndex + "-" + threadId + ": No sub trace mapping found for id " + id);
-			}
-		}
-		
-		if (error) {
-			throw new IllegalStateException("No sub trace mapping found for some ID(s).");
-		}
+//		boolean error = false;
+//		for (ReplaceableCloneableIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
+//			// check if all IDs are actually stored in the map
+//			Integer id = iterator.next();
+//			if (!map.containsKey(id)) {
+//				// this should definitely not happen!
+//				error = true;
+//				System.err.println(traceIndex + "-" + threadId + ": No sub trace mapping found for id " + id);
+//			}
+//		}
+//		
+//		if (error) {
+//			throw new IllegalStateException("No sub trace mapping found for some ID(s).");
+//		}
 		
 //		// the next few commands are necessary to ensure consistency in sub trace ids!!!
 //		// each project data comes potentially with its own mapping from ids to sub traces...

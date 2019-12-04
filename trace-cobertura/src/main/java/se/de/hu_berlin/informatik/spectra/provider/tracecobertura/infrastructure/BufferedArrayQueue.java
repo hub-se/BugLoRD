@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.ReplaceableCloneableIterator;
 
@@ -34,8 +31,8 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	 */
 	private static final long serialVersionUID = 2334531021193748807L;
 
-	// keep at most 5 (+1 with the last node) nodes in memory
-    private static final int CACHE_SIZE = 5;
+	// keep at most 4 (+1 with the last node) nodes in memory
+    private static final int CACHE_SIZE = 4;
     
     private static final int ARRAY_SIZE = 1000;
 	
@@ -56,8 +53,6 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	private volatile int firstNodeSize = 0;
 	
 	private volatile transient Node<E> lastNode;
-	
-	private transient Lock lock = new ReentrantLock();
 	
 	// cache all other nodes, if necessary
 	private transient Map<Integer,Node<E>> cachedNodes = new HashMap<>();
@@ -94,24 +89,19 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 
 	// stores all nodes on disk
 	public void sleep() {
-		lock.lock();
-		try {
-			for (Node<E> node : cachedNodes.values()) {
-				// stores cached nodes, if modified (i.e., if elements were added/removed)
-				if (node.modified) {
-					store(node);
-				}
-				node.cleanup();
+		for (Node<E> node : cachedNodes.values()) {
+			// stores cached nodes, if modified (i.e., if elements were added/removed)
+			if (node.modified) {
+				store(node);
 			}
-			cachedNodes.clear();
-			cacheSequence.clear();
-			// store the last node, too
-			if (lastNode != null && lastNode.modified) {
-				store(lastNode);
-				lastNode = null;
-			}
-		} finally {
-			lock.unlock();
+			node.cleanup();
+		}
+		cachedNodes.clear();
+		cacheSequence.clear();
+		// store the last node, too
+		if (lastNode != null && lastNode.modified) {
+			store(lastNode);
+			lastNode = null;
 		}
 	}
 
@@ -128,7 +118,6 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         size = stream.readInt();
         arrayLength = stream.readInt();
         
-        lock = new ReentrantLock();
         cachedNodes = new HashMap<>();
         cacheSequence = new LinkedList<>();
         // always delete files from deserialized object TODO
@@ -279,36 +268,31 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
    
     
     private void putInCache(int storeIndex, Node<E> node) {
-    	lock.lock();
-    	try {
-    		// already in the cache?
-    		if (cachedNodes.containsKey(storeIndex)) {
-    			return;
-    		}
-    		// remove a cached node if the cache is full
-    		if (cachedNodes.size() >= CACHE_SIZE) {
-    			// remove the node from the cache that has been added first
-    			uncache(cacheSequence.remove(0));
-    		}
-    		cachedNodes.put(storeIndex, node);
-    		cacheSequence.add(storeIndex);
-    	} finally {
-    		lock.unlock();
+    	// last node?
+    	if (storeIndex > lastStoreIndex) {
+    		lastNode = node;
+    		return;
     	}
+    	// already in the cache?
+    	if (cachedNodes.containsKey(storeIndex)) {
+    		return;
+    	}
+    	// remove a cached node if the cache is full
+    	if (cachedNodes.size() >= CACHE_SIZE) {
+    		// remove the node from the cache that has been added first
+    		uncache(cacheSequence.remove(0));
+    	}
+    	cachedNodes.put(storeIndex, node);
+    	cacheSequence.add(storeIndex);
 	}
     
     // should check for modifications and possibly write to the disk
     private void uncache(int storeIndex) {
-    	lock.lock();
-    	try {
-    		Node<E> node = cachedNodes.remove(storeIndex);
-    		if (node != null) {
-    			if (node.modified) {
-    				store(node);
-    			}
+    	Node<E> node = cachedNodes.remove(storeIndex);
+    	if (node != null) {
+    		if (node.modified) {
+    			store(node);
     		}
-    	} finally {
-    		lock.unlock();
     	}
     }
 
@@ -344,41 +328,26 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         return element;
     }
 
-	private void uncacheAndDelete(int storeIndex) {
-		lock.lock();
-		try {
-			uncacheNoStore(storeIndex);
-			delete(storeIndex);
-		} finally {
-			lock.unlock();
-		}
+    private void uncacheAndDelete(int storeIndex) {
+    	uncacheNoStore(storeIndex);
+    	delete(storeIndex);
 	}
     
 	private void uncacheNoStore(int storeIndex) {
-		lock.lock();
-		try {
-			if (cachedNodes.containsKey(storeIndex)) {
-				Node<E> node = cachedNodes.get(storeIndex);
-				node.cleanup();
-				cachedNodes.remove(storeIndex);
-				cacheSequence.remove((Integer)storeIndex);
-			}
-		} finally {
-			lock.unlock();
+		if (cachedNodes.containsKey(storeIndex)) {
+			Node<E> node = cachedNodes.get(storeIndex);
+			node.cleanup();
+			cachedNodes.remove(storeIndex);
+			cacheSequence.remove((Integer)storeIndex);
 		}
 	}
 	
 	private void delete(int storeIndex) {
-		lock.lock();
-		try {
-			String filename = getFileName(storeIndex);
-			// stored node should be deleted
-			File file = new File(filename);
-			if (file.exists()) {
-				file.delete();
-			}
-		} finally {
-			lock.unlock();
+		String filename = getFileName(storeIndex);
+		// stored node should be deleted
+		File file = new File(filename);
+		if (file.exists()) {
+			file.delete();
 		}
 	}
 
@@ -386,38 +355,6 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		return output.getAbsolutePath() + File.separator + filePrefix + "-" + storeIndex + ".rry";
 	}
 
-//	private Node<E> load() {
-//		String filename = getFileName(firstStoreIndex);
-//		if (cachedNodes.containsKey(firstStoreIndex)) {
-//			// node was cached, previously
-//			Node<E> node = cachedNodes.get(firstStoreIndex);
-//			cacheSequence.remove(firstStoreIndex);
-//			// stored node can/should be deleted
-//			new File(filename).delete();
-//			++firstStoreIndex;
-//			return node;
-//		} else {
-//			Node<E> loadedNode;
-//			try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
-//				Object[] items = (Object[])inputStream.readObject();
-//				loadedNode = new Node<E>(items);
-//				// stored node can/should be deleted
-//				new File(filename).delete();
-//			} catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//				throw new IllegalStateException();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//				throw new IllegalStateException();
-//			} catch (ClassNotFoundException e) {
-//				e.printStackTrace();
-//				throw new IllegalStateException();
-//			}
-//			++firstStoreIndex;
-//			return loadedNode;
-//		}
-//	}
-	
 	private Node<E> loadFirst() {
 		if (storedNodeExists()) {
 			return load(firstStoreIndex);
@@ -439,169 +376,124 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		if (lastNode != null && storeIndex == lastNode.storeIndex) {
 			return lastNode;
 		}
-//		if (storeIndex > lastStoreIndex) {
-//			return null;
-//		}
-		
-		lock.lock();
-		try {
-			// only cache nodes that are not the last node
-//			if (storeIndex <= lastStoreIndex) {
-			if (cachedNodes.containsKey(storeIndex)) {
-				// already cached
-				return cachedNodes.get(storeIndex);
-			}
-//			}
-			
-			String filename = getFileName(storeIndex);
-			if (!(new File(filename).exists())) {
-				return null;
-//				throw new IllegalStateException("Node " + storeIndex + " was neither found in the cache or as a file.");
-			}
-			
-			Node<E> loadedNode;
-			try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
-				Object[] items = new Object[arrayLength];
-				
-				int startIndex = inputStream.readInt();
-				int endIndex = inputStream.readInt();
-				
-				switch (serializationType) {
-				case INTEGER:
-					for (int i = startIndex; i < endIndex; ++i) {
-						items[i] = inputStream.readInt();
-					}
-					break;
-				case LONG:
-					for (int i = startIndex; i < endIndex; ++i) {
-						items[i] = inputStream.readLong(); 
-					}
-					break;
-				case OTHER:
-					for (int i = startIndex; i < endIndex; ++i) {
-						items[i] = inputStream.readObject(); 
-					}
-					break;
-				default:
-					throw new UnsupportedOperationException();
-				}
-				
-//				if (items.length < arrayLength) {
-//					Object[] realArray = new Object[arrayLength];
-//					System.arraycopy(items, 0, realArray, 0, items.length);
-//					items = realArray;
-//				}
-				loadedNode = new Node<>(items, startIndex, endIndex, storeIndex, arrayLength);
-			} catch (ClassNotFoundException | IOException e) {
-				e.printStackTrace();
-				throw new IllegalStateException();
-			}
-			
-			if (storeIndex <= lastStoreIndex) {
-				putInCache(storeIndex, loadedNode);
-			}
-			return loadedNode;
-		} finally {
-			lock.unlock();
+
+		// only cache nodes that are not the last node
+		if (cachedNodes.containsKey(storeIndex)) {
+			// already cached
+			return cachedNodes.get(storeIndex);
 		}
+
+		String filename = getFileName(storeIndex);
+		if (!(new File(filename).exists())) {
+			return null;
+		}
+
+		Node<E> loadedNode;
+		try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
+			Object[] items = new Object[arrayLength];
+
+			int startIndex = inputStream.readInt();
+			int endIndex = inputStream.readInt();
+
+			switch (serializationType) {
+			case INTEGER:
+				for (int i = startIndex; i < endIndex; ++i) {
+					items[i] = inputStream.readInt();
+				}
+				break;
+			case LONG:
+				for (int i = startIndex; i < endIndex; ++i) {
+					items[i] = inputStream.readLong(); 
+				}
+				break;
+			case OTHER:
+				for (int i = startIndex; i < endIndex; ++i) {
+					items[i] = inputStream.readObject(); 
+				}
+				break;
+			default:
+				throw new UnsupportedOperationException();
+			}
+
+//			if (items.length < arrayLength) {
+//				Object[] realArray = new Object[arrayLength];
+//				System.arraycopy(items, 0, realArray, 0, items.length);
+//				items = realArray;
+//			}
+			loadedNode = new Node<>(items, startIndex, endIndex, storeIndex, arrayLength);
+		} catch (ClassNotFoundException | IOException e) {
+			e.printStackTrace();
+			throw new IllegalStateException();
+		}
+
+		if (storeIndex <= lastStoreIndex) {
+			putInCache(storeIndex, loadedNode);
+		} else {
+			lastNode = loadedNode;
+		}
+		return loadedNode;
 	}
 
 	
 	@Override
     public int size() {
-    	lock.lock();
-    	try {
-    		if (size <= Integer.MAX_VALUE) {
-    			return (int) size;
-    		} else {
-    			throw new IllegalStateException("Size too large!");
-    		}
-    	} finally {
-    		lock.unlock();
-    	}
+		if (size <= Integer.MAX_VALUE) {
+			return (int) size;
+		} else {
+			throw new IllegalStateException("Size too large!");
+		}
     }
 	
 	public long longSize() {
-    	lock.lock();
-    	try {
-    		return (int) size;
-    	} finally {
-    		lock.unlock();
-    	}
+		return size;
     }
 
     public boolean add(E e) {
     	if (locked) {
     		throw new IllegalStateException("Tried to add value " + e + " while being locked.");
     	}
-    	lock.lock();
-    	try {
-    		loadLast();
-    		if (lastNode != null && lastNode.hasFreeSpace()) {
-    			lastNode.add(e);
-    			++size;
-    			if (firstStoreIndex == lastNode.storeIndex) {
-    				++firstNodeSize;
-    			}
-//    			System.out.println(e + " -> added " + lastNode.storeIndex + ", " + lastNode.endIndex);
-    		} else {
-    			linkLast(e);
-//    			System.out.println(e + " -> linked " + lastNode.storeIndex + ", " + lastNode.endIndex);
+
+    	loadLast();
+    	if (lastNode != null && lastNode.hasFreeSpace()) {
+    		lastNode.add(e);
+    		++size;
+    		if (firstStoreIndex == lastNode.storeIndex) {
+    			++firstNodeSize;
     		}
-    		return true;
-    	} finally {
-    		lock.unlock();
+//    		System.out.println(e + " -> added " + lastNode.storeIndex + ", " + lastNode.endIndex);
+    	} else {
+    		linkLast(e);
+//    		System.out.println(e + " -> linked " + lastNode.storeIndex + ", " + lastNode.endIndex);
     	}
+    	return true;
     }
 
     private void clearCache() {
-		lock.lock();
-		try {
-			for (Node<E> node : cachedNodes.values()) {
-				node.cleanup();
-			}
-			cachedNodes.clear();
-			cacheSequence.clear();
-		} finally {
-			lock.unlock();
-		}
+    	for (Node<E> node : cachedNodes.values()) {
+    		node.cleanup();
+    	}
+    	cachedNodes.clear();
+    	cacheSequence.clear();
 	}
     
     public void clear() {
     	if (locked) {
     		throw new IllegalStateException("Tried to clear queue while being locked.");
     	}
-    	lock.lock();
-    	try {
-    		clearCache();
-    		// delete possibly stored nodes
-    		for (; storedNodeExists(); ++firstStoreIndex) {
-    			delete(firstStoreIndex);
-    		}
-    		// delete potentially stored last node
-    		delete(lastStoreIndex+1);
-//    		// empty last (and now also first) node
-//    		if (lastNode != null) {
-//    			for (int j = lastNode.startIndex; j < lastNode.endIndex; ++j) {
-//    				lastNode.items[j] = null;
-//    			}
-//    			// keep one node/array to avoid having to allocate a new one
-//    			lastNode.startIndex = 0;
-//    			lastNode.endIndex = 0;
-//    		}
-    		initialize();
-    	} finally {
-    		lock.unlock();
-		}
+
+    	clearCache();
+    	// delete possibly stored nodes
+    	for (; storedNodeExists(); ++firstStoreIndex) {
+    		delete(firstStoreIndex);
+    	}
+    	// delete potentially stored last node
+    	delete(lastStoreIndex+1);
+
+    	initialize();
     }
 
 	private boolean storedNodeExists() {
-		lock.lock();
-		try {
-			return firstStoreIndex <= lastStoreIndex;
-		} finally {
-			lock.unlock();
-		}
+		return firstStoreIndex <= lastStoreIndex;
 	}
     
     /**
@@ -618,51 +510,47 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     	if (locked) {
     		throw new IllegalStateException("Tried to clear queue while being locked.");
     	}
-    	lock.lock();
-    	try {
-    		Node<E> x = null;
-    		if (storedNodeExists()) {
-    			// do not load nodes, if possible
-    			while (count >= firstNodeSize) {
-    				// we can just delete the file without looking at the node
-    				uncacheAndDelete(firstStoreIndex);
-    				++firstStoreIndex;
-    				count -= firstNodeSize;
-    				size -= firstNodeSize;
-    				// still a node on disk?
-    				if (storedNodeExists()) {
-    					firstNodeSize = arrayLength;
-    				} else {
-    					break;
-    				}
-    			}
 
-    			// still elements left to clear?
-    			if (count > 0) {
-    				if (storedNodeExists()) {
-    					x = load(firstStoreIndex);
-    				} else {
-    					loadLast();
-    					// no node left on disk, so continue with the last node
-    					firstNodeSize = lastNode.endIndex - lastNode.startIndex;
-    					x = lastNode;
-    				}
+    	Node<E> x = null;
+    	if (storedNodeExists()) {
+    		// do not load nodes, if possible
+    		while (count >= firstNodeSize) {
+    			// we can just delete the file without looking at the node
+    			uncacheAndDelete(firstStoreIndex);
+    			++firstStoreIndex;
+    			count -= firstNodeSize;
+    			size -= firstNodeSize;
+    			// still a node on disk?
+    			if (storedNodeExists()) {
+    				firstNodeSize = arrayLength;
+    			} else {
+    				break;
     			}
-    		} else {
-    			loadLast();
-    			x = lastNode;
     		}
-    		
-    		if (count > 0 && x != null) {
-    			// remove elements from first node
-    			x.clear((int) count);
-    			firstNodeSize -= count;
+
+    		// still elements left to clear?
+    		if (count > 0) {
+    			if (storedNodeExists()) {
+    				x = load(firstStoreIndex);
+    			} else {
+    				loadLast();
+    				// no node left on disk, so continue with the last node
+    				firstNodeSize = lastNode.endIndex - lastNode.startIndex;
+    				x = lastNode;
+    			}
     		}
-    		
-    		size -= count;
-    	} finally {
-    		lock.unlock();
-		}
+    	} else {
+    		loadLast();
+    		x = lastNode;
+    	}
+
+    	if (count > 0 && x != null) {
+    		// remove elements from first node
+    		x.clear((int) count);
+    		firstNodeSize -= count;
+    	}
+
+    	size -= count;
     }
     
     /**
@@ -679,62 +567,53 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     	if (locked) {
     		throw new IllegalStateException("Tried to clear queue while being locked.");
     	}
-    	lock.lock();
-    	try {
-    		loadLast();
-    		int removedElements = lastNode.size();
-			int storeIndex = lastNode.storeIndex;
 
-			if (count >= removedElements) {
-				// we can delete the last node's file
-				uncacheAndDelete(storeIndex);
-				--lastStoreIndex;
-				--currentStoreIndex;
-				count -= removedElements;
-				size -= removedElements;
-				lastNode = null;
-			}
+    	loadLast();
+    	int removedElements = lastNode.size();
+    	int storeIndex = lastNode.storeIndex;
 
-			// check if we can delete entire nodes without actually loading the respective nodes
-			while (count >= arrayLength) {
-				// we can just delete the respective file
-				uncacheAndDelete(--storeIndex);
-				--lastStoreIndex;
-				--currentStoreIndex;
-				count -= arrayLength;
-				size -= arrayLength;
-			}
+    	if (count >= removedElements) {
+    		// we can delete the last node's file
+    		uncacheAndDelete(storeIndex);
+    		--lastStoreIndex;
+    		--currentStoreIndex;
+    		count -= removedElements;
+    		size -= removedElements;
+    		lastNode = null;
+    	}
 
-			// ensure that the last node is not cached
-			loadLast();
-			removeFromCache(lastNode.storeIndex);
-			
-			// still elements left to clear?
-			if (count > 0) {
-				// it holds that count < arrayLength
-	    		lastNode.clearLast((int) count);
-				if (!storedNodeExists()) {
-					// no node left on disk, so continue with the last node
-					firstNodeSize = lastNode.endIndex - lastNode.startIndex;
-				}
-			}
+    	// check if we can delete entire nodes without actually loading the respective nodes
+    	while (count >= arrayLength) {
+    		// we can just delete the respective file
+    		uncacheAndDelete(--storeIndex);
+    		--lastStoreIndex;
+    		--currentStoreIndex;
+    		count -= arrayLength;
+    		size -= arrayLength;
+    	}
 
-    		size -= count;
-    	} finally {
-    		lock.unlock();
-		}
+    	// ensure that the last node is not cached
+    	loadLast();
+    	removeFromCache(lastNode.storeIndex);
+
+    	// still elements left to clear?
+    	if (count > 0) {
+    		// it holds that count < arrayLength
+    		lastNode.clearLast((int) count);
+    		if (!storedNodeExists()) {
+    			// no node left on disk, so continue with the last node
+    			firstNodeSize = lastNode.endIndex - lastNode.startIndex;
+    		}
+    	}
+
+    	size -= count;
     }
     
     private void removeFromCache(int storeIndex) {
-    	lock.lock();
-		try {
-			if (cachedNodes.containsKey(storeIndex)) {
-				cachedNodes.remove(storeIndex);
-				cacheSequence.remove((Integer)storeIndex);
-			}
-		} finally {
-			lock.unlock();
-		}
+    	if (cachedNodes.containsKey(storeIndex)) {
+    		cachedNodes.remove(storeIndex);
+    		cacheSequence.remove((Integer)storeIndex);
+    	}
 	}
 
 	/**
@@ -761,85 +640,63 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     	if (locked) {
     		throw new IllegalStateException("Tried to clear queue while being locked.");
     	}
-    	lock.lock();
-    	try {
-    		int startNodeIndex = -1;
-    		int startItemIndex = (int) startIndex;
-    		Node<E> startNode = null;
-    		// we can compute the store index using the size of the 
-    		// first node and the constant size of each array node
-    		if (startIndex < firstNodeSize) {
-    			startNode = loadFirst();
-    	        if (startNode == null || startNode.startIndex >= startNode.endIndex)
-    	            throw new NoSuchElementException();
-    	        startNodeIndex = startNode.storeIndex;
-    		} else {
-    			int i = (int) (startIndex - firstNodeSize);
-    			startNodeIndex = firstStoreIndex + 1 + (i / arrayLength);
-    			startItemIndex = i % arrayLength;
-    			startNode = load(startNodeIndex);
-    		}
 
-    		long endItemIndex = startIndex + count;
+    	int startNodeIndex = -1;
+    	int startItemIndex = (int) startIndex;
+    	Node<E> startNode = null;
+    	// we can compute the store index using the size of the 
+    	// first node and the constant size of each array node
+    	if (startIndex < firstNodeSize) {
+    		startNode = loadFirst();
+    		if (startNode == null || startNode.startIndex >= startNode.endIndex)
+    			throw new NoSuchElementException();
+    		startNodeIndex = startNode.storeIndex;
+    	} else {
+    		int i = (int) (startIndex - firstNodeSize);
+    		startNodeIndex = firstStoreIndex + 1 + (i / arrayLength);
+    		startItemIndex = i % arrayLength;
+    		startNode = load(startNodeIndex);
+    	}
 
-    		// shift the remaining elements to the left
-    		ReplaceableCloneableIterator<E> iterator = iterator(endItemIndex);
-    		while (iterator.hasNext()) {
-    			// since we keep a reference to the node here, we might make changes to it,
-    			// but we might also have remove the node from the cache earlier
-    			startNode.set(startItemIndex++, iterator.next());
-    			if (startNode.startIndex + startItemIndex >= startNode.endIndex) {
-    				// ensure that the node is in the cache after being modified
-    				putInCache(startNode.storeIndex, startNode);
-    				startItemIndex = 0;
-    				startNode = load(++startNodeIndex);
-    			}
+    	long endItemIndex = startIndex + count;
+
+    	// shift the remaining elements to the left
+    	ReplaceableCloneableIterator<E> iterator = iterator(endItemIndex);
+    	while (iterator.hasNext()) {
+    		// since we keep a reference to the node here, we might make changes to it,
+    		// but we might also have remove the node from the cache earlier
+    		startNode.set(startItemIndex++, iterator.next());
+    		if (startNode.startIndex + startItemIndex >= startNode.endIndex) {
+    			// ensure that the node is in the cache after being modified
+    			putInCache(startNode.storeIndex, startNode);
+    			startItemIndex = 0;
+    			startNode = load(++startNodeIndex);
     		}
-    		// ensure that the node is in the cache after being modified
-			putInCache(startNode.storeIndex, startNode);
-    		
-    		// now just remove the duplicate entries at the end
-    		clearLast(count);
-    		
-//    		System.out.println();
-//    		MyBufferedIntIterator iterator2 = iterator(0);
-//    		while (iterator2.hasNext()) {
-//    			System.out.print(iterator2.next() + ",");
-//    		}
-//    		System.out.println();
-    		
-    	} finally {
-    		lock.unlock();
-		}
+    	}
+    	// ensure that the node is in the cache after being modified
+    	putInCache(startNode.storeIndex, startNode);
+
+    	// now just remove the duplicate entries at the end
+    	clearLast(count);
     }
 
 	@SuppressWarnings("unchecked")
 	public E peekLast() {
-		lock.lock();
-    	try {
-    		final Node<E> f = loadLast();
-    		if (f == null || f.startIndex >= f.endIndex)
-    			return null;
-    		return (E) f.items[f.endIndex-1];
-    	} finally {
-    		lock.unlock();
-    	}
+		final Node<E> f = loadLast();
+		if (f == null || f.startIndex >= f.endIndex)
+			return null;
+		return (E) f.items[f.endIndex-1];
     }
     
     @SuppressWarnings("unchecked")
-	public E lastElement() {
-    	lock.lock();
-    	try {
-    		final Node<E> f = loadLast();
-    		if (f == null || f.startIndex >= f.endIndex)
-    			if (f == null) 
-    				throw new NoSuchElementException("size: " + size);
-    			else
-    				throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
-    		return (E) f.items[f.endIndex-1];
-    	} finally {
-    		lock.unlock();
-    	}
+    public E lastElement() {
+    	final Node<E> f = loadLast();
+    	if (f == null || f.startIndex >= f.endIndex)
+    		if (f == null) 
+    			throw new NoSuchElementException("size: " + size);
+    		else
+    			throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
+    	return (E) f.items[f.endIndex-1];
     }
     
     // Queue operations
@@ -847,65 +704,47 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
     @SuppressWarnings("unchecked")
 	@Override
     public E peek() {
-    	lock.lock();
-    	try {
-    		final Node<E> f = loadFirst();
-    		if (f == null || f.startIndex >= f.endIndex)
-    			return null;
-    		return (E) f.items[f.startIndex];
-    	} finally {
-    		lock.unlock();
-    	}
+    	final Node<E> f = loadFirst();
+    	if (f == null || f.startIndex >= f.endIndex)
+    		return null;
+    	return (E) f.items[f.startIndex];
     }
 
     @SuppressWarnings("unchecked")
     @Override
 	public E element() {
-    	lock.lock();
-    	try {
-    		final Node<E> f = loadFirst();
-    		if (f == null || f.startIndex >= f.endIndex)
-    			if (f == null) 
-    				throw new NoSuchElementException("size: " + size);
-    			else
-    				throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
-    		return (E) f.items[f.startIndex];
-    	} finally {
-    		lock.unlock();
-    	}
+    	final Node<E> f = loadFirst();
+    	if (f == null || f.startIndex >= f.endIndex)
+    		if (f == null) 
+    			throw new NoSuchElementException("size: " + size);
+    		else
+    			throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
+    	return (E) f.items[f.startIndex];
     }
 
     public E poll() {
     	if (locked) {
-			throw new IllegalStateException("Tried to remove element while being locked.");
-		}
-    	lock.lock();
-    	try {
-    		final Node<E> f = loadFirst();
-    		if (f == null || f.startIndex >= f.endIndex)
-    			return null;
-    		return removeFirst(f);
-    	} finally {
-    		lock.unlock();
+    		throw new IllegalStateException("Tried to remove element while being locked.");
     	}
+
+    	final Node<E> f = loadFirst();
+    	if (f == null || f.startIndex >= f.endIndex)
+    		return null;
+    	return removeFirst(f);
     }
 
     public E remove() {
     	if (locked) {
 			throw new IllegalStateException("Tried to remove element while being locked.");
 		}
-    	lock.lock();
-    	try {
-    		final Node<E> f = loadFirst();
-    		if (f == null || f.startIndex >= f.endIndex)
-    			if (f== null) 
-    				throw new NoSuchElementException("size: " + size);
-    			else
-    				throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
-    		return removeFirst(f);
-    	} finally {
-    		lock.unlock();
-    	}
+
+    	final Node<E> f = loadFirst();
+    	if (f == null || f.startIndex >= f.endIndex)
+    		if (f== null) 
+    			throw new NoSuchElementException("size: " + size);
+    		else
+    			throw new NoSuchElementException("startindex: " + (f.startIndex) + ", endindex: " + (f.endIndex) + ", size: " + size);
+    	return removeFirst(f);
     }
     
     /*
@@ -925,39 +764,8 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         return add(e);
     }
 
-//    @Override
-//    public Object[] toArray() {
-//        Object[] result = new Object[size];
-//        int i = 0;
-//        for (Node<E> x = first; x != null; x = x.next)
-//            result[i++] = x.item;
-//        return result;
-//    }
-//
-//    @Override
-//    @SuppressWarnings("unchecked")
-//    public <T> T[] toArray(T[] a) {
-//        if (a.length < size)
-//            a = (T[])java.lang.reflect.Array.newInstance(
-//                                a.getClass().getComponentType(), size);
-//        int i = 0;
-//        Object[] result = a;
-//        for (Node<E> x = first; x != null; x = x.next)
-//            result[i++] = x.item;
-//
-//        if (a.length > size)
-//            a[size] = null;
-//
-//        return a;
-//    }
-
 	public boolean isEmpty() {
-		lock.lock();
-    	try {
-    		return size == 0;
-    	} finally {
-			lock.unlock();
-		}
+		return size == 0;
 	}
 
 	public ReplaceableCloneableIterator<E> iterator() {

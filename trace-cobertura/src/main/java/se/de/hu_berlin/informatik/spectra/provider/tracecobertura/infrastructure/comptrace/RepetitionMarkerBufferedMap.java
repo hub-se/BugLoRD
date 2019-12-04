@@ -47,6 +47,12 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
     }
 	
 	@Override
+	public void sleep() {
+		super.sleep();
+		writeBuffer = null;
+	}
+	
+	@Override
 	protected void store(Node<int[]> node, String filename) {
 		try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {
 			try (FileChannel file = raFile.getChannel()) {
