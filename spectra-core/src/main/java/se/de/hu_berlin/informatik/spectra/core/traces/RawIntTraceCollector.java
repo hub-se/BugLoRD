@@ -44,7 +44,7 @@ public class RawIntTraceCollector {
 
 	private IntArraySequenceIndexer indexer = null;
 	
-	private final Set<Integer> startElements = new HashSet<>();
+	private final Set<Integer> startElements = new HashSet<>(16, 0.7F);
 	
 //	public Map<Integer,EfficientCompressedIntegerTrace> getGlobalIdToSubTraceMap() {
 //		return globalIdToSubTraceMap;

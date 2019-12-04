@@ -26,8 +26,8 @@ public class BufferedIntArrayQueue implements Serializable {
 	 */
 	private static final long serialVersionUID = -1777403971930917719L;
 
-	// keep at most 4 (+1 with the last node) nodes in memory
-    private static final int CACHE_SIZE = 4;
+	// keep at most 3 (+1 with the last node) nodes in memory
+    private static final int CACHE_SIZE = 3;
     
     private static final int ARRAY_SIZE = 1000;
 	
@@ -126,6 +126,7 @@ public class BufferedIntArrayQueue implements Serializable {
     }
     
     private void initialize() {
+    	writeBuffer = null;
 		firstStoreIndex = 0;
 		lastStoreIndex = -1;
 		if (lastNode != null) {

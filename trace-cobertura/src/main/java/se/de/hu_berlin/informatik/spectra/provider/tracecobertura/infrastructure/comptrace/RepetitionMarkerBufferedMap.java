@@ -53,6 +53,12 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 	}
 	
 	@Override
+	public void clear() {
+		super.clear();
+		writeBuffer = null;
+	}
+	
+	@Override
 	protected void store(Node<int[]> node, String filename) {
 		try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {
 			try (FileChannel file = raFile.getChannel()) {
@@ -91,10 +97,9 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 				file.read(directBuf);
 				directBuf.flip();
 				
-				Map<Integer, int[]> map = new HashMap<>();
-				
-				
 				int count = (int)fileSize/12; // size/4/3
+				// ((float)s / loadFactor) + 1.0F
+				Map<Integer, int[]> map = new HashMap<>((int) (((float)count / 0.7F) + 1), 0.7F);
 				// fill sub map
 				for (int i = 0; i < count; ++i) {
 					map.put(directBuf.getInt(), new int[] { directBuf.getInt(), directBuf.getInt()});

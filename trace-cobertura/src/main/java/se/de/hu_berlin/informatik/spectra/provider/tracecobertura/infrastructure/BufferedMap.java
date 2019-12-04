@@ -36,8 +36,8 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	 */
 	private static final long serialVersionUID = 3786896457427890598L;
 
-	// keep at most 4 nodes in memory
-    private static final int CACHE_SIZE = 4;
+	// keep at most 3 nodes in memory
+    private static final int CACHE_SIZE = 3;
     
 	private File output;
 	private String filePrefix;
@@ -351,7 +351,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	}
 	
 	private Node<E> createNewNode(Integer key) {
-		Node<E> node = new Node<>(key);
+		Node<E> node = new Node<>(key, maxSubMapSize);
 		existingNodes.add(key);
 		cacheNode(node);
 		return node;
@@ -468,9 +468,10 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			return storeIndex;
 		}
 
-		public Node(int storeIndex) {
+		public Node(int storeIndex, int mapSize) {
         	this.storeIndex = storeIndex;
-        	this.subMap = new HashMap<>();
+        	// ((float)s / loadFactor) + 1.0F
+        	this.subMap = new HashMap<>((int) (((float)mapSize / 0.7F) + 1), 0.7F);
         	// ensure that new nodes are stored (if not empty)
         	this.modified = true;
         }
