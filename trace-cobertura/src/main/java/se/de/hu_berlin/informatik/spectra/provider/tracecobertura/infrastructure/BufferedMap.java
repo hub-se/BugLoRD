@@ -35,7 +35,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	private static final long serialVersionUID = 3786896457427890598L;
 
 	// keep at most 3 nodes in memory
-    private static final int CACHE_SIZE = 3;
+    private static final int CACHE_SIZE = 4;
     
 	private File output;
 	private String filePrefix;
