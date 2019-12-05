@@ -21,6 +21,8 @@ import se.de.hu_berlin.informatik.gen.spectra.main.TraceCoberturaSpectraGenerato
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
+import se.de.hu_berlin.informatik.spectra.core.branch.StatementSpectraToBranchSpectra;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -61,6 +63,11 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		case TRACE_COBERTURA:
 			subDirName = BugLoRDConstants.DIR_NAME_TRACE_COBERTURA;
 			break;
+
+			case  BRANCH_SPECTRA:
+				subDirName = BugLoRDConstants.DIR_NAME_BRANCH_SPECTRA;
+				break;
+
 		default:
 			throw new IllegalStateException("Spectra Generation Tool unknown.");
 		}
@@ -71,14 +78,14 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 	private boolean tryToGetSpectraFromArchive(Entity entity) {
 		File spectra;
 		File destination;
-		
+
 		spectra = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR),
 				subDirName, Misc.replaceWhitespacesInString(entity.getUniqueIdentifier(), "_") + ".zip").toFile();
 		if (!spectra.exists()) {
 			return false;
 		}
 
-		destination = new File(entity.getWorkDataDir() + Defects4J.SEP + 
+		destination = new File(entity.getWorkDataDir() + Defects4J.SEP +
 				subDirName + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
 		try {
 			FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
@@ -86,7 +93,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
 			return false;
 		}
-		
+
 		return true;
 	}
 	
@@ -138,6 +145,38 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		 * # if not found a spectra, then run all the tests and build a new one
 		 * #==================================================================================== */
 		if (!foundSpectra) {
+			if (toolSpecific.equals(ToolSpecific.BRANCH_SPECTRA)) {
+				File spectraFile = Paths.get(Defects4J.getValueOf(Defects4JProperties.SPECTRA_ARCHIVE_DIR),
+						BugLoRDConstants.DIR_NAME_TRACE_COBERTURA,
+						Misc.replaceWhitespacesInString(bug.getUniqueIdentifier(), "_") + ".zip").toFile();
+				if (!spectraFile.exists()) {
+					Log.err(this, "Error while generating spectra. Skipping '" + buggyEntity + "'.");
+					return null;
+				}
+
+				Path traceSpectraDestination = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_TRACE_COBERTURA)
+						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+				try {
+					FileUtils.copyFileOrDir(spectraFile, traceSpectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException e) {
+					Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectraFile, traceSpectraDestination);
+					return null;
+				}
+
+				ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY,
+						traceSpectraDestination.toAbsolutePath());
+
+				ProgramBranchSpectra programBranchSpectra = StatementSpectraToBranchSpectra
+						.generateBranchingSpectraFromStatementSpectra(spectra, traceSpectraDestination.toAbsolutePath().toString());
+
+				Path destination = bug.getWorkDataDir().resolve(subDirName)
+										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+				SpectraFileUtils.saveSpectraToZipFile(programBranchSpectra, destination,
+						true, true, true);
+
+				return buggyEntity;
+			}
+
 			/* #====================================================================================
 			 * # checkout buggy version if necessary
 			 * #==================================================================================== */
