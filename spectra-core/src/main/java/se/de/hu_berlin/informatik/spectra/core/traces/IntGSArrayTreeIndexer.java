@@ -83,8 +83,11 @@ public class IntGSArrayTreeIndexer implements IntArraySequenceIndexer {
 	
 //	private int currentIndex = 0;
 	
+	private int maxNodeSequenceLength = 0;
+	private int minNodeSequenceLength = Integer.MAX_VALUE;
 	private int maxSequenceLength = 0;
 	private int minSequenceLength = Integer.MAX_VALUE;
+	private long nodeSequenceLengthSum = 0;
 	private long sequenceLengthSum = 0;
 	
 	@Override
@@ -92,6 +95,11 @@ public class IntGSArrayTreeIndexer implements IntArraySequenceIndexer {
 		maxSequenceLength = 0;
 		minSequenceLength = Integer.MAX_VALUE;
 		sequenceLengthSum = 0;
+		
+		maxNodeSequenceLength = 0;
+		minNodeSequenceLength = Integer.MAX_VALUE;
+		nodeSequenceLengthSum = 0;
+		
 //		currentIndex = 0;
 		int suffixCount = tree.countAllSuffixes();
 		// initialize sequence array
@@ -103,12 +111,17 @@ public class IntGSArrayTreeIndexer implements IntArraySequenceIndexer {
 		}
 		
 		Log.out(this, "Statistics:%n"
-				+ "- %-25s %,d%n"
-				+ "- %-25s %,d%n"
-				+ "- %-25s %,d%n"
-				+ "- %-25s %,d%n"
-				+ "- %-25s %.2f", 
+				+ "- %-30s %,d%n"
+				+ "- %-30s %,d%n"
+				+ "- %-30s %,d%n"
+				+ "- %-30s %,d%n"
+				+ "- %-30s %.2f%n"
+				+ "- %-30s %,d%n"
+				+ "- %-30s %,d%n"
+				+ "- %-30s %.2f", 
 				"number of sequences:", suffixCount, "starting elements:", tree.getBranches().size(), 
+				"minimum node sequence length:", minNodeSequenceLength, "maximum node sequence length:", maxNodeSequenceLength,
+				"mean node sequence length:", suffixCount > 0 ? (float)nodeSequenceLengthSum/(float)suffixCount : 0,
 				"minimum sequence length:", minSequenceLength, "maximum sequence length:", maxSequenceLength,
 				"mean sequence length:", suffixCount > 0 ? (float)sequenceLengthSum/(float)suffixCount : 0);
 	}
@@ -116,9 +129,18 @@ public class IntGSArrayTreeIndexer implements IntArraySequenceIndexer {
 	private void collectAllSuffixes(IntGSArrayTreeNode[] sequence, IntGSArrayTreeNode node) {
 		if (node instanceof IntGSArrayTreeEndNode) {
 			sequences[((IntGSArrayTreeEndNode) node).getIndex()] = sequence;
-			maxSequenceLength = Math.max(maxSequenceLength, sequence.length);
-			minSequenceLength = Math.min(minSequenceLength, sequence.length);
-			sequenceLengthSum += sequence.length;
+			
+			maxNodeSequenceLength = Math.max(maxNodeSequenceLength, sequence.length);
+			minNodeSequenceLength = Math.min(minNodeSequenceLength, sequence.length);
+			nodeSequenceLengthSum += sequence.length;
+			
+			int length = 0;
+			for (IntGSArrayTreeNode seqNode : sequence) {
+				length += seqNode.getSequence().length;
+			}
+			maxSequenceLength = Math.max(maxSequenceLength, length);
+			minSequenceLength = Math.min(minSequenceLength, length);
+			sequenceLengthSum += length;
 			return;
 		}
 		
