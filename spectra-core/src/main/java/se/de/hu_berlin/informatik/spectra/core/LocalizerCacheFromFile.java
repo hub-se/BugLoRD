@@ -18,29 +18,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.spectra.util.Indexable;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-public class LocalizerCacheFromFile implements ILocalizerCache<SourceCodeBlock> {
+public class LocalizerCacheFromFile<T extends Indexable<T> & Comparable<T>> implements ILocalizerCache<T> {
 
 	// TODO: arrays instead of maps
 	/** cache EF */
-	private Map<SourceCodeBlock, Integer> __cacheEF;
+	private Map<T, Integer> __cacheEF;
 	/** cache EP */
-	private Map<SourceCodeBlock, Integer> __cacheEP;
+	private Map<T, Integer> __cacheEP;
 	/** cache NF */
-	private Map<SourceCodeBlock, Integer> __cacheNF;
+	private Map<T, Integer> __cacheNF;
 	/** cache NP */
-	private Map<SourceCodeBlock, Integer> __cacheNP;
+	private Map<T, Integer> __cacheNP;
 	
-	private List<INode<SourceCodeBlock>> nodes;
+	private List<INode<T>> nodes;
 	private int currentIndex = -1;
 
-	public LocalizerCacheFromFile(final String traceFile, final String metricsCsvFile) {
-		readFiles(Paths.get(traceFile), Paths.get(metricsCsvFile));
+	public LocalizerCacheFromFile(T dummy, final String traceFile, final String metricsCsvFile) {
+		readFiles(dummy, Paths.get(traceFile), Paths.get(metricsCsvFile));
 	}
 	
-	private void readFiles(Path traceFile, Path metricsCsvFile) {
+	private void readFiles(T dummy, Path traceFile, Path metricsCsvFile) {
 		resetCache();
 		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile, StandardCharsets.UTF_8);
 				BufferedReader metricsCsvFileReader = Files.newBufferedReader(metricsCsvFile, StandardCharsets.UTF_8)) {
@@ -49,8 +50,8 @@ public class LocalizerCacheFromFile implements ILocalizerCache<SourceCodeBlock> 
 			while ((traceLine = traceFileReader.readLine()) != null
 					&& (metricsLine = metricsCsvFileReader.readLine()) != null) {
 				
-				SourceCodeBlock identifier = SourceCodeBlock.getNewBlockFromString(traceLine);
-				nodes.add(new DummyNode<>(++currentIndex, identifier, this));
+				T identifier = dummy.getFromString(traceLine);
+				nodes.add(new DummyNode<T>(++currentIndex, identifier, this));
 				
 				String[] entry = CSVUtils.fromCsvLine(metricsLine);
 				if (entry.length != 4) {
@@ -70,7 +71,7 @@ public class LocalizerCacheFromFile implements ILocalizerCache<SourceCodeBlock> 
 	}
 
 	@Override
-	public double getNP(INode<SourceCodeBlock> node, ComputationStrategies strategy) {
+	public double getNP(INode<T> node, ComputationStrategies strategy) {
 		Integer np = this.__cacheNP.get(node.getIdentifier());
 		if (np == null) {
 			Log.abort(this, "No value stored for node '%s'.", node.getIdentifier());
@@ -79,7 +80,7 @@ public class LocalizerCacheFromFile implements ILocalizerCache<SourceCodeBlock> 
 	}
 
 	@Override
-	public double getNF(INode<SourceCodeBlock> node, ComputationStrategies strategy) {
+	public double getNF(INode<T> node, ComputationStrategies strategy) {
 		Integer nf = this.__cacheNF.get(node.getIdentifier());
 		if (nf == null) {
 			Log.abort(this, "No value stored for node '%s'.", node.getIdentifier());
@@ -88,7 +89,7 @@ public class LocalizerCacheFromFile implements ILocalizerCache<SourceCodeBlock> 
 	}
 
 	@Override
-	public double getEP(INode<SourceCodeBlock> node, ComputationStrategies strategy) {
+	public double getEP(INode<T> node, ComputationStrategies strategy) {
 		Integer ep = this.__cacheEP.get(node.getIdentifier());
 		if (ep == null) {
 			Log.abort(this, "No value stored for node '%s'.", node.getIdentifier());
@@ -97,7 +98,7 @@ public class LocalizerCacheFromFile implements ILocalizerCache<SourceCodeBlock> 
 	}
 
 	@Override
-	public double getEF(INode<SourceCodeBlock> node, ComputationStrategies strategy) {
+	public double getEF(INode<T> node, ComputationStrategies strategy) {
 		Integer ef = this.__cacheEF.get(node.getIdentifier());
 		if (ef == null) {
 			Log.abort(this, "No value stored for node '%s'.", node.getIdentifier());
@@ -119,12 +120,12 @@ public class LocalizerCacheFromFile implements ILocalizerCache<SourceCodeBlock> 
 	}
 
 	@Override
-	public Collection<INode<SourceCodeBlock>> getNodes() {
+	public Collection<INode<T>> getNodes() {
 		return nodes;
 	}
 
 	@Override
-	public Collection<? extends ITrace<SourceCodeBlock>> getTraces() {
+	public Collection<? extends ITrace<T>> getTraces() {
 		throw new UnsupportedOperationException("No information on traces available.");
 	}
 

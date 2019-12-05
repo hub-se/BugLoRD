@@ -11,6 +11,8 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDPropertie
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.gen.ranking.Spectra2Ranking;
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -86,24 +88,48 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 		
 		if (!forceLoadSpectra && traceFile.toFile().exists() && metricsFile.toFile().exists()) {
 			// reuse computed data for repeated computations (don't need to load the spectra again)
-			Spectra2Ranking.generateRankingFromTraceFile(
-					traceFile.toAbsolutePath().toString(),
-					metricsFile.toAbsolutePath().toString(),
-					rankingDir.toString(), localizers, ComputationStrategies.STANDARD_SBFL);
+			if (toolSpecific.equals(ToolSpecific.BRANCH_SPECTRA)) {
+				Spectra2Ranking.generateRankingFromTraceFile(ProgramBranch.DUMMY,
+						traceFile.toAbsolutePath().toString(),
+						metricsFile.toAbsolutePath().toString(),
+						rankingDir.toString(), localizers, ComputationStrategies.STANDARD_SBFL);
+			} else {
+				Spectra2Ranking.generateRankingFromTraceFile(SourceCodeBlock.DUMMY,
+						traceFile.toAbsolutePath().toString(),
+						metricsFile.toAbsolutePath().toString(),
+						rankingDir.toString(), localizers, ComputationStrategies.STANDARD_SBFL);
+			}
 		} else {
-			if (removeIrrelevantNodes) {
-				String compressedSpectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName).toString();
+			if (toolSpecific.equals(ToolSpecific.BRANCH_SPECTRA)) {
+				if (removeIrrelevantNodes) {
+					String compressedSpectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName).toString();
 
-				if (new File(compressedSpectraFileFiltered).exists()) {
-					Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(), 
-							localizers, false, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
+					if (new File(compressedSpectraFileFiltered).exists()) {
+						Spectra2Ranking.generateRanking(ProgramBranch.DUMMY, compressedSpectraFileFiltered, rankingDir.toString(),
+								localizers, false, ComputationStrategies.STANDARD_SBFL, null);
+					} else {
+						Spectra2Ranking.generateRanking(ProgramBranch.DUMMY, compressedSpectraFile, rankingDir.toString(),
+								localizers, true, ComputationStrategies.STANDARD_SBFL, null);
+					}
 				} else {
-					Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-							localizers, true, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
+					Spectra2Ranking.generateRanking(ProgramBranch.DUMMY, compressedSpectraFile, rankingDir.toString(),
+							localizers, false, ComputationStrategies.STANDARD_SBFL, null);
 				}
 			} else {
-				Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(), 
-						localizers, false, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
+				if (removeIrrelevantNodes) {
+					String compressedSpectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName).toString();
+
+					if (new File(compressedSpectraFileFiltered).exists()) {
+						Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(),
+								localizers, false, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
+					} else {
+						Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(),
+								localizers, true, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
+					}
+				} else {
+					Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(),
+							localizers, false, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
+				}
 			}
 		}
 

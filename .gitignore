@@ -52,3 +52,7 @@ aspectj-frontend/aspectjProperties.ini
 .classpath
 
 jacoco.exec
+
+#intellij
+.idea
+*.iml
