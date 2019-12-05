@@ -111,7 +111,7 @@ public class BufferedIntArrayQueue implements Serializable {
         currentStoreIndex = stream.readInt();
         lastStoreIndex = stream.readInt();
         firstNodeSize = stream.readInt();
-        size = stream.readInt();
+        size = stream.readLong();
         arrayLength = stream.readInt();
 
         // always delete files from deserialized object TODO

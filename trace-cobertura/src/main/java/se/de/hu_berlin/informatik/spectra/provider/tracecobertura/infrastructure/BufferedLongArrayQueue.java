@@ -108,7 +108,7 @@ public class BufferedLongArrayQueue implements Serializable {
         currentStoreIndex = stream.readInt();
         lastStoreIndex = stream.readInt();
         firstNodeSize = stream.readInt();
-        size = stream.readInt();
+        size = stream.readLong();
         arrayLength = stream.readInt();
         
         cachedNodes = new HashMap<>();
