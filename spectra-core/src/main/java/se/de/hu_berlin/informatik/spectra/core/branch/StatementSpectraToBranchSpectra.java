@@ -6,8 +6,8 @@ import se.de.hu_berlin.informatik.spectra.core.*;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue.MyBufferedIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 
 import java.nio.file.Path;
@@ -38,7 +38,8 @@ public class StatementSpectraToBranchSpectra {
         ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>>
                 statementSpectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, path);
 
-        ProgramBranchSpectra branchingSpectra = generateBranchingSpectraFromStatementSpectra(statementSpectra, "");
+        @SuppressWarnings("unused")
+		ProgramBranchSpectra branchingSpectra = generateBranchingSpectraFromStatementSpectra(statementSpectra, "");
 
         HashSet<Integer> executionBranchIds = new HashSet<Integer>();
         Collection<Integer> branchIds = new ArrayList<>();
@@ -155,7 +156,7 @@ public class StatementSpectraToBranchSpectra {
         /*====================================================================================*/
 
         HashSet<Integer> executionBranchIds = new HashSet<Integer>();
-        BufferedIntArrayQueue.MyBufferedIntIterator myExecutionBranchIterator = executionTrace.getCompressedTrace().iterator();
+        MyBufferedIterator myExecutionBranchIterator = executionTrace.getCompressedTrace().iterator();
 
         while(myExecutionBranchIterator.hasNext()){
             Iterator<Integer> subTraceIdIterator = statementSpectra.getIndexer().getSubTraceIDSequenceIterator(myExecutionBranchIterator.next());
@@ -181,7 +182,7 @@ public class StatementSpectraToBranchSpectra {
 
         List<Integer> statementIndices = null;
 
-        IntTraceIterator statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(branchId);
+        TraceIterator statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(branchId);
         statementIndices = new ArrayList<Integer>();
 
         while(statementIndicesIterator.hasNext()){
@@ -293,7 +294,7 @@ public class StatementSpectraToBranchSpectra {
 
         boolean result = false;
 
-        IntTraceIterator _statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(branchId);
+        TraceIterator _statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(branchId);
         List<Integer> _statementIndices = new ArrayList<Integer>();
 
         while(_statementIndicesIterator.hasNext()){
