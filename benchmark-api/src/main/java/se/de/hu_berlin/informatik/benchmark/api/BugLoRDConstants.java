@@ -22,6 +22,7 @@ public class BugLoRDConstants {
 	public static final String DIR_NAME_JACOCO = "JACOCO";
 	public static final String DIR_NAME_COBERTURA = "COBERTURA";
 	public static final String DIR_NAME_TRACE_COBERTURA = "TRACE_COBERTURA";
+	public static final String DIR_NAME_BRANCH_SPECTRA = "BRANCH_SPECTRA";
 	public static final String SPECTRA_FILE_NAME = "spectraCompressed.zip";
 	public static final String FILTERED_SPECTRA_FILE_NAME = "spectraCompressed_filtered.zip";
 	

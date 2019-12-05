@@ -91,7 +91,7 @@ public class HyperbolicComputeSBFLRankingsEH extends AbstractProcessor<BuggyFixe
 		
 		if (traceFile.toFile().exists() && metricsFile.toFile().exists()) {
 			// reuse computed data for repeated computations (don't need to load the spectra again)
-			Spectra2Ranking.generateRankingFromTraceFileForLocalizers(
+			Spectra2Ranking.generateRankingFromTraceFileForLocalizers(SourceCodeBlock.DUMMY,
 					traceFile.toAbsolutePath().toString(),
 					metricsFile.toAbsolutePath().toString(),
 					bucketOutput.toString(), localizers, strategy);

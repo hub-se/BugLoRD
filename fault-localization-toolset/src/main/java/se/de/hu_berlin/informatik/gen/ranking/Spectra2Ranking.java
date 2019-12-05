@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.BuildBlockSpectraModule;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.ReadSpectraModule;
+import se.de.hu_berlin.informatik.spectra.util.Indexable;
 import se.de.hu_berlin.informatik.spectra.util.TraceFileModule;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -177,6 +178,80 @@ final public class Spectra2Ranking {
 		linker.append(new RankingModule<SourceCodeBlock>(strategy, outputDir, localizers))
 		.submit(spectraFile);
 	}
+
+	/**
+	 * Convenience method. Generates a ranking from the given spectra file. Checks the inputs
+	 * for correctness and aborts the application with an error message if one of
+	 * the inputs is not correct.
+	 * @param dummy
+	 * dummy identifier; used for loading the spectra
+	 * @param spectraFileOption
+	 * a compressed spectra file
+	 * @param rankingDir
+	 * path to the main ranking directory
+	 * @param localizers
+	 * an array of String representation of fault localizers
+	 * as used by STARDUST
+	 * @param removeIrrelevantNodes
+	 * whether to remove nodes that were not touched by any failed traces
+	 * @param strategy
+	 * the strategy to use for computation of the rankings
+	 * @param suffix
+	 * a suffix to append to generated trace files and metrics files
+	 * @param <T>
+	 * type of node identifiers
+	 */
+	public static <T extends Indexable<T> & Comparable<T>> void generateRanking(T dummy,
+			final String spectraFileOption, final String rankingDir, final String[] localizers,
+			final boolean removeIrrelevantNodes, ComputationStrategies strategy, String suffix) {
+		final Path spectraFile = FileUtils.checkIfAnExistingFile(null, spectraFileOption);
+		if (spectraFile == null) {
+			Log.abort(Spectra2Ranking.class, "'%s' is not an existing file.", spectraFileOption);
+		}
+		final Path outputDir = FileUtils.checkIfNotAnExistingFile(null, rankingDir);
+		if (outputDir == null) {
+			Log.abort(Spectra2Ranking.class, "'%s' is not a directory.", rankingDir);
+		}
+		if (localizers == null) {
+			Log.abort(Spectra2Ranking.class, "No localizers given.");
+		}
+		generateRankingForCheckedInputs(dummy, spectraFile, outputDir.toString(),
+				localizers, removeIrrelevantNodes, strategy, suffix);
+	}
+
+	/**
+	 * Generates the ranking. Assumes that inputs have been checked to be correct.
+	 * @param dummy
+	 * dummy identifier; used for loading the spectra
+	 * @param spectraFile
+	 * a compressed spectra file
+	 * @param outputDir
+	 * path to the main ranking directory
+	 * @param localizers
+	 * an array of String representation of fault localizers
+	 * as used by STARDUST
+	 * @param removeIrrelevantNodes
+	 * whether to remove nodes that were not touched by any failed traces
+	 * @param strategy
+	 * the strategy to use for computation of the rankings
+	 * @param suffix
+	 * a suffix to append to generated trace files and metrics files
+	 * @param <T>
+	 * type of node identifiers
+	 */
+	private static <T extends Indexable<T> & Comparable<T>> void generateRankingForCheckedInputs(T dummy, final Path spectraFile,
+																				final String outputDir, final String[] localizers,
+																				final boolean removeIrrelevantNodes,
+																				ComputationStrategies strategy, String suffix) {
+		ModuleLinker linker = new ModuleLinker()
+				.append(new ReadSpectraModule<T>(dummy));
+		if (removeIrrelevantNodes) {
+			linker.append(new FilterSpectraModule<T>(INode.CoverageType.EF_EQUALS_ZERO));
+		}
+		linker.append(new TraceFileModule<T>(Paths.get(outputDir), suffix));
+		linker.append(new RankingModule<T>(strategy, outputDir, localizers))
+				.submit(spectraFile);
+	}
 	
 	
 	
@@ -184,6 +259,8 @@ final public class Spectra2Ranking {
 	 * Convenience method. Generates a ranking from the given trace file. Checks the inputs
 	 * for correctness and aborts the application with an error message if one of
 	 * the inputs is not correct.
+	 * @param dummy
+	 * dummy node identifier
 	 * @param traceFile
 	 * a trace file
 	 * @param metricsFile
@@ -195,12 +272,14 @@ final public class Spectra2Ranking {
 	 * as used by STARDUST
 	 * @param strategy
 	 * the strategy to use for computation of the rankings
+	 * @param <T>
+	 * the type of node identifiers
 	 */
-	public static void generateRankingFromTraceFile(
-			final String traceFile, final String metricsFile, 
+	public static <T extends Indexable<T> & Comparable<T>> void generateRankingFromTraceFile(
+			T dummy, final String traceFile, final String metricsFile,
 			final String rankingDir, final String[] localizers, 
 			ComputationStrategies strategy) {
-		generateRankingFromTraceFileForLocalizers(traceFile, 
+		generateRankingFromTraceFileForLocalizers(dummy, traceFile,
 				metricsFile, rankingDir, getLocalizers(localizers), strategy);
 	}
 
@@ -209,6 +288,8 @@ final public class Spectra2Ranking {
 	 * Convenience method. Generates a ranking from the given trace file. Checks the inputs
 	 * for correctness and aborts the application with an error message if one of
 	 * the inputs is not correct.
+	 * @param dummy
+	 * dummy identifier
 	 * @param traceFile
 	 * a trace file
 	 * @param metricsFile
@@ -223,8 +304,8 @@ final public class Spectra2Ranking {
 	 * @param <T>
 	 * the type of nodes
 	 */
-	public static <T> void generateRankingFromTraceFileForLocalizers(
-			final String traceFile, final String metricsFile, 
+	public static <T extends Indexable<T> & Comparable<T>> void generateRankingFromTraceFileForLocalizers(
+			T dummy, final String traceFile, final String metricsFile,
 			final String rankingDir, final List<IFaultLocalizer<T>> localizers, 
 			ComputationStrategies strategy) {
 		final Path traceFilePath = FileUtils.checkIfAnExistingFile(null, traceFile);
@@ -243,7 +324,7 @@ final public class Spectra2Ranking {
 			Log.abort(Spectra2Ranking.class, "No localizers given.");
 		}
 
-		new RankingFromTraceFileModule(traceFilePath, metricsFilePath, 
+		new RankingFromTraceFileModule(dummy, traceFilePath, metricsFilePath,
 				strategy, outputDir.toString())
 		.submit(localizers);
 	}
