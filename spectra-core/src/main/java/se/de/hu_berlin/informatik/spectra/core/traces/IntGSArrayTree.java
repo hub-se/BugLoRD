@@ -188,6 +188,7 @@ public class IntGSArrayTree {
 		}
 		
 		if (rawTrace.getCompressedTrace().isEmpty()) {
+			rawTrace.sleep();
 			return new ExecutionTrace(
 					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
 					ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
@@ -210,7 +211,8 @@ public class IntGSArrayTree {
 				throw new IllegalStateException("Could not get index for a sequence in the input trace.");
 			}
 		}
-
+		rawTrace.sleep();
+		
 		return indexedtrace;
 	}
 	

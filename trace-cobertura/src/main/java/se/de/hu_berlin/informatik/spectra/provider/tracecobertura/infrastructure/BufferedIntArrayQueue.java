@@ -50,8 +50,8 @@ public class BufferedIntArrayQueue implements Serializable {
 	private volatile transient Node lastNode;
 	
 	// cache all other nodes, if necessary
-	private transient Map<Integer,Node> cachedNodes = new HashMap<>();
-	private transient List<Integer> cacheSequence = new LinkedList<>();
+	private transient Map<Integer,Node> cachedNodes = null;
+	private transient List<Integer> cacheSequence = null;
 
 	private transient boolean deleteOnExit;
 	
@@ -82,15 +82,18 @@ public class BufferedIntArrayQueue implements Serializable {
 	// stores all nodes on disk
 	public void sleep() {
 //		System.out.println(super.toString() + " sleep: " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
-		for (Node node : cachedNodes.values()) {
-			// stores cached nodes, if modified (i.e., if elements were added/removed)
-			if (node.modified) {
-				store(node);
+		if (cachedNodes != null) {
+			for (Node node : cachedNodes.values()) {
+				// stores cached nodes, if modified (i.e., if elements were added/removed)
+				if (node.modified) {
+					store(node);
+				}
+				node.cleanup();
 			}
-			node.cleanup();
+			cachedNodes = null;
+			cacheSequence = null;
 		}
-		cachedNodes.clear();
-		cacheSequence.clear();
+		
 		// store the last node, too
 		if (lastNode != null && lastNode.modified) {
 			store(lastNode);
@@ -110,9 +113,7 @@ public class BufferedIntArrayQueue implements Serializable {
         firstNodeSize = stream.readInt();
         size = stream.readInt();
         arrayLength = stream.readInt();
-        
-        cachedNodes = new HashMap<>();
-        cacheSequence = new LinkedList<>();
+
         // always delete files from deserialized object TODO
         deleteOnExit = true;
     }
@@ -258,10 +259,15 @@ public class BufferedIntArrayQueue implements Serializable {
     		lastNode = node;
     		return;
     	}
-    	// already in the cache?
-    	if (cachedNodes.containsKey(storeIndex)) {
+    	
+    	if (cachedNodes == null) {
+    		cachedNodes = new HashMap<>((int)(((float)CACHE_SIZE / 0.7F) + 1), 0.7F);
+    		cacheSequence = new LinkedList<>();
+    	} else if (cachedNodes.containsKey(storeIndex)) {
+    		// already in the cache?
     		return;
     	}
+    	
 //    	System.out.println(super.toString() + " cache: " + storeIndex + ", " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     	// remove a cached node if the cache is full
     	if (cachedNodes.size() >= CACHE_SIZE) {
@@ -274,6 +280,9 @@ public class BufferedIntArrayQueue implements Serializable {
 
     // should check for modifications and possibly write to the disk
     private void uncache(int storeIndex) {
+    	if (cachedNodes == null) {
+    		return;
+    	}
     	Node node = cachedNodes.remove(storeIndex);
     	if (node != null) {
     		if (node.modified) {
@@ -320,6 +329,9 @@ public class BufferedIntArrayQueue implements Serializable {
     }
 
     private void uncacheNoStore(int storeIndex) {
+    	if (cachedNodes == null) {
+    		return;
+    	}
     	if (cachedNodes.containsKey(storeIndex)) {
 //    		System.out.println(super.toString() + " uncache: " + storeIndex + ", " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     		Node node = cachedNodes.get(storeIndex);
@@ -367,7 +379,7 @@ public class BufferedIntArrayQueue implements Serializable {
 		}
 
 		// only cache nodes that are not the last node
-		if (cachedNodes.containsKey(storeIndex)) {
+		if (cachedNodes != null && cachedNodes.containsKey(storeIndex)) {
 			// already cached
 			return cachedNodes.get(storeIndex);
 		}
@@ -448,12 +460,15 @@ public class BufferedIntArrayQueue implements Serializable {
     }
 
     private void clearCache() {
+    	if (cachedNodes == null) {
+    		return;
+    	}
 //    	System.out.println(super.toString() + " clear cache, " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     	for (Node node : cachedNodes.values()) {
     		node.cleanup();
     	}
-    	cachedNodes.clear();
-    	cacheSequence.clear();
+    	cachedNodes = null;
+    	cacheSequence = null;
     }
 
     public void clear() {
@@ -590,6 +605,9 @@ public class BufferedIntArrayQueue implements Serializable {
     }
     
     private void removeFromCache(int storeIndex) {
+    	if (cachedNodes == null) {
+    		return;
+    	}
     	if (cachedNodes.containsKey(storeIndex)) {
 //    		System.out.println(super.toString() + " uncache: " + storeIndex + ", " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     		cachedNodes.remove(storeIndex);
