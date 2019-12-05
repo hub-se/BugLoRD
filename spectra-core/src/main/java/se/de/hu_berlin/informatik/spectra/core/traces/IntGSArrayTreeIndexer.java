@@ -83,22 +83,42 @@ public class IntGSArrayTreeIndexer implements IntArraySequenceIndexer {
 	
 //	private int currentIndex = 0;
 	
+	private int maxSequenceLength = 0;
+	private int minSequenceLength = Integer.MAX_VALUE;
+	private long sequenceLengthSum = 0;
+	
 	@Override
 	public void generateSequenceIndex() {
+		maxSequenceLength = 0;
+		minSequenceLength = Integer.MAX_VALUE;
+		sequenceLengthSum = 0;
+//		currentIndex = 0;
 		int suffixCount = tree.countAllSuffixes();
-		Log.out(this, "Number of sequences: %d", suffixCount);
+		// initialize sequence array
 		sequences = newSequencesArray(suffixCount);
 		
-//		currentIndex = 0;
 		// iterate over all different branches (starting with the same element)
 		for (IntGSArrayTreeNode node : tree.getBranches().values()) {
 			collectAllSuffixes(newArray(0), node);
 		}
+		
+		Log.out(this, "Statistics:%n"
+				+ "- %-25s %,d%n"
+				+ "- %-25s %,d%n"
+				+ "- %-25s %,d%n"
+				+ "- %-25s %,d%n"
+				+ "- %-25s %.2f", 
+				"number of sequences:", suffixCount, "starting elements:", tree.getBranches().size(), 
+				"minimum sequence length:", minSequenceLength, "maximum sequence length:", maxSequenceLength,
+				"mean sequence length:", suffixCount > 0 ? (float)sequenceLengthSum/(float)suffixCount : 0);
 	}
 	
 	private void collectAllSuffixes(IntGSArrayTreeNode[] sequence, IntGSArrayTreeNode node) {
 		if (node instanceof IntGSArrayTreeEndNode) {
 			sequences[((IntGSArrayTreeEndNode) node).getIndex()] = sequence;
+			maxSequenceLength = Math.max(maxSequenceLength, sequence.length);
+			minSequenceLength = Math.min(minSequenceLength, sequence.length);
+			sequenceLengthSum += sequence.length;
 			return;
 		}
 		
