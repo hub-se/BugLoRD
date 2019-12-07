@@ -65,6 +65,14 @@ public class CompressedIntegerTraceLevel implements Serializable {
 		}
 	}
 	
+	public void cleanup() {
+		traceWithoutRepetitions = null;
+		traceRepetitions = null;
+		elementToPositionMap = null;
+		resultTraceIterator = null;
+		inputTraceIterator = null;
+	}
+	
 	public long size() {
 		return originalSize;
 	}

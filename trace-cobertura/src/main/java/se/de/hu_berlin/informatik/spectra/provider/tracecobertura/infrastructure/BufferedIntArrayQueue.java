@@ -483,7 +483,8 @@ public class BufferedIntArrayQueue implements Serializable {
     	}
     	// delete potentially stored last node
     	delete(lastStoreIndex+1);
-
+    	lastNode = null;
+    	
     	initialize();
     }
 
