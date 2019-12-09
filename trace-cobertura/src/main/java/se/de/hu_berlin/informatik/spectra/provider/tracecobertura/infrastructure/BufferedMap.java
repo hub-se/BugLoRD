@@ -418,7 +418,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	public static class Node<E> implements Map<Integer, E> {
         
 		private transient boolean modified = false;
-		private final Map<Integer,E> subMap;
+		private Map<Integer,E> subMap;
 
         // index to store/load this node
 		private final int storeIndex;
@@ -503,6 +503,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 				modified = true;
 			}
 			subMap.clear();
+			subMap = null;
 		}
 
 		@Override

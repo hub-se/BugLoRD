@@ -365,6 +365,11 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 						compressedTrace = levels.get(levels.size() - 1).getCompressedTrace();
 					}
 
+					// help the GC
+					for (CompressedIntegerTraceLevel traceLevel :levels) {
+						traceLevel.cleanup();
+					}
+					
 					// don't need the levels anymore now
 					levels.clear();
 				}

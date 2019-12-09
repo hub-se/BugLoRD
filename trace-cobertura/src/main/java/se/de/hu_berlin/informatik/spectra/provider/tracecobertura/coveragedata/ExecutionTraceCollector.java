@@ -21,7 +21,7 @@ public class ExecutionTraceCollector {
 
 	public final static int EXECUTION_TRACE_CHUNK_SIZE = 100000;
 	public final static int MAP_CHUNK_SIZE = 300000;
-	public static final int SUBTRACE_ARRAY_SIZE = 1000;
+	public static final int SUBTRACE_ARRAY_SIZE = 500;
 	
 	public static final int NEW_SUBTRACE_ID = 0;
 	

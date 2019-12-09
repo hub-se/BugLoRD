@@ -390,6 +390,7 @@ public class RawIntTraceCollector {
 				// it should suffice to only iterate over the compressed traces...
 				// (if not, we will try processing the entire sequence later, when generating the execution traces)
 				extractCommonSequencesFromRawTrace(rawTrace.baseIterator());
+				rawTrace.clear();
 				rawTrace = null;
 			}
 		} catch (Exception e) {

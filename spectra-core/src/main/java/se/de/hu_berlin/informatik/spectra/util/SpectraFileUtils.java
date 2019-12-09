@@ -1302,7 +1302,7 @@ public class SpectraFileUtils {
 		} else {
 			e = new EfficientCompressedIntegerTrace(compressedTrace, null, false);
 		}
-		e.sleep();
+//		e.sleep();
 		return e;
 	}
 	
