@@ -29,7 +29,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	private long originalSize = 0;
 	private BufferedIntArrayQueue compressedTrace;
 	
-	private List<CompressedIntegerTraceLevel> levels = new ArrayList<>(MAX_ITERATION_COUNT + 1);
+	private List<CompressedIntegerTraceLevel> levels = null;
 	
 	private File outputDir;
 	private int nodeSize;
@@ -68,6 +68,9 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	}
 	
 	private void initialize() {
+		if (!flat) {
+			levels = new ArrayList<>(MAX_ITERATION_COUNT + 1);
+		}
 		this.originalSize = 0;
 		this.locked = false;
 	}
@@ -362,6 +365,8 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 						compressedTrace = levels.get(levels.size() - 1).getCompressedTrace();
 					}
 
+					// don't need the levels anymore now
+					levels.clear();
 				}
 				
 				int markerSize = 0;
@@ -379,11 +384,6 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 				if (log) {
 					System.out.println(builder.toString());
 				}
-
-				// don't need the levels anymore now
-				levels.clear();
-
-				// TODO: need to clean up each level?
 
 			}
 

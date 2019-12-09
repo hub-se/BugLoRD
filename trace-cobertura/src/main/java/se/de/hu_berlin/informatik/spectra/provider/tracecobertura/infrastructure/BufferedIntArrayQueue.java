@@ -97,8 +97,8 @@ public class BufferedIntArrayQueue implements Serializable {
 		// store the last node, too
 		if (lastNode != null && lastNode.modified) {
 			store(lastNode);
-			lastNode = null;
 		}
+		lastNode = null;
 		writeBuffer = null;
 	}
 

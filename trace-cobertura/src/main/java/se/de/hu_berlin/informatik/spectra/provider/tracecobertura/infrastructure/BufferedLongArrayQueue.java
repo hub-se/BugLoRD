@@ -94,8 +94,8 @@ public class BufferedLongArrayQueue implements Serializable {
 		// store the last node, too
 		if (lastNode != null && lastNode.modified) {
 			store(lastNode);
-			lastNode = null;
 		}
+		lastNode = null;
 		writeBuffer = null;
 	}
 
@@ -108,7 +108,7 @@ public class BufferedLongArrayQueue implements Serializable {
         currentStoreIndex = stream.readInt();
         lastStoreIndex = stream.readInt();
         firstNodeSize = stream.readInt();
-        size = stream.readInt();
+        size = stream.readLong();
         arrayLength = stream.readInt();
         
         cachedNodes = new HashMap<>();

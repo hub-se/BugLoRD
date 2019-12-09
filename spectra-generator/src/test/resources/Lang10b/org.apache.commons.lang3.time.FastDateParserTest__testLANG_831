@@ -1,0 +1,16 @@
+#ignored:0, FAILED!!!
+Testsuite: org.apache.commons.lang3.time.FastDateParserTest
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0,014 sec
+
+Testcase: testLANG_831 took 0,013 sec
+	FAILED
+Expected FDF failure, but got Tue Mar 03 06:00:00 CET 1970 for [M E,3  Tue] using (\p{IsNd}++)\s*+(Fri|Friday|Mon|Monday|Sat|Saturday|Sun|Sunday|Thu|Thursday|Tue|Tuesday|Wed|Wednesday)
+junit.framework.AssertionFailedError: Expected FDF failure, but got Tue Mar 03 06:00:00 CET 1970 for [M E,3  Tue] using (\p{IsNd}++)\s*+(Fri|Friday|Mon|Monday|Sat|Saturday|Sun|Sunday|Thu|Thursday|Tue|Tuesday|Wed|Wednesday)
+	at org.apache.commons.lang3.time.FastDateParserTest.testSdfAndFdp(FastDateParserTest.java:368)
+	at org.apache.commons.lang3.time.FastDateParserTest.testLANG_831(FastDateParserTest.java:339)
+	at se.de.hu_berlin.informatik.java7.testrunner.TestWrapper$TestRunFutureTask$TestRunCall.call(TestWrapper.java:121)
+	at se.de.hu_berlin.informatik.java7.testrunner.TestWrapper$TestRunFutureTask$TestRunCall.call(TestWrapper.java:1)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.lang.Thread.run(Thread.java:748)
+
+
