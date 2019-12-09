@@ -59,6 +59,7 @@ public class TraceCoberturaAddReportToProviderAndGenerateSpectraModule extends A
 		
 		if (!provider.addData(reportWrapper)) {
 			Log.err(this, "Could not add report '%s'.", reportWrapper.getIdentifier());
+			errorState  = true;
 			throw new IllegalStateException("Adding a report failed. Can not provide correct spectra.");
 		}
 		
