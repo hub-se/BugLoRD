@@ -24,7 +24,7 @@ public class BufferedLongArrayQueue implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 3684150499665589360L;
+	private static final long serialVersionUID = -1103705721017209751L;
 
 	// keep at most 3 (+1 with the last node) nodes in memory
     private static final int CACHE_SIZE = 3;
@@ -50,10 +50,13 @@ public class BufferedLongArrayQueue implements Serializable {
 	private volatile transient Node lastNode;
 	
 	// cache all other nodes, if necessary
-	private transient Map<Integer,Node> cachedNodes = new HashMap<>();
-	private transient List<Integer> cacheSequence = new LinkedList<>();
+	private transient Map<Integer,Node> cachedNodes = null;
+	private transient List<Integer> cacheSequence = null;
 
 	private transient boolean deleteOnExit;
+	
+	// keep a node that may be reused
+	private transient Node reusableNode = null;
 	
 	private void writeObject(java.io.ObjectOutputStream stream)
             throws IOException {
@@ -82,21 +85,25 @@ public class BufferedLongArrayQueue implements Serializable {
 	// stores all nodes on disk
 	public void sleep() {
 //		System.out.println(super.toString() + " sleep: " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
-		for (Node node : cachedNodes.values()) {
-			// stores cached nodes, if modified (i.e., if elements were added/removed)
-			if (node.modified) {
-				store(node);
+		if (cachedNodes != null) {
+			for (Node node : cachedNodes.values()) {
+				// stores cached nodes, if modified (i.e., if elements were added/removed)
+				if (node.modified) {
+					store(node);
+				}
+				node.cleanup();
 			}
-			node.cleanup();
+			cachedNodes = null;
+			cacheSequence = null;
 		}
-		cachedNodes.clear();
-		cacheSequence.clear();
+		
 		// store the last node, too
 		if (lastNode != null && lastNode.modified) {
 			store(lastNode);
 		}
 		lastNode = null;
 		writeBuffer = null;
+		reusableNode = null;
 	}
 
 	private void readObject(java.io.ObjectInputStream stream)
@@ -110,9 +117,7 @@ public class BufferedLongArrayQueue implements Serializable {
         firstNodeSize = stream.readInt();
         size = stream.readLong();
         arrayLength = stream.readInt();
-        
-        cachedNodes = new HashMap<>();
-        cacheSequence = new LinkedList<>();
+
         // always delete files from deserialized object TODO
         deleteOnExit = true;
     }
@@ -189,8 +194,6 @@ public class BufferedLongArrayQueue implements Serializable {
      */
     private void linkLast(long e) {
         final Node l = loadLast();
-        final Node newNode = new Node(e, arrayLength, ++currentStoreIndex);
-        lastNode = newNode;
         if (l == null) {
         	// no nodes did exist, previously
 			++firstNodeSize;
@@ -203,6 +206,11 @@ public class BufferedLongArrayQueue implements Serializable {
 //        	// we can now remove the node from memory
 //        	l.items = null;
         }
+        
+        final Node newNode = reusableNode == null ? new Node(e, arrayLength, ++currentStoreIndex) : reusableNode.recycle(e, ++currentStoreIndex);
+        reusableNode = null;
+        lastNode = newNode;
+        
         ++size;
     }
     
@@ -258,10 +266,15 @@ public class BufferedLongArrayQueue implements Serializable {
     		lastNode = node;
     		return;
     	}
-    	// already in the cache?
-    	if (cachedNodes.containsKey(storeIndex)) {
+    	
+    	if (cachedNodes == null) {
+    		cachedNodes = new HashMap<>((int)(((float)CACHE_SIZE / 0.7F) + 1), 0.7F);
+    		cacheSequence = new LinkedList<>();
+    	} else if (cachedNodes.containsKey(storeIndex)) {
+    		// already in the cache?
     		return;
     	}
+    	
 //    	System.out.println(super.toString() + " cache: " + storeIndex + ", " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     	// remove a cached node if the cache is full
     	if (cachedNodes.size() >= CACHE_SIZE) {
@@ -274,12 +287,16 @@ public class BufferedLongArrayQueue implements Serializable {
 
     // should check for modifications and possibly write to the disk
     private void uncache(int storeIndex) {
+    	if (cachedNodes == null) {
+    		return;
+    	}
     	Node node = cachedNodes.remove(storeIndex);
     	if (node != null) {
     		if (node.modified) {
 //    			System.out.println(super.toString() + " uncache: " + storeIndex + ", " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     			store(node);
     		}
+    		reusableNode = node.reset();
     	}
     }
 
@@ -294,7 +311,7 @@ public class BufferedLongArrayQueue implements Serializable {
 //        final Node<E> next = f.next;
         if (storedNodeExists()) {
         	// there exists a stored node on disk;
-            f.items = null; // help GC
+//            f.items = null; // help GC
         	uncacheAndDelete(firstStoreIndex);
         	++firstStoreIndex;
             --size;
@@ -320,10 +337,13 @@ public class BufferedLongArrayQueue implements Serializable {
     }
 
     private void uncacheNoStore(int storeIndex) {
+    	if (cachedNodes == null) {
+    		return;
+    	}
     	if (cachedNodes.containsKey(storeIndex)) {
 //    		System.out.println(super.toString() + " uncache: " + storeIndex + ", " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     		Node node = cachedNodes.get(storeIndex);
-    		node.cleanup();
+    		reusableNode = node.reset();
     		cachedNodes.remove(storeIndex);
     		cacheSequence.remove((Integer)storeIndex);
     	}
@@ -367,7 +387,7 @@ public class BufferedLongArrayQueue implements Serializable {
 		}
 
 		// only cache nodes that are not the last node
-		if (cachedNodes.containsKey(storeIndex)) {
+		if (cachedNodes != null && cachedNodes.containsKey(storeIndex)) {
 			// already cached
 			return cachedNodes.get(storeIndex);
 		}
@@ -392,15 +412,28 @@ public class BufferedLongArrayQueue implements Serializable {
 				int startIndex = directBuf.getInt();
 				int endIndex = directBuf.getInt();
 
-//				int arrayLength = (int)fileSize/8 - 2;
-				// actually only load an array of the size that's necessary;
-				// will be extended if there are new elements that are added
-				long[] items = new long[endIndex];
-				for (int i = startIndex; i < endIndex; ++i) {
-					items[i] = directBuf.getLong();
-				}
+				if (reusableNode == null) {
+//					int arrayLength = (int)fileSize/8 - 2;
+					// actually only load an array of the size that's necessary;
+					// will be extended if there are new elements that are added
+					long[] items = new long[endIndex];
+					for (int i = startIndex; i < endIndex; ++i) {
+						items[i] = directBuf.getLong();
+					}
 
-				loadedNode = new Node(items, startIndex, endIndex, storeIndex, arrayLength);
+					loadedNode = new Node(items, startIndex, endIndex, storeIndex, arrayLength);
+				} else {
+					long[] items = reusableNode.items;
+					if (endIndex > items.length) {
+						items = new long[endIndex];
+					}
+					for (int i = startIndex; i < endIndex; ++i) {
+						items[i] = directBuf.getLong();
+					}
+
+					loadedNode = reusableNode.recycle(items, startIndex, endIndex, storeIndex);
+					reusableNode = null;
+				}
 
 				// file can not be removed, due to serialization! TODO
 				if (deleteOnExit) {
@@ -448,12 +481,16 @@ public class BufferedLongArrayQueue implements Serializable {
     }
 
     private void clearCache() {
+    	if (cachedNodes == null) {
+    		return;
+    	}
 //    	System.out.println(super.toString() + " clear cache, " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     	for (Node node : cachedNodes.values()) {
     		node.cleanup();
     	}
-    	cachedNodes.clear();
-    	cacheSequence.clear();
+    	cachedNodes = null;
+    	cacheSequence = null;
+    	reusableNode = null;
     }
 
     public void clear() {
@@ -468,7 +505,8 @@ public class BufferedLongArrayQueue implements Serializable {
     	}
     	// delete potentially stored last node
     	delete(lastStoreIndex+1);
-
+    	lastNode = null;
+    	
     	initialize();
     }
 
@@ -590,6 +628,9 @@ public class BufferedLongArrayQueue implements Serializable {
     }
     
     private void removeFromCache(int storeIndex) {
+    	if (cachedNodes == null) {
+    		return;
+    	}
     	if (cachedNodes.containsKey(storeIndex)) {
 //    		System.out.println(super.toString() + " uncache: " + storeIndex + ", " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     		cachedNodes.remove(storeIndex);
@@ -856,7 +897,7 @@ public class BufferedLongArrayQueue implements Serializable {
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 7440302290446217770L;
+		private static final long serialVersionUID = -7985304543765441098L;
 
 		private volatile transient boolean modified = false;
 
@@ -884,6 +925,45 @@ public class BufferedLongArrayQueue implements Serializable {
         	this.modified = true;
 		}
 		
+		public Node recycle(long[] items, int startIndex, int endIndex, int storeIndex) {
+//			System.out.println("node load recycle " + this.storeIndex + " -> " + storeIndex);
+			this.items = items;
+			this.endIndex = endIndex;
+			this.startIndex = startIndex;
+			this.storeIndex = storeIndex;
+			this.modified = false;
+			return this;
+		}
+
+		public Node reset() {
+			// prepare for possible recycling
+			// nothing to do here
+			return this;
+		}
+
+		public Node recycle(long element, int storeIndex) {
+//			System.out.println("node recycle " + this.storeIndex + " -> " + storeIndex);
+			startIndex = 0;
+			endIndex = 1;
+			items[0] = element;
+			this.storeIndex = storeIndex;
+			// ensure that new nodes are stored (if not empty)
+        	this.modified = true;
+			return this;
+		}
+
+//		Node(int element, int arrayLength, int[] items, int storeIndex) {
+//			this.arrayLength = arrayLength;
+//			if (arrayLength < 1) {
+//        		throw new IllegalStateException();
+//        	}
+//            this.items = items;
+//            items[0] = element;
+//			this.storeIndex = storeIndex;
+//			// ensure that new nodes are stored (if not empty)
+//        	this.modified = true;
+//		}
+		
 		public void clearLast(int count) {
 			this.endIndex -= count;
 			this.modified = true;
@@ -894,8 +974,11 @@ public class BufferedLongArrayQueue implements Serializable {
 			this.modified = true;
 		}
 
-		public void cleanup() {
+		public long[] cleanup() {
+//			System.out.println("node cleanup " + this.storeIndex);
+			long[] temp = this.items;
 			this.items = null;
+			return temp;
 		}
 
 		public int size() {
@@ -921,7 +1004,7 @@ public class BufferedLongArrayQueue implements Serializable {
         // adds an element to the end
 		public void add(long e) {
 			this.modified = true;
-			if (items.length < arrayLength) {
+			if (items.length <= endIndex) {
 				extendArray();
 			}
 			items[endIndex++] = e;

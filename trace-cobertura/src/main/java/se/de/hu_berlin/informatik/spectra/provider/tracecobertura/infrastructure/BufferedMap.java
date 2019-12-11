@@ -52,6 +52,8 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 
 	private transient int lastStoreIndex = -1;
 	
+	protected transient Node<E> reusableNode = null;
+	
 	
 	// cache all other nodes, if necessary
 	protected transient Map<Integer,Node<E>> cachedNodes = null;
@@ -82,11 +84,11 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		}
 		cachedNodes = null;
 		cacheSequence = null;
+		reusableNode = null;
 	}
 
 	private void sleep(Node<E> node) {
 		store(node);
-		node.clear();
 	}
 
     @SuppressWarnings("unchecked")
@@ -172,6 +174,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
     	}
     	cachedNodes = null;
     	cacheSequence = null;
+    	reusableNode = null;
     }
 
     private void delete(Integer storeIndex) {
@@ -237,7 +240,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 			Node<E> node = getNode(lastStoreIndex);
 			if (node != null) {
 				uncache(lastStoreIndex);
-				sleep(node);
+//				sleep(node);
 			}
 		}
 		lastStoreIndex = storeIndex;
@@ -330,7 +333,10 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	}
 	
 	private Node<E> createNewNode(Integer key) {
-		Node<E> node = new Node<>(key, maxSubMapSize);
+		Node<E> node = reusableNode == null ? 
+				new Node<E>(key, maxSubMapSize) : 
+					reusableNode.recycle(key);
+		reusableNode = null;
 		existingNodes.add(key);
 		cacheNode(node);
 		return node;
@@ -392,13 +398,15 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		}
 
 		if (node.isEmpty()) {
+			delete(node.storeIndex);
 			existingNodes.remove(node.storeIndex);
+			reusableNode = node.reset();
 			return;
-		}
-		if (node.modified) {
+		} else if (node.modified) {
 			String filename = getFileName(node.storeIndex);
 			store(node, filename);
 			node.modified = false;
+			reusableNode = node.reset();
 		}
 	}
 
@@ -421,7 +429,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		private Map<Integer,E> subMap;
 
         // index to store/load this node
-		private final int storeIndex;
+		private int storeIndex;
 
         
 		public boolean isModified() {
@@ -449,6 +457,22 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		public Node(int storeIndex, Map<Integer, E> map) {
 			this.storeIndex = storeIndex;
         	this.subMap = map;
+		}
+		
+		public Node<E> recycle(int storeIndex) {
+//			System.out.println("map recycle " + this.storeIndex + " -> " + storeIndex);
+			this.storeIndex = storeIndex;
+			// ensure that new nodes are stored (if not empty)
+        	this.modified = true;
+			return this;
+		}
+		
+		public Node<E> recycle(int storeIndex, Map<Integer,E> subMap) {
+//			System.out.println("map load recycle " + this.storeIndex + " -> " + storeIndex);
+			this.storeIndex = storeIndex;
+			this.subMap = subMap;
+        	this.modified = false;
+			return this;
 		}
 
 		@Override
@@ -499,11 +523,23 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 
 		@Override
 		public void clear() {
+			cleanup();
+		}
+		
+		public Node<E> reset() {
+			// prepare for possible recycling
+			subMap.clear();
+			return this;
+		}
+		
+		public Map<Integer,E> cleanup() {
 			if (!subMap.isEmpty()) {
 				modified = true;
 			}
 			subMap.clear();
+			Map<Integer,E> temp = subMap;
 			subMap = null;
+			return temp;
 		}
 
 		@Override
