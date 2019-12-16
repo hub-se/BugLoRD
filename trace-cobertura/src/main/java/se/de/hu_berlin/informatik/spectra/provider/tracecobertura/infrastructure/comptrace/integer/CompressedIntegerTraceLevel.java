@@ -32,7 +32,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 	BufferedMap<int[]> traceRepetitions;
 	
 	// should indicate up to which index the trace has been checked for repetitions
-	private int bufferStartIndex = 0;
+	private long bufferStartIndex = 0;
 	
 	MyBufferedIterator resultTraceIterator;
 	MyBufferedIterator inputTraceIterator;
@@ -45,8 +45,8 @@ public class CompressedIntegerTraceLevel implements Serializable {
 	
 
 	int maxPosMapSize = 0;
-	int maxBufferSize = 0;
-	int maxTraceSize = 0;
+	long maxBufferSize = 0;
+	long maxTraceSize = 0;
 
 	
 	
@@ -123,7 +123,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 			if (position == null) {
 				// no repetition possible; remember node containing the element
 				if (originalSize <= MAX_INDEX) {
-					elementToPositionMap.put(element, bufferStartIndex);
+					elementToPositionMap.put(element,  (int) bufferStartIndex);
 					maxPosMapSize = Math.max(maxPosMapSize, elementToPositionMap.size());
 //					System.out.println("norm add: " + element + ", pos: " + bufferStartIndex + ", bs: " + currentBufferSize());
 				}
@@ -194,7 +194,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 			if (position == null) {
 				// no repetition possible; remember node containing the element
 				if (originalSize <= MAX_INDEX) {
-					elementToPositionMap.put(firstBufferElement, bufferStartIndex);
+					elementToPositionMap.put(firstBufferElement, (int) bufferStartIndex);
 					maxPosMapSize = Math.max(maxPosMapSize, elementToPositionMap.size());
 				}
 //				System.out.println("norm buf: " + traceWithoutRepetitions.get(bufferStartIndex) + ", pos: " + bufferStartIndex + ", bs: " + currentBufferSize());
@@ -244,7 +244,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 				// no repetition found with a sufficiently large buffer trace...
 				// add the new position to the list of remembered positions
 				if (originalSize <= MAX_INDEX) {
-					elementToPositionMap.put(traceWithoutRepetitions.get(bufferStartIndex), bufferStartIndex);
+					elementToPositionMap.put(traceWithoutRepetitions.get(bufferStartIndex),  (int) bufferStartIndex);
 					maxPosMapSize = Math.max(maxPosMapSize, elementToPositionMap.size());
 				} else {
 					elementToPositionMap.remove(traceWithoutRepetitions.get(bufferStartIndex));
@@ -341,7 +341,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 //		System.out.println();
 		// count the number of elements that need to be removed later with count variable;
 		// variable count should start at 1 to skip the very first (known to be equal) element
-		int sequenceLength = bufferStartIndex - position;
+		int sequenceLength =  (int) bufferStartIndex - position;
 		for (int count = 0; ; ++count) {
 			if (count == sequenceLength) {
 				// at the end of the compressed sequence

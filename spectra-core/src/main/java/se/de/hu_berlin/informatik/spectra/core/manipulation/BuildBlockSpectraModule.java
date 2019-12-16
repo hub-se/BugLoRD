@@ -56,6 +56,7 @@ public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCo
 						isInvolvedInSameTraces = false;
 						break;
 					}
+					trace.sleep();
 				}
 				//if this line is involved in the same traces as the last, then 
 				//we can safely extend the last block to this line;

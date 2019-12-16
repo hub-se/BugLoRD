@@ -372,6 +372,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 					
 					// don't need the levels anymore now
 					levels.clear();
+					levels = null;
 				}
 				
 				int markerSize = 0;

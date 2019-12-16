@@ -257,25 +257,25 @@ public class SpectraUtils {
     
 
     private static <T> boolean isNodeInvolvedInATrace(Collection<? extends ITrace<T>> traces, INode<T> node) {
-		boolean isInvolved = false;
 		for (ITrace<T> trace : traces) {
 			if (trace.isInvolved(node)) {
-				isInvolved = true;
-				break;
+				trace.sleep();
+				return true;
 			}
+			trace.sleep();
 		}
-		return isInvolved;
+		return false;
 	}
 	
 	private static <T> boolean isNodeNotInvolvedInATrace(Collection<? extends ITrace<T>> traces, INode<T> node) {
-		boolean isNotInvolved = false;
 		for (ITrace<T> trace : traces) {
 			if (!trace.isInvolved(node)) {
-				isNotInvolved = true;
-				break;
+				trace.sleep();
+				return true;
 			}
+			trace.sleep();
 		}
-		return isNotInvolved;
+		return false;
 	}
 	
 	
@@ -330,6 +330,8 @@ public class SpectraUtils {
     				}
     			}
     		}
+    		inputTrace.sleep();
+    		addedTrace.sleep();
     	}
 
     	return spectra;
@@ -370,6 +372,8 @@ public class SpectraUtils {
     				}
     			}
     		}
+    		inputTrace.sleep();
+    		addedTrace.sleep();
     	}
 
     	return spectra;
@@ -438,6 +442,7 @@ public class SpectraUtils {
 		for (ISpectra<T,?> spectrum : spectra) {
 			for (ITrace<T> trace : spectrum.getTraces()) {
 				allTraceIdentifiers.add(trace.getIdentifier());
+				trace.sleep();
 			}
 		}
 
@@ -471,6 +476,7 @@ public class SpectraUtils {
 				if (foundTrace.isSuccessful()) {
 					++successfulCounter;
 				}
+				foundTrace.sleep();
 			}
 			boolean majSuccessful = false;
 			if ((successfulCounter > foundTraceCounter / 2) || (preferSuccess && successfulCounter > 0)) {
@@ -491,6 +497,7 @@ public class SpectraUtils {
 					if (foundTrace.isInvolved(nodeIdentifier)) {
 						++involvedCounter;
 					}
+					foundTrace.sleep();
 				}
 				if ((involvedCounter > foundTraceCounter / 2) || (preferInvolved && involvedCounter > 0)) {
 					setInvolvement(resultTrace, nodeIdentifier, countTraces, hits);
@@ -506,6 +513,7 @@ public class SpectraUtils {
 		if (countTraces > 0) {
 			resultTrace.setHits(nodeIdentifier, Math.round(hits/(double)countTraces));
 		}
+		resultTrace.sleep();
 	}
 	
     /**
@@ -534,6 +542,7 @@ public class SpectraUtils {
 		for (ISpectra<T,?> spectrum : spectra) {
 			for (ITrace<T> trace : spectrum.getTraces()) {
 				allTraceIdentifiers.add(trace.getIdentifier());
+				trace.sleep();
 			}
 		}
 
@@ -567,6 +576,7 @@ public class SpectraUtils {
 				if (foundTrace.isSuccessful()) {
 					++successfulCounter;
 				}
+				foundTrace.sleep();
 			}
 			boolean majSuccessful = false;
 			if ((successfulCounter > foundTraceCounter / 2) || (preferSuccess && successfulCounter > 0)) {
@@ -581,11 +591,13 @@ public class SpectraUtils {
 					if (foundTrace.isInvolved(nodeIdentifier)) {
 						++involvedCounter;
 					}
+					foundTrace.sleep();
 				}
 				if ((involvedCounter > foundTraceCounter / 2) || (preferInvolved && involvedCounter > 0)) {
 					resultTrace.setInvolvement(nodeIdentifier, true);
 				}
 			}
+			resultTrace.sleep();
 		}
 		
 		return result;

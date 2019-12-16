@@ -172,6 +172,7 @@ public class SpectraFileUtils {
 		// store the identifiers (order is important)
 		for (ITrace<T> trace : traces) {
 			buffer.append(trace.getIdentifier()).append(IDENTIFIER_DELIMITER);
+			trace.sleep();
 		}
 		if (buffer.length() > 0) {
 			buffer.deleteCharAt(buffer.length() - 1);
@@ -341,6 +342,7 @@ public class SpectraFileUtils {
 						sparseEntries.add(nodeCounter);
 					}
 				}
+				trace.sleep();
 
 				byte[] involvement = module.submit(sparseEntries).getResult();
 
@@ -376,6 +378,7 @@ public class SpectraFileUtils {
 						involvement[++byteCounter] = 0;
 					}
 				}
+				trace.sleep();
 
 				if (compress) {
 					involvement = new ByteArrayToCompressedByteArrayProcessor().submit(involvement).getResult();
@@ -460,6 +463,7 @@ public class SpectraFileUtils {
 					hasExecutionTraces |= trace.storeExecutionTracesInZipFile(outputFile, 
 							new TraceFileNameSupplier(traceCount), new RepMarkerFileNameSupplier(traceCount));
 
+					trace.sleep();
 				}
 				
 				if (hasExecutionTraces) {
@@ -965,6 +969,7 @@ public class SpectraFileUtils {
 						trace.setInvolvement(lineArray.get(i), false);
 					}
 				}
+				trace.sleep();
 			}
 			result = spectra;
 		} else if (isCountSpectra(status)) {
@@ -983,6 +988,7 @@ public class SpectraFileUtils {
 				while (iterator.hasNext()) {
 					trace.setHits(lineArray.get(++i), iterator.next());
 				}
+				trace.sleep();
 			}
 			result = (D) spectra;
 		} else {
@@ -1004,6 +1010,7 @@ public class SpectraFileUtils {
                 for (T t : lineArray) {
                     trace.setInvolvement(t, involvementTable[++tablePosition] == 1);
                 }
+                trace.sleep();
 			}
 			result = spectra;
 		}
@@ -1060,6 +1067,7 @@ public class SpectraFileUtils {
 				}
 				
 				loadExecutionTraces(zip, traceCounter, trace);
+				trace.sleep();
 			}
 			result = spectra;
 		} else if (isCountSpectra(status)) {
@@ -1089,6 +1097,7 @@ public class SpectraFileUtils {
 				}
 				
 				loadExecutionTraces(zip, traceCounter, trace);
+				trace.sleep();
 			}
 			result = (D) spectra;
 		} else {
@@ -1120,6 +1129,7 @@ public class SpectraFileUtils {
 				}
 				
 				loadExecutionTraces(zip, traceCounter, trace);
+				trace.sleep();
 			}
 			result = spectra;
 		}
@@ -1644,6 +1654,7 @@ public class SpectraFileUtils {
 				} else {
 					row[count] = biclusterFormat ? "2" : "0";
 				}
+				trace.sleep();
 				++count;
 			}
 			for (ITrace<T> trace : successfulTraces) {
@@ -1652,6 +1663,7 @@ public class SpectraFileUtils {
 				} else {
 					row[count] = "0";
 				}
+				trace.sleep();
 				++count;
 			}
 			fileWriterPipe.submit(CSVUtils.toCsvLine(row));
@@ -1752,6 +1764,7 @@ public class SpectraFileUtils {
 			nodeInvolvements[count] = trace.isInvolved(node) ? ifInvolved : ifNotInvolved;
 			++count;
 		}
+		trace.sleep();
 		return nodeInvolvements;
 	}
 

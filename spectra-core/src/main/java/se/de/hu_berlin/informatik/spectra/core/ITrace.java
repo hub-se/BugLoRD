@@ -156,4 +156,9 @@ public interface ITrace<T> {
 	public boolean storeExecutionTracesInZipFile(Path outputFile, 
 			Supplier<String> traceFileNameSupplier, Supplier<String> repMarkerFileNameSupplier);
 
+	/**
+	 * Free resources when not in use.
+	 */
+	public void sleep();
+
 }
