@@ -446,6 +446,10 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 					}
 				}
 				nodeIdSequences[i] = newSequence;
+				newSequence.sleep();
+				sequence.clear();
+			} else {
+				sequence.sleep();
 			}
 		}
 	}
@@ -479,6 +483,23 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 					}
 				}
 				nodeIdSequences[i] = newSequence;
+				newSequence.sleep();
+				sequence.clear();
+			} else {
+				sequence.sleep();
+			}
+		}
+	}
+	
+	@Override
+	public void sleep() {
+		if (nodeIdSequences == null) {
+			return;
+		}
+		for (int i = 0; i < nodeIdSequences.length; i++) {
+			EfficientCompressedIntegerTrace sequence = nodeIdSequences[i];
+			if (sequence != null) {
+				sequence.sleep();
 			}
 		}
 	}

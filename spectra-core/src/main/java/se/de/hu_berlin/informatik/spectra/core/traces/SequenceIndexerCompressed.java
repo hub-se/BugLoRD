@@ -87,5 +87,7 @@ public interface SequenceIndexerCompressed {
 	 * an iterator over the specified sequence of sub trace IDs
 	 */
 	Iterator<Integer> getSubTraceIDSequenceReverseIterator(int subTraceSequenceIndex);
+
+	void sleep();
 	
 }

@@ -90,6 +90,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 						lastNodeIndex = nodeIndex;
 					}
 				}
+				input.getIndexer().sleep();
 				// add method level execution trace
 				methodSpectraTrace.addExecutionTrace(methodExecutionTrace);
 			}

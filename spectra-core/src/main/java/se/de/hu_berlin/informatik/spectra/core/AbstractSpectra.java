@@ -157,6 +157,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     		//remove node from traces
     		for (K trace : traces.values()) {
     			trace.setInvolvement(node, false);
+    			trace.sleep();
     		}
     		removeNodeFromSequences(node);
     	}
@@ -182,6 +183,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     		//remove node from traces
     		for (K trace : traces.values()) {
     			trace.setInvolvement(node, false);
+    			trace.sleep();
     		}
     		removeNodeFromSequences(node);
     	}
@@ -203,6 +205,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     			//remove node from traces
     			for (K trace : traces.values()) {
     				trace.setInvolvement(node, false);
+    				trace.sleep();
     			}
     		}
     		nodesToRemove.add(node.getIndex());
@@ -226,6 +229,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     			//remove node from traces
     			for (K trace : traces.values()) {
     				trace.setInvolvement(node, false);
+    				trace.sleep();
     			}
     		}
     		nodesToRemove.add(node.getIndex());
