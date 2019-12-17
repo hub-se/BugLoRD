@@ -43,7 +43,7 @@ public class BuildCoherentSpectraModule extends AbstractProcessor<ISpectra<Sourc
 		for (SourceCodeBlock line : array) {
 			//see if we are inside the same method in the same package
 			if (line.getMethodName().equals(lastLine.getMethodName())
-					&& line.getPackageName().equals(lastLine.getPackageName())) {
+					&& line.getFilePath().equals(lastLine.getFilePath())) {
 				//set the end line number of the last covered line to be equal 
 				//to the line before the next covered line
 				if (line.getStartLineNumber() == lastLine.getStartLineNumber()) {

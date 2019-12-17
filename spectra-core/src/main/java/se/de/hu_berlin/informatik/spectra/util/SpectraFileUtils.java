@@ -810,6 +810,7 @@ public class SpectraFileUtils {
 					traceHits.add(0);
 				}
 			}
+			trace.sleep();
 
 			byte[] involvement = module.submit(traceHits).getResult();
 			// store each trace separately
