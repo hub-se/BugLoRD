@@ -41,7 +41,8 @@ public class GenerateSpectraArchive {
 	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 		CREATE_SPECTRA_ARCHIVE("s", "spectra", false, "Whether the spectra archive shall be created/updated.", false),
-		CREATE_CHANGES_ARCHIVE("c", "changes", false, "Whether the changes archive shall be created/updated.", false);
+		CREATE_CHANGES_ARCHIVE("c", "changes", false, "Whether the changes archive shall be created/updated.", false),
+		FILTER_SPECTRA("f", "filter", false, "Whether the spectra should be filtered in case a filtered spectra file does not exist.", false);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -196,11 +197,13 @@ public class GenerateSpectraArchive {
 											ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
 											SpectraFileUtils.saveSpectraToZipFile(spectra, spectraDestinationFiltered, true, true, true);
 										}
-									} else { //generate filtered spectra
+									} else if (options.hasOption(CmdOptions.FILTER_SPECTRA)) {	
+										// generate filtered spectra
 										ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 										SpectraFileUtils.saveSpectraToZipFile(
 												new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult(),
 												spectraDestinationFiltered, true, true, true);
+
 									}
 								} else {
 									Log.err(GenerateSpectraArchive.class, "'%s' does not exist.", spectraFile);
