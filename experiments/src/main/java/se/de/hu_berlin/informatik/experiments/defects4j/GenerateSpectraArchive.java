@@ -204,6 +204,8 @@ public class GenerateSpectraArchive {
 												new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult(),
 												spectraDestinationFiltered, true, true, true);
 
+									} else {
+										Log.warn(this, "Filtered spectra for %s does not exist.", input);
 									}
 								} else {
 									Log.err(GenerateSpectraArchive.class, "'%s' does not exist.", spectraFile);
