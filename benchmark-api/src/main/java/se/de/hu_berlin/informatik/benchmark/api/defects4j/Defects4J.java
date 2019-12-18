@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 import java.io.File;
 import java.util.Properties;
 
+import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SystemUtils;
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
 import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
@@ -110,9 +111,14 @@ public final class Defects4J extends Defects4JBase {
 	 * the command to execute, given as an array
 	 */
 	public static void executeCommand(File executionDir, boolean abortOnError, String... commandArgs) {
-		SystemUtils.executeCommandInJavaEnvironment(
-				executionDir, Defects4JProperties.JAVA7_DIR.getValue(), Defects4JProperties.JAVA7_HOME.getValue(),
-				Defects4JProperties.JAVA7_JRE.getValue(), abortOnError, (String[]) commandArgs);
+		try {
+			SystemUtils.executeCommandInJavaEnvironment(
+					executionDir, Defects4JProperties.JAVA7_DIR.getValue(), Defects4JProperties.JAVA7_HOME.getValue(),
+					Defects4JProperties.JAVA7_JRE.getValue(), abortOnError, (String[]) commandArgs);
+		} catch (Abort a) {
+			SystemUtils.executeCommandInJavaEnvironment(
+					executionDir, null, null, null, abortOnError, (String[]) commandArgs);
+		}
 	}
 
 	/**
