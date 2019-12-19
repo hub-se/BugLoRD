@@ -111,14 +111,14 @@ public final class Defects4J extends Defects4JBase {
 	 * the command to execute, given as an array
 	 */
 	public static void executeCommand(File executionDir, boolean abortOnError, String... commandArgs) {
-		try {
-			SystemUtils.executeCommandInJavaEnvironment(
-					executionDir, Defects4JProperties.JAVA7_DIR.getValue(), Defects4JProperties.JAVA7_HOME.getValue(),
-					Defects4JProperties.JAVA7_JRE.getValue(), abortOnError, (String[]) commandArgs);
-		} catch (Abort a) {
-			SystemUtils.executeCommandInJavaEnvironment(
-					executionDir, null, null, null, abortOnError, (String[]) commandArgs);
-		}
+//		try {
+		SystemUtils.executeCommandInJavaEnvironment(
+				executionDir, Defects4JProperties.JAVA7_DIR.getValue(), Defects4JProperties.JAVA7_HOME.getValue(),
+				Defects4JProperties.JAVA7_JRE.getValue(), abortOnError, (String[]) commandArgs);
+//		} catch (Abort a) {
+//			SystemUtils.executeCommandInJavaEnvironment(
+//					executionDir, null, null, null, abortOnError, (String[]) commandArgs);
+//		}
 	}
 
 	/**
