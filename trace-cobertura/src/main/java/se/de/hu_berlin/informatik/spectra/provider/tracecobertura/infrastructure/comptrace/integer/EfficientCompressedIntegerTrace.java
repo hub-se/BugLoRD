@@ -42,18 +42,36 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 
 	private String prefix;
 
+	private int maxRepetitionCount;
+
 	public EfficientCompressedIntegerTrace(File outputDir, String prefix, 
 			int nodeSize, int mapSize, boolean deleteOnExit) {
-		this(outputDir, prefix, nodeSize, mapSize, deleteOnExit, false, false);
+		this(outputDir, prefix, nodeSize, mapSize, deleteOnExit, false, false, Integer.MAX_VALUE);
 	}
 	
 	public EfficientCompressedIntegerTrace(File outputDir, String prefix, 
 			int nodeSize, int mapSize, boolean deleteOnExit, boolean log) {
-		this(outputDir, prefix, nodeSize, mapSize, deleteOnExit, log, false);
+		this(outputDir, prefix, nodeSize, mapSize, deleteOnExit, log, false, Integer.MAX_VALUE);
+	}
+	
+	public EfficientCompressedIntegerTrace(File outputDir, String prefix, 
+			int nodeSize, int mapSize, boolean deleteOnExit, int maxRepetitionCount) {
+		this(outputDir, prefix, nodeSize, mapSize, deleteOnExit, false, false, maxRepetitionCount);
+	}
+	
+	public EfficientCompressedIntegerTrace(File outputDir, String prefix, 
+			int nodeSize, int mapSize, boolean deleteOnExit, boolean log, int maxRepetitionCount) {
+		this(outputDir, prefix, nodeSize, mapSize, deleteOnExit, log, false, maxRepetitionCount);
 	}
 	
 	public EfficientCompressedIntegerTrace(File outputDir, String prefix, 
 			int nodeSize, int mapSize, boolean deleteOnExit, boolean log, boolean flat) {
+		this(outputDir, prefix, nodeSize, mapSize, deleteOnExit, log, flat, Integer.MAX_VALUE);
+	}
+	
+	public EfficientCompressedIntegerTrace(File outputDir, String prefix, 
+			int nodeSize, int mapSize, boolean deleteOnExit, boolean log, 
+			boolean flat, int maxRepetitionCount) {
 		this.log = log;
 		this.flat = flat;
 		this.outputDir = outputDir;
@@ -61,6 +79,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		this.nodeSize = nodeSize;
 		this.mapSize = mapSize;
 		this.deleteOnExit = deleteOnExit;
+		this.maxRepetitionCount = maxRepetitionCount;
 		String uuid = UUID.randomUUID().toString();
 		this.compressedTrace = new BufferedIntArrayQueue(outputDir, 
 				prefix + "cpr_trace_" + uuid, nodeSize, deleteOnExit);
@@ -86,7 +105,8 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	 * whether to ignore repetitions
 	 */
 	public EfficientCompressedIntegerTrace(BufferedIntArrayQueue trace, boolean log, boolean flat) {
-		this(trace.getOutputDir(), trace.getFilePrefix(), trace.getNodeSize(), trace.getNodeSize(), trace.isDeleteOnExit(), log, flat);
+		this(trace.getOutputDir(), trace.getFilePrefix(), trace.getNodeSize(), trace.getNodeSize(), 
+				trace.isDeleteOnExit(), log, flat, Integer.MAX_VALUE);
 		while (!trace.isEmpty()) {
 			add(trace.remove());
 		}
@@ -399,7 +419,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	}
 
 	private void addNewLevel() {
-		levels.add(new CompressedIntegerTraceLevel(outputDir, prefix, nodeSize, mapSize, deleteOnExit, flat));
+		levels.add(new CompressedIntegerTraceLevel(outputDir, prefix, nodeSize, mapSize, deleteOnExit, flat, maxRepetitionCount));
 	}
 
 

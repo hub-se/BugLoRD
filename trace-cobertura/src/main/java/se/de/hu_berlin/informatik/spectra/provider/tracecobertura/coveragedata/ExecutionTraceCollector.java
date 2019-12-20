@@ -23,6 +23,10 @@ public class ExecutionTraceCollector {
 	public final static int MAP_CHUNK_SIZE = 100000;
 	public static final int SUBTRACE_ARRAY_SIZE = 500;
 	
+	private static final int MAX_TRACKED_STATEMENTS = 500000000;
+	private static boolean isActive = true;
+	private static long statementCounter = 0;
+	
 	public static final int NEW_SUBTRACE_ID = 0;
 	
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
@@ -60,6 +64,7 @@ public class ExecutionTraceCollector {
 	 */
 	public static Map<Long,EfficientCompressedIntegerTrace> getAndResetExecutionTraces() {
 		globalExecutionTraceCollectorLock.lock();
+		reset();
 		try {
 			processAllRemainingSubTraces();
 			Map<Long, EfficientCompressedIntegerTrace> traces = executionTraces;
@@ -83,6 +88,10 @@ public class ExecutionTraceCollector {
 	 * Marks the beginning of a new sub trace by adding a special indicator to the trace.
 	 */
 	public static void startNewSubTrace() {
+		if (statementCounter > MAX_TRACKED_STATEMENTS) {
+			isActive = false;
+			return;
+		}
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
@@ -146,6 +155,13 @@ public class ExecutionTraceCollector {
 			globalExecutionTraceCollectorLock.unlock();
 		}
 
+		reset();
+	}
+
+
+	private static void reset() {
+		isActive = true;
+		statementCounter = 0;
 	}
 	
 
@@ -208,6 +224,10 @@ public class ExecutionTraceCollector {
 	
 
 	private static void addStatementToExecutionTrace(int classId, int counterId, int specialIndicatorId) {
+		if (!isActive) {
+			return;
+		}
+		++statementCounter;
 		if (counterId == AbstractCodeProvider.FAKE_COUNTER_ID) {
 			// this marks a fake jump! (ignore)
 			return;
