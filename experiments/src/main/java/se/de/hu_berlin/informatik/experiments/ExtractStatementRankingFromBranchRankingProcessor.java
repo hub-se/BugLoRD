@@ -45,14 +45,17 @@ public class ExtractStatementRankingFromBranchRankingProcessor extends AbstractP
 
         MarkedRanking<ProgramBranch, List<Modification>> markedProgramBranchRanking = new MarkedRanking<>(programBranchRanking);
 
+        HashSet<SourceCodeBlock> modifiedStatements = new HashSet<>();
+
         List<Modification> ignoreList = new ArrayList<>();
         for (ProgramBranch programBranch : markedProgramBranchRanking.getElements()) {
             List<Modification> list = new ArrayList<>();
-            for (SourceCodeBlock block : programBranch.getElements()) {
+            for (SourceCodeBlock statement : programBranch.getElements()) {
                 List<Modification> modifications = Modification.getModifications(
-                        block.getFilePath(), block.getStartLineNumber(), block.getEndLineNumber(), true,
+                        statement.getFilePath(), statement.getStartLineNumber(), statement.getEndLineNumber(), true,
                         changeInformation, ignoreList);
-                if(modifications != null){
+                if(modifications != null && !modifications.isEmpty()){
+                    modifiedStatements.add(statement);
                     list.addAll(modifications);
                 }
                 // found changes for this line? then mark the line with the
@@ -79,7 +82,7 @@ public class ExtractStatementRankingFromBranchRankingProcessor extends AbstractP
 
             for(SourceCodeBlock statement : changedElement.getElements()){
 
-                if(extractedStatements.contains(statement)){
+                if(extractedStatements.contains(statement) || modifiedStatements.contains(statement) == false){
                     continue;
                 }else{
                     extractedStatements.add(statement);
