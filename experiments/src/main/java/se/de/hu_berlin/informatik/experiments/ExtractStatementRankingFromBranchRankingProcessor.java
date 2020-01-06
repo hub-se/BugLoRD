@@ -45,7 +45,7 @@ public class ExtractStatementRankingFromBranchRankingProcessor extends AbstractP
 
         MarkedRanking<ProgramBranch, List<Modification>> markedProgramBranchRanking = new MarkedRanking<>(programBranchRanking);
 
-        HashSet<SourceCodeBlock> modifiedStatements = new HashSet<>();
+        List<SourceCodeBlock> modifiedStatements = new ArrayList<>();
 
         List<Modification> ignoreList = new ArrayList<>();
         for (ProgramBranch programBranch : markedProgramBranchRanking.getElements()) {
@@ -73,7 +73,7 @@ public class ExtractStatementRankingFromBranchRankingProcessor extends AbstractP
         String bugIdentifier = bug.getUniqueIdentifier();
 
         int count = 0;
-        HashSet<SourceCodeBlock> extractedStatements = new HashSet<>(); //avoid duplicate statements when extracting statements from branches
+        List<SourceCodeBlock> extractedStatements = new ArrayList<>(); //avoid duplicate statements when extracting statements from branches
 
         for (ProgramBranch changedElement : markedProgramBranchRanking.getMarkedElements()) {
 
