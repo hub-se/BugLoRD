@@ -7,6 +7,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
@@ -190,16 +191,51 @@ public class GenerateDucCsvBugData {
                             return Misc.sortByKeyToValueList(map);
                         }
                     },
-                    new ListToFileWriter<List<String>>(output.resolve("faultData").resolve(localizer + ".csv"), true));
+                    new ListToFileWriter<List<String>>(output.resolve("branchFaultData").resolve(localizer + ".csv"), true));
+
+            //===================EXTRACT STATEMENT RANKING FROM BRANCH RANKING=======================//
+            //=======================================================================================//
+            PipeLinker linker3 = new PipeLinker().append(
+                    new ThreadedProcessor<>(options.getNumberOfThreads(),
+                            new ExtractStatementRankingFromBranchRankingProcessor(suffix, localizer)),
+                    new AbstractProcessor<Pair<String, String[]>, List<String>>() {
+
+                        final Map<String, String> map = new HashMap<>();
+
+                        @Override
+                        public List<String> processItem(Pair<String, String[]> item) {
+                            map.put(item.first(), CSVUtils.toCsvLine(item.second()));
+                            return null;
+                        }
+
+                        @Override
+                        public List<String> getResultFromCollectedItems() {
+
+                            // BugID, Line, EF, EP, NF, NP, BestRanking,
+                            // WorstRanking, MinWastedEffort, MaxWastedEffort,
+                            // Suspiciousness,
+                            // MinFiles, MaxFiles, MinMethods, MaxMethods
+
+                            String[] titleArray = { "BugID", "Line", "EF", "EP", "NF", "NP", "BestRanking",
+                                    "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness",
+                                    "MinFiles", "MaxFiles", "MinMethods", "MaxMethods" };
+                            map.put("", CSVUtils.toCsvLine(titleArray));
+                            return Misc.sortByKeyToValueList(map);
+                        }
+                    },
+                    new ListToFileWriter<List<String>>(output.resolve("extractedStatementFaultData").resolve(localizer + ".csv"), true));
+            //=======================================================================================//
 
             // iterate over all projects
             for (String project : Defects4J.getAllProjects()) {
                 String[] ids = Defects4J.getAllBugIDs(project);
                 for (String id : ids) {
                     linker2.submit(new Defects4JBuggyFixedEntity(project, id));
+                    linker3.submit(new Defects4JBuggyFixedEntity(project, id));
                 }
             }
             linker2.shutdown();
+            linker3.shutdown();
 
         }
 
@@ -239,11 +275,17 @@ public class GenerateDucCsvBugData {
 
             List<Modification> ignoreList = new ArrayList<>();
             for (ProgramBranch programBranch : markedRanking.getElements()) {
-                List<Modification> list = Modification.getModifications(
-                        programBranch.getFilePath(), programBranch.getStartLineNumber(), programBranch.getEndLineNumber(), true,
-                        changeInformation, ignoreList);
-                // found changes for this line? then mark the line with the
-                // change(s)...
+                List<Modification> list = new ArrayList<>();
+                for (SourceCodeBlock block : programBranch.getElements()) {
+                    List<Modification> modifications = Modification.getModifications(
+                            block.getFilePath(), block.getStartLineNumber(), block.getEndLineNumber(), true,
+                            changeInformation, ignoreList);
+                    if(modifications != null){
+                        list.addAll(modifications);
+                    }
+                    // found changes for this line? then mark the line with the
+                    // change(s)...
+                }
                 if (list != null && !list.isEmpty()) {
                     markedRanking.markElementWith(programBranch, list);
                 }
