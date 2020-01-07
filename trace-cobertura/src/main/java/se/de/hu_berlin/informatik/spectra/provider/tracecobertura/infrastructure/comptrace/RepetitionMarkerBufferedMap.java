@@ -98,14 +98,26 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 				directBuf.flip();
 				
 				int count = (int)fileSize/12; // size/4/3
-				// ((float)s / loadFactor) + 1.0F
-				Map<Integer, int[]> map = new HashMap<>((int) (((float)count / 0.7F) + 1), 0.7F);
-				// fill sub map
-				for (int i = 0; i < count; ++i) {
-					map.put(directBuf.getInt(), new int[] { directBuf.getInt(), directBuf.getInt()});
-				}
 				
-				loadedNode = new Node<>(storeIndex, map);
+				if (reusableNode == null) {
+					// ((float)s / loadFactor) + 1.0F
+					Map<Integer, int[]> map = new HashMap<>((int) (((float)count / 0.7F) + 1), 0.7F);
+					// fill sub map
+					for (int i = 0; i < count; ++i) {
+						map.put(directBuf.getInt(), new int[] { directBuf.getInt(), directBuf.getInt()});
+					}
+
+					loadedNode = new Node<>(storeIndex, map);
+				} else {
+					Map<Integer, int[]> map = reusableNode.getSubMap();
+					// fill sub map
+					for (int i = 0; i < count; ++i) {
+						map.put(directBuf.getInt(), new int[] { directBuf.getInt(), directBuf.getInt()});
+					}
+
+					loadedNode = reusableNode.recycle(storeIndex, map);
+					reusableNode = null;
+				}
 
 				// file can not be removed, due to serialization! TODO
 				if (deleteOnExit) {

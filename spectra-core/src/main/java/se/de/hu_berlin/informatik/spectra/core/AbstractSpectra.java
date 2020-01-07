@@ -157,6 +157,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     		//remove node from traces
     		for (K trace : traces.values()) {
     			trace.setInvolvement(node, false);
+    			trace.sleep();
     		}
     		removeNodeFromSequences(node);
     	}
@@ -182,6 +183,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     		//remove node from traces
     		for (K trace : traces.values()) {
     			trace.setInvolvement(node, false);
+    			trace.sleep();
     		}
     		removeNodeFromSequences(node);
     	}
@@ -203,6 +205,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     			//remove node from traces
     			for (K trace : traces.values()) {
     				trace.setInvolvement(node, false);
+    				trace.sleep();
     			}
     		}
     		nodesToRemove.add(node.getIndex());
@@ -217,7 +220,6 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
      */
     @Override
     public boolean removeNodesByIndex(final Collection<Integer> indices) {
-    	Collection<Integer> nodesToRemove = new HashSet<>();
     	for (Integer index : indices) {
     		INode<T> node = nodesByIndex.remove(index);
     		if (node != null) {
@@ -226,11 +228,11 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
     			//remove node from traces
     			for (K trace : traces.values()) {
     				trace.setInvolvement(node, false);
+    				trace.sleep();
     			}
     		}
-    		nodesToRemove.add(node.getIndex());
     	}
-    	removeNodesFromSequences(nodesToRemove);
+    	removeNodesFromSequences(indices);
     	invalidateCachedValues();
     	return true;
     }

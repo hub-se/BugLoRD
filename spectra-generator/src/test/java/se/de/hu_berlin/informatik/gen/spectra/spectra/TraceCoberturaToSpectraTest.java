@@ -264,6 +264,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		.setTestClassPath(project.getTestCP())
 		.setPathsToBinaries(project.getBinDir())
 		.setOutputDir(extraTestOutput + File.separator + outputDirName)
+//		.setOutputDir(Paths.get("src","test","resources","Lang10b").toString())
 		.setTestList(testListPath)
 		.setFailingTests(project.getFailingTests())
 		.useFullSpectra(fullSpectra)

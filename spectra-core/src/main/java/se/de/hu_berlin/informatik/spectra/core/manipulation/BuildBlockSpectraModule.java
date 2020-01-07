@@ -47,7 +47,7 @@ public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCo
 			//and make sure that this is not a branch node (true/false branch)
 			if (line.getNodeType().equals(NodeType.NORMAL) 
 					&& line.getMethodName().equals(lastLine.getMethodName())
-					&& line.getPackageName().equals(lastLine.getPackageName())) {
+					&& line.getFilePath().equals(lastLine.getFilePath())) {
 				boolean isInvolvedInSameTraces = true;
 				//see if the involvements match for consecutive nodes
 				for (ITrace<SourceCodeBlock> trace : traces) {
@@ -56,6 +56,7 @@ public class BuildBlockSpectraModule extends AbstractProcessor<ISpectra<SourceCo
 						isInvolvedInSameTraces = false;
 						break;
 					}
+					trace.sleep();
 				}
 				//if this line is involved in the same traces as the last, then 
 				//we can safely extend the last block to this line;

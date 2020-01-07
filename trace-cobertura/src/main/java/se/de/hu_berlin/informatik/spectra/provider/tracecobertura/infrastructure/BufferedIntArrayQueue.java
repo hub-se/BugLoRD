@@ -55,6 +55,9 @@ public class BufferedIntArrayQueue implements Serializable {
 
 	private transient boolean deleteOnExit;
 	
+	// keep a node that may be reused
+	private transient Node reusableNode = null;
+	
 	private void writeObject(java.io.ObjectOutputStream stream)
             throws IOException {
 		sleep();
@@ -97,9 +100,10 @@ public class BufferedIntArrayQueue implements Serializable {
 		// store the last node, too
 		if (lastNode != null && lastNode.modified) {
 			store(lastNode);
-			lastNode = null;
 		}
+		lastNode = null;
 		writeBuffer = null;
+		reusableNode = null;
 	}
 
 	private void readObject(java.io.ObjectInputStream stream)
@@ -111,7 +115,7 @@ public class BufferedIntArrayQueue implements Serializable {
         currentStoreIndex = stream.readInt();
         lastStoreIndex = stream.readInt();
         firstNodeSize = stream.readInt();
-        size = stream.readInt();
+        size = stream.readLong();
         arrayLength = stream.readInt();
 
         // always delete files from deserialized object TODO
@@ -190,8 +194,6 @@ public class BufferedIntArrayQueue implements Serializable {
      */
     private void linkLast(int e) {
         final Node l = loadLast();
-        final Node newNode = new Node(e, arrayLength, ++currentStoreIndex);
-        lastNode = newNode;
         if (l == null) {
         	// no nodes did exist, previously
 			++firstNodeSize;
@@ -204,6 +206,11 @@ public class BufferedIntArrayQueue implements Serializable {
 //        	// we can now remove the node from memory
 //        	l.items = null;
         }
+        
+        final Node newNode = reusableNode == null ? new Node(e, arrayLength, ++currentStoreIndex) : reusableNode.recycle(e, ++currentStoreIndex);
+        reusableNode = null;
+        lastNode = newNode;
+        
         ++size;
     }
     
@@ -289,6 +296,7 @@ public class BufferedIntArrayQueue implements Serializable {
 //    			System.out.println(super.toString() + " uncache: " + storeIndex + ", " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     			store(node);
     		}
+    		reusableNode = node.reset();
     	}
     }
 
@@ -303,7 +311,7 @@ public class BufferedIntArrayQueue implements Serializable {
 //        final Node<E> next = f.next;
         if (storedNodeExists()) {
         	// there exists a stored node on disk;
-            f.items = null; // help GC
+//            f.items = null; // help GC
         	uncacheAndDelete(firstStoreIndex);
         	++firstStoreIndex;
             --size;
@@ -335,7 +343,7 @@ public class BufferedIntArrayQueue implements Serializable {
     	if (cachedNodes.containsKey(storeIndex)) {
 //    		System.out.println(super.toString() + " uncache: " + storeIndex + ", " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
     		Node node = cachedNodes.get(storeIndex);
-    		node.cleanup();
+    		reusableNode = node.reset();
     		cachedNodes.remove(storeIndex);
     		cacheSequence.remove((Integer)storeIndex);
     	}
@@ -404,15 +412,28 @@ public class BufferedIntArrayQueue implements Serializable {
 				int startIndex = directBuf.getInt();
 				int endIndex = directBuf.getInt();
 
-//				int arrayLength = (int)fileSize/4 - 2;
-				// actually only load an array of the size that's necessary;
-				// will be extended if there are new elements that are added
-				int[] items = new int[endIndex];
-				for (int i = startIndex; i < endIndex; ++i) {
-					items[i] = directBuf.getInt();
-				}
+				if (reusableNode == null) {
+//					int arrayLength = (int)fileSize/4 - 2;
+					// actually only load an array of the size that's necessary;
+					// will be extended if there are new elements that are added
+					int[] items = new int[endIndex];
+					for (int i = startIndex; i < endIndex; ++i) {
+						items[i] = directBuf.getInt();
+					}
 
-				loadedNode = new Node(items, startIndex, endIndex, storeIndex, arrayLength);
+					loadedNode = new Node(items, startIndex, endIndex, storeIndex, arrayLength);
+				} else {
+					int[] items = reusableNode.items;
+					if (endIndex > items.length) {
+						items = new int[endIndex];
+					}
+					for (int i = startIndex; i < endIndex; ++i) {
+						items[i] = directBuf.getInt();
+					}
+
+					loadedNode = reusableNode.recycle(items, startIndex, endIndex, storeIndex);
+					reusableNode = null;
+				}
 
 				// file can not be removed, due to serialization! TODO
 				if (deleteOnExit) {
@@ -469,6 +490,7 @@ public class BufferedIntArrayQueue implements Serializable {
     	}
     	cachedNodes = null;
     	cacheSequence = null;
+    	reusableNode = null;
     }
 
     public void clear() {
@@ -483,7 +505,8 @@ public class BufferedIntArrayQueue implements Serializable {
     	}
     	// delete potentially stored last node
     	delete(lastStoreIndex+1);
-
+    	lastNode = null;
+    	
     	initialize();
     }
 
@@ -902,6 +925,45 @@ public class BufferedIntArrayQueue implements Serializable {
         	this.modified = true;
 		}
 		
+		public Node recycle(int[] items, int startIndex, int endIndex, int storeIndex) {
+//			System.out.println("node load recycle " + this.storeIndex + " -> " + storeIndex);
+			this.items = items;
+			this.endIndex = endIndex;
+			this.startIndex = startIndex;
+			this.storeIndex = storeIndex;
+			this.modified = false;
+			return this;
+		}
+		
+		public Node reset() {
+			// prepare for possible recycling
+			// nothing to do here
+			return this;
+		}
+
+		public Node recycle(int element, int storeIndex) {
+//			System.out.println("node recycle " + this.storeIndex + " -> " + storeIndex);
+			startIndex = 0;
+			endIndex = 1;
+			items[0] = element;
+			this.storeIndex = storeIndex;
+			// ensure that new nodes are stored (if not empty)
+        	this.modified = true;
+			return this;
+		}
+
+//		Node(int element, int arrayLength, int[] items, int storeIndex) {
+//			this.arrayLength = arrayLength;
+//			if (arrayLength < 1) {
+//        		throw new IllegalStateException();
+//        	}
+//            this.items = items;
+//            items[0] = element;
+//			this.storeIndex = storeIndex;
+//			// ensure that new nodes are stored (if not empty)
+//        	this.modified = true;
+//		}
+		
 		public void clearLast(int count) {
 			this.endIndex -= count;
 			this.modified = true;
@@ -912,8 +974,11 @@ public class BufferedIntArrayQueue implements Serializable {
 			this.modified = true;
 		}
 
-		public void cleanup() {
+		public int[] cleanup() {
+//			System.out.println("node cleanup " + this.storeIndex);
+			int[] temp = this.items;
 			this.items = null;
+			return temp;
 		}
 
 		public int size() {
@@ -939,7 +1004,7 @@ public class BufferedIntArrayQueue implements Serializable {
         // adds an element to the end
 		public void add(int e) {
 			this.modified = true;
-			if (items.length < arrayLength) {
+			if (items.length <= endIndex) {
 				extendArray();
 			}
 			items[endIndex++] = e;

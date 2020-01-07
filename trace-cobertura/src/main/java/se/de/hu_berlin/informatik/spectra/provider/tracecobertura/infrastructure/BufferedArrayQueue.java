@@ -31,7 +31,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 	 */
 	private static final long serialVersionUID = 2334531021193748807L;
 
-	// keep at most 4 (+1 with the last node) nodes in memory
+	// keep at most 3 (+1 with the last node) nodes in memory
     private static final int CACHE_SIZE = 3;
     
     private static final int ARRAY_SIZE = 1000;
@@ -101,8 +101,8 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
 		// store the last node, too
 		if (lastNode != null && lastNode.modified) {
 			store(lastNode);
-			lastNode = null;
 		}
+		lastNode = null;
 	}
 
 	private void readObject(java.io.ObjectInputStream stream)
@@ -115,7 +115,7 @@ public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializa
         currentStoreIndex = stream.readInt();
         lastStoreIndex = stream.readInt();
         firstNodeSize = stream.readInt();
-        size = stream.readInt();
+        size = stream.readLong();
         arrayLength = stream.readInt();
         
         cachedNodes = new HashMap<>();

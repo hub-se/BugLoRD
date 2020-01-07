@@ -3,7 +3,11 @@ package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 import java.io.File;
 import java.util.Properties;
 
+import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SystemUtils;
+import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteCommandInSystemEnvironment;
 import se.de.hu_berlin.informatik.utils.properties.PropertyLoader;
 import se.de.hu_berlin.informatik.utils.properties.PropertyTemplate;
 
@@ -110,9 +114,41 @@ public final class Defects4J extends Defects4JBase {
 	 * the command to execute, given as an array
 	 */
 	public static void executeCommand(File executionDir, boolean abortOnError, String... commandArgs) {
-		SystemUtils.executeCommandInJavaEnvironment(
-				executionDir, Defects4JProperties.JAVA7_DIR.getValue(), Defects4JProperties.JAVA7_HOME.getValue(),
-				Defects4JProperties.JAVA7_JRE.getValue(), abortOnError, (String[]) commandArgs);
+//		try {
+//		SystemUtils.executeCommandInJavaEnvironment(
+//				executionDir, Defects4JProperties.JAVA7_DIR.getValue(), Defects4JProperties.JAVA7_HOME.getValue(),
+//				Defects4JProperties.JAVA7_JRE.getValue(), abortOnError, (String[]) commandArgs);
+//		} catch (Abort a) {
+//			SystemUtils.executeCommandInJavaEnvironment(
+//					executionDir, null, null, null, abortOnError, (String[]) commandArgs);
+//		}
+		
+		int executionResult = -1;
+		String javaBinDir = Defects4JProperties.JAVA7_DIR.getValue();
+		String javaHomeDir = Defects4JProperties.JAVA7_HOME.getValue();
+		String javaJREDir = Defects4JProperties.JAVA7_JRE.getValue();
+		if (javaBinDir == null || javaHomeDir == null || javaJREDir == null) {
+			executionResult = new ExecuteCommandInSystemEnvironment(executionDir)
+					.asModule()
+					.submit(commandArgs)
+					.getResult();
+		} else {
+			executionResult = new ExecuteCommandInSystemEnvironment(executionDir, javaBinDir)
+					.setEnvVariable("JAVA_HOME", javaHomeDir)
+					.setEnvVariable("JRE_HOME", javaJREDir)
+					.asModule()
+					.submit(commandArgs)
+					.getResult();
+		}
+		
+		if (executionResult != 0) {
+			if (abortOnError) {
+				Log.abort(SystemUtils.class, "Error while executing command: " + Misc.arrayToString(commandArgs, " ", "", ""));
+			} else {
+				Log.err(SystemUtils.class, "Error while executing command: " + Misc.arrayToString(commandArgs, " ", "", ""));
+			}
+		}
+		
 	}
 
 	/**

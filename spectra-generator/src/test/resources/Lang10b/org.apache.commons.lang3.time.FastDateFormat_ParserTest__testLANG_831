@@ -1,0 +1,16 @@
+#ignored:0, FAILED!!!
+Testsuite: org.apache.commons.lang3.time.FastDateFormat_ParserTest
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0,318 sec
+
+Testcase: testLANG_831 took 0,241 sec
+	FAILED
+Parsed dates should be equal expected:<null> but was:<Tue Mar 03 06:00:00 CET 1970>
+junit.framework.AssertionFailedError: Parsed dates should be equal expected:<null> but was:<Tue Mar 03 06:00:00 CET 1970>
+	at org.apache.commons.lang3.time.FastDateParserTest.testSdfAndFdp(FastDateParserTest.java:379)
+	at org.apache.commons.lang3.time.FastDateParserTest.testLANG_831(FastDateParserTest.java:339)
+	at se.de.hu_berlin.informatik.java7.testrunner.TestWrapper$TestRunFutureTask$TestRunCall.call(TestWrapper.java:121)
+	at se.de.hu_berlin.informatik.java7.testrunner.TestWrapper$TestRunFutureTask$TestRunCall.call(TestWrapper.java:1)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.lang.Thread.run(Thread.java:748)
+
+

@@ -252,15 +252,19 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 				Log.err(this, e, "Could not copy the spectra to the data directory.");
 			}
 			
-			try {
-				FileUtils.copyFileOrDir(
-						spectraFileFiltered, 
-						bug.getWorkDataDir().resolve(subDirName)
-						.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile(), 
-						StandardCopyOption.REPLACE_EXISTING);
-				FileUtils.delete(spectraFileFiltered);
-			} catch (IOException e) {
-				Log.err(this, e, "Could not copy the filtered spectra to the data directory.");
+			if (spectraFileFiltered.exists()) {
+				try {
+					FileUtils.copyFileOrDir(
+							spectraFileFiltered, 
+							bug.getWorkDataDir().resolve(subDirName)
+							.resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile(), 
+							StandardCopyOption.REPLACE_EXISTING);
+					FileUtils.delete(spectraFileFiltered);
+				} catch (IOException e) {
+					Log.err(this, e, "Could not copy the filtered spectra to the data directory.");
+				}
+			} else {
+				Log.warn(this, "Filtered spectra file does not exist.");
 			}
 			
 			try {
@@ -306,7 +310,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 			bug.removeUnnecessaryFiles(true);
 
 		} else if (!foundFilteredSpectra) {
-			computeFilteredSpectraFromFoundSpectra(bug);
+//			computeFilteredSpectraFromFoundSpectra(bug);
+			Log.warn(this, "Filtered spectra file does not exist.");
 		}
 		
 //		/* #====================================================================================

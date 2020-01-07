@@ -290,4 +290,13 @@ public class HitTrace<T> implements ITrace<T> {
 		executionTraces.add(executionTrace);
 	}
 
+	@Override
+	public void sleep() {
+		if (executionTraces != null) {
+			for (ExecutionTrace trace : executionTraces) {
+				trace.sleep();
+			}
+		}
+	}
+
 }

@@ -203,6 +203,8 @@ public abstract class TraceCoberturaReportLoader<T, K extends ITrace<T>>
 
 			onLeavingPackage(packageName, lineSpectra, trace);
 		}
+		
+		trace.sleep();
 
 		if (!coveredLines) {
 			Log.warn(this, "Test '%s' covered no lines.", testId);

@@ -286,6 +286,7 @@ public class GenerateDucCsvBugData {
                     // found changes for this line? then mark the line with the
                     // change(s)...
                 }
+
                 if (list != null && !list.isEmpty()) {
                     markedRanking.markElementWith(programBranch, list);
                 }
