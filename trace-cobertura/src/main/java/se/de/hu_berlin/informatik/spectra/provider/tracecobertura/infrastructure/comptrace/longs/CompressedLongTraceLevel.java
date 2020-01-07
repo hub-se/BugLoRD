@@ -23,7 +23,7 @@ public class CompressedLongTraceLevel implements Serializable {
 	 * We are able to process traces with a larger index, but still are
 	 * restricted in terms of repetition marker index, at the moment.
 	 */
-	private static int MAX_INDEX = Integer.MAX_VALUE;
+	private static int MAX_INDEX = Integer.MAX_VALUE - 1;
 
 	private long originalSize = 0;
 

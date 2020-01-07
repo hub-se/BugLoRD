@@ -186,7 +186,7 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 					max = Math.max(entry.getValue()[0], max);
 					max = Math.max(entry.getValue()[1], max);
 				}
-				max = Math.max(repMarkerWrapper.getRepetitionMarkers().size(), max);
+//				max = Math.max(repMarkerWrapper.getRepetitionMarkers().size(), max);
 			}
 		}
 		
