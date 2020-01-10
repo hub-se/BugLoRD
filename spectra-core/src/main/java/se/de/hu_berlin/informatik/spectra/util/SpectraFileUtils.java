@@ -1135,7 +1135,7 @@ public class SpectraFileUtils {
 			result = spectra;
 		}
 		
-		loadSequenceIndexer(zip, result);
+//		result.setIndexer(loadSequenceIndexer(zip));
 		return result;
 	}
 
@@ -1351,12 +1351,14 @@ public class SpectraFileUtils {
 //		}
 	}
 	
-	private static <T> void loadSequenceIndexer(ZipFileWrapper zip, ISpectra<T, ?> spectra) throws ZipException {
+	public static <T> SequenceIndexerCompressed loadSequenceIndexer(ZipFileWrapper zip) throws ZipException {
+		Log.out(SpectraFileUtils.class, "Loading sequence indexer from zip file...");
+		
 		byte[] subTraceIDSequencesByteArray = zip.get(SUBTRACE_ID_SEQUENCES_FILE_NAME, false);
 
 		if (subTraceIDSequencesByteArray == null) {
-			Log.out(SpectraFileUtils.class, "File with sub trace ID sequences not found. (Probably no execution traces stored.)");
-			return;
+			Log.err(SpectraFileUtils.class, "File with sub trace ID sequences not found. (Probably no execution traces stored.)");
+			return null;
 		}
 		CompressedByteArrayToIntArraysProcessor execTraceProcessor1 = new CompressedByteArrayToIntArraysProcessor(true);
 		
@@ -1383,7 +1385,7 @@ public class SpectraFileUtils {
 		
 		
 		EfficientCompressedIntegerTrace[] nodeIdSequences = loadNodeIdSequences(zip);
-		spectra.setIndexer(new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences));
+		return new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences);
 	}
 	
 	public static EfficientCompressedIntegerTrace[] loadNodeIdSequences(ZipFileWrapper zip) throws ZipException {
@@ -1395,6 +1397,7 @@ public class SpectraFileUtils {
 			}
 		}
 		
+		Log.out(SpectraFileUtils.class, "Loading %d sequences from zip file...", counter);
 		// TODO: id 0 is always representing the empty sub trace... it's set to null here...
 		// empty sub traces should not really exist, anyway...
 		EfficientCompressedIntegerTrace[] traces = new EfficientCompressedIntegerTrace[counter];
@@ -1404,6 +1407,7 @@ public class SpectraFileUtils {
 			EfficientCompressedIntegerTrace e = loadNodeIdSequenceFromZipFile(zip, file, repetitionFile);
 
 			traces[i] = e;
+			e.sleep();
 		}
 		
 		return traces;

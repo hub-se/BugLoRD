@@ -46,7 +46,7 @@ public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<
 		// save a trace file that contains all executed lines
 		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
 
-		Log.out(this, "sorting %d nodes... (%s)", nodes.size(), output.toString());
+//		Log.out(this, "sorting %d nodes... (%s)", nodes.size(), output.toString());
 		// order the nodes based on the order of their identifiers
 		nodes.sort(Comparator.comparing(INode::getIdentifier));
 
@@ -54,7 +54,7 @@ public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<
 		List<String> csvLines = new ArrayList<>(nodes.size());
 		
 
-		Log.out(this, "calculating metrics for %d nodes... (%s)", nodes.size(), output.toString());
+//		Log.out(this, "calculating metrics for %d nodes... (%s)", nodes.size(), output.toString());
 		// iterate over the identifiers
 		for (INode<T> node : nodes) {
 			traceFileLines.add(node.getIdentifier().toString());
