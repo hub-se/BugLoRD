@@ -18,9 +18,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.ZipException;
 
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 
 /**
@@ -422,6 +426,15 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 
 	@Override
 	public SequenceIndexerCompressed getIndexer() {
+		// lazily load the sequence indexer from the zip file, when necessary...
+		if (this.indexer == null && getPathToSpectraZipFile() != null) {
+			ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(getPathToSpectraZipFile());
+			try {
+				this.indexer = SpectraFileUtils.loadSequenceIndexer(zip);
+			} catch (ZipException e) {
+				Log.abort(this, e, "Could not get sequence indexer from spectra zip file.");
+			}
+		}
 		return this.indexer;
 	}
 

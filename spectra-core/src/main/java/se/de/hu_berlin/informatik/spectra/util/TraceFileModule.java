@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -45,13 +46,15 @@ public class TraceFileModule<T extends Comparable<T>> extends AbstractProcessor<
 		// save a trace file that contains all executed lines
 		List<INode<T>> nodes = new ArrayList<>(spectra.getNodes());
 
+//		Log.out(this, "sorting %d nodes... (%s)", nodes.size(), output.toString());
 		// order the nodes based on the order of their identifiers
 		nodes.sort(Comparator.comparing(INode::getIdentifier));
 
-		List<String> traceFileLines = new ArrayList<>();
-		List<String> csvLines = new ArrayList<>();
+		List<String> traceFileLines = new ArrayList<>(nodes.size());
+		List<String> csvLines = new ArrayList<>(nodes.size());
 		
 
+//		Log.out(this, "calculating metrics for %d nodes... (%s)", nodes.size(), output.toString());
 		// iterate over the identifiers
 		for (INode<T> node : nodes) {
 			traceFileLines.add(node.getIdentifier().toString());

@@ -23,7 +23,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 	 * We are able to process traces with a larger index, but still are
 	 * restricted in terms of repetition marker index, at the moment.
 	 */
-	private static int MAX_INDEX = Integer.MAX_VALUE;
+	private static int MAX_INDEX = Integer.MAX_VALUE - 1;
 
 	private long originalSize = 0;
 
@@ -48,13 +48,9 @@ public class CompressedIntegerTraceLevel implements Serializable {
 	long maxBufferSize = 0;
 	long maxTraceSize = 0;
 
-	private int maxRepetitionCount;
-
 	
 	
-	public CompressedIntegerTraceLevel(File outputDir, String prefix, int nodeSize, int mapSize, 
-			boolean deleteOnExit, boolean flat, int maxRepetitionCount) {
-		this.maxRepetitionCount = maxRepetitionCount;
+	public CompressedIntegerTraceLevel(File outputDir, String prefix, int nodeSize, int mapSize, boolean deleteOnExit, boolean flat) {
 		String uuid = UUID.randomUUID().toString();
 		traceWithoutRepetitions = new BufferedIntArrayQueue(outputDir,
 				prefix + "cpr_trace_lvl_" + uuid, nodeSize, deleteOnExit);
@@ -313,7 +309,7 @@ public class CompressedIntegerTraceLevel implements Serializable {
 			if (index > Integer.MAX_VALUE) {
 				throw new IllegalStateException("Repetition index too large: " + index);
 			}
-			traceRepetitions.put((int) index, new int[] { repetitionLength, (repetitionCounter + 1 > maxRepetitionCount ? maxRepetitionCount : repetitionCounter + 1) });
+			traceRepetitions.put((int) index, new int[] { repetitionLength, repetitionCounter + 1 });
 //			System.out.println(this + "new idx: " + (originalSize - repetitionLength) + ", len: " + repetitionLength + ", rpt: " + (repetitionCounter+1));
 
 			// reset repetition recognition
