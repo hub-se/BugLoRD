@@ -11,12 +11,16 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
+import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
+import se.de.hu_berlin.informatik.experiments.defects4j.ExperimentRunner.CmdOptions;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils.SourceCodeBlockRankingMetrics;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.ListToFileWriter;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -45,6 +49,8 @@ public class GenerateCsvBugDataFiles {
 				"A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
 						+ "the localizers will be retrieved from the properties file.")
 				.build()),
+		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, 
+				"What tool has been used to compute the rankings?.", false),
 		OUTPUT("o", "output", true, "Path to output directory in which csv files will be stored.", true);
 
 		/* the following code blocks should not need to be changed */
@@ -139,6 +145,9 @@ public class GenerateCsvBugDataFiles {
 		if (localizers.length < 1) {
 			Log.abort(GenerateCsvBugDataFiles.class, "No localizers given.");
 		}
+		
+		ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL, 
+				ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, true);
 
 		// bug size data
 		{
@@ -182,7 +191,7 @@ public class GenerateCsvBugDataFiles {
 			Log.out(GenerateCsvBugDataFiles.class, "Processing %s.", localizer);
 			PipeLinker linker2 = new PipeLinker().append(
 					new ThreadedProcessor<>(options.getNumberOfThreads(),
-							new GenStatisticsProcessor(suffix, localizer)),
+							new GenStatisticsProcessor(suffix, localizer, toolSpecific)),
 					new AbstractProcessor<Pair<String, String[]>, List<String>>() {
 
 						final Map<String, String> map = new HashMap<>();
@@ -229,16 +238,20 @@ public class GenerateCsvBugDataFiles {
 
 		final private String rankingIdentifier;
 		private final String suffix;
+		private ToolSpecific spectraTool;
 
 		/**
 		 * @param suffix
 		 * a suffix to append to the ranking directory (may be null)
 		 * @param rankingIdentifier
 		 * a fault localizer identifier or an lm ranking file name
+		 * @param spectraTool
+		 * the tool used to generate the rankings (statement-/ branch-level ...)
 		 */
-		private GenStatisticsProcessor(String suffix, String rankingIdentifier) {
+		private GenStatisticsProcessor(String suffix, String rankingIdentifier, ToolSpecific spectraTool) {
 			this.suffix = suffix;
 			this.rankingIdentifier = rankingIdentifier;
+			this.spectraTool = spectraTool;
 		}
 
 		@Override
@@ -248,7 +261,40 @@ public class GenerateCsvBugDataFiles {
 
 			Map<String, List<Modification>> changeInformation = entity.loadChangesFromFile();
 
-			Ranking<SourceCodeBlock> ranking = RankingUtils.getRanking(bug, suffix, rankingIdentifier);
+			// generate a statement level ranking!
+			Ranking<SourceCodeBlock> ranking = null;
+			
+			switch (spectraTool) {
+			case BRANCH_SPECTRA:
+				// convert the given branch level ranking to a statement level ranking
+				Ranking<ProgramBranch> branchRanking = RankingUtils.getRanking(ProgramBranch.DUMMY, bug, suffix, rankingIdentifier);
+				if (branchRanking == null) {
+					Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier);
+				}
+				ranking = new SimpleRanking<>(false);
+				
+				// add new statements to the statement level ranking, using the scores of the branches
+				Iterator<ProgramBranch> iterator = branchRanking.iterator();
+				while (iterator.hasNext()) {
+					ProgramBranch branch = iterator.next();
+					double rankingValue = branchRanking.getRankingValue(branch);
+					for (SourceCodeBlock block : branch.getElements()) {
+						if (!ranking.hasRanking(block)) {
+							ranking.add(block, rankingValue);
+						}
+					}
+				}
+				break;
+			case COBERTURA:
+			case JACOCO:
+			case TRACE_COBERTURA:
+				// use statement level rankings for common SBFL scores
+				ranking = RankingUtils.getRanking(SourceCodeBlock.DUMMY, bug, suffix, rankingIdentifier);
+				break;
+			default:
+				throw new UnsupportedOperationException("option '" + spectraTool + "' not supported.");
+			}
+
 			if (ranking == null) {
 				Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier);
 			}
@@ -328,7 +374,7 @@ public class GenerateCsvBugDataFiles {
 			Log.out(GenerateCsvBugDataFiles.class, "Processing %s for general data.", entity);
 			Entity bug = entity.getBuggyVersion();
 
-			Ranking<SourceCodeBlock> ranking = RankingUtils.getRanking(bug, suffix, rankingIdentifier);
+			Ranking<SourceCodeBlock> ranking = RankingUtils.getRanking(SourceCodeBlock.DUMMY, bug, suffix, rankingIdentifier);
 			if (ranking == null) {
 				Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier);
 			}
