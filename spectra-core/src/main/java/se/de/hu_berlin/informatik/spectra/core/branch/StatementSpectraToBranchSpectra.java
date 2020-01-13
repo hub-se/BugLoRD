@@ -114,7 +114,7 @@ public class StatementSpectraToBranchSpectra {
         // --> assert(branchingSpectraMatchesStatementSpectra) or something
         // kind of hard to do now, since the existing data structures don't have easy ways to access
         // the required information
-        assert(branchesHaveAtMostKDecisionPoints(programBranchSpectra, 1)); // k=1 --> number of decisions in a branch is at most 1 for now ; next plan is to merge multiple branches therefore they can have multiple decision points
+        assert(branchesHaveAtMostKDecisionPoints(programBranchSpectra, 2)); // k=1 --> number of decisions in a branch is at most 1 for now ; next plan is to merge multiple branches therefore they can have multiple decision points
         /*====================================================================================*/
 
         return programBranchSpectra;
