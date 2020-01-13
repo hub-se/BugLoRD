@@ -12,7 +12,6 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEnt
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
-import se.de.hu_berlin.informatik.experiments.defects4j.ExperimentRunner.CmdOptions;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils.SourceCodeBlockRankingMetrics;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
@@ -153,7 +152,7 @@ public class GenerateCsvBugDataFiles {
 		{
 			PipeLinker linker = new PipeLinker().append(
 					new ThreadedProcessor<>(options.getNumberOfThreads(),
-							new RankingLOCProcessor(suffix, localizers[0])),
+							new RankingLOCProcessor(suffix, localizers[0], toolSpecific)),
 					new AbstractProcessor<String, List<String>>() {
 
 						final Map<String, String> map = new HashMap<>();
@@ -234,6 +233,47 @@ public class GenerateCsvBugDataFiles {
 
 	}
 
+	protected static Ranking<SourceCodeBlock> generateStatementLevelRanking(Entity bug, ToolSpecific spectraTool, String suffix, String rankingIdentifier) {
+		// generate a statement level ranking!
+		Ranking<SourceCodeBlock> ranking = null;
+		
+		switch (spectraTool) {
+		case BRANCH_SPECTRA:
+			// convert the given branch level ranking to a statement level ranking
+			Ranking<ProgramBranch> branchRanking = RankingUtils.getRanking(ProgramBranch.DUMMY, bug, suffix, rankingIdentifier);
+			if (branchRanking == null) {
+				Log.abort(GenerateCsvBugDataFiles.class, "Found no ranking with identifier '%s'.", rankingIdentifier);
+			}
+			ranking = new SimpleRanking<>(false);
+			
+			// add new statements to the statement level ranking, using the scores of the branches
+			Iterator<ProgramBranch> iterator = branchRanking.iterator();
+			while (iterator.hasNext()) {
+				ProgramBranch branch = iterator.next();
+				double rankingValue = branchRanking.getRankingValue(branch);
+				for (SourceCodeBlock block : branch.getElements()) {
+					if (!ranking.hasRanking(block)) {
+						ranking.add(block, rankingValue);
+					}
+				}
+			}
+			break;
+		case COBERTURA:
+		case JACOCO:
+		case TRACE_COBERTURA:
+			// use statement level rankings for common SBFL scores
+			ranking = RankingUtils.getRanking(SourceCodeBlock.DUMMY, bug, suffix, rankingIdentifier);
+			break;
+		default:
+			throw new UnsupportedOperationException("option '" + spectraTool + "' not supported.");
+		}
+
+		if (ranking == null) {
+			Log.abort(GenerateCsvBugDataFiles.class, "Found no ranking with identifier '%s'.", rankingIdentifier);
+		}
+		return ranking;
+	}
+
 	private static class GenStatisticsProcessor extends AbstractProcessor<BuggyFixedEntity<?>, Pair<String, String[]>> {
 
 		final private String rankingIdentifier;
@@ -261,43 +301,7 @@ public class GenerateCsvBugDataFiles {
 
 			Map<String, List<Modification>> changeInformation = entity.loadChangesFromFile();
 
-			// generate a statement level ranking!
-			Ranking<SourceCodeBlock> ranking = null;
-			
-			switch (spectraTool) {
-			case BRANCH_SPECTRA:
-				// convert the given branch level ranking to a statement level ranking
-				Ranking<ProgramBranch> branchRanking = RankingUtils.getRanking(ProgramBranch.DUMMY, bug, suffix, rankingIdentifier);
-				if (branchRanking == null) {
-					Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier);
-				}
-				ranking = new SimpleRanking<>(false);
-				
-				// add new statements to the statement level ranking, using the scores of the branches
-				Iterator<ProgramBranch> iterator = branchRanking.iterator();
-				while (iterator.hasNext()) {
-					ProgramBranch branch = iterator.next();
-					double rankingValue = branchRanking.getRankingValue(branch);
-					for (SourceCodeBlock block : branch.getElements()) {
-						if (!ranking.hasRanking(block)) {
-							ranking.add(block, rankingValue);
-						}
-					}
-				}
-				break;
-			case COBERTURA:
-			case JACOCO:
-			case TRACE_COBERTURA:
-				// use statement level rankings for common SBFL scores
-				ranking = RankingUtils.getRanking(SourceCodeBlock.DUMMY, bug, suffix, rankingIdentifier);
-				break;
-			default:
-				throw new UnsupportedOperationException("option '" + spectraTool + "' not supported.");
-			}
-
-			if (ranking == null) {
-				Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier);
-			}
+			Ranking<SourceCodeBlock> ranking = generateStatementLevelRanking(bug, spectraTool, suffix, rankingIdentifier);
 
 			MarkedRanking<SourceCodeBlock, List<Modification>> markedRanking = new MarkedRanking<>(ranking);
 
@@ -357,16 +361,20 @@ public class GenerateCsvBugDataFiles {
 
 		final private String rankingIdentifier;
 		private final String suffix;
+		private ToolSpecific spectraTool;
 
 		/**
 		 * @param suffix
 		 * a suffix to append to the ranking directory (may be null)
 		 * @param rankingIdentifier
 		 * a fault localizer identifier or an lm ranking file name
+		 * @param spectraTool
+		 * the tool used to generate the rankings (statement-/ branch-level ...)
 		 */
-		private RankingLOCProcessor(String suffix, String rankingIdentifier) {
+		private RankingLOCProcessor(String suffix, String rankingIdentifier, ToolSpecific spectraTool) {
 			this.suffix = suffix;
 			this.rankingIdentifier = rankingIdentifier;
+			this.spectraTool = spectraTool;
 		}
 
 		@Override
@@ -374,10 +382,7 @@ public class GenerateCsvBugDataFiles {
 			Log.out(GenerateCsvBugDataFiles.class, "Processing %s for general data.", entity);
 			Entity bug = entity.getBuggyVersion();
 
-			Ranking<SourceCodeBlock> ranking = RankingUtils.getRanking(SourceCodeBlock.DUMMY, bug, suffix, rankingIdentifier);
-			if (ranking == null) {
-				Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier);
-			}
+			Ranking<SourceCodeBlock> ranking = generateStatementLevelRanking(bug, spectraTool, suffix, rankingIdentifier);
 
 			// BugID, Line, IF, IS, NF, NS, BestRanking, WorstRanking,
 			// MinWastedEffort, MaxWastedEffort, Suspiciousness
