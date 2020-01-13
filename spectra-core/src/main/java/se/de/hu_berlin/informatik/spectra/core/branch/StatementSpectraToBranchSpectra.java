@@ -295,6 +295,7 @@ public class StatementSpectraToBranchSpectra {
         boolean result = false;
 
         TraceIterator _statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(branchId);
+
         List<Integer> _statementIndices = new ArrayList<Integer>();
 
         while(_statementIndicesIterator.hasNext()){
