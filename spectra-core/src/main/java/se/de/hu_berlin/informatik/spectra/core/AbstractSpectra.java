@@ -427,7 +427,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 	@Override
 	public SequenceIndexerCompressed getIndexer() {
 		// lazily load the sequence indexer from the zip file, when necessary...
-		if (this.indexer == null && getPathToSpectraZipFile() != null) {
+		if (this.indexer == null && getPathToSpectraZipFile() != null && getPathToSpectraZipFile().toFile().exists()) {
 			ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(getPathToSpectraZipFile());
 			try {
 				this.indexer = SpectraFileUtils.loadSequenceIndexer(zip);

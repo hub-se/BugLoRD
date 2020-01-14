@@ -64,10 +64,11 @@ public class StatementSpectraToBranchSpectra {
 
         /*====================================================================================*/
         assert(statementSpectra != null);
-        assert(pathToSpectraZipFile != null);
+//        assert(pathToSpectraZipFile != null);
         /*====================================================================================*/
 
-        ProgramBranchSpectra programBranchSpectra = new ProgramBranchSpectra(Paths.get(pathToSpectraZipFile));
+        // spectra file path should actually be null here, since it's a new spectra that isn't loaded from a zip file
+        ProgramBranchSpectra programBranchSpectra = new ProgramBranchSpectra(pathToSpectraZipFile == null ? null : Paths.get(pathToSpectraZipFile));
         Collection<Integer> failingExecutionBranchIds = collectExecutionBranchIds(statementSpectra.getFailingTraces(), statementSpectra);
         Map<Integer, INode<ProgramBranch>> branchIdMap = new HashMap<>();
         INode<ProgramBranch> branchNode;

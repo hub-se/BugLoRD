@@ -43,7 +43,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 	final private int port;
 	private final ToolSpecific toolSpecific;
 	private String subDirName;
-	private boolean condenseNodes;
+	private boolean fillEmptyLines;
 
 	/**
 	 * @param toolSpecific
@@ -52,12 +52,12 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 	 * a suffix to append to the ranking directory (may be null)
 	 * @param port
 	 * the port to use for the JaCoCo Java agent
-	 * @param condense
+	 * @param fillEmptyLines
 	 * whether to fill up empty lines between statements
 	 */
-	public ERGenerateSpectraEH(ToolSpecific toolSpecific, String suffix, int port, boolean condense) {
+	public ERGenerateSpectraEH(ToolSpecific toolSpecific, String suffix, int port, boolean fillEmptyLines) {
 		this.toolSpecific = toolSpecific;
-		this.condenseNodes = condense;
+		this.fillEmptyLines = fillEmptyLines;
 		switch (toolSpecific) {
 		case COBERTURA:
 			subDirName = BugLoRDConstants.DIR_NAME_COBERTURA;
@@ -172,14 +172,21 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 						traceSpectraDestination.toAbsolutePath());
 				
 				// fill up empty lines in between statements?
-				if (condenseNodes) {
+				if (fillEmptyLines) {
 					new BuildCoherentSpectraModule().submit(spectra);
 				}
 
 				Path destination = bug.getWorkDataDir().resolve(subDirName)
 						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
 				ProgramBranchSpectra programBranchSpectra = StatementSpectraToBranchSpectra
-						.generateBranchingSpectraFromStatementSpectra(spectra, destination.toAbsolutePath().toString());
+						.generateBranchingSpectraFromStatementSpectra(spectra, null
+								// giving a path here lets the methods assume that the spectra
+								// has been loaded from a file which triggers procedures to,
+								// e.g., copy existing execution traces from the existing file and
+								// to load existing node sequence indexers, etc.
+								// ... this is not what we want here. :/
+								// destination.toAbsolutePath().toString()
+								);
 
 				
 				SpectraFileUtils.saveSpectraToZipFile(programBranchSpectra, destination,
@@ -379,7 +386,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 //		.useSeparateJVM(true)
 		.useJava7only(Boolean.valueOf(Defects4JProperties.ALWAYS_USE_JAVA7.getValue()))
 //		.setTimeout(5000L)
-		.setCondenseNodes(condenseNodes)
+		.setCondenseNodes(fillEmptyLines)
 		//~139h
 		.setTimeout(500000L)
 		.setTestRepeatCount(1)
