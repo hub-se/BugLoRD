@@ -519,5 +519,11 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		getCompressedTrace().deleteOnExit();
 		super.deleteOnExit();
 	}
+
+	@Override
+	public void trim() {
+		getCompressedTrace().trim();
+		super.trim();
+	}
 	
 }

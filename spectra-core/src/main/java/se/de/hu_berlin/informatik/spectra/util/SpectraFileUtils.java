@@ -1411,7 +1411,7 @@ public class SpectraFileUtils {
 			EfficientCompressedIntegerTrace e = loadNodeIdSequenceFromZipFile(tempOutput, zip, file, repetitionFile);
 
 			traces[i] = e;
-			e.sleep();
+//			e.sleep();
 		}
 		
 		return traces;
@@ -1459,6 +1459,8 @@ public class SpectraFileUtils {
 		} else {
 			e = new EfficientCompressedIntegerTrace(compressedTrace, null, false);
 		}
+		// reduce used item array space
+		e.trim();
 		return e;
 	}
 	

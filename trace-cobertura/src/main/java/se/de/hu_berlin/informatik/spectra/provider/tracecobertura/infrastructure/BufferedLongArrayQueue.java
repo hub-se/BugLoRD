@@ -1032,6 +1032,15 @@ public class BufferedLongArrayQueue implements Serializable {
 			}
 			items[i+startIndex] = value;
 		}
+		
+		public void trim() {
+			// reduce size of item array to remove empty space
+			if (items.length > endIndex) {
+				long[] temp = items;
+				items = new long[endIndex];
+				System.arraycopy(temp, startIndex, items, startIndex, endIndex - startIndex);
+			}
+		}
 
 	}
 	
@@ -1111,6 +1120,18 @@ public class BufferedLongArrayQueue implements Serializable {
 	
 	public void deleteOnExit() {
 		deleteOnExit = true;
+	}
+
+	public void trim() {
+//		System.out.println(super.toString() + " trim: " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
+		if (cachedNodes != null) {
+			for (Node node : cachedNodes.values()) {
+				node.trim();
+			}
+		}
+		if (lastNode != null) {
+			lastNode.trim();
+		}
 	}
 	
 }
