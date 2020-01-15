@@ -10,8 +10,6 @@
 package se.de.hu_berlin.informatik.spectra.core.count;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.UUID;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;
@@ -19,6 +17,7 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 
 /**
  * This class represents a single execution trace and its success state.
@@ -32,8 +31,6 @@ public class CountTrace<T> extends HitTrace<T> {
 	 * a map that contains the hit counts of the different nodes
 	 */
 	private final BufferedMap<Integer> hitCountMap;
-	
-	private static File tempOutputDir;
 	
     /**
      * Create a trace for a spectra.
@@ -49,26 +46,13 @@ public class CountTrace<T> extends HitTrace<T> {
     protected CountTrace(final ISpectra<T,?> spectra, final String identifier, 
     		final int traceIndex, final boolean successful) {
         super(spectra, identifier, traceIndex, successful);
-        File outputDir = null;
-        if (spectra.getPathToSpectraZipFile() == null) {
-        	try {
-				outputDir = getTemporaryOutputDir();
-			} catch (IOException e) {
-				throw new IllegalStateException(e);
-			}
-        } else {
-        	outputDir = spectra.getPathToSpectraZipFile().getParent().resolve("execTraceTemp").toAbsolutePath().toFile();
-        }
+        File outputDir = SpectraFileUtils.getTemporaryOutputDir("hitCount_tmp", 
+        		spectra.getPathToSpectraZipFile() == null ? null : 
+        			spectra.getPathToSpectraZipFile().getParent().resolve("execTraceTemp").toAbsolutePath());
+        
         this.hitCountMap = new BufferedMap<>(outputDir, 
 				"hitCount-" + UUID.randomUUID().toString(), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
     }
-
-	private static File getTemporaryOutputDir() throws IOException {
-		if (tempOutputDir == null) {
-			tempOutputDir = Files.createTempDirectory("hitCount_temp").toAbsolutePath().toFile();
-		}
-		return tempOutputDir;
-	}
 	
     public void setHits(T identifier, long numberOfHits) {
     	setHits(spectra.getOrCreateNode(identifier), numberOfHits);

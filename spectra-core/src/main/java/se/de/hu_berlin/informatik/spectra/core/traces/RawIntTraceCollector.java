@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -232,6 +233,15 @@ public class RawIntTraceCollector {
 //
 //	}
 
+	private static File tmpOutputDir = null;
+	
+	private static File getTmpDir(Path alternatePath) {
+		if (tmpOutputDir == null) {
+			tmpOutputDir = SpectraFileUtils.getTemporaryOutputDir("rawTraces_tmp", alternatePath);
+		}
+		return tmpOutputDir;
+	}
+	
 	public List<EfficientCompressedIntegerTrace> getRawTraces(int traceIndex) throws ZipException {
 		if (!output.toFile().exists()) {
 			return null;
@@ -247,7 +257,9 @@ public class RawIntTraceCollector {
 			if (zip.exists(compressedTraceFile)) {
 				String repetitionFile = traceIndex + "-" + (traceCounter) + REP_MARKER_FILE_EXTENSION;
 				EfficientCompressedIntegerTrace rawTrace = SpectraFileUtils
-						.loadRawTraceFromZipFile(zip, compressedTraceFile, repetitionFile);
+						.loadRawTraceFromZipFile(getTmpDir(
+								zip.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath()), 
+								zip, compressedTraceFile, repetitionFile);
 				result.add(rawTrace);
 			} else {
 				break;
@@ -383,7 +395,9 @@ public class RawIntTraceCollector {
 			for (String fileHeader : rawTraceFiles) {
 				tracker.track("processing " + fileHeader);
 				EfficientCompressedIntegerTrace rawTrace = SpectraFileUtils
-						.loadRawTraceFromZipFile(zip, fileHeader, fileHeader
+						.loadRawTraceFromZipFile(getTmpDir(
+								zip.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath()),
+								zip, fileHeader, fileHeader
 								.replace(RAW_TRACE_FILE_EXTENSION, REP_MARKER_FILE_EXTENSION));
 
 //				extractCommonSequencesFromRawTrace(executionTrace.iterator());
