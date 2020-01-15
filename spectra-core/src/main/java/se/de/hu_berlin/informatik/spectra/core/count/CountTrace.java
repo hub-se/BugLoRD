@@ -10,6 +10,7 @@
 package se.de.hu_berlin.informatik.spectra.core.count;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.UUID;
 
 import se.de.hu_berlin.informatik.spectra.core.INode;
@@ -32,6 +33,15 @@ public class CountTrace<T> extends HitTrace<T> {
 	 */
 	private final BufferedMap<Integer> hitCountMap;
 	
+	private static File tmpOutputDir = null;
+	
+	private static File getTmpDir(Path alternatePath) {
+		if (tmpOutputDir == null) {
+			tmpOutputDir = SpectraFileUtils.getTemporaryOutputDir("hitCount_tmp", alternatePath);
+		}
+		return tmpOutputDir;
+	}
+	
     /**
      * Create a trace for a spectra.
      * @param spectra
@@ -46,8 +56,7 @@ public class CountTrace<T> extends HitTrace<T> {
     protected CountTrace(final ISpectra<T,?> spectra, final String identifier, 
     		final int traceIndex, final boolean successful) {
         super(spectra, identifier, traceIndex, successful);
-        File outputDir = SpectraFileUtils.getTemporaryOutputDir("hitCount_tmp", 
-        		spectra.getPathToSpectraZipFile() == null ? null : 
+        File outputDir = getTmpDir(spectra.getPathToSpectraZipFile() == null ? null : 
         			spectra.getPathToSpectraZipFile().getParent().resolve("execTraceTemp").toAbsolutePath());
         
         this.hitCountMap = new BufferedMap<>(outputDir, 

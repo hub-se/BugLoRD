@@ -1421,7 +1421,9 @@ public class SpectraFileUtils {
 		String tmpDir = System.getProperty("tmp_dir");
         if (tmpDir != null) {
         	try {
-        		File tempOutputDir = Files.createTempDirectory(Paths.get(tmpDir), "dirNamePrefix").toAbsolutePath().toFile();
+        		Path path = Paths.get(tmpDir);
+        		path.toFile().mkdirs();
+				File tempOutputDir = Files.createTempDirectory(path, dirNamePrefix).toAbsolutePath().toFile();
         		tempOutputDir.deleteOnExit();
         		return tempOutputDir;
 			} catch (IOException e) {
