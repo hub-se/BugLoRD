@@ -9,6 +9,8 @@ import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue.MyBufferedIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,12 +63,14 @@ public class StatementSpectraToBranchSpectra {
 
     public static ProgramBranchSpectra generateBranchingSpectraFromStatementSpectra
             (ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra, String pathToSpectraZipFile){
-
+    	Log.out(StatementSpectraToBranchSpectra.class, "Generating branch spectra...");
+    	
         /*====================================================================================*/
         assert(statementSpectra != null);
 //        assert(pathToSpectraZipFile != null);
         /*====================================================================================*/
-
+        ProgressTracker tracker = new ProgressTracker(false);
+        
         // spectra file path should actually be null here, since it's a new spectra that isn't loaded from a zip file
         ProgramBranchSpectra programBranchSpectra = new ProgramBranchSpectra(pathToSpectraZipFile == null ? null : Paths.get(pathToSpectraZipFile));
         Collection<Integer> failingExecutionBranchIds = collectExecutionBranchIds(statementSpectra.getFailingTraces(), statementSpectra);
@@ -98,6 +102,8 @@ public class StatementSpectraToBranchSpectra {
             newTrace = programBranchSpectra.addTrace(testCase.getIdentifier(), testCase.getIndex(), testCase.isSuccessful());
 
             for(ExecutionTrace executionTrace : testCase.getExecutionTraces()){
+            	// give some visual progress information
+            	tracker.track(String.format("size: %20d", executionTrace.size()));
                 for(Integer executionBranchId : collectExecutionBranchIds(executionTrace, statementSpectra)){
 
                     branchNode = programBranchSpectra.getBranchNode(executionBranchId);

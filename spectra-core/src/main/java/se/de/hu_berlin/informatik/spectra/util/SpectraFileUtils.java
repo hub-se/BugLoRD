@@ -1414,6 +1414,7 @@ public class SpectraFileUtils {
 //			e.sleep();
 		}
 		
+		Log.out(SpectraFileUtils.class, "Loaded %d sequences from zip file!", counter);
 		return traces;
 	}
 	
