@@ -102,7 +102,7 @@ public class StatementSpectraToBranchSpectra {
 
             for(ExecutionTrace executionTrace : testCase.getExecutionTraces()){
             	// give some visual progress information
-            	tracker.track(String.format("size: %20,d", executionTrace.getCompressedTrace().size()));
+            	tracker.track(String.format("size: %,20d", executionTrace.getCompressedTrace().size()));
             	HashSet<Integer> executionBranchIds = new HashSet<Integer>();
             	collectExecutionBranchIds(executionBranchIds, executionTrace, statementSpectra);
                 for(Integer executionBranchId : executionBranchIds){
