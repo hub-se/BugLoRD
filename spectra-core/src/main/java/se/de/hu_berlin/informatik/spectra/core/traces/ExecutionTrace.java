@@ -11,6 +11,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceReverseIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.EfficientCompressedLongTrace;
+import se.de.hu_berlin.informatik.spectra.util.CompressedByteArrayToRepetitionMarkerMapListProcessor;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 
 /**
  * An execution trace consists structurally of a list of executed nodes (or references to node lists)
@@ -24,6 +27,10 @@ public class ExecutionTrace extends EfficientCompressedIntegerTrace implements S
 	 * 
 	 */
 	private static final long serialVersionUID = -1586811553594468248L;
+	
+	private String repetitionFile;
+	private ZipFileWrapper zipFileWrapper;
+	private File tmpOutputDir;
 
 	public ExecutionTrace(BufferedIntArrayQueue trace, boolean log) {
 		super(trace, log);
@@ -44,6 +51,27 @@ public class ExecutionTrace extends EfficientCompressedIntegerTrace implements S
 
 	public ExecutionTrace(File outputDir, String prefix, int nodeSize, int mapSize, boolean deleteOnExit) {
 		super(outputDir, prefix, nodeSize, mapSize, deleteOnExit);
+	}
+
+	public ExecutionTrace(BufferedIntArrayQueue compressedTrace, ZipFileWrapper zipFileWrapper, File tmpOutputDir,
+			String repetitionFile, boolean log) {
+		super(compressedTrace, null, log);
+		// load the repetition marker maps later, if they are needed...
+		this.zipFileWrapper = zipFileWrapper;
+		this.tmpOutputDir = tmpOutputDir;
+		this.repetitionFile = repetitionFile;
+	}
+	
+	private void loadRepetitionMarkerMap() {
+		// lazily load repetition markers, if necessary;
+		// will not be necessary, if we only want to iterate over the compressed base trace
+		if (zipFileWrapper != null) {
+			CompressedByteArrayToRepetitionMarkerMapListProcessor repProcessor = 
+					new CompressedByteArrayToRepetitionMarkerMapListProcessor(zipFileWrapper, true, new SpectraFileUtils.MapSupplier(tmpOutputDir));
+			List<BufferedMap<int[]>> repetitionMarkers = repProcessor.submit(repetitionFile).getResult();
+			setRepetitionMarkers(repetitionMarkers);
+			zipFileWrapper = null;
+		}
 	}
 
 	/**
@@ -146,4 +174,15 @@ public class ExecutionTrace extends EfficientCompressedIntegerTrace implements S
 			}};
 	}
 	
+	@Override
+	public TraceIterator iterator() {
+		loadRepetitionMarkerMap();
+		return super.iterator();
+	}
+	
+	@Override
+	public TraceReverseIterator reverseIterator() {
+		loadRepetitionMarkerMap();
+		return super.reverseIterator();
+	}
 }

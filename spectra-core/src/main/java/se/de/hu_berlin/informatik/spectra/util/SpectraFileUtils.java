@@ -1242,7 +1242,7 @@ public class SpectraFileUtils {
 //		return e;
 //	}
 	
-	private static class MapSupplier implements Supplier<BufferedMap<int[]>> {
+	public static class MapSupplier implements Supplier<BufferedMap<int[]>> {
 
 		private File tmpOutputDir;
 
@@ -1270,9 +1270,12 @@ public class SpectraFileUtils {
 		// load the repetition markers (if any)
 		ExecutionTrace e;
 		if (zipFileWrapper.exists(repetitionFile)) {
-			CompressedByteArrayToRepetitionMarkerMapListProcessor repProcessor = new CompressedByteArrayToRepetitionMarkerMapListProcessor(zipFileWrapper, true, new MapSupplier(tmpOutputDir));
-			List<BufferedMap<int[]>> repetitionMarkers = repProcessor.submit(repetitionFile).getResult();
-			e = new ExecutionTrace(compressedTrace, repetitionMarkers, false);
+//			CompressedByteArrayToRepetitionMarkerMapListProcessor repProcessor = new CompressedByteArrayToRepetitionMarkerMapListProcessor(zipFileWrapper, true, new MapSupplier(tmpOutputDir));
+//			List<BufferedMap<int[]>> repetitionMarkers = repProcessor.submit(repetitionFile).getResult();
+//			e = new ExecutionTrace(compressedTrace, repetitionMarkers, false);
+			
+			// lazily load repetition marker maps...
+			e = new ExecutionTrace(compressedTrace, zipFileWrapper, tmpOutputDir, repetitionFile, false);
 		} else {
 			e = new ExecutionTrace(compressedTrace, null, false);
 		}

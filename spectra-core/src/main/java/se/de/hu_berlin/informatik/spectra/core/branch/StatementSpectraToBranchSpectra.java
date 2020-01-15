@@ -6,7 +6,7 @@ import se.de.hu_berlin.informatik.spectra.core.*;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue.MyBufferedIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -48,8 +48,7 @@ public class StatementSpectraToBranchSpectra {
 
         for(ITrace<SourceCodeBlock> testCaseTrace : statementSpectra.getTraces()){
             for(ExecutionTrace executionTrace : testCaseTrace.getExecutionTraces()){
-                branchIds = collectExecutionBranchIds(executionTrace, statementSpectra);
-                executionBranchIds.addAll(collectExecutionBranchIds(executionTrace, statementSpectra));
+                collectExecutionBranchIds(executionBranchIds, executionTrace, statementSpectra);
             }
             assert(branchesAreExactlyCoveredByThisTestCase(testCaseTrace, branchIds, statementSpectra));
             branchIds.clear();
@@ -103,8 +102,10 @@ public class StatementSpectraToBranchSpectra {
 
             for(ExecutionTrace executionTrace : testCase.getExecutionTraces()){
             	// give some visual progress information
-            	tracker.track(String.format("size: %20d", executionTrace.size()));
-                for(Integer executionBranchId : collectExecutionBranchIds(executionTrace, statementSpectra)){
+            	tracker.track(String.format("size: %20,d", executionTrace.getCompressedTrace().size()));
+            	HashSet<Integer> executionBranchIds = new HashSet<Integer>();
+            	collectExecutionBranchIds(executionBranchIds, executionTrace, statementSpectra);
+                for(Integer executionBranchId : executionBranchIds){
 
                     branchNode = programBranchSpectra.getBranchNode(executionBranchId);
                     if(branchNode != null){
@@ -143,7 +144,7 @@ public class StatementSpectraToBranchSpectra {
 
         for(ITrace<SourceCodeBlock> testCaseTrace : testCaseTraces){
             for(ExecutionTrace executionTrace : testCaseTrace.getExecutionTraces()){
-                executionBranchIds.addAll(collectExecutionBranchIds(executionTrace, statementSpectra));
+                collectExecutionBranchIds(executionBranchIds, executionTrace, statementSpectra);
             }
         }
 
@@ -155,15 +156,14 @@ public class StatementSpectraToBranchSpectra {
 
     }
 
-    private static Collection<Integer> collectExecutionBranchIds(ExecutionTrace executionTrace,
+    private static void collectExecutionBranchIds(Set<Integer> executionBranchIds, ExecutionTrace executionTrace,
                                                                  ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra){
 
         /*====================================================================================*/
         assert(executionTrace != null);
         /*====================================================================================*/
 
-        HashSet<Integer> executionBranchIds = new HashSet<Integer>();
-        MyBufferedIterator myExecutionBranchIterator = executionTrace.getCompressedTrace().iterator();
+        ReplaceableCloneableIterator myExecutionBranchIterator = executionTrace.baseIterator();
 
         while(myExecutionBranchIterator.hasNext()){
             Iterator<Integer> subTraceIdIterator = statementSpectra.getIndexer().getSubTraceIDSequenceIterator(myExecutionBranchIterator.next());
@@ -176,8 +176,6 @@ public class StatementSpectraToBranchSpectra {
         /*====================================================================================*/
         assert(executionBranchIds != null);
         /*====================================================================================*/
-
-        return executionBranchIds;
 
     }
 
