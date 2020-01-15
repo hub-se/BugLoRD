@@ -1398,6 +1398,7 @@ public class SpectraFileUtils {
 		}
 		
 		Log.out(SpectraFileUtils.class, "Loading %d sequences from zip file...", counter);
+		ProgressTracker tracker = new ProgressTracker(false, 100);
 		
 		File tempOutput = getTemporaryOutputDir("nodeIdSequences_tmp", 
 				zip.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath());
@@ -1406,6 +1407,7 @@ public class SpectraFileUtils {
 		// empty sub traces should not really exist, anyway...
 		EfficientCompressedIntegerTrace[] traces = new EfficientCompressedIntegerTrace[counter];
 		for (int i = 1; i < traces.length; ++i) {
+			tracker.track();
 			String file = i + SpectraFileUtils.NODE_ID_FILE_EXTENSION;
 			String repetitionFile = i + SpectraFileUtils.NODE_ID_REPETITIONS_FILE_EXTENSION;
 			EfficientCompressedIntegerTrace e = loadNodeIdSequenceFromZipFile(tempOutput, zip, file, repetitionFile);
