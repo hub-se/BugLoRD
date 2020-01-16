@@ -14,7 +14,9 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDPropertie
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils.SourceCodeBlockRankingMetrics;
+import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.MarkedRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
@@ -50,7 +52,8 @@ public class GenerateCsvBugDataFiles {
 				.build()),
 		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, 
 				"What tool has been used to compute the rankings?.", false),
-		OUTPUT("o", "output", true, "Path to output directory in which csv files will be stored.", true);
+		OUTPUT("o", "output", true, "Path to output directory in which csv files will be stored.", true),
+		FILL_EMPTY_LINES("f", "fill", false, "Whether empty lines between statements in the same method should be filled up.", false);
 
 		/* the following code blocks should not need to be changed */
 		final private OptionWrapper option;
@@ -190,7 +193,7 @@ public class GenerateCsvBugDataFiles {
 			Log.out(GenerateCsvBugDataFiles.class, "Processing %s.", localizer);
 			PipeLinker linker2 = new PipeLinker().append(
 					new ThreadedProcessor<>(options.getNumberOfThreads(),
-							new GenStatisticsProcessor(suffix, localizer, toolSpecific)),
+							new GenStatisticsProcessor(suffix, localizer, toolSpecific, options.hasOption(CmdOptions.FILL_EMPTY_LINES))),
 					new AbstractProcessor<Pair<String, String[]>, List<String>>() {
 
 						final Map<String, String> map = new HashMap<>();
@@ -279,6 +282,7 @@ public class GenerateCsvBugDataFiles {
 		final private String rankingIdentifier;
 		private final String suffix;
 		private ToolSpecific spectraTool;
+		private boolean fillEmptyLines;
 
 		/**
 		 * @param suffix
@@ -287,11 +291,15 @@ public class GenerateCsvBugDataFiles {
 		 * a fault localizer identifier or an lm ranking file name
 		 * @param spectraTool
 		 * the tool used to generate the rankings (statement-/ branch-level ...)
+		 * @param fillEmptyLines
+		 * whether to fill empty lines between statements within the same method
 		 */
-		private GenStatisticsProcessor(String suffix, String rankingIdentifier, ToolSpecific spectraTool) {
+		private GenStatisticsProcessor(String suffix, String rankingIdentifier, 
+				ToolSpecific spectraTool, boolean fillEmptyLines) {
 			this.suffix = suffix;
 			this.rankingIdentifier = rankingIdentifier;
 			this.spectraTool = spectraTool;
+			this.fillEmptyLines = fillEmptyLines;
 		}
 
 		@Override
@@ -302,6 +310,12 @@ public class GenerateCsvBugDataFiles {
 			Map<String, List<Modification>> changeInformation = entity.loadChangesFromFile();
 
 			Ranking<SourceCodeBlock> ranking = generateStatementLevelRanking(bug, spectraTool, suffix, rankingIdentifier);
+			
+			if (fillEmptyLines) {
+				// fill up empty lines between statements within the same method;
+				// helps with the correct marking of changes to ranked elements
+				fillEmptylines(ranking);
+			}
 
 			MarkedRanking<SourceCodeBlock, List<Modification>> markedRanking = new MarkedRanking<>(ranking);
 
@@ -390,6 +404,43 @@ public class GenerateCsvBugDataFiles {
 			String bugIdentifier = bug.getUniqueIdentifier();
 
 			return bugIdentifier + "," + Objects.requireNonNull(ranking).getElements().size();
+		}
+	}
+
+	public static void fillEmptylines(Ranking<SourceCodeBlock> ranking) {
+		//get lines in the ranking and sort them
+		Collection<SourceCodeBlock> nodes = ranking.getElements();
+		SourceCodeBlock[] array = new SourceCodeBlock[nodes.size()];
+		int counter = -1;
+		for (SourceCodeBlock node : nodes) {
+			array[++counter] = node;
+		}
+		Arrays.sort(array);
+
+		SourceCodeBlock lastLine = new SourceCodeBlock("", "", "", -1, NodeType.NORMAL);
+		//iterate over all lines
+		List<SourceCodeBlock> nodesOnSameLine = new ArrayList<>(3);
+		for (SourceCodeBlock line : array) {
+			//see if we are inside the same method in the same package
+			if (line.getMethodName().equals(lastLine.getMethodName())
+					&& line.getFilePath().equals(lastLine.getFilePath())) {
+				//set the end line number of the last covered line to be equal 
+				//to the line before the next covered line
+				if (line.getStartLineNumber() == lastLine.getStartLineNumber()) {
+					nodesOnSameLine.add(line);
+				} else {
+					for (SourceCodeBlock block : nodesOnSameLine) {
+						// set end line for all nodes on the same line
+						block.setLineNumberEnd(line.getStartLineNumber()-1);	
+					}
+					nodesOnSameLine.clear();
+				}
+			} else {
+				nodesOnSameLine.clear();
+			}
+
+			//next line...
+			lastLine = line;
 		}
 	}
 

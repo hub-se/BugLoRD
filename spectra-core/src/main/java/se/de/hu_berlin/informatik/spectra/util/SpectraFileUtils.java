@@ -439,6 +439,11 @@ public class SpectraFileUtils {
 
 	private static <T> void saveExecutionTraces(ISpectra<T, ?> spectra,
 			Map<Integer, Integer> nodeIndexToStoreIdMap, Path outputFile) {
+		if (spectra.getPathToSpectraZipFile() != null) {
+			// don't load the indexer, but simply move it
+			// TODO
+			// return;
+		}
 		SequenceIndexerCompressed indexer = spectra.getIndexer();
 
 		try {
