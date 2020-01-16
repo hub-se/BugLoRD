@@ -68,28 +68,48 @@ public class StatementSpectraToBranchSpectra {
         assert(statementSpectra != null);
 //        assert(pathToSpectraZipFile != null);
         /*====================================================================================*/
-        ProgressTracker tracker = new ProgressTracker(false);
+        
         
         // spectra file path should actually be null here, since it's a new spectra that isn't loaded from a zip file
         ProgramBranchSpectra programBranchSpectra = new ProgramBranchSpectra(pathToSpectraZipFile == null ? null : Paths.get(pathToSpectraZipFile));
-        Collection<Integer> failingExecutionBranchIds = collectExecutionBranchIds(statementSpectra.getFailingTraces(), statementSpectra);
         Map<Integer, INode<ProgramBranch>> branchIdMap = new HashMap<>();
         INode<ProgramBranch> branchNode;
         ProgramBranch programBranch;
-
+        
+        // we can filter out nodes later that may have not been covered by failing test cases
+//      Collection<Integer> failingExecutionBranchIds = collectExecutionBranchIds(statementSpectra.getFailingTraces(), statementSpectra);
+//
+//        /* extract the "failing" branches from the statement spectra, i.e.
+//         *  branches that are covered in a failing test case
+//         *  branch := list of statements
+//         */
+//        for(Integer failingExecutionBranchId : failingExecutionBranchIds){
+//            programBranch = new ProgramBranch(getExecutedStatementsFromBranch(failingExecutionBranchId, statementSpectra));
+//            branchNode = programBranchSpectra.getOrCreateNode(programBranch);
+//            branchIdMap.put(failingExecutionBranchId, branchNode);
+//        }
+//
+//        programBranchSpectra.setBranchIdMap(branchIdMap);
+        
+        
+        // collect all existing branch IDs
+        Collection<Integer> allExecutionBranchIds = collectAllExecutionBranchIds(statementSpectra);
+        
         /* extract the "failing" branches from the statement spectra, i.e.
          *  branches that are covered in a failing test case
          *  branch := list of statements
          */
-        for(Integer failingExecutionBranchId : failingExecutionBranchIds){
-            programBranch = new ProgramBranch(getExecutedStatementsFromBranch(failingExecutionBranchId, statementSpectra));
+        for(Integer executionBranchId : allExecutionBranchIds){
+            programBranch = new ProgramBranch(getExecutedStatementsFromBranch(executionBranchId, statementSpectra));
             branchNode = programBranchSpectra.getOrCreateNode(programBranch);
-            branchIdMap.put(failingExecutionBranchId, branchNode);
+            branchIdMap.put(executionBranchId, branchNode);
         }
 
         programBranchSpectra.setBranchIdMap(branchIdMap);
+        
+        
 
-        ITrace<ProgramBranch> newTrace;
+        ProgressTracker tracker = new ProgressTracker(false);
 
         /* the branchingSpectra has the same traces as the statementSpectra
          *  --> copy every trace, but set the involvement for each trace according to which branches
@@ -98,7 +118,8 @@ public class StatementSpectraToBranchSpectra {
          */
         for(ITrace<SourceCodeBlock> testCase : statementSpectra.getTraces()){
 
-            newTrace = programBranchSpectra.addTrace(testCase.getIdentifier(), testCase.getIndex(), testCase.isSuccessful());
+        	ITrace<ProgramBranch> newTrace = programBranchSpectra.
+        			addTrace(testCase.getIdentifier(), testCase.getIndex(), testCase.isSuccessful());
 
             for(ExecutionTrace executionTrace : testCase.getExecutionTraces()){
             	// give some visual progress information
@@ -113,6 +134,9 @@ public class StatementSpectraToBranchSpectra {
                     }
 
                 }
+                
+                // free memory after use
+                executionTrace.sleep();
             }
         }
 
@@ -132,6 +156,30 @@ public class StatementSpectraToBranchSpectra {
     /*====================================================================================
      * HELPER METHODS
      *====================================================================================*/
+
+    private static Collection<Integer> collectAllExecutionBranchIds(ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra){
+
+    	/*====================================================================================*/
+    	assert(statementSpectra != null);
+    	/*====================================================================================*/
+
+    	HashSet<Integer> executionBranchIds = new HashSet<Integer>();
+    	
+    	int[][] subTraceIdSequences = statementSpectra.getIndexer().getSubTraceIdSequences();
+
+    	for(int[] subTraceIdSequence : subTraceIdSequences){
+    		for(int subTraceId : subTraceIdSequence){
+    			executionBranchIds.add(subTraceId);
+    		}
+    	}
+
+    	/*====================================================================================*/
+    	assert(executionBranchIds != null);
+    	/*====================================================================================*/
+
+    	return executionBranchIds;
+
+    }
 
     private static Collection<Integer> collectExecutionBranchIds(Collection<? extends ITrace<SourceCodeBlock>> testCaseTraces,
                                                                  ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra){

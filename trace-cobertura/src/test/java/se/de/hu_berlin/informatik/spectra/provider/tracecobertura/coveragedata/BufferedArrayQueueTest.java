@@ -266,6 +266,15 @@ public class BufferedArrayQueueTest {
 		}
 		queue.sleep();
 		
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator reverseIterator = queue.reverseIterator();
+		
+		i = 49;
+		while (reverseIterator.hasNext()) {
+//			System.out.println(iterator.next());
+			Assert.assertEquals(i--, reverseIterator.next());
+		}
+		queue.sleep();
+		
 		queue.remove();
 		queue.element();
 		

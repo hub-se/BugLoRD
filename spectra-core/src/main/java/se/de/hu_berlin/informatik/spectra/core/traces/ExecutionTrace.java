@@ -95,7 +95,8 @@ public class ExecutionTrace extends EfficientCompressedIntegerTrace implements S
 	}
 	
 	/**
-	 * iterates over all node IDs in the execution trace.
+	 * iterates over all node IDs in the execution trace. 
+	 * (might be slow due to lazily loading repetition marker maps!)
 	 * @param sequenceIndexer
 	 * indexer that is used to connect the element IDs in the execution trace to the respective sub traces
 	 * that contain node IDs
@@ -135,7 +136,8 @@ public class ExecutionTrace extends EfficientCompressedIntegerTrace implements S
 	}
 	
 	/**
-	 * iterates over all node IDs in the execution trace, starting from the end of the trace.
+	 * iterates over all node IDs in the execution trace, starting from the end of the trace. 
+	 * (might be slow due to lazily loading repetition marker maps!)
 	 * @param sequenceIndexer
 	 * indexer that is used to connect the element IDs in the execution trace to the respective sub traces
 	 * that contain node IDs
@@ -174,12 +176,18 @@ public class ExecutionTrace extends EfficientCompressedIntegerTrace implements S
 			}};
 	}
 	
+	/**
+	 * (might be slow due to lazily loading repetition marker maps!)
+	 */
 	@Override
 	public TraceIterator iterator() {
 		loadRepetitionMarkerMap();
 		return super.iterator();
 	}
 	
+	/**
+	 * (might be slow due to lazily loading repetition marker maps!)
+	 */
 	@Override
 	public TraceReverseIterator reverseIterator() {
 		loadRepetitionMarkerMap();

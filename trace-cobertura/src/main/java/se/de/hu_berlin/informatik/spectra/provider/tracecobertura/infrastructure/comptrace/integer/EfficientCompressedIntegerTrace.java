@@ -460,6 +460,15 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		return new TraceReverseIterator(this);
 	}
 	
+	/**
+	 * @return
+	 * reverse iterator over the compressed trace (ignores repetitions)
+	 */
+	public ReplaceableCloneableIterator reverseBaseIterator() {
+		endOfLine();
+		return compressedTrace.reverseIterator();
+	}
+	
 //	public Set<Integer> computeStartingElements() {
 //		Set<Integer> set = new HashSet<>();
 //		addStartingElementsToSet(set);
