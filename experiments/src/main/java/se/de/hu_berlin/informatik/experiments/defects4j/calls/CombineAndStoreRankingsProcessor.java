@@ -67,12 +67,12 @@ public class CombineAndStoreRankingsProcessor extends AbstractProcessor<BuggyFix
 			}
 		}
 
-		Ranking<SourceCodeBlock> ranking1 = RankingUtils.getRanking(bug, suffix, rankingIdentifier1);
+		Ranking<SourceCodeBlock> ranking1 = RankingUtils.getRanking(SourceCodeBlock.DUMMY, bug, suffix, rankingIdentifier1);
 		if (ranking1 == null) {
 			Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier1);
 		}
 
-		Ranking<SourceCodeBlock> ranking2 = RankingUtils.getRanking(bug, suffix, rankingIdentifier2);
+		Ranking<SourceCodeBlock> ranking2 = RankingUtils.getRanking(SourceCodeBlock.DUMMY, bug, suffix, rankingIdentifier2);
 		if (ranking2 == null) {
 			Log.abort(this, "Found no ranking with identifier '%s'.", rankingIdentifier2);
 		}

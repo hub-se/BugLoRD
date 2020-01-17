@@ -130,5 +130,9 @@ public abstract class RepetitionMarkerBase implements Serializable {
 		}
 		return builder.toString();
 	}
+
+	public void trim() {
+		// do nothing
+	}
 	
 }

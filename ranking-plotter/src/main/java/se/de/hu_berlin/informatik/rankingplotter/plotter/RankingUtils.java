@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingValueReplacementStrategy;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.utils.miscellaneous.FromString;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class RankingUtils {
@@ -60,28 +61,28 @@ public class RankingUtils {
 				(k, v) -> (firstRankingPercentage * k + (100.0 - firstRankingPercentage) * v));
 	}
 
-	public static Ranking<SourceCodeBlock> getRanking(Entity bug, String suffix, String rankingIdentifier) {
-		return getRanking(null, bug, suffix, rankingIdentifier);
+	public static <T extends FromString<T>> Ranking<T> getRanking(T dummy, Entity bug, String suffix, String rankingIdentifier) {
+		return getRanking(dummy, null, bug, suffix, rankingIdentifier);
 	}
 	
-	public static Ranking<SourceCodeBlock> getRanking(Path bugDir, Entity bug, String suffix, String rankingIdentifier) {
-		Ranking<SourceCodeBlock> ranking = null;
+	public static <T extends FromString<T>> Ranking<T> getRanking(T dummy, Path bugDir, Entity bug, String suffix, String rankingIdentifier) {
+		Ranking<T> ranking = null;
 
-		ranking = tryToGetRanking(bugDir, bug, suffix, rankingIdentifier.toLowerCase(Locale.getDefault()));
+		ranking = tryToGetRanking(dummy, bugDir, bug, suffix, rankingIdentifier.toLowerCase(Locale.getDefault()));
 
 		if (ranking == null && !rankingIdentifier.toLowerCase(Locale.getDefault()).equals(rankingIdentifier)) {
-			ranking = tryToGetRanking(bugDir, bug, suffix, rankingIdentifier);
+			ranking = tryToGetRanking(dummy, bugDir, bug, suffix, rankingIdentifier);
 		}
 
 		return ranking;
 	}
 	
-	public static Ranking<SourceCodeBlock> tryToGetRanking(Entity bug, String suffix, String rankingIdentifier) {
-		return tryToGetRanking(null, bug, suffix, rankingIdentifier);
+	public static <T extends FromString<T>> Ranking<T> tryToGetRanking(T dummy, Entity bug, String suffix, String rankingIdentifier) {
+		return tryToGetRanking(dummy, null, bug, suffix, rankingIdentifier);
 	}
 
-	public static Ranking<SourceCodeBlock> tryToGetRanking(Path bugDir, Entity bug, String suffix, String rankingIdentifier) {
-		Ranking<SourceCodeBlock> ranking;
+	public static <T extends FromString<T>> Ranking<T> tryToGetRanking(T dummy, Path bugDir, Entity bug, String suffix, String rankingIdentifier) {
+		Ranking<T> ranking;
 		Path sbflRankingFile;
 		// identifier might be an SBFL ranking that is based on a trace file
 		if (bugDir == null) {
@@ -102,7 +103,7 @@ public class RankingUtils {
 									: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
 					.resolve(BugLoRDConstants.getTraceFileFileName(null));
 
-			ranking = createCompleteRanking(traceFile, sbflRankingFile);
+			ranking = createCompleteRanking(dummy, traceFile, sbflRankingFile);
 		} else {
 			// identifier might be a "normal" sbfl ranking file
 			if (bugDir == null) {
@@ -118,7 +119,7 @@ public class RankingUtils {
 			if (sbflRankingFile.toFile().exists()) {
 				// identifier is an SBFL ranking
 				ranking = Ranking.load(
-						sbflRankingFile, false, SourceCodeBlock::getNewBlockFromString, RankingValueReplacementStrategy.WORST,
+						sbflRankingFile, false, dummy::getFromString, RankingValueReplacementStrategy.WORST,
 						RankingValueReplacementStrategy.BEST, RankingValueReplacementStrategy.WORST);
 			} else {
 				// identifier is (probably) an lm ranking or a combined ranking
@@ -137,7 +138,7 @@ public class RankingUtils {
 											: BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
 							.resolve(BugLoRDConstants.getTraceFileFileName(null));
 
-					ranking = createCompleteRanking(traceFile, Paths.get(lmRankingFileDir).resolve(rankingIdentifier));
+					ranking = createCompleteRanking(dummy, traceFile, Paths.get(lmRankingFileDir).resolve(rankingIdentifier));
 				} else {
 					// identifier is (probably) a combined ranking
 					String combinedRankingFileDir = bug.getWorkDataDir()
@@ -152,7 +153,7 @@ public class RankingUtils {
 					}
 
 					ranking = Ranking.load(
-							path, false, SourceCodeBlock::getNewBlockFromString, RankingValueReplacementStrategy.WORST,
+							path, false, dummy::getFromString, RankingValueReplacementStrategy.WORST,
 							RankingValueReplacementStrategy.BEST, RankingValueReplacementStrategy.WORST);
 				}
 			}
@@ -160,8 +161,8 @@ public class RankingUtils {
 		return ranking;
 	} 
 
-	private static Ranking<SourceCodeBlock> createCompleteRanking(Path traceFile, Path globalRankingFile) {
-		Ranking<SourceCodeBlock> ranking = new SimpleRanking<>(false);
+	private static <T extends FromString<T>> Ranking<T> createCompleteRanking(T dummy, Path traceFile, Path globalRankingFile) {
+		Ranking<T> ranking = new SimpleRanking<>(false);
 		try (BufferedReader traceFileReader = Files.newBufferedReader(traceFile, StandardCharsets.UTF_8);
 				BufferedReader rankingFileReader = Files.newBufferedReader(globalRankingFile, StandardCharsets.UTF_8)) {
 			String traceLine;
@@ -175,7 +176,7 @@ public class RankingUtils {
 				} else {
 					rankingValue = Double.valueOf(rankingLine);
 				}
-				ranking.add(SourceCodeBlock.getNewBlockFromString(traceLine), rankingValue);
+				ranking.add(dummy.getFromString(traceLine), rankingValue);
 			}
 		} catch (IOException e) {
 			Log.abort(RankingUtils.class, e, "Could not read trace file or lm ranking file.");

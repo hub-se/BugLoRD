@@ -23,6 +23,7 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
 import se.de.hu_berlin.informatik.spectra.core.branch.StatementSpectraToBranchSpectra;
+import se.de.hu_berlin.informatik.spectra.core.manipulation.BuildCoherentSpectraModule;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -42,6 +43,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 	final private int port;
 	private final ToolSpecific toolSpecific;
 	private String subDirName;
+	private boolean fillEmptyLines;
 
 	/**
 	 * @param toolSpecific
@@ -50,9 +52,12 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 	 * a suffix to append to the ranking directory (may be null)
 	 * @param port
 	 * the port to use for the JaCoCo Java agent
+	 * @param fillEmptyLines
+	 * whether to fill up empty lines between statements
 	 */
-	public ERGenerateSpectraEH(ToolSpecific toolSpecific, String suffix, int port) {
+	public ERGenerateSpectraEH(ToolSpecific toolSpecific, String suffix, int port, boolean fillEmptyLines) {
 		this.toolSpecific = toolSpecific;
+		this.fillEmptyLines = fillEmptyLines;
 		switch (toolSpecific) {
 		case COBERTURA:
 			subDirName = BugLoRDConstants.DIR_NAME_COBERTURA;
@@ -165,12 +170,25 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 
 				ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY,
 						traceSpectraDestination.toAbsolutePath());
-
-				ProgramBranchSpectra programBranchSpectra = StatementSpectraToBranchSpectra
-						.generateBranchingSpectraFromStatementSpectra(spectra, traceSpectraDestination.toAbsolutePath().toString());
+				
+				// fill up empty lines in between statements?
+				if (fillEmptyLines) {
+					new BuildCoherentSpectraModule().submit(spectra);
+				}
 
 				Path destination = bug.getWorkDataDir().resolve(subDirName)
-										.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+						.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+				ProgramBranchSpectra programBranchSpectra = StatementSpectraToBranchSpectra
+						.generateBranchingSpectraFromStatementSpectra(spectra, null
+								// giving a path here lets the methods assume that the spectra
+								// has been loaded from a file which triggers procedures to,
+								// e.g., copy existing execution traces from the existing file and
+								// to load existing node sequence indexers, etc.
+								// ... this is not what we want here. :/
+								// destination.toAbsolutePath().toString()
+								);
+
+				
 				SpectraFileUtils.saveSpectraToZipFile(programBranchSpectra, destination,
 						true, true, true);
 
@@ -368,6 +386,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 //		.useSeparateJVM(true)
 		.useJava7only(Boolean.valueOf(Defects4JProperties.ALWAYS_USE_JAVA7.getValue()))
 //		.setTimeout(5000L)
+		.setCondenseNodes(fillEmptyLines)
 		//~139h
 		.setTimeout(500000L)
 		.setTestRepeatCount(1)

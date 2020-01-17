@@ -1,7 +1,10 @@
 package se.de.hu_berlin.informatik.spectra.util;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -436,6 +439,11 @@ public class SpectraFileUtils {
 
 	private static <T> void saveExecutionTraces(ISpectra<T, ?> spectra,
 			Map<Integer, Integer> nodeIndexToStoreIdMap, Path outputFile) {
+		if (spectra.getPathToSpectraZipFile() != null) {
+			// don't load the indexer, but simply move it
+			// TODO
+			// return;
+		}
 		SequenceIndexerCompressed indexer = spectra.getIndexer();
 
 		try {
@@ -1139,7 +1147,7 @@ public class SpectraFileUtils {
 		return result;
 	}
 
-	public static <T> Collection<ExecutionTrace> loadExecutionTraces(ZipFileWrapper zip, int traceCounter) throws ZipException {
+	public static <T> Collection<ExecutionTrace> loadExecutionTraces(File tmpOutputDir, ZipFileWrapper zip, int traceCounter) throws ZipException {
 		List<ExecutionTrace> traces = new ArrayList<>(1);
 		// we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
 		// the stored IDs have to match the IDs of the node identifiers in the line array
@@ -1148,7 +1156,7 @@ public class SpectraFileUtils {
 			String file = (traceCounter) + "-" + (++threadIndex) + SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION;
 			if (zip.exists(file)) {
 				String repetitionFile = (traceCounter) + "-" + (threadIndex) + SpectraFileUtils.EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION;
-				ExecutionTrace e = loadExecutionTraceFromZipFile(zip, file, repetitionFile);
+				ExecutionTrace e = loadExecutionTraceFromZipFile(tmpOutputDir, zip, file, repetitionFile);
 
 				traces.add(e);
 			} else {
@@ -1239,28 +1247,26 @@ public class SpectraFileUtils {
 //		return e;
 //	}
 	
-	private static class MapSupplier implements Supplier<BufferedMap<int[]>> {
+	public static class MapSupplier implements Supplier<BufferedMap<int[]>> {
 
-		private ZipFileWrapper zipFileWrapper;
+		private File tmpOutputDir;
 
-		public MapSupplier(ZipFileWrapper zipFileWrapper) {
+		public MapSupplier(File tmpOutputDir) {
 			super();
-			this.zipFileWrapper = zipFileWrapper;
+			this.tmpOutputDir = tmpOutputDir;
 		}
 
 		@Override
 		public BufferedMap<int[]> get() {
 			return new RepetitionMarkerBufferedMap(
-					zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-					"lmap-" + UUID.randomUUID().toString(), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
+					tmpOutputDir, "lmap-" + UUID.randomUUID().toString(), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
 		}
 
 	}
 
-	public static ExecutionTrace loadExecutionTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) throws ZipException {
+	public static ExecutionTrace loadExecutionTraceFromZipFile(File tmpOutputDir, ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) throws ZipException {
 		BufferedIntArrayQueue compressedTrace = new BufferedIntArrayQueue(
-				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-				UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
+				tmpOutputDir, UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
 		BufferedCompressedByteArrayToIntegerQueueProcessor execTraceProcessor = new BufferedCompressedByteArrayToIntegerQueueProcessor(zipFileWrapper, true,
 				k -> {compressedTrace.add(k);});
 		// load the compressed execution trace +  repetition markers (if any)
@@ -1269,9 +1275,12 @@ public class SpectraFileUtils {
 		// load the repetition markers (if any)
 		ExecutionTrace e;
 		if (zipFileWrapper.exists(repetitionFile)) {
-			CompressedByteArrayToRepetitionMarkerMapListProcessor repProcessor = new CompressedByteArrayToRepetitionMarkerMapListProcessor(zipFileWrapper, true, new MapSupplier(zipFileWrapper));
-			List<BufferedMap<int[]>> repetitionMarkers = repProcessor.submit(repetitionFile).getResult();
-			e = new ExecutionTrace(compressedTrace, repetitionMarkers, false);
+//			CompressedByteArrayToRepetitionMarkerMapListProcessor repProcessor = new CompressedByteArrayToRepetitionMarkerMapListProcessor(zipFileWrapper, true, new MapSupplier(tmpOutputDir));
+//			List<BufferedMap<int[]>> repetitionMarkers = repProcessor.submit(repetitionFile).getResult();
+//			e = new ExecutionTrace(compressedTrace, repetitionMarkers, false);
+			
+			// lazily load repetition marker maps...
+			e = new ExecutionTrace(compressedTrace, zipFileWrapper, tmpOutputDir, repetitionFile, false);
 		} else {
 			e = new ExecutionTrace(compressedTrace, null, false);
 		}
@@ -1294,10 +1303,9 @@ public class SpectraFileUtils {
 //		return e;
 //	}
 	
-	public static EfficientCompressedIntegerTrace loadRawTraceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) throws ZipException {
+	public static EfficientCompressedIntegerTrace loadRawTraceFromZipFile(File tmpOutputDir, ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) throws ZipException {
 		BufferedIntArrayQueue compressedTrace = new BufferedIntArrayQueue(
-				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-				UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
+				tmpOutputDir, UUID.randomUUID().toString(), ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE);
 		BufferedCompressedByteArrayToIntegerQueueProcessor execTraceProcessor = new BufferedCompressedByteArrayToIntegerQueueProcessor(zipFileWrapper, true, 
 				k -> {compressedTrace.add(k);});
 		// load the compressed raw trace
@@ -1307,7 +1315,7 @@ public class SpectraFileUtils {
 		// load the repetition markers (if any)
 		EfficientCompressedIntegerTrace e;
 		if (zipFileWrapper.exists(repetitionFile)) {
-			CompressedByteArrayToRepetitionMarkerMapListProcessor repProcessor = new CompressedByteArrayToRepetitionMarkerMapListProcessor(zipFileWrapper, true, new MapSupplier(zipFileWrapper));
+			CompressedByteArrayToRepetitionMarkerMapListProcessor repProcessor = new CompressedByteArrayToRepetitionMarkerMapListProcessor(zipFileWrapper, true, new MapSupplier(tmpOutputDir));
 			List<BufferedMap<int[]>> repetitionMarkers = repProcessor.submit(repetitionFile).getResult();
 			e = new EfficientCompressedIntegerTrace(compressedTrace, repetitionMarkers, false);
 		} else {
@@ -1398,25 +1406,56 @@ public class SpectraFileUtils {
 		}
 		
 		Log.out(SpectraFileUtils.class, "Loading %d sequences from zip file...", counter);
+		ProgressTracker tracker = new ProgressTracker(false, 100);
+		
+		File tempOutput = getTemporaryOutputDir("nodeIdSequences_tmp", 
+				zip.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath());
+		
 		// TODO: id 0 is always representing the empty sub trace... it's set to null here...
 		// empty sub traces should not really exist, anyway...
 		EfficientCompressedIntegerTrace[] traces = new EfficientCompressedIntegerTrace[counter];
 		for (int i = 1; i < traces.length; ++i) {
+			tracker.track();
 			String file = i + SpectraFileUtils.NODE_ID_FILE_EXTENSION;
 			String repetitionFile = i + SpectraFileUtils.NODE_ID_REPETITIONS_FILE_EXTENSION;
-			EfficientCompressedIntegerTrace e = loadNodeIdSequenceFromZipFile(zip, file, repetitionFile);
+			EfficientCompressedIntegerTrace e = loadNodeIdSequenceFromZipFile(tempOutput, zip, file, repetitionFile);
 
 			traces[i] = e;
-			e.sleep();
+//			e.sleep();
 		}
 		
+		Log.out(SpectraFileUtils.class, "Loaded %d sequences from zip file!", counter);
 		return traces;
 	}
 	
-	public static EfficientCompressedIntegerTrace loadNodeIdSequenceFromZipFile(ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) throws ZipException {
+	public static File getTemporaryOutputDir(String dirNamePrefix, Path alternatePath) {
+		String tmpDir = System.getProperty("tmp_dir");
+        if (tmpDir != null) {
+        	try {
+        		Path path = Paths.get(tmpDir);
+        		path.toFile().mkdirs();
+				File tempOutputDir = Files.createTempDirectory(path, dirNamePrefix).toAbsolutePath().toFile();
+        		tempOutputDir.deleteOnExit();
+        		return tempOutputDir;
+			} catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
+        } else if (alternatePath != null) {
+        	return alternatePath.toFile();
+        } else {
+        	try {
+        		File tempOutputDir = Files.createTempDirectory(dirNamePrefix).toAbsolutePath().toFile();
+        		tempOutputDir.deleteOnExit();
+        		return tempOutputDir;
+        	} catch (IOException e) {
+        		throw new IllegalStateException(e);
+        	}
+        }
+	}
+	
+	public static EfficientCompressedIntegerTrace loadNodeIdSequenceFromZipFile(File tmpOutputDir, ZipFileWrapper zipFileWrapper, String compressedTraceFile, String repetitionFile) throws ZipException {
 		BufferedIntArrayQueue compressedTrace = new BufferedIntArrayQueue(
-				zipFileWrapper.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath().toFile(), 
-				UUID.randomUUID().toString(), ExecutionTraceCollector.SUBTRACE_ARRAY_SIZE);
+				tmpOutputDir, UUID.randomUUID().toString(), ExecutionTraceCollector.SUBTRACE_ARRAY_SIZE);
 		BufferedCompressedByteArrayToIntegerQueueProcessor execTraceProcessor = new BufferedCompressedByteArrayToIntegerQueueProcessor(zipFileWrapper, true,
 				k -> {compressedTrace.add(k);});
 		// load the compressed execution trace +  repetition markers (if any)
@@ -1425,12 +1464,14 @@ public class SpectraFileUtils {
 		// load the repetition markers (if any)
 		EfficientCompressedIntegerTrace e;
 		if (zipFileWrapper.exists(repetitionFile)) {
-			CompressedByteArrayToRepetitionMarkerMapListProcessor repProcessor = new CompressedByteArrayToRepetitionMarkerMapListProcessor(zipFileWrapper, true, new MapSupplier(zipFileWrapper));
+			CompressedByteArrayToRepetitionMarkerMapListProcessor repProcessor = new CompressedByteArrayToRepetitionMarkerMapListProcessor(zipFileWrapper, true, new MapSupplier(tmpOutputDir));
 			List<BufferedMap<int[]>> repetitionMarkers = repProcessor.submit(repetitionFile).getResult();
 			e = new EfficientCompressedIntegerTrace(compressedTrace, repetitionMarkers, false);
 		} else {
 			e = new EfficientCompressedIntegerTrace(compressedTrace, null, false);
 		}
+		// reduce used item array space
+		e.trim();
 		return e;
 	}
 	

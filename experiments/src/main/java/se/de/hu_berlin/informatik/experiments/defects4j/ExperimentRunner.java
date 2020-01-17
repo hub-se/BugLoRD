@@ -52,6 +52,8 @@ public class ExperimentRunner {
 				.build()),
 		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, 
 				"When generating spectra and computing rankings, which spectra should be used?.", false),
+		FILL_EMPTY_LINES("fe", "fill", false, "Whether to fill up empty lines between statements "
+				+ "in the same method. (Only for experiment 'genSpectra'!)", false),
 		CONDENSE("c", "condenseNodes", false, "Whether to combine several lines "
 				+ "with equal trace involvement to larger blocks. (Only for experiment 'computeSBFL'!)", false),
 		FILTER("f", "filterSpectra", false,
@@ -165,7 +167,7 @@ public class ExperimentRunner {
 		if (toDoContains(toDo, "genSpectra") || toDoContains(toDo, "all")) {
 			// every thread needs its own port for the JaCoCo Java agent, sadly...
 			EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>> firstEH = 
-					new ERGenerateSpectraEH(toolSpecific, options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT).asEH();
+					new ERGenerateSpectraEH(toolSpecific, options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT, options.hasOption(CmdOptions.FILL_EMPTY_LINES)).asEH();
 			@SuppressWarnings("unchecked")
 			final Class<EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>>>) firstEH.getClass();
 			final EHWithInputAndReturn<BuggyFixedEntity<?>,BuggyFixedEntity<?>>[] handlers = Misc.createGenericArray(clazz, threadCount);
@@ -173,7 +175,7 @@ public class ExperimentRunner {
 			handlers[0] = firstEH;
 			for (int i = 1; i < handlers.length; ++i) {
 				// create modules with different port numbers
-				handlers[i] = new ERGenerateSpectraEH(toolSpecific, options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT + (i * 3)).asEH();
+				handlers[i] = new ERGenerateSpectraEH(toolSpecific, options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT + (i * 3), options.hasOption(CmdOptions.FILL_EMPTY_LINES)).asEH();
 			}
 			linker.append(
 					new ThreadedProcessor<>(limit, handlers));

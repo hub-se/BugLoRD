@@ -892,6 +892,99 @@ public class BufferedIntArrayQueue implements Serializable {
 //			throw new UnsupportedOperationException();
 //		}
 	}
+	
+	public MyBufferedReverseIterator reverseIterator() {
+		return new MyBufferedReverseIterator();
+	}
+	
+	public MyBufferedReverseIterator reverseIterator(final long position) {
+		return new MyBufferedReverseIterator(position);
+	}
+	
+	public final class MyBufferedReverseIterator implements ReplaceableCloneableIterator {
+
+		int storeIndex;
+		int index;
+
+		MyBufferedReverseIterator(long i) {
+			setToPosition(i);
+		}
+		
+		public void setToPosition(long i) {
+			// we can compute the store index using the size of the 
+			// first node and the constant size of each array node
+			if (i < firstNodeSize) {
+				storeIndex = firstStoreIndex;
+				Node node = load(storeIndex);
+				index = (int) (i+node.startIndex);
+			} else {
+				i -= firstNodeSize;
+				storeIndex = (int) (firstStoreIndex + 1 + (i / arrayLength));
+				index = (int) (i % arrayLength);
+			}
+		}
+		
+		MyBufferedReverseIterator() {
+			if (loadLast() != null) {
+				storeIndex = lastNode.storeIndex;
+				index = lastNode.endIndex - 1;
+			} else {
+				storeIndex = -1;
+				index = -1;
+			}
+		}
+		
+		// clone constructor
+		private MyBufferedReverseIterator(MyBufferedReverseIterator iterator) {
+			storeIndex = iterator.storeIndex;
+			index = iterator.index;
+		}
+
+		public MyBufferedReverseIterator clone() {
+			return new MyBufferedReverseIterator(this);
+		}
+		
+		public boolean hasNext() {
+			if (storeIndex < firstStoreIndex) {
+				return false;
+			}
+			Node node = load(storeIndex);
+			return node != null && index >= node.startIndex;
+		}
+
+		public int next() {
+			Node currentNode = load(storeIndex);
+			int temp = currentNode.items[index--];
+			if (index < currentNode.startIndex) {
+				--storeIndex;
+				index = arrayLength - 1;
+			}
+			return temp;
+		}
+		
+		@Override
+		public int processNextAndReplaceWithResult(Function<Integer,Integer> function) {
+			Node currentNode = load(storeIndex);
+			int temp = currentNode.items[index];
+			// replace item with function's result; otherwise the same as next()
+			currentNode.items[index] = function.apply(temp);
+			index--;
+			if (index < currentNode.startIndex) {
+				--storeIndex;
+				index = arrayLength - 1;
+			}
+			return temp;
+		}
+
+		public int peek() {
+			Node currentNode = load(storeIndex);
+			return currentNode.items[index];
+		}
+
+//		public void remove() {
+//			throw new UnsupportedOperationException();
+//		}
+	}
 
 	private static class Node implements Serializable {
 		private volatile transient boolean modified = false;
@@ -1033,6 +1126,16 @@ public class BufferedIntArrayQueue implements Serializable {
 			items[i+startIndex] = value;
 		}
 
+		public void trim() {
+			// reduce size of item array to remove empty space
+			if (items.length > endIndex) {
+//				System.out.println(super.toString() + " trim: " + items.length + " -> " + (endIndex-startIndex));
+				int[] temp = items;
+				items = new int[endIndex];
+				System.arraycopy(temp, startIndex, items, startIndex, endIndex - startIndex);
+			}
+		}
+
 	}
 	
 	@Override
@@ -1111,6 +1214,18 @@ public class BufferedIntArrayQueue implements Serializable {
 	
 	public void deleteOnExit() {
 		deleteOnExit = true;
+	}
+
+	public void trim() {
+//		System.out.println(super.toString() + " trim: " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
+		if (cachedNodes != null) {
+			for (Node node : cachedNodes.values()) {
+				node.trim();
+			}
+		}
+		if (lastNode != null) {
+			lastNode.trim();
+		}
 	}
 	
 }

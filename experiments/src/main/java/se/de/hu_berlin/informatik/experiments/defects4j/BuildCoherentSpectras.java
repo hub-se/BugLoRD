@@ -35,6 +35,7 @@ public class BuildCoherentSpectras {
 	public enum CmdOptions implements OptionWrapperInterface {
 		/* add options here according to your needs */
 //		OUTPUT("o", "output", true, "Path to output csv statistics file (e.g. '~/outputDir/project/bugID/data.csv').", true)
+		FILTER_SPECTRA("f", "filter", false, "Whether the altered spectra should be filtered.", false);
 		;
 		
 		/* the following code blocks should not need to be changed */
@@ -98,11 +99,13 @@ public class BuildCoherentSpectras {
 		
 		PipeLinker linker = new PipeLinker().append(
 				new ThreadedProcessor<>(numberOfThreads, limit,
-						new CoherentProcessor(null)),
+						new CoherentProcessor(null, options.hasOption(CmdOptions.FILTER_SPECTRA))),
 				new ThreadedProcessor<>(numberOfThreads, limit,
-						new CoherentProcessor(BugLoRDConstants.DIR_NAME_JACOCO)),
+						new CoherentProcessor(BugLoRDConstants.DIR_NAME_JACOCO, options.hasOption(CmdOptions.FILTER_SPECTRA))),
 				new ThreadedProcessor<>(numberOfThreads, limit,
-						new CoherentProcessor(BugLoRDConstants.DIR_NAME_COBERTURA))
+						new CoherentProcessor(BugLoRDConstants.DIR_NAME_COBERTURA, options.hasOption(CmdOptions.FILTER_SPECTRA))),
+				new ThreadedProcessor<>(numberOfThreads, limit,
+						new CoherentProcessor(BugLoRDConstants.DIR_NAME_TRACE_COBERTURA, options.hasOption(CmdOptions.FILTER_SPECTRA)))
 				);
 
 		//iterate over all projects
@@ -121,9 +124,11 @@ public class BuildCoherentSpectras {
 	private static class CoherentProcessor extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
 		
 		private final String subDirName;
+		private boolean filterSpectra;
 		
-		public CoherentProcessor(String subDirName) {
+		public CoherentProcessor(String subDirName, boolean filterSpectra) {
 			this.subDirName = subDirName;
+			this.filterSpectra = filterSpectra;
 		}
 
 		@Override
@@ -139,8 +144,6 @@ public class BuildCoherentSpectras {
 				return input;
 			}
 			
-			Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
-
 			//load the full spectra
 			ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 			
@@ -150,13 +153,17 @@ public class BuildCoherentSpectras {
 			//save the coherent full spectra
 			new SaveSpectraModule<>(spectraFile).submit(spectra);
 
-			//generate the filtered coherent spectra
-			//(building a coherent spectra from an already filtered spectra may yield wrong results
-			//by generating blocks that reach over filtered out nodes...)
-			spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
-			
-			//save the filtered spectra
-			new SaveSpectraModule<>(spectraFileFiltered).submit(spectra);
+			if (filterSpectra) {
+				Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
+
+				//generate the filtered coherent spectra
+				//(building a coherent spectra from an already filtered spectra may yield wrong results
+				//by generating blocks that reach over filtered out nodes...)
+				spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
+
+				//save the filtered spectra
+				new SaveSpectraModule<>(spectraFileFiltered).submit(spectra);
+			}
 
 			return input;
 		}

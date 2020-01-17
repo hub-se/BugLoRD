@@ -51,9 +51,9 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 	protected Set<Integer> existingNodes = new HashSet<>();
 
 	private transient int lastStoreIndex = -1;
-
-	protected transient Node<E> reusableNode = null;
 	
+	protected transient Node<E> reusableNode = null;
+
 	// cache all other nodes, if necessary
 	protected transient Map<Integer,Node<E>> cachedNodes = null;
 	private transient List<Integer> cacheSequence = null;
@@ -84,7 +84,6 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 		cachedNodes = null;
 		cacheSequence = null;
 		reusableNode = null;
-
 	}
 
 	private void sleep(Node<E> node) {

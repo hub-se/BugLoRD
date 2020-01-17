@@ -516,4 +516,9 @@ public class EfficientCompressedLongTrace extends RepetitionMarkerBase implement
 		super.deleteOnExit();
 	}
 	
+	@Override
+	public void trim() {
+		getCompressedTrace().trim();
+		super.trim();
+	}
 }

@@ -6,6 +6,7 @@
 
 package se.de.hu_berlin.informatik.spectra.core.hit;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -199,6 +200,15 @@ public class HitTrace<T> implements ITrace<T> {
 		}
 		return false;
 	}
+	 
+	private static File tmpOutputDir = null;
+	
+	private static File getTmpDir(Path alternatePath) {
+		if (tmpOutputDir == null) {
+			tmpOutputDir = SpectraFileUtils.getTemporaryOutputDir("executionTraces_tmp", alternatePath);
+		}
+		return tmpOutputDir;
+	}
 
 	@Override
 	public Collection<ExecutionTrace> getExecutionTraces() {
@@ -206,7 +216,9 @@ public class HitTrace<T> implements ITrace<T> {
 		if (executionTraces == null && spectra.getPathToSpectraZipFile() != null) {
 			ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(spectra.getPathToSpectraZipFile());
 			try {
-				return SpectraFileUtils.loadExecutionTraces(zip, this.getIndex());
+				return SpectraFileUtils.loadExecutionTraces(getTmpDir(
+						zip.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath()), 
+						zip, this.getIndex());
 			} catch (ZipException e) {
 				Log.abort(this, e, "Could not get execution traces from spectra zip file.");
 			}

@@ -151,6 +151,30 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		locked = true;
 	}
 	
+	protected void setRepetitionMarkers(List<BufferedMap<int[]>> repetitionMarkers) {
+		if (repetitionMarkers != null) {
+			long size = compressedTrace.size();
+			int index = 0;
+			while (index < repetitionMarkers.size()) {
+				BufferedMap<int[]> repMarkers = repetitionMarkers.get(index++);
+//				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromIntegerQueue(repetitionMarkers.get(index++), 
+//						compressedTrace.getOutputDir(), 
+//						compressedTrace.getFilePrefix() + "-map-" + index, ExecutionTraceCollector.MAP_CHUNK_SIZE,
+//						compressedTrace.isDeleteOnExit());
+				// calculate the trace's size on the current level
+				for (Iterator<Entry<Integer, int[]>> iterator = repMarkers.entrySetIterator(); iterator.hasNext();) {
+					Entry<Integer, int[]> repMarker = iterator.next();
+					// [length, repetitionCount]
+					size += (repMarker.getValue()[0] * (repMarker.getValue()[1]-1));
+				}
+				// add the level to the list
+				addRepetitionMarkers(repMarkers, size);
+			}
+			this.originalSize = size;
+			repetitionMarkers.clear();
+		}
+	}
+	
 //	private int computeFullTraceLengths() {
 //		int size = compressedTrace.size();
 //		
@@ -436,6 +460,15 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 		return new TraceReverseIterator(this);
 	}
 	
+	/**
+	 * @return
+	 * reverse iterator over the compressed trace (ignores repetitions)
+	 */
+	public ReplaceableCloneableIterator reverseBaseIterator() {
+		endOfLine();
+		return compressedTrace.reverseIterator();
+	}
+	
 //	public Set<Integer> computeStartingElements() {
 //		Set<Integer> set = new HashSet<>();
 //		addStartingElementsToSet(set);
@@ -518,6 +551,12 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 	public void deleteOnExit() {
 		getCompressedTrace().deleteOnExit();
 		super.deleteOnExit();
+	}
+
+	@Override
+	public void trim() {
+		getCompressedTrace().trim();
+		super.trim();
 	}
 	
 }

@@ -1,10 +1,13 @@
 package se.de.hu_berlin.informatik.spectra.core.manipulation;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.util.Indexable;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -35,7 +38,19 @@ public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor
 //			return null;
 //		} else {
 			Log.out(this, "Saving spectra...");
-			SpectraFileUtils.saveSpectraToZipFile(input, output, true, true, true);
+			
+			if (output.toFile().exists()) {
+				// we might be overwriting a spectra file that we are still loading stuff from...
+				Path tempOut = output.getParent().resolve("tmp_spectra.zip");
+				SpectraFileUtils.saveSpectraToZipFile(input, tempOut, true, true, true);
+				try {
+					FileUtils.copyFileOrDir(tempOut.toFile(), output.toFile(), StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException e) {
+					Log.err(this, "Could not copy temporary spectra output '%s' to '%s'.", tempOut, output);
+				}
+			} else {
+				SpectraFileUtils.saveSpectraToZipFile(input, output, true, true, true);
+			}
 //		}
 		return input;
 	}
