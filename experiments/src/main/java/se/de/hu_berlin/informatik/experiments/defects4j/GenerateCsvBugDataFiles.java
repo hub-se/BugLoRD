@@ -14,7 +14,6 @@ import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDPropertie
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils.SourceCodeBlockRankingMetrics;
-import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
@@ -316,6 +315,8 @@ public class GenerateCsvBugDataFiles {
 				// helps with the correct marking of changes to ranked elements
 				fillEmptylines(ranking);
 			}
+			
+			ranking = removeDuplicateLines(ranking);
 
 			MarkedRanking<SourceCodeBlock, List<Modification>> markedRanking = new MarkedRanking<>(ranking);
 
@@ -397,6 +398,8 @@ public class GenerateCsvBugDataFiles {
 			Entity bug = entity.getBuggyVersion();
 
 			Ranking<SourceCodeBlock> ranking = generateStatementLevelRanking(bug, spectraTool, suffix, rankingIdentifier);
+			
+			ranking = removeDuplicateLines(ranking);
 
 			// BugID, Line, IF, IS, NF, NS, BestRanking, WorstRanking,
 			// MinWastedEffort, MaxWastedEffort, Suspiciousness
@@ -407,7 +410,7 @@ public class GenerateCsvBugDataFiles {
 		}
 	}
 
-	public static void fillEmptylines(Ranking<SourceCodeBlock> ranking) {
+	protected static void fillEmptylines(Ranking<SourceCodeBlock> ranking) {
 		//get lines in the ranking and sort them
 		Collection<SourceCodeBlock> nodes = ranking.getElements();
 		SourceCodeBlock[] array = new SourceCodeBlock[nodes.size()];
@@ -442,6 +445,24 @@ public class GenerateCsvBugDataFiles {
 			//next line...
 			lastLine = line;
 		}
+	}
+
+	protected static Ranking<SourceCodeBlock> removeDuplicateLines(Ranking<SourceCodeBlock> ranking) {
+		Ranking<SourceCodeBlock> result = new SimpleRanking<>(false);
+		
+		Set<String> seenLines = new HashSet<>();
+		// add new statements to the statement level ranking, using the scores of the branches
+		Iterator<SourceCodeBlock> iterator = ranking.iterator();
+		while (iterator.hasNext()) {
+			SourceCodeBlock block = iterator.next();
+			String lineRep = block.getFilePath() + block.getStartLineNumber();
+			if (!seenLines.contains(lineRep)) {
+				seenLines.add(lineRep);
+				double rankingValue = ranking.getRankingValue(block);
+				result.add(block, rankingValue);
+			}
+		}
+		return result;
 	}
 
 }
