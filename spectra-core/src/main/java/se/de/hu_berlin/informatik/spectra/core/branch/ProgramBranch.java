@@ -57,6 +57,22 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
         /*====================================================================================*/
 
     }
+    
+    public ProgramBranch(SourceCodeBlock programBlock){
+
+        /*====================================================================================*/
+        //probably check if branch is gapless, but need better data structures probably
+        /*====================================================================================*/
+
+        this.branchElements = ImmutableList.of(programBlock);
+
+        //store the hashCode now
+        int immutableHashCode =  31 * (527 + branchElements.size());
+        for (SourceCodeBlock block : branchElements) {
+            immutableHashCode = immutableHashCode * 31 + block.hashCode();
+        }
+        this.immutableHashCode = immutableHashCode;
+    }
 
     /*====================================================================================
      * OVERRIDE OBJECT

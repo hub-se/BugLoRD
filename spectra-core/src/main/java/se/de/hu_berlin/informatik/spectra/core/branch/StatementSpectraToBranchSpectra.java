@@ -91,19 +91,35 @@ public class StatementSpectraToBranchSpectra {
 //
 //        programBranchSpectra.setBranchIdMap(branchIdMap);
         
+        int maxID = 0;
+        Set<SourceCodeBlock> executedStatements = new HashSet<>();
         
         // collect all existing branch IDs
         Collection<Integer> allExecutionBranchIds = collectAllExecutionBranchIds(statementSpectra);
         
-        /* extract the "failing" branches from the statement spectra, i.e.
-         *  branches that are covered in a failing test case
+        /* extract all branches from the statement spectra, i.e.
+         *  branches that are covered in a test case
          *  branch := list of statements
          */
-        for(Integer executionBranchId : allExecutionBranchIds){
+        for(int executionBranchId : allExecutionBranchIds){
             programBranch = new ProgramBranch(getExecutedStatementsFromBranch(executionBranchId, statementSpectra));
             branchNode = programBranchSpectra.getOrCreateNode(programBranch);
             branchIdMap.put(executionBranchId, branchNode);
+            
+            for (SourceCodeBlock block : programBranch.getElements()) {
+				executedStatements.add(block);
+			}
+            
+            maxID = Math.max(maxID, executionBranchId);
         }
+        
+        // add statements to the new spectra that have not been executed by any test case...
+        for (INode<SourceCodeBlock> node : statementSpectra.getNodes()) {
+			if (!executedStatements.contains(node.getIdentifier())) {
+				branchNode = programBranchSpectra.getOrCreateNode(new ProgramBranch(node.getIdentifier()));
+	            branchIdMap.put(++maxID, branchNode);
+			}
+		}
 
         programBranchSpectra.setBranchIdMap(branchIdMap);
         
