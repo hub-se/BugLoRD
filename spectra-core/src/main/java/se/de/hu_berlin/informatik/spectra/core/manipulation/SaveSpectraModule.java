@@ -44,9 +44,11 @@ public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor
 				Path tempOut = output.getParent().resolve("tmp_spectra.zip");
 				SpectraFileUtils.saveSpectraToZipFile(input, tempOut, true, true, true);
 				try {
+					output.toFile().delete();
 					FileUtils.copyFileOrDir(tempOut.toFile(), output.toFile(), StandardCopyOption.REPLACE_EXISTING);
+					tempOut.toFile().delete();
 				} catch (IOException e) {
-					Log.err(this, "Could not copy temporary spectra output '%s' to '%s'.", tempOut, output);
+					Log.err(this, e, "Could not copy temporary spectra output '%s' to '%s'.", tempOut, output);
 				}
 			} else {
 				SpectraFileUtils.saveSpectraToZipFile(input, output, true, true, true);

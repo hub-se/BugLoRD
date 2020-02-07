@@ -20,6 +20,9 @@ public class IntGSArrayTree {
 //	public static final GSTreeNode END_NODE = new GSTreeNode();
 	public static final int SUCC_END = -1;
 	private static final Integer END_NODE = -2;
+	
+	private static final int EXECUTION_TRACE_CHUNK_SIZE = 500000;
+	private static final int MAP_CHUNK_SIZE = 500000;
 
 	int[] newArray(int size) {
 		return new int[size];
@@ -181,52 +184,52 @@ public class IntGSArrayTree {
 		return branches;
 	}
 
-	public ExecutionTrace generateIndexedTrace(
-			EfficientCompressedIntegerTrace rawTrace, IntArraySequenceIndexer indexer) {
-		if (rawTrace == null) {
-			return null;
-		}
-		
-		if (rawTrace.getCompressedTrace().isEmpty()) {
-			rawTrace.sleep();
-			return new ExecutionTrace(
-					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
-					ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
-		}
-		
-		if (!indexer.isIndexed()) {
-			indexer.generateSequenceIndex();
-		}
-		
-		ExecutionTrace indexedtrace = new ExecutionTrace(
-				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
-				ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
-		
-		TraceIterator iterator = rawTrace.iterator();
-		int startElement = iterator.next();
-		while (startElement != SUCC_END) {
-			startElement = addNextSequenceIndexToTrace(indexer, startElement, iterator, indexedtrace);
-			if (startElement == BAD_INDEX) {
-				System.err.flush();
-				throw new IllegalStateException("Could not get index for a sequence in the input trace.");
-			}
-		}
-		rawTrace.sleep();
-		
-		return indexedtrace;
-	}
-	
-	public int addNextSequenceIndexToTrace(IntArraySequenceIndexer indexer, int firstElement, 
-			TraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
-		IntGSArrayTreeNode startingNode = branches.get(firstElement);
-		if (startingNode != null) {
-			// some sequence with this starting element exists in the tree
-			return startingNode.getNextSequenceIndex(indexer, rawTraceIterator, indexedtrace);
-		} else {
-			// no sequence with this starting element exists in the tree
-			System.err.println("No sequence starting with " + firstElement);
-			return BAD_INDEX;
-		}
-	}
+//	public ExecutionTrace generateIndexedTrace(
+//			EfficientCompressedIntegerTrace rawTrace, IntArraySequenceIndexer indexer) {
+//		if (rawTrace == null) {
+//			return null;
+//		}
+//		
+//		if (rawTrace.getCompressedTrace().isEmpty()) {
+//			rawTrace.sleep();
+//			return new ExecutionTrace(
+//					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
+//					EXECUTION_TRACE_CHUNK_SIZE, MAP_CHUNK_SIZE, true);
+//		}
+//		
+//		if (!indexer.isIndexed()) {
+//			indexer.generateSequenceIndex();
+//		}
+//		
+//		ExecutionTrace indexedtrace = new ExecutionTrace(
+//				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
+//				EXECUTION_TRACE_CHUNK_SIZE, MAP_CHUNK_SIZE, true);
+//		
+//		TraceIterator iterator = rawTrace.iterator();
+//		int startElement = iterator.next();
+//		while (startElement != SUCC_END) {
+//			startElement = addNextSequenceIndexToTrace(indexer, startElement, iterator, indexedtrace);
+//			if (startElement == BAD_INDEX) {
+//				System.err.flush();
+//				throw new IllegalStateException("Could not get index for a sequence in the input trace.");
+//			}
+//		}
+//		rawTrace.sleep();
+//		
+//		return indexedtrace;
+//	}
+//	
+//	public int addNextSequenceIndexToTrace(IntArraySequenceIndexer indexer, int firstElement, 
+//			TraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
+//		IntGSArrayTreeNode startingNode = branches.get(firstElement);
+//		if (startingNode != null) {
+//			// some sequence with this starting element exists in the tree
+//			return startingNode.getNextSequenceIndex(indexer, rawTraceIterator, indexedtrace);
+//		} else {
+//			// no sequence with this starting element exists in the tree
+//			System.err.println("No sequence starting with " + firstElement);
+//			return BAD_INDEX;
+//		}
+//	}
 	
 }

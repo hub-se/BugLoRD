@@ -10,16 +10,17 @@ import java.nio.file.Path;
 
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.hit.HierarchicalHitSpectra;
 
-public abstract class HierarchicalTraceCoberturaReportLoader<T, K extends ITrace<T>> extends TraceCoberturaReportLoader<T, K> {
+public abstract class HierarchicalTraceCoberturaReportLoader<K extends ITrace<SourceCodeBlock>> extends TraceCoberturaReportLoader<K> {
 
-	private final HierarchicalHitSpectra<String, T> methodSpectra;
+	private final HierarchicalHitSpectra<String, SourceCodeBlock> methodSpectra;
 	private final HierarchicalHitSpectra<String, String> classSpectra;
 	private final HierarchicalHitSpectra<String, String> packageSpectra;
 
 	public HierarchicalTraceCoberturaReportLoader(HierarchicalHitSpectra<String, String> packageSpectra,
-			HierarchicalHitSpectra<String, String> classSpectra, HierarchicalHitSpectra<String, T> methodSpectra, 
+			HierarchicalHitSpectra<String, String> classSpectra, HierarchicalHitSpectra<String, SourceCodeBlock> methodSpectra, 
 			Path tempOutputDir) {
 		super(tempOutputDir);
 		this.methodSpectra = methodSpectra;
@@ -40,8 +41,8 @@ public abstract class HierarchicalTraceCoberturaReportLoader<T, K extends ITrace
 	}
 
 	@Override
-	protected void onNewLine(String packageName, String classFilePath, String methodName, T lineIdentifier,
-			ISpectra<T, K> lineSpectra, K currentTrace, boolean fullSpectra, long numberOfHits) {
+	protected void onNewLine(String packageName, String classFilePath, String methodName, SourceCodeBlock lineIdentifier,
+			ISpectra<SourceCodeBlock, K> lineSpectra, K currentTrace, boolean fullSpectra, long numberOfHits) {
 		super.onNewLine(
 				packageName, classFilePath, methodName, lineIdentifier, lineSpectra, currentTrace, fullSpectra,
 				numberOfHits);

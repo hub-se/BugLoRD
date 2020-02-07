@@ -110,6 +110,12 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${commonslangVersion}</version>
 		</dependency>
+		
+		<dependency>
+            <groupId>de.unisb.cs.st</groupId>
+            <artifactId>sequitur</artifactId>
+            <version>1.0.1</version>
+        </dependency>
 
 	</dependencies>
 

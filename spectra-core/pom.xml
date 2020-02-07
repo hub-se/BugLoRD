@@ -41,6 +41,11 @@
 
 	<!-- PROJECT DEPENDENCIES -->
 	<dependencies>
+	<dependency>
+            <groupId>de.unisb.cs.st</groupId>
+            <artifactId>sequitur</artifactId>
+            <version>1.0.1</version>
+        </dependency>
 
 		<!-- library dependencies -->
 		<!-- <dependency>

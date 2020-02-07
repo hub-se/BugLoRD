@@ -16,7 +16,6 @@ import java.util.UUID;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 
@@ -60,7 +59,7 @@ public class CountTrace<T> extends HitTrace<T> {
         			spectra.getPathToSpectraZipFile().getParent().resolve("execTraceTemp").toAbsolutePath());
         
         this.hitCountMap = new BufferedMap<>(outputDir, 
-				"hitCount-" + UUID.randomUUID().toString(), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
+				"hitCount-" + UUID.randomUUID().toString(), 500000, true);
     }
 	
     public void setHits(T identifier, long numberOfHits) {

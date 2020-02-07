@@ -26,12 +26,12 @@ import se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report.
 public class HierarchicalTraceCoberturaReportProvider<K extends ITrace<SourceCodeBlock>>
 		extends AbstractHierarchicalSpectraProvider<SourceCodeBlock, K, TraceCoberturaReportWrapper> {
 
-	private final HierarchicalTraceCoberturaReportLoader<SourceCodeBlock, K> loader;
+	private final HierarchicalTraceCoberturaReportLoader<K> loader;
 
 	public HierarchicalTraceCoberturaReportProvider(final ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
 		super(lineSpectra, fullSpectra);
 
-		loader = new HierarchicalTraceCoberturaReportLoader<SourceCodeBlock, K>(packageSpectra, classSpectra,
+		loader = new HierarchicalTraceCoberturaReportLoader<K>(packageSpectra, classSpectra,
 				methodSpectra, tempOutputDir) {
 
 			@Override

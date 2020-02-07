@@ -475,6 +475,20 @@ public class EfficientCompressedIntegerTrace extends RepetitionMarkerBase implem
 //		return set;
 //	}
 	
+//	public void addStartingElementsToSet(Set<Integer> set) {
+//		TraceIterator iterator = iterator();
+//		if (iterator.hasNext()) {
+//			set.add(iterator.next());
+//		}
+//		while (iterator.hasNext()) {
+//			if (iterator.isStartOfRepetition()) {
+//				set.add(iterator.next());
+//			} else {
+//				iterator.next();
+//			}
+//		}
+//	}
+	
 	public void addStartingElementsToSet(Set<Integer> set) {
 		TraceIterator iterator = iterator();
 		boolean lastElementWasSequenceEnd = false;

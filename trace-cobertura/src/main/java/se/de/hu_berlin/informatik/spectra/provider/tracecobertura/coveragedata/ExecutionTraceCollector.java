@@ -1,10 +1,9 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.ObjectOutputStream;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -12,23 +11,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import de.unisb.cs.st.sequitur.output.OutputSequence;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 
 @CoverageIgnore
 public class ExecutionTraceCollector {
 
-	public final static int EXECUTION_TRACE_CHUNK_SIZE = 150000;
-	public final static int MAP_CHUNK_SIZE = 150000;
-	public static final int SUBTRACE_ARRAY_SIZE = 500;
+//	public final static int EXECUTION_TRACE_CHUNK_SIZE = 150000;
+//	public final static int MAP_CHUNK_SIZE = 150000;
+//	public static final int SUBTRACE_ARRAY_SIZE = 500;
 	
 	public static final int NEW_SUBTRACE_ID = 0;
 	
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
-	private static Map<Long,EfficientCompressedIntegerTrace> executionTraces = new ConcurrentHashMap<>();
+	private static Map<Long,OutputSequence<Integer>> executionTraces = new ConcurrentHashMap<>();
 
 	private static int[][] classesToCounterArrayMap = new int[2048][];
 	
@@ -38,18 +37,18 @@ public class ExecutionTraceCollector {
 		classesToCounterArrayMap[classId] = new int[countersCnt];
 	}
 	
-	private static Path tempDir;
-	
-	static {
-		try {
-			Path path = Paths.get(System.getProperty("user.dir")).resolve("execTracesTmp");
-			path.toFile().mkdirs();
-			tempDir = Files.createTempDirectory(path.toAbsolutePath(), "exec");
-		} catch (IOException e) {
-			e.printStackTrace();
-			tempDir = null;
-		}
-	}
+//	private static Path tempDir;
+//	
+//	static {
+//		try {
+//			Path path = Paths.get(System.getProperty("user.dir")).resolve("execTracesTmp");
+//			path.toFile().mkdirs();
+//			tempDir = Files.createTempDirectory(path.toAbsolutePath(), "exec");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			tempDir = null;
+//		}
+//	}
 	
 	
 	/**
@@ -58,24 +57,33 @@ public class ExecutionTraceCollector {
 	 * the statements in the traces are stored as "class_id:statement_counter";
 	 * also resets the internal map and collects potentially remaining sub traces.
 	 */
-	public static Map<Long,EfficientCompressedIntegerTrace> getAndResetExecutionTraces() {
+	public static Map<Long,byte[]> getAndResetExecutionTraces() {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			processAllRemainingSubTraces();
-			Map<Long, EfficientCompressedIntegerTrace> traces = executionTraces;
-			executionTraces = new ConcurrentHashMap<>();
+			Map<Long, byte[]> traces = new HashMap<>();
+			for (Entry<Long, OutputSequence<Integer>> entry : executionTraces.entrySet()) {
+				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+				ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
+				entry.getValue().writeOut(objOut, true);
+				objOut.close();
+				byte[] bytes = byteOut.toByteArray();
+				
+				traces.put(entry.getKey(), bytes);
+			}
 			return traces;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
 		} finally {
+			executionTraces.clear();
 			globalExecutionTraceCollectorLock.unlock();
 		}
 	}
 	
 
-	private static EfficientCompressedIntegerTrace getNewCollector(long threadId) {
-		// do not delete buffered trace files on exit, due to possible necessary serialization
-		return new EfficientCompressedIntegerTrace(tempDir.toAbsolutePath().toFile(), 
-				"exec_trc_" + threadId + "-", 
-				EXECUTION_TRACE_CHUNK_SIZE, MAP_CHUNK_SIZE, false, true);
+	private static OutputSequence<Integer> getNewCollector(long threadId) {
+		return new OutputSequence<Integer>();
 	}
 	
 	
@@ -87,14 +95,14 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
 		// get the thread's execution trace
-		EfficientCompressedIntegerTrace trace = executionTraces.get(threadId);
+		OutputSequence<Integer> trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
 		}
 
 		// add an indicator to the trace that represents a visited catch block
-		trace.add(NEW_SUBTRACE_ID);
+		trace.append(NEW_SUBTRACE_ID);
 
 	}
 
@@ -128,23 +136,23 @@ public class ExecutionTraceCollector {
 		
 		currentThreads.clear();
 		
-		globalExecutionTraceCollectorLock.lock();
-		try {
-			// store execution traces
-			Iterator<Entry<Long, EfficientCompressedIntegerTrace>> iterator2 = executionTraces.entrySet().iterator();
-			while (iterator2.hasNext()) {
-				try {
-					iterator2.next().getValue().sleep();
-				} catch (Exception e) {
-					e.printStackTrace();
-					// something went wrong...
-					iterator2.remove();
-				}
-			}
-			
-		} finally {
-			globalExecutionTraceCollectorLock.unlock();
-		}
+//		globalExecutionTraceCollectorLock.lock();
+//		try {
+//			// store execution traces
+//			Iterator<Entry<Long, OutputSequence<Integer>>> iterator2 = executionTraces.entrySet().iterator();
+//			while (iterator2.hasNext()) {
+//				try {
+//					iterator2.next().getValue().sleep();
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					// something went wrong...
+//					iterator2.remove();
+//				}
+//			}
+//			
+//		} finally {
+//			globalExecutionTraceCollectorLock.unlock();
+//		}
 
 	}
 	
@@ -217,14 +225,14 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
 		// get the thread's execution trace
-		EfficientCompressedIntegerTrace trace = executionTraces.get(threadId);
+		OutputSequence<Integer> trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
 		}
 		
 		// add the statement to the execution trace
-		trace.add(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(classId, counterId));
+		trace.append(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(classId, counterId));
 	}
 	
 	/**

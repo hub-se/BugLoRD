@@ -1,12 +1,13 @@
 package se.de.hu_berlin.informatik.spectra.core.manipulation;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
-
+import de.unisb.cs.st.sequitur.output.OutputSequence;
+import de.unisb.cs.st.sequitur.output.SharedOutputGrammar;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
@@ -14,6 +15,10 @@ import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
+import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
+import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -65,36 +70,59 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 			currentMethodLine.setLineNumberEnd(line.getEndLineNumber());
 		}
 		
-		Collection<? extends ITrace<SourceCodeBlock>> traces = input.getTraces();
-		int traceCounter = 0;
-		// iterate over all traces
-		for (ITrace<SourceCodeBlock> trace : traces) {
-			ITrace<?> methodSpectraTrace = methodSpectra.addTrace(
-					trace.getIdentifier(), ++traceCounter, trace.isSuccessful());
-			// set the involvement, if at least one node of the method was executed
-			for (int nodeIndex : trace.getInvolvedNodes()) {
-				methodSpectraTrace.setInvolvement(lineToMethodMap.get(nodeIndex), true);
+		if (currentMethodNodeIndex >= 0) {
+			int[][] nodeIdSequences = new int[currentMethodNodeIndex+1][];
+			for (int i = 0; i < nodeIdSequences.length; ++i) {
+				// one to one mapping... (still ok for easy future removal of nodes from traces)
+				nodeIdSequences[i] = new int[] {i};
 			}
 			
-			// iterate over all execution traces
-			for (ExecutionTrace executiontrace : trace.getExecutionTraces()) {
-				ExecutionTrace methodExecutionTrace = 
-						new ExecutionTrace(executiontrace.getCompressedTrace().getOutputDir(), 
-								"m_cpr_trace_" + UUID.randomUUID().toString(), 50000, 50000, true);
-				int lastNodeIndex = -1;
-				for (Iterator<Integer> iterator = executiontrace.mappedIterator(input.getIndexer()); iterator.hasNext();) {
-					int nodeIndex = lineToMethodMap.get(iterator.next());
-					// add index to execution trace without repetitions
-					if (nodeIndex != lastNodeIndex) {
-						methodExecutionTrace.add(nodeIndex);
-						lastNodeIndex = nodeIndex;
-					}
+			SharedOutputGrammar<Integer> methodExecutionTraceGrammar = new SharedOutputGrammar<>();
+			SequenceIndexerCompressed methodSpectraIndexer = new SimpleIntIndexerCompressed(methodExecutionTraceGrammar, nodeIdSequences);
+
+			Collection<? extends ITrace<SourceCodeBlock>> traces = input.getTraces();
+			int traceCounter = 0;
+			// iterate over all traces
+			for (ITrace<SourceCodeBlock> trace : traces) {
+				ITrace<?> methodSpectraTrace = methodSpectra.addTrace(
+						trace.getIdentifier(), ++traceCounter, trace.isSuccessful());
+				// set the involvement, if at least one node of the method was executed
+				for (int nodeIndex : trace.getInvolvedNodes()) {
+					methodSpectraTrace.setInvolvement(lineToMethodMap.get(nodeIndex), true);
 				}
-				input.getIndexer().sleep();
-				// add method level execution trace
-				methodSpectraTrace.addExecutionTrace(methodExecutionTrace);
+
+				// iterate over all execution traces
+				for (ExecutionTrace executiontrace : trace.getExecutionTraces()) {
+
+					OutputSequence<Integer> outSeq = new OutputSequence<>(methodExecutionTraceGrammar);
+					int lastNodeIndex = -1;
+					for (Iterator<Integer> iterator = executiontrace.mappedIterator(input.getIndexer()); iterator.hasNext();) {
+						int nodeIndex = lineToMethodMap.get(iterator.next());
+						// add index to execution trace without repetitions
+						if (nodeIndex != lastNodeIndex) {
+							outSeq.append(nodeIndex);
+							lastNodeIndex = nodeIndex;
+						}
+					}
+
+					try {
+						byte[] byteArray = SpectraFileUtils.convertToByteArray(outSeq, false);
+
+						ExecutionTrace methodExecutionTrace = 
+								new ExecutionTrace(byteArray, methodSpectraIndexer);
+
+						// add method level execution trace
+						methodSpectraTrace.addExecutionTrace(methodExecutionTrace);
+					} catch (IOException e) {
+						Log.abort(this, e, "Could not add method level execution trace");
+					}
+					
+				}
+				trace.sleep();
 			}
-			trace.sleep();
+
+			// don't forget to set the indexer
+			methodSpectra.setIndexer(methodSpectraIndexer);
 		}
 		
 		return methodSpectra;

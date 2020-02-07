@@ -6,14 +6,12 @@
 
 package se.de.hu_berlin.informatik.spectra.core.hit;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -201,14 +199,14 @@ public class HitTrace<T> implements ITrace<T> {
 		return false;
 	}
 	 
-	private static File tmpOutputDir = null;
-	
-	private static File getTmpDir(Path alternatePath) {
-		if (tmpOutputDir == null) {
-			tmpOutputDir = SpectraFileUtils.getTemporaryOutputDir("executionTraces_tmp", alternatePath);
-		}
-		return tmpOutputDir;
-	}
+//	private static File tmpOutputDir = null;
+//	
+//	private static File getTmpDir(Path alternatePath) {
+//		if (tmpOutputDir == null) {
+//			tmpOutputDir = SpectraFileUtils.getTemporaryOutputDir("executionTraces_tmp", alternatePath);
+//		}
+//		return tmpOutputDir;
+//	}
 
 	@Override
 	public Collection<ExecutionTrace> getExecutionTraces() {
@@ -216,14 +214,12 @@ public class HitTrace<T> implements ITrace<T> {
 		if (executionTraces == null && spectra.getPathToSpectraZipFile() != null) {
 			ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(spectra.getPathToSpectraZipFile());
 			try {
-				return SpectraFileUtils.loadExecutionTraces(getTmpDir(
-						zip.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath()), 
-						zip, this.getIndex());
+				return SpectraFileUtils.loadExecutionTraces(zip, this.getIndex(), spectra);
 			} catch (ZipException e) {
 				Log.abort(this, e, "Could not get execution traces from spectra zip file.");
 			}
 		} else if (executionTraces == null && spectra.getRawTraceCollector() != null) {
-			List<ExecutionTrace> traces = null;
+			Collection<ExecutionTrace> traces = null;
 			try {
 				traces = spectra.getRawTraceCollector().calculateExecutionTraces(this.getIndex(), false);
 			} catch (ZipException e) {
@@ -255,8 +251,7 @@ public class HitTrace<T> implements ITrace<T> {
 //	}
 	
 	@Override
-	public boolean storeExecutionTracesInZipFile(Path outputFile, Supplier<String> traceFileNameSupplier,
-			Supplier<String> repMarkerFileNameSupplier) {
+	public boolean storeExecutionTracesInZipFile(Path outputFile, Supplier<String> traceFileNameSupplier) {
 		if (executionTraces == null && spectra.getPathToSpectraZipFile() != null) {
 			if (spectra.getPathToSpectraZipFile().toAbsolutePath().equals(outputFile.toAbsolutePath())) {
 				// storing execution traces in the same zip file?
@@ -266,14 +261,14 @@ public class HitTrace<T> implements ITrace<T> {
 			ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(spectra.getPathToSpectraZipFile());
 			try {
 				return SpectraFileUtils.moveExecutionTraces(zip, this.getIndex(), 
-						outputFile, traceFileNameSupplier, repMarkerFileNameSupplier);
+						outputFile, traceFileNameSupplier);
 			} catch (ZipException e) {
 				Log.abort(this, e, "Could not move execution traces.");
 			}
 		} else if (spectra.getRawTraceCollector() != null) {
 			try {
 				return spectra.getRawTraceCollector().moveExecutionTraces(this.getIndex(), 
-						outputFile, traceFileNameSupplier, repMarkerFileNameSupplier);
+						outputFile, traceFileNameSupplier);
 			} catch (ZipException e) {
 				e.printStackTrace();
 			}
@@ -283,7 +278,7 @@ public class HitTrace<T> implements ITrace<T> {
 			}
 			for (ExecutionTrace executionTrace : executionTraces) {
 				try {
-					SpectraFileUtils.storeCompressedIntegerTrace(executionTrace, outputFile, traceFileNameSupplier.get(), repMarkerFileNameSupplier.get(), true);
+					SpectraFileUtils.storeCompressedIntegerTrace(executionTrace.getTraceByteArray(), outputFile, traceFileNameSupplier.get());
 				} catch (IOException e) {
 					Log.abort(this, e, "Trying to store execution traces in zip file failed.");
 					return false;
@@ -304,11 +299,11 @@ public class HitTrace<T> implements ITrace<T> {
 
 	@Override
 	public void sleep() {
-		if (executionTraces != null) {
-			for (ExecutionTrace trace : executionTraces) {
-				trace.sleep();
-			}
-		}
+//		if (executionTraces != null) {
+//			for (ExecutionTrace trace : executionTraces) {
+//				trace.sleep();
+//			}
+//		}
 	}
 
 }

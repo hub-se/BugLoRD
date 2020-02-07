@@ -9,6 +9,7 @@
 
 package se.de.hu_berlin.informatik.spectra.core;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.zip.ZipException;
-
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
@@ -431,7 +430,7 @@ public abstract class AbstractSpectra<T,K extends ITrace<T>> implements Cloneabl
 			ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(getPathToSpectraZipFile());
 			try {
 				this.indexer = SpectraFileUtils.loadSequenceIndexer(zip);
-			} catch (ZipException e) {
+			} catch (ClassNotFoundException | IOException e) {
 				Log.abort(this, e, "Could not get sequence indexer from spectra zip file.");
 			}
 		}

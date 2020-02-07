@@ -6,11 +6,9 @@ import org.slf4j.LoggerFactory;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocker;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -25,33 +23,42 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	private static final transient Lock globalProjectDataLock = new ReentrantLock();
 	
 	private String[] idToClassName;
-	private Map<Long, EfficientCompressedIntegerTrace> executionTraces;
+	private Map<Long, byte[]> executionTraces;
 //	private Map<Integer, EfficientCompressedIntegerTrace> idToSubtraceMap;
 	
 	public ProjectData() {
 	}
 	
-	public void addExecutionTraces(Map<Long, EfficientCompressedIntegerTrace> map) {
+	public void addExecutionTraces(Map<Long, byte[]> map) {
 		lock.lock();
 		try {
-			this.executionTraces = new HashMap<>();
-			for (Entry<Long, EfficientCompressedIntegerTrace> entry : map.entrySet()) {
-				try {
-					EfficientCompressedIntegerTrace trace = entry.getValue();
-					trace.sleep();
-					this.executionTraces.put(entry.getKey(), trace);
-				} catch (Throwable e) {
-					e.printStackTrace();
-					System.exit(404);
-				} finally {
-//					try {
-//						// delete any existing stored nodes (should not happen, but oh well...
-//						entry.getValue().finalize();
-//					} catch (Throwable e) {
-//						e.printStackTrace();
-//					}
-				}
-			}
+			this.executionTraces = map;
+//					new HashMap<>();
+//			
+//			for (Entry<Long, OutputSequence<Integer>> entry : map.entrySet()) {
+//				try {
+//					OutputSequence<Integer> trace = entry.getValue();
+////					trace.sleep();
+//					ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+//					ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
+//					trace.writeOut(objOut, includeGrammar);
+//					objOut.close();
+//					byte[] bytes = byteOut.toByteArray();
+//					this.executionTraces.put(entry.getKey(), bytes);
+//				} catch (Throwable e) {
+//					e.printStackTrace();
+//					System.exit(404);
+//				} finally {
+////					try {
+////						// delete any existing stored nodes (should not happen, but oh well...
+////						entry.getValue().finalize();
+////					} catch (Throwable e) {
+////						e.printStackTrace();
+////					}
+//				}
+//			}
+//			// help GC
+//			map.clear();
 		} finally {
 			lock.unlock();
 		}
@@ -75,7 +82,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	 * the collection of execution traces for all executed threads;
 	 * the statements in the traces are stored as "class_id:statement_counter"
 	 */
-	public Map<Long, EfficientCompressedIntegerTrace> getExecutionTraces() {
+	public Map<Long, byte[]> getExecutionTraces() {
 		return executionTraces;
 	}
 	

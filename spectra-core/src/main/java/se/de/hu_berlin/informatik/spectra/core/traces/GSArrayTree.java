@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.ArrayIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CloneableIterator;
@@ -21,6 +20,7 @@ public abstract class GSArrayTree<T,K> {
 	// in the future, negative indices will possibly point to node sequences, themselves...
 //	public static final int SEQUENCE_END = -2;
 	public static final int BAD_INDEX = -3;
+	private static final int EXECUTION_TRACE_CHUNK_SIZE = 500000;
 //	public static final GSTreeNode END_NODE = new GSTreeNode();
 
 	// the (virtual) root node has a lot of branches, the inner nodes should not branch that much
@@ -191,7 +191,7 @@ public abstract class GSArrayTree<T,K> {
 		if (rawTrace.getCompressedTrace().isEmpty()) {
 			return new BufferedArrayQueue<>(
 					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
-					ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, Type.INTEGER);
+					EXECUTION_TRACE_CHUNK_SIZE, Type.INTEGER);
 		}
 		
 		if (!indexer.isIndexed()) {
@@ -200,7 +200,7 @@ public abstract class GSArrayTree<T,K> {
 		
 		BufferedArrayQueue<Integer> indexedtrace = new BufferedArrayQueue<>(
 				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
-				ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, Type.INTEGER);
+				EXECUTION_TRACE_CHUNK_SIZE, Type.INTEGER);
 		
 		Iterator<T> iterator = rawTrace.iterator();
 		K startElement = getRepresentation(iterator.next());

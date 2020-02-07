@@ -25,12 +25,12 @@ import se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report.
 public class TraceCoberturaCountReportProvider<K extends CountTrace<SourceCodeBlock>>
 		extends AbstractSpectraProvider<SourceCodeBlock, K, TraceCoberturaReportWrapper> {
 
-	private final TraceCoberturaCountReportLoader<SourceCodeBlock, K> loader;
+	private final TraceCoberturaCountReportLoader<K> loader;
 
 	public TraceCoberturaCountReportProvider(final ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
 		super(lineSpectra, fullSpectra);
 
-		loader = new TraceCoberturaCountReportLoader<SourceCodeBlock, K>(tempOutputDir) {
+		loader = new TraceCoberturaCountReportLoader<K>(tempOutputDir) {
 
 			@Override
 			public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,

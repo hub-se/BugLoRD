@@ -154,7 +154,7 @@ public interface ITrace<T> {
     public int getIndex();
 
 	public boolean storeExecutionTracesInZipFile(Path outputFile, 
-			Supplier<String> traceFileNameSupplier, Supplier<String> repMarkerFileNameSupplier);
+			Supplier<String> traceFileNameSupplier);
 
 	/**
 	 * Free resources when not in use.

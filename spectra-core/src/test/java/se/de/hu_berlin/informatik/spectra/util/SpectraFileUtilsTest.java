@@ -7,11 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.zip.ZipException;
 
 import org.junit.After;
@@ -35,9 +31,6 @@ import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaCountXMLProvider;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
@@ -85,30 +78,8 @@ public class SpectraFileUtilsTest extends TestSettings {
 		return numbers;
 	}
 	
-	private int[][] rt(int... numbers) {
-		int[][] result = new int[numbers.length][];
-		for (int i = 0; i < numbers.length; ++i) {
-			result[i] = new int[] {0,numbers[i],0};
-		}
-		return result;
-	}
-	
-	private EfficientCompressedIntegerTrace asList(Path outputDir, int[][] rt) {
-		BufferedIntArrayQueue list = new BufferedIntArrayQueue(
-				outputDir.toFile(), String.valueOf(UUID.randomUUID()), rt.length);
-		for (int[] statement : rt) {
-			list.add(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(statement[0], statement[1]));
-		}
-		return new EfficientCompressedIntegerTrace(list, true);
-	}
-	
-	private EfficientCompressedIntegerTrace c(Path outputDir, int... numbers) {
-		BufferedIntArrayQueue list = new BufferedIntArrayQueue(
-				outputDir.toFile(), String.valueOf(UUID.randomUUID()), numbers.length);
-		for (int id : numbers) {
-			list.add(id);
-		}
-		return new EfficientCompressedIntegerTrace(list, true);
+	private int[] c(int... numbers) {
+		return numbers;
 	}
 	
 	/**
@@ -161,41 +132,30 @@ public class SpectraFileUtilsTest extends TestSettings {
         
         Path outputDir = Paths.get(getStdTestDir());
         
-        // mapping: tree indexer sequence ID -> sequence of sub trace IDs
-    	int[][] subTraceIdSequences = new int[][] {s(1,2,3)};
-    	
     	// mapping: sub trace ID -> sequence of spectra node IDs
-    	EfficientCompressedIntegerTrace[] nodeIdSequences = 
-    			new EfficientCompressedIntegerTrace[] {
-    					c(outputDir), c(outputDir, 1,2,3), c(outputDir, 4,5,6), c(outputDir, 7,8,9)};
+    	int[][] nodeIdSequences = 
+    			new int[][] {c(), c(1,2,3), c(4,5,6), c(7,8,9)};
     	
         // sub trace id array
     	int[] rawTrace = new int[] {1,2,3,1,2,3};
         
         RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
         
-        // sub trace id -> sub trace
-        Map<Integer, EfficientCompressedIntegerTrace> idToSubTraceMap = new HashMap<>();
-        idToSubTraceMap.put(1,asList(outputDir, rt(5,6,7)));
-        idToSubTraceMap.put(2,asList(outputDir, rt(8,9,10)));
-        idToSubTraceMap.put(3,asList(outputDir, rt(11,12,13)));
-        
-        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false, outputDir, "t1", idToSubTraceMap);
-        traceCollector.getIndexer().getSequences();
+        traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false, outputDir, "t1");
         
 //        System.out.println(traceCollector.getGsTree());
         
-        List<ExecutionTrace> executionTraces = traceCollector.calculateExecutionTraces(trace.getIndex(), false);
+        Collection<ExecutionTrace> executionTraces = traceCollector.calculateExecutionTraces(trace.getIndex(), false);
         for (ExecutionTrace eTrace : executionTraces) {
-        	System.out.println(eTrace.getCompressedTrace());
+        	System.out.println(eTrace);
         	trace.addExecutionTrace(eTrace);
         }
         assertFalse(trace.getExecutionTraces().isEmpty());
         
-        SimpleIntIndexerCompressed indexer = new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences);
+        SimpleIntIndexerCompressed indexer = new SimpleIntIndexerCompressed(nodeIdSequences);
 		spectra.setIndexer(indexer);
         
-        ExecutionTrace executionTrace = executionTraces.get(0);
+        ExecutionTrace executionTrace = executionTraces.iterator().next();
 		int[] trace1 = executionTrace.reconstructFullMappedTrace(spectra.getIndexer());
         
         Log.out(this, Arrays.toString(trace1));

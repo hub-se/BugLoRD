@@ -3,9 +3,7 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 import java.util.Collection;
 import java.util.Iterator;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceReverseIterator;
+import de.unisb.cs.st.sequitur.input.SharedInputGrammar;
 
 public interface SequenceIndexerCompressed {
 
@@ -13,81 +11,14 @@ public interface SequenceIndexerCompressed {
 	
 	public void removeFromSequences(Collection<Integer> nodeIndicesToRemove);
 
-	int[][] getSubTraceIdSequences();
+	int[][] getNodeIdSequences();
 
-	EfficientCompressedIntegerTrace[] getNodeIdSequences();
+	int[] getNodeIdSequence(int subTraceIndex);
 
-	int[] getSubTraceIdSequence(int index);
+	SharedInputGrammar<Integer> getExecutionTraceInputGrammar();
 
-	EfficientCompressedIntegerTrace getNodeIdSequence(int subTraceIndex);
+	public Iterator<Integer> getNodeIdSequenceIterator(int subTraceId);
 
-	/**
-	 * Iterates over the sequence of sub trace IDs 
-	 * with the given index and each node ID in the
-	 * respective indexed sub trace.
-	 * @param subTraceSequenceIndex
-	 * an index of a sequence of sub trace IDs
-	 * @return
-	 * an iterator over all sub traces in the 
-	 * specified sequence of sub trace IDs
-	 */
-	Iterator<Integer> getFullSequenceIterator(int subTraceSequenceIndex);
-	
-	/**
-	 * Iterates over the sequence of sub trace IDs 
-	 * with the given index and each node ID in the
-	 * respective indexed sub trace, starting from the end
-	 * of the sequence.
-	 * @param subTraceSequenceIndex
-	 * an index of a sequence of sub trace IDs
-	 * @return
-	 * an iterator over all sub traces in the 
-	 * specified sequence of sub trace IDs
-	 */
-	Iterator<Integer> getFullSequenceReverseIterator(int subTraceSequenceIndex);
+	byte[] getGrammarByteArray();
 
-	/**
-	 * Iterates over the sub trace with the given index.
-	 * The sub trace contains spectra node IDs.
-	 * @param subTraceIndex
-	 * an index of a sub trace 
-	 * @return
-	 * an iterator over the specified sub trace
-	 */
-	TraceIterator getNodeIdSequenceIterator(int subTraceIndex);
-	
-	/**
-	 * Iterates over the sub trace with the given index, 
-	 * starting from the end of the sequence.
-	 * The sub trace contains spectra node IDs.
-	 * @param subTraceIndex
-	 * an index of a sub trace 
-	 * @return
-	 * an iterator over the specified sub trace
-	 */
-	TraceReverseIterator getNodeIdSequenceReverseIterator(int subTraceIndex);
-	
-	/**
-	 * Iterates over the sequence of sub trace IDs 
-	 * with the given index.
-	 * @param subTraceSequenceIndex
-	 * an index of a sequence of sub trace IDs
-	 * @return
-	 * an iterator over the specified sequence of sub trace IDs
-	 */
-	Iterator<Integer> getSubTraceIDSequenceIterator(int subTraceSequenceIndex);
-	
-	/**
-	 * Iterates over the sequence of sub trace IDs 
-	 * with the given index, starting from the end 
-	 * of the sequence.
-	 * @param subTraceSequenceIndex
-	 * an index of a sequence of sub trace IDs
-	 * @return
-	 * an iterator over the specified sequence of sub trace IDs
-	 */
-	Iterator<Integer> getSubTraceIDSequenceReverseIterator(int subTraceSequenceIndex);
-
-	void sleep();
-	
 }

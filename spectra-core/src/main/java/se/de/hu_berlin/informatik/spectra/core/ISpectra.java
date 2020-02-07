@@ -47,6 +47,7 @@ public interface ISpectra<T, K extends ITrace<T>> {
      * Returns the node for the given identifier.
      *
      * If the node is not present in the current spectra, the node will be created.
+     * (indices should start at 0)
      *
      * @param identifier
      *            identifier

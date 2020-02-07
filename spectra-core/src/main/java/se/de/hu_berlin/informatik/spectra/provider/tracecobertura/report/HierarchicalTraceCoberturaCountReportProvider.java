@@ -26,13 +26,13 @@ import se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report.
 public class HierarchicalTraceCoberturaCountReportProvider<K extends CountTrace<SourceCodeBlock>>
 		extends AbstractHierarchicalSpectraProvider<SourceCodeBlock, K, TraceCoberturaReportWrapper> {
 
-	private final HierarchicalTraceCoberturaCountReportLoader<SourceCodeBlock, K> loader;
+	private final HierarchicalTraceCoberturaCountReportLoader<K> loader;
 
 	public HierarchicalTraceCoberturaCountReportProvider(final ISpectra<SourceCodeBlock, K> lineSpectra, 
 			boolean fullSpectra, Path tempOutputDir) {
 		super(lineSpectra, fullSpectra);
 
-		loader = new HierarchicalTraceCoberturaCountReportLoader<SourceCodeBlock, K>(packageSpectra, classSpectra,
+		loader = new HierarchicalTraceCoberturaCountReportLoader<K>(packageSpectra, classSpectra,
 				methodSpectra, tempOutputDir) {
 
 			@Override

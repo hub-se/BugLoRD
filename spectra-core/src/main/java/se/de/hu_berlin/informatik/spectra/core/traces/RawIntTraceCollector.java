@@ -1,15 +1,14 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.zip.ZipException;
 
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
+import de.unisb.cs.st.sequitur.output.OutputSequence;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
@@ -19,38 +18,15 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
-import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
 public class RawIntTraceCollector {
 	
-	private static final String RAW_TRACE_FILE_EXTENSION = ".raw";
-	private static final String REP_MARKER_FILE_EXTENSION = ".rep";
+//	private static final String RAW_TRACE_FILE_EXTENSION = ".raw";
+//	private static final String REP_MARKER_FILE_EXTENSION = ".rep";
 //	private static final String EXEC_TRACE_FILE_EXTENSION = ".exec";
 
-//	/**
-//	 * map from (global) sub trace ids to actual sub traces;
-//	 * this stores all existing (and executed) sub traces!
-//	 */
-//	private Map<Integer,EfficientCompressedIntegerTrace> globalIdToSubTraceMap;
-
-	// stores (sub trace representation -> sub trace id) to retrieve subtrace ids
-	// the long value representation has to contain start and ending node of the sub trace
-	// if the sub trace is longer than one statement(s)
-//	private  Map<Long,Integer> subTraceGlobalIdMap = new HashMap<>();
-//	private int currentId = 0; 
-	
 	private final Path output;
 
-	private final IntGSArrayTree gsTree = new IntGSArrayTree();
-
-	private IntArraySequenceIndexer indexer = null;
-	
-	private final Set<Integer> startElements = new HashSet<>(16, 0.7F);
-	
-//	public Map<Integer,EfficientCompressedIntegerTrace> getGlobalIdToSubTraceMap() {
-//		return globalIdToSubTraceMap;
-//	}
-	
 //	public RawTraceCollector() {
 //		this(null);
 //	}
@@ -65,201 +41,78 @@ public class RawIntTraceCollector {
 //		}
 		
 		this.output.toFile().deleteOnExit();
-		getExecutionTraceZipFilePath().toFile().deleteOnExit();
 //		Runtime.getRuntime().addShutdownHook(new Thread(new RemoveOutput(this.output)));
 	}
 	
+	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
-			BufferedIntArrayQueue trace, boolean log,
-			Map<Integer,EfficientCompressedIntegerTrace> idToSubTraceMap) {
-		addTrace(traceIndex, threadId, trace, log, idToSubTraceMap);
+			byte[] trace, boolean log) {
+		addTrace(traceIndex, threadId, trace, log);
 		return true;
 	}
 	
 	// only used for testing purposes
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
-			int[] traceArray, boolean log, Path outputDir, String prefix,
-			Map<Integer,EfficientCompressedIntegerTrace> idToSubTraceMap) {
-		BufferedIntArrayQueue trace = new BufferedIntArrayQueue(outputDir.toFile(), prefix, 100);
-//        trace.addAll(Arrays.asList(traceArray));
-		for (int i : traceArray) {
-			trace.add(i);
-		}
-//		trace.clear(1);
-//		for (ReplaceableCloneableIntIterator iterator = trace.iterator(); iterator.hasNext();) {
-//			int integer = iterator.next();
-//			System.out.print(integer + ", ");
-//		}
-//		System.out.println();
-		return addRawTraceToPool(traceIndex, threadId, trace, log, idToSubTraceMap);
-	}
+			int[] traceArray, boolean log, Path outputDir, String prefix) {
 
-	private void addTrace(int traceIndex, int threadId, 
-			BufferedIntArrayQueue trace, boolean log,
-			Map<Integer,EfficientCompressedIntegerTrace> idToSubTraceMap) {
-		addTrace(traceIndex, threadId, new EfficientCompressedIntegerTrace(trace, log), idToSubTraceMap);
+		OutputSequence<Integer> outSeq = new OutputSequence<Integer>();
+        for (int i : traceArray) {
+            outSeq.append(i);
+        }
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        ObjectOutputStream objOut;
+		try {
+			objOut = new ObjectOutputStream(byteOut);
+			outSeq.writeOut(objOut, true);
+	        objOut.close();
+	        byte[] trace = byteOut.toByteArray();
+	        
+			return addRawTraceToPool(traceIndex, threadId, trace, log);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return false;
 	}
 	
-	public boolean addRawTraceToPool(int traceIndex, int threadId, 
-			EfficientCompressedIntegerTrace eTrace,
-			Map<Integer, EfficientCompressedIntegerTrace> map) {
-		addTrace(traceIndex, threadId, eTrace, map);
+	private void addTrace(int traceIndex, int threadId, 
+			byte[] trace, boolean log) {
+		addTrace(traceIndex, threadId, trace);
+	}
+	
+	public boolean addRawTraceToPool(int traceIndex, int threadId, byte[] eTrace) {
+		addTrace(traceIndex, threadId, eTrace);
 		return true;
 	}
 
-	private void addTrace(int traceIndex, int threadId, 
-			EfficientCompressedIntegerTrace eTrace,
-			Map<Integer, EfficientCompressedIntegerTrace> map) {
-		
-//		boolean error = false;
-//		for (ReplaceableCloneableIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
-//			// check if all IDs are actually stored in the map
-//			Integer id = iterator.next();
-//			if (!map.containsKey(id)) {
-//				// this should definitely not happen!
-//				error = true;
-//				System.err.println(traceIndex + "-" + threadId + ": No sub trace mapping found for id " + id);
-//			}
-//		}
-//		
-//		if (error) {
-//			throw new IllegalStateException("No sub trace mapping found for some ID(s).");
-//		}
-		
-//		// the next few commands are necessary to ensure consistency in sub trace ids!!!
-//		// each project data comes potentially with its own mapping from ids to sub traces...
-//		// so we need to get the respective ids for existing sub traces and produce 
-//		// new ones for newly added sub traces.
-//		Map<Integer,Integer> localIdToGlobalIdMap = getAndCreateSubTraceIdMapping(map, output.getParent());
-//		// and then replace all local ids with the global ones...
-//		globalizeTrace(eTrace, localIdToGlobalIdMap);
-		
+	private void addTrace(int traceIndex, int threadId, byte[] eTrace) {
 		// collect raw trace
-		String traceFileName = traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION;
-		String repMarkerFileName = traceIndex + "-" + threadId + REP_MARKER_FILE_EXTENSION;
+		String traceFileName = traceIndex + "-" + threadId + SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION;
 		// avoid storing traces in memory...
 		// store the compressed trace
 		try {
-			SpectraFileUtils.storeCompressedIntegerTrace(eTrace, output, traceFileName, repMarkerFileName, false);
+			SpectraFileUtils.storeCompressedIntegerTrace(eTrace, output, traceFileName);
 		} catch (IOException e) {
 			Log.abort(this, e, "Could not store raw trace.");
 		}
-		
-		// new input may or may not invalidate previously generated execution traces
-		// (generally, the execution traces should only be generated at the end of trace collection)
-//		executionTracePool.clear();
-		// we need to extract repetitions in the trace and add them to the GS tree
-		// (2 repetitions should be enough for each repeated sequence) TODO
-//		extractRepetitions(eTrace.iterator());
-		
-		// only extract all elements that mark the beginning of sequences;
-		// adding the traces to the GS tree has to be done in a separate, last step
-		eTrace.addStartingElementsToSet(startElements);
-		eTrace.clear();
-		eTrace = null;
 	}
-	
-//	private void globalizeTrace(EfficientCompressedIntegerTrace eTrace,
-//			Map<Integer, Integer> localIdToGlobalIdMap) {
-//		for (ReplaceableCloneableIntIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
-//			// this should now replace all local sub trace ids with the respective global ids...
-//			@SuppressWarnings("unused")
-//			Integer previous = iterator.processNextAndReplaceWithResult(k -> {
-//				Integer globalId = localIdToGlobalIdMap.get(k);
-//				if (globalId == null) {
-//					// this should definitely not happen!
-//					throw new IllegalStateException("No global id found for local id " + k);
-//				}
-//				return globalId;
-//			});
-//		}
-//		
-//	}
-//
-//	private Map<Integer, Integer> getAndCreateSubTraceIdMapping(
-//			Map<Integer, EfficientCompressedIntegerTrace> map, Path tempDir) {
-//		if (globalIdToSubTraceMap == null) {
-//			globalIdToSubTraceMap = getNewSubTraceMap(tempDir);
-//		}
-//		// should map local sub trace ids (parameter) to global ids (field),
-//		// so that the ids in the submitted raw traces can be replaced.
-//		Map<Integer, Integer> subTraceIdMapping = new HashMap<>();
-//		Iterator<Entry<Integer, EfficientCompressedIntegerTrace>> iterator = map.entrySet().iterator();
-//		while (iterator.hasNext()) {
-//			Entry<Integer, EfficientCompressedIntegerTrace> entry = iterator.next();
-////			System.out.println(entry.getKey() + ">> " + entry.getValue());
-//			int globalId = getOrCreateIdForSubTrace(entry.getValue());
-//			subTraceIdMapping.put(entry.getKey(), globalId);
-//		}
-//		return subTraceIdMapping;
-//	}
-	
-//	private Map<Integer, EfficientCompressedIntegerTrace> getNewSubTraceMap(Path tempDir) {
-//		return new HashMap<>();
-////		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
-////		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
-////				String.valueOf(UUID.randomUUID()), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
-//	}
-	
-//	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
-//	private int getOrCreateIdForSubTrace(EfficientCompressedIntegerTrace compressedLongTraceBase) {
-//		if (compressedLongTraceBase == null || compressedLongTraceBase.size() == 0) {
-//			// id 0 indicates empty sub trace
-//			return 0;
-//		}
-//
-//		long wrapper = CoberturaStatementEncoding.generateRepresentationForSubTrace(compressedLongTraceBase);
-//		Integer id = subTraceGlobalIdMap.get(wrapper);
-//		if (id == null) {
-//			// sub trace is not yet part of the global sub trace map
-//			// starts with id 1
-//			id = ++currentId;
-//
-//			// new sub trace, so store new id and store sub trace
-//			subTraceGlobalIdMap.put(wrapper, currentId);
-//			compressedLongTraceBase.sleep();
-//			globalIdToSubTraceMap.put(currentId, compressedLongTraceBase);
-//		} else {
-//			if (!globalIdToSubTraceMap.get(id).equals(compressedLongTraceBase)) {
-//				// already got this sub trace in the global map!
-//				// (and it's not the exact same object!) 
-//				// delete any stored nodes from disk after processing all threads' traces!
-//				compressedLongTraceBase.markForDeletion();
-////				compressedLongTraceBase.clear();
-//			}
-//		}
-//		
-//		return id;
-//
-//	}
 
-	private static File tmpOutputDir = null;
 	
-	private static File getTmpDir(Path alternatePath) {
-		if (tmpOutputDir == null) {
-			tmpOutputDir = SpectraFileUtils.getTemporaryOutputDir("rawTraces_tmp", alternatePath);
-		}
-		return tmpOutputDir;
-	}
-	
-	public List<EfficientCompressedIntegerTrace> getRawTraces(int traceIndex) throws ZipException {
+	public Collection<ExecutionTrace> getRawTraces(int traceIndex) throws ZipException {
 		if (!output.toFile().exists()) {
 			return null;
 		}
 		// retrieve the raw traces from the zip file
-		List<EfficientCompressedIntegerTrace> result = new ArrayList<>(1);
+		List<ExecutionTrace> result = new ArrayList<>(1);
 		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(output);
 
 		int traceCounter = -1;
 		// assume IDs to start at 0
 		while (true) {
-			String compressedTraceFile = traceIndex + "-" + (++traceCounter) + RAW_TRACE_FILE_EXTENSION;
+			String compressedTraceFile = traceIndex + "-" + (++traceCounter) + SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION;
 			if (zip.exists(compressedTraceFile)) {
-				String repetitionFile = traceIndex + "-" + (traceCounter) + REP_MARKER_FILE_EXTENSION;
-				EfficientCompressedIntegerTrace rawTrace = SpectraFileUtils
-						.loadRawTraceFromZipFile(getTmpDir(
-								zip.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath()), 
-								zip, compressedTraceFile, repetitionFile);
+				ExecutionTrace rawTrace = SpectraFileUtils
+						.loadExecutionTraceFromZipFile(zip, compressedTraceFile);
 				result.add(rawTrace);
 			} else {
 				break;
@@ -290,186 +143,16 @@ public class RawIntTraceCollector {
 		}
 	}
 
-	public List<ExecutionTrace> calculateExecutionTraces(int traceIndex, boolean log) throws ZipException {
+	public Collection<ExecutionTrace> calculateExecutionTraces(int traceIndex, boolean log) throws ZipException {
 		// check if a stored execution trace exists
 		if (!output.toFile().exists()) {
+			Log.err(this, "%s does not exist!", output);
 			return null;
 		}
-//		// try to retrieve the execution traces from the zip file
-//		List<ExecutionTrace> result = new ArrayList<>(1);
-//		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(output);
-//
-//		int traceCounter = -1;
-//		// assume IDs to start at 0
-//		while (true) {
-//			String compressedTraceFile = traceIndex + "-" + (++traceCounter) + 
-//					SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION;
-//			if (zip.exists(compressedTraceFile)) {
-//				String repetitionFile = traceIndex + "-" + (traceCounter) + 
-//						SpectraFileUtils.EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION;
-//				ExecutionTrace executionTrace = 
-//						SpectraFileUtils.loadExecutionTraceFromZipFile(zip, compressedTraceFile, repetitionFile);
-//				result.add(executionTrace);
-//			} else {
-//				break;
-//			}
-//		}
-//		if (!result.isEmpty()) {
-//			return result;
-//		}
-
-		// generate execution trace from current GS tree
-		if (indexer == null) {
-			extractCommonSequencesFromRawTraces();
-			indexer = new IntGSArrayTreeIndexer(gsTree);
-		}
-
-		// if at this point, try generating the execution traces from raw traces on the fly
-		List<EfficientCompressedIntegerTrace> rawTraces = getRawTraces(traceIndex);
-		if (rawTraces == null) {
-			return null;
-		}
-		List<ExecutionTrace> executionTraces = generateExecutiontraceFromRawTraces(rawTraces, log);
-
-		// collect execution traces
-		int traceCounter = -1;
-		for (ExecutionTrace executionTrace : executionTraces) {
-			String traceFileName = traceIndex + "-" + (++traceCounter) + 
-					SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION;
-			String repMarkerFileName = traceIndex + "-" + (traceCounter) + 
-					SpectraFileUtils.EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION;
-			// avoid storing traces in memory...
-			// store the execution trace and repetition markers
-			try {
-				SpectraFileUtils.storeCompressedIntegerTrace(executionTrace, 
-						getExecutionTraceZipFilePath(), traceFileName, repMarkerFileName, true);
-			} catch (IOException e) {
-				Log.abort(this, e, "Could not store execution trace.");
-			}
-		}
-		// may still be null?
-		return executionTraces;
-	}
-
-	public Path getExecutionTraceZipFilePath() {
-		return output.toAbsolutePath().getParent().resolve(output.getFileName() + "Exec.zip");
-	}
-
-	private List<ExecutionTrace> generateExecutiontraceFromRawTraces(List<EfficientCompressedIntegerTrace> rawTraces, boolean log) {
-		// replace sequences in the raw trace with indices
-		List<ExecutionTrace> traces = new ArrayList<>(rawTraces.size());
-		for (EfficientCompressedIntegerTrace rawTrace : rawTraces) {
-			try {
-				ExecutionTrace trace = gsTree.generateIndexedTrace(rawTrace, indexer);
-				trace.sleep();
-				traces.add(trace);
-			} catch (IllegalStateException e) {
-				Log.warn(this, "Generating indexed Trace not successful: %s", e.getMessage());
-				Log.out(this, "Trying to add entire trace... (%d elements)", rawTrace.size());
-				// a sequence was not matched correctly, so try to add the entire trace to the tree...
-				extractCommonSequencesFromRawTrace(rawTrace.iterator());
-				ExecutionTrace trace = gsTree.generateIndexedTrace(rawTrace, indexer);
-				trace.sleep();
-				traces.add(trace);
-			}
-		}
 		
-		return traces;
+		return getRawTraces(traceIndex);
 	}
 
-	private void extractCommonSequencesFromRawTraces() {
-		if (indexer == null) {
-			indexer = new IntGSArrayTreeIndexer(gsTree);
-		}
-		
-		ProgressTracker tracker = new ProgressTracker(false);
-
-		if (!output.toFile().exists()) {
-			return;
-		}
-		try {
-			// retrieve the raw traces from the zip file
-			ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(output);
-			List<String> rawTraceFiles = 
-					zip.getFileHeadersContainingString(RAW_TRACE_FILE_EXTENSION);
-			for (String fileHeader : rawTraceFiles) {
-				tracker.track("processing " + fileHeader);
-				EfficientCompressedIntegerTrace rawTrace = SpectraFileUtils
-						.loadRawTraceFromZipFile(getTmpDir(
-								zip.getzipFilePath().getParent().resolve("execTraceTemp").toAbsolutePath()),
-								zip, fileHeader, fileHeader
-								.replace(RAW_TRACE_FILE_EXTENSION, REP_MARKER_FILE_EXTENSION));
-
-//				extractCommonSequencesFromRawTrace(executionTrace.iterator());
-				// it should suffice to only iterate over the compressed traces...
-				// (if not, we will try processing the entire sequence later, when generating the execution traces)
-				extractCommonSequencesFromRawTrace(rawTrace.baseIterator());
-				rawTrace.clear();
-				rawTrace = null;
-			}
-		} catch (Exception e) {
-			Log.abort(this, e, "Error reading or processing raw traces from zip file.");
-		}
-	}
-
-	private void extractCommonSequencesFromRawTrace(ReplaceableCloneableIterator replaceableCloneableIntIterator) {
-		if (indexer != null) {
-			indexer.reset();
-		}
-		// remember starting position
-		ReplaceableCloneableIterator unprocessedIterator = replaceableCloneableIntIterator.clone();
-		int processedElements = 0;
-		while (replaceableCloneableIntIterator.hasNext()) {
-			Integer element = replaceableCloneableIntIterator.peek();
-//			System.out.println("next: " + element);
-			// TODO prevent negative elements!
-//			if (element < 0) {
-//				// check if the element is a correct id, which has to be positive (atm) TODO
-//				// this may mark elements which shall be ignored/skipped when executing exactly this method...
-//				throw new IllegalStateException("Tried to add an negative item: " + element);
-//			}
-			
-			if (startElements.contains(element)) {
-				// the element was recognized as a starting element, previously
-				if (processedElements > 0) {
-					// there exists an unprocessed sequence 
-					// before this element's position
-					gsTree.__addSequence(unprocessedIterator, processedElements, 
-							unprocessedIterator.peek());
-	
-					unprocessedIterator = replaceableCloneableIntIterator.clone();
-					processedElements = 0;
-				}
-			}
-			
-			// add the current element to the list of unprocessed elements
-			++processedElements;
-			replaceableCloneableIntIterator.next();
-		}
-		
-		// process remaining elements
-		if (processedElements > 0) {
-			// there exists an unprocessed sequence
-			gsTree.__addSequence(unprocessedIterator, processedElements, 
-					unprocessedIterator.peek());
-		}
-	}
-
-	public IntGSArrayTree getGsTree() {
-		if (indexer == null) {
-			extractCommonSequencesFromRawTraces();
-			indexer = new IntGSArrayTreeIndexer(gsTree);
-		}
-		return gsTree;
-	}
-
-	public IntArraySequenceIndexer getIndexer() {
-		if (indexer == null) {
-			extractCommonSequencesFromRawTraces();
-			indexer = new IntGSArrayTreeIndexer(gsTree);
-		}
-		return indexer;
-	}
 
 	@Override
 	public void finalize() throws Throwable {
@@ -479,22 +162,20 @@ public class RawIntTraceCollector {
 		super.finalize();
 	}
 
-	public boolean moveExecutionTraces(int traceIndex, Path outputFile, Supplier<String> traceFileNameSupplier,
-			Supplier<String> repMarkerFileNameSupplier) throws ZipException, Abort {
+	public boolean moveExecutionTraces(int traceIndex, Path outputFile, Supplier<String> traceFileNameSupplier) throws ZipException, Abort {
 		// check if a stored execution trace exists
-		if (!getExecutionTraceZipFilePath().toFile().exists()) {
+		if (!output.toFile().exists()) {
 			return false;
 		}
-		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(getExecutionTraceZipFilePath());
+		ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(output);
 		Module<Pair<String, String>, Boolean> module = 
-				new MoveNamedByteArraysBetweenZipFilesProcessor(getExecutionTraceZipFilePath(), outputFile).asModule();
+				new MoveNamedByteArraysBetweenZipFilesProcessor(output, outputFile).asModule();
 		int threadIndex = -1;
 		while (true) {
-			String traceFile = traceIndex + "-" + (++threadIndex) + 
-					SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION;
+			String traceFile = traceIndex + "-" + (++threadIndex) + SpectraFileUtils.EXECUTION_TRACE_FILE_EXTENSION;
 			if (zip.exists(traceFile)) {
+//				Log.out(this, "Moving '%s' from %s to %s", traceFile, output, outputFile);
 				String traceFileTarget = traceFileNameSupplier.get();
-				String repMarkerFileTarget = repMarkerFileNameSupplier.get();
 
 				// move trace file
 				boolean successful = module.submit(new Pair<>(traceFile, traceFileTarget)).getResult();
@@ -503,16 +184,16 @@ public class RawIntTraceCollector {
 					Log.abort(SpectraFileUtils.class, "Could not move trace file.");
 				}
 
-				String repMarkerFile = (traceIndex) + "-" + (threadIndex) + 
-						SpectraFileUtils.EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION;
-				if (zip.exists(repMarkerFile)) {
-					// move repetition marker file
-					successful = module.submit(new Pair<>(repMarkerFile, repMarkerFileTarget)).getResult();
-
-					if (!successful) {
-						Log.abort(SpectraFileUtils.class, "Could not move repetition marker file.");
-					}
-				}
+//				String repMarkerFile = (traceIndex) + "-" + (threadIndex) + 
+//						SpectraFileUtils.EXECUTION_TRACE_REPETITIONS_FILE_EXTENSION;
+//				if (zip.exists(repMarkerFile)) {
+//					// move repetition marker file
+//					successful = module.submit(new Pair<>(repMarkerFile, repMarkerFileTarget)).getResult();
+//
+//					if (!successful) {
+//						Log.abort(SpectraFileUtils.class, "Could not move repetition marker file.");
+//					}
+//				}
 
 //				// load the repetition marker array
 //				executionTraceThreadInvolvement = zip.get((traceCounter) + "-" + (threadIndex) 
