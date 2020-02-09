@@ -233,7 +233,7 @@ public class SpectraFileUtilsTest extends TestSettings {
 		assertTrue(output3.toFile().length() > output2.toFile().length());
 	}
 	
-	@Test
+//	@Test
 	public void testBlockSpectraReadingAndWriting2() throws ZipException {
 		Path output1 = Paths.get(getStdResourcesDir(), "Chart-22b.zip");
 		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadBlockSpectraFromZipFile(output1);

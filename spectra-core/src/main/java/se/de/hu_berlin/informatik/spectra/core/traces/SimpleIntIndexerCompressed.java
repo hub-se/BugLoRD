@@ -147,7 +147,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 
 	@Override
 	public SharedInputGrammar<Integer> getExecutionTraceInputGrammar() {
-		if (executionTraceInputGrammar == null) {
+		if (executionTraceInputGrammar == null && storedGrammar != null) {
 			try {
 				executionTraceInputGrammar = SpectraFileUtils.convertToInputGrammar(storedGrammar);
 			} catch (ClassNotFoundException | IOException e) {
