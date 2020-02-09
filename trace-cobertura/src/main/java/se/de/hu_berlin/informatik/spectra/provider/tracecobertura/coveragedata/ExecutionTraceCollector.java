@@ -50,6 +50,7 @@ public class ExecutionTraceCollector {
 //		}
 //	}
 	
+	private static long counter = 0;	
 	
 	/**
 	 * @return
@@ -61,6 +62,8 @@ public class ExecutionTraceCollector {
 		globalExecutionTraceCollectorLock.lock();
 		try {
 			processAllRemainingSubTraces();
+			StringBuilder sb = new StringBuilder();
+			sb.append(String.format("%n#statements: %,d%n", counter));
 			Map<Long, byte[]> traces = new HashMap<>();
 			for (Entry<Long, OutputSequence<Integer>> entry : executionTraces.entrySet()) {
 				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -70,7 +73,10 @@ public class ExecutionTraceCollector {
 				byte[] bytes = byteOut.toByteArray();
 				
 				traces.put(entry.getKey(), bytes);
+				
+				sb.append(String.format("  -> %,d (%.2f%%)%n", bytes.length/4, -100.00+100.0*(double)(bytes.length/4)/(double)counter));
 			}
+			System.out.print(sb.toString());
 			return traces;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -220,6 +226,12 @@ public class ExecutionTraceCollector {
 			// this marks a fake jump! (ignore)
 			return;
 		}
+		
+		++counter;
+		if (counter % 100000 == 0)
+			System.out.print('.');
+		if (counter % 10000000 == 0)
+			System.out.println(String.format("%,d", counter));
 		
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO

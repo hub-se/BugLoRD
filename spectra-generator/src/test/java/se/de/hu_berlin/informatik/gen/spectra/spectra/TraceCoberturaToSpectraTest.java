@@ -36,6 +36,7 @@ import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
@@ -243,6 +244,8 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	private void testOnProjectWithTestList(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful, String testListPath) {
+		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
+		FileUtils.delete(spectraZipFile);
 		long startTime = new Date().getTime();
 		new TraceCoberturaSpectraGenerator.Builder()
 		.setProjectDir(project.getProjectMainDir())
@@ -264,7 +267,6 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		
 		System.out.println("Execution time: " + Misc.getFormattedTimerString(endTime - startTime));
 		
-		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
 			assertTrue(Files.exists(spectraZipFile));
 			checkTraceSpectra(spectraZipFile);
@@ -276,6 +278,8 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	private void testOnProjectWithFailedtests(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful, List<String> failedtests) {
+		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
+		FileUtils.delete(spectraZipFile);
 		long startTime = new Date().getTime();
 		new TraceCoberturaSpectraGenerator.Builder()
 		.setProjectDir(project.getProjectMainDir())
@@ -296,7 +300,6 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 		
 		System.out.println("Execution time: " + Misc.getFormattedTimerString(endTime - startTime));
 
-		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
 		if (successful) {
 			assertTrue(Files.exists(spectraZipFile));
 			checkTraceSpectra(spectraZipFile);

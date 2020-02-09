@@ -19,7 +19,6 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	// mapping: sub trace ID -> sequence of spectra node IDs
 	private int[][] nodeIdSequences;
 	
-	private SharedOutputGrammar<Integer> executionTraceOutputGrammar;
 	private SharedInputGrammar<Integer> executionTraceInputGrammar;
 
 	private byte[] storedGrammar;
@@ -32,27 +31,34 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	
 	// constructor used before storing in zip file
 	public SimpleIntIndexerCompressed(SharedOutputGrammar<Integer> executionTraceGrammar, 
-			Map<Integer, byte[]> existingSubTraces, SharedInputGrammar<Integer> subTraceGrammar) throws IOException {
-		this.executionTraceOutputGrammar = executionTraceGrammar;
+			Map<Integer, byte[]> existingSubTraces, SharedOutputGrammar<Integer> sharedSubTraceGrammar) throws ClassNotFoundException, IOException {
+		this.storedGrammar = SpectraFileUtils.convertToByteArray(executionTraceGrammar);
+
 		this.nodeIdSequences = new int[existingSubTraces.size()+1][];
 
+		byte[] subTraceByteArray = SpectraFileUtils.convertToByteArray(sharedSubTraceGrammar);
+		SharedInputGrammar<Integer> sharedInputGrammar = SpectraFileUtils.convertToInputGrammar(subTraceByteArray);
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = new int[0];
 		for (int i = 1; i < existingSubTraces.size() + 1; i++) {
-			InputSequence<Integer> inputSequence = getInputSequenceFromByteArray(existingSubTraces.get(i), subTraceGrammar);
+			InputSequence<Integer> inputSequence = getInputSequenceFromByteArray(existingSubTraces.get(i), sharedInputGrammar);
 			int[] nodeIdSequence = new int[(int) inputSequence.getLength()];
 			ListIterator<Integer> iterator = inputSequence.iterator();
 			for (int j = 0; iterator.hasNext(); ++j) {
 				nodeIdSequence[j] = iterator.next();
 			}
-			
+
 			this.nodeIdSequences[i] = nodeIdSequence;
 		}
+		
+		System.out.println(String.format("execution trace grammar size: %,d%n"
+				+ "sub trace grammar size: %,d", 
+				storedGrammar.length/4, subTraceByteArray.length/4));
 	}
 	
 	// constructor used before storing in zip file
-	public SimpleIntIndexerCompressed(SharedOutputGrammar<Integer> executionTraceGrammar, int[][] nodeIdSequences) {
-		this.executionTraceOutputGrammar = executionTraceGrammar;
+	public SimpleIntIndexerCompressed(SharedOutputGrammar<Integer> executionTraceGrammar, int[][] nodeIdSequences) throws ClassNotFoundException, IOException {
+		this.storedGrammar = SpectraFileUtils.convertToByteArray(executionTraceGrammar);
 		this.nodeIdSequences = nodeIdSequences;
 	}
 	
@@ -136,32 +142,16 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	
 	@Override
 	public byte[] getGrammarByteArray() {
-		if (storedGrammar == null && executionTraceOutputGrammar != null) {
-			try {
-				storedGrammar = SpectraFileUtils.convertToByteArray(executionTraceOutputGrammar);
-			} catch (ClassNotFoundException | IOException e) {
-				Log.abort(this, e, "Could not convert grammar.");
-			}
-		}
 		return storedGrammar;
 	}
 
 	@Override
 	public SharedInputGrammar<Integer> getExecutionTraceInputGrammar() {
 		if (executionTraceInputGrammar == null) {
-			if (storedGrammar != null) {
-				try {
-					executionTraceInputGrammar = SpectraFileUtils.convertToInputGrammar(storedGrammar);
-				} catch (ClassNotFoundException | IOException e) {
-					Log.abort(this, e, "Could not convert grammar.");
-				}
-			} else if (executionTraceOutputGrammar != null) {
-				try {
-					storedGrammar = SpectraFileUtils.convertToByteArray(executionTraceOutputGrammar);
-					executionTraceInputGrammar = SpectraFileUtils.convertToInputGrammar(storedGrammar);
-				} catch (ClassNotFoundException | IOException e) {
-					Log.abort(this, e, "Could not convert grammar.");
-				}
+			try {
+				executionTraceInputGrammar = SpectraFileUtils.convertToInputGrammar(storedGrammar);
+			} catch (ClassNotFoundException | IOException e) {
+				Log.abort(this, e, "Could not convert grammar.");
 			}
 		}
 		return executionTraceInputGrammar;

@@ -78,7 +78,12 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 			}
 			
 			SharedOutputGrammar<Integer> methodExecutionTraceGrammar = new SharedOutputGrammar<>();
-			SequenceIndexerCompressed methodSpectraIndexer = new SimpleIntIndexerCompressed(methodExecutionTraceGrammar, nodeIdSequences);
+			SequenceIndexerCompressed methodSpectraIndexer = null;
+			try {
+				methodSpectraIndexer = new SimpleIntIndexerCompressed(methodExecutionTraceGrammar, nodeIdSequences);
+			} catch (ClassNotFoundException | IOException e1) {
+				Log.abort(this, e1, "Cannot set up indexer.");
+			}
 
 			Collection<? extends ITrace<SourceCodeBlock>> traces = input.getTraces();
 			int traceCounter = 0;

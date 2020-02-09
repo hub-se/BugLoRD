@@ -43,6 +43,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBlock>>
@@ -250,6 +251,8 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 				
 				byte[] mappedExecutionTrace = generateSubTraceExecutionTrace(entry.getValue(), projectData, lineSpectra);
 				
+//				System.out.println(String.format("grammar size: %,d", SpectraFileUtils.convertToByteArray(sharedExecutionTraceGrammar).length/4));
+				
 				executionTracesWithSubTraces.put(entry.getKey(), mappedExecutionTrace);
 			}
 			projectData.addExecutionTraces(executionTracesWithSubTraces);
@@ -270,12 +273,12 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 					Log.out(true, this, "Thread: " + entry.getKey());
 					// iterate over executed statements in the trace
 
-					SharedInputGrammar<Integer> inExecutionTraceGrammar = convertToInputGrammar(sharedExecutionTraceGrammar);
+					SharedInputGrammar<Integer> inExecutionTraceGrammar = SpectraFileUtils.convertToInputGrammar(sharedExecutionTraceGrammar);
 					
 					InputSequence<Integer> inputSequence = getInputSequenceFromByteArray(entry.getValue(), inExecutionTraceGrammar);
 					ListIterator<Integer> traceIterator = inputSequence.iterator();
 		            
-		            SharedInputGrammar<Integer> inSubTraceGrammar = convertToInputGrammar(sharedSubTraceGrammar);
+		            SharedInputGrammar<Integer> inSubTraceGrammar = SpectraFileUtils.convertToInputGrammar(sharedSubTraceGrammar);
 			        
 					while (traceIterator.hasNext()) {
 						int subTraceId = traceIterator.next();
@@ -432,22 +435,6 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 		return inputSequence;
 	}
 
-	private SharedInputGrammar<Integer> convertToInputGrammar(SharedOutputGrammar<Integer> outputGrammar) 
-			throws IOException, ClassNotFoundException {
-		// store/load the current shared grammar (convert from output to input grammar...)
-		ByteArrayOutputStream byteOutg = new ByteArrayOutputStream();
-		ObjectOutputStream objOutg = new ObjectOutputStream(byteOutg);
-		outputGrammar.writeOut(objOutg);
-		objOutg.close();
-		byte[] bytesg = byteOutg.toByteArray();
-		
-		ByteArrayInputStream byteIng = new ByteArrayInputStream(bytesg);
-		ObjectInputStream objIng = new ObjectInputStream(byteIng);
-		@SuppressWarnings("unchecked")
-		SharedInputGrammar<Integer> inGrammar = (SharedInputGrammar<Integer>)SharedInputGrammar.readFrom(objIng);
-		return inGrammar;
-	}
-
 	private byte[] generateSubTraceExecutionTrace(byte[] trace, 
 			ProjectData projectData, ISpectra<SourceCodeBlock, K> lineSpectra) throws ClassNotFoundException, IOException {
 		OutputSequence<Integer> resultTrace = new OutputSequence<Integer>(sharedExecutionTraceGrammar);
@@ -578,6 +565,8 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 		resultTrace.writeOut(objOut, false);
 		objOut.close();
 		byte[] bytes = byteOut.toByteArray();
+		
+		System.out.println(String.format("%n#sub traces: %,d -> %,d", counter, bytes.length/4));
 		
 		return bytes;
 	}
@@ -786,8 +775,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 		SimpleIntIndexerCompressed simpleIndexer = null;
 		try {
 			simpleIndexer = new SimpleIntIndexerCompressed(
-					sharedExecutionTraceGrammar,
-					existingSubTraces, convertToInputGrammar(sharedSubTraceGrammar));
+					sharedExecutionTraceGrammar, existingSubTraces, sharedSubTraceGrammar);
 		} catch (ClassNotFoundException | IOException e) {
 			Log.abort(TraceCoberturaReportLoader.class, e, "Error setting up indexer");
 		}
