@@ -6,9 +6,9 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
-import de.unisb.cs.st.sequitur.input.InputSequence;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 /**
@@ -16,9 +16,9 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
  * and a list of tuples that mark repeated sequences in the trace.
  *
  */
-public class ExecutionTrace implements Iterable<Integer> {
+public class ExecutionTrace {
 
-	private InputSequence<Integer> trace;
+	private InputSequence trace;
 
 	private byte[] traceByteArray;
 
@@ -37,7 +37,7 @@ public class ExecutionTrace implements Iterable<Integer> {
 		this.traceByteArray = traceByteArrayWithGrammar;
 	}
 	
-	private InputSequence<Integer> getTrace() {
+	private InputSequence getTrace() {
 		// lazy instanciation
 		if (this.trace == null) {
 			try {
@@ -49,16 +49,16 @@ public class ExecutionTrace implements Iterable<Integer> {
 		return this.trace;
 	}
 
-	private InputSequence<Integer> getInputSequenceFromByteArray() throws IOException, ClassNotFoundException {
+	private InputSequence getInputSequenceFromByteArray() throws IOException, ClassNotFoundException {
 		ByteArrayInputStream byteIn = new ByteArrayInputStream(traceByteArray);
         ObjectInputStream objIn = new ObjectInputStream(byteIn);
 		if (sequenceIndexer == null || sequenceIndexer.getExecutionTraceInputGrammar() == null) {
 			// grammar should be included
-	        InputSequence<Integer> inputSequence = InputSequence.readFrom(objIn, Integer.class);
+	        InputSequence inputSequence = InputSequence.readFrom(objIn);
 	        return inputSequence;
 		} else {
 			// grammar should be shared
-			InputSequence<Integer> inputSequence = InputSequence.readFrom(objIn, sequenceIndexer.getExecutionTraceInputGrammar());
+			InputSequence inputSequence = InputSequence.readFrom(objIn, sequenceIndexer.getExecutionTraceInputGrammar());
 			return inputSequence;
 		}
 	}
@@ -95,7 +95,7 @@ public class ExecutionTrace implements Iterable<Integer> {
 	public Iterator<Integer> mappedIterator(SequenceIndexerCompressed sequenceIndexer) {
 		return new Iterator<Integer>(){
 			
-			final Iterator<Integer> iterator = ExecutionTrace.this.iterator();
+			final TraceIterator iterator = ExecutionTrace.this.iterator();
 			int[] currentSequence;
 			int subTraceIndex = 0;
 
@@ -138,7 +138,7 @@ public class ExecutionTrace implements Iterable<Integer> {
 	public Iterator<Integer> mappedReverseIterator(SequenceIndexerCompressed sequenceIndexer) {
 		return new Iterator<Integer>(){
 			
-			final ListIterator<Integer> iterator = ExecutionTrace.this.reverseIterator();
+			final TraceIterator iterator = ExecutionTrace.this.reverseIterator();
 			int[] currentSequence;
 			int subTraceIndex = -1;
 
@@ -170,12 +170,11 @@ public class ExecutionTrace implements Iterable<Integer> {
 		};
 	}
 	
-	@Override
-	public ListIterator<Integer> iterator() {
+	public TraceIterator iterator() {
 		return getTrace().iterator();
 	}
 	
-	public ListIterator<Integer> reverseIterator() {
+	public TraceIterator reverseIterator() {
 		return getTrace().iterator(getTrace().getLength());
 	}
 	

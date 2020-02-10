@@ -23,9 +23,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipException;
 import java.util.Map.Entry;
 
-import de.unisb.cs.st.sequitur.input.SharedInputGrammar;
-import de.unisb.cs.st.sequitur.output.OutputSequence;
-import de.unisb.cs.st.sequitur.output.SharedOutputGrammar;
 import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReport;
 import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReportDeserializer;
 import de.unistuttgart.iste.rss.bugminer.coverage.CoverageReportSerializer;
@@ -45,6 +42,9 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToIntSequencesProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.ByteArrayToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToByteArrayProcessor;
@@ -77,7 +77,7 @@ import static java.util.Comparator.comparingInt;
  */
 public class SpectraFileUtils {
 
-	private static final String SEQ_INDEX_DIR = "SeqIndex";
+//	private static final String SEQ_INDEX_DIR = "SeqIndex";
 
 	// TODO: what about hit count spectra? They are saved as normal hit spectra
 	// atm...
@@ -104,7 +104,7 @@ public class SpectraFileUtils {
 	public static final String NODE_ID_REPETITIONS_FILE_EXTENSION = ".rnid";
 	
 //	private static final String SEQUENCE_INDEX_FILE_EXTENSION = ".seq";
-	private static final String SUBTRACE_ID_SEQUENCES_FILE_NAME = ".subTraceIdSequences";
+//	private static final String SUBTRACE_ID_SEQUENCES_FILE_NAME = ".subTraceIdSequences";
 //	private static final String NODE_ID_SEQUENCES_FILE_NAME = ".nodeIdSequences";
 
 	public static final byte STATUS_UNCOMPRESSED = 0;
@@ -438,7 +438,7 @@ public class SpectraFileUtils {
 //		
 //	}
 
-	public static byte[] convertToByteArray(SharedOutputGrammar<Integer> outputGrammar) 
+	public static byte[] convertToByteArray(SharedOutputGrammar outputGrammar) 
 			throws IOException, ClassNotFoundException {
 		// store/load the current shared grammar (convert from output grammar to byte array...)
 		ByteArrayOutputStream byteOutg = new ByteArrayOutputStream();
@@ -450,7 +450,7 @@ public class SpectraFileUtils {
 		return bytesg;
 	}
 	
-	public static byte[] convertToByteArray(OutputSequence<Integer> outSeq, final boolean includeGrammar) throws IOException {
+	public static byte[] convertToByteArray(OutputSequence outSeq, final boolean includeGrammar) throws IOException {
     	ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
         outSeq.writeOut(objOut, true);
@@ -1085,17 +1085,16 @@ public class SpectraFileUtils {
 		return new SimpleIntIndexerCompressed(grammarByteArray, nodeIdSequences);
 	}
 	
-	public static SharedInputGrammar<Integer> convertToInputGrammar(byte[] storedGrammar) 
+	public static SharedInputGrammar convertToInputGrammar(byte[] storedGrammar) 
 			throws IOException, ClassNotFoundException {
 		// load the current shared grammar (convert from byte array to input grammar...)
 		ByteArrayInputStream byteIng = new ByteArrayInputStream(storedGrammar);
 		ObjectInputStream objIng = new ObjectInputStream(byteIng);
-		@SuppressWarnings("unchecked")
-		SharedInputGrammar<Integer> inGrammar = (SharedInputGrammar<Integer>)SharedInputGrammar.readFrom(objIng);
+		SharedInputGrammar inGrammar = SharedInputGrammar.readFrom(objIng);
 		return inGrammar;
 	}
 	
-	public static SharedInputGrammar<Integer> convertToInputGrammar(SharedOutputGrammar<Integer> outputGrammar) 
+	public static SharedInputGrammar convertToInputGrammar(SharedOutputGrammar outputGrammar) 
 			throws IOException, ClassNotFoundException {
 		// store/load the current shared grammar (convert from output to input grammar...)
 		ByteArrayOutputStream byteOutg = new ByteArrayOutputStream();
@@ -1104,11 +1103,7 @@ public class SpectraFileUtils {
 		objOutg.close();
 		byte[] bytesg = byteOutg.toByteArray();
 		
-		ByteArrayInputStream byteIng = new ByteArrayInputStream(bytesg);
-		ObjectInputStream objIng = new ObjectInputStream(byteIng);
-		@SuppressWarnings("unchecked")
-		SharedInputGrammar<Integer> inGrammar = (SharedInputGrammar<Integer>)SharedInputGrammar.readFrom(objIng);
-		return inGrammar;
+		return convertToInputGrammar(bytesg);
 	}
 	
 	private static int[][] loadNodeIdSequences(ZipFileWrapper zip) throws ZipException {

@@ -110,14 +110,25 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${commonslangVersion}</version>
 		</dependency>
-		
 		<dependency>
-            <groupId>de.unisb.cs.st</groupId>
-            <artifactId>sequitur</artifactId>
-            <version>1.0.1</version>
+            <groupId>de.hammacher</groupId>
+            <artifactId>utilities</artifactId>
+            <version>1.2.10</version>
         </dependency>
-
+        <dependency>
+            <groupId>net.sf.trove4j</groupId>
+            <artifactId>trove4j</artifactId>
+            <version>3.0.2</version>
+        </dependency>
 	</dependencies>
+	
+	<repositories>
+        <repository>
+            <id>titania</id>
+            <name>the students' nexus server</name>
+            <url>http://titania.fs.uni-saarland.de/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
 
 	<profiles>
 

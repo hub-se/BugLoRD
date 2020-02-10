@@ -6,8 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import de.unisb.cs.st.sequitur.output.OutputSequence;
-import de.unisb.cs.st.sequitur.output.SharedOutputGrammar;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
@@ -17,6 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -77,7 +77,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 				nodeIdSequences[i] = new int[] {i};
 			}
 			
-			SharedOutputGrammar<Integer> methodExecutionTraceGrammar = new SharedOutputGrammar<>();
+			SharedOutputGrammar methodExecutionTraceGrammar = new SharedOutputGrammar();
 			SequenceIndexerCompressed methodSpectraIndexer = null;
 			try {
 				methodSpectraIndexer = new SimpleIntIndexerCompressed(methodExecutionTraceGrammar, nodeIdSequences);
@@ -99,7 +99,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 				// iterate over all execution traces
 				for (ExecutionTrace executiontrace : trace.getExecutionTraces()) {
 
-					OutputSequence<Integer> outSeq = new OutputSequence<>(methodExecutionTraceGrammar);
+					OutputSequence outSeq = new OutputSequence(methodExecutionTraceGrammar);
 					int lastNodeIndex = -1;
 					for (Iterator<Integer> iterator = executiontrace.mappedIterator(input.getIndexer()); iterator.hasNext();) {
 						int nodeIndex = lineToMethodMap.get(iterator.next());

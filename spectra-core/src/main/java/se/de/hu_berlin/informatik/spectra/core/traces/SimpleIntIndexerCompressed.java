@@ -6,11 +6,12 @@ import java.io.ObjectInputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.Map;
-import de.unisb.cs.st.sequitur.input.InputSequence;
-import de.unisb.cs.st.sequitur.input.SharedInputGrammar;
-import de.unisb.cs.st.sequitur.output.SharedOutputGrammar;
+
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -19,7 +20,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	// mapping: sub trace ID -> sequence of spectra node IDs
 	private int[][] nodeIdSequences;
 	
-	private SharedInputGrammar<Integer> executionTraceInputGrammar;
+	private SharedInputGrammar executionTraceInputGrammar;
 
 	private byte[] storedGrammar;
 
@@ -30,20 +31,20 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	}
 	
 	// constructor used before storing in zip file
-	public SimpleIntIndexerCompressed(SharedOutputGrammar<Integer> executionTraceGrammar, 
-			Map<Integer, byte[]> existingSubTraces, SharedOutputGrammar<Integer> sharedSubTraceGrammar) throws ClassNotFoundException, IOException {
+	public SimpleIntIndexerCompressed(SharedOutputGrammar executionTraceGrammar, 
+			Map<Integer, byte[]> existingSubTraces, SharedOutputGrammar sharedSubTraceGrammar) throws ClassNotFoundException, IOException {
 		this.storedGrammar = SpectraFileUtils.convertToByteArray(executionTraceGrammar);
 
 		this.nodeIdSequences = new int[existingSubTraces.size()+1][];
 
 		byte[] subTraceByteArray = SpectraFileUtils.convertToByteArray(sharedSubTraceGrammar);
-		SharedInputGrammar<Integer> sharedInputGrammar = SpectraFileUtils.convertToInputGrammar(subTraceByteArray);
+		SharedInputGrammar sharedInputGrammar = SpectraFileUtils.convertToInputGrammar(subTraceByteArray);
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = new int[0];
 		for (int i = 1; i < existingSubTraces.size() + 1; i++) {
-			InputSequence<Integer> inputSequence = getInputSequenceFromByteArray(existingSubTraces.get(i), sharedInputGrammar);
+			InputSequence inputSequence = getInputSequenceFromByteArray(existingSubTraces.get(i), sharedInputGrammar);
 			int[] nodeIdSequence = new int[(int) inputSequence.getLength()];
-			ListIterator<Integer> iterator = inputSequence.iterator();
+			TraceIterator iterator = inputSequence.iterator();
 			for (int j = 0; iterator.hasNext(); ++j) {
 				nodeIdSequence[j] = iterator.next();
 			}
@@ -57,7 +58,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	}
 	
 	// constructor used before storing in zip file
-	public SimpleIntIndexerCompressed(SharedOutputGrammar<Integer> executionTraceGrammar, int[][] nodeIdSequences) throws ClassNotFoundException, IOException {
+	public SimpleIntIndexerCompressed(SharedOutputGrammar executionTraceGrammar, int[][] nodeIdSequences) throws ClassNotFoundException, IOException {
 		this.storedGrammar = SpectraFileUtils.convertToByteArray(executionTraceGrammar);
 		this.nodeIdSequences = nodeIdSequences;
 	}
@@ -67,11 +68,11 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		this.nodeIdSequences = nodeIdSequences;
 	}
 	
-	private InputSequence<Integer> getInputSequenceFromByteArray(byte[] bytes,
-			SharedInputGrammar<Integer> inGrammar) throws IOException {
+	private InputSequence getInputSequenceFromByteArray(byte[] bytes,
+			SharedInputGrammar inGrammar) throws IOException {
 		ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
 		ObjectInputStream objIn = new ObjectInputStream(byteIn);
-		InputSequence<Integer> inputSequence = InputSequence.readFrom(objIn, inGrammar);
+		InputSequence inputSequence = InputSequence.readFrom(objIn, inGrammar);
 		return inputSequence;
 	}
 	
@@ -146,7 +147,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	}
 
 	@Override
-	public SharedInputGrammar<Integer> getExecutionTraceInputGrammar() {
+	public SharedInputGrammar getExecutionTraceInputGrammar() {
 		if (executionTraceInputGrammar == null && storedGrammar != null) {
 			try {
 				executionTraceInputGrammar = SpectraFileUtils.convertToInputGrammar(storedGrammar);

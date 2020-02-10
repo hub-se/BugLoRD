@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import org.junit.After;
@@ -33,8 +32,7 @@ import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -149,7 +147,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 			// iterate over execution traces
 			for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
 				// iterate over the compressed trace (should contain all executed sub trace IDs)
-				ListIterator<Integer> subTraceIdIterator = executionTrace.iterator();
+				TraceIterator subTraceIdIterator = executionTrace.iterator();
 				while (subTraceIdIterator.hasNext()) {
 					// iterate over the full node ID sequence using the indexer
 					Iterator<Integer> nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceIdIterator.next());

@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.zip.ZipException;
 
-import de.unisb.cs.st.sequitur.output.OutputSequence;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
@@ -55,7 +55,7 @@ public class RawIntTraceCollector {
 	public boolean addRawTraceToPool(int traceIndex, int threadId, 
 			int[] traceArray, boolean log, Path outputDir, String prefix) {
 
-		OutputSequence<Integer> outSeq = new OutputSequence<Integer>();
+		OutputSequence outSeq = new OutputSequence();
         for (int i : traceArray) {
             outSeq.append(i);
         }

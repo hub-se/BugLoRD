@@ -11,9 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import de.unisb.cs.st.sequitur.output.OutputSequence;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
 
 @CoverageIgnore
 public class ExecutionTraceCollector {
@@ -27,7 +27,7 @@ public class ExecutionTraceCollector {
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
-	private static Map<Long,OutputSequence<Integer>> executionTraces = new ConcurrentHashMap<>();
+	private static Map<Long,OutputSequence> executionTraces = new ConcurrentHashMap<>();
 
 	private static int[][] classesToCounterArrayMap = new int[2048][];
 	
@@ -65,7 +65,7 @@ public class ExecutionTraceCollector {
 			StringBuilder sb = new StringBuilder();
 			sb.append(String.format("%n#statements: %,d%n", counter));
 			Map<Long, byte[]> traces = new HashMap<>();
-			for (Entry<Long, OutputSequence<Integer>> entry : executionTraces.entrySet()) {
+			for (Entry<Long, OutputSequence> entry : executionTraces.entrySet()) {
 				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 				ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
 				entry.getValue().writeOut(objOut, true);
@@ -88,8 +88,8 @@ public class ExecutionTraceCollector {
 	}
 	
 
-	private static OutputSequence<Integer> getNewCollector(long threadId) {
-		return new OutputSequence<Integer>();
+	private static OutputSequence getNewCollector(long threadId) {
+		return new OutputSequence();
 	}
 	
 	
@@ -101,7 +101,7 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
 		// get the thread's execution trace
-		OutputSequence<Integer> trace = executionTraces.get(threadId);
+		OutputSequence trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
@@ -227,8 +227,7 @@ public class ExecutionTraceCollector {
 			return;
 		}
 		
-		++counter;
-		if (counter % 100000 == 0) {
+		if (++counter % 100000 == 0) {
 			System.out.print('.');
 			if (counter % 10000000 == 0)
 				System.out.println(String.format("%,d", counter));
@@ -238,7 +237,7 @@ public class ExecutionTraceCollector {
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
 		// get the thread's execution trace
-		OutputSequence<Integer> trace = executionTraces.get(threadId);
+		OutputSequence trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);

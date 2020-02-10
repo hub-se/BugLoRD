@@ -3,7 +3,7 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 import java.util.Collection;
 import java.util.Iterator;
 
-import de.unisb.cs.st.sequitur.input.SharedInputGrammar;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
 
 public interface SequenceIndexerCompressed {
 
@@ -15,7 +15,7 @@ public interface SequenceIndexerCompressed {
 
 	int[] getNodeIdSequence(int subTraceIndex);
 
-	SharedInputGrammar<Integer> getExecutionTraceInputGrammar();
+	SharedInputGrammar getExecutionTraceInputGrammar();
 
 	public Iterator<Integer> getNodeIdSequenceIterator(int subTraceId);
 

@@ -9,6 +9,7 @@ import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
@@ -251,7 +252,7 @@ public class StatementSpectraToBranchSpectra {
         assert(executionTrace != null);
         /*====================================================================================*/
 
-        ListIterator<Integer> myExecutionBranchIterator = executionTrace.iterator();
+        TraceIterator myExecutionBranchIterator = executionTrace.iterator();
 
         while(myExecutionBranchIterator.hasNext()){
         	executionBranchIds.add(myExecutionBranchIterator.next());
