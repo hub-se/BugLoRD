@@ -228,11 +228,12 @@ public class ExecutionTraceCollector {
 		}
 		
 		++counter;
-		if (counter % 100000 == 0)
+		if (counter % 100000 == 0) {
 			System.out.print('.');
-		if (counter % 10000000 == 0)
-			System.out.println(String.format("%,d", counter));
-		
+			if (counter % 10000000 == 0)
+				System.out.println(String.format("%,d", counter));
+		}
+
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 

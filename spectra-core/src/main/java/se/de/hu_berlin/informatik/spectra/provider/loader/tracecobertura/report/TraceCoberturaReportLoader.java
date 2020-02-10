@@ -49,7 +49,9 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBlock>>
 		extends AbstractCoverageDataLoader<SourceCodeBlock, K, TraceCoberturaReportWrapper> {
 
-    private final RawIntTraceCollector traceCollector;
+    private static final int LARGE_STEP = 10000000;
+	private static final int SMALL_STEP = 100000;
+	private final RawIntTraceCollector traceCollector;
 	private ProjectData projectData;
 	
 	private Map<Long, Integer> idToSubtraceIdMap = new HashMap<>();
@@ -466,10 +468,11 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 				if (!currentSubTrace.isEmpty()) {
 					currentSubTrace = processLastSubTrace(resultTrace, currentSubTrace, lastNodeType, idToClassNameMap, lineSpectra);
 					++counter;
-					if (counter % 100000 == 0)
+					if (counter % SMALL_STEP == 0) {
 						System.out.print('.');
-					if (counter % 10000000 == 0)
-						System.out.println(String.format("%,d", counter));
+						if (counter % LARGE_STEP == 0)
+							System.out.println(String.format("%,d", counter));
+					}
 				}
 				
 				while (statement == ExecutionTraceCollector.NEW_SUBTRACE_ID) {
@@ -512,10 +515,11 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 						// cut the trace after each change in methods
 						currentSubTrace = processLastSubTrace(resultTrace, currentSubTrace, lastNodeType, idToClassNameMap, lineSpectra);
 						++counter;
-						if (counter % 100000 == 0)
+						if (counter % SMALL_STEP == 0) {
 							System.out.print('.');
-						if (counter % 10000000 == 0)
-							System.out.println(String.format("%,d", counter));
+							if (counter % LARGE_STEP == 0)
+								System.out.println(String.format("%,d", counter));
+						}
 					}
 					lastMethod = currentMethod;
 				} else {
@@ -524,10 +528,11 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 						// cut the trace after each change in classes
 						currentSubTrace = processLastSubTrace(resultTrace, currentSubTrace, lastNodeType, idToClassNameMap, lineSpectra);
 						++counter;
-						if (counter % 100000 == 0)
+						if (counter % SMALL_STEP == 0) {
 							System.out.print('.');
-						if (counter % 10000000 == 0)
-							System.out.println(String.format("%,d", counter));
+							if (counter % LARGE_STEP == 0)
+								System.out.println(String.format("%,d", counter));
+						}
 					}
 					lastMethod = lineNumber[2];
 					lastClass = classId;
@@ -543,10 +548,11 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 					// cut the trace after each branching statement
 					currentSubTrace = processLastSubTrace(resultTrace, currentSubTrace, lastNodeType, idToClassNameMap, lineSpectra);
 					++counter;
-					if (counter % 100000 == 0)
+					if (counter % SMALL_STEP == 0) {
 						System.out.print('.');
-					if (counter % 10000000 == 0)
-						System.out.println(String.format("%,d", counter));
+						if (counter % LARGE_STEP == 0)
+							System.out.println(String.format("%,d", counter));
+					}
 				}
 
 			} else {
