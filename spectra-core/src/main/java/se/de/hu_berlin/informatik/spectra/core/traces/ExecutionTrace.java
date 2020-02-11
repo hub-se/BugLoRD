@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
@@ -19,6 +20,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public class ExecutionTrace {
 
 	private InputSequence trace;
+	private Set<Integer> terminals;
 
 	private byte[] traceByteArray;
 
@@ -63,9 +65,9 @@ public class ExecutionTrace {
 		}
 	}
 	
-//	public long size() {
-//		return getTrace().getLength();
-//	}
+	public long size() {
+		return getTrace().getLength();
+	}
 
 	/**
 	 * Constructs the full execution trace. Usually, you should NOT be using this. Use an iterator instead!
@@ -177,6 +179,13 @@ public class ExecutionTrace {
 	public TraceIterator reverseIterator() {
 		return getTrace().iterator(getTrace().getLength());
 	}
+	
+	public Set<Integer> getTerminals() {
+		if (terminals == null) {
+			terminals = getTrace().computeTerminals();
+		}
+		return terminals;
+    }
 	
 	@Override
 	public String toString() {

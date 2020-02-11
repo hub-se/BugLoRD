@@ -29,12 +29,13 @@ import java.util.Set;
 
 public class OutputSequence {
 
-    
 	private final Grammar grammar;
     protected final Rule firstRule;
     private final ObjectWriter objectWriter;
     private int lastValue = Symbol.NULL_VALUE;
     private int lastValueCount = 0;
+    
+    private long length = 0;
 
     public OutputSequence() {
         this(new Rule(false), new Grammar(), null);
@@ -57,6 +58,7 @@ public class OutputSequence {
     }
 
     public void append(final int obj) {
+    	++length;
         if (this.lastValueCount == 0) {
             this.lastValue = obj;
             this.lastValueCount = 1;
@@ -71,6 +73,10 @@ public class OutputSequence {
             this.lastValue = obj;
             this.lastValueCount = 1;
         }
+    }
+    
+    public long getLength() {
+    	return length;
     }
 
     public long getStartRuleNumber() {

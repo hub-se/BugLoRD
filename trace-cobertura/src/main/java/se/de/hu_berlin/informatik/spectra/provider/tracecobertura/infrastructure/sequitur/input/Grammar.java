@@ -25,6 +25,8 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.hammacher.util.LongArrayList;
 
@@ -57,6 +59,18 @@ class Grammar {
         if (ruleNr < 0 || ruleNr >= this.rules.longSize())
             return null;
         return this.rules.get(ruleNr);
+    }
+    
+    public Set<Integer> computeTerminals() {
+    	Set<Integer> result = new HashSet<>();
+    	for (Rule rule : rules) {
+    		for (Symbol symbol : rule.symbols) {
+    			if (symbol instanceof Terminal) {
+    				result.add(((Terminal) symbol).getValue());
+    			}
+    		}
+    	}
+    	return result;
     }
 
 }

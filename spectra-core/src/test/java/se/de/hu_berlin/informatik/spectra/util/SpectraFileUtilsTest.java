@@ -137,7 +137,7 @@ public class SpectraFileUtilsTest extends TestSettings {
     			new int[][] {c(), c(1,2,3), c(4,5,6), c(7,8,9)};
     	
         // sub trace id array
-    	int[] rawTrace = new int[] {1,2,3,1,2,3};
+    	int[] rawTrace = new int[] {1,2,3,1,2,3,1,3};
         
         RawIntTraceCollector traceCollector = new RawIntTraceCollector(outputDir);
         
@@ -156,10 +156,13 @@ public class SpectraFileUtilsTest extends TestSettings {
 		spectra.setIndexer(indexer);
         
         ExecutionTrace executionTrace = executionTraces.iterator().next();
+        assertEquals(rawTrace.length, executionTrace.size());
+        
 		int[] trace1 = executionTrace.reconstructFullMappedTrace(spectra.getIndexer());
+		int[] expectedMappedTrace = s(1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,7,8,9);
         
         Log.out(this, Arrays.toString(trace1));
-        assertEquals(18, trace1.length);
+        assertEquals(24, trace1.length);
         
         Iterator<Integer> iterator = executionTrace.mappedIterator(indexer);
         int count = 0;
@@ -169,13 +172,13 @@ public class SpectraFileUtilsTest extends TestSettings {
         assertEquals(trace1.length, count);
         
         Iterator<Integer> iterator2 = executionTrace.mappedReverseIterator(indexer);
-        count = 18;
+        count = expectedMappedTrace.length;
         while (iterator2.hasNext()) {
         	assertEquals(trace1[--count], iterator2.next().intValue());
         }
         assertEquals(0, count);
         
-        assertArrayEquals(s(1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9), trace1);
+		assertArrayEquals(expectedMappedTrace, trace1);
         
 //        try {
 //			traceCollector.finalize();
@@ -206,9 +209,9 @@ public class SpectraFileUtilsTest extends TestSettings {
 //		}
         
         trace1 = executionTrace1.reconstructFullMappedTrace(spectra2.getIndexer());
-        assertEquals(18, trace1.length);
+        assertEquals(expectedMappedTrace.length, trace1.length);
 
-        assertArrayEquals(s(1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9), trace1);
+        assertArrayEquals(expectedMappedTrace, trace1);
         
         assertEquals(spectra, spectra2);
 		

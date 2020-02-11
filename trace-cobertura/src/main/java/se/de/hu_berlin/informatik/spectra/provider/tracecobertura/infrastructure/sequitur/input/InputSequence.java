@@ -30,8 +30,10 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import de.hammacher.util.LongHolder;
 
@@ -332,6 +334,20 @@ public class InputSequence {
         if (rule == null)
             throw new IOException("Unknown rule number");
         return new InputSequence(rule);
+    }
+    
+    public Set<Integer> computeTerminals() {
+    	Set<Integer> result = new HashSet<>();
+    	final TObjectLongMap<Rule> rules = this.firstRule.getUsedRules();
+    	Rule[] keys = rules.keys((Rule[]) new Rule[rules.size()]);
+    	for (Rule rule : keys) {
+    		for (Symbol symbol : rule.symbols) {
+    			if (symbol instanceof Terminal) {
+    				result.add(((Terminal) symbol).getValue());
+    			}
+    		}
+    	}
+    	return result;
     }
 
 }

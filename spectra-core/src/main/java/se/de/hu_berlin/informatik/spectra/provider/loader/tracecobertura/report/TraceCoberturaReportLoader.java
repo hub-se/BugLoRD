@@ -574,7 +574,8 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 		byte[] bytes = byteOut.toByteArray();
 		
 		if (!sharedExe) {
-			System.out.println(String.format("%n#sub traces: %,d -> %,d", counter, bytes.length/4));
+			System.out.println(String.format("%n#sub traces: %,d -> %,d (%.2f%%)", 
+					counter, bytes.length/4, -100.00+100.0*(double)(bytes.length/4)/(double)counter));
 		}
 		
 		return bytes;

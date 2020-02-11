@@ -48,7 +48,6 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		this.nodeIdSequences[0] = new int[0];
 		for (int i = 1; i < existingSubTraces.size() + 1; i++) {
 			InputSequence inputSequence = SequiturUtils.getInputSequenceFromByteArray(existingSubTraces.get(i), sharedInputGrammar);
-			// TODO: getLength() is not correct!
 			int[] nodeIdSequence = new int[(int) inputSequence.getLength()];
 			TraceIterator iterator = inputSequence.iterator();
 			for (int j = 0; iterator.hasNext(); ++j) {

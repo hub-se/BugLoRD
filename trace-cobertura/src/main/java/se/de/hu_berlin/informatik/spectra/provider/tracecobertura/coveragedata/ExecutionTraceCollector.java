@@ -73,7 +73,7 @@ public class ExecutionTraceCollector {
 				
 				traces.put(entry.getKey(), bytes);
 				
-				sb.append(String.format("  -> %,d (%.2f%%)%n", bytes.length/4, -100.00+100.0*(double)(bytes.length/4)/(double)counter));
+				sb.append(String.format(" %,d -> %,d (%.2f%%)%n", entry.getValue().getLength(), bytes.length/4, -100.00+100.0*(double)(bytes.length/4)/(double)entry.getValue().getLength()));
 			}
 			counter = 0;
 			System.out.print(sb.toString());
@@ -97,6 +97,13 @@ public class ExecutionTraceCollector {
 	 * Marks the beginning of a new sub trace by adding a special indicator to the trace.
 	 */
 	public static void startNewSubTrace() {
+		
+		if (++counter % 100000 == 0) {
+			System.out.print('.');
+			if (counter % 10000000 == 0)
+				System.out.println(String.format("%,d", counter));
+		}
+		
 		// get an id for the current thread
 		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
 
