@@ -38,7 +38,7 @@ class Grammar {
     }
 
     public static  Grammar readFrom(final ObjectInputStream objIn, final ObjectReader objectReader) 
-    		throws IOException, ClassNotFoundException {
+    		throws IOException {
         final LongArrayList<Rule> rules = Rule.readAll(objIn, objectReader);
         final Grammar grammar = new Grammar(rules);
         for (final Rule rule: rules)

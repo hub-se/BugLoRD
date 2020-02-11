@@ -110,7 +110,7 @@ class Rule {
     }
 
     public static  LongArrayList<Rule> readAll(final ObjectInputStream objIn,
-            final ObjectReader objectReader) throws IOException, ClassNotFoundException {
+            final ObjectReader objectReader) throws IOException {
 
         final LongArrayList<Rule> rules = new LongArrayList<Rule>();
         readRules:

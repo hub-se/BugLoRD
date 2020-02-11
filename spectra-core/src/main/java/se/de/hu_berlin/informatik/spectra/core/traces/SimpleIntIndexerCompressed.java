@@ -151,7 +151,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 		if (executionTraceInputGrammar == null && storedGrammar != null) {
 			try {
 				executionTraceInputGrammar = SpectraFileUtils.convertToInputGrammar(storedGrammar);
-			} catch (ClassNotFoundException | IOException e) {
+			} catch (IOException e) {
 				Log.abort(this, e, "Could not convert grammar.");
 			}
 		}

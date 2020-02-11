@@ -315,12 +315,12 @@ public class InputSequence {
     }
 
     public static InputSequence readFrom(final ObjectInputStream objIn)
-            throws IOException, ClassNotFoundException {
+            throws IOException {
         return readFrom(objIn, SharedInputGrammar.readFrom(objIn));
     }
 
     public static  InputSequence readFrom(final ObjectInputStream objIn,
-            final ObjectReader objectReader) throws IOException, ClassNotFoundException {
+            final ObjectReader objectReader) throws IOException {
         return readFrom(objIn, SharedInputGrammar.readFrom(objIn, objectReader));
     }
 

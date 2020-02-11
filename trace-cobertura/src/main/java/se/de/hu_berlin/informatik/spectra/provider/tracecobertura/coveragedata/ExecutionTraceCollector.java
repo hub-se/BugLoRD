@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,7 +26,7 @@ public class ExecutionTraceCollector {
 	private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 
 	// shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
-	private static Map<Long,OutputSequence> executionTraces = new ConcurrentHashMap<>();
+	private static Map<Long,OutputSequence> executionTraces = new HashMap<>();
 
 	private static int[][] classesToCounterArrayMap = new int[2048][];
 	
@@ -76,6 +75,7 @@ public class ExecutionTraceCollector {
 				
 				sb.append(String.format("  -> %,d (%.2f%%)%n", bytes.length/4, -100.00+100.0*(double)(bytes.length/4)/(double)counter));
 			}
+			counter = 0;
 			System.out.print(sb.toString());
 			return traces;
 		} catch (IOException e) {
@@ -122,9 +122,9 @@ public class ExecutionTraceCollector {
 			boolean done = false;
 			while (!done) {
 				if (thread.isAlive()) {
-					System.err.println("Thread " + thread.getId() + " is still alive. Waiting 20 seconds for it to die...");
+					System.err.println("Thread " + thread.getId() + " is still alive. Waiting 10 seconds for it to die...");
 					try {
-						thread.join(20000); // wait 20 seconds for threads to die... TODO
+						thread.join(10000); // wait 20 seconds for threads to die... TODO
 						if (thread.isAlive()) {
 							System.err.println("(At least) thread " + thread.getId() + " remains alive...");
 							//						thread.interrupt();

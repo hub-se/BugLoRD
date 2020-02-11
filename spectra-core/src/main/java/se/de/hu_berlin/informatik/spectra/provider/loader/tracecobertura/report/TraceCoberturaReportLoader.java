@@ -277,7 +277,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 
 					SharedInputGrammar inExecutionTraceGrammar = SpectraFileUtils.convertToInputGrammar(sharedExecutionTraceGrammar);
 					
-					InputSequence inputSequence = getInputSequenceFromByteArray(entry.getValue(), inExecutionTraceGrammar);
+					InputSequence inputSequence = SpectraFileUtils.getInputSequenceFromByteArray(entry.getValue(), inExecutionTraceGrammar);
 					TraceIterator traceIterator = inputSequence.iterator();
 		            
 		            SharedInputGrammar inSubTraceGrammar = SpectraFileUtils.convertToInputGrammar(sharedSubTraceGrammar);
@@ -427,14 +427,6 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 			Log.err(this, e, "Exception thrown for test '%s'.", testId);
 			return false;
 		}
-	}
-
-	private InputSequence getInputSequenceFromByteArray(byte[] bytes,
-			SharedInputGrammar inGrammar) throws IOException {
-		ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
-		ObjectInputStream objIn = new ObjectInputStream(byteIn);
-		InputSequence inputSequence = InputSequence.readFrom(objIn, inGrammar);
-		return inputSequence;
 	}
 
 	private byte[] generateSubTraceExecutionTrace(byte[] trace, 

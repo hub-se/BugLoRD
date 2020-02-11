@@ -56,7 +56,7 @@ class Terminal extends Symbol {
     }
 
     public static  Terminal readFrom(final ObjectInputStream objIn, final boolean counted,
-            final ObjectReader objectReader) throws IOException, ClassNotFoundException {
+            final ObjectReader objectReader) throws IOException {
         final int count = counted ? DataInput.readInt(objIn) : 1;
         if (objectReader == null) {
             final int value = DataInput.readInt(objIn);

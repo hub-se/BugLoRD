@@ -36,12 +36,12 @@ public class SharedInputGrammar {
         this.grammar = grammar;
     }
 
-    public static SharedInputGrammar readFrom(final ObjectInputStream objIn) throws IOException, ClassNotFoundException {
+    public static SharedInputGrammar readFrom(final ObjectInputStream objIn) throws IOException {
         return new SharedInputGrammar(Grammar.readFrom(objIn, null));
     }
 
     public static  SharedInputGrammar readFrom(final ObjectInputStream objIn,
-            final ObjectReader objectReader) throws IOException, ClassNotFoundException {
+            final ObjectReader objectReader) throws IOException {
         return new SharedInputGrammar(Grammar.readFrom(objIn, objectReader));
     }
 
