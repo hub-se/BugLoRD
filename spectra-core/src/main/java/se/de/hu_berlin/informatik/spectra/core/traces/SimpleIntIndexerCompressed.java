@@ -8,11 +8,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.SequiturUtils;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
-import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
@@ -33,12 +33,12 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	// constructor used before storing in zip file
 	public SimpleIntIndexerCompressed(SharedOutputGrammar executionTraceGrammar, 
 			Map<Integer, byte[]> existingSubTraces, SharedOutputGrammar sharedSubTraceGrammar) throws ClassNotFoundException, IOException {
-		this.storedGrammar = SpectraFileUtils.convertToByteArray(executionTraceGrammar);
+		this.storedGrammar = SequiturUtils.convertToByteArray(executionTraceGrammar);
 
 		this.nodeIdSequences = new int[existingSubTraces.size()+1][];
 
-		byte[] subTraceByteArray = SpectraFileUtils.convertToByteArray(sharedSubTraceGrammar);
-		SharedInputGrammar sharedInputGrammar = SpectraFileUtils.convertToInputGrammar(subTraceByteArray);
+		byte[] subTraceByteArray = SequiturUtils.convertToByteArray(sharedSubTraceGrammar);
+		SharedInputGrammar sharedInputGrammar = SequiturUtils.convertToInputGrammar(subTraceByteArray);
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = new int[0];
 		for (int i = 1; i < existingSubTraces.size() + 1; i++) {
@@ -59,7 +59,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	
 	// constructor used before storing in zip file
 	public SimpleIntIndexerCompressed(SharedOutputGrammar executionTraceGrammar, int[][] nodeIdSequences) throws ClassNotFoundException, IOException {
-		this.storedGrammar = SpectraFileUtils.convertToByteArray(executionTraceGrammar);
+		this.storedGrammar = SequiturUtils.convertToByteArray(executionTraceGrammar);
 		this.nodeIdSequences = nodeIdSequences;
 	}
 	
@@ -150,7 +150,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	public SharedInputGrammar getExecutionTraceInputGrammar() {
 		if (executionTraceInputGrammar == null && storedGrammar != null) {
 			try {
-				executionTraceInputGrammar = SpectraFileUtils.convertToInputGrammar(storedGrammar);
+				executionTraceInputGrammar = SequiturUtils.convertToInputGrammar(storedGrammar);
 			} catch (IOException e) {
 				Log.abort(this, e, "Could not convert grammar.");
 			}

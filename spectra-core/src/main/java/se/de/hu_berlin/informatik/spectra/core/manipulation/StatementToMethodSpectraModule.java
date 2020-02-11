@@ -15,9 +15,9 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.SequiturUtils;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
-import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -111,7 +111,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 					}
 
 					try {
-						byte[] byteArray = SpectraFileUtils.convertToByteArray(outSeq, false);
+						byte[] byteArray = SequiturUtils.convertToByteArray(outSeq, false);
 
 						ExecutionTrace methodExecutionTrace = 
 								new ExecutionTrace(byteArray, methodSpectraIndexer);

@@ -36,6 +36,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.S
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedIntArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.SequiturUtils;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
@@ -43,7 +44,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
-import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBlock>>
@@ -275,12 +275,12 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 					Log.out(true, this, "Thread: " + entry.getKey());
 					// iterate over executed statements in the trace
 
-					SharedInputGrammar inExecutionTraceGrammar = SpectraFileUtils.convertToInputGrammar(sharedExecutionTraceGrammar);
+					SharedInputGrammar inExecutionTraceGrammar = SequiturUtils.convertToInputGrammar(sharedExecutionTraceGrammar);
 					
-					InputSequence inputSequence = SpectraFileUtils.getInputSequenceFromByteArray(entry.getValue(), inExecutionTraceGrammar);
+					InputSequence inputSequence = SequiturUtils.getInputSequenceFromByteArray(entry.getValue(), inExecutionTraceGrammar);
 					TraceIterator traceIterator = inputSequence.iterator();
 		            
-		            SharedInputGrammar inSubTraceGrammar = SpectraFileUtils.convertToInputGrammar(sharedSubTraceGrammar);
+		            SharedInputGrammar inSubTraceGrammar = SequiturUtils.convertToInputGrammar(sharedSubTraceGrammar);
 			        
 					while (traceIterator.hasNext()) {
 						int subTraceId = traceIterator.next();
