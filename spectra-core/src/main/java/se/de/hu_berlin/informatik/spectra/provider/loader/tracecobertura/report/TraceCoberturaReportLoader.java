@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -55,7 +56,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 	private ProjectData projectData;
 	
 	private Map<Long, Integer> idToSubtraceIdMap = new HashMap<>();
-	private Map<Integer, byte[]> existingSubTraces = new HashMap<>();
+	private Map<Integer, int[]> existingSubTraces = new HashMap<>();
 
 	public TraceCoberturaReportLoader(Path tempOutputDir) {
 		traceCollector = new RawIntTraceCollector(tempOutputDir);
@@ -63,6 +64,13 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 	
 	private int traceCount = 0;
 	private int currentId = 0;
+	
+	SharedOutputGrammar sharedExecutionTraceGrammar = new SharedOutputGrammar();
+	SharedOutputGrammar sharedSubTraceGrammar = new SharedOutputGrammar();
+	
+	private final boolean sharedExe = false;
+//	private final boolean sharedSub = false;
+
 	
 	@Override
 	public boolean loadSingleCoverageData(ISpectra<SourceCodeBlock, K> lineSpectra, final TraceCoberturaReportWrapper reportWrapper,
@@ -275,20 +283,21 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 					Log.out(true, this, "Thread: " + entry.getKey());
 					// iterate over executed statements in the trace
 
-					SharedInputGrammar inExecutionTraceGrammar = SequiturUtils.convertToInputGrammar(sharedExecutionTraceGrammar);
+					SharedInputGrammar inExecutionTraceGrammar = SequiturUtils.convertToInputGrammar(sharedExe ? sharedExecutionTraceGrammar : null);
 					
 					InputSequence inputSequence = SequiturUtils.getInputSequenceFromByteArray(entry.getValue(), inExecutionTraceGrammar);
 					TraceIterator traceIterator = inputSequence.iterator();
 		            
-		            SharedInputGrammar inSubTraceGrammar = SequiturUtils.convertToInputGrammar(sharedSubTraceGrammar);
+//		            SharedInputGrammar inSubTraceGrammar = SequiturUtils.convertToInputGrammar(sharedSubTraceGrammar);
 			        
 					while (traceIterator.hasNext()) {
 						int subTraceId = traceIterator.next();
-						InputSequence subTrace = null;
+						int[] subTrace = null;
 						if (subTraceId == 0) {
 							subTrace = null;
 						} else {
-							subTrace = InputSequence.readFrom(new ObjectInputStream(new ByteArrayInputStream(existingSubTraces.get(subTraceId))), inSubTraceGrammar);
+//							subTrace = InputSequence.readFrom(new ObjectInputStream(new ByteArrayInputStream(existingSubTraces.get(subTraceId))), inSubTraceGrammar);
+							subTrace = existingSubTraces.get(subTraceId);
 							if (subTrace == null) {
 								Log.err(this, "No sub trace found for ID: " + subTraceId);
 								return false;
@@ -297,9 +306,9 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 						if (subTrace == null) {
 							continue;
 						}
-						Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.getLength());
+						Log.out(true, this, "sub trace ID: " + subTraceId + ", length: " + subTrace.length);
 
-						TraceIterator longTraceIterator = subTrace.iterator();
+						Iterator<Integer> longTraceIterator = Arrays.stream(subTrace).iterator();
 						while (longTraceIterator.hasNext()) {
 							int statement = longTraceIterator.next();
 //							if (CoberturaStatementEncoding.getClassId(statement) != 142) {
@@ -431,7 +440,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 
 	private byte[] generateSubTraceExecutionTrace(byte[] trace, 
 			ProjectData projectData, ISpectra<SourceCodeBlock, K> lineSpectra) throws ClassNotFoundException, IOException {
-		OutputSequence resultTrace = new OutputSequence(sharedExecutionTraceGrammar);
+		OutputSequence resultTrace = sharedExe ? new OutputSequence(sharedExecutionTraceGrammar) : new OutputSequence();
 		String[] idToClassNameMap = projectData.getIdToClassNameMap();
 		// iterate over trace and generate new trace based on seen sub traces
 		// iterate over executed statements in the trace
@@ -560,18 +569,18 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 
 		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 		ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
-		resultTrace.writeOut(objOut, false);
+		resultTrace.writeOut(objOut, !sharedExe);
 		objOut.close();
 		byte[] bytes = byteOut.toByteArray();
 		
-		System.out.println(String.format("%n#sub traces: %,d -> %,d", counter, bytes.length/4));
+		if (!sharedExe) {
+			System.out.println(String.format("%n#sub traces: %,d -> %,d", counter, bytes.length/4));
+		}
 		
 		return bytes;
 	}
 	
-	SharedOutputGrammar sharedExecutionTraceGrammar = new SharedOutputGrammar();
-	SharedOutputGrammar sharedSubTraceGrammar = new SharedOutputGrammar();
-
+	
 	private SingleLinkedIntArrayQueue processLastSubTrace(
 			OutputSequence resultTrace, SingleLinkedIntArrayQueue currentSubTrace, 
 			int lastNodeType, String[] idToClassNameMap, ISpectra<SourceCodeBlock, K> lineSpectra) {
@@ -587,6 +596,8 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 //			}
 //		}
 		
+		int subTraceLength = currentSubTrace.size();
+		
 		Integer lastExecutedStatement = null;
 		if (lastNodeType != CoberturaStatementEncoding.NORMAL_ID) {
 			lastExecutedStatement = currentSubTrace.peekLastNoCheck();
@@ -599,24 +610,40 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 
 			// add id to the map
 			idToSubtraceIdMap.put(subTraceId, id);
-			OutputSequence subTrace = getNewSubTrace();
+			
+//			// using sequitur sequences
+//			OutputSequence subTrace = sharedSub ? new OutputSequence(sharedSubTraceGrammar) : new OutputSequence();
+//			while (!currentSubTrace.isEmpty()) {
+//				// convert to the actual spectra node indices
+//				subTrace.append(getNodeIndexForCounter(currentSubTrace.removeNoAutoBoxing(), idToClassNameMap, lineSpectra));
+//			}
+//			ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+//			try (ObjectOutputStream objOut= new ObjectOutputStream(byteOut)) {
+//				subTrace.writeOut(objOut, !sharedSub);
+//				objOut.close();
+//				
+//				byte[] bytes = byteOut.toByteArray();
+//				
+//				if (!sharedSub) {
+//					System.out.println(String.format("#sub trace: %,d -> %,d", subTraceLength, bytes.length/4));
+//				}
+//				
+//				// add sub trace to the list of existing sub traces (together with the id)
+//				existingSubTraces.put(id, bytes);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			
+			// using integer arrays
+			int[] subTrace = new int[subTraceLength];
+			int j = 0;
 			while (!currentSubTrace.isEmpty()) {
 				// convert to the actual spectra node indices
-				subTrace.append(getNodeIndexForCounter(currentSubTrace.removeNoAutoBoxing(), idToClassNameMap, lineSpectra));
+				subTrace[j++] = getNodeIndexForCounter(currentSubTrace.removeNoAutoBoxing(), idToClassNameMap, lineSpectra);
 			}
-			ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-			try (ObjectOutputStream objOut= new ObjectOutputStream(byteOut)) {
-				subTrace.writeOut(objOut, false);
-				objOut.close();
-				
-				byte[] bytes = byteOut.toByteArray();
-				
-				// add sub trace to the list of existing sub traces (together with the id)
-				existingSubTraces.put(id, bytes);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
+			// add sub trace to the list of existing sub traces (together with the id)
+			existingSubTraces.put(id, subTrace);
 			
 			currentSubTrace.clear();
 		} else {
@@ -757,9 +784,9 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 //		return true;
 //	}
 
-	private OutputSequence getNewSubTrace() {
-		return new OutputSequence(sharedSubTraceGrammar);
-	}
+//	private OutputSequence getNewSubTrace() {
+//		return sharedSub ? new OutputSequence(sharedSubTraceGrammar) : new OutputSequence();
+//	}
 
 	public void addExecutionTracesToSpectra(ISpectra<SourceCodeBlock, ? super K> spectra) {
 		// add trace collector to the spectra
@@ -771,9 +798,12 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 		// generate mapping from statements to spectra nodes
 		SimpleIntIndexerCompressed simpleIndexer = null;
 		try {
+//			simpleIndexer = new SimpleIntIndexerCompressed(
+//					sharedExe ? sharedExecutionTraceGrammar : null, 
+//							existingSubTraces, sharedSub ? sharedSubTraceGrammar : null);
 			simpleIndexer = new SimpleIntIndexerCompressed(
-					sharedExecutionTraceGrammar, existingSubTraces, sharedSubTraceGrammar);
-		} catch (ClassNotFoundException | IOException e) {
+					sharedExe ? sharedExecutionTraceGrammar : null, existingSubTraces);
+		} catch (IOException e) {
 			Log.abort(TraceCoberturaReportLoader.class, e, "Error setting up indexer");
 		}
 		

@@ -81,7 +81,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 			SequenceIndexerCompressed methodSpectraIndexer = null;
 			try {
 				methodSpectraIndexer = new SimpleIntIndexerCompressed(methodExecutionTraceGrammar, nodeIdSequences);
-			} catch (ClassNotFoundException | IOException e1) {
+			} catch (IOException e1) {
 				Log.abort(this, e1, "Cannot set up indexer.");
 			}
 
