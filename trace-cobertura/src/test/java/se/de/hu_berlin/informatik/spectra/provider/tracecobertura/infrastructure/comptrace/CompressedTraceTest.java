@@ -64,7 +64,7 @@ public class CompressedTraceTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringLong() throws Exception {
 		BufferedArrayQueue<Long> queue = new BufferedArrayQueue<Long>(outputDir, "test", 5, Type.LONG);
 		
@@ -129,7 +129,7 @@ public class CompressedTraceTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test2", 4);
 		
@@ -200,7 +200,7 @@ public class CompressedTraceTest {
 		Assert.assertEquals(compressedIdTrace.size(), counter);
 	}
 	
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedArrayQueueFlat() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test222", 4);
 		
@@ -269,7 +269,7 @@ public class CompressedTraceTest {
 		Assert.assertEquals(compressedIdTrace.size(), counter);
 	}
 	
-	@Test
+//	@Test
 	public void testBackwardsLongIterationWithAlternations() throws Exception {
 		BufferedLongArrayQueue queue = new BufferedLongArrayQueue(outputDir, "test2rAL", 5);
 		
@@ -347,7 +347,7 @@ public class CompressedTraceTest {
 		queue.clear();
 	}
 	
-	@Test
+//	@Test
 	public void testBackwardsIntegerIterationWithAlternations() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test2rA", 5);
 		
@@ -431,7 +431,7 @@ public class CompressedTraceTest {
 		queue.clear();
 	}
 
-	@Test
+//	@Test
 	public void testBackwardsIntegerIteration() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test2r", 5);
 		
@@ -526,7 +526,7 @@ public class CompressedTraceTest {
 	}
 	
 	
-	@Test
+//	@Test
 	public void testBackwardsLongIteration() throws Exception {
 		BufferedLongArrayQueue queue = new BufferedLongArrayQueue(outputDir, "test2lr", 5);
 		
@@ -624,7 +624,7 @@ public class CompressedTraceTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedIntArrayQueue() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test17", 5);
 //		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, false);
@@ -713,7 +713,7 @@ public class CompressedTraceTest {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedArrayQueue() throws Exception {
 		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<>(outputDir, "test17", 5, Type.INTEGER);
 //		EfficientCompressedIntegerTrace compressedIdTrace = new EfficientCompressedIntegerTrace(queue, false);
@@ -805,7 +805,7 @@ public class CompressedTraceTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedArrayQueueLong() throws Exception {
 		BufferedLongArrayQueue queue = new BufferedLongArrayQueue(outputDir, "test18", 5);
 		EfficientCompressedLongTrace compressedIdTrace = new EfficientCompressedLongTrace(queue, false);
@@ -822,7 +822,7 @@ public class CompressedTraceTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt2() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "test3", 5);
 		
@@ -896,7 +896,7 @@ public class CompressedTraceTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedLongBufferedArrayQueue() throws Exception {
 		BufferedLongArrayQueue queue = new BufferedLongArrayQueue(outputDir, "test4", 5);
 		
