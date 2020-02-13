@@ -49,27 +49,28 @@ class DataOutput {
         // cannot be instantiated
     }
 
+    private static final int  HIGHER_8_BITS    = 0xff000000;
+    private static final int  HIGHER_16_BITS   = 0xffff0000;
+    private static final int  HIGHER_24_BITS   = 0xffffff00;
+
     public static void writeInt(final OutputStream out, final int value) throws IOException {
-        if ((value & LOWER_8_BITS) == value) {
+        if ((value & HIGHER_24_BITS) == 0) {
             if (value >= 252)
                 out.write(MAGIC_1BYTE);
-            out.write(value);
-        } else if ((value & LOWER_16_BITS) == value) {
+        } else if ((value & HIGHER_16_BITS) == 0) {
             out.write(MAGIC_2BYTES);
             out.write(value >>> 8);
-            out.write(value);
-        } else if ((value & LOWER_24_BITS) == value) {
+        } else if ((value & HIGHER_8_BITS) == 0) {
             out.write(MAGIC_3BYTES);
             out.write(value >>> 16);
             out.write(value >>> 8);
-            out.write(value);
         } else {
             out.write(MAGIC_4BYTES);
             out.write(value >>> 24);
             out.write(value >>> 16);
             out.write(value >>> 8);
-            out.write(value);
         }
+        out.write(value);
     }
 
     public static void writeLong(final OutputStream str, final long value) throws IOException {

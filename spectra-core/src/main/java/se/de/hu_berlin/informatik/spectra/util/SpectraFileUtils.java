@@ -41,9 +41,7 @@ import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed
 import se.de.hu_berlin.informatik.utils.compression.CompressedByteArrayToIntSequencesProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.ByteArrayToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToByteArrayProcessor;
-import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToIntArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.CompressedByteArrayToIntSequenceProcessor;
-import se.de.hu_berlin.informatik.utils.compression.single.IntArrayToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.single.IntSequenceToCompressedByteArrayProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
@@ -109,6 +107,8 @@ public class SpectraFileUtils {
 
 	public static final byte STATUS_COMPRESSED_COUNT = 6;
 	public static final byte STATUS_COMPRESSED_INDEXED_COUNT = 7;
+
+	public static final String NODE_ID_SEQUENCES_DIR = "nodeSeqs";
 
 	// suppress default constructor (class should not be instantiated)
 	private SpectraFileUtils() {
@@ -485,24 +485,25 @@ public class SpectraFileUtils {
 //							}
 //						}
 
-						IntArrayToCompressedByteArrayProcessor module2 = new IntArrayToCompressedByteArrayProcessor();
-
-						Log.out(SpectraFileUtils.class, "Storing %s indexed node ID sequences...", indexer.getNodeIdSequences().length-1);
+						Log.out(SpectraFileUtils.class, "Storing %s indexed node ID sequences...", indexer.getNodeIdSequences().size()-1);
 						// store the referenced sequence parts
 
-						try {
-							for (int i = 0; i < indexer.getNodeIdSequences().length; i++) {
-								byte[] result = module2.submit(indexer.getNodeIdSequence(i)).getResult();
-								
-								zipModule.submit(new Pair<>(i + NODE_ID_FILE_EXTENSION, result));
-							}
-						} catch (UnsupportedOperationException e) {
-							// this should not happen!!
-							throw e;
-						}
+						indexer.getNodeIdSequences().moveMapContentsTo(outputFile);
+						
+//						IntArrayToCompressedByteArrayProcessor module2 = new IntArrayToCompressedByteArrayProcessor();
+//						try {
+//							for (int i = 0; i < indexer.getNodeIdSequences().size(); i++) {
+//								byte[] result = module2.submit(indexer.getNodeIdSequence(i)).getResult();
+//								
+//								zipModule.submit(new Pair<>(i + NODE_ID_FILE_EXTENSION, result));
+//							}
+//						} catch (UnsupportedOperationException e) {
+//							// this should not happen!!
+//							throw e;
+//						}
 
 					}
-					Log.out(SpectraFileUtils.class, "Stored %s indexed sequences!", indexer.getNodeIdSequences().length-1);
+					Log.out(SpectraFileUtils.class, "Stored %s indexed sequences!", indexer.getNodeIdSequences().size()-1);
 				} else {
 					Log.out(SpectraFileUtils.class, "No execution traces!");
 				}
@@ -1041,7 +1042,7 @@ public class SpectraFileUtils {
 		Log.out(SpectraFileUtils.class, "Loading sequence indexer from zip file...");
 		
 		byte[] grammarByteArray = zip.get(EXECUTION_TRACE_GRAMMAR_FILE, false);
-		int[][] nodeIdSequences = loadNodeIdSequences(zip);
+		CachedMap<int[]> nodeIdSequences = loadNodeIdSequences(zip);
 		
 		if (grammarByteArray == null) {
 			if (nodeIdSequences == null) {
@@ -1056,30 +1057,36 @@ public class SpectraFileUtils {
 		return new SimpleIntIndexerCompressed(grammarByteArray, nodeIdSequences);
 	}
 	
-	private static int[][] loadNodeIdSequences(ZipFileWrapper zip) throws ZipException {
-		int counter = 0;
-		while (true) {
-			String file = (++counter) + SpectraFileUtils.NODE_ID_FILE_EXTENSION;
-			if (!zip.exists(file)) {
-				break;
-			}
-		}
+	private static CachedMap<int[]> loadNodeIdSequences(ZipFileWrapper zip) throws ZipException {
 		
-		if (counter <= 1) {
-			return null;
-		}
+		// TODO what is a good cache size here?
+		CachedMap<int[]> map = new CachedIntArrayMap(zip.getzipFilePath(), 5000, NODE_ID_SEQUENCES_DIR, false);
 		
-		Log.out(SpectraFileUtils.class, "Loading %d sequences from zip file...", counter-1);
-
-		int[][] traces = new int[counter][];
-		CompressedByteArrayToIntArrayProcessor module = new CompressedByteArrayToIntArrayProcessor();
-		for (int i = 0; i < traces.length; ++i) {
-			String file = i + SpectraFileUtils.NODE_ID_FILE_EXTENSION;
-			traces[i] = module.submit(zip.uncheckedGet(file)).getResult();
-		}
+//		int counter = 0;
+//		while (true) {
+//			String file = (++counter) + SpectraFileUtils.NODE_ID_FILE_EXTENSION;
+//			if (!zip.exists(file)) {
+//				break;
+//			}
+//		}
+//		
+//		if (counter <= 1) {
+//			return null;
+//		}
+//		
+//		Log.out(SpectraFileUtils.class, "Loading %d sequences from zip file...", counter-1);
+//
+//		int[][] traces = new int[counter][];
+//		CompressedByteArrayToIntArrayProcessor module = new CompressedByteArrayToIntArrayProcessor();
+//		for (int i = 0; i < traces.length; ++i) {
+//			String file = i + SpectraFileUtils.NODE_ID_FILE_EXTENSION;
+//			traces[i] = module.submit(zip.uncheckedGet(file)).getResult();
+//		}
+//		
+//		Log.out(SpectraFileUtils.class, "Loaded %d sequences from zip file!", counter-1);
 		
-		Log.out(SpectraFileUtils.class, "Loaded %d sequences from zip file!", counter-1);
-		return traces;
+		Log.out(SpectraFileUtils.class, "Loaded %d sequences from zip file!", map.size()-1);
+		return map;
 	}
 	
 	public static File getTemporaryOutputDir(String dirNamePrefix, Path alternatePath) {

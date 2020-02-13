@@ -174,7 +174,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 				}
 			}
 			
-			for (int subTraceId = 0; subTraceId < spectra.getIndexer().getNodeIdSequences().length; ++subTraceId) {
+			for (int subTraceId = 0; subTraceId < spectra.getIndexer().getNodeIdSequences().size(); ++subTraceId) {
 				int special_counter = 0;
 				int special_counter_at_pos = 0;
 				

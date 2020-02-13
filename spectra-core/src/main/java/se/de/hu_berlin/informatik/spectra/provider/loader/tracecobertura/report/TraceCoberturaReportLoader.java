@@ -45,6 +45,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report.TraceCoberturaReportWrapper;
+import se.de.hu_berlin.informatik.spectra.util.CachedIntArrayMap;
+import se.de.hu_berlin.informatik.spectra.util.CachedMap;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBlock>>
@@ -56,10 +59,12 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 	private ProjectData projectData;
 	
 	private Map<Long, Integer> idToSubtraceIdMap = new HashMap<>();
-	private Map<Integer, int[]> existingSubTraces = new HashMap<>();
+	private CachedMap<int[]> existingSubTraces;
 
 	public TraceCoberturaReportLoader(Path tempOutputDir) {
 		traceCollector = new RawIntTraceCollector(tempOutputDir);
+		existingSubTraces = new CachedIntArrayMap(tempOutputDir.resolve("nodeIdSequences.zip"), 
+				0, SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
 	}
 	
 	private int traceCount = 0;
@@ -258,6 +263,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 			Map<Long, byte[]> executionTracesWithSubTraces = new HashMap<>();
 			for (Iterator<Entry<Long, byte[]>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext();) {
 				Entry<Long, byte[]> entry = iterator.next();
+				iterator.remove();
 				
 				byte[] mappedExecutionTrace = generateSubTraceExecutionTrace(entry.getValue(), projectData, lineSpectra);
 				
@@ -297,6 +303,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 							subTrace = null;
 						} else {
 //							subTrace = InputSequence.readFrom(new ObjectInputStream(new ByteArrayInputStream(existingSubTraces.get(subTraceId))), inSubTraceGrammar);
+							// TODO might run into issues due to rewriting zip files, etc...
 							subTrace = existingSubTraces.get(subTraceId);
 							if (subTrace == null) {
 								Log.err(this, "No sub trace found for ID: " + subTraceId);

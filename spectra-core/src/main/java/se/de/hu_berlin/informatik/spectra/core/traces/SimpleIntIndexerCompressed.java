@@ -4,68 +4,30 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.SequiturUtils;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
+import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 
 	// mapping: sub trace ID -> sequence of spectra node IDs
-	private int[][] nodeIdSequences;
-	
+	private CachedMap<int[]> nodeIdSequences;
+
 	private SharedInputGrammar executionTraceInputGrammar;
 
 	private byte[] storedGrammar;
 
 	// constructor used when loading indexer from zip file
-	public SimpleIntIndexerCompressed(byte[] storedGrammar, int[][] nodeIdSequences) {
+	public SimpleIntIndexerCompressed(byte[] storedGrammar, CachedMap<int[]> nodeIdSequences) {
 		this.storedGrammar = storedGrammar;
 		this.nodeIdSequences = nodeIdSequences;
 	}
 	
 	// constructor used before storing in zip file
 	public SimpleIntIndexerCompressed(SharedOutputGrammar executionTraceGrammar, 
-			Map<Integer, byte[]> existingSubTraces, SharedOutputGrammar sharedSubTraceGrammar) throws IOException {
-		System.out.println(String.format(
-				"- #sub traces: %,d", existingSubTraces.size()));
-		// might be null if grammar is null
-		this.storedGrammar = SequiturUtils.convertToByteArray(executionTraceGrammar);
-		if (storedGrammar != null) {
-			System.out.println(String.format(
-					"- execution trace grammar size: %,d", storedGrammar.length/4));
-		}
-
-		this.nodeIdSequences = new int[existingSubTraces.size()+1][];
-
-		byte[] subTraceByteArray = SequiturUtils.convertToByteArray(sharedSubTraceGrammar);
-		SharedInputGrammar sharedInputGrammar = SequiturUtils.convertToInputGrammar(subTraceByteArray);
-		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
-		this.nodeIdSequences[0] = new int[0];
-		for (int i = 1; i < existingSubTraces.size() + 1; i++) {
-			InputSequence inputSequence = SequiturUtils.getInputSequenceFromByteArray(existingSubTraces.get(i), sharedInputGrammar);
-			int[] nodeIdSequence = new int[(int) inputSequence.getLength()];
-			TraceIterator iterator = inputSequence.iterator();
-			for (int j = 0; iterator.hasNext(); ++j) {
-				nodeIdSequence[j] = iterator.next();
-			}
-
-			this.nodeIdSequences[i] = nodeIdSequence;
-		}
-		
-		if (subTraceByteArray != null) {
-			System.out.println(String.format(
-					"- sub trace grammar size: %,d", subTraceByteArray.length/4));
-		}
-	}
-	
-	// constructor used before storing in zip file
-	public SimpleIntIndexerCompressed(SharedOutputGrammar executionTraceGrammar, 
-			Map<Integer, int[]> existingSubTraces) throws IOException {
+			CachedMap<int[]> existingSubTraces) throws IOException {
 //		System.out.println(String.format(
 //				"- #sub traces: %,d", existingSubTraces.size()));
 
@@ -76,66 +38,77 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 					"- execution trace grammar size: %,d", storedGrammar.length/4));
 		}
 
-		this.nodeIdSequences = new int[existingSubTraces.size()+1][];
+		this.nodeIdSequences = existingSubTraces;
 
+		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
+		if (!this.nodeIdSequences.containsKey(0)) {
+			this.nodeIdSequences.put(0, new int[0]);
+		}
+		
+		// gather/print some statistics (loads from zip file)
+		printStatistics();
+	}
+
+	private void printStatistics() {
 		int min = Integer.MAX_VALUE;
 		int max = 0;
 		long sum = 0;
-
-		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
-		this.nodeIdSequences[0] = new int[0];
-		for (int i = 1; i < existingSubTraces.size() + 1; i++) {
-			this.nodeIdSequences[i] = existingSubTraces.get(i);
-			int length = this.nodeIdSequences[i].length;
+		
+		// id 0 marks an empty sub trace
+		for (int i = 1; i < this.nodeIdSequences.size(); i++) {
+			int[] seq = this.nodeIdSequences.get(i);
+			int length = seq.length;
 			min = Math.min(min, length);
 			max = Math.max(max, length);
 			sum += length;
 		}
 
+		int count = this.nodeIdSequences.size()-1;
+		
 		Log.out(this, "Statistics:%n"
 				+ "- %-30s %,d%n"
 				+ "- %-30s %,d%n"
 				+ "- %-30s %,d%n"
 				+ "- %-30s %,d%n"
 				+ "- %-30s %.2f%n", 
-				"number of sequences:", existingSubTraces.size(),
+				"number of sequences:", count,
 				"total size (int):", sum, 
 				"minimum node sequence length:", min, 
 				"maximum node sequence length:", max,
-				"mean node sequence length:", existingSubTraces.size() > 0 ? (float)sum/(float)existingSubTraces.size() : 0);
+				"mean node sequence length:", count > 0 ? (float)sum/(float)count : 0);
 	}
 
-	// constructor used before storing in zip file
-	public SimpleIntIndexerCompressed(SharedOutputGrammar executionTraceGrammar, int[][] nodeIdSequences) throws IOException {
-		// might be null if grammar is null
-		this.storedGrammar = SequiturUtils.convertToByteArray(executionTraceGrammar);
-		this.nodeIdSequences = nodeIdSequences;
-	}
+//	// constructor used before storing in zip file
+//	public SimpleIntIndexerCompressed(SharedOutputGrammar executionTraceGrammar, int[][] nodeIdSequences) throws IOException {
+//		// might be null if grammar is null
+//		this.storedGrammar = SequiturUtils.convertToByteArray(executionTraceGrammar);
+//		this.nodeIdSequences = nodeIdSequences;
+//	}
 	
 	// constructor used when grammar is included in execution traces
-	public SimpleIntIndexerCompressed(int[][] nodeIdSequences) {
+	public SimpleIntIndexerCompressed(CachedMap<int[]> nodeIdSequences) {
 		this.nodeIdSequences = nodeIdSequences;
 	}
 	
 	@Override
-	public int[][] getNodeIdSequences() {
+	public CachedMap<int[]> getNodeIdSequences() {
 		return nodeIdSequences;
 	}
 	
 	@Override
 	public int[] getNodeIdSequence(int subTraceIndex) {
-		if (subTraceIndex >= nodeIdSequences.length) {
+		if (subTraceIndex >= nodeIdSequences.size()) {
 			return null;
 		}
-		return nodeIdSequences[subTraceIndex];
+		return nodeIdSequences.get(subTraceIndex);
 	}
 	
 	@Override
 	public void removeFromSequences(int nodeId) {
 		// iterate over all sub traces
 		// TODO: sub trace with id 0 is the empty sub trace. Should not exist, regularly
-		for (int i = 1; i < nodeIdSequences.length; i++) {
-			int[] sequence = nodeIdSequences[i];
+		for (int i = 1; i < nodeIdSequences.size(); i++) {
+			int[] sequence = nodeIdSequences.get(i);
 			int foundCounter = 0;
 			for (int id : sequence) {
 				if (id == nodeId) {
@@ -151,7 +124,8 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 						newSequence[j++] = id;
 					}
 				}
-				nodeIdSequences[i] = newSequence;
+				// this needs to rewrite the entire zip archive!
+				nodeIdSequences.put(i, newSequence);
 			}
 		}
 	}
@@ -160,8 +134,8 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 	public void removeFromSequences(Collection<Integer> nodeIndicesToRemove) {
 		// iterate over all sub traces
 		// TODO: sub trace with id 0 is the empty sub trace. Should not exist, regularly
-		for (int i = 1; i < nodeIdSequences.length; i++) {
-			int[] sequence = nodeIdSequences[i];
+		for (int i = 1; i < nodeIdSequences.size(); i++) {
+			int[] sequence = nodeIdSequences.get(i);
 			int foundCounter = 0;
 			for (int id : sequence) {
 				if (nodeIndicesToRemove.contains(id)) {
@@ -177,7 +151,8 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 						newSequence[j++] = id;
 					}
 				}
-				nodeIdSequences[i] = newSequence;
+				// this needs to rewrite the entire zip archive!
+				nodeIdSequences.put(i, newSequence);
 			}
 		}
 	}
@@ -201,6 +176,6 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 
 	@Override
 	public Iterator<Integer> getNodeIdSequenceIterator(int subTraceId) {
-		return Arrays.stream(nodeIdSequences[subTraceId]).iterator();
+		return Arrays.stream(nodeIdSequences.get(subTraceId)).iterator();
 	}
 }

@@ -18,6 +18,9 @@ import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.SequiturUtils;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
+import se.de.hu_berlin.informatik.spectra.util.CachedIntArrayMap;
+import se.de.hu_berlin.informatik.spectra.util.CachedMap;
+import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -71,10 +74,12 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
 		}
 		
 		if (currentMethodNodeIndex >= 0) {
-			int[][] nodeIdSequences = new int[currentMethodNodeIndex+1][];
-			for (int i = 0; i < nodeIdSequences.length; ++i) {
+			CachedMap<int[]> nodeIdSequences = new CachedIntArrayMap(
+					input.getPathToSpectraZipFile().getParent().resolve("methodMap.zip"), 
+					0, SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
+			for (int i = 0; i < currentMethodNodeIndex+1; ++i) {
 				// one to one mapping... (still ok for easy future removal of nodes from traces)
-				nodeIdSequences[i] = new int[] {i};
+				nodeIdSequences.put(i, new int[] {i});
 			}
 			
 			SharedOutputGrammar methodExecutionTraceGrammar = new SharedOutputGrammar();

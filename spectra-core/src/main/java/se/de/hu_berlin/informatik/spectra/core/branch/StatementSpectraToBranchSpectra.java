@@ -10,6 +10,8 @@ import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.core.traces.SimpleIntIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.util.CachedIntArrayMap;
+import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
@@ -97,7 +99,7 @@ public class StatementSpectraToBranchSpectra {
         Set<SourceCodeBlock> executedStatements = new HashSet<>();
         
         // collect all existing branch IDs
-        int[][] nodeIdSequences = statementSpectra.getIndexer().getNodeIdSequences();
+        CachedMap<int[]> nodeIdSequences = statementSpectra.getIndexer().getNodeIdSequences();
         
         /* extract all branches from the statement spectra, i.e.
          *  branches that are covered in a test case
@@ -105,7 +107,7 @@ public class StatementSpectraToBranchSpectra {
          *  
          *  id 0 is reserved for the empty branch (which should not exist)
          */
-        for(int executionBranchId = 0; executionBranchId < nodeIdSequences.length; ++executionBranchId) {
+        for(int executionBranchId = 0; executionBranchId < nodeIdSequences.size(); ++executionBranchId) {
             programBranch = new ProgramBranch(getExecutedStatementsFromBranch(executionBranchId, statementSpectra));
             branchNode = programBranchSpectra.getOrCreateNode(programBranch);
             branchIdMap.put(executionBranchId, branchNode);
@@ -133,10 +135,12 @@ public class StatementSpectraToBranchSpectra {
         // in the statement level spectra, branch IDs were mapped to the sequence of node IDs in the respective branch;
         // now we can map the branch IDs to the IDs of the branch...
         // no need to include the single node branches that have not been executed in here!
-        int[][] branchNodeIdSequences = new int[nodeIdSequences.length][];
-		for (int i = 0; i < nodeIdSequences.length; ++i) {
+		CachedMap<int[]> branchNodeIdSequences = new CachedIntArrayMap(
+				statementSpectra.getPathToSpectraZipFile().getParent().resolve("branchMap.zip"), 
+				0, SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
+		for (int i = 0; i < nodeIdSequences.size(); ++i) {
 			// one to one mapping... (still ok for easy future removal of nodes from traces)
-			branchNodeIdSequences[i] = new int[] {i};
+			branchNodeIdSequences.put(i, new int[] {i});
 		}
 		
 		// should be able to reuse the execution trace grammar!

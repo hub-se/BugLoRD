@@ -133,9 +133,13 @@ public class SpectraFileUtilsTest extends TestSettings {
         Path outputDir = Paths.get(getStdTestDir());
         
     	// mapping: sub trace ID -> sequence of spectra node IDs
-    	int[][] nodeIdSequences = 
-    			new int[][] {c(), c(1,2,3), c(4,5,6), c(7,8,9)};
-    	
+        CachedMap<int[]> nodeIdSequences = new CachedIntArrayMap(Paths.get(getStdTestDir(), "map.zip"), 
+        		5, SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
+        nodeIdSequences.put(0, c());
+        nodeIdSequences.put(1, c(1,2,3));
+        nodeIdSequences.put(2, c(4,5,6));
+        nodeIdSequences.put(3, c(7,8,9));
+
         // sub trace id array
     	int[] rawTrace = new int[] {1,2,3,1,2,3,1,3};
         

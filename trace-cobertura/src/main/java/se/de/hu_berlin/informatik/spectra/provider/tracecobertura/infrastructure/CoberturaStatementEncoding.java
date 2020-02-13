@@ -48,8 +48,7 @@ public class CoberturaStatementEncoding {
 	public static int generateUniqueRepresentationForStatement(int classId, int counterId) {
 		//        32 bits        
 		// class id | counter id
-		return (classId << COUNTER_ID_BITS) 
-				| counterId;
+		return (classId << COUNTER_ID_BITS) | counterId;
 	}
 	
 	public static int getClassId(int encodedStatement) {
@@ -87,7 +86,7 @@ public class CoberturaStatementEncoding {
 		} else if (subTrace.size() == 1) {
 			return (subTrace.element() & LOWER_BITMASK) << INTEGER_BITS;
 		} else {
-			return ((subTrace.element() & LOWER_BITMASK) << INTEGER_BITS) | (subTrace.lastElement());
+			return ((subTrace.element() & LOWER_BITMASK) << INTEGER_BITS) | (subTrace.lastElement() & LOWER_BITMASK);
 		}
 	}
 	

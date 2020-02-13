@@ -68,7 +68,7 @@ public class BufferedArrayQueueTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt() throws Exception {
 		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test", 5, Type.INTEGER);
 		
@@ -91,7 +91,7 @@ public class BufferedArrayQueueTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt2() throws Exception {
 		BufferedArrayQueue<Integer> queue = new BufferedArrayQueue<Integer>(outputDir, "test2", 5, Type.INTEGER);
 		
@@ -146,7 +146,7 @@ public class BufferedArrayQueueTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedArrayQueueFileStringInt3() throws Exception {
 		BufferedArrayQueue<int[]> queue = new BufferedArrayQueue<int[]>(outputDir, "test3", 5, Type.OTHER);
 		
@@ -172,7 +172,7 @@ public class BufferedArrayQueueTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedIntArrayQueueFileStringInt() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "testInt", 5);
 		
@@ -203,7 +203,7 @@ public class BufferedArrayQueueTest {
 		queue.clear();
 	}
 	
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedIntArrayQueueBla() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "testIntBla", 5);
 		
@@ -225,7 +225,7 @@ public class BufferedArrayQueueTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedIntArrayQueueFileStringInt2() throws Exception {
 		BufferedIntArrayQueue queue = new BufferedIntArrayQueue(outputDir, "testInt2", 5);
 		
@@ -289,7 +289,7 @@ public class BufferedArrayQueueTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedLongArrayQueueFileStringInt() throws Exception {
 		BufferedLongArrayQueue queue = new BufferedLongArrayQueue(outputDir, "testLong", 5);
 		
@@ -324,7 +324,7 @@ public class BufferedArrayQueueTest {
 	/*
 	 * Test method for {@link se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SingleLinkedBufferedArrayQueue#SingleLinkedBufferedArrayQueue(java.io.File, java.lang.String, int)}.
 	 */
-	@Test
+//	@Test
 	public void testSingleLinkedBufferedLongArrayQueueFileStringInt2() throws Exception {
 		BufferedLongArrayQueue queue = new BufferedLongArrayQueue(outputDir, "testLong2", 5);
 		
@@ -379,7 +379,7 @@ public class BufferedArrayQueueTest {
 	private static final int NUM_INTS = 500000;
 	private static final int NUM_REPS = 100;
 
-	@Test
+//	@Test
 	public void testTime() {
 		outputDir.mkdirs();
 
