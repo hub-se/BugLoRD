@@ -27,6 +27,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 
 	private int lastJumpIdVariableIndex;
 	
+	private int threadIdVariableIndex;
+	
 	public InjectCodeTouchPointListener(ClassMap classMap,
 			CodeProvider codeProvider) {
 		this.classMap = classMap;
@@ -65,7 +67,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //			logger.debug("jump true counter:" + jumpTrueCounterId + ", " + currentLine + "(" + eventId + ") to: "
 //					+ label);
 			codeProvider.generateCodeThatIncrementsCoberturaCounterAfterJump(
-					nextMethodVisitor, jumpTrueCounterId, classMap
+					nextMethodVisitor, threadIdVariableIndex, jumpTrueCounterId, classMap
 							.getClassName(), classMap.getClassId());
 			codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 					nextMethodVisitor, lastJumpIdVariableIndex);
@@ -119,7 +121,8 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 				codeProvider
 						.generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
 								mv, entry.getKey(), entry.getValue(),
-								lastJumpIdVariableIndex, classMap.getClassName(), classMap.getClassId());
+								lastJumpIdVariableIndex, threadIdVariableIndex, 
+								classMap.getClassName(), classMap.getClassId());
 			}
 		}
 
@@ -139,14 +142,14 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //			}
 			codeProvider
 			.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
-					mv, lastJumpIdVariableIndex, 
+					mv, lastJumpIdVariableIndex, threadIdVariableIndex, 
 					classMap.getClassName(), classMap.getClassId());
 		}
 		
 		if (classMap.isCatchBlockLabel(eventId)) {
 //			logger.debug("Catch block label for event(" + eventId + "):"
 //					+ label + ", line " + currentLine);		
-			codeProvider.generateCodeThatProcessesLastSubtrace(mv);
+			codeProvider.generateCodeThatProcessesLastSubtrace(mv, threadIdVariableIndex);
 			
 		}
 	}
@@ -173,7 +176,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		// TODO when can this be null?
 		if (lineCounterId != null) {
 			codeProvider.generateCodeThatIncrementsCoberturaCounter(
-					nextMethodVisitor, lineCounterId, 
+					nextMethodVisitor, threadIdVariableIndex, lineCounterId, 
 					classMap.getClassName(), classMap.getClassId());
 		}
 	}
@@ -187,6 +190,11 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 		// setup variables
 		codeProvider.generateCodeThatZeroJumpCounterIdVariable(
 				nextMethodVisitor, lastJumpIdVariableIndex);
+		
+		// fetch the current thread's id at the start of the method;
+		// stores it in a local variable
+		codeProvider.generateCodeThatSetsCurrentThreadOutputSequence(
+				nextMethodVisitor, threadIdVariableIndex);
 	
 //		// this starts a new sub trace whenever we reach the start of a method...
 //		// it serves mainly to avoid problems due to having a 
@@ -194,7 +202,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 //		// (e.g. in test classes) that executes code without decision points (branches)
 //		// in it. This results in a very large sub trace, potentially...
 		
-		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
+		codeProvider.generateCodeThatProcessesLastSubtrace(nextMethodVisitor, threadIdVariableIndex);
 	}
 	
 
@@ -215,6 +223,10 @@ public class InjectCodeTouchPointListener implements TouchPointListener {
 	 */
 	public void setLastJumpIdVariableIndex(int lastJumpIdVariableIndex) {
 		this.lastJumpIdVariableIndex = lastJumpIdVariableIndex;
+	}
+	
+	public void setThreadIdVariableIndex(int threadIdVariableIndex) {
+		this.threadIdVariableIndex = threadIdVariableIndex;
 	}
 
 }

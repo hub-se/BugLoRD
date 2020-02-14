@@ -8,6 +8,7 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.AbstractFindTouchPointsClassInstrumenter;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FindTouchPointsMethodAdapter;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
 
 import java.util.Collection;
 import java.util.Map;
@@ -115,8 +116,8 @@ public class InjectCodeClassInstrumenter
 				instrumenter);
 		int variable = sorter.newLocal(Type.INT_TYPE);
 		touchPointListener.setLastJumpIdVariableIndex(variable);
-//		int variable2 = sorter.newLocal(Type.INT_TYPE);
-//		touchPointListener.setDecisionIndicatorVariableIndex(variable2);
+		int variable2 = sorter.newLocal(Type.getObjectType(Type.getInternalName(OutputSequence.class)));
+		touchPointListener.setThreadIdVariableIndex(variable2);
 		return sorter;
 		//return new ShiftVariableMethodAdapter(instrumenter, access, desc, 1);
 	}

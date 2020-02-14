@@ -53,8 +53,8 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBlock>>
 		extends AbstractCoverageDataLoader<SourceCodeBlock, K, TraceCoberturaReportWrapper> {
 
-    private static final int LARGE_STEP = 10000000;
-	private static final int SMALL_STEP = 100000;
+    private static final int LARGE_STEP = 100000000;
+	private static final int SMALL_STEP = 1000000;
 	private final RawIntTraceCollector traceCollector;
 	private ProjectData projectData;
 	

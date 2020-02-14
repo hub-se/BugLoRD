@@ -48,34 +48,37 @@ public interface CodeProvider {
 	 * Injects code that increments counter given by parameter.
 	 *
 	 * @param nextMethodVisitor - {@link MethodVisitor} that is listener of code-generation events
+	 * @param threadIdVariableIndex   - index of the local variable that holds the current thread's id
 	 * @param counterId         -  counterId of counter that have to be incremented
 	 * @param className         - internal name (asm) of class being instrumented
 	 * @param classId			- unique id of the class
 	 */
 	public void generateCodeThatIncrementsCoberturaCounter(
-			MethodVisitor nextMethodVisitor, int counterId, String className, int classId);
+			MethodVisitor nextMethodVisitor, int threadIdVariableIndex, int counterId, String className, int classId);
 	
 	/**
 	 * Injects code that increments counter given by parameter.
 	 *
 	 * @param nextMethodVisitor - {@link MethodVisitor} that is listener of code-generation events
+	 * @param threadIdVariableIndex   - index of the local variable that holds the current thread's id
 	 * @param counterId         -  counterId of counter that have to be incremented
 	 * @param className         - internal name (asm) of class being instrumented
 	 * @param classId			- unique id of the class
 	 */
 	public void generateCodeThatIncrementsCoberturaCounterAfterJump(
-			MethodVisitor nextMethodVisitor, int counterId, String className, int classId);
+			MethodVisitor nextMethodVisitor, int threadIdVariableIndex, int counterId, String className, int classId);
 	
 	/**
 	 * Injects code that increments counter given by parameter.
 	 *
 	 * @param nextMethodVisitor - {@link MethodVisitor} that is listener of code-generation events
+	 * @param threadIdVariableIndex   - index of the local variable that holds the current thread's id
 	 * @param counterId         -  counterId of counter that have to be incremented
 	 * @param className         - internal name (asm) of class being instrumented
 	 * @param classId			- unique id of the class
 	 */
 	public void generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(
-			MethodVisitor nextMethodVisitor, int counterId, String className, int classId);
+			MethodVisitor nextMethodVisitor, int threadIdVariableIndex, int counterId, String className, int classId);
 
 	/**
 	 * Injects code that increments counter given by internal variable.
@@ -85,11 +88,12 @@ public interface CodeProvider {
 	 *
 	 * @param nextMethodVisitor       - {@link MethodVisitor} that is listener of code-generation events
 	 * @param lastJumpIdVariableIndex - id of the variable used to store counterId that have to be incremented
+	 * @param threadIdVariableIndex   - index of the local variable that holds the current thread's id
 	 * @param className               - internal name (asm) of class being instrumented
 	 * @param classId				  - unique id of the class
 	 */
 	public void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
-			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
+			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex, int threadIdVariableIndex,
 			String className, int classId);
 
 	/**
@@ -145,13 +149,14 @@ public interface CodeProvider {
 	 * @param neededJumpCounterIdVariableValue - id... ?
 	 * @param counterIdToIncrement    - id of counter to increment
 	 * @param lastJumpIdVariableIndex - index of variable that have to be set
+	 * @param threadIdVariableIndex   - index of the local variable that holds the current thread's id
 	 * @param className				  - name of the class
 	 * @param classId				  - id of the class
 	 */
 	public void generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
 			MethodVisitor nextMethodVisitor,
 			Integer neededJumpCounterIdVariableValue,
-			Integer counterIdToIncrement, int lastJumpIdVariableIndex,
+			Integer counterIdToIncrement, int lastJumpIdVariableIndex, int threadIdVariableIndex,
 			String className, int classId);
 
 	/**
@@ -186,7 +191,12 @@ public interface CodeProvider {
 //	public void generateCodeThatIncrementsCoberturaCounterAndChecksForDecision(MethodVisitor nextMethodVisitor,
 //			int lineCounterId, int decisionIndicatorVariableIndex, String className, int classId);
 	
-	public void generateCodeThatProcessesLastSubtrace(MethodVisitor nextMethodVisitor);
+	public void generateCodeThatProcessesLastSubtrace(MethodVisitor nextMethodVisitor, int threadIdVariableIndex);
+
+//	void generateCodeThatSetsThreadIdVariable(MethodVisitor nextMethodVisitor, long new_value,
+//			int threadIdVariableIndex);
+
+	void generateCodeThatSetsCurrentThreadOutputSequence(MethodVisitor mv, int threadIdVariableIndex);
 			
 //	public void generateCodeThatMarksBeginningOfNewSubTrace(MethodVisitor nextMethodVisitor,
 //			int lineCounterId, int decisionIndicatorVariableIndex, String className, int classId);

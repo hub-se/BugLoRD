@@ -95,25 +95,17 @@ public class ExecutionTraceCollector {
 	
 	/**
 	 * Marks the beginning of a new sub trace by adding a special indicator to the trace.
+	 * @param trace
+	 * the output sequence to append statements to
 	 */
-	public static void startNewSubTrace() {
+	public static void startNewSubTrace(OutputSequence trace) {
 		
-		if (++counter % 100000 == 0) {
+		if (++counter % 1000000 == 0) {
 			System.out.print('.');
-			if (counter % 10000000 == 0)
+			if (counter % 100000000 == 0)
 				System.out.println(String.format("%,d", counter));
 		}
 		
-		// get an id for the current thread
-		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
-
-		// get the thread's execution trace
-		OutputSequence trace = executionTraces.get(threadId);
-		if (trace == null) {
-			trace = getNewCollector(threadId);
-			executionTraces.put(threadId, trace);
-		}
-
 		// add an indicator to the trace that represents a visited catch block
 		trace.append(NEW_SUBTRACE_ID);
 
@@ -178,9 +170,11 @@ public class ExecutionTraceCollector {
 	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
+	 * @param trace
+	 * the output sequence to append statements to
 	 */
-	public static void addStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.NORMAL_ID);
+	public static void addStatementToExecutionTraceAndIncrementCounter(int classId, int counterId, OutputSequence trace) {
+		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.NORMAL_ID, trace);
 		incrementCounter(classId, counterId);
 	}
 
@@ -192,9 +186,11 @@ public class ExecutionTraceCollector {
 	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
+	 * @param trace
+	 * the output sequence to append statements to
 	 */
-	public static void variableAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.BRANCH_ID);
+	public static void variableAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId, OutputSequence trace) {
+		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.BRANCH_ID, trace);
 		incrementCounter(classId, counterId);
 	}
 
@@ -206,9 +202,11 @@ public class ExecutionTraceCollector {
 	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
+	 * @param trace
+	 * the output sequence to append statements to
 	 */
-	public static void jumpAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
-		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.JUMP_ID);
+	public static void jumpAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId, OutputSequence trace) {
+		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.JUMP_ID, trace);
 		incrementCounter(classId, counterId);
 	}
 
@@ -220,38 +218,48 @@ public class ExecutionTraceCollector {
 	 * the unique id of the class, as used by cobertura
 	 * @param counterId
 	 * the cobertura counter id, necessary to retrieve the exact line in the class
+	 * @param trace
+	 * the output sequence to append statements to
 	 */
-	public static void switchAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId) {
+	public static void switchAddStatementToExecutionTraceAndIncrementCounter(int classId, int counterId, OutputSequence trace) {
 //		processLastSubTrace();
-		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.SWITCH_ID);
+		addStatementToExecutionTrace(classId, counterId, CoberturaStatementEncoding.SWITCH_ID, trace);
 		incrementCounter(classId, counterId);
 	}
 	
 
-	private static void addStatementToExecutionTrace(int classId, int counterId, int specialIndicatorId) {
+	private static void addStatementToExecutionTrace(int classId, int counterId, int specialIndicatorId, OutputSequence trace) {
 		if (counterId == AbstractCodeProvider.FAKE_COUNTER_ID) {
 			// this marks a fake jump! (ignore)
 			return;
 		}
 		
-		if (++counter % 100000 == 0) {
+		if (++counter % 1000000 == 0) {
 			System.out.print('.');
-			if (counter % 10000000 == 0)
+			if (counter % 100000000 == 0)
 				System.out.println(String.format("%,d", counter));
 		}
 
-		// get an id for the current thread
-		long threadId = Thread.currentThread().getId(); // may be reused, once the thread is killed TODO
+		// add the statement to the execution trace
+		trace.append(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(classId, counterId));
+	}
 
+
+	/**
+	 * This method gets called once at the start of each instrumented method. 
+	 * The returned reference is stored in a local variable and used throughout the method.
+	 * @return
+	 * output sequence for the current thread
+	 */
+	public static OutputSequence getOutputSequence() {
+		long threadId = Thread.currentThread().getId();
 		// get the thread's execution trace
 		OutputSequence trace = executionTraces.get(threadId);
 		if (trace == null) {
 			trace = getNewCollector(threadId);
 			executionTraces.put(threadId, trace);
 		}
-		
-		// add the statement to the execution trace
-		trace.append(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(classId, counterId));
+		return trace;
 	}
 	
 	/**

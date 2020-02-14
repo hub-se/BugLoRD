@@ -9,6 +9,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
 
 
 public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
@@ -25,7 +26,7 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounterFromInternalVariable(
-			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex,
+			MethodVisitor nextMethodVisitor, int lastJumpIdVariableIndex, int threadIdVariableIndex,
 			String className, int classId) {
 		if (shouldNotBeInstrumented(classId, lastJumpIdVariableIndex)) { //TODO
 			return;
@@ -45,9 +46,11 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			nextMethodVisitor.visitLdcInsn(classId);
 			// load the counter id of the last stored/remembered branching statement (before jump)
 			nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
+			// load the current thread's trace
+			nextMethodVisitor.visitVarInsn(Opcodes.ALOAD, threadIdVariableIndex);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "variableAddStatementToExecutionTraceAndIncrementCounter",
-					"(II)V");
+					"(IIL" + Type.getInternalName(OutputSequence.class) + ";)V");
 			
 			generateCodeThatZeroJumpCounterIdVariable(nextMethodVisitor,
 					lastJumpIdVariableIndex);
@@ -72,19 +75,34 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatProcessesLastSubtrace(
-			MethodVisitor nextMethodVisitor) {
+			MethodVisitor nextMethodVisitor, int threadIdVariableIndex) {
 //		nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 //				.getInternalName(ExecutionTraceCollector.class), "processLastSubTrace",
 //				"()V");
+		// load the current thread's trace
+		nextMethodVisitor.visitVarInsn(Opcodes.ALOAD, threadIdVariableIndex);
 		nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 		.getInternalName(ExecutionTraceCollector.class), "startNewSubTrace",
-		"()V");
+		"(L" + Type.getInternalName(OutputSequence.class) + ";)V");
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public void generateCodeThatSetsCurrentThreadOutputSequence(
+			MethodVisitor mv, int threadIdVariableIndex) {
+		// should request the current thread's id like this:
+//		long threadId = Thread.currentThread().getId();
+		
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+				.getInternalName(ExecutionTraceCollector.class), 
+				"getOutputSequence", "()L" + Type.getInternalName(OutputSequence.class) + ";");
+		mv.visitVarInsn(Opcodes.ASTORE, threadIdVariableIndex);
 	}
 	
 	
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounter(
-			MethodVisitor nextMethodVisitor, int counterId, 
+			MethodVisitor nextMethodVisitor, int threadIdVariableIndex, int counterId, 
 			String className, int classId) {
 		if (shouldNotBeInstrumented(classId, counterId)) {
 			return;
@@ -93,9 +111,11 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
 			nextMethodVisitor.visitLdcInsn(counterId);
+			// load the current thread's trace
+			nextMethodVisitor.visitVarInsn(Opcodes.ALOAD, threadIdVariableIndex);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "addStatementToExecutionTraceAndIncrementCounter",
-					"(II)V");
+					"(IIL" + Type.getInternalName(OutputSequence.class) + ";)V");
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
@@ -108,7 +128,7 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounterAfterJump(
-			MethodVisitor nextMethodVisitor, int counterId, 
+			MethodVisitor nextMethodVisitor, int threadIdVariableIndex, int counterId, 
 			String className, int classId) {
 		if (shouldNotBeInstrumented(classId, counterId)) {
 			return;
@@ -119,9 +139,11 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			nextMethodVisitor.visitLdcInsn(classId);
 			// this is the counter id of the true branch?!
 			nextMethodVisitor.visitLdcInsn(counterId);
+			// load the current thread's trace
+			nextMethodVisitor.visitVarInsn(Opcodes.ALOAD, threadIdVariableIndex);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "jumpAddStatementToExecutionTraceAndIncrementCounter",
-					"(II)V");
+					"(IIL" + Type.getInternalName(OutputSequence.class) + ";)V");
 		} else {
 			// increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
@@ -134,7 +156,7 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 	
 	@SuppressWarnings("deprecation")
 	public void generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(
-			MethodVisitor nextMethodVisitor, int counterId, 
+			MethodVisitor nextMethodVisitor, int threadIdVariableIndex, int counterId, 
 			String className, int classId) {
 		if (shouldNotBeInstrumented(classId, counterId)) {
 			return;
@@ -143,9 +165,11 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 			// add the statement to the execution trace AND increment counter
 			nextMethodVisitor.visitLdcInsn(classId);
 			nextMethodVisitor.visitLdcInsn(counterId);
+			// load the current thread's trace
+			nextMethodVisitor.visitVarInsn(Opcodes.ALOAD, threadIdVariableIndex);
 			nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 					.getInternalName(ExecutionTraceCollector.class), "switchAddStatementToExecutionTraceAndIncrementCounter",
-					"(II)V");
+					"(IIL" + Type.getInternalName(OutputSequence.class) + ";)V");
 //			generateCodeThatProcessesLastSubtrace(nextMethodVisitor);
 		} else {
 			// increment counter

@@ -47,6 +47,14 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	}
 	
 //	@Override
+//	public void generateCodeThatSetsThreadIdVariable(
+//			MethodVisitor nextMethodVisitor, long new_value,
+//			int threadIdVariableIndex) {
+//		nextMethodVisitor.visitLdcInsn(new_value);
+//		nextMethodVisitor.visitVarInsn(Opcodes.LSTORE, threadIdVariableIndex);
+//	}
+	
+//	@Override
 //	public void generateCodeThatSetsDecisionIndicatorVariable(
 //			MethodVisitor nextMethodVisitor,
 //			int decisionIndicatorVariableIndex) {
@@ -66,14 +74,14 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	public void generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(
 			MethodVisitor nextMethodVisitor,
 			Integer neededJumpCounterIdVariableValue,
-			Integer counterIdToIncrement, int lastJumpIdVariableIndex,
+			Integer counterIdToIncrement, int lastJumpIdVariableIndex, int threadIdVariableIndex,
 			String className, int classId) {
 
 		nextMethodVisitor.visitLdcInsn(neededJumpCounterIdVariableValue);
 		nextMethodVisitor.visitVarInsn(Opcodes.ILOAD, lastJumpIdVariableIndex);
 		Label afterJump = new Label();
 		nextMethodVisitor.visitJumpInsn(Opcodes.IF_ICMPNE, afterJump);
-		generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(nextMethodVisitor,
+		generateCodeThatIncrementsCoberturaCounterAfterSwitchLabel(nextMethodVisitor, threadIdVariableIndex,
 				counterIdToIncrement, className, classId);
 		generateCodeThatZeroJumpCounterIdVariable(nextMethodVisitor,
 				lastJumpIdVariableIndex);
