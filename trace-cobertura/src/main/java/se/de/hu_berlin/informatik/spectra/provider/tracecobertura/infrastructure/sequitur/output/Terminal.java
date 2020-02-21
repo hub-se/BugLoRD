@@ -45,24 +45,24 @@ class Terminal extends Symbol {
 
     @Override
     public boolean meltDigram(final Grammar grammar) {
-        if (this.next.getClass() != this.getClass())
-            return false;
-
-        final Terminal otherT = (Terminal) this.next;
-        if (this.value == Symbol.NULL_VALUE ? otherT.value == Symbol.NULL_VALUE : this.value == otherT.value) {
-            final boolean hasPrev = !(this.prev instanceof Dummy);
-            final boolean hasNextNext = !(otherT.next instanceof Dummy);
-            if (hasPrev)
-                grammar.removeDigram(this.prev);
-            if (hasNextNext)
-                grammar.removeDigram(otherT);
-            this.count += otherT.count;
-            otherT.remove();
-            if (hasPrev)
-                grammar.checkDigram(this.prev);
-            if (hasNextNext)
-                grammar.checkDigram(this);
-            return true;
+        if (this.next instanceof Terminal) {
+        	final Terminal otherT = (Terminal) this.next;
+        	// check if both terminals are the same value
+        	if (this.value == Symbol.NULL_VALUE ? otherT.value == Symbol.NULL_VALUE : this.value == otherT.value) {
+        		final boolean hasPrev = !(this.prev instanceof Dummy);
+        		final boolean hasNextNext = !(otherT.next instanceof Dummy);
+        		if (hasPrev)
+        			grammar.removeDigram(this.prev);
+        		if (hasNextNext)
+        			grammar.removeDigram(otherT);
+        		this.count += otherT.count;
+        		otherT.remove();
+        		if (hasPrev)
+        			grammar.checkDigram(this.prev);
+        		if (hasNextNext)
+        			grammar.checkDigram(this);
+        		return true;
+        	}
         }
         return false;
     }

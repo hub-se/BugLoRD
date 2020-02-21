@@ -97,13 +97,14 @@ class Rule {
     }
 
     public Rule(final Symbol first, final Symbol second) {
-        this();
+        this(true);
         Symbol.linkTogether(this.dummy, first);
         Symbol.linkTogether(first, second);
         Symbol.linkTogether(second, this.dummy);
     }
 
     public void append(final Symbol newSymbol, final Grammar grammar) {
+    	// the dummy marks both the start and the end of the rule
         this.dummy.insertBefore(newSymbol);
         grammar.checkDigram(newSymbol.prev);
     }

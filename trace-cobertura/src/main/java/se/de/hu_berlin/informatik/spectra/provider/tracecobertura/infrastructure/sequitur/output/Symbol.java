@@ -25,12 +25,16 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.Rule.Dummy;
 
 // package-private
 abstract class Symbol implements Cloneable {
+	
+	static final Map<Symbol, Symbol> digrams = new HashMap<Symbol, Symbol>();
 	
 	protected static final int NULL_VALUE = -1;
 
@@ -47,29 +51,30 @@ abstract class Symbol implements Cloneable {
     }
 
     /**
-     * Rawly inserts the given Symbol before this Symbol in the implicit linked list.
+     * Inserts the given Symbol before this Symbol in the implicit linked list.
      * Does <b>not</b> check any invariants or manipulate the grammar.
      *
-     * @param newPrev the new Symbol to insert
+     * @param toInsert the new Symbol to insert
      */
-    public void insertBefore(final Symbol newPrev) {
-        linkTogether(this.prev, newPrev);
-        linkTogether(newPrev, this);
+    public void insertBefore(final Symbol toInsert) {
+        linkTogether(this.prev, toInsert);
+        linkTogether(toInsert, this);
     }
 
-    protected static  void linkTogether(final Symbol first, final Symbol second) {
+    protected static void linkTogether(final Symbol first, final Symbol second) {
         first.next = second;
         second.prev = first;
     }
-
+    
+    /**
+     * Replace this symbol with a non-terminal representing the given rule.
+     */
     public void substituteDigram(final Rule rule, final Grammar grammar) {
-        if (!(this.prev instanceof Dummy))
-            grammar.removeDigram(this.prev);
+        grammar.removeDigram(this.prev);
         grammar.removeDigram(this);
-        if (!(this.next.next instanceof Dummy))
-            grammar.removeDigram(this.next);
-        this.remove();
-        this.next.remove();
+        grammar.removeDigram(this.next);
+        this.remove(); // this.next is still intact
+        this.next.remove(); // this.next.next is still intact
         final NonTerminal newSymbol = new NonTerminal(rule);
         this.next.next.insertBefore(newSymbol);
 
@@ -81,7 +86,7 @@ abstract class Symbol implements Cloneable {
 
     /**
      * Removes this symbol from the implicit linked list.
-     * Does no checking of digrams of something else.
+     * Does no checking of digrams or something else.
      */
     public void remove() {
         linkTogether(this.prev, this.next);
@@ -89,12 +94,12 @@ abstract class Symbol implements Cloneable {
     }
 
     /**
-     * Tries to melt this symbol with it's successor. Only possible if the successor is equal
+     * Tries to melt this symbol with its successor. Only possible if the successor is equal
      * to this symbol.
      * In that case, the count for this symbol is increased by the count of the successor and
      * the successor is removed.
      *
-     * @return whether this symbol could be melt with it's successor
+     * @return whether this symbol could be melted with it's successor
      */
     public abstract boolean meltDigram(final Grammar grammar);
 

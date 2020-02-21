@@ -64,13 +64,16 @@ class NonTerminal extends Symbol {
         return this.rule.hashCode() + 31*this.count;
     }
 
+    /**
+     * replace this non terminal with the contents of its rule;
+     * works only if the rule is only used once
+     * @param grammar
+     */
     public void checkExpand(final Grammar grammar) {
         assert this.count >= 1;
         if (this.count == 1 && this.rule.getUseCount() == 1) {
-            if (!(this.prev instanceof Dummy))
-                grammar.removeDigram(this.prev);
-            if (!(this.next instanceof Dummy))
-                grammar.removeDigram(this);
+            grammar.removeDigram(this.prev);
+            grammar.removeDigram(this);
             remove();
             linkTogether(this.prev, this.rule.dummy.next);
             linkTogether(this.rule.dummy.prev, this.next);
@@ -81,13 +84,14 @@ class NonTerminal extends Symbol {
 
     public boolean checkSubstRule(final Grammar grammar) {
         assert this.count >= 1;
+        // only works if rule is of length one...
         if (this.rule.dummy.next.next != this.rule.dummy)
             return false;
 
-        if (!(this.prev instanceof Dummy))
-            grammar.removeDigram(this.prev);
-        if (!(this.next instanceof Dummy))
-            grammar.removeDigram(this);
+        grammar.removeDigram(this.prev);
+        grammar.removeDigram(this);
+        
+        // replace this non-terminal with the right side of the rule
         final Symbol newSymbol = this.rule.dummy.next.clone();
         newSymbol.count *= this.count;
         remove();
@@ -99,25 +103,25 @@ class NonTerminal extends Symbol {
 
     @Override
     public boolean meltDigram(final Grammar grammar) {
-        if (this.next.getClass() != this.getClass())
-            return false;
-
-        final NonTerminal otherNonT = (NonTerminal) this.next;
-        if (otherNonT.rule.equals(this.rule)) {
-            final boolean hasPrev = !(this.prev instanceof Dummy);
-            final boolean hasNextNext = !(otherNonT.next instanceof Dummy);
-            if (hasPrev)
-                grammar.removeDigram(this.prev);
-            if (hasNextNext)
-                grammar.removeDigram(otherNonT);
-            this.count += otherNonT.count;
-            otherNonT.remove();
-            if (hasPrev)
-                grammar.checkDigram(this.prev);
-            if (hasNextNext)
-                grammar.checkDigram(this);
-            return true;
-        }
+    	if (this.next instanceof NonTerminal) {
+    		final NonTerminal otherNonT = (NonTerminal) this.next;
+    		// check if both non-terminals are the same rule
+    		if (otherNonT.rule.equals(this.rule)) {
+    			final boolean hasPrev = !(this.prev instanceof Dummy);
+    			final boolean hasNextNext = !(otherNonT.next instanceof Dummy);
+    			if (hasPrev)
+    				grammar.removeDigram(this.prev);
+    			if (hasNextNext)
+    				grammar.removeDigram(otherNonT);
+    			this.count += otherNonT.count;
+    			otherNonT.remove();
+    			if (hasPrev)
+    				grammar.checkDigram(this.prev);
+    			if (hasNextNext)
+    				grammar.checkDigram(this);
+    			return true;
+    		}
+    	}
         return false;
     }
 
