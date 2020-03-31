@@ -128,6 +128,22 @@ public class FaultLocalizerFactory {
 			return new M1<>();
 		case "m2":
 			return new M2<>();
+		case "nessa-2-04":
+			return new Nessa<>(2, 0.4);
+		case "nessa-2-09":
+			return new Nessa<>(2, 0.9);
+		case "nessa-3-04":
+			return new Nessa<>(3, 0.4);
+		case "nessa-3-09":
+			return new Nessa<>(3, 0.9);
+		case "nessa-2-04-true":
+			return new Nessa<>(2, 0.4, true);
+		case "nessa-3-04-true":
+			return new Nessa<>(3, 0.4, true);
+		case "nessa-2-09-true":
+			return new Nessa<>(2, 0.9, true);
+		case "nessa-3-09-true":
+			return new Nessa<>(3, 0.9, true);
 		case "ochiai2":
 			return new Ochiai2<>();
 		case "overlap":
