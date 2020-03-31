@@ -1,23 +1,8 @@
 package se.de.hu_berlin.informatik.gen.spectra.internal;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
-import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.internal.RunAllTestsAndGenSpectra.CmdOptions;
-import se.de.hu_berlin.informatik.gen.spectra.main.JaCoCoSpectraGenerator;
+import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.testlister.mining.TestMinerProcessor;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -32,33 +17,59 @@ import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
-public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends AbstractConsumingProcessor<OptionParser> {
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
-	public static final boolean TEST_DEBUG_OUTPUT = true;
-	private final AbstractSpectraGenerationFactory<T, R, S> factory;
-	
-	
-	public RunTestsAndGenSpectraProcessor(AbstractSpectraGenerationFactory<T,R,S> factory) {
-		Objects.requireNonNull(factory, "Factory is null.");
-		this.factory = factory;
-	}
+public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extends AbstractConsumingProcessor<OptionParser> {
 
-	@Override
-	public void consumeItem(OptionParser options) throws UnsupportedOperationException {
+    public static final boolean TEST_DEBUG_OUTPUT = true;
+    private final AbstractSpectraGenerationFactory<T, R, S> factory;
 
-		String[] pathsToBinaries = options.getOptionValues(CmdOptions.ORIGINAL_CLASSES_DIRS);
-		
+
+    public RunTestsAndGenSpectraProcessor(AbstractSpectraGenerationFactory<T, R, S> factory) {
+        Objects.requireNonNull(factory, "Factory is null.");
+        this.factory = factory;
+    }
+
+    private static Path getPathAndAddToURLs(String stringPath, List<URL> cpURLs) {
+        Path path = null;
+        if (stringPath != null) {
+            try {
+                path = new File(stringPath).toPath().toAbsolutePath();
+                if (path.toFile().exists()) {
+                    cpURLs.add(path.toFile().toURI().toURL());
+                } else {
+                    Log.err(RunTestsAndGenSpectraProcessor.class, "Path '%s' does not exist and will not be added to the class loader.", path);
+                }
+            } catch (MalformedURLException e) {
+                Log.err(RunTestsAndGenSpectraProcessor.class, e, "Could not parse URL from '%s'.", stringPath);
+            }
+        }
+        return path;
+    }
+
+    @Override
+    public void consumeItem(OptionParser options) throws UnsupportedOperationException {
+
+        String[] pathsToBinaries = options.getOptionValues(CmdOptions.ORIGINAL_CLASSES_DIRS);
+
 //		Log.out(RunTestsAndGenSpectra.class, "Project dir: '%s'.", Paths.get(options.getOptionValue(CmdOptions.PROJECT_DIR)));
 
-		final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
+        final String outputDir = options.isDirectory(CmdOptions.OUTPUT, false).toString();
 
-		final StatisticsCollector<StatisticsData> statisticsContainer = new StatisticsCollector<>(StatisticsData.class);
-		
+        final StatisticsCollector<StatisticsData> statisticsContainer = new StatisticsCollector<>(StatisticsData.class);
+
 		String testClassPath = options.hasOption(CmdOptions.TEST_CLASS_PATH) ? options.getOptionValue(CmdOptions.TEST_CLASS_PATH) : null;
-		
+
 		// assemble the necessary directories for running the tests
 		List<URL> cpURLs = new ArrayList<>();
-		
+
 		@SuppressWarnings("unused")
 		Path instrumentedDir = getPathAndAddToURLs(options.getOptionValue(CmdOptions.INSTRUMENTED_DIR), cpURLs);
 		@SuppressWarnings("unused")
@@ -66,7 +77,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 		for (String binaryPathString : pathsToBinaries) {
 			getPathAndAddToURLs(binaryPathString, cpURLs);
 		}
-		
+
 		if (testClassPath != null) {
 //			Log.out(RunTestsAndGenSpectra.class, testClassPath);
 			String[] cpArray = testClassPath.split(File.pathSeparator);
@@ -74,65 +85,67 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 				try {
 					cpURLs.add(new File(cpElement).getAbsoluteFile().toURI().toURL());
 				} catch (MalformedURLException e) {
-					Log.err(RunAllTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", cpElement);
-				}
+                    Log.err(this, e, "Could not parse URL from '%s'.", cpElement);
+                }
 //				break;
 			}
 		}
-		
+
 		List<URL> systemClassPathElements = new ClassPathParser().parseSystemClasspath().getUniqueClasspathElements();
 		List<URL> testRelatedElements = new ArrayList<>();
 		for (URL url : systemClassPathElements) {
-			String path = url.getPath().toLowerCase();
+            String path = url.getPath().toLowerCase();
 //			Log.out(this, "in classpath: %s", path);
-			// TODO: this is tool-specific...
-			if (path.contains("ant-junit") || path.contains("junit-4.12") 
-					|| path.contains("tracecobertura") || path.contains("trace-cobertura")
-					) {
-				Log.out(this, "added '%s' to start of classpath.", path);
-				testRelatedElements.add(url);
-			}
-		}
-		
+            // TODO: this is tool-specific...
+            if (path.contains("ant-junit") || path.contains("junit-4.12")
+                    || path.contains("tracecobertura") || path.contains("trace-cobertura")
+            ) {
+                Log.out(this, "added '%s' to start of classpath.", path);
+                testRelatedElements.add(url);
+            }
+        }
+
 		ClassPathParser classPathParser = new ClassPathParser();
 		// TODO: check if necessary..
 //		for (URL url : testRelatedElements) {
 //			classPathParser.addElementToClassPath(url);
 //		}
-		for (URL url : cpURLs) {
+        for (URL url : cpURLs) {
 //			String path = url.getPath().toLowerCase();
 //			Log.out(this, "in cpURLs: %s", path);
-			classPathParser.addElementToClassPath(url);
-		}
-		String changedTestClassPath = classPathParser.getClasspath();
-		
+            classPathParser.addElementToClassPath(url);
+        }
+        String changedTestClassPath = classPathParser.getClasspath();
+
 //		Log.out(RunTestsAndGenSpectra.class, classpath);
-		
-		// exclude junit classes to be able to extract the tests
-		ClassLoader testClassLoader = 
-				new ParentLastClassLoader(cpURLs, false
-						, "junit.runner", "junit.framework", "org.junit", "org.hamcrest", "java.lang", "java.util"
-						);
+
+        // exclude junit classes to be able to extract the tests
+        ClassLoader testClassLoader =
+                new ParentLastClassLoader(cpURLs, false
+                        , "junit.runner", "junit.framework", "org.junit", "org.hamcrest", "java.lang", "java.util"
+                );
 
 //		preLoadClasses(instrumentedDir, pathsToBinaries, testClassDir, testClassLoader, false);
-		
+
 //		preLoadClasses(instrumentedDir, pathsToBinaries, testClassDir, testClassLoader, true);
-		
+
 //		preLoadPrivateInnerClasses(instrumentedDir, pathsToBinaries, testClassDir, testClassLoader, true);
-//		
+//
 //		preLoadClasses(instrumentedDir, pathsToBinaries, testClassDir, Thread.currentThread().getContextClassLoader(), true);
-		
+
 //		Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
 
 		PipeLinker linker = new PipeLinker();
-		
-		Path testFile = null;
+
+        Path testFile = null;
 		// collect the tests
 		if (options.hasOption(CmdOptions.TEST_CLASS_LIST)) { //has option "tc"
-			testFile = options.isFile(CmdOptions.TEST_CLASS_LIST, true);
-			
-			Path testOutputFile = Paths.get(outputDir, "minedTests.txt");
-			linker.append(
+            testFile = options.isFile(CmdOptions.TEST_CLASS_LIST, true);
+            Log.out(this, "Mining tests from test class file: %s", testFile);
+
+            Path testOutputFile = Paths.get(outputDir, "minedTests.txt");
+
+            linker.append(1,
                     new FileLineProcessor<>(new StringProcessor<String>() {
                         private final Set<String> seenClasses = new HashSet<>();
                         private String clazz = null;
@@ -165,21 +178,22 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
 					new TestMinerProcessor(testClassLoader, false),
 					new StringsToFileWriter<TestWrapper>(testOutputFile , true));
 		} else { //has option "t"
-			testFile = options.isFile(CmdOptions.TEST_LIST, true);
-			
-			linker.append(
+            testFile = options.isFile(CmdOptions.TEST_LIST, true);
+            Log.out(this, "Mining tests from test file: %s", testFile);
+
+            linker.append(1,
                     new FileLineProcessor<>(testClassLoader, new StringProcessor<TestWrapper>() {
                         private TestWrapper testWrapper;
 
                         @Override
                         public boolean process(String testNameAndClass) {
-                        	if (testNameAndClass.startsWith("#")) {
-                        		return false;
-                        	}
+                            if (testNameAndClass.startsWith("#")) {
+                                return false;
+                            }
                             //format: test.class::testName
                             final String[] test = testNameAndClass.split("::");
                             if (test.length != 2) {
-                                Log.err(JaCoCoSpectraGenerator.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
+                                Log.err(RunTestsAndGenSpectraProcessor.class, "Wrong test identifier format: '" + testNameAndClass + "'.");
                                 return false;
                             } else {
                                 testWrapper = new TestWrapper(test[0], test[1], testClassLoader);
@@ -194,52 +208,35 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable,R,S> extends 
                             return temp;
                         }
                     }));
-		}
-		
-		// need a special class loader to run the tests...
-		ClassLoader testAndInstrumentClassLoader = testClassLoader;
-		
-		// run tests and collect reports based on used coverage tool
-		linker.append(
-				factory.getTestRunnerModule(options, testAndInstrumentClassLoader, changedTestClassPath, statisticsContainer)
+        }
+
+        // need a special class loader to run the tests...
+        ClassLoader testAndInstrumentClassLoader = testClassLoader;
+
+        // run tests and collect reports based on used coverage tool
+        linker.append(1,
+                factory.getTestRunnerModule(options, testAndInstrumentClassLoader, changedTestClassPath, statisticsContainer)
 //				.asPipe(instrumentedClassesLoader)
-				.asPipe().enableTracking().allowOnlyForcedTracks(),
-				factory.getReportToSpectraProcessor(options, statisticsContainer),
-				// save the resulting spectra + reduced/filtered spectra
-				factory.getSpectraProcessor(options))
-		.submitAndShutdown(testFile);
-		
-		// print some statistics and stuff...
-		EnumSet<StatisticsData> stringDataEnum = EnumSet.noneOf(StatisticsData.class);
+                        .asPipe(1).enableTracking().allowOnlyForcedTracks(),
+                factory.getReportToSpectraProcessor(options, statisticsContainer),
+                // save the resulting spectra + reduced/filtered spectra
+                factory.getSpectraProcessor(options))
+                .submitAndShutdown(testFile);
+
+        // print some statistics and stuff...
+        EnumSet<StatisticsData> stringDataEnum = EnumSet.noneOf(StatisticsData.class);
 		stringDataEnum.add(StatisticsData.ERROR_MSG);
 		stringDataEnum.add(StatisticsData.FAILED_TEST_COVERAGE);
 		String statsWithoutStringData = statisticsContainer.printStatistics(EnumSet.complementOf(stringDataEnum));
-		
-		Log.out(this, statsWithoutStringData);
-		
-		String stats = statisticsContainer.printStatistics(stringDataEnum);
+
+        Log.out(this, statsWithoutStringData);
+
+        String stats = statisticsContainer.printStatistics(stringDataEnum);
 		try {
 			FileUtils.writeStrings2File(Paths.get(outputDir, testFile.getFileName() + "_stats").toFile(), statsWithoutStringData, stats);
 		} catch (IOException e) {
-			Log.err(JaCoCoSpectraGenerator.class, "Can not write statistics to '%s'.", Paths.get(outputDir, testFile.getFileName() + "_stats"));
-		}
-	}
-	
-	private static Path getPathAndAddToURLs(String stringPath, List<URL> cpURLs) {
-		Path path = null;
-		if (stringPath != null) {
-			try {
-				path = new File(stringPath).toPath().toAbsolutePath();
-				if (path.toFile().exists()) {
-					cpURLs.add(path.toFile().toURI().toURL());
-				} else {
-					Log.err(RunAllTestsAndGenSpectra.class, "Path '%s' does not exist and will not be added to the class loader.", path);
-				}
-			} catch (MalformedURLException e) {
-				Log.err(RunAllTestsAndGenSpectra.class, e, "Could not parse URL from '%s'.", stringPath);
-			}
-		}
-		return path;
+            Log.err(this, "Can not write statistics to '%s'.", Paths.get(outputDir, testFile.getFileName() + "_stats"));
+        }
 	}
 	
 //	private static void preLoadPrivateInnerClasses(Path instrumentedDir, String[] pathsToBinaries, Path testClassDir,

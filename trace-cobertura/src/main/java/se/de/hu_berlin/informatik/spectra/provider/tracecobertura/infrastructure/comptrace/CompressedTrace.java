@@ -1,18 +1,12 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
-import java.util.Set;
-import java.util.UUID;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * An execution trace consists structurally of a list of executed nodes
@@ -65,36 +59,41 @@ public abstract class CompressedTrace<T,K> extends RepetitionMarkerBase implemen
 		}
 		if (getRepetitionMarkers() != null) {
 			// reverse the order of repetition marker levels (smallest first)
-			Collections.reverse(getRepetitionMarkers());
+			RepetitionMarkerWrapper[] temp = Arrays.copyOf(getRepetitionMarkers(), levelCount());
+			int j = temp.length - 1;
+			for (int i = 0; i < temp.length; i++, --j) {
+				getRepetitionMarkers()[i] = temp[j];
+			}
 		}
 	}
-	
-	public CompressedTrace(BufferedArrayQueue<T> traceOfNodeIDs, CompressedTrace<?,?> otherCompressedTrace) {
+
+	public CompressedTrace(BufferedArrayQueue<T> traceOfNodeIDs, CompressedTrace<?, ?> otherCompressedTrace) {
 		this.originalSize = otherCompressedTrace.size();
 		this.compressedTrace = traceOfNodeIDs;
 		setRepetitionMarkers(otherCompressedTrace.getRepetitionMarkers());
 	}
 
-	public CompressedTrace(BufferedArrayQueue<T> compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers) {
+	public CompressedTrace(BufferedArrayQueue<T> compressedTrace, List<Queue<Integer>> repetitionMarkers) {
 		this.compressedTrace = compressedTrace;
 		if (repetitionMarkers != null) {
 			int size = compressedTrace.size();
 			int index = 0;
 			while (index < repetitionMarkers.size()) {
-				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromArray(repetitionMarkers.get(index++), 
-						compressedTrace.getOutputDir(), 
-						compressedTrace.getFilePrefix() + "-map-" + index, compressedTrace.getArrayLength(),
+				BufferedMap<int[]> repMarkers = RepetitionMarkerBase.constructFromIntegerQueue(repetitionMarkers.get(index++),
+						compressedTrace.getOutputDir(),
+						compressedTrace.getFilePrefix() + "-map-" + index, ExecutionTraceCollector.MAP_CHUNK_SIZE,
 						compressedTrace.isDeleteOnExit());
 				// calculate the trace's size on the current level
-				for (Iterator<Entry<Integer, int[]>> iterator = repMarkers.entrySetIterator(); iterator.hasNext();) {
+				for (Iterator<Entry<Integer, int[]>> iterator = repMarkers.entrySetIterator(); iterator.hasNext(); ) {
 					Entry<Integer, int[]> repMarker = iterator.next();
 					// [length, repetitionCount]
-					size += (repMarker.getValue()[0] * (repMarker.getValue()[1]-1));
+					size += (repMarker.getValue()[0] * (repMarker.getValue()[1] - 1));
 				}
 				// add the level to the list
 				addRepetitionMarkers(repMarkers, size);
 			}
 			this.originalSize = size;
+			repetitionMarkers.clear();
 		} else {
 			this.originalSize = compressedTrace.size();
 		}

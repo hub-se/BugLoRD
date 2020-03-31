@@ -1,18 +1,19 @@
-package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
+package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.LevelState;
 
-public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> {
-	
-	private final CompressedTrace<T,?> trace;
-	private final LevelState[] levelStates;
-	
-	// level 0 is the lowest level
-	private int currentLevel = 0;
-	
-	public TraceReverseIterator(CompressedTrace<T,?> trace) {
-		this.trace = trace;
-		if (trace.getRepetitionMarkers() != null) {
+public class TraceReverseIterator implements ReplaceableCloneableIterator {
+
+    private final EfficientCompressedIntegerTrace trace;
+    private final LevelState[] levelStates;
+
+    // level 0 is the lowest level
+    private int currentLevel = 0;
+
+    public TraceReverseIterator(EfficientCompressedIntegerTrace trace) {
+        this.trace = trace;
+        if (trace.getRepetitionMarkers() != null) {
             levelStates = new LevelState[trace.levelCount() + 1];
             for (int i = 0; i < trace.levelCount() + 1; ++i) {
                 levelStates[i] = new LevelState(i);
@@ -26,29 +27,32 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
         } else {
             levelStates = new LevelState[]{new LevelState(0)};
         }
+//		if (trace.getCompressedTrace().size() - 1 > Integer.MAX_VALUE) {
+//			throw new IllegalStateException("Size of trace too large: " + trace.getCompressedTrace().size());
+//		}
         levelStates[0].indexState[0] = trace.getCompressedTrace().size() - 1;
         resetCurrentLevel();
     }
-	
-	// clone constructor
-	private TraceReverseIterator(TraceReverseIterator<T> iterator) {
-		this.trace = iterator.trace;
-		levelStates = LevelState.copy(iterator.levelStates);
-		this.currentLevel = iterator.currentLevel;
-	}
 
-	public TraceReverseIterator<T> clone() {
-		return new TraceReverseIterator<>(this);
-	}
+    // clone constructor
+    private TraceReverseIterator(TraceReverseIterator iterator) {
+        this.trace = iterator.trace;
+        levelStates = LevelState.copy(iterator.levelStates);
+        this.currentLevel = iterator.currentLevel;
+    }
 
-	@Override
-	public boolean hasNext() {
+    public TraceReverseIterator clone() {
+        return new TraceReverseIterator(this);
+    }
+
+    @Override
+    public boolean hasNext() {
         return levelStates[0].indexState[0] > -1;
     }
 
-	@Override
-	public T next() {
-		if (currentLevel <= 0) {
+    @Override
+    public int next() {
+        if (currentLevel <= 0) {
             resetCurrentLevel();
 //			System.out.println("s: 0, " + levelStates[0].indexState[0]);
             return trace.getCompressedTrace().get(levelStates[0].indexState[0]--);
@@ -62,7 +66,7 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
                     ++levelStates[currentLevel].repetitionState[2];
                     if (levelStates[currentLevel].repetitionState[2] < levelStates[currentLevel].repetitionState[1]) {
                         // still an iteration to go
-                        T lastElementOfRepetition = peek();
+                        int lastElementOfRepetition = peek();
                         // reset to previous reset point
                         LevelState.resetState(levelStates, currentLevel);
                         resetCurrentLevel();
@@ -111,7 +115,7 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 		currentLevel = levelStates.length - 1;
 	}
 
-	public T peek() {
+	public int peek() {
         return trace.getCompressedTrace().get(levelStates[0].indexState[0]);
     }
 
@@ -142,7 +146,7 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 	}
 
 	@Override
-	public T processNextAndReplaceWithResult(Function<T, T> function) {
+	public int processNextAndReplaceWithResult(Function<Integer, Integer> function) {
 		if (currentLevel <= 0) {
             resetCurrentLevel();
             return trace.getCompressedTrace().getAndReplaceWith(levelStates[0].indexState[0]--, function);
@@ -156,7 +160,7 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
                     ++levelStates[currentLevel].repetitionState[2];
                     if (levelStates[currentLevel].repetitionState[2] < levelStates[currentLevel].repetitionState[1]) {
                         // still an iteration to go
-                        T lastElementOfRepetition = peek();
+                        int lastElementOfRepetition = peek();
                         // reset to previous reset point
                         LevelState.resetState(levelStates, currentLevel);
                         resetCurrentLevel();
@@ -198,10 +202,5 @@ public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> 
 			}
 		}
 	}
-
-    @Override
-    public void setToPosition(long i) {
-        throw new UnsupportedOperationException();
-    }
 
 }

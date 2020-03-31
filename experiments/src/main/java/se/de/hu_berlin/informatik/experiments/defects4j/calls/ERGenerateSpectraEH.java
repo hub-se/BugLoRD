@@ -1,12 +1,5 @@
 package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
-
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
@@ -23,17 +16,24 @@ import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
-import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Date;
+import java.util.List;
+
 /**
  * Runs a single experiment.
- * 
+ *
  * @author Simon Heiden
  */
-public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
+public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
 
 	private String suffix;
 	final private int port;
@@ -318,20 +318,22 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		.setSourceDir(buggyMainSrcDir)
 		.setTestClassDir(buggyTestBinDir)
 		.setTestClassPath(buggyTestCP)
-		.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString())
-		.setOutputDir(rankingDir.toString())
-		.setTestClassList(testClassesFile)
-		.setFailingTests(failingTests)
+				.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString())
+				.setOutputDir(rankingDir.toString())
+				.setTestClassList(testClassesFile)
+				.setFailingTests(failingTests)
 //		.useSeparateJVM(true)
-		.useJava7only(Boolean.valueOf(Defects4JProperties.ALWAYS_USE_JAVA7.getValue()))
+				.useJava7only(Boolean.valueOf(Defects4JProperties.ALWAYS_USE_JAVA7.getValue()))
 //		.setTimeout(5000L)
-		//~139h
-		.setTimeout(500000L)
-		.setTestRepeatCount(1)
-		.setMaxErrors(2);
+				//~139h
+				.setTimeout(500000L)
+				.setTestRepeatCount(1)
+				.setMaxErrors(0);
+
+		long startTime = new Date().getTime();
 
 		builder
-		.run();
+				.run();
 
 		File spectraFile = rankingDir.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();
 		if (!spectraFile.exists()) {
@@ -340,7 +342,10 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>,B
 		} else {
 			Log.out(this, "%s: Generating spectra was successful!", buggyEntity);
 		}
-		
+		long endTime = new Date().getTime();
+
+		Log.out(this, "%s: Execution time: %s", buggyEntity, Misc.getFormattedTimerString(endTime - startTime));
+
 		// filtering is already done beforehand
 //		Log.out(this, "%s: Reloading spectra for filtering...", buggyEntity);
 //		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraFile.toPath());

@@ -1,27 +1,8 @@
 package se.de.hu_berlin.informatik.spectra.util;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.zip.ZipException;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemErrRule;
-
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
@@ -37,19 +18,25 @@ import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLPro
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.zip.ZipException;
+
+import static org.junit.Assert.*;
+
 /**
  * @author SimHigh
- *
  */
 public class SpectraFileUtilsTest extends TestSettings {
 
-	/**
-	 */
-	@BeforeClass
+    /**
+     */
+    @BeforeClass
 	public static void setUpBeforeClass() {
 	}
 
@@ -181,25 +168,41 @@ public class SpectraFileUtilsTest extends TestSettings {
         
         traceCollector.addRawTraceToPool(trace.getIndex(), 0, rawTrace, false, outputDir, "t1", idToSubTraceMap);
         traceCollector.getIndexer().getSequences();
-        
+
 //        System.out.println(traceCollector.getGsTree());
-        
+
         List<ExecutionTrace> executionTraces = traceCollector.calculateExecutionTraces(trace.getIndex(), false);
         for (ExecutionTrace eTrace : executionTraces) {
-        	System.out.println(eTrace.getCompressedTrace());
-        	trace.addExecutionTrace(eTrace);
+            System.out.println(eTrace.getCompressedTrace());
+            trace.addExecutionTrace(eTrace);
         }
         assertFalse(trace.getExecutionTraces().isEmpty());
-        
-        spectra.setIndexer(new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences));
-        
-        int[] trace1 = executionTraces.get(0).reconstructFullMappedTrace(spectra.getIndexer());
-        
+
+        SimpleIntIndexerCompressed indexer = new SimpleIntIndexerCompressed(subTraceIdSequences, nodeIdSequences);
+        spectra.setIndexer(indexer);
+
+        ExecutionTrace executionTrace = executionTraces.get(0);
+        int[] trace1 = executionTrace.reconstructFullMappedTrace(spectra.getIndexer());
+
         Log.out(this, Arrays.toString(trace1));
         assertEquals(18, trace1.length);
 
-        assertArrayEquals(s(1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9), trace1);
-        
+        Iterator<Integer> iterator = executionTrace.mappedIterator(indexer);
+        int count = 0;
+        while (iterator.hasNext()) {
+            assertEquals(trace1[count++], iterator.next().intValue());
+        }
+        assertEquals(trace1.length, count);
+
+        Iterator<Integer> iterator2 = executionTrace.mappedReverseIterator(indexer);
+        count = 18;
+        while (iterator2.hasNext()) {
+            assertEquals(trace1[--count], iterator2.next().intValue());
+        }
+        assertEquals(0, count);
+
+        assertArrayEquals(s(1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9), trace1);
+
 //        try {
 //			traceCollector.finalize();
 //		} catch (Throwable e) {
@@ -207,8 +210,8 @@ public class SpectraFileUtilsTest extends TestSettings {
 //			e.printStackTrace();
 //		}
 
-		Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
-		SpectraFileUtils.saveSpectraToZipFile(spectra, output1, true, false, true);
+        Path output1 = Paths.get(getStdTestDir(), "spectra_block.zip");
+        SpectraFileUtils.saveSpectraToZipFile(spectra, output1, true, false, true);
 		Log.out(this, "saved...");
 		
 		ISpectra<SourceCodeBlock, ?> spectra2 = SpectraFileUtils.loadBlockSpectraFromZipFile(output1);

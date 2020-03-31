@@ -1,15 +1,15 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntArrayIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ExecutionTraceCollector;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntArrayIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
 
 public class IntGSArrayTree {
 	
@@ -25,10 +25,10 @@ public class IntGSArrayTree {
 		return new int[size];
 	}
 
-	IntGSArrayTreeNode newTreeNode(IntGSArrayTree treeReference,
-			ReplaceableCloneableIntIterator unprocessedIterator, int i) {
-		return new IntGSArrayTreeNode(treeReference, unprocessedIterator, i);
-	}
+    IntGSArrayTreeNode newTreeNode(IntGSArrayTree treeReference,
+                                   ReplaceableCloneableIterator unprocessedIterator, int i) {
+        return new IntGSArrayTreeNode(treeReference, unprocessedIterator, i);
+    }
 
 	IntGSArrayTreeNode newTreeNode(IntGSArrayTree treeReference,
 			int[] remainingSequence, List<IntGSArrayTreeNode> existingEdges) {
@@ -48,57 +48,57 @@ public class IntGSArrayTree {
 	
 	public int getEndNodeCount() {
 		return endNodeCount;
-	}
-	
-	public boolean addSequence(int[] sequence) {
-		if (sequence == null) {
-			return false;
-		}
-		
-		return __addSequence(new IntArrayIterator(sequence), sequence.length);
-	}
-	
-	public boolean addSequence(ReplaceableCloneableIntIterator unprocessedIterator, int length) {
-		if (unprocessedIterator == null) {
-			return false;
-		}
+    }
 
-		return __addSequence(unprocessedIterator, length);
-	}
-	
-	boolean __addSequence(ReplaceableCloneableIntIterator unprocessedIterator, int length) {
-		if (length == 0) {
-			System.out.println("adding empty sequence..."); // this should not occur, normally
-			if (!branches.containsKey(END_NODE)) {
-				branches.put(END_NODE, getNewEndNode());
-			}
-			return true;
-		}
-		int firstElement = unprocessedIterator.peek();
-		
-		return __addSequence(unprocessedIterator, length, firstElement);
-	}
-	
-	boolean __addSequence(ReplaceableCloneableIntIterator unprocessedIterator, int length, int firstElement) {
-		IntGSArrayTreeNode startingNode = branches.get(firstElement);
-		if (startingNode == null) {
-			return addSequenceInNewBranch(unprocessedIterator, length, firstElement);
-		} else {
+    public boolean addSequence(int[] sequence) {
+        if (sequence == null) {
+            return false;
+        }
+
+        return __addSequence(new IntArrayIterator(sequence), sequence.length);
+    }
+
+    public boolean addSequence(ReplaceableCloneableIterator unprocessedIterator, int length) {
+        if (unprocessedIterator == null) {
+            return false;
+        }
+
+        return __addSequence(unprocessedIterator, length);
+    }
+
+    boolean __addSequence(ReplaceableCloneableIterator unprocessedIterator, int length) {
+        if (length == 0) {
+            System.out.println("adding empty sequence..."); // this should not occur, normally
+            if (!branches.containsKey(END_NODE)) {
+                branches.put(END_NODE, getNewEndNode());
+            }
+            return true;
+        }
+        int firstElement = unprocessedIterator.peek();
+
+        return __addSequence(unprocessedIterator, length, firstElement);
+    }
+
+    boolean __addSequence(ReplaceableCloneableIterator unprocessedIterator, int length, int firstElement) {
+        IntGSArrayTreeNode startingNode = branches.get(firstElement);
+        if (startingNode == null) {
+            return addSequenceInNewBranch(unprocessedIterator, length, firstElement);
+        } else {
 //			System.out.println("adding existing: " + firstElement);
-			// branch with this starting element already exists
-			startingNode.addSequence(unprocessedIterator, length);
-			return true;
-		}
-	}
+            // branch with this starting element already exists
+            startingNode.addSequence(unprocessedIterator, length);
+            return true;
+        }
+    }
 
-	public boolean addSequenceInNewBranch(ReplaceableCloneableIntIterator unprocessedIterator, int length,
-			int firstElement) {
-		// new starting element
+    public boolean addSequenceInNewBranch(ReplaceableCloneableIterator unprocessedIterator, int length,
+                                          int firstElement) {
+        // new starting element
 //			System.out.println("new start: " + firstElement);
-		branches.put(firstElement, newTreeNode(this, unprocessedIterator, length));
-		return true;
-	}
-	
+        branches.put(firstElement, newTreeNode(this, unprocessedIterator, length));
+        return true;
+    }
+
 //	public int getSequenceIndex(IntArraySequenceIndexer indexer, SingleLinkedArrayQueue<T> sequence) {
 //		if (sequence == null) {
 //			return BAD_INDEX;
@@ -191,40 +191,40 @@ public class IntGSArrayTree {
 			return new ExecutionTrace(
 					rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
 					ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
-		}
-		
-		if (!indexer.isIndexed()) {
-			indexer.generateSequenceIndex();
-		}
-		
-		ExecutionTrace indexedtrace = new ExecutionTrace(
-				rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(), 
-				ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
-		
-		IntTraceIterator iterator = rawTrace.iterator();
-		int startElement = iterator.next();
-		while (startElement != SUCC_END) {
-			startElement = addNextSequenceIndexToTrace(indexer, startElement, iterator, indexedtrace);
-			if (startElement == BAD_INDEX) {
-				System.err.flush();
-				throw new IllegalStateException("Could not get index for a sequence in the input trace.");
-			}
-		}
+        }
 
-		return indexedtrace;
+        if (!indexer.isIndexed()) {
+            indexer.generateSequenceIndex();
+        }
+
+        ExecutionTrace indexedtrace = new ExecutionTrace(
+                rawTrace.getCompressedTrace().getOutputDir(), UUID.randomUUID().toString(),
+                ExecutionTraceCollector.EXECUTION_TRACE_CHUNK_SIZE, ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
+
+        TraceIterator iterator = rawTrace.iterator();
+        int startElement = iterator.next();
+        while (startElement != SUCC_END) {
+            startElement = addNextSequenceIndexToTrace(indexer, startElement, iterator, indexedtrace);
+            if (startElement == BAD_INDEX) {
+                System.err.flush();
+                throw new IllegalStateException("Could not get index for a sequence in the input trace.");
+            }
+        }
+
+        return indexedtrace;
 	}
-	
-	public int addNextSequenceIndexToTrace(IntArraySequenceIndexer indexer, int firstElement, 
-			IntTraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
-		IntGSArrayTreeNode startingNode = branches.get(firstElement);
-		if (startingNode != null) {
-			// some sequence with this starting element exists in the tree
-			return startingNode.getNextSequenceIndex(indexer, rawTraceIterator, indexedtrace);
-		} else {
-			// no sequence with this starting element exists in the tree
-			System.err.println("No sequence starting with " + firstElement);
-			return BAD_INDEX;
-		}
-	}
+
+    public int addNextSequenceIndexToTrace(IntArraySequenceIndexer indexer, int firstElement,
+                                           TraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
+        IntGSArrayTreeNode startingNode = branches.get(firstElement);
+        if (startingNode != null) {
+            // some sequence with this starting element exists in the tree
+            return startingNode.getNextSequenceIndex(indexer, rawTraceIterator, indexedtrace);
+        } else {
+            // no sequence with this starting element exists in the tree
+            System.err.println("No sequence starting with " + firstElement);
+            return BAD_INDEX;
+        }
+    }
 	
 }

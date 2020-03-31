@@ -9,14 +9,14 @@
 
 package se.de.hu_berlin.informatik.spectra.core;
 
+import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
+import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
+import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
+
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
-import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
-import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 
 
 /**
@@ -75,21 +75,43 @@ public interface ISpectra<T, K extends ITrace<T>> {
      * @return the spectra node object for the identifier, if existing; null otherwise
      */
     public INode<T> getNode(int index);
-    
+
     /**
      * Removes (deletes) a node from the spectra.
      *
-     * @param identifier
-     *            identifier
+     * @param identifier identifier
      * @return true if successful, false otherwise
      */
     public boolean removeNode(T identifier);
 
     /**
+     * Removes (deletes) a node from the spectra.
+     *
+     * @param index index
+     * @return true if successful, false otherwise
+     */
+    public boolean removeNode(int index);
+
+    /**
+     * Removes (deletes) the given nodes from the spectra.
+     *
+     * @param identifiers identifiers
+     * @return true if successful, false otherwise
+     */
+    public boolean removeNodes(Collection<T> identifiers);
+
+    /**
+     * Removes (deletes) the given nodes from the spectra.
+     *
+     * @param indices indices
+     * @return true if successful, false otherwise
+     */
+    public boolean removeNodesByIndex(Collection<Integer> indices);
+
+    /**
      * Checks whether the node with the given identifier is present in the current spectra.
      *
-     * @param identifier
-     *            of the node
+     * @param identifier of the node
      * @return true if it is present, false otherwise
      */
     public boolean hasNode(T identifier);

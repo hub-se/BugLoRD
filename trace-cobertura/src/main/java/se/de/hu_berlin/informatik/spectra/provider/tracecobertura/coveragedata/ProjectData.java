@@ -2,11 +2,11 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileLocker;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
@@ -88,48 +88,58 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 	 * the map of IDs to class names, as used by cobertura
 	 */
 	public String[] getIdToClassNameMap() {
-		if (idToClassName == null) {
-			generateClassIdToClassNameMap();
-		}
-		return idToClassName;
-	}
+        if (idToClassName == null) {
+            generateClassIdToClassNameMap();
+        }
+        return idToClassName;
+    }
 
-	/**
-	 * This collection is used for quicker access to the list of classes.
-	 */
-	private final Map<String, ClassData> classes = new HashMap<>();
+    /**
+     * This collection is used for quicker access to the list of classes.
+     */
+    private final Map<String, ClassData> classes = new HashMap<>();
 
-	public void addClassData(ClassData classData) {
-		lock.lock();
-		try {
-			String packageName = classData.getPackageName();
-			PackageData packageData = (PackageData) children.get(packageName);
-			if (packageData == null) {
-				packageData = new PackageData(packageName);
-				// Each key is a package name, stored as an String object.
-				// Each value is information about the package, stored as a PackageData object.
-				this.children.put(packageName, packageData);
-			}
-			packageData.addClassData(classData);
-			this.classes.put(classData.getName(), classData);
-		} finally {
-			lock.unlock();
-		}
-	}
+    /**
+     * This collection is used for quicker access to the list of classes.
+     */
+    private final Map<Integer, ClassData> classes2 = new HashMap<>();
 
-	public ClassData getClassData(String name) {
-		return this.classes.get(name);
-	}
+    public void addClassData(ClassData classData) {
+        lock.lock();
+        try {
+            String packageName = classData.getPackageName();
+            PackageData packageData = (PackageData) children.get(packageName);
+            if (packageData == null) {
+                packageData = new PackageData(packageName);
+                // Each key is a package name, stored as an String object.
+                // Each value is information about the package, stored as a PackageData object.
+                this.children.put(packageName, packageData);
+            }
+            packageData.addClassData(classData);
+            this.classes.put(classData.getName(), classData);
+            this.classes2.put(classData.getClassId(), classData);
+        } finally {
+            lock.unlock();
+        }
+    }
 
-	/*
-	 * This is called by instrumented bytecode.
-	 */
-	public ClassData getOrCreateClassData(String name, int classId) {
-		lock.lock();
-		try {
-			ClassData classData = this.classes.get(name);
-			if (classData == null) {
-				classData = new ClassData(name, classId);
+    public ClassData getClassData(String name) {
+        return this.classes.get(name);
+    }
+
+    public ClassData getClassData(int classId) {
+        return this.classes2.get(classId);
+    }
+
+    /*
+     * This is called by instrumented bytecode.
+     */
+    public ClassData getOrCreateClassData(String name, int classId) {
+        lock.lock();
+        try {
+            ClassData classData = this.classes.get(name);
+            if (classData == null) {
+                classData = new ClassData(name, classId);
 				addClassData(classData);
 			}
 			return classData;
@@ -297,7 +307,9 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 
             for (String key : projectData.classes.keySet()) {
                 if (!this.classes.containsKey(key)) {
-                    this.classes.put(key, projectData.classes.get(key));
+                    ClassData data = projectData.classes.get(key);
+                    this.classes.put(key, data);
+                    this.classes2.put(data.getClassId(), data);
                 }
             }
 		} finally {
@@ -644,7 +656,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 			idToClassName = new String[getMaxClassId()+1];
 			
 			for (ClassData classData : getClasses()) {
-				idToClassName[classData.getClassId()] = classData.getName();
+                idToClassName[classData.getClassId()] = classData.getName().replace('/', '.');
 			}
 		} finally {
 			lock.unlock();

@@ -1,11 +1,11 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map.Entry;
-
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 
 /**
  * Stores/handles repetition markers for compressed traces.
@@ -13,20 +13,23 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 public class RepetitionMarkerWrapper implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 5549208997766294856L;
 
 	private BufferedMap<int[]> repetitionMarkers;
 	private BufferedMap<int[]> backwardsRepetitionMarkers;
-	
-	private int traceSize;
-	
+
+	private long traceSize;
+
 	protected RepetitionMarkerWrapper() {
-		
+
 	}
-	
-	public RepetitionMarkerWrapper(BufferedMap<int[]> traceRepetitions, int originalTraceSize) {
+
+	public RepetitionMarkerWrapper(BufferedMap<int[]> traceRepetitions, long originalTraceSize) {
+//		if (originalTraceSize > Integer.MAX_VALUE) {
+//			throw new IllegalStateException("Trace size too large: " + originalTraceSize);
+//		}
 		this.repetitionMarkers = traceRepetitions;
 		this.traceSize = originalTraceSize;
 	}
@@ -34,19 +37,19 @@ public class RepetitionMarkerWrapper implements Serializable {
 	protected static BufferedMap<int[]> constructFromArray(int[] repetitionMarkers, File outputDir, String filePreix, int subMapSize, boolean deleteOnExit) {
 		BufferedMap<int[]> map = new RepetitionMarkerBufferedMap(outputDir, filePreix, subMapSize, deleteOnExit);
 		for (int i = 0; i < repetitionMarkers.length; i += 3) {
-			map.put(repetitionMarkers[i], new int[] {repetitionMarkers[i+1], repetitionMarkers[i+2]});
+			map.put(repetitionMarkers[i], new int[]{repetitionMarkers[i + 1], repetitionMarkers[i + 2]});
 		}
 		return map;
 	}
-	
-	protected void setTraceSize(int size) {
+
+	protected void setTraceSize(long size) {
 		this.traceSize = size;
 	}
-	
-	public int traceSize() {
+
+	public long traceSize() {
 		return traceSize;
 	}
-	
+
 	protected void setRepetitionMarkers(BufferedMap<int[]> repetitionMarkers) {
 		this.repetitionMarkers = repetitionMarkers;
 	}
@@ -71,7 +74,7 @@ public class RepetitionMarkerWrapper implements Serializable {
 	}
 	
 	private void generateBackwardsRepetitionMarkers() {
-		backwardsRepetitionMarkers = new BufferedMap<>(repetitionMarkers.getOutputDir(), 
+		backwardsRepetitionMarkers = new RepetitionMarkerBufferedMap(repetitionMarkers.getOutputDir(),
 				"rev_" + repetitionMarkers.getFilePrefix(), repetitionMarkers.getMaxSubMapSize(), repetitionMarkers.isDeleteOnExit());
 		Iterator<Entry<Integer, int[]>> entrySetIterator = repetitionMarkers.entrySetIterator();
 		while (entrySetIterator.hasNext()) {

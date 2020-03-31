@@ -1,24 +1,19 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
-import java.util.Set;
-
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-
+import org.objectweb.asm.*;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
+
+import java.util.Set;
 
 
 public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
-		implements
-			CodeProvider {
+        implements
+        CodeProvider {
 
-	private final boolean collectExecutionTrace;
-	private Set<Integer> statementsToInstrument;
+    private final boolean collectExecutionTrace;
+    private Set<Integer> statementsToInstrument;
 
-	public ExecutionTracesOnlyCodeProvider(Set<Integer> statementsToInstrument, boolean collectExecutionTrace) {
+    public ExecutionTracesOnlyCodeProvider(Set<Integer> statementsToInstrument, boolean collectExecutionTrace) {
 		this.statementsToInstrument = statementsToInstrument;
 		this.collectExecutionTrace = collectExecutionTrace;
 	}
@@ -77,8 +72,8 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 //				.getInternalName(ExecutionTraceCollector.class), "processLastSubTrace",
 //				"()V");
 		nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-		.getInternalName(ExecutionTraceCollector.class), "visitedCatchBlock",
-		"()V");
+                        .getInternalName(ExecutionTraceCollector.class), "startNewSubTrace",
+                "()V");
 	}
 	
 	

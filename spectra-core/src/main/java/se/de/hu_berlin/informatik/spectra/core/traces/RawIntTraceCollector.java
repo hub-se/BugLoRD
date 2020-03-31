@@ -1,16 +1,8 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.function.Supplier;
-import java.util.zip.ZipException;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
@@ -22,10 +14,16 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.zip.ZipException;
+
 public class RawIntTraceCollector {
-	
-	private static final String RAW_TRACE_FILE_EXTENSION = ".raw";
-	private static final String REP_MARKER_FILE_EXTENSION = ".rep";
+
+    private static final String RAW_TRACE_FILE_EXTENSION = ".raw";
+    private static final String REP_MARKER_FILE_EXTENSION = ".rep";
 //	private static final String EXEC_TRACE_FILE_EXTENSION = ".exec";
 
 //	/**
@@ -111,22 +109,22 @@ public class RawIntTraceCollector {
 	private void addTrace(int traceIndex, int threadId, 
 			EfficientCompressedIntegerTrace eTrace,
 			Map<Integer, EfficientCompressedIntegerTrace> map) {
-		
-		boolean error = false;
-		for (ReplaceableCloneableIntIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
-			// check if all IDs are actually stored in the map
-			Integer id = iterator.next();
-			if (!map.containsKey(id)) {
-				// this should definitely not happen!
-				error = true;
-				System.err.println(traceIndex + "-" + threadId + ": No sub trace mapping found for id " + id);
-			}
-		}
-		
-		if (error) {
-			throw new IllegalStateException("No sub trace mapping found for some ID(s).");
-		}
-		
+
+//		boolean error = false;
+//		for (ReplaceableCloneableIterator iterator = eTrace.baseIterator(); iterator.hasNext();) {
+//			// check if all IDs are actually stored in the map
+//			Integer id = iterator.next();
+//			if (!map.containsKey(id)) {
+//				// this should definitely not happen!
+//				error = true;
+//				System.err.println(traceIndex + "-" + threadId + ": No sub trace mapping found for id " + id);
+//			}
+//		}
+//		
+//		if (error) {
+//			throw new IllegalStateException("No sub trace mapping found for some ID(s).");
+//		}
+
 //		// the next few commands are necessary to ensure consistency in sub trace ids!!!
 //		// each project data comes potentially with its own mapping from ids to sub traces...
 //		// so we need to get the respective ids for existing sub traces and produce 
@@ -134,8 +132,8 @@ public class RawIntTraceCollector {
 //		Map<Integer,Integer> localIdToGlobalIdMap = getAndCreateSubTraceIdMapping(map, output.getParent());
 //		// and then replace all local ids with the global ones...
 //		globalizeTrace(eTrace, localIdToGlobalIdMap);
-		
-		// collect raw trace
+
+        // collect raw trace
 		String traceFileName = traceIndex + "-" + threadId + RAW_TRACE_FILE_EXTENSION;
 		String repMarkerFileName = traceIndex + "-" + threadId + REP_MARKER_FILE_EXTENSION;
 		// avoid storing traces in memory...
@@ -194,14 +192,14 @@ public class RawIntTraceCollector {
 //		}
 //		return subTraceIdMapping;
 //	}
-	
-	private Map<Integer, EfficientCompressedIntegerTrace> getNewSubTraceMap(Path tempDir) {
-		return new HashMap<>();
-//		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
-//		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
-//				String.valueOf(UUID.randomUUID()), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
-	}
-	
+
+//	private Map<Integer, EfficientCompressedIntegerTrace> getNewSubTraceMap(Path tempDir) {
+//		return new HashMap<>();
+////		// can delete buffered map on exit, due to no necessary serialization?? TODO check if correct...
+////		return new BufferedMap<>(tempDir.toAbsolutePath().toFile(), 
+////				String.valueOf(UUID.randomUUID()), ExecutionTraceCollector.MAP_CHUNK_SIZE, true);
+//	}
+
 //	// TODO reuse (parts of) the more or less identical method in ExecutionTraceCollector?
 //	private int getOrCreateIdForSubTrace(EfficientCompressedIntegerTrace compressedLongTraceBase) {
 //		if (compressedLongTraceBase == null || compressedLongTraceBase.size() == 0) {
@@ -389,27 +387,27 @@ public class RawIntTraceCollector {
 								.replace(RAW_TRACE_FILE_EXTENSION, REP_MARKER_FILE_EXTENSION));
 
 //				extractCommonSequencesFromRawTrace(executionTrace.iterator());
-				// it should suffice to only iterate over the compressed traces...
-				// (if not, we will try processing the entire sequence later, when generating the execution traces)
-				extractCommonSequencesFromRawTrace(rawTrace.baseIterator());
-				rawTrace = null;
-			}
-		} catch (Exception e) {
-			Log.abort(this, e, "Error reading or processing raw traces from zip file.");
-		}
-	}
+                // it should suffice to only iterate over the compressed traces...
+                // (if not, we will try processing the entire sequence later, when generating the execution traces)
+                extractCommonSequencesFromRawTrace(rawTrace.baseIterator());
+                rawTrace = null;
+            }
+        } catch (Exception e) {
+            Log.abort(this, e, "Error reading or processing raw traces from zip file.");
+        }
+    }
 
-	private void extractCommonSequencesFromRawTrace(ReplaceableCloneableIntIterator replaceableCloneableIntIterator) {
-		if (indexer != null) {
-			indexer.reset();
-		}
-		// remember starting position
-		ReplaceableCloneableIntIterator unprocessedIterator = replaceableCloneableIntIterator.clone();
-		int processedElements = 0;
-		while (replaceableCloneableIntIterator.hasNext()) {
-			Integer element = replaceableCloneableIntIterator.peek();
+    private void extractCommonSequencesFromRawTrace(ReplaceableCloneableIterator replaceableCloneableIntIterator) {
+        if (indexer != null) {
+            indexer.reset();
+        }
+        // remember starting position
+        ReplaceableCloneableIterator unprocessedIterator = replaceableCloneableIntIterator.clone();
+        int processedElements = 0;
+        while (replaceableCloneableIntIterator.hasNext()) {
+            Integer element = replaceableCloneableIntIterator.peek();
 //			System.out.println("next: " + element);
-			// TODO prevent negative elements!
+            // TODO prevent negative elements!
 //			if (element < 0) {
 //				// check if the element is a correct id, which has to be positive (atm) TODO
 //				// this may mark elements which shall be ignored/skipped when executing exactly this method...

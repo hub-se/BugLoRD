@@ -3,32 +3,18 @@
  */
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.RandomAccessFile;
+import org.junit.*;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
+
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
 import java.util.Random;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue.Type;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableLongIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 
 
 /**
@@ -186,22 +172,22 @@ public class BufferedArrayQueueTest {
 		
 		queue.clear(100);
 		Assert.assertEquals(0, queue.size());
-		
+
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
 		queue.sleep();
 //		
 		queue.clear(6);
-		
+
 //		Thread.sleep(5000);
-		ReplaceableCloneableIntIterator iterator = queue.iterator();
-		
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator iterator = queue.iterator();
+
 		int i = 6;
 		while (iterator.hasNext()) {
 			Assert.assertEquals(i++, iterator.next());
 		}
-		Assert.assertEquals(50,i);
+		Assert.assertEquals(50, i);
 		queue.clear();
 	}
 	
@@ -249,25 +235,25 @@ public class BufferedArrayQueueTest {
 		queue.clear(10);
 		Assert.assertEquals(40, queue.size());
 		queue.sleep();
-		
+
 		queue.clear(13);
 		Assert.assertEquals(27, queue.size());
 		queue.sleep();
-		
+
 		Assert.assertEquals(23, queue.get(0));
 		Assert.assertEquals(25, queue.get(2));
 		Assert.assertEquals(40, queue.get(17));
 		queue.sleep();
-		
-		ReplaceableCloneableIntIterator iterator = queue.iterator();
-		
+
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator iterator = queue.iterator();
+
 		int i = 23;
 		while (iterator.hasNext()) {
 //			System.out.println(iterator.next());
 			Assert.assertEquals(i++, iterator.next());
 		}
 		queue.sleep();
-		
+
 		queue.remove();
 		queue.element();
 		
@@ -294,23 +280,23 @@ public class BufferedArrayQueueTest {
 		
 		queue.clear(100);
 		Assert.assertEquals(0, queue.size());
-		
+
 		for (int i = 0; i < 50; ++i) {
 			queue.add(i);
 		}
 		queue.sleep();
 //		
 		queue.clear(6);
-		
+
 //		Thread.sleep(5000);
-		ReplaceableCloneableLongIterator iterator = queue.iterator();
-		
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableIterator iterator = queue.iterator();
+
 		int i = 6;
 		while (iterator.hasNext()) {
 			Assert.assertEquals(i++, iterator.next());
 		}
-		Assert.assertEquals(50,i);
-		
+		Assert.assertEquals(50, i);
+
 		queue.clear();
 	}
 	
@@ -339,25 +325,25 @@ public class BufferedArrayQueueTest {
 		queue.clear(10);
 		Assert.assertEquals(40, queue.size());
 		queue.sleep();
-		
+
 		queue.clear(13);
 		Assert.assertEquals(27, queue.size());
 		queue.sleep();
-		
+
 		Assert.assertEquals(23, queue.get(0));
 		Assert.assertEquals(25, queue.get(2));
 		Assert.assertEquals(40, queue.get(17));
 		queue.sleep();
-		
-		ReplaceableCloneableLongIterator iterator = queue.iterator();
-		
+
+		se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableIterator iterator = queue.iterator();
+
 		int i = 23;
 		while (iterator.hasNext()) {
 //			System.out.println(iterator.next());
 			Assert.assertEquals(i++, iterator.next());
 		}
 		queue.sleep();
-		
+
 		queue.remove();
 		queue.element();
 		

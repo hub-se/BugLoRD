@@ -3,27 +3,9 @@
  */
 package se.de.hu_berlin.informatik.gen.spectra.spectra;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.rules.ExpectedException;
-
 import se.de.hu_berlin.informatik.gen.spectra.main.TraceCoberturaSpectraGenerator;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -31,20 +13,28 @@ import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Simon
- *
  */
 public class TraceCoberturaToSpectraTest extends TestSettings {
 
-	/**
+    /**
      */
-	@BeforeClass
+    @BeforeClass
 	public static void setUpBeforeClass() {
 	}
 
@@ -95,32 +85,36 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	private void testOnProject(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful) {
-		new TraceCoberturaSpectraGenerator.Builder()
-		.setProjectDir(project.getProjectMainDir())
-		.setSourceDir(project.getSrcDir())
-		.setTestClassDir(project.getBinTestDir())
-		.setTestClassPath(project.getTestCP())
-		.setPathsToBinaries(project.getBinDir())
-		.setOutputDir(extraTestOutput + File.separator + outputDirName)
-		.setTestClassList(project.getTestClassListPath())
-		.setFailingTests(project.getFailingTests())
-		.useFullSpectra(fullSpectra)
-		.useSeparateJVM(separateJVM)
-		.useJava7only(useJava7)
-		.setTimeout(timeout)
-		.setTestRepeatCount(testrepeatCount)
-		.run();
+        long startTime = new Date().getTime();
+        new TraceCoberturaSpectraGenerator.Builder()
+                .setProjectDir(project.getProjectMainDir())
+                .setSourceDir(project.getSrcDir())
+                .setTestClassDir(project.getBinTestDir())
+                .setTestClassPath(project.getTestCP())
+                .setPathsToBinaries(project.getBinDir())
+                .setOutputDir(extraTestOutput + File.separator + outputDirName)
+                .setTestClassList(project.getTestClassListPath())
+                .setFailingTests(project.getFailingTests())
+                .useFullSpectra(fullSpectra)
+                .useSeparateJVM(separateJVM)
+                .useJava7only(useJava7)
+                .setTimeout(timeout)
+                .setTestRepeatCount(testrepeatCount)
+                .run();
+        long endTime = new Date().getTime();
 
-		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
-		if (successful) {
-			assertTrue(Files.exists(spectraZipFile));
-			checkTraceSpectra(spectraZipFile);
-		} else {
-			assertFalse(Files.exists(spectraZipFile));
-		}
-	}
-	
-	private void checkTraceSpectra(Path spectraZipFile) {
+        System.out.println("Execution time: " + Misc.getFormattedTimerString(endTime - startTime));
+
+        Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
+        if (successful) {
+            assertTrue(Files.exists(spectraZipFile));
+            checkTraceSpectra(spectraZipFile);
+        } else {
+            assertFalse(Files.exists(spectraZipFile));
+        }
+    }
+
+    private void checkTraceSpectra(Path spectraZipFile) {
 		boolean debug = false;
 		ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadBlockSpectraFromZipFile(spectraZipFile);
 		assertNotNull(spectra);
@@ -140,20 +134,19 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 			Set<Integer> involvedInExecutionTraces = new HashSet<>();
 			// iterate over execution traces
 			for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
-				// iterate over the compressed trace (should contain all executed node IDs)
-				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
-				while (baseIterator.hasNext()) {
-					System.out.print(".");
-					// execution trace is composed of indexed sequences of subtrace IDs
-					int subTraceSequenceIndex = baseIterator.next();
-					// iterate over the full node ID sequence using the indexer
-					Iterator<Integer> nodeIdIterator = spectra.getIndexer().getFullSequenceIterator(subTraceSequenceIndex);
-					while (nodeIdIterator.hasNext()) {
-						Integer nodeId = nodeIdIterator.next();
-						// check if all nodes in the execution trace are contained in the test case
-						assertTrue(test.getInvolvedNodes().contains(nodeId));
-						involvedInExecutionTraces.add(nodeId);
-					}
+                // iterate over the compressed trace (should contain all executed node IDs)
+                ReplaceableCloneableIterator baseIterator = executionTrace.baseIterator();
+                while (baseIterator.hasNext()) {
+                    // execution trace is composed of indexed sequences of subtrace IDs
+                    int subTraceSequenceIndex = baseIterator.next();
+                    // iterate over the full node ID sequence using the indexer
+                    Iterator<Integer> nodeIdIterator = spectra.getIndexer().getFullSequenceIterator(subTraceSequenceIndex);
+                    while (nodeIdIterator.hasNext()) {
+                        Integer nodeId = nodeIdIterator.next();
+                        // check if all nodes in the execution trace are contained in the test case
+                        assertTrue(test.getInvolvedNodes().contains(nodeId));
+                        involvedInExecutionTraces.add(nodeId);
+                    }
 				}
 			}
 			
@@ -170,36 +163,34 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 						involvedInExecutionTraces.contains(nodeIndex));
 				}
 			}
-			System.out.println("!");
 			
 			// iterate over execution traces
 			for (ExecutionTrace executionTrace : test.getExecutionTraces()) {
-				// iterate over the compressed trace (should contain all executed node IDs)
-				ReplaceableCloneableIntIterator baseIterator = executionTrace.baseIterator();
-				while (baseIterator.hasNext()) {
-					System.out.print(".");
-					// execution trace is composed of indexed sequences of subtrace IDs
-					int subTraceSequenceIndex = baseIterator.next();
-					// iterate over the sub trace ID sequences using the indexer
-					Iterator<Integer> subTraceIdIterator = spectra.getIndexer().getSubTraceIDSequenceIterator(subTraceSequenceIndex);
-					while (subTraceIdIterator.hasNext()) {
-						Integer subTraceId = subTraceIdIterator.next();
-						int special_counter = 0;
-						int special_counter_at_pos = 0;
-						
-						boolean isFirst = true;
-						IntTraceIterator  nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
-						while (nodeIdIterator.hasNext()) {
-							int nodeId = nodeIdIterator.next();
-							INode<SourceCodeBlock> node = spectra.getNode(nodeId);
-							if (!node.getIdentifier().getNodeType().equals(NodeType.NORMAL)) {
-								++special_counter;
-								if (isFirst || !nodeIdIterator.hasNext()) {
-									++special_counter_at_pos;
-								}
-							}
-							isFirst = false;
-						}
+                // iterate over the compressed trace (should contain all executed node IDs)
+                ReplaceableCloneableIterator baseIterator = executionTrace.baseIterator();
+                while (baseIterator.hasNext()) {
+                    // execution trace is composed of indexed sequences of subtrace IDs
+                    int subTraceSequenceIndex = baseIterator.next();
+                    // iterate over the sub trace ID sequences using the indexer
+                    Iterator<Integer> subTraceIdIterator = spectra.getIndexer().getSubTraceIDSequenceIterator(subTraceSequenceIndex);
+                    while (subTraceIdIterator.hasNext()) {
+                        Integer subTraceId = subTraceIdIterator.next();
+                        int special_counter = 0;
+                        int special_counter_at_pos = 0;
+
+                        boolean isFirst = true;
+                        TraceIterator nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
+                        while (nodeIdIterator.hasNext()) {
+                            int nodeId = nodeIdIterator.next();
+                            INode<SourceCodeBlock> node = spectra.getNode(nodeId);
+                            if (!node.getIdentifier().getNodeType().equals(NodeType.NORMAL)) {
+                                ++special_counter;
+                                if (isFirst || !nodeIdIterator.hasNext()) {
+                                    ++special_counter_at_pos;
+                                }
+                            }
+                            isFirst = false;
+                        }
 						if (special_counter > 2 || special_counter != special_counter_at_pos) {
 							nodeIdIterator = spectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
 							while (nodeIdIterator.hasNext()) {
@@ -221,88 +212,100 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	private void testOnProjectWithTestClassList(TestProject project, String outputDirName, 
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful, String testClassListPath) {
-		new TraceCoberturaSpectraGenerator.Builder()
-		.setProjectDir(project.getProjectMainDir())
-		.setSourceDir(project.getSrcDir())
-		.setTestClassDir(project.getBinTestDir())
-		.setTestClassPath(project.getTestCP())
-		.setPathsToBinaries(project.getBinDir())
-		.setOutputDir(extraTestOutput + File.separator + outputDirName)
-		.setTestClassList(testClassListPath)
-		.setFailingTests(project.getFailingTests())
-		.useFullSpectra(fullSpectra)
-		.useSeparateJVM(separateJVM)
-		.useJava7only(useJava7)
-		.setTimeout(timeout)
-		.setTestRepeatCount(testrepeatCount)
-		.run();
+        long startTime = new Date().getTime();
+        new TraceCoberturaSpectraGenerator.Builder()
+                .setProjectDir(project.getProjectMainDir())
+                .setSourceDir(project.getSrcDir())
+                .setTestClassDir(project.getBinTestDir())
+                .setTestClassPath(project.getTestCP())
+                .setPathsToBinaries(project.getBinDir())
+                .setOutputDir(extraTestOutput + File.separator + outputDirName)
+                .setTestClassList(testClassListPath)
+                .setFailingTests(project.getFailingTests())
+                .useFullSpectra(fullSpectra)
+                .useSeparateJVM(separateJVM)
+                .useJava7only(useJava7)
+                .setTimeout(timeout)
+                .setTestRepeatCount(testrepeatCount)
+                .run();
+        long endTime = new Date().getTime();
 
-		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
-		if (successful) {
-			assertTrue(Files.exists(spectraZipFile));
-			checkTraceSpectra(spectraZipFile);
-		} else {
-			assertFalse(Files.exists(spectraZipFile));
-		}
-	}
-	
-	private void testOnProjectWithTestList(TestProject project, String outputDirName, 
+        System.out.println("Execution time: " + Misc.getFormattedTimerString(endTime - startTime));
+
+        Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
+        if (successful) {
+            assertTrue(Files.exists(spectraZipFile));
+            checkTraceSpectra(spectraZipFile);
+        } else {
+            assertFalse(Files.exists(spectraZipFile));
+        }
+    }
+
+    private void testOnProjectWithTestList(TestProject project, String outputDirName,
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful, String testListPath) {
-		new TraceCoberturaSpectraGenerator.Builder()
-		.setProjectDir(project.getProjectMainDir())
-		.setSourceDir(project.getSrcDir())
-		.setTestClassDir(project.getBinTestDir())
-		.setTestClassPath(project.getTestCP())
-		.setPathsToBinaries(project.getBinDir())
-		.setOutputDir(extraTestOutput + File.separator + outputDirName)
-		.setTestList(testListPath)
-		.setFailingTests(project.getFailingTests())
-		.useFullSpectra(fullSpectra)
-		.useSeparateJVM(separateJVM)
-		.useJava7only(useJava7)
-		.setTimeout(timeout)
-		.setTestRepeatCount(testrepeatCount)
-		.run();
+        long startTime = new Date().getTime();
+        new TraceCoberturaSpectraGenerator.Builder()
+                .setProjectDir(project.getProjectMainDir())
+                .setSourceDir(project.getSrcDir())
+                .setTestClassDir(project.getBinTestDir())
+                .setTestClassPath(project.getTestCP())
+                .setPathsToBinaries(project.getBinDir())
+                .setOutputDir(extraTestOutput + File.separator + outputDirName)
+                .setTestList(testListPath)
+                .setFailingTests(project.getFailingTests())
+                .useFullSpectra(fullSpectra)
+                .useSeparateJVM(separateJVM)
+                .useJava7only(useJava7)
+                .setTimeout(timeout)
+                .setTestRepeatCount(testrepeatCount)
+                .run();
+        long endTime = new Date().getTime();
 
-		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
-		if (successful) {
-			assertTrue(Files.exists(spectraZipFile));
-			checkTraceSpectra(spectraZipFile);
-		} else {
-			assertFalse(Files.exists(spectraZipFile));
-		}
-	}
-	
-	private void testOnProjectWithFailedtests(TestProject project, String outputDirName, 
+        System.out.println("Execution time: " + Misc.getFormattedTimerString(endTime - startTime));
+
+        Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
+        if (successful) {
+            assertTrue(Files.exists(spectraZipFile));
+            checkTraceSpectra(spectraZipFile);
+        } else {
+            assertFalse(Files.exists(spectraZipFile));
+        }
+    }
+
+    private void testOnProjectWithFailedtests(TestProject project, String outputDirName,
 			long timeout, int testrepeatCount, boolean fullSpectra, 
 			boolean separateJVM, boolean useJava7, boolean successful, List<String> failedtests) {
-		new TraceCoberturaSpectraGenerator.Builder()
-		.setProjectDir(project.getProjectMainDir())
-		.setSourceDir(project.getSrcDir())
-		.setTestClassDir(project.getBinTestDir())
-		.setTestClassPath(project.getTestCP())
-		.setPathsToBinaries(project.getBinDir())
-		.setOutputDir(extraTestOutput + File.separator + outputDirName)
-		.setTestClassList(project.getTestClassListPath())
-		.setFailingTests(failedtests)
-		.useFullSpectra(fullSpectra)
-		.useSeparateJVM(separateJVM)
-		.useJava7only(useJava7)
-		.setTimeout(timeout)
-		.setTestRepeatCount(testrepeatCount)
-		.run();
+        long startTime = new Date().getTime();
+        new TraceCoberturaSpectraGenerator.Builder()
+                .setProjectDir(project.getProjectMainDir())
+                .setSourceDir(project.getSrcDir())
+                .setTestClassDir(project.getBinTestDir())
+                .setTestClassPath(project.getTestCP())
+                .setPathsToBinaries(project.getBinDir())
+                .setOutputDir(extraTestOutput + File.separator + outputDirName)
+                .setTestClassList(project.getTestClassListPath())
+                .setFailingTests(failedtests)
+                .useFullSpectra(fullSpectra)
+                .useSeparateJVM(separateJVM)
+                .useJava7only(useJava7)
+                .setTimeout(timeout)
+                .setTestRepeatCount(testrepeatCount)
+                .run();
+        long endTime = new Date().getTime();
 
-		Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
-		if (successful) {
-			assertTrue(Files.exists(spectraZipFile));
-			checkTraceSpectra(spectraZipFile);
-		} else {
-			assertFalse(Files.exists(spectraZipFile));
-		}
-	}
-	
-	/**
+        System.out.println("Execution time: " + Misc.getFormattedTimerString(endTime - startTime));
+
+        Path spectraZipFile = Paths.get(extraTestOutput, outputDirName, "spectraCompressed.zip");
+        if (successful) {
+            assertTrue(Files.exists(spectraZipFile));
+            checkTraceSpectra(spectraZipFile);
+        } else {
+            assertFalse(Files.exists(spectraZipFile));
+        }
+    }
+
+    /**
 	 * Test method for .
 	 */
 //	@Test
@@ -339,27 +342,27 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 	 */
 //	@Test
 	public void testGenerateRankingForLang10() {
-		testNormalExecution(new TestProjects.Lang10b(), "reportLang10b", true);
-	}
-	
-//	@Test
-	public void testGenerateRankingForLang10TestList() {
-		testOnProjectWithTestList(new TestProjects.Lang10b(), "reportLang10bTestList", 
-				10000L, 1, false, false, false, true, "lang10tests.txt");
-	}
-	
-//	@Test
-	public void testGenerateRankingForLang10TestListSmall() {
-		// org.apache.commons.lang3.time.FastDateParser, counter ID 166, line 399
-		testOnProjectWithTestList(new TestProjects.Lang10b(), "reportLang10bTestListSmall", 
-				10000L, 1, false, false, false, true, "lang10testsSmall.txt");
-	}
-	
-	/**
-	 * Test method for .
-	 */
-	@Test
-	public void testGenerateRankingForCoberturaTestProjectTestList() {
+        testNormalExecution(new TestProjects.Lang10b(), "reportLang10b", true);
+    }
+
+    //	@Test
+    public void testGenerateRankingForLang10TestList() {
+        testOnProjectWithTestList(new TestProjects.Lang10b(), "reportLang10bTestList",
+                10000L, 1, false, false, false, true, "lang10tests.txt");
+    }
+
+    @Test
+    public void testGenerateRankingForLang10TestListSmall() {
+        // org.apache.commons.lang3.time.FastDateParser, counter ID 166, line 399
+        testOnProjectWithTestList(new TestProjects.Lang10b(), "reportLang10bTestListSmall",
+                10000L, 1, false, false, false, true, "lang10testsSmall.txt");
+    }
+
+    /**
+     * Test method for .
+     */
+    @Test
+    public void testGenerateRankingForCoberturaTestProjectTestList() {
 		testOnProjectWithTestList(new TestProjects.CoberturaTestProject(), "reportCoberturaTestProjectTestList", 
 				10L, 1, false, false, false, true, "all_testsSimple.txt");
 	}

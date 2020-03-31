@@ -105,12 +105,22 @@ public class SingleLinkedIntArrayQueue extends AbstractQueue<Integer> implements
 
     @Override
     public boolean add(Integer e) {
-    	if (last != null && last.hasFreeSpace()) {
-    		last.add(e);
-    		++size;
-    	} else {
-    		linkLast(e);	
-		}
+        if (last != null && last.hasFreeSpace()) {
+            last.add(e);
+            ++size;
+        } else {
+            linkLast(e);
+        }
+        return true;
+    }
+
+    public boolean addNoAutoBoxing(int e) {
+        if (last != null && last.hasFreeSpace()) {
+            last.add(e);
+            ++size;
+        } else {
+            linkLast(e);
+        }
         return true;
     }
 
@@ -176,22 +186,30 @@ public class SingleLinkedIntArrayQueue extends AbstractQueue<Integer> implements
         }
         size -= count;
         if (size < 0) {
-        	size = 0;
+            size = 0;
         }
         first = x;
         if (x == null) {
-        	last = null;
+            last = null;
         }
     }
-    
-	public Integer peekLast() {
+
+    public int peekLastNoCheck() {
+        return last.items[last.endIndex - 1];
+    }
+
+    public int peekNoCheck() {
+        return first.items[first.startIndex];
+    }
+
+    public Integer peekLast() {
         final Node f = last;
-        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.endIndex-1] : null));
+        return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.endIndex - 1] : null));
     }
 
     // Queue operations
 
-	@Override
+    @Override
     public Integer peek() {
         final Node f = first;
         return ((f == null) ? null : (f.startIndex < f.endIndex ? f.items[f.startIndex] : null));
@@ -213,21 +231,28 @@ public class SingleLinkedIntArrayQueue extends AbstractQueue<Integer> implements
 
     @Override
     public Integer remove() {
-    	final Node f = first;
+        final Node f = first;
         if (f == null || f.startIndex >= f.endIndex)
             throw new NoSuchElementException();
         return removeFirst(f);
     }
-    
+
+    public int removeNoAutoBoxing() {
+        final Node f = first;
+        if (f == null || f.startIndex >= f.endIndex)
+            throw new NoSuchElementException();
+        return removeFirst(f);
+    }
+
     /*
      * Removes the first element.
      */
     private int removeFirst(Node f) {
-    	if (f.startIndex < f.endIndex - 1) {
-    		--size;
-    		return f.remove();
-    	} else {
-    		return unlinkFirst(f);	
+        if (f.startIndex < f.endIndex - 1) {
+            --size;
+            return f.remove();
+        } else {
+            return unlinkFirst(f);
 		}
     }
 

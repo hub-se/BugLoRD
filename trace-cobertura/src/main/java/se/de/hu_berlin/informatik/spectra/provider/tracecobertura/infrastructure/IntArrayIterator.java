@@ -1,19 +1,19 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 
-public class IntArrayIterator implements ReplaceableCloneableIntIterator {
-	
-	private final int[] array;
-	private int index = 0;
+public class IntArrayIterator implements ReplaceableCloneableIterator {
 
-	public IntArrayIterator(int[] array) {
-		this.array = array;
-	}
-	
-	// clone constructor
-	private IntArrayIterator(IntArrayIterator iterator) {
+    private final int[] array;
+    private int index = 0;
+
+    public IntArrayIterator(int[] array) {
+        this.array = array;
+    }
+
+    // clone constructor
+    private IntArrayIterator(IntArrayIterator iterator) {
 		array = iterator.array;
 		index = iterator.index;
 	}

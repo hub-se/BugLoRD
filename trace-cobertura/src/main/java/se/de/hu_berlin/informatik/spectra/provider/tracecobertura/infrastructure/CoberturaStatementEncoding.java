@@ -100,20 +100,30 @@ public class CoberturaStatementEncoding {
 //			return (subTrace.getFirstElement() & UPPER_BITMASK) | (subTrace.getLastElement() >> INTEGER_BITS);
 //		}
 //	}
-	
-	public static long generateRepresentationForSubTrace(EfficientCompressedIntegerTrace subTrace) {
-		if (subTrace.isEmpty()) {
-			return 0;
-		} else if (subTrace.size() == 1) {
-			return (subTrace.getFirstElement() & LOWER_BITMASK) << INTEGER_BITS;
-		} else {
-			return ((subTrace.getFirstElement() & LOWER_BITMASK) << INTEGER_BITS) | (subTrace.getLastElement() & LOWER_BITMASK);
-		}
-	}
-	
-	public static long generateUniqueRepresentationForTwoStatements(int encodedStatement1, int encodedStatement2) {
-		return ((encodedStatement1 & LOWER_BITMASK) << INTEGER_BITS) | (encodedStatement2 & LOWER_BITMASK);
-	}
+
+    public static long generateRepresentationForSubTrace(EfficientCompressedIntegerTrace subTrace) {
+        if (subTrace.size() > 1) {
+            return ((subTrace.getFirstElement() & LOWER_BITMASK) << INTEGER_BITS) | (subTrace.getLastElement() & LOWER_BITMASK);
+        } else if (subTrace.size() == 1) {
+            return (subTrace.getFirstElement() & LOWER_BITMASK) << INTEGER_BITS;
+        } else {
+            return 0;
+        }
+    }
+
+    public static long generateRepresentationForSubTrace(SingleLinkedIntArrayQueue subTrace) {
+        if (subTrace.size() > 1) {
+            return ((subTrace.peekNoCheck() & LOWER_BITMASK) << INTEGER_BITS) | (subTrace.peekLastNoCheck() & LOWER_BITMASK);
+        } else if (subTrace.size() == 1) {
+            return (subTrace.peekNoCheck() & LOWER_BITMASK) << INTEGER_BITS;
+        } else {
+            return 0;
+        }
+    }
+
+    public static long generateUniqueRepresentationForTwoStatements(int encodedStatement1, int encodedStatement2) {
+        return ((encodedStatement1 & LOWER_BITMASK) << INTEGER_BITS) | (encodedStatement2 & LOWER_BITMASK);
+    }
 
 	public static int getFirstClassId(long encodedSubTrace) {
 		return getClassId((int)(encodedSubTrace >>> INTEGER_BITS));

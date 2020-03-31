@@ -3,7 +3,6 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LightClassmapListener;
 
@@ -14,14 +13,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @CoverageIgnore
 public class TouchCollector {
-	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
-	/*In fact - concurrentHashset*/
-	public static final Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<>();
-	
-	static {
-		ProjectData.getGlobalProjectData(); // To call ProjectData.initialize();
-	}
-	
+
+    /*In fact - concurrentHashset*/
+    public static final Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<>();
+
+    private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
+
+    static {
+        ProjectData.getGlobalProjectData(); // To call ProjectData.initialize();
+    }
+
 //	public static void setRegisteredClasses(Map<Class<?>, Integer> input) {
 //		registeredClasses = input;
 //		for (Class<?> clazz : registeredClasses.keySet()) {
@@ -169,6 +170,7 @@ public class TouchCollector {
 		}
 		
 		projectData.addExecutionTraces(ExecutionTraceCollector.getAndResetExecutionTraces());
+
 //		projectData.addIdToSubTraceMap(ExecutionTraceCollector.getAndResetIdToSubtraceMap());
 		
 //		if (!projectData.getExecutionTraces().isEmpty() && projectData.getIdToSubtraceMap().isEmpty()) {

@@ -1,14 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>se.de.hu_berlin.informatik</groupId>
-		<artifactId>BugLoRD</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
-	<artifactId>trace-cobertura</artifactId>
-	<name>Trace Cobertura</name>
-	<description>Trace Cobertura version that works with Java 1.7.</description>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>se.de.hu_berlin.informatik</groupId>
+        <artifactId>BugLoRD</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>trace-cobertura</artifactId>
+    <name>Trace Cobertura</name>
+    <description>Trace Cobertura version that works with Java 1.7.</description>
 
 	<properties>
 		<asmVersion>5.0.1</asmVersion>
@@ -92,7 +93,7 @@
 			<artifactId>jetty-util</artifactId>
 			<version>${jettyVersion}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -104,48 +105,49 @@
 			<version>${logbackVersion}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>${commonslangVersion}</version>
-		</dependency>
-	</dependencies>
-	
-	<profiles>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commonslangVersion}</version>
+        </dependency>
 
-      <profile>
-          <id>standardToolsJar-profile</id>
-          <activation>
-              <activeByDefault>true</activeByDefault>
-              <file>
-                  <exists>${JAVA_HOME}/lib/tools.jar</exists>
-              </file>
-          </activation>
-          <properties>
-              <toolsjar>${JAVA_HOME}/lib/tools.jar</toolsjar>
-          </properties>
-      </profile>
-      <profile>
-          <id>appleJdkToolsJar-profile</id>
-          <activation>
-              <activeByDefault>false</activeByDefault>
-              <file>
-                  <exists>${JAVA_HOME}/Classes/classes.jar</exists>
-              </file>
-          </activation>
-          <properties>
-              <toolsjar>${JAVA_HOME}/Classes/classes.jar</toolsjar>
-          </properties>
-      </profile>
-  </profiles>
-  
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${compiler.version}</version>
-				<configuration>
+    </dependencies>
+
+    <profiles>
+
+        <profile>
+            <id>standardToolsJar-profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <file>
+                    <exists>${JAVA_HOME}/lib/tools.jar</exists>
+                </file>
+            </activation>
+            <properties>
+                <toolsjar>${JAVA_HOME}/lib/tools.jar</toolsjar>
+            </properties>
+        </profile>
+        <profile>
+            <id>appleJdkToolsJar-profile</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <file>
+                    <exists>${JAVA_HOME}/Classes/classes.jar</exists>
+                </file>
+            </activation>
+            <properties>
+                <toolsjar>${JAVA_HOME}/Classes/classes.jar</toolsjar>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.version}</version>
+                <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
 					<verbose>true</verbose>

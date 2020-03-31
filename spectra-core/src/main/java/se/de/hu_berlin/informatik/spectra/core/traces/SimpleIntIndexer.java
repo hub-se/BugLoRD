@@ -1,11 +1,5 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
@@ -15,7 +9,9 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
+
+import java.util.*;
 
 public class SimpleIntIndexer implements SequenceIndexer {
 
@@ -65,32 +61,32 @@ public class SimpleIntIndexer implements SequenceIndexer {
 		// id 0 marks an empty sub trace... should not really happen, but just in case it does... :/
 		this.nodeIdSequences[0] = new int[] {};
 		for (int i = 1; i < idToSubTraceMap.size() + 1; i++) {
-			BufferedIntArrayQueue subTrace = idToSubTraceMap.get(i);
-			ReplaceableCloneableIntIterator sequenceIterator = subTrace.iterator();
-			SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
-			
-			while (sequenceIterator.hasNext()) {
-				int encodedStatement = sequenceIterator.next();
-				int classId = CoberturaStatementEncoding.getClassId(encodedStatement);
-				int counterId = CoberturaStatementEncoding.getCounterId(encodedStatement);
-				
-				//			 Log.out(true, this, "statement: " + Arrays.toString(statement));
-				// TODO store the class names with '.' from the beginning, or use the '/' version?
-				String classSourceFileName = idToClassNameMap[classId];
-				if (classSourceFileName == null) {
-					throw new IllegalStateException("No class name found for class ID: " + classId);
-				}
-				ClassData classData = projectData.getClassData(classSourceFileName.replace('/', '.'));
+            BufferedIntArrayQueue subTrace = idToSubTraceMap.get(i);
+            ReplaceableCloneableIterator sequenceIterator = subTrace.iterator();
+            SingleLinkedArrayQueue<Integer> traceOfNodeIDs = new SingleLinkedArrayQueue<>(100);
 
-				if (classData != null) {
-					if (classData.getCounterId2LineNumbers() == null) {
-						throw new IllegalStateException("No counter ID to line number map for class " + classSourceFileName);
-					}
-					int[] lineNumber = classData.getCounterId2LineNumbers()[counterId];
-					int specialIndicatorId = lineNumber[1];
+            while (sequenceIterator.hasNext()) {
+                int encodedStatement = sequenceIterator.next();
+                int classId = CoberturaStatementEncoding.getClassId(encodedStatement);
+                int counterId = CoberturaStatementEncoding.getCounterId(encodedStatement);
 
-					//				// these following lines print out the execution trace
-					//				String addendum = "";
+                //			 Log.out(true, this, "statement: " + Arrays.toString(statement));
+                // TODO store the class names with '.' from the beginning, or use the '/' version?
+                String classSourceFileName = idToClassNameMap[classId];
+                if (classSourceFileName == null) {
+                    throw new IllegalStateException("No class name found for class ID: " + classId);
+                }
+                ClassData classData = projectData.getClassData(classSourceFileName);
+
+                if (classData != null) {
+                    if (classData.getCounterId2LineNumbers() == null) {
+                        throw new IllegalStateException("No counter ID to line number map for class " + classSourceFileName);
+                    }
+                    int[] lineNumber = classData.getCounterId2LineNumbers()[counterId];
+                    int specialIndicatorId = lineNumber[1];
+
+                    //				// these following lines print out the execution trace
+                    //				String addendum = "";
 					//				if (statement.length > 2) {
 					//					switch (statement[2]) {
 					//					case 0:

@@ -1,11 +1,13 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntArrayWrapper;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Queue;
 
 /**
  * An execution trace consists structurally of a list of executed nodes
@@ -27,7 +29,7 @@ public class CompressedIntArrayTrace extends CompressedTrace<int[],IntArrayWrapp
 		super(trace, otherCompressedTrace);
 	}
 
-	public CompressedIntArrayTrace(BufferedArrayQueue<int[]> compressedTrace, BufferedArrayQueue<int[]> repetitionMarkers) {
+	public CompressedIntArrayTrace(BufferedArrayQueue<int[]> compressedTrace, List<Queue<Integer>> repetitionMarkers) {
 		super(compressedTrace, repetitionMarkers);
 	}
 
@@ -53,6 +55,9 @@ public class CompressedIntArrayTrace extends CompressedTrace<int[],IntArrayWrapp
 		}
 		if (getRepetitionMarkers() != null) {
 			for (RepetitionMarkerWrapper repMarkerWrapper : getRepetitionMarkers()) {
+				if (repMarkerWrapper == null) {
+					break;
+				}
 				Iterator<Entry<Integer, int[]>> entrySetIterator = repMarkerWrapper.getRepetitionMarkers().entrySetIterator();
 				while (entrySetIterator.hasNext()) {
 					Entry<Integer, int[]> entry = entrySetIterator.next();

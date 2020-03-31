@@ -1,16 +1,16 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 
-import java.util.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
+
+import java.util.*;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
-
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 /**
  * <p>
@@ -324,26 +324,36 @@ public class ClassData extends CoverageDataContainer
 			lock.unlock();
 		}
 	}
-	
-	public String getMethodNameAndDescriptor(int lineNumber) {
-		lock.lock();
-		try {
-			LineData next = (LineData) children.get(lineNumber);
-			return next.getMethodName() + next.getMethodDescriptor();
-		} finally {
-			lock.unlock();
-		}
-	}
 
-	/**
-	 * @return The method name and descriptor of each method found in the
-	 *         class represented by this instrumentation.
-	 */
-	public Set<String> getMethodNamesAndDescriptors() {
-		lock.lock();
-		try {
-			return methodNamesAndDescriptors;
-		} finally {
+    public String getMethodNameAndDescriptor(int lineNumber) {
+        lock.lock();
+        try {
+            LineData next = (LineData) children.get(lineNumber);
+            return next.getMethodName() + next.getMethodDescriptor();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public String getMethodName(int lineNumber) {
+        lock.lock();
+        try {
+            LineData next = (LineData) children.get(lineNumber);
+            return next.getMethodName();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * @return The method name and descriptor of each method found in the
+     * class represented by this instrumentation.
+     */
+    public Set<String> getMethodNamesAndDescriptors() {
+        lock.lock();
+        try {
+            return methodNamesAndDescriptors;
+        } finally {
 			lock.unlock();
 		}
 	}
@@ -513,23 +523,35 @@ public class ClassData extends CoverageDataContainer
 			// super.merge() above.
 			for (Iterator<Integer> iter = classData.branches.keySet()
 					.iterator(); iter.hasNext();) {
-				Integer key = iter.next();
-				if (!this.branches.containsKey(key)) {
-					this.branches.put(key, classData.branches.get(key));
-				}
-			}
+                Integer key = iter.next();
+                if (!this.branches.containsKey(key)) {
+                    this.branches.put(key, classData.branches.get(key));
+                }
+            }
 
 //			this.coverageMap.putAll(classData.coverageMap);
-			if (this.counterId2LineNumbers == null) {
-				this.counterId2LineNumbers = classData.counterId2LineNumbers;
-			}
+            if (this.counterId2LineNumbers == null) {
+                this.counterId2LineNumbers = classData.counterId2LineNumbers;
+            }
+
+            if (this.counterId2LineNumbers != null &&
+                    this.counterId2LineNumbers.length > Math.pow(2, CoberturaStatementEncoding.COUNTER_ID_BITS)) {
+                throw new IllegalStateException("Counter ID too high! Encoding error: " + (this.counterId2LineNumbers.length - 1));
+            }
+
+            if (this.classId > Math.pow(2, CoberturaStatementEncoding.CLASS_ID_BITS) - 1) {
+                throw new IllegalStateException("Class ID too high! Encoding error: " + this.classId);
+            }
+
+//			System.out.println("max counter ID: " + (this.counterId2LineNumbers.length - 1) + ", class ID: " + this.classId);
+
 //			this.counterIdToLineNumberMap.putAll(classData.counterIdToLineNumberMap);
-			this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
-			this.methodNamesAndDescriptors.addAll(classData
-					.getMethodNamesAndDescriptors());
-			if (classData.sourceFileName != null)
-				this.sourceFileName = classData.sourceFileName;
-		} finally {
+            this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
+            this.methodNamesAndDescriptors.addAll(classData
+                    .getMethodNamesAndDescriptors());
+            if (classData.sourceFileName != null)
+                this.sourceFileName = classData.sourceFileName;
+        } finally {
 			lock.unlock();
 			classData.lock.unlock();
 		}

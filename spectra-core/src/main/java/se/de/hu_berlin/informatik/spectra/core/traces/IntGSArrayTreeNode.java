@@ -1,13 +1,10 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.IntTraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIntIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.TraceIterator;
+
+import java.util.*;
 
 public class IntGSArrayTreeNode {
 	
@@ -15,30 +12,30 @@ public class IntGSArrayTreeNode {
 	private int[] sequence;
 	
 	private List<IntGSArrayTreeNode> edges;
-	
-	protected IntGSArrayTreeNode() {
-		// only for extension (end nodes)
-	}
-	
-	public IntGSArrayTreeNode(IntGSArrayTree treeReference, int[] remainingSequence, List<IntGSArrayTreeNode> existingEdges) {
-		this.treeReference = treeReference;
-		this.sequence = remainingSequence;
-		this.edges = existingEdges;
-	}
 
-	public IntGSArrayTreeNode(IntGSArrayTree treeReference, ReplaceableCloneableIntIterator sequence, int length) {
-		this.treeReference = treeReference;
-		ReplaceableCloneableIntIterator iterator = sequence.clone();
-		iterator.next();
-		// check if an element in the sequence has already been identified as a starting element
-		for (int i = 1; i < length; ++i) {
-			// check if the next element has already been identified as a starting element, previously
-			if (treeReference.checkIfStartingElementExists(iterator.next())) {
-				// set the sequence to end at position i and add an ending edge
-				int[] seq = treeReference.newArray(i);
-				for (int j = 0; j < i; ++j) {
-					seq[j] = sequence.next();
-				}
+    protected IntGSArrayTreeNode() {
+        // only for extension (end nodes)
+    }
+
+    public IntGSArrayTreeNode(IntGSArrayTree treeReference, int[] remainingSequence, List<IntGSArrayTreeNode> existingEdges) {
+        this.treeReference = treeReference;
+        this.sequence = remainingSequence;
+        this.edges = existingEdges;
+    }
+
+    public IntGSArrayTreeNode(IntGSArrayTree treeReference, ReplaceableCloneableIterator sequence, int length) {
+        this.treeReference = treeReference;
+        ReplaceableCloneableIterator iterator = sequence.clone();
+        iterator.next();
+        // check if an element in the sequence has already been identified as a starting element
+        for (int i = 1; i < length; ++i) {
+            // check if the next element has already been identified as a starting element, previously
+            if (treeReference.checkIfStartingElementExists(iterator.next())) {
+                // set the sequence to end at position i and add an ending edge
+                int[] seq = treeReference.newArray(i);
+                for (int j = 0; j < i; ++j) {
+                    seq[j] = sequence.next();
+                }
 				this.setSequenceAndAddEndingEdge(seq);
 				// add the remaining sequence to the tree
 				treeReference.addSequence(sequence, length - i);
@@ -64,27 +61,27 @@ public class IntGSArrayTreeNode {
 		this.sequence = sequence;
 		this.edges = new ArrayList<>(1);
 		edges.add(treeReference.getNewEndNode());
-	}
+    }
 
-	public List<IntGSArrayTreeNode> getEdges() {
-		return edges == null ? Collections.emptyList() : edges;
-	}
+    public List<IntGSArrayTreeNode> getEdges() {
+        return edges == null ? Collections.emptyList() : edges;
+    }
 
-	private void setEdges(List<IntGSArrayTreeNode> edges) {
-		this.edges = edges;
-	}
-	
-	public void addSequence(ReplaceableCloneableIntIterator unprocessedIterator, int length) {
-		// check how much of this node's sequence is identical to the sequence to add;
-		// we can start from index 1 (and posIndex + 1), since the first elements 
-		// are guaranteed to be identical
-		unprocessedIterator.next();
-		int i = 1;
-		for (; i < this.sequence.length; i++, unprocessedIterator.next()) {
-			if (i < length) {
-				// both sequences still contain elements
-				int nextAddedElement = unprocessedIterator.peek();
-				// check if the next element has already been identified as a starting element, previously
+    private void setEdges(List<IntGSArrayTreeNode> edges) {
+        this.edges = edges;
+    }
+
+    public void addSequence(ReplaceableCloneableIterator unprocessedIterator, int length) {
+        // check how much of this node's sequence is identical to the sequence to add;
+        // we can start from index 1 (and posIndex + 1), since the first elements
+        // are guaranteed to be identical
+        unprocessedIterator.next();
+        int i = 1;
+        for (; i < this.sequence.length; i++, unprocessedIterator.next()) {
+            if (i < length) {
+                // both sequences still contain elements
+                int nextAddedElement = unprocessedIterator.peek();
+                // check if the next element has already been identified as a starting element, previously
 				if (treeReference.checkIfStartingElementExists(nextAddedElement)) {
 					// sequence to add is smaller than existing sequence
 					// split sequence at this point and add branch with marked ending point
@@ -312,26 +309,26 @@ public class IntGSArrayTreeNode {
 		// we still need to check if there exists an ending edge, in this case
 		for (IntGSArrayTreeNode edge : this.getEdges()) {
 			if (edge instanceof IntGSArrayTreeEndNode) {
-				// we are done!
-				return true;
-			}
-		}
-		
-		// no ending edge was found
-		return false;
-	}
-	
-	
-	public int getSequenceIndex(IntArraySequenceIndexer indexer, IntTraceIterator iterator, int remainingLength) {
-		// check how much of this node's sequence is identical to the sequence to check;
-		// we can start from index 1, since the first elements 
-		// are guaranteed to be identical (has been checked previously);
-		// the iterator parameter is already pointing to the second element in the sequence
-		
-		// sequence to check is smaller than existing sequence
-		if (remainingLength < this.sequence.length) {
-			return GSArrayTree.BAD_INDEX;
-		}
+                // we are done!
+                return true;
+            }
+        }
+
+        // no ending edge was found
+        return false;
+    }
+
+
+    public int getSequenceIndex(IntArraySequenceIndexer indexer, TraceIterator iterator, int remainingLength) {
+        // check how much of this node's sequence is identical to the sequence to check;
+        // we can start from index 1, since the first elements
+        // are guaranteed to be identical (has been checked previously);
+        // the iterator parameter is already pointing to the second element in the sequence
+
+        // sequence to check is smaller than existing sequence
+        if (remainingLength < this.sequence.length) {
+            return GSArrayTree.BAD_INDEX;
+        }
 		
 		// iterate over the sequence and check for equality
 		for (int i = 1; i < this.sequence.length; ++i) {
@@ -393,18 +390,18 @@ public class IntGSArrayTreeNode {
 		this.sequence = array;
 	}
 
-	public int getNextSequenceIndex(IntArraySequenceIndexer indexer, 
-			IntTraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
-		// we are iterating through the raw trace until we find an element that is a starting element of the tree;
-		// this element is returned in the end to check the index of the following sequence, and so on;
-		// we start at the second element of the sequence to check
-		
-		// check how much of this node's sequence is identical to the sequence to check;
+    public int getNextSequenceIndex(IntArraySequenceIndexer indexer,
+                                    TraceIterator rawTraceIterator, EfficientCompressedIntegerTrace indexedtrace) {
+        // we are iterating through the raw trace until we find an element that is a starting element of the tree;
+        // this element is returned in the end to check the index of the following sequence, and so on;
+        // we start at the second element of the sequence to check
 
-		// iterate over the sequence and check for equality
-		for (int i = 1; i < this.sequence.length; ++i) {
-			if (!rawTraceIterator.hasNext()) {
-				// sequence to check is smaller than existing sequence
+        // check how much of this node's sequence is identical to the sequence to check;
+
+        // iterate over the sequence and check for equality
+        for (int i = 1; i < this.sequence.length; ++i) {
+            if (!rawTraceIterator.hasNext()) {
+                // sequence to check is smaller than existing sequence
 				System.err.println("Sequence to check is smaller than existing sequence in tree.");
 				return IntGSArrayTree.BAD_INDEX;
 			}
