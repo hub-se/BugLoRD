@@ -27,6 +27,7 @@ public class LinearExecutionHitTrace {
         traceCount = new AtomicInteger(0);
         this.spectra = spectra;
         TestTrace = new ArrayList<>(spectra.getTraces().size());
+        long start = System.currentTimeMillis();
 
         try {
             initGraphNode();
@@ -42,10 +43,6 @@ public class LinearExecutionHitTrace {
             e.printStackTrace();
         }
 
-    }
-
-    public int getTraceCount() {
-        return traceCount.get();
     }
 
 
@@ -111,6 +108,10 @@ public class LinearExecutionHitTrace {
 
     public List<LinearExecutionTestTrace> getFailedTest() {
         return getTestTrace().stream().filter(t -> t.isSuccessful() == false).collect(Collectors.toList());
+    }
+
+    public List<LinearExecutionTestTrace> getSuccessfulTest() {
+        return getTestTrace().stream().filter(t -> t.isSuccessful() == true).collect(Collectors.toList());
     }
 
     public int getFailedTestCount() {
@@ -225,7 +226,7 @@ public class LinearExecutionHitTrace {
                     }
                 }
 
-                //we have seen this node some where
+                //we have seen this node somewhere
 
                 //check if we are at the beginning of a block
                 if ((currentBlock == -2) || (node.getBlockID() == nodeIndex)) {
@@ -237,7 +238,7 @@ public class LinearExecutionHitTrace {
                     currentBlock = nodeIndex;
                     lastBlock = nodeIndex;
                 }
-                // otherwise, just a inner node, keep on  skipping
+                // otherwise, just an inner node, keep on skipping
 
                 //check if we have to close this block
                 if (hasMultiOut(node)) {

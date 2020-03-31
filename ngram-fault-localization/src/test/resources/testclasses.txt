@@ -1,1 +1,0 @@
-se.de.hu_berlin.informatik.gen.ranking.Spectra2RankingTest
