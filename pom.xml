@@ -16,7 +16,6 @@
 		<module>spectra-core</module>
 		<module>project-analyzer</module>
 		<module>fault-localization-toolset</module>
-		<module>ngram-fault-localization</module>
 		<module>aspectj-frontend</module>
 		<module>java7-test-runner</module>
 		<module>junit-test-utils</module>

@@ -1,0 +1,207 @@
+@startuml
+
+title __NGRAM's Class Diagram__\n
+
+  namespace se.de.hu_berlin.informatik.faultlocalizer {
+    namespace ngram {
+      class se.de.hu_berlin.informatik.faultlocalizer.ngram.ExecutionGraphNode {
+          - InNodes : ConcurrentHashMap<Integer, Integer>
+          - OutNodes : ConcurrentHashMap<Integer, Integer>
+          - blockID : AtomicInteger
+          - index : int
+          + addInNode()
+          + addOutNode()
+          + checkInNode()
+          + checkOutNode()
+          + getInDegree()
+          + getInNodes()
+          + getIndex()
+          + getOutDegree()
+          + getOutNodes()
+          + getSpectraNode()
+          + setBlockID()
+          + toString()
+          # ExecutionGraphNode()
+          ~ getBlockID()
+      }
+    }
+  }
+  
+
+  namespace se.de.hu_berlin.informatik.faultlocalizer {
+    namespace ngram {
+      class se.de.hu_berlin.informatik.faultlocalizer.ngram.LinearBlockSequence {
+          - blockSeq : LinkedList<Integer>
+          + LinearBlockSequence()
+          + addBlock()
+          + equals()
+          + getBlockSeq()
+          + getBlockSeqSize()
+          + hashCode()
+          + involvedBlocks()
+          + toString()
+      }
+    }
+  }
+  
+
+  namespace se.de.hu_berlin.informatik.faultlocalizer {
+    namespace ngram {
+      class se.de.hu_berlin.informatik.faultlocalizer.ngram.LinearExecutionHitTrace {
+          - TestTrace : ArrayList<LinearExecutionTestTrace>
+          - block2NodeMap : ConcurrentHashMap<Integer, LinkedHashSet<Integer>>
+          - nodeSeq : ConcurrentHashMap<Integer, ExecutionGraphNode>
+          - numOfCores : int
+          - spectra : ISpectra<SourceCodeBlock, ?>
+          - traceCount : AtomicInteger
+          + LinearExecutionHitTrace()
+          + getAllBlocks()
+          + getBlock2NodeMap()
+          + getBlockCount()
+          + getEF()
+          + getEP()
+          + getFailedTest()
+          + getFailedTestCount()
+          + getIdentifier()
+          + getNodeSeq()
+          + getShortIdentifier()
+          + getSpectra()
+          + getTestTrace()
+          + getTrace()
+          + getTraceCount()
+          + toString()
+          - generateLEBFromExeTrace()
+          - generateLinearBlockTrace()
+          - hasMultiIn()
+          - hasMultiOut()
+          - initGraphNode()
+          - isLoop()
+      }
+    }
+  }
+  
+
+  namespace se.de.hu_berlin.informatik.faultlocalizer {
+    namespace ngram {
+      class se.de.hu_berlin.informatik.faultlocalizer.ngram.LinearExecutionTestTrace {
+          - idString : String
+          - isSuccessful : boolean
+          - testID : int
+          - traces : ArrayList<LinearBlockSequence>
+          + LinearExecutionTestTrace()
+          + getInvolvedBlocks()
+          + getTestID()
+          + getTrace()
+          + getTraces()
+          + isSuccessful()
+          + toString()
+      }
+    }
+  }
+  
+
+  namespace se.de.hu_berlin.informatik.faultlocalizer {
+    namespace ngram {
+      class se.de.hu_berlin.informatik.faultlocalizer.ngram.NGram {
+          ~ length : int
+          - EF : double
+          - ET : double
+          - blockIDs : ArrayList<Integer>
+          - confidence : double
+          + NGram()
+          + compareTo()
+          + equals()
+          + getBlockIDs()
+          + getConfidence()
+          + getEF()
+          + getET()
+          + getLength()
+          + hashCode()
+          + toString()
+      }
+    }
+  }
+  
+
+  namespace se.de.hu_berlin.informatik.faultlocalizer {
+    namespace ngram {
+      class se.de.hu_berlin.informatik.faultlocalizer.ngram.NGramSet {
+          - confidence : LinkedHashMap<Integer, Double>
+          - dynaSup : boolean
+          - failedTest : HashMap<Integer, HashSet<Integer>>
+          - failedTestCount : double
+          - involvedTest : HashMap<Integer, HashSet<Integer>>
+          - maxLength : int
+          - minEF : int
+          - minSupport : double
+          - nGramHashSet : ConcurrentHashMap<ArrayList<Integer>, NGram>
+          - numOfCores : int
+          - relevant : HashSet<Integer>
+          - result : List<NGram>
+          + NGramSet()
+          + NGramSet()
+          + getConfidence()
+          + getConfidence()
+          + getMinEF()
+          + getResult()
+          + getResultAsText()
+          - buildNGramSet()
+          - calcNGramStats()
+          - checkThenAdd()
+          - computeConfOfSingleBlock()
+          - computeMinEF()
+          - createNGrams()
+          - getIntersectionCount()
+          - getIntersectionCount2()
+          - initInvolvementMap()
+          - mapResult2Nodes()
+          - startNgramSet()
+      }
+    }
+  }
+  
+
+  namespace se.de.hu_berlin.informatik.faultlocalizer {
+    namespace ngram {
+      class se.de.hu_berlin.informatik.faultlocalizer.ngram.NGramSet.SizeComparator {
+          + compare()
+      }
+    }
+  }
+  
+
+  namespace se.de.hu_berlin.informatik.faultlocalizer {
+    namespace ngram {
+      class se.de.hu_berlin.informatik.faultlocalizer.ngram.Nessa {
+          - confidence : HashMap<Integer, Double>
+          - dynSup : boolean
+          - maxN : int
+          - minSup : double
+          + Nessa()
+          + Nessa()
+          + Nessa()
+          + localize()
+          + localize()
+          + suspiciousness()
+      }
+    }
+  }
+  
+
+  se.de.hu_berlin.informatik.faultlocalizer.ngram.ExecutionGraphNode o-- se.de.hu_berlin.informatik.spectra.core.ISpectra : spectra
+  se.de.hu_berlin.informatik.faultlocalizer.ngram.LinearExecutionTestTrace o-- se.de.hu_berlin.informatik.spectra.core.ISpectra : spectra
+  se.de.hu_berlin.informatik.faultlocalizer.ngram.NGram .up.|> java.lang.Comparable
+  se.de.hu_berlin.informatik.faultlocalizer.ngram.NGramSet o-- se.de.hu_berlin.informatik.faultlocalizer.ngram.LinearExecutionHitTrace : hitTrace
+  se.de.hu_berlin.informatik.faultlocalizer.ngram.NGramSet +-down- se.de.hu_berlin.informatik.faultlocalizer.ngram.NGramSet.SizeComparator
+  se.de.hu_berlin.informatik.faultlocalizer.ngram.NGramSet.SizeComparator .up.|> java.util.Comparator
+  se.de.hu_berlin.informatik.faultlocalizer.ngram.Nessa -up-|> se.de.hu_berlin.informatik.faultlocalizer.sbfl.AbstractFaultLocalizer
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml
