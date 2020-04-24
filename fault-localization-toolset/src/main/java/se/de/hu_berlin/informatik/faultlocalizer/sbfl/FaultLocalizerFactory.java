@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.faultlocalizer.sbfl;
 import java.util.Locale;
 
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.ngram.Nessa;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ample;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Anderberg;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ArithmeticMean;
