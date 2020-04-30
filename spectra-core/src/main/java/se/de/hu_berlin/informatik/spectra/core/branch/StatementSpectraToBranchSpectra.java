@@ -95,7 +95,7 @@ public class StatementSpectraToBranchSpectra {
         Set<SourceCodeBlock> executedStatements = new HashSet<>();
 
         // collect all existing branch IDs
-        CachedMap<int[]> nodeIdSequences = statementSpectra.getIndexer().getNodeIdSequences();
+        CachedMap<int[]> subTraceIdSequences = statementSpectra.getIndexer().getSubTraceIdSequences();
 
         /* extract all branches from the statement spectra, i.e.
          *  branches that are covered in a test case
@@ -103,7 +103,7 @@ public class StatementSpectraToBranchSpectra {
          *
          *  id 0 is reserved for the empty branch (which should not exist)
          */
-        for (int executionBranchId = 0; executionBranchId < nodeIdSequences.size(); ++executionBranchId) {
+        for (int executionBranchId = 0; executionBranchId < subTraceIdSequences.size(); ++executionBranchId) {
             programBranch = new ProgramBranch(getExecutedStatementsFromBranch(executionBranchId, statementSpectra));
             branchNode = programBranchSpectra.getOrCreateNode(programBranch);
             branchIdMap.put(executionBranchId, branchNode);
@@ -134,7 +134,7 @@ public class StatementSpectraToBranchSpectra {
         CachedMap<int[]> branchNodeIdSequences = new CachedIntArrayMap(
                 statementSpectra.getPathToSpectraZipFile().getParent().resolve("branchMap.zip"),
                 0, SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
-        for (int i = 0; i < nodeIdSequences.size(); ++i) {
+        for (int i = 0; i < subTraceIdSequences.size(); ++i) {
             // one to one mapping... (still ok for easy future removal of nodes from traces)
             branchNodeIdSequences.put(i, new int[]{i});
         }
@@ -159,7 +159,7 @@ public class StatementSpectraToBranchSpectra {
             for (ExecutionTrace executionTrace : testCase.getExecutionTraces()) {
                 // give some visual progress information
                 tracker.track(String.format("size: %,20d", executionTrace.getTraceByteArray().length / 4));
-                HashSet<Integer> executionBranchIds = new HashSet<Integer>();
+                HashSet<Integer> executionBranchIds = new HashSet<>();
                 collectExecutionBranchIds(executionBranchIds, executionTrace, statementSpectra);
                 for (Integer executionBranchId : executionBranchIds) {
 
@@ -274,7 +274,7 @@ public class StatementSpectraToBranchSpectra {
 
         List<Integer> statementIndices = getStatementIndicesFromBranch(branchId, statementSpectra);
 
-        statements = new ArrayList<SourceCodeBlock>();
+        statements = new ArrayList<>(statementIndices.size());
         for (Integer statementIndex : statementIndices) {
             statements.add(statementSpectra.getNode(statementIndex).getIdentifier());
         }
@@ -296,11 +296,16 @@ public class StatementSpectraToBranchSpectra {
 
         List<Integer> statementIndices = null;
 
-        Iterator<Integer> statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(branchId);
-        statementIndices = new ArrayList<Integer>();
+        statementIndices = new ArrayList<>();
 
-        while (statementIndicesIterator.hasNext()) {
-            statementIndices.add(statementIndicesIterator.next());
+        // iterate over all sub traces in the sequence
+        Iterator<Integer> sequenceIterator = statementSpectra.getIndexer().getSubTraceIdSequenceIterator(branchId);
+        while (sequenceIterator.hasNext()) {
+            // iterate over all statements in the sub trace
+            Iterator<Integer> statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(sequenceIterator.next());
+            while (statementIndicesIterator.hasNext()) {
+                statementIndices.add(statementIndicesIterator.next());
+            }
         }
 
         /*====================================================================================*/

@@ -24,6 +24,8 @@ public interface SequenceIndexerCompressed {
 
     public Iterator<Integer> getNodeIdSequenceIterator(int subTraceId);
 
+    public Iterator<Integer> getSubTraceIdSequenceIterator(int subTraceId);
+
     byte[] getGrammarByteArray();
 
 }

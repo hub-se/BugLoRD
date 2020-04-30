@@ -251,4 +251,9 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
     public Iterator<Integer> getNodeIdSequenceIterator(int subTraceId) {
         return Arrays.stream(nodeIdSequences.get(subTraceId)).iterator();
     }
+
+    @Override
+    public Iterator<Integer> getSubTraceIdSequenceIterator(int subTraceSequenceId) {
+        return Arrays.stream(subTraceIdSequences.get(subTraceSequenceId)).iterator();
+    }
 }
