@@ -9,26 +9,26 @@ import java.util.regex.Pattern;
 
 public class Decamelizer {
 
-private static final Pattern CAPS = Pattern.compile("([A-Z\\d][^A-Z\\d]*)");
-    
+    private static final Pattern CAPS = Pattern.compile("([A-Z\\d][^A-Z\\d]*)");
+
     public static String decamelizeMatcher(String className) {
         if (className.length() == 0) {
             return "<custom argument matcher>";
         }
-        
+
         String decamelized = decamelizeClassName(className);
-        
+
         if (decamelized.length() == 0) {
             return "<" + className + ">";
         }
-        
+
         return "<" + decamelized + ">";
     }
 
     private static String decamelizeClassName(String className) {
         Matcher match = CAPS.matcher(className);
         StringBuilder deCameled = new StringBuilder();
-        while(match.find()) {
+        while (match.find()) {
             if (deCameled.length() == 0) {
                 deCameled.append(match.group());
             } else {

@@ -15,15 +15,14 @@
  */
 package org.joda.time.chrono.gj;
 
-import java.util.Random;
-
 import junit.framework.TestCase;
-
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeField;
 import org.joda.time.chrono.GregorianChronology;
 import org.joda.time.chrono.JulianChronology;
+
+import java.util.Random;
 
 /**
  * Tests either the Julian or Gregorian chronology from org.joda.time.chrono.gj
@@ -51,7 +50,7 @@ public class MainTest extends TestCase {
     public static final int GREGORIAN_MODE = 0;
     public static final int JULIAN_MODE = 1;
 
-    private static final long MILLIS_PER_YEAR = (long)365.2425 * 24 * 60 * 60 * 1000;
+    private static final long MILLIS_PER_YEAR = (long) 365.2425 * 24 * 60 * 60 * 1000;
     private static final long _1000_YEARS = 1000 * MILLIS_PER_YEAR;
     private static final long _500_YEARS = 500 * MILLIS_PER_YEAR;
     private static final long MAX_MILLIS = (10000 - 1970) * MILLIS_PER_YEAR;
@@ -77,7 +76,7 @@ public class MainTest extends TestCase {
                     mode = JULIAN_MODE;
                 } else {
                     throw new IllegalArgumentException
-                        ("Unknown mode: " + args[1]);
+                            ("Unknown mode: " + args[1]);
                 }
                 if (args.length > 2) {
                     seed = Long.parseLong(args[2]);
@@ -97,8 +96,8 @@ public class MainTest extends TestCase {
 
     /**
      * @param iterations number of test iterations to perform
-     * @param mode GREGORIAN_MODE or JULIAN_MODE,0=Gregorian, 1=Julian
-     * @param seed seed for random number generator
+     * @param mode       GREGORIAN_MODE or JULIAN_MODE,0=Gregorian, 1=Julian
+     * @param seed       seed for random number generator
      */
     public MainTest(int iterations, int mode, long seed) {
         super("testChronology");
@@ -115,6 +114,7 @@ public class MainTest extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Main junit test
      */
@@ -133,11 +133,11 @@ public class MainTest extends TestCase {
         Random rnd = new Random(seed);
         long updateMillis = System.currentTimeMillis() + UPDATE_INTERVAL;
 
-        for (int i=0; i<iterations; i++) {
+        for (int i = 0; i < iterations; i++) {
             long now = System.currentTimeMillis();
             if (now >= updateMillis) {
                 updateMillis = now + UPDATE_INTERVAL;
-                double complete = ((int)((double)i / iterations * 1000.0)) / 10d;
+                double complete = ((int) ((double) i / iterations * 1000.0)) / 10d;
                 if (complete < 100) {
                     System.out.println("" + complete + "% complete (i=" + i + ")");
                 }
@@ -169,14 +169,13 @@ public class MainTest extends TestCase {
         testField(iTest.dayOfMonth(), iActual.dayOfMonth(), millis, value, millis2);
         testField(iTest.weekyear(), iActual.weekyear(), millis, value, millis2);
         testField(iTest.weekOfWeekyear(),
-                  iActual.weekOfWeekyear(), millis, value, millis2);
+                iActual.weekOfWeekyear(), millis, value, millis2);
         testField(iTest.dayOfWeek(), iActual.dayOfWeek(), millis, value, millis2);
         testField(iTest.dayOfYear(), iActual.dayOfYear(), millis, value, millis2);
     }
 
     private void testField(DateTimeField fieldA, DateTimeField fieldB, long millis,
-                           int value, long millis2)
-    {
+                           int value, long millis2) {
         int a, b;
         long x, y;
         boolean m, n;
@@ -190,9 +189,9 @@ public class MainTest extends TestCase {
         // Restrict this test to the fields that matter.
         Class fieldClass = fieldA.getClass();
         if (fieldClass == TestGJDayOfYearField.class ||
-            fieldClass == TestGJDayOfMonthField.class ||
-            fieldClass == TestGJWeekOfWeekyearField.class) {
-            
+                fieldClass == TestGJDayOfMonthField.class ||
+                fieldClass == TestGJWeekOfWeekyearField.class) {
+
             a = fieldA.getMaximumValue(millis);
             b = fieldB.getMaximumValue(millis);
             testValue(fieldA, fieldB, "getMaximumValue", millis, a, b);
@@ -200,11 +199,11 @@ public class MainTest extends TestCase {
 
         // set test
         a = getWrappedValue
-            (value, fieldA.getMinimumValue(millis), fieldA.getMaximumValue(millis));
+                (value, fieldA.getMinimumValue(millis), fieldA.getMaximumValue(millis));
         b = getWrappedValue
-            (value, fieldB.getMinimumValue(millis), fieldB.getMaximumValue(millis));
+                (value, fieldB.getMinimumValue(millis), fieldB.getMaximumValue(millis));
         if (iMode == JULIAN_MODE && a == 0
-            && (fieldA.getName().equals("year") || fieldA.getName().equals("weekyear"))) {
+                && (fieldA.getName().equals("year") || fieldA.getName().equals("weekyear"))) {
             // Exclude setting Julian year of zero.
         } else {
             x = fieldA.set(millis, a);
@@ -321,7 +320,7 @@ public class MainTest extends TestCase {
                            String method, long millis, long valueA, long valueB) {
         System.out.println("Failure on " + makeName(fieldA, fieldB) + "." + method);
         System.out.println(fieldA.getClass().getName() + "\n\tvs. "
-                           + fieldB.getClass().getName());
+                + fieldB.getClass().getName());
         System.out.println("Datetime: " + makeDatetime(millis));
         System.out.println("Millis from 1970: " + millis);
         System.out.println(valueA + " != " + valueB);
@@ -332,23 +331,23 @@ public class MainTest extends TestCase {
                             String method, long millis, long millisA, long millisB) {
         System.out.println("Failure on " + makeName(fieldA, fieldB) + "." + method);
         System.out.println(fieldA.getClass().getName() + "\n\tvs. "
-                           + fieldB.getClass().getName());
+                + fieldB.getClass().getName());
         System.out.println("Datetime: " + makeDatetime(millis));
         System.out.println("Millis from 1970: " + millis);
         System.out.println(makeDatetime(millisA) + " != " + makeDatetime(millisB));
         System.out.println(millisA + " != " + millisB);
         System.out.println("Original value as reported by first field: " +
-                           fieldA.get(millis));
+                fieldA.get(millis));
         System.out.println("Original value as reported by second field: " +
-                           fieldB.get(millis));
+                fieldB.get(millis));
         System.out.println("First new value as reported by first field: " +
-                           fieldA.get(millisA));
+                fieldA.get(millisA));
         System.out.println("First new value as reported by second field: " +
-                           fieldB.get(millisA));
+                fieldB.get(millisA));
         System.out.println("Second new value as reported by first field: " +
-                           fieldA.get(millisB));
+                fieldA.get(millisB));
         System.out.println("Second new value as reported by second field: " +
-                           fieldB.get(millisB));
+                fieldB.get(millisB));
         throw new RuntimeException();
     }
 
@@ -357,23 +356,23 @@ public class MainTest extends TestCase {
                             int valueA, int valueB) {
         System.out.println("Failure on " + makeName(fieldA, fieldB) + "." + method);
         System.out.println(fieldA.getClass().getName() + "\n\tvs. "
-                           + fieldB.getClass().getName());
+                + fieldB.getClass().getName());
         System.out.println("Datetime: " + makeDatetime(millis));
         System.out.println("Millis from 1970: " + millis);
         System.out.println(makeDatetime(millisA) + " != " + makeDatetime(millisB));
         System.out.println(millisA + " != " + millisB);
         System.out.println("Original value as reported by first field: " +
-                           fieldA.get(millis));
+                fieldA.get(millis));
         System.out.println("Original value as reported by second field: " +
-                           fieldB.get(millis));
+                fieldB.get(millis));
         System.out.println("First new value as reported by first field: " +
-                           fieldA.get(millisA));
+                fieldA.get(millisA));
         System.out.println("First new value as reported by second field: " +
-                           fieldB.get(millisA));
+                fieldB.get(millisA));
         System.out.println("Second new value as reported by first field: " +
-                           fieldA.get(millisB));
+                fieldA.get(millisB));
         System.out.println("Second new value as reported by second field: " +
-                           fieldB.get(millisB));
+                fieldB.get(millisB));
         System.out.println("Value to set for first field: " + valueA);
         System.out.println("Value to set for second field: " + valueB);
         throw new RuntimeException();
@@ -383,7 +382,7 @@ public class MainTest extends TestCase {
                              String method, long millis, boolean boolA, boolean boolB) {
         System.out.println("Failure on " + makeName(fieldA, fieldB) + "." + method);
         System.out.println(fieldA.getClass().getName() + "\n\tvs. "
-                           + fieldB.getClass().getName());
+                + fieldB.getClass().getName());
         System.out.println("Datetime: " + makeDatetime(millis));
         System.out.println("Millis from 1970: " + millis);
         System.out.println(boolA + " != " + boolB);
@@ -404,9 +403,9 @@ public class MainTest extends TestCase {
 
     private String makeDatetime(long millis, Chronology chrono) {
         return chrono.dayOfWeek().getAsShortText(millis) + " "
-            + new DateTime(millis, chrono).toString() + " / " +
-            chrono.weekyear().get(millis) + "-W" + chrono.weekOfWeekyear().get(millis) +
-            "-" + chrono.dayOfWeek().get(millis);
+                + new DateTime(millis, chrono).toString() + " / " +
+                chrono.weekyear().get(millis) + "-W" + chrono.weekOfWeekyear().get(millis) +
+                "-" + chrono.dayOfWeek().get(millis);
     }
 
     private String makeDate(long millis) {
@@ -415,9 +414,9 @@ public class MainTest extends TestCase {
 
     private String makeDate(long millis, Chronology chrono) {
         return chrono.dayOfWeek().getAsShortText(millis) + " "
-            + new DateTime(millis, chrono).toString("yyyy-MM-dd") + " / " +
-            chrono.weekyear().get(millis) + "-W" + chrono.weekOfWeekyear().get(millis) +
-            "-" + chrono.dayOfWeek().get(millis);
+                + new DateTime(millis, chrono).toString("yyyy-MM-dd") + " / " +
+                chrono.weekyear().get(millis) + "-W" + chrono.weekOfWeekyear().get(millis) +
+                "-" + chrono.dayOfWeek().get(millis);
     }
 
     //-----------------------------------------------------------------------

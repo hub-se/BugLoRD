@@ -1,32 +1,34 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-32">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/geometry/euclidean/threed/PolyhedronsSetTest">
-					<exception>java.lang.ClassCastException:org.apache.commons.math3.geometry.partitioning.BoundaryAttribute
-						cannot be cast to java.lang.Boolean</exception>
-				</testfile>
-				<spectra>
-					<number_tests>23</number_tests>
-					<failed>1</failed>
-					<passed>22</passed>
-					<nodes>31908</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/geometry/euclidean/twod/PolygonsSet.java">
-					<change>136</change>
-					<bugtypes>
-						<id id="1.2" lines="136">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-32">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/geometry/euclidean/threed/PolyhedronsSetTest">
+                    <exception>
+                        java.lang.ClassCastException:org.apache.commons.math3.geometry.partitioning.BoundaryAttribute
+                        cannot be cast to java.lang.Boolean
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>23</number_tests>
+                    <failed>1</failed>
+                    <passed>22</passed>
+                    <nodes>31908</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/geometry/euclidean/twod/PolygonsSet.java">
+                    <change>136</change>
+                    <bugtypes>
+                        <id id="1.2" lines="136">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

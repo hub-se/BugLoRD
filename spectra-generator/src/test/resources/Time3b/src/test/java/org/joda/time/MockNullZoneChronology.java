@@ -20,7 +20,7 @@ import org.joda.time.chrono.ISOChronology;
 
 /**
  * Mock class for unit testing.
- * 
+ *
  * @author Stephen Colebourne
  */
 class MockNullZoneChronology extends BaseChronology {
@@ -28,15 +28,19 @@ class MockNullZoneChronology extends BaseChronology {
     public DateTimeZone getZone() {
         return null;
     }
+
     public Chronology withUTC() {
         return this;
     }
+
     public Chronology withZone(DateTimeZone zone) {
         return this;
     }
+
     public DateTimeField dayOfMonth() {  // for DateMidnight test
         return ISOChronology.getInstance().dayOfMonth();
     }
+
     public String toString() {
         return "";
     }

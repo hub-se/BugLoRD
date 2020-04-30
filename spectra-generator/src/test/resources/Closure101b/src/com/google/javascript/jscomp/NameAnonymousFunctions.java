@@ -18,85 +18,89 @@ package com.google.javascript.jscomp;
 
 import com.google.javascript.rhino.Node;
 
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 /**
  * Gives anonymous function names. This makes it way easier to debug because
  * debuggers and stack traces use the function names. So if you have
- *
+ * <p>
  * goog.string.htmlEscape = function(str) {
  * }
- *
+ * <p>
  * It will become
- *
+ * <p>
  * goog.string.htmlEscape = function $goog$string$htmlEscape$(str) {
  * }
- *
-*
  */
 class NameAnonymousFunctions implements CompilerPass {
-  private static final Logger logger = Logger.getLogger(
-      NameAnonymousFunctions.class.getName());
+    private static final Logger logger = Logger.getLogger(
+            NameAnonymousFunctions.class.getName());
 
-  static final char DELIMITER = '$';
+    static final char DELIMITER = '$';
 
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  private int namedCount = 0;
-  private int bytesUsed = 0;
+    private int namedCount = 0;
+    private int bytesUsed = 0;
 
-  NameAnonymousFunctions(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  /** {@inheritDoc} */
-  public void process(Node externs, Node root) {
-    AnonymousFunctionNamingCallback namingCallback =
-        new AnonymousFunctionNamingCallback(new AnonymousFunctionNamer());
-    NodeTraversal.traverse(compiler, root, namingCallback);
-    logger.info("Named " + namedCount + " anon functions using " +
-        bytesUsed + " bytes");
-  }
-
-  /**
-   * Names anonymous functions. The function names don't have to be globally
-   * unique or even locally unique. We make them somewhat unique because of a
-   * bug in IE (and there may be other bugs we haven't found). See unit test for
-   * more info.
-   */
-  private class AnonymousFunctionNamer
-      implements AnonymousFunctionNamingCallback.FunctionNamer {
-    private NodeNameExtractor nameExtractor;
-
-    AnonymousFunctionNamer() {
-      this.nameExtractor = new NodeNameExtractor(DELIMITER);
+    NameAnonymousFunctions(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
 
     /**
-     * Returns a likely not conflicting name to make IE happy. See unit test
-     * for more info.
+     * {@inheritDoc}
      */
-    private String getLikelyNonConflictingName(String name) {
-      return DELIMITER + name + DELIMITER;
+    public void process(Node externs, Node root) {
+        AnonymousFunctionNamingCallback namingCallback =
+                new AnonymousFunctionNamingCallback(new AnonymousFunctionNamer());
+        NodeTraversal.traverse(compiler, root, namingCallback);
+        logger.info("Named " + namedCount + " anon functions using " +
+                bytesUsed + " bytes");
     }
 
-    /** {@inheritDoc} */
-    public final String getName(Node node) {
-      return nameExtractor.getName(node);
-    }
+    /**
+     * Names anonymous functions. The function names don't have to be globally
+     * unique or even locally unique. We make them somewhat unique because of a
+     * bug in IE (and there may be other bugs we haven't found). See unit test for
+     * more info.
+     */
+    private class AnonymousFunctionNamer
+            implements AnonymousFunctionNamingCallback.FunctionNamer {
+        private NodeNameExtractor nameExtractor;
 
-    /** {@inheritDoc} */
-    public final void setFunctionName(String name, Node fnNode) {
-      Node fnNameNode = fnNode.getFirstChild();
-      String uniqueName = getLikelyNonConflictingName(name);
-      fnNameNode.setString(uniqueName);
-      compiler.reportCodeChange();
-      namedCount++;
-      bytesUsed += uniqueName.length();
-    }
+        AnonymousFunctionNamer() {
+            this.nameExtractor = new NodeNameExtractor(DELIMITER);
+        }
 
-    public final String getCombinedName(String lhs, String rhs) {
-      return lhs + DELIMITER + rhs;
+        /**
+         * Returns a likely not conflicting name to make IE happy. See unit test
+         * for more info.
+         */
+        private String getLikelyNonConflictingName(String name) {
+            return DELIMITER + name + DELIMITER;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public final String getName(Node node) {
+            return nameExtractor.getName(node);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public final void setFunctionName(String name, Node fnNode) {
+            Node fnNameNode = fnNode.getFirstChild();
+            String uniqueName = getLikelyNonConflictingName(name);
+            fnNameNode.setString(uniqueName);
+            compiler.reportCodeChange();
+            namedCount++;
+            bytesUsed += uniqueName.length();
+        }
+
+        public final String getCombinedName(String lhs, String rhs) {
+            return lhs + DELIMITER + rhs;
+        }
     }
-  }
 }

@@ -15,26 +15,15 @@
  */
 package org.joda.time;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.joda.time.chrono.BuddhistChronology;
-import org.joda.time.chrono.CopticChronology;
-import org.joda.time.chrono.GJChronology;
-import org.joda.time.chrono.GregorianChronology;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.chrono.JulianChronology;
+import org.joda.time.chrono.*;
 import org.joda.time.field.UnsupportedDateTimeField;
 import org.joda.time.field.UnsupportedDurationField;
+
+import java.io.*;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * This class is a Junit unit test for serialization.
@@ -48,31 +37,31 @@ public class TestSerialization extends TestCase {
     private static final DateTimeZone PARIS = DateTimeZone.forID("Europe/Paris");
     private static final DateTimeZone LONDON = DateTimeZone.forID("Europe/London");
     private static final DateTimeZone TOKYO = DateTimeZone.forID("Asia/Tokyo");
-    
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
-    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365 + 365;
-    
+
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
+    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365;
+
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
-            
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
+
     // 2002-04-05
     private long TEST_TIME1 =
-            (y2002days + 31L + 28L + 31L + 5L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 12L * DateTimeConstants.MILLIS_PER_HOUR
-            + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (y2002days + 31L + 28L + 31L + 5L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 12L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     // 2003-05-06
     private long TEST_TIME2 =
-            (y2003days + 31L + 28L + 31L + 30L + 6L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 14L * DateTimeConstants.MILLIS_PER_HOUR
-            + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
+            (y2003days + 31L + 28L + 31L + 30L + 6L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 14L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
 
 //    private static class MockDelegatedDurationField extends DelegatedDurationField implements Serializable {
 //        private static final long serialVersionUID = 1878496002811998493L;        
@@ -319,12 +308,12 @@ public class TestSerialization extends TestCase {
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(test);
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         ObjectInputStream ois = new ObjectInputStream(bais);
         Object obj = ois.readObject();
         ois.close();
-        
+
         if (same) {
             assertSame(test, obj);
         } else {

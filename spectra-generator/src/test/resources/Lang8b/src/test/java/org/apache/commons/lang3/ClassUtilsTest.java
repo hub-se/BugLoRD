@@ -16,39 +16,26 @@
  */
 package org.apache.commons.lang3;
 
-import static org.apache.commons.lang3.JavaVersion.JAVA_1_5;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import org.junit.Test;
+import static org.apache.commons.lang3.JavaVersion.JAVA_1_5;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.ClassUtils}.
  *
  * @version $Id$
  */
-public class ClassUtilsTest  {
+public class ClassUtilsTest {
 
     private static class Inner {
-        private class DeeplyNested{}
+        private class DeeplyNested {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -71,8 +58,10 @@ public class ClassUtilsTest  {
         assertEquals("<null>", ClassUtils.getShortClassName(null, "<null>"));
 
         // Inner types
-        class Named extends Object {}
-        assertEquals("ClassUtilsTest.1", ClassUtils.getShortClassName(new Object(){}, "<null>"));
+        class Named extends Object {
+        }
+        assertEquals("ClassUtilsTest.1", ClassUtils.getShortClassName(new Object() {
+        }, "<null>"));
         assertEquals("ClassUtilsTest.1Named", ClassUtils.getShortClassName(new Named(), "<null>"));
         assertEquals("ClassUtilsTest.Inner", ClassUtils.getShortClassName(new Inner(), "<null>"));
     }
@@ -111,14 +100,15 @@ public class ClassUtilsTest  {
         assertEquals("String[][]", ClassUtils.getShortClassName(String[][].class));
         assertEquals("String[][][]", ClassUtils.getShortClassName(String[][][].class));
         assertEquals("String[][][][]", ClassUtils.getShortClassName(String[][][][].class));
-        
+
         // Inner types
-        class Named extends Object {}
-        assertEquals("ClassUtilsTest.2", ClassUtils.getShortClassName(new Object(){}.getClass()));
+        class Named extends Object {
+        }
+        assertEquals("ClassUtilsTest.2", ClassUtils.getShortClassName(new Object() {
+        }.getClass()));
         assertEquals("ClassUtilsTest.2Named", ClassUtils.getShortClassName(Named.class));
         assertEquals("ClassUtilsTest.Inner", ClassUtils.getShortClassName(Inner.class));
     }
-
 
 
     @Test
@@ -163,10 +153,12 @@ public class ClassUtilsTest  {
         assertEquals("String[][]", ClassUtils.getSimpleName(String[][].class));
         assertEquals("String[][][]", ClassUtils.getSimpleName(String[][][].class));
         assertEquals("String[][][][]", ClassUtils.getSimpleName(String[][][][].class));
-        
+
         // On-the-fly types
-        class Named extends Object {}
-        assertEquals("", ClassUtils.getSimpleName(new Object(){}.getClass()));
+        class Named extends Object {
+        }
+        assertEquals("", ClassUtils.getSimpleName(new Object() {
+        }.getClass()));
         assertEquals("Named", ClassUtils.getSimpleName(Named.class));
     }
 
@@ -190,7 +182,7 @@ public class ClassUtilsTest  {
     public void test_getPackageName_Class() {
         assertEquals("java.lang", ClassUtils.getPackageName(String.class));
         assertEquals("java.util", ClassUtils.getPackageName(Map.Entry.class));
-        assertEquals("", ClassUtils.getPackageName((Class<?>)null));
+        assertEquals("", ClassUtils.getPackageName((Class<?>) null));
 
         // LANG-535
         assertEquals("java.lang", ClassUtils.getPackageName(String[].class));
@@ -209,10 +201,12 @@ public class ClassUtilsTest  {
         assertEquals("java.lang", ClassUtils.getPackageName(String[][].class));
         assertEquals("java.lang", ClassUtils.getPackageName(String[][][].class));
         assertEquals("java.lang", ClassUtils.getPackageName(String[][][][].class));
-        
+
         // On-the-fly types
-        class Named extends Object {}
-        assertEquals("org.apache.commons.lang3", ClassUtils.getPackageName(new Object(){}.getClass()));
+        class Named extends Object {
+        }
+        assertEquals("org.apache.commons.lang3", ClassUtils.getPackageName(new Object() {
+        }.getClass()));
         assertEquals("org.apache.commons.lang3", ClassUtils.getPackageName(Named.class));
     }
 
@@ -220,7 +214,7 @@ public class ClassUtilsTest  {
     public void test_getPackageName_String() {
         assertEquals("org.apache.commons.lang3", ClassUtils.getPackageName(ClassUtils.class.getName()));
         assertEquals("java.util", ClassUtils.getPackageName(Map.Entry.class.getName()));
-        assertEquals("", ClassUtils.getPackageName((String)null));
+        assertEquals("", ClassUtils.getPackageName((String) null));
         assertEquals("", ClassUtils.getPackageName(""));
     }
 
@@ -251,18 +245,25 @@ public class ClassUtilsTest  {
 
     private static interface IA {
     }
+
     private static interface IB {
     }
+
     private static interface IC extends ID, IE {
     }
+
     private static interface ID {
     }
+
     private static interface IE extends IF {
     }
+
     private static interface IF {
     }
+
     private static class CX implements IB, IA, IE {
     }
+
     private static class CY extends CX implements IB, IC {
     }
 
@@ -283,12 +284,13 @@ public class ClassUtilsTest  {
         assertEquals(Object.class, result.get(2));
 
         @SuppressWarnings("unchecked") // test what happens when non-generic code adds wrong type of element
-        List<Object> olist = (List<Object>)(List<?>)list;
+                List<Object> olist = (List<Object>) (List<?>) list;
         olist.add(new Object());
         try {
             ClassUtils.convertClassNamesToClasses(list);
             fail("Should not have been able to convert list");
-        } catch (ClassCastException expected) {}
+        } catch (ClassCastException expected) {
+        }
         assertEquals(null, ClassUtils.convertClassNamesToClasses(null));
     }
 
@@ -308,12 +310,13 @@ public class ClassUtilsTest  {
         assertEquals("java.lang.Object", result.get(2));
 
         @SuppressWarnings("unchecked") // test what happens when non-generic code adds wrong type of element
-        List<Object> olist = (List<Object>)(List<?>)list;
+                List<Object> olist = (List<Object>) (List<?>) list;
         olist.add(new Object());
         try {
             ClassUtils.convertClassesToClassNames(list);
             fail("Should not have been able to convert list");
-        } catch (ClassCastException expected) {}
+        } catch (ClassCastException expected) {
+        }
         assertEquals(null, ClassUtils.convertClassesToClassNames(null));
     }
 
@@ -332,12 +335,12 @@ public class ClassUtilsTest  {
     // -------------------------------------------------------------------------
     @Test
     public void test_isAssignable_ClassArray_ClassArray() throws Exception {
-        Class<?>[] array2 = new Class[] {Object.class, Object.class};
-        Class<?>[] array1 = new Class[] {Object.class};
-        Class<?>[] array1s = new Class[] {String.class};
-        Class<?>[] array0 = new Class[] {};
-        Class<?>[] arrayPrimitives = { Integer.TYPE, Boolean.TYPE };
-        Class<?>[] arrayWrappers = { Integer.class, Boolean.class };
+        Class<?>[] array2 = new Class[]{Object.class, Object.class};
+        Class<?>[] array1 = new Class[]{Object.class};
+        Class<?>[] array1s = new Class[]{String.class};
+        Class<?>[] array0 = new Class[]{};
+        Class<?>[] arrayPrimitives = {Integer.TYPE, Boolean.TYPE};
+        Class<?>[] arrayWrappers = {Integer.class, Boolean.class};
 
         assertFalse(ClassUtils.isAssignable(array1, array2));
         assertFalse(ClassUtils.isAssignable(null, array2));
@@ -363,12 +366,12 @@ public class ClassUtilsTest  {
 
     @Test
     public void test_isAssignable_ClassArray_ClassArray_Autoboxing() throws Exception {
-        Class<?>[] array2 = new Class[] {Object.class, Object.class};
-        Class<?>[] array1 = new Class[] {Object.class};
-        Class<?>[] array1s = new Class[] {String.class};
-        Class<?>[] array0 = new Class[] {};
-        Class<?>[] arrayPrimitives = { Integer.TYPE, Boolean.TYPE };
-        Class<?>[] arrayWrappers = { Integer.class, Boolean.class };
+        Class<?>[] array2 = new Class[]{Object.class, Object.class};
+        Class<?>[] array1 = new Class[]{Object.class};
+        Class<?>[] array1s = new Class[]{String.class};
+        Class<?>[] array0 = new Class[]{};
+        Class<?>[] arrayPrimitives = {Integer.TYPE, Boolean.TYPE};
+        Class<?>[] arrayWrappers = {Integer.class, Boolean.class};
 
         assertFalse(ClassUtils.isAssignable(array1, array2, true));
         assertFalse(ClassUtils.isAssignable(null, array2, true));
@@ -391,12 +394,12 @@ public class ClassUtilsTest  {
 
     @Test
     public void test_isAssignable_ClassArray_ClassArray_NoAutoboxing() throws Exception {
-        Class<?>[] array2 = new Class[] {Object.class, Object.class};
-        Class<?>[] array1 = new Class[] {Object.class};
-        Class<?>[] array1s = new Class[] {String.class};
-        Class<?>[] array0 = new Class[] {};
-        Class<?>[] arrayPrimitives = { Integer.TYPE, Boolean.TYPE };
-        Class<?>[] arrayWrappers = { Integer.class, Boolean.class };
+        Class<?>[] array2 = new Class[]{Object.class, Object.class};
+        Class<?>[] array1 = new Class[]{Object.class};
+        Class<?>[] array1s = new Class[]{String.class};
+        Class<?>[] array0 = new Class[]{};
+        Class<?>[] arrayPrimitives = {Integer.TYPE, Boolean.TYPE};
+        Class<?>[] arrayWrappers = {Integer.class, Boolean.class};
 
         assertFalse(ClassUtils.isAssignable(array1, array2, false));
         assertFalse(ClassUtils.isAssignable(null, array2, false));
@@ -756,7 +759,7 @@ public class ClassUtilsTest  {
         assertTrue("Long.class", ClassUtils.isPrimitiveOrWrapper(Long.class));
         assertTrue("Double.class", ClassUtils.isPrimitiveOrWrapper(Double.class));
         assertTrue("Float.class", ClassUtils.isPrimitiveOrWrapper(Float.class));
-        
+
         // test primitive classes
         assertTrue("boolean", ClassUtils.isPrimitiveOrWrapper(Boolean.TYPE));
         assertTrue("byte", ClassUtils.isPrimitiveOrWrapper(Byte.TYPE));
@@ -767,14 +770,14 @@ public class ClassUtilsTest  {
         assertTrue("double", ClassUtils.isPrimitiveOrWrapper(Double.TYPE));
         assertTrue("float", ClassUtils.isPrimitiveOrWrapper(Float.TYPE));
         assertTrue("Void.TYPE", ClassUtils.isPrimitiveOrWrapper(Void.TYPE));
-        
+
         // others
         assertFalse("null", ClassUtils.isPrimitiveOrWrapper(null));
         assertFalse("Void.class", ClassUtils.isPrimitiveOrWrapper(Void.class));
         assertFalse("String.class", ClassUtils.isPrimitiveOrWrapper(String.class));
         assertFalse("this.getClass()", ClassUtils.isPrimitiveOrWrapper(this.getClass()));
     }
-    
+
     @Test
     public void testIsPrimitiveWrapper() {
 
@@ -787,7 +790,7 @@ public class ClassUtilsTest  {
         assertTrue("Long.class", ClassUtils.isPrimitiveWrapper(Long.class));
         assertTrue("Double.class", ClassUtils.isPrimitiveWrapper(Double.class));
         assertTrue("Float.class", ClassUtils.isPrimitiveWrapper(Float.class));
-        
+
         // test primitive classes
         assertFalse("boolean", ClassUtils.isPrimitiveWrapper(Boolean.TYPE));
         assertFalse("byte", ClassUtils.isPrimitiveWrapper(Byte.TYPE));
@@ -797,7 +800,7 @@ public class ClassUtilsTest  {
         assertFalse("long", ClassUtils.isPrimitiveWrapper(Long.TYPE));
         assertFalse("double", ClassUtils.isPrimitiveWrapper(Double.TYPE));
         assertFalse("float", ClassUtils.isPrimitiveWrapper(Float.TYPE));
-        
+
         // others
         assertFalse("null", ClassUtils.isPrimitiveWrapper(null));
         assertFalse("Void.class", ClassUtils.isPrimitiveWrapper(Void.class));
@@ -805,40 +808,40 @@ public class ClassUtilsTest  {
         assertFalse("String.class", ClassUtils.isPrimitiveWrapper(String.class));
         assertFalse("this.getClass()", ClassUtils.isPrimitiveWrapper(this.getClass()));
     }
-    
+
     @Test
     public void testPrimitiveToWrapper() {
 
         // test primitive classes
         assertEquals("boolean -> Boolean.class",
-            Boolean.class, ClassUtils.primitiveToWrapper(Boolean.TYPE));
+                Boolean.class, ClassUtils.primitiveToWrapper(Boolean.TYPE));
         assertEquals("byte -> Byte.class",
-            Byte.class, ClassUtils.primitiveToWrapper(Byte.TYPE));
+                Byte.class, ClassUtils.primitiveToWrapper(Byte.TYPE));
         assertEquals("char -> Character.class",
-            Character.class, ClassUtils.primitiveToWrapper(Character.TYPE));
+                Character.class, ClassUtils.primitiveToWrapper(Character.TYPE));
         assertEquals("short -> Short.class",
-            Short.class, ClassUtils.primitiveToWrapper(Short.TYPE));
+                Short.class, ClassUtils.primitiveToWrapper(Short.TYPE));
         assertEquals("int -> Integer.class",
-            Integer.class, ClassUtils.primitiveToWrapper(Integer.TYPE));
+                Integer.class, ClassUtils.primitiveToWrapper(Integer.TYPE));
         assertEquals("long -> Long.class",
-            Long.class, ClassUtils.primitiveToWrapper(Long.TYPE));
+                Long.class, ClassUtils.primitiveToWrapper(Long.TYPE));
         assertEquals("double -> Double.class",
-            Double.class, ClassUtils.primitiveToWrapper(Double.TYPE));
+                Double.class, ClassUtils.primitiveToWrapper(Double.TYPE));
         assertEquals("float -> Float.class",
-            Float.class, ClassUtils.primitiveToWrapper(Float.TYPE));
+                Float.class, ClassUtils.primitiveToWrapper(Float.TYPE));
 
         // test a few other classes
         assertEquals("String.class -> String.class",
-            String.class, ClassUtils.primitiveToWrapper(String.class));
+                String.class, ClassUtils.primitiveToWrapper(String.class));
         assertEquals("ClassUtils.class -> ClassUtils.class",
-            org.apache.commons.lang3.ClassUtils.class,
-            ClassUtils.primitiveToWrapper(org.apache.commons.lang3.ClassUtils.class));
+                org.apache.commons.lang3.ClassUtils.class,
+                ClassUtils.primitiveToWrapper(org.apache.commons.lang3.ClassUtils.class));
         assertEquals("Void.TYPE -> Void.TYPE",
-            Void.TYPE, ClassUtils.primitiveToWrapper(Void.TYPE));
+                Void.TYPE, ClassUtils.primitiveToWrapper(Void.TYPE));
 
         // test null
         assertNull("null -> null",
-            ClassUtils.primitiveToWrapper(null));
+                ClassUtils.primitiveToWrapper(null));
     }
 
     @Test
@@ -848,7 +851,7 @@ public class ClassUtilsTest  {
         assertNull("null -> null", ClassUtils.primitivesToWrappers((Class<?>[]) null)); // equivalent cast to avoid warning
         // Other possible casts for null
         assertTrue("empty -> empty", Arrays.equals(ArrayUtils.EMPTY_CLASS_ARRAY, ClassUtils.primitivesToWrappers()));
-        Class<?>[] castNull = ClassUtils.primitivesToWrappers((Class<?>)null); // == new Class<?>[]{null}
+        Class<?>[] castNull = ClassUtils.primitivesToWrappers((Class<?>) null); // == new Class<?>[]{null}
         assertTrue("(Class<?>)null -> [null]", Arrays.equals(new Class<?>[]{null}, castNull));
         // test empty array is returned unchanged
         // TODO this is not documented
@@ -856,14 +859,14 @@ public class ClassUtilsTest  {
                 ArrayUtils.EMPTY_CLASS_ARRAY, ClassUtils.primitivesToWrappers(ArrayUtils.EMPTY_CLASS_ARRAY));
 
         // test an array of various classes
-        final Class<?>[] primitives = new Class[] {
+        final Class<?>[] primitives = new Class[]{
                 Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE,
                 Integer.TYPE, Long.TYPE, Double.TYPE, Float.TYPE,
                 String.class, ClassUtils.class
         };
-        Class<?>[] wrappers= ClassUtils.primitivesToWrappers(primitives);
+        Class<?>[] wrappers = ClassUtils.primitivesToWrappers(primitives);
 
-        for (int i=0; i < primitives.length; i++) {
+        for (int i = 0; i < primitives.length; i++) {
             // test each returned wrapper
             Class<?> primitive = primitives[i];
             Class<?> expectedWrapper = ClassUtils.primitiveToWrapper(primitive);
@@ -872,7 +875,7 @@ public class ClassUtilsTest  {
         }
 
         // test an array of no primitive classes
-        final Class<?>[] noPrimitives = new Class[] {
+        final Class<?>[] noPrimitives = new Class[]{
                 String.class, ClassUtils.class, Void.TYPE
         };
         // This used to return the exact same array, but no longer does.
@@ -929,9 +932,9 @@ public class ClassUtilsTest  {
         assertNull("Wrong result for null input", ClassUtils.wrappersToPrimitives((Class<?>[]) null)); // equivalent cast
         // Other possible casts for null
         assertTrue("empty -> empty", Arrays.equals(ArrayUtils.EMPTY_CLASS_ARRAY, ClassUtils.wrappersToPrimitives()));
-        Class<?>[] castNull = ClassUtils.wrappersToPrimitives((Class<?>)null); // == new Class<?>[]{null}
+        Class<?>[] castNull = ClassUtils.wrappersToPrimitives((Class<?>) null); // == new Class<?>[]{null}
         assertTrue("(Class<?>)null -> [null]", Arrays.equals(new Class<?>[]{null}, castNull));
-}
+    }
 
     @Test
     public void testWrappersToPrimitivesEmpty() {
@@ -941,126 +944,125 @@ public class ClassUtilsTest  {
 
     @Test
     public void testGetClassClassNotFound() throws Exception {
-        assertGetClassThrowsClassNotFound( "bool" );
-        assertGetClassThrowsClassNotFound( "bool[]" );
-        assertGetClassThrowsClassNotFound( "integer[]" );
+        assertGetClassThrowsClassNotFound("bool");
+        assertGetClassThrowsClassNotFound("bool[]");
+        assertGetClassThrowsClassNotFound("integer[]");
     }
 
     @Test
     public void testGetClassInvalidArguments() throws Exception {
-        assertGetClassThrowsNullPointerException( null );
-        assertGetClassThrowsClassNotFound( "[][][]" );
-        assertGetClassThrowsClassNotFound( "[[]" );
-        assertGetClassThrowsClassNotFound( "[" );
-        assertGetClassThrowsClassNotFound( "java.lang.String][" );
-        assertGetClassThrowsClassNotFound( ".hello.world" );
-        assertGetClassThrowsClassNotFound( "hello..world" );
+        assertGetClassThrowsNullPointerException(null);
+        assertGetClassThrowsClassNotFound("[][][]");
+        assertGetClassThrowsClassNotFound("[[]");
+        assertGetClassThrowsClassNotFound("[");
+        assertGetClassThrowsClassNotFound("java.lang.String][");
+        assertGetClassThrowsClassNotFound(".hello.world");
+        assertGetClassThrowsClassNotFound("hello..world");
     }
 
     @Test
     public void testWithInterleavingWhitespace() throws ClassNotFoundException {
-        assertEquals( int[].class, ClassUtils.getClass( " int [ ] " ) );
-        assertEquals( long[].class, ClassUtils.getClass( "\rlong\t[\n]\r" ) );
-        assertEquals( short[].class, ClassUtils.getClass( "\tshort                \t\t[]" ) );
-        assertEquals( byte[].class, ClassUtils.getClass( "byte[\t\t\n\r]   " ) );
+        assertEquals(int[].class, ClassUtils.getClass(" int [ ] "));
+        assertEquals(long[].class, ClassUtils.getClass("\rlong\t[\n]\r"));
+        assertEquals(short[].class, ClassUtils.getClass("\tshort                \t\t[]"));
+        assertEquals(byte[].class, ClassUtils.getClass("byte[\t\t\n\r]   "));
     }
 
     @Test
     public void testGetInnerClass() throws ClassNotFoundException {
-        assertEquals( Inner.DeeplyNested.class, ClassUtils.getClass( "org.apache.commons.lang3.ClassUtilsTest.Inner.DeeplyNested" ) );
-        assertEquals( Inner.DeeplyNested.class, ClassUtils.getClass( "org.apache.commons.lang3.ClassUtilsTest.Inner$DeeplyNested" ) );
-        assertEquals( Inner.DeeplyNested.class, ClassUtils.getClass( "org.apache.commons.lang3.ClassUtilsTest$Inner$DeeplyNested" ) );
-        assertEquals( Inner.DeeplyNested.class, ClassUtils.getClass( "org.apache.commons.lang3.ClassUtilsTest$Inner.DeeplyNested" ) );
+        assertEquals(Inner.DeeplyNested.class, ClassUtils.getClass("org.apache.commons.lang3.ClassUtilsTest.Inner.DeeplyNested"));
+        assertEquals(Inner.DeeplyNested.class, ClassUtils.getClass("org.apache.commons.lang3.ClassUtilsTest.Inner$DeeplyNested"));
+        assertEquals(Inner.DeeplyNested.class, ClassUtils.getClass("org.apache.commons.lang3.ClassUtilsTest$Inner$DeeplyNested"));
+        assertEquals(Inner.DeeplyNested.class, ClassUtils.getClass("org.apache.commons.lang3.ClassUtilsTest$Inner.DeeplyNested"));
     }
 
     @Test
     public void testGetClassByNormalNameArrays() throws ClassNotFoundException {
-        assertEquals( int[].class, ClassUtils.getClass( "int[]" ) );
-        assertEquals( long[].class, ClassUtils.getClass( "long[]" ) );
-        assertEquals( short[].class, ClassUtils.getClass( "short[]" ) );
-        assertEquals( byte[].class, ClassUtils.getClass( "byte[]" ) );
-        assertEquals( char[].class, ClassUtils.getClass( "char[]" ) );
-        assertEquals( float[].class, ClassUtils.getClass( "float[]" ) );
-        assertEquals( double[].class, ClassUtils.getClass( "double[]" ) );
-        assertEquals( boolean[].class, ClassUtils.getClass( "boolean[]" ) );
-        assertEquals( String[].class, ClassUtils.getClass( "java.lang.String[]" ) );
-        assertEquals( java.util.Map.Entry[].class, ClassUtils.getClass( "java.util.Map.Entry[]" ) );
-        assertEquals( java.util.Map.Entry[].class, ClassUtils.getClass( "java.util.Map$Entry[]" ) );
-        assertEquals( java.util.Map.Entry[].class, ClassUtils.getClass( "[Ljava.util.Map.Entry;" ) );
-        assertEquals( java.util.Map.Entry[].class, ClassUtils.getClass( "[Ljava.util.Map$Entry;" ) );
+        assertEquals(int[].class, ClassUtils.getClass("int[]"));
+        assertEquals(long[].class, ClassUtils.getClass("long[]"));
+        assertEquals(short[].class, ClassUtils.getClass("short[]"));
+        assertEquals(byte[].class, ClassUtils.getClass("byte[]"));
+        assertEquals(char[].class, ClassUtils.getClass("char[]"));
+        assertEquals(float[].class, ClassUtils.getClass("float[]"));
+        assertEquals(double[].class, ClassUtils.getClass("double[]"));
+        assertEquals(boolean[].class, ClassUtils.getClass("boolean[]"));
+        assertEquals(String[].class, ClassUtils.getClass("java.lang.String[]"));
+        assertEquals(java.util.Map.Entry[].class, ClassUtils.getClass("java.util.Map.Entry[]"));
+        assertEquals(java.util.Map.Entry[].class, ClassUtils.getClass("java.util.Map$Entry[]"));
+        assertEquals(java.util.Map.Entry[].class, ClassUtils.getClass("[Ljava.util.Map.Entry;"));
+        assertEquals(java.util.Map.Entry[].class, ClassUtils.getClass("[Ljava.util.Map$Entry;"));
     }
 
     @Test
     public void testGetClassByNormalNameArrays2D() throws ClassNotFoundException {
-        assertEquals( int[][].class, ClassUtils.getClass( "int[][]" ) );
-        assertEquals( long[][].class, ClassUtils.getClass( "long[][]" ) );
-        assertEquals( short[][].class, ClassUtils.getClass( "short[][]" ) );
-        assertEquals( byte[][].class, ClassUtils.getClass( "byte[][]" ) );
-        assertEquals( char[][].class, ClassUtils.getClass( "char[][]" ) );
-        assertEquals( float[][].class, ClassUtils.getClass( "float[][]" ) );
-        assertEquals( double[][].class, ClassUtils.getClass( "double[][]" ) );
-        assertEquals( boolean[][].class, ClassUtils.getClass( "boolean[][]" ) );
-        assertEquals( String[][].class, ClassUtils.getClass( "java.lang.String[][]" ) );
+        assertEquals(int[][].class, ClassUtils.getClass("int[][]"));
+        assertEquals(long[][].class, ClassUtils.getClass("long[][]"));
+        assertEquals(short[][].class, ClassUtils.getClass("short[][]"));
+        assertEquals(byte[][].class, ClassUtils.getClass("byte[][]"));
+        assertEquals(char[][].class, ClassUtils.getClass("char[][]"));
+        assertEquals(float[][].class, ClassUtils.getClass("float[][]"));
+        assertEquals(double[][].class, ClassUtils.getClass("double[][]"));
+        assertEquals(boolean[][].class, ClassUtils.getClass("boolean[][]"));
+        assertEquals(String[][].class, ClassUtils.getClass("java.lang.String[][]"));
     }
 
     @Test
     public void testGetClassWithArrayClasses2D() throws Exception {
-        assertGetClassReturnsClass( String[][].class );
-        assertGetClassReturnsClass( int[][].class );
-        assertGetClassReturnsClass( long[][].class );
-        assertGetClassReturnsClass( short[][].class );
-        assertGetClassReturnsClass( byte[][].class );
-        assertGetClassReturnsClass( char[][].class );
-        assertGetClassReturnsClass( float[][].class );
-        assertGetClassReturnsClass( double[][].class );
-        assertGetClassReturnsClass( boolean[][].class );
+        assertGetClassReturnsClass(String[][].class);
+        assertGetClassReturnsClass(int[][].class);
+        assertGetClassReturnsClass(long[][].class);
+        assertGetClassReturnsClass(short[][].class);
+        assertGetClassReturnsClass(byte[][].class);
+        assertGetClassReturnsClass(char[][].class);
+        assertGetClassReturnsClass(float[][].class);
+        assertGetClassReturnsClass(double[][].class);
+        assertGetClassReturnsClass(boolean[][].class);
     }
 
     @Test
     public void testGetClassWithArrayClasses() throws Exception {
-        assertGetClassReturnsClass( String[].class );
-        assertGetClassReturnsClass( int[].class );
-        assertGetClassReturnsClass( long[].class );
-        assertGetClassReturnsClass( short[].class );
-        assertGetClassReturnsClass( byte[].class );
-        assertGetClassReturnsClass( char[].class );
-        assertGetClassReturnsClass( float[].class );
-        assertGetClassReturnsClass( double[].class );
-        assertGetClassReturnsClass( boolean[].class );
+        assertGetClassReturnsClass(String[].class);
+        assertGetClassReturnsClass(int[].class);
+        assertGetClassReturnsClass(long[].class);
+        assertGetClassReturnsClass(short[].class);
+        assertGetClassReturnsClass(byte[].class);
+        assertGetClassReturnsClass(char[].class);
+        assertGetClassReturnsClass(float[].class);
+        assertGetClassReturnsClass(double[].class);
+        assertGetClassReturnsClass(boolean[].class);
     }
 
     @Test
     public void testGetClassRawPrimitives() throws ClassNotFoundException {
-        assertEquals( int.class, ClassUtils.getClass( "int" ) );
-        assertEquals( long.class, ClassUtils.getClass( "long" ) );
-        assertEquals( short.class, ClassUtils.getClass( "short" ) );
-        assertEquals( byte.class, ClassUtils.getClass( "byte" ) );
-        assertEquals( char.class, ClassUtils.getClass( "char" ) );
-        assertEquals( float.class, ClassUtils.getClass( "float" ) );
-        assertEquals( double.class, ClassUtils.getClass( "double" ) );
-        assertEquals( boolean.class, ClassUtils.getClass( "boolean" ) );
+        assertEquals(int.class, ClassUtils.getClass("int"));
+        assertEquals(long.class, ClassUtils.getClass("long"));
+        assertEquals(short.class, ClassUtils.getClass("short"));
+        assertEquals(byte.class, ClassUtils.getClass("byte"));
+        assertEquals(char.class, ClassUtils.getClass("char"));
+        assertEquals(float.class, ClassUtils.getClass("float"));
+        assertEquals(double.class, ClassUtils.getClass("double"));
+        assertEquals(boolean.class, ClassUtils.getClass("boolean"));
     }
 
-    private void assertGetClassReturnsClass( Class<?> c ) throws Exception {
-        assertEquals( c, ClassUtils.getClass( c.getName() ) );
+    private void assertGetClassReturnsClass(Class<?> c) throws Exception {
+        assertEquals(c, ClassUtils.getClass(c.getName()));
     }
 
-    private void assertGetClassThrowsException( String className, Class<?> exceptionType ) throws Exception {
+    private void assertGetClassThrowsException(String className, Class<?> exceptionType) throws Exception {
         try {
-            ClassUtils.getClass( className );
-            fail( "ClassUtils.getClass() should fail with an exception of type " + exceptionType.getName() + " when given class name \"" + className + "\"." );
-        }
-        catch( Exception e ) {
-            assertTrue( exceptionType.isAssignableFrom( e.getClass() ) );
+            ClassUtils.getClass(className);
+            fail("ClassUtils.getClass() should fail with an exception of type " + exceptionType.getName() + " when given class name \"" + className + "\".");
+        } catch (Exception e) {
+            assertTrue(exceptionType.isAssignableFrom(e.getClass()));
         }
     }
 
-    private void assertGetClassThrowsNullPointerException( String className ) throws Exception {
-        assertGetClassThrowsException( className, NullPointerException.class );
+    private void assertGetClassThrowsNullPointerException(String className) throws Exception {
+        assertGetClassThrowsException(className, NullPointerException.class);
     }
 
-    private void assertGetClassThrowsClassNotFound( String className ) throws Exception {
-        assertGetClassThrowsException( className, ClassNotFoundException.class );
+    private void assertGetClassThrowsClassNotFound(String className) throws Exception {
+        assertGetClassThrowsException(className, ClassNotFoundException.class);
     }
 
     // Show the Java bug: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4071957
@@ -1069,11 +1071,11 @@ public class ClassUtilsTest  {
     public void testShowJavaBug() throws Exception {
         // Tests with Collections$UnmodifiableSet
         Set<?> set = Collections.unmodifiableSet(new HashSet<Object>());
-        Method isEmptyMethod = set.getClass().getMethod("isEmpty",  new Class[0]);
+        Method isEmptyMethod = set.getClass().getMethod("isEmpty", new Class[0]);
         try {
             isEmptyMethod.invoke(set, new Object[0]);
             fail("Failed to throw IllegalAccessException as expected");
-        } catch(IllegalAccessException iae) {
+        } catch (IllegalAccessException iae) {
             // expected
         }
     }
@@ -1082,25 +1084,25 @@ public class ClassUtilsTest  {
     public void testGetPublicMethod() throws Exception {
         // Tests with Collections$UnmodifiableSet
         Set<?> set = Collections.unmodifiableSet(new HashSet<Object>());
-        Method isEmptyMethod = ClassUtils.getPublicMethod(set.getClass(), "isEmpty",  new Class[0]);
-            assertTrue(Modifier.isPublic(isEmptyMethod.getDeclaringClass().getModifiers()));
+        Method isEmptyMethod = ClassUtils.getPublicMethod(set.getClass(), "isEmpty", new Class[0]);
+        assertTrue(Modifier.isPublic(isEmptyMethod.getDeclaringClass().getModifiers()));
 
         try {
             isEmptyMethod.invoke(set, new Object[0]);
-        } catch(java.lang.IllegalAccessException iae) {
+        } catch (java.lang.IllegalAccessException iae) {
             fail("Should not have thrown IllegalAccessException");
         }
 
         // Tests with a public Class
-        Method toStringMethod = ClassUtils.getPublicMethod(Object.class, "toString",  new Class[0]);
-            assertEquals(Object.class.getMethod("toString", new Class[0]), toStringMethod);
+        Method toStringMethod = ClassUtils.getPublicMethod(Object.class, "toString", new Class[0]);
+        assertEquals(Object.class.getMethod("toString", new Class[0]), toStringMethod);
     }
 
     @Test
     public void testToClass_object() {
 //        assertNull(ClassUtils.toClass(null)); // generates warning
         assertNull(ClassUtils.toClass((Object[]) null)); // equivalent explicit cast
-        
+
         // Additional varargs tests
         assertTrue("empty -> empty", Arrays.equals(ArrayUtils.EMPTY_CLASS_ARRAY, ClassUtils.toClass()));
         Class<?>[] castNull = ClassUtils.toClass((Object) null); // == new Object[]{null}
@@ -1108,11 +1110,11 @@ public class ClassUtilsTest  {
 
         assertSame(ArrayUtils.EMPTY_CLASS_ARRAY, ClassUtils.toClass(ArrayUtils.EMPTY_OBJECT_ARRAY));
 
-        assertTrue(Arrays.equals(new Class[] { String.class, Integer.class, Double.class },
-                ClassUtils.toClass(new Object[] { "Test", Integer.valueOf(1), Double.valueOf(99d) })));
+        assertTrue(Arrays.equals(new Class[]{String.class, Integer.class, Double.class},
+                ClassUtils.toClass(new Object[]{"Test", Integer.valueOf(1), Double.valueOf(99d)})));
 
-        assertTrue(Arrays.equals(new Class[] { String.class, null, Double.class },
-                ClassUtils.toClass(new Object[] { "Test", null, Double.valueOf(99d) })));
+        assertTrue(Arrays.equals(new Class[]{String.class, null, Double.class},
+                ClassUtils.toClass(new Object[]{"Test", null, Double.valueOf(99d)})));
     }
 
     @Test
@@ -1125,8 +1127,10 @@ public class ClassUtilsTest  {
         assertEquals("int[][]", ClassUtils.getShortCanonicalName(new int[0][0], "<null>"));
 
         // Inner types
-        class Named extends Object {}
-        assertEquals("ClassUtilsTest.6", ClassUtils.getShortCanonicalName(new Object(){}, "<null>"));
+        class Named extends Object {
+        }
+        assertEquals("ClassUtilsTest.6", ClassUtils.getShortCanonicalName(new Object() {
+        }, "<null>"));
         assertEquals("ClassUtilsTest.5Named", ClassUtils.getShortCanonicalName(new Named(), "<null>"));
         assertEquals("ClassUtilsTest.Inner", ClassUtils.getShortCanonicalName(new Inner(), "<null>"));
     }
@@ -1138,10 +1142,12 @@ public class ClassUtilsTest  {
         assertEquals("ClassUtils[][]", ClassUtils.getShortCanonicalName(ClassUtils[][].class));
         assertEquals("int[]", ClassUtils.getShortCanonicalName(int[].class));
         assertEquals("int[][]", ClassUtils.getShortCanonicalName(int[][].class));
-        
+
         // Inner types
-        class Named extends Object {}
-        assertEquals("ClassUtilsTest.7", ClassUtils.getShortCanonicalName(new Object(){}.getClass()));
+        class Named extends Object {
+        }
+        assertEquals("ClassUtilsTest.7", ClassUtils.getShortCanonicalName(new Object() {
+        }.getClass()));
         assertEquals("ClassUtilsTest.6Named", ClassUtils.getShortCanonicalName(Named.class));
         assertEquals("ClassUtilsTest.Inner", ClassUtils.getShortCanonicalName(Inner.class));
     }
@@ -1157,7 +1163,7 @@ public class ClassUtilsTest  {
         assertEquals("int[][]", ClassUtils.getShortCanonicalName("[[I"));
         assertEquals("int[]", ClassUtils.getShortCanonicalName("int[]"));
         assertEquals("int[][]", ClassUtils.getShortCanonicalName("int[][]"));
-        
+
         // Inner types
         assertEquals("ClassUtilsTest.6", ClassUtils.getShortCanonicalName("org.apache.commons.lang3.ClassUtilsTest$6"));
         assertEquals("ClassUtilsTest.5Named", ClassUtils.getShortCanonicalName("org.apache.commons.lang3.ClassUtilsTest$5Named"));
@@ -1172,10 +1178,12 @@ public class ClassUtilsTest  {
         assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName(new ClassUtils[0][0], "<null>"));
         assertEquals("", ClassUtils.getPackageCanonicalName(new int[0], "<null>"));
         assertEquals("", ClassUtils.getPackageCanonicalName(new int[0][0], "<null>"));
-        
+
         // Inner types
-        class Named extends Object {}
-        assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName(new Object(){}, "<null>"));
+        class Named extends Object {
+        }
+        assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName(new Object() {
+        }, "<null>"));
         assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName(new Named(), "<null>"));
         assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName(new Inner(), "<null>"));
     }
@@ -1187,10 +1195,12 @@ public class ClassUtilsTest  {
         assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName(ClassUtils[][].class));
         assertEquals("", ClassUtils.getPackageCanonicalName(int[].class));
         assertEquals("", ClassUtils.getPackageCanonicalName(int[][].class));
-        
+
         // Inner types
-        class Named extends Object {}
-        assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName(new Object(){}.getClass()));
+        class Named extends Object {
+        }
+        assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName(new Object() {
+        }.getClass()));
         assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName(Named.class));
         assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName(Inner.class));
     }
@@ -1198,20 +1208,20 @@ public class ClassUtilsTest  {
     @Test
     public void test_getPackageCanonicalName_String() {
         assertEquals("org.apache.commons.lang3",
-            ClassUtils.getPackageCanonicalName("org.apache.commons.lang3.ClassUtils"));
+                ClassUtils.getPackageCanonicalName("org.apache.commons.lang3.ClassUtils"));
         assertEquals("org.apache.commons.lang3",
-            ClassUtils.getPackageCanonicalName("[Lorg.apache.commons.lang3.ClassUtils;"));
+                ClassUtils.getPackageCanonicalName("[Lorg.apache.commons.lang3.ClassUtils;"));
         assertEquals("org.apache.commons.lang3",
-            ClassUtils.getPackageCanonicalName("[[Lorg.apache.commons.lang3.ClassUtils;"));
+                ClassUtils.getPackageCanonicalName("[[Lorg.apache.commons.lang3.ClassUtils;"));
         assertEquals("org.apache.commons.lang3",
-            ClassUtils.getPackageCanonicalName("org.apache.commons.lang3.ClassUtils[]"));
+                ClassUtils.getPackageCanonicalName("org.apache.commons.lang3.ClassUtils[]"));
         assertEquals("org.apache.commons.lang3",
-            ClassUtils.getPackageCanonicalName("org.apache.commons.lang3.ClassUtils[][]"));
+                ClassUtils.getPackageCanonicalName("org.apache.commons.lang3.ClassUtils[][]"));
         assertEquals("", ClassUtils.getPackageCanonicalName("[I"));
         assertEquals("", ClassUtils.getPackageCanonicalName("[[I"));
         assertEquals("", ClassUtils.getPackageCanonicalName("int[]"));
         assertEquals("", ClassUtils.getPackageCanonicalName("int[][]"));
-        
+
         // Inner types
         assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName("org.apache.commons.lang3.ClassUtilsTest$6"));
         assertEquals("org.apache.commons.lang3", ClassUtils.getPackageCanonicalName("org.apache.commons.lang3.ClassUtilsTest$5Named"));

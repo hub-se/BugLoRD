@@ -17,7 +17,6 @@ package org.joda.time.chrono;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

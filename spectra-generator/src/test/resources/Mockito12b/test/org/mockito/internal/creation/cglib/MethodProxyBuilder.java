@@ -4,15 +4,15 @@
  */
 package org.mockito.internal.creation.cglib;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.mockito.internal.creation.MockitoMethodProxy;
 import org.mockito.internal.invocation.ExposedInvocation;
 import org.mockito.internal.invocation.Invocation;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.mockitousage.IMethods;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MethodProxyBuilder {
 
@@ -21,8 +21,9 @@ public class MethodProxyBuilder {
         when(mock.objectReturningMethodNoArgs()).thenAnswer(new Answer<Object>() {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 return invocation;
-            }});
-        
+            }
+        });
+
         Invocation i = (Invocation) mock.objectReturningMethodNoArgs();
         return new ExposedInvocation(i).getMethodProxy();
     }

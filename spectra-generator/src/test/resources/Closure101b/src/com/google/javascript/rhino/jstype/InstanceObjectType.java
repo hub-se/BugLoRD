@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,150 +36,144 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 
 import com.google.common.base.Preconditions;
-import com.google.javascript.rhino.ErrorReporter;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * An object type that is an instance of some function constructor.
-*
-*
  */
 public final class InstanceObjectType extends PrototypeObjectType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private final FunctionType constructor;
+    private final FunctionType constructor;
 
-  InstanceObjectType(JSTypeRegistry registry, FunctionType constructor) {
-    this(registry, constructor, false);
-  }
-
-  InstanceObjectType(JSTypeRegistry registry, FunctionType constructor,
-                     boolean isNativeType) {
-    super(registry, null, null, isNativeType);
-    Preconditions.checkNotNull(constructor);
-    this.constructor = constructor;
-  }
-
-  @Override
-  public String getReferenceName() {
-    return getConstructor().getReferenceName();
-  }
-
-  @Override
-  public boolean hasReferenceName() {
-    return getConstructor().hasReferenceName();
-  }
-
-  @Override
-  public ObjectType getImplicitPrototype() {
-    return getConstructor().getPrototype();
-  }
-
-  @Override
-  public FunctionType getConstructor() {
-    return constructor;
-  }
-
-  @Override
-  boolean defineProperty(String name, JSType type, boolean inferred,
-      boolean inExterns) {
-    ObjectType proto = getImplicitPrototype();
-    if (proto != null && proto.hasOwnDeclaredProperty(name)) {
-      return false;
+    InstanceObjectType(JSTypeRegistry registry, FunctionType constructor) {
+        this(registry, constructor, false);
     }
-    return super.defineProperty(name, type, inferred, inExterns);
-  }
 
-  @Override
-  public String toString() {
-    return constructor.getReferenceName();
-  }
-
-  @Override
-  boolean isTheObjectType() {
-    return getConstructor().isNative() && "Object".equals(getReferenceName());
-  }
-
-  @Override
-  public boolean isInstanceType() {
-    return true;
-  }
-
-  @Override
-  public boolean isArrayType() {
-    return getConstructor().isNative() && "Array".equals(getReferenceName());
-  }
-
-  @Override
-  public boolean isStringObjectType() {
-    return getConstructor().isNative() && "String".equals(getReferenceName());
-  }
-
-  @Override
-  public boolean isBooleanObjectType() {
-    return getConstructor().isNative() && "Boolean".equals(getReferenceName());
-  }
-
-  @Override
-  public boolean isNumberObjectType() {
-    return getConstructor().isNative() && "Number".equals(getReferenceName());
-  }
-
-  @Override
-  public boolean isDateType() {
-    return getConstructor().isNative() && "Date".equals(getReferenceName());
-  }
-
-  @Override
-  public boolean isRegexpType() {
-    return getConstructor().isNative() && "RegExp".equals(getReferenceName());
-  }
-
-  @Override
-  public boolean isNominalType() {
-    return hasReferenceName();
-  }
-
-  @Override
-  public boolean equals(Object that) {
-    if (this == that) {
-      return true;
-    } else if (that instanceof JSType && this.isNominalType()) {
-      ObjectType thatObj = ObjectType.cast((JSType) that);
-      if (thatObj != null && thatObj.isNominalType()) {
-        return getReferenceName().equals(thatObj.getReferenceName());
-      }
+    InstanceObjectType(JSTypeRegistry registry, FunctionType constructor,
+                       boolean isNativeType) {
+        super(registry, null, null, isNativeType);
+        Preconditions.checkNotNull(constructor);
+        this.constructor = constructor;
     }
-    return false;
-  }
 
-  /**
-   * If this is equal to a NamedType object, its hashCode must be equal
-   * to the hashCode of the NamedType object.
-   */
-  @Override
-  public int hashCode() {
-    if (hasReferenceName()) {
-      return getReferenceName().hashCode();
-    } else {
-      return super.hashCode();
+    @Override
+    public String getReferenceName() {
+        return getConstructor().getReferenceName();
     }
-  }
 
-  @Override
-  public Iterable<ObjectType> getCtorImplementedInterfaces() {
-    return getConstructor().getImplementedInterfaces();
-  }
-  
-  // The owner will always be a resolved type, so there's no need to set
-  // the constructor in resolveInternal.
-  // (it would lead to infinite loops if we did).
-  // JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope);
+    @Override
+    public boolean hasReferenceName() {
+        return getConstructor().hasReferenceName();
+    }
+
+    @Override
+    public ObjectType getImplicitPrototype() {
+        return getConstructor().getPrototype();
+    }
+
+    @Override
+    public FunctionType getConstructor() {
+        return constructor;
+    }
+
+    @Override
+    boolean defineProperty(String name, JSType type, boolean inferred,
+                           boolean inExterns) {
+        ObjectType proto = getImplicitPrototype();
+        if (proto != null && proto.hasOwnDeclaredProperty(name)) {
+            return false;
+        }
+        return super.defineProperty(name, type, inferred, inExterns);
+    }
+
+    @Override
+    public String toString() {
+        return constructor.getReferenceName();
+    }
+
+    @Override
+    boolean isTheObjectType() {
+        return getConstructor().isNative() && "Object".equals(getReferenceName());
+    }
+
+    @Override
+    public boolean isInstanceType() {
+        return true;
+    }
+
+    @Override
+    public boolean isArrayType() {
+        return getConstructor().isNative() && "Array".equals(getReferenceName());
+    }
+
+    @Override
+    public boolean isStringObjectType() {
+        return getConstructor().isNative() && "String".equals(getReferenceName());
+    }
+
+    @Override
+    public boolean isBooleanObjectType() {
+        return getConstructor().isNative() && "Boolean".equals(getReferenceName());
+    }
+
+    @Override
+    public boolean isNumberObjectType() {
+        return getConstructor().isNative() && "Number".equals(getReferenceName());
+    }
+
+    @Override
+    public boolean isDateType() {
+        return getConstructor().isNative() && "Date".equals(getReferenceName());
+    }
+
+    @Override
+    public boolean isRegexpType() {
+        return getConstructor().isNative() && "RegExp".equals(getReferenceName());
+    }
+
+    @Override
+    public boolean isNominalType() {
+        return hasReferenceName();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        } else if (that instanceof JSType && this.isNominalType()) {
+            ObjectType thatObj = ObjectType.cast((JSType) that);
+            if (thatObj != null && thatObj.isNominalType()) {
+                return getReferenceName().equals(thatObj.getReferenceName());
+            }
+        }
+        return false;
+    }
+
+    /**
+     * If this is equal to a NamedType object, its hashCode must be equal
+     * to the hashCode of the NamedType object.
+     */
+    @Override
+    public int hashCode() {
+        if (hasReferenceName()) {
+            return getReferenceName().hashCode();
+        } else {
+            return super.hashCode();
+        }
+    }
+
+    @Override
+    public Iterable<ObjectType> getCtorImplementedInterfaces() {
+        return getConstructor().getImplementedInterfaces();
+    }
+
+    // The owner will always be a resolved type, so there's no need to set
+    // the constructor in resolveInternal.
+    // (it would lead to infinite loops if we did).
+    // JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope);
 }

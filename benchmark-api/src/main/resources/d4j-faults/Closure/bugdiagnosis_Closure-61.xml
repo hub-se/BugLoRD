@@ -1,33 +1,34 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-61">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/PeepholeRemoveDeadCodeTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.PeepholeRemoveDeadCodeTest::testCall2:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.PeepholeRemoveDeadCodeTest::testRemoveUselessOps:--&gt;
-						junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>5987</number_tests>
-					<failed>3</failed>
-					<passed>5984</passed>
-					<nodes>45389</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/NodeUtil.java">
-					<insert numberlines="6">956-959</insert>
-					<bugtypes>
-						<id id="1.1" lines="957">
-							<description>Missing case for equality of tokens.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-61">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/PeepholeRemoveDeadCodeTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.PeepholeRemoveDeadCodeTest::testCall2:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.PeepholeRemoveDeadCodeTest::testRemoveUselessOps:--&gt;
+                        junit.framework.AssertionFailedError:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>5987</number_tests>
+                    <failed>3</failed>
+                    <passed>5984</passed>
+                    <nodes>45389</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/NodeUtil.java">
+                    <insert numberlines="6">956-959</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="957">
+                            <description>Missing case for equality of tokens.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

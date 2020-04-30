@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,7 +36,7 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino;
 
 import java.util.ArrayList;
@@ -45,73 +45,65 @@ import java.util.List;
 /**
  * A simple {@link ErrorReporter} that collects warnings and errors and makes
  * them accessible via {@link #errors()} and {@link #warnings()}.
- *
-*
  */
 public class SimpleErrorReporter implements ErrorReporter {
     private List<String> warnings = null;
     private List<String> errors = null;
 
     public void warning(String message, String sourceName, int line,
-                        String lineSource, int lineOffset)
-    {
+                        String lineSource, int lineOffset) {
         if (warnings == null) {
             warnings = new ArrayList<String>();
         }
         warnings.add(formatDetailedMessage(
-            message, sourceName, line, lineSource, lineOffset));
+                message, sourceName, line, lineSource, lineOffset));
     }
 
     public void error(String message, String sourceName, int line,
-                      String lineSource, int lineOffset)
-    {
+                      String lineSource, int lineOffset) {
         if (errors == null) {
             errors = new ArrayList<String>();
         }
         errors.add(formatDetailedMessage(
-            message, sourceName, line, lineSource, lineOffset));
+                message, sourceName, line, lineSource, lineOffset));
     }
 
     public EvaluatorException runtimeError(
-        String message, String sourceName, int line, String lineSource,
-        int lineOffset)
-    {
+            String message, String sourceName, int line, String lineSource,
+            int lineOffset) {
         return new EvaluatorException(
-            message, sourceName, line, lineSource, lineOffset);
+                message, sourceName, line, lineSource, lineOffset);
     }
 
     /**
      * Returns the list of errors, or {@code null} if there were none.
      */
-    public List<String> errors()
-    {
+    public List<String> errors() {
         return errors;
     }
 
     /**
      * Returns the list of warnings, or {@code null} if there were none.
      */
-    public List<String> warnings()
-    {
+    public List<String> warnings() {
         return warnings;
     }
-  
+
     private String formatDetailedMessage(
-        String message, String sourceName, int line, String lineSource,
-        int lineOffset)
-    {
+            String message, String sourceName, int line, String lineSource,
+            int lineOffset) {
         RhinoException e = new RhinoException(message);
         if (sourceName != null) {
-          e.initSourceName(sourceName);
+            e.initSourceName(sourceName);
         }
         if (lineSource != null) {
-          e.initLineSource(lineSource);
+            e.initLineSource(lineSource);
         }
         if (line > 0) {
-          e.initLineNumber(line);
+            e.initLineNumber(line);
         }
         if (lineOffset > 0) {
-          e.initColumnNumber(lineOffset);
+            e.initColumnNumber(lineOffset);
         }
         return e.getMessage();
     }

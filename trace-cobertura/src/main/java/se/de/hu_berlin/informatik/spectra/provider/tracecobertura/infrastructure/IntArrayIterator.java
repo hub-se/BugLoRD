@@ -4,41 +4,41 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.F
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.ReplaceableCloneableIterator;
 
 public class IntArrayIterator implements ReplaceableCloneableIterator {
-	
-	private final int[] array;
-	private int index = 0;
 
-	public IntArrayIterator(int[] array) {
-		this.array = array;
-	}
-	
-	// clone constructor
-	private IntArrayIterator(IntArrayIterator iterator) {
-		array = iterator.array;
-		index = iterator.index;
-	}
+    private final int[] array;
+    private int index = 0;
 
-	public IntArrayIterator clone() {
-		return new IntArrayIterator(this);
-	}
+    public IntArrayIterator(int[] array) {
+        this.array = array;
+    }
 
-	@Override
-	public boolean hasNext() {
-		return index < array.length;
-	}
+    // clone constructor
+    private IntArrayIterator(IntArrayIterator iterator) {
+        array = iterator.array;
+        index = iterator.index;
+    }
 
-	@Override
-	public int next() {
-		return array[index++];
-	}
-	
-	public int peek() {
-		return array[index];
-	}
+    public IntArrayIterator clone() {
+        return new IntArrayIterator(this);
+    }
 
-	@Override
-	public int processNextAndReplaceWithResult(Function<Integer, Integer> function) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public boolean hasNext() {
+        return index < array.length;
+    }
+
+    @Override
+    public int next() {
+        return array[index++];
+    }
+
+    public int peek() {
+        return array[index];
+    }
+
+    @Override
+    public int processNextAndReplaceWithResult(Function<Integer, Integer> function) {
+        throw new UnsupportedOperationException();
+    }
 
 }

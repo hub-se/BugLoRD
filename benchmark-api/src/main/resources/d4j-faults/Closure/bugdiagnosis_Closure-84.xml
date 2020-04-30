@@ -1,37 +1,37 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-84">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/parsing/ParserTest">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>5572</number_tests>
-					<failed>1</failed>
-					<passed>5571</passed>
-					<nodes>41861</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/parsing/IRFactory.java">
-					<insert numberlines="7">341</insert>
-					<insert numberlines="11">797-798</insert>
-					<insert numberlines="9"></insert>
-					<bugtypes>
-						<id id="1.1" lines="340">
-							<description>Missing case.</description>
-						</id>
-						<id id="1.1" lines="796">
-							<description>Missing case for token equality.</description>
-						</id>
-						<id id="1.4" lines="805">
-							<description>Missing function.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-84">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/parsing/ParserTest">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>5572</number_tests>
+                    <failed>1</failed>
+                    <passed>5571</passed>
+                    <nodes>41861</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/parsing/IRFactory.java">
+                    <insert numberlines="7">341</insert>
+                    <insert numberlines="11">797-798</insert>
+                    <insert numberlines="9"></insert>
+                    <bugtypes>
+                        <id id="1.1" lines="340">
+                            <description>Missing case.</description>
+                        </id>
+                        <id id="1.1" lines="796">
+                            <description>Missing case for token equality.</description>
+                        </id>
+                        <id id="1.4" lines="805">
+                            <description>Missing function.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

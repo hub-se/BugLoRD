@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Wong1 fault localizer $\EF$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Wong1<T> extends AbstractFaultLocalizer<T> {
 

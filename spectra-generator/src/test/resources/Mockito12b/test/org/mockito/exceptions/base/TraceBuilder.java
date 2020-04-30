@@ -21,7 +21,7 @@ public class TraceBuilder {
 
     private List<StackTraceElement> toTraceList() {
         assert methods.length == 0 || classes.length == 0;
-        
+
         List<StackTraceElement> trace = new LinkedList<StackTraceElement>();
         for (String method : methods) {
             trace.add(new StackTraceElement("SomeClass", method, "SomeClass.java", 50));
@@ -29,21 +29,21 @@ public class TraceBuilder {
         for (String clazz : classes) {
             trace.add(new StackTraceElement(clazz, "someMethod", clazz + ".java", 50));
         }
-        
+
         Collections.reverse(trace);
         return trace;
     }
-    
+
     public StackTraceElement[] toTraceArray() {
         return toTraceList().toArray(new StackTraceElement[0]);
     }
 
-    public TraceBuilder classes(String ... classes) {
+    public TraceBuilder classes(String... classes) {
         this.classes = classes;
         return this;
     }
-    
-    public TraceBuilder methods(String ... methods) {
+
+    public TraceBuilder methods(String... methods) {
         this.methods = methods;
         return this;
     }

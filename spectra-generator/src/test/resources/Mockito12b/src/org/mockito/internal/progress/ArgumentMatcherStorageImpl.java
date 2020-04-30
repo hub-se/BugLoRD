@@ -4,12 +4,6 @@
  */
 package org.mockito.internal.progress;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
-
 import org.hamcrest.Matcher;
 import org.mockito.exceptions.Reporter;
 import org.mockito.exceptions.misusing.InvalidUseOfMatchersException;
@@ -18,11 +12,13 @@ import org.mockito.internal.matchers.LocalizedMatcher;
 import org.mockito.internal.matchers.Not;
 import org.mockito.internal.matchers.Or;
 
+import java.util.*;
+
 @SuppressWarnings("unchecked")
 public class ArgumentMatcherStorageImpl implements ArgumentMatcherStorage {
-    
+
     private Stack<LocalizedMatcher> matcherStack = new Stack<LocalizedMatcher>();
-    
+
     /* (non-Javadoc)
      * @see org.mockito.internal.progress.ArgumentMatcherStorage#reportMatcher(org.hamcrest.Matcher)
      */
@@ -38,7 +34,7 @@ public class ArgumentMatcherStorageImpl implements ArgumentMatcherStorage {
         if (matcherStack.isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         List<LocalizedMatcher> matchers = new ArrayList<LocalizedMatcher>(matcherStack);
         matcherStack.clear();
         return (List) matchers;

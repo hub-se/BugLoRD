@@ -4,11 +4,11 @@
  */
 package org.mockito.internal.matchers;
 
-import java.io.Serializable;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.mockito.ArgumentMatcher;
+
+import java.io.Serializable;
 
 @SuppressWarnings("unchecked")
 public class Not extends ArgumentMatcher implements Serializable {

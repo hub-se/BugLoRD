@@ -101,8 +101,7 @@ public class GenerateDucCsvBugData {
     }
 
     /**
-     * @param args
-     * command line arguments
+     * @param args command line arguments
      */
     public static void main(String[] args) {
 
@@ -183,9 +182,9 @@ public class GenerateDucCsvBugData {
                             // Suspiciousness,
                             // MinFiles, MaxFiles, MinMethods, MaxMethods
 
-                            String[] titleArray = { "BugID", "Line", "EF", "EP", "NF", "NP", "BestRanking",
+                            String[] titleArray = {"BugID", "Line", "EF", "EP", "NF", "NP", "BestRanking",
                                     "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness",
-                                    "MinFiles", "MaxFiles", "MinMethods", "MaxMethods" };
+                                    "MinFiles", "MaxFiles", "MinMethods", "MaxMethods"};
                             map.put("", CSVUtils.toCsvLine(titleArray));
                             return Misc.sortByKeyToValueList(map);
                         }
@@ -213,10 +212,8 @@ public class GenerateDucCsvBugData {
         private final String suffix;
 
         /**
-         * @param suffix
-         * a suffix to append to the ranking directory (may be null)
-         * @param rankingIdentifier
-         * a fault localizer identifier or an lm ranking file name
+         * @param suffix            a suffix to append to the ranking directory (may be null)
+         * @param rankingIdentifier a fault localizer identifier or an lm ranking file name
          */
         private GenStatisticsProcessor(String suffix, String rankingIdentifier) {
             this.suffix = suffix;
@@ -295,10 +292,8 @@ public class GenerateDucCsvBugData {
         private final String suffix;
 
         /**
-         * @param suffix
-         * a suffix to append to the ranking directory (may be null)
-         * @param rankingIdentifier
-         * a fault localizer identifier or an lm ranking file name
+         * @param suffix            a suffix to append to the ranking directory (may be null)
+         * @param rankingIdentifier a fault localizer identifier or an lm ranking file name
          */
         private RankingLOCProcessor(String suffix, String rankingIdentifier) {
             this.suffix = suffix;

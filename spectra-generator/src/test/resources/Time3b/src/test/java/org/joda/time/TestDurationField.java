@@ -15,10 +15,9 @@
  */
 package org.joda.time;
 
-import org.joda.time.chrono.ISOChronology;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.joda.time.chrono.ISOChronology;
 
 /**
  * This class is a Junit unit test for DurationField.
@@ -56,7 +55,8 @@ public class TestDurationField extends TestCase {
         try {
             fld.subtract(-1000L, Long.MIN_VALUE);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
 }

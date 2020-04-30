@@ -24,41 +24,50 @@ import java.util.TimeZone;
  * @author Stephen Colebourne
  */
 class MockUnknownCalendar extends Calendar {
-    
+
     private long millis;
     private TimeZone zone;
-    
+
     MockUnknownCalendar(long millis) {
         this.millis = millis;
     }
+
     MockUnknownCalendar(TimeZone zone) {
         this.zone = zone;
     }
-    
+
     public long getTimeInMillis() {
         return millis;
     }
+
     public TimeZone getTimeZone() {
         return zone;
     }
 
     protected void computeTime() {
     }
+
     protected void computeFields() {
     }
+
     public void add(int field, int amount) {
     }
+
     public void roll(int field, boolean up) {
     }
+
     public int getMinimum(int field) {
         return 0;
     }
+
     public int getMaximum(int field) {
         return 0;
     }
+
     public int getGreatestMinimum(int field) {
         return 0;
     }
+
     public int getLeastMaximum(int field) {
         return 0;
     }

@@ -1,56 +1,57 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-110">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/ScopedAliasesTest">
-					<exception>junit.framework.AssertionFailedError:Unexpected
-						error(s):JSC_GOOG_SCOPE_NON_ALIAS_LOCAL. The local variable f is
-						in a goog.scope and is not an alias. at testcode line 1:39
-						expected:&lt;0&gt; but was:&lt;1&gt;:-
-						com.google.javascript.jscomp.ScopedAliasesTest::testFunctionDeclaration:--&gt;
-						junit.framework.AssertionFailedError:Unexpected
-						error(s):JSC_GOOG_SCOPE_NON_ALIAS_LOCAL. The local variable f is
-						in a goog.scope and is not an alias. at testcode line 1:41
-						expected:&lt;0&gt; but was:&lt;1&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>8112</number_tests>
-					<failed>2</failed>
-					<passed>8110</passed>
-					<nodes>53796</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/rhino/Node.java">
-					<insert numberlines="3">554-555</insert>
-					<bugtypes>
-						<id id="1.1" lines="553">
-							<description>Missing check for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="com/google/javascript/jscomp/ScopedAliases.java">
-					<change>366</change>
-					<change parent="368-370">368-369</change>
-					<change>371</change>
-					<insert numberlines="1">357-358</insert>
-					<insert numberlines="12">380-398</insert>
-					<insert numberlines="3,1">407-408,409</insert>
-					<bugtypes>
-						<id id="1.2" lines="357,366,368,369">
-							<description>Incorrect condition and case.</description>
-						</id>
-						<id id="1.1" lines="357,382,383,391,392,394">
-							<description>Missing cases.</description>
-						</id>
-						<id id="1.1" lines="407,408">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>12</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-110">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/ScopedAliasesTest">
+                    <exception>junit.framework.AssertionFailedError:Unexpected
+                        error(s):JSC_GOOG_SCOPE_NON_ALIAS_LOCAL. The local variable f is
+                        in a goog.scope and is not an alias. at testcode line 1:39
+                        expected:&lt;0&gt; but was:&lt;1&gt;:-
+                        com.google.javascript.jscomp.ScopedAliasesTest::testFunctionDeclaration:--&gt;
+                        junit.framework.AssertionFailedError:Unexpected
+                        error(s):JSC_GOOG_SCOPE_NON_ALIAS_LOCAL. The local variable f is
+                        in a goog.scope and is not an alias. at testcode line 1:41
+                        expected:&lt;0&gt; but was:&lt;1&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>8112</number_tests>
+                    <failed>2</failed>
+                    <passed>8110</passed>
+                    <nodes>53796</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/rhino/Node.java">
+                    <insert numberlines="3">554-555</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="553">
+                            <description>Missing check for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="com/google/javascript/jscomp/ScopedAliases.java">
+                    <change>366</change>
+                    <change parent="368-370">368-369</change>
+                    <change>371</change>
+                    <insert numberlines="1">357-358</insert>
+                    <insert numberlines="12">380-398</insert>
+                    <insert numberlines="3,1">407-408,409</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="357,366,368,369">
+                            <description>Incorrect condition and case.</description>
+                        </id>
+                        <id id="1.1" lines="357,382,383,391,392,394">
+                            <description>Missing cases.</description>
+                        </id>
+                        <id id="1.1" lines="407,408">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>12</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

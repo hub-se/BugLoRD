@@ -1,103 +1,88 @@
-/** License information:
- *    Component: sequitur
- *    Package:   de.unisb.cs.st
- *    Class:     RandomIntegrationTest
- *    Filename:  sequitur/src/test/java/de/unisb/cs/st/RandomIntegrationTest.java
- *
+/**
+ * License information:
+ * Component: sequitur
+ * Package:   de.unisb.cs.st
+ * Class:     RandomIntegrationTest
+ * Filename:  sequitur/src/test/java/de/unisb/cs/st/RandomIntegrationTest.java
+ * <p>
  * This file is part of the Sequitur library developed by Clemens Hammacher
  * at Saarland University. It has been developed for use in the JavaSlicer
  * tool. See http://www.st.cs.uni-saarland.de/javaslicer/ for more information.
- *
+ * <p>
  * Sequitur is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Sequitur is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Sequitur. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.AbstractList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Random;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
+
+import java.io.*;
+
+import static org.junit.Assert.*;
 
 
 public class SequiturTest {
 
     private int[] concatenateArrays(int[]... arrays) {
-    	int length = 0;
-    	for (int[] a : arrays) {
-    		length += a.length;
-    	}
-    	int[] result = new int[length];
-    	int index = 0;
-    	for (int[] a : arrays) {
-    		System.arraycopy(a, 0, result, index, a.length);
-    		index += a.length;
-    	}
-    	return result;
+        int length = 0;
+        for (int[] a : arrays) {
+            length += a.length;
+        }
+        int[] result = new int[length];
+        int index = 0;
+        for (int[] a : arrays) {
+            System.arraycopy(a, 0, result, index, a.length);
+            index += a.length;
+        }
+        return result;
     }
-    
-    private int[] a = {1,2,3,4,5};
-    private int[] b = {1,5,4,5,4,5,4,5};
-    private int[] c = {3,3,3,3,3,3,3};
-    private int[] d = {9,9,9};
-    private int[] e = {1,2,3};
+
+    private int[] a = {1, 2, 3, 4, 5};
+    private int[] b = {1, 5, 4, 5, 4, 5, 4, 5};
+    private int[] c = {3, 3, 3, 3, 3, 3, 3};
+    private int[] d = {9, 9, 9};
+    private int[] e = {1, 2, 3};
 
     @Test
     public void privateGrammar() throws IOException {
-    	OutputSequence outSeq = new OutputSequence();
-    	int[] ints = concatenateArrays(a,b,e,c,d,d,d,a,a,c,b,b,a,e,c,c,d,d,d,a,d,a,b,e, a,b,c,a,b,c,e);
-    	for (int i = 0; i < ints.length; ++i) {
-    		outSeq.append(ints[i]);
-    	}
-    	ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-    	ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
-    	outSeq.writeOut(objOut, true);
-    	objOut.close();
-    	byte[] bytes = byteOut.toByteArray();
+        OutputSequence outSeq = new OutputSequence();
+        int[] ints = concatenateArrays(a, b, e, c, d, d, d, a, a, c, b, b, a, e, c, c, d, d, d, a, d, a, b, e, a, b, c, a, b, c, e);
+        for (int i = 0; i < ints.length; ++i) {
+            outSeq.append(ints[i]);
+        }
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+        ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
+        outSeq.writeOut(objOut, true);
+        objOut.close();
+        byte[] bytes = byteOut.toByteArray();
 
-    	ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
-    	ObjectInputStream objIn = new ObjectInputStream(byteIn);
-    	InputSequence inSeq = InputSequence.readFrom(objIn);
+        ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
+        ObjectInputStream objIn = new ObjectInputStream(byteIn);
+        InputSequence inSeq = InputSequence.readFrom(objIn);
 
-    	assertEquals(ints.length, inSeq.getLength());
-    	TraceIterator inIt = inSeq.iterator();
-    	for (int i = 0; i < ints.length; ++i) {
-    		assertTrue(inIt.hasNext());
-    		assertEquals(ints[i], inIt.next());
-    	}
-    	assertFalse(inIt.hasNext());
-            
-        System.out.println(inSeq);    
-        
+        assertEquals(ints.length, inSeq.getLength());
+        TraceIterator inIt = inSeq.iterator();
+        for (int i = 0; i < ints.length; ++i) {
+            assertTrue(inIt.hasNext());
+            assertEquals(ints[i], inIt.next());
+        }
+        assertFalse(inIt.hasNext());
+
+        System.out.println(inSeq);
+
         assertEquals(74, bytes.length);
     }
 

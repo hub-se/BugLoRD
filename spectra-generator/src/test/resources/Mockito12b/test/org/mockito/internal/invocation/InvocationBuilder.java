@@ -4,19 +4,19 @@
  */
 package org.mockito.internal.invocation;
 
+import org.mockito.Mockito;
+import org.mockitousage.IMethods;
+
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.mockito.Mockito;
-import org.mockitousage.IMethods;
 
 @SuppressWarnings("unchecked")
 public class InvocationBuilder {
 
     private String methodName = "simpleMethod";
     private int sequenceNumber = 0;
-    private Object[] args = new Object[] {};
+    private Object[] args = new Object[]{};
     private Object mock = Mockito.mock(IMethods.class);
     private Method method;
     private boolean verified;
@@ -31,14 +31,14 @@ public class InvocationBuilder {
                     argTypes.add(arg.getClass());
                 }
             }
-            
+
             try {
                 method = IMethods.class.getMethod(methodName, argTypes.toArray(new Class[argTypes.size()]));
             } catch (Exception e) {
                 throw new RuntimeException("builder only creates invocations of IMethods interface", e);
             }
         }
-        
+
         Invocation i = new Invocation(mock, new SerializableMethod(method), args, sequenceNumber, null);
         if (verified) {
             i.markVerified();
@@ -47,7 +47,7 @@ public class InvocationBuilder {
     }
 
     public InvocationBuilder method(String methodName) {
-        this.methodName  = methodName;
+        this.methodName = methodName;
         return this;
     }
 
@@ -56,13 +56,13 @@ public class InvocationBuilder {
         return this;
     }
 
-    public InvocationBuilder args(Object ... args) {
+    public InvocationBuilder args(Object... args) {
         this.args = args;
         return this;
     }
-    
+
     public InvocationBuilder arg(Object o) {
-        this.args = new Object[] {o};
+        this.args = new Object[]{o};
         return this;
     }
 
@@ -88,7 +88,7 @@ public class InvocationBuilder {
     public InvocationBuilder simpleMethod() {
         return this.method("simpleMethod");
     }
-    
+
     public InvocationBuilder differentMethod() {
         return this.method("differentMethod");
     }

@@ -4,9 +4,6 @@
  */
 package org.mockito.internal.stubbing;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.mockito.exceptions.Reporter;
 import org.mockito.internal.stubbing.answers.DoesNothing;
 import org.mockito.internal.stubbing.answers.Returns;
@@ -14,6 +11,9 @@ import org.mockito.internal.stubbing.answers.ThrowsException;
 import org.mockito.internal.util.MockUtil;
 import org.mockito.stubbing.Answer;
 import org.mockito.stubbing.Stubber;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class StubberImpl implements Stubber {
@@ -23,7 +23,7 @@ public class StubberImpl implements Stubber {
 
     public <T> T when(T mock) {
         MockUtil mockUtil = new MockUtil();
-        
+
         if (mock == null) {
             reporter.nullPassedToWhenMethod();
         } else {
@@ -31,7 +31,7 @@ public class StubberImpl implements Stubber {
                 reporter.notAMockPassedToWhenMethod();
             }
         }
-        
+
         mockUtil.getMockHandler(mock).setAnswersForStubbing(answers);
         return mock;
     }

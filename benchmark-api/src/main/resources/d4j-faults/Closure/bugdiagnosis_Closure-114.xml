@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-114">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/NameAnalyzerTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>638</number_tests>
-					<failed>1</failed>
-					<passed>637</passed>
-					<nodes>49518</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/NameAnalyzer.java">
-					<change>578</change>
-					<bugtypes>
-						<id id="1.2" lines="578">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-114">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/NameAnalyzerTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>638</number_tests>
+                    <failed>1</failed>
+                    <passed>637</passed>
+                    <nodes>49518</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/NameAnalyzer.java">
+                    <change>578</change>
+                    <bugtypes>
+                        <id id="1.2" lines="578">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

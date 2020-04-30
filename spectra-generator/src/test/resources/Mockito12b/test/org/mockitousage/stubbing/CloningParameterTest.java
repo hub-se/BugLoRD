@@ -4,13 +4,13 @@
  */
 package org.mockitousage.stubbing;
 
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.mockito.internal.stubbing.answers.ClonesArguments;
 import org.mockitoutil.TestBase;
+
+import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 public class CloningParameterTest extends TestBase {
 

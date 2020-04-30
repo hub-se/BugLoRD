@@ -24,48 +24,46 @@ import com.google.javascript.rhino.Node;
 
 /**
  * Execute {@link RemoveConstantExpressions} in parallel.
- * 
-*
  */
 final class RemoveConstantExpressionsParallel implements CompilerPass {
 
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  private final int numThreads;
-  
-  RemoveConstantExpressionsParallel(AbstractCompiler compiler, int numThreads) {
-    this.compiler = compiler;
-    this.numThreads = numThreads;
-  }
-  
-  RemoveConstantExpressionsParallel(AbstractCompiler compiler) {
-    this(compiler, Runtime.getRuntime().availableProcessors());
-  }
+    private final int numThreads;
 
-  @Override
-  public void process(Node externs, Node root) {
-    // Estimate the number of CPU needed.
-    AstParallelizer splitter = AstParallelizer
-      .createNewFileLevelAstParallelizer(root);
-      
-    // Clean supply of RemoveConstantRValuesCallback.
-    Supplier<Task> supplier = new Supplier<Task>() {
-      @Override
-      public Task get() {
-        return new Task() {
-          @Override
-          public Result processSubtree(Node subtree) {
-            RemoveConstantRValuesCallback cb =
-                new RemoveConstantRValuesCallback();
-            NodeTraversal.traverse(null, subtree, cb);
-            return cb.getResult();
-          }
+    RemoveConstantExpressionsParallel(AbstractCompiler compiler, int numThreads) {
+        this.compiler = compiler;
+        this.numThreads = numThreads;
+    }
+
+    RemoveConstantExpressionsParallel(AbstractCompiler compiler) {
+        this(compiler, Runtime.getRuntime().availableProcessors());
+    }
+
+    @Override
+    public void process(Node externs, Node root) {
+        // Estimate the number of CPU needed.
+        AstParallelizer splitter = AstParallelizer
+                .createNewFileLevelAstParallelizer(root);
+
+        // Clean supply of RemoveConstantRValuesCallback.
+        Supplier<Task> supplier = new Supplier<Task>() {
+            @Override
+            public Task get() {
+                return new Task() {
+                    @Override
+                    public Result processSubtree(Node subtree) {
+                        RemoveConstantRValuesCallback cb =
+                                new RemoveConstantRValuesCallback();
+                        NodeTraversal.traverse(null, subtree, cb);
+                        return cb.getResult();
+                    }
+                };
+            }
         };
-      }
-    };
 
-    // Execute in parallel.
-    (new ParallelCompilerPass(compiler, splitter, supplier, numThreads))
-      .process(externs, root);
-  }
+        // Execute in parallel.
+        (new ParallelCompilerPass(compiler, splitter, supplier, numThreads))
+                .process(externs, root);
+    }
 }

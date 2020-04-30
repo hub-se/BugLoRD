@@ -17,53 +17,53 @@
 package com.google.javascript.jscomp;
 
 /**
-*
+ *
  */
 public class CheckMissingGetCssNameTest extends CompilerTestCase {
-  @Override
-  protected CompilerPass getProcessor(final Compiler compiler) {
-    return new CombinedCompilerPass(
-        compiler,
-        new CheckMissingGetCssName(compiler, CheckLevel.ERROR, "goog-[a-z-]*"));
-  }
+    @Override
+    protected CompilerPass getProcessor(final Compiler compiler) {
+        return new CombinedCompilerPass(
+                compiler,
+                new CheckMissingGetCssName(compiler, CheckLevel.ERROR, "goog-[a-z-]*"));
+    }
 
-  public void testMissingGetCssName() {
-    testMissing("var s = 'goog-inline-block'");
-    testMissing("var s = 'CSS_FOO goog-menu'");
-    testMissing("alert('goog-inline-block ' + goog.getClassName('CSS_FOO'))");
-    testMissing("html = '<div class=\"goog-special-thing\">Hello</div>'");
-  }
+    public void testMissingGetCssName() {
+        testMissing("var s = 'goog-inline-block'");
+        testMissing("var s = 'CSS_FOO goog-menu'");
+        testMissing("alert('goog-inline-block ' + goog.getClassName('CSS_FOO'))");
+        testMissing("html = '<div class=\"goog-special-thing\">Hello</div>'");
+    }
 
-  public void testRecognizeGetCssName() {
-    testNotMissing("var s = goog.getCssName('goog-inline-block')");
-  }
+    public void testRecognizeGetCssName() {
+        testNotMissing("var s = goog.getCssName('goog-inline-block')");
+    }
 
-  public void testIgnoreGetUniqueIdArguments() {
-    testNotMissing("var s = goog.events.getUniqueId('goog-some-event')");
-  }
+    public void testIgnoreGetUniqueIdArguments() {
+        testNotMissing("var s = goog.events.getUniqueId('goog-some-event')");
+    }
 
-  public void testIgnoreAssignmentsToIdConstant() {
-    testNotMissing("SOME_ID = 'goog-some-id'");
-    testNotMissing("SOME_PRIVATE_ID_ = 'goog-some-id'");
-    testNotMissing("var SOME_ID_ = 'goog-some-id'");
-  }
+    public void testIgnoreAssignmentsToIdConstant() {
+        testNotMissing("SOME_ID = 'goog-some-id'");
+        testNotMissing("SOME_PRIVATE_ID_ = 'goog-some-id'");
+        testNotMissing("var SOME_ID_ = 'goog-some-id'");
+    }
 
-  public void testNotMissingGetCssName() {
-    testNotMissing("s = 'not-a-css-name'");
-    testNotMissing("s = 'notagoog-css-name'");
-  }
+    public void testNotMissingGetCssName() {
+        testNotMissing("s = 'not-a-css-name'");
+        testNotMissing("s = 'notagoog-css-name'");
+    }
 
-  public void testDontCrashIfTheresNoQualifiedName() {
-    testMissing("things[2].DONT_CARE_ABOUT_THIS_KIND_OF_ID = "
+    public void testDontCrashIfTheresNoQualifiedName() {
+        testMissing("things[2].DONT_CARE_ABOUT_THIS_KIND_OF_ID = "
                 + "'goog-inline-block'");
-    testMissing("objects[3].doSomething('goog-inline-block')");
-  }
+        testMissing("objects[3].doSomething('goog-inline-block')");
+    }
 
-  private void testMissing(String js) {
-    test(js, js, CheckMissingGetCssName.MISSING_GETCSSNAME);
-  }
+    private void testMissing(String js) {
+        test(js, js, CheckMissingGetCssName.MISSING_GETCSSNAME);
+    }
 
-  private void testNotMissing(String js) {
-    test(js, js);
-  }
+    private void testNotMissing(String js) {
+        test(js, js);
+    }
 }

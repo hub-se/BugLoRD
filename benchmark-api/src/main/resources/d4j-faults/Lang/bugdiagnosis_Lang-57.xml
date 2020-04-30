@@ -1,47 +1,47 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-57">
-			<tests>
-				<testfile path="org/apache/commons/lang/LocaleUtilsTest">
-					<exception>java.lang.NullPointerException:-
-						org.apache.commons.lang.LocaleUtilsTest::testIsAvailableLocale:--&gt;
-						java.lang.NullPointerException:-
-						org.apache.commons.lang.LocaleUtilsTest::testAvailableLocaleList:--&gt;
-						java.lang.NullPointerException:-
-						org.apache.commons.lang.LocaleUtilsTest::testCountriesByLanguage:--&gt;
-						java.lang.NullPointerException:-
-						org.apache.commons.lang.LocaleUtilsTest::testLocaleLookupList_LocaleLocale:--&gt;
-						java.lang.NullPointerException:-
-						org.apache.commons.lang.LocaleUtilsTest::testLanguagesByCountry:--&gt;
-						java.lang.NullPointerException:-
-						org.apache.commons.lang.LocaleUtilsTest::testToLocale_1Part:--&gt;
-						java.lang.NullPointerException:-
-						org.apache.commons.lang.LocaleUtilsTest::testToLocale_2Part:--&gt;
-						java.lang.NullPointerException:-
-						org.apache.commons.lang.LocaleUtilsTest::testToLocale_3Part:--&gt;
-						java.lang.NullPointerException:-
-						org.apache.commons.lang.LocaleUtilsTest::testLocaleLookupList_Locale
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>11</number_tests>
-					<failed>11</failed>
-					<passed>0</passed>
-					<nodes>9579</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang/LocaleUtils.java">
-					<change>223</change>
-					<bugtypes>
-						<id id="2.2" lines="223">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-57">
+            <tests>
+                <testfile path="org/apache/commons/lang/LocaleUtilsTest">
+                    <exception>java.lang.NullPointerException:-
+                        org.apache.commons.lang.LocaleUtilsTest::testIsAvailableLocale:--&gt;
+                        java.lang.NullPointerException:-
+                        org.apache.commons.lang.LocaleUtilsTest::testAvailableLocaleList:--&gt;
+                        java.lang.NullPointerException:-
+                        org.apache.commons.lang.LocaleUtilsTest::testCountriesByLanguage:--&gt;
+                        java.lang.NullPointerException:-
+                        org.apache.commons.lang.LocaleUtilsTest::testLocaleLookupList_LocaleLocale:--&gt;
+                        java.lang.NullPointerException:-
+                        org.apache.commons.lang.LocaleUtilsTest::testLanguagesByCountry:--&gt;
+                        java.lang.NullPointerException:-
+                        org.apache.commons.lang.LocaleUtilsTest::testToLocale_1Part:--&gt;
+                        java.lang.NullPointerException:-
+                        org.apache.commons.lang.LocaleUtilsTest::testToLocale_2Part:--&gt;
+                        java.lang.NullPointerException:-
+                        org.apache.commons.lang.LocaleUtilsTest::testToLocale_3Part:--&gt;
+                        java.lang.NullPointerException:-
+                        org.apache.commons.lang.LocaleUtilsTest::testLocaleLookupList_Locale
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>11</number_tests>
+                    <failed>11</failed>
+                    <passed>0</passed>
+                    <nodes>9579</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang/LocaleUtils.java">
+                    <change>223</change>
+                    <bugtypes>
+                        <id id="2.2" lines="223">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

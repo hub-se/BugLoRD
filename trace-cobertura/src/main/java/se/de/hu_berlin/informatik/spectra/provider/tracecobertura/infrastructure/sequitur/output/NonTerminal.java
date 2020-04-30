@@ -1,33 +1,34 @@
-/** License information:
- *    Component: sequitur
- *    Package:   de.unisb.cs.st.sequitur.output
- *    Class:     NonTerminal
- *    Filename:  sequitur/src/main/java/de/unisb/cs/st/sequitur/output/NonTerminal.java
- *
+/**
+ * License information:
+ * Component: sequitur
+ * Package:   de.unisb.cs.st.sequitur.output
+ * Class:     NonTerminal
+ * Filename:  sequitur/src/main/java/de/unisb/cs/st/sequitur/output/NonTerminal.java
+ * <p>
  * This file is part of the Sequitur library developed by Clemens Hammacher
  * at Saarland University. It has been developed for use in the JavaSlicer
  * tool. See http://www.st.cs.uni-saarland.de/javaslicer/ for more information.
- *
+ * <p>
  * Sequitur is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Sequitur is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Sequitur. If not, see <http://www.gnu.org/licenses/>.
  */
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.Rule.Dummy;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Queue;
-
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.Rule.Dummy;
 
 // package-private
 class NonTerminal extends Symbol {
@@ -61,12 +62,13 @@ class NonTerminal extends Symbol {
 
     @Override
     protected int singleHashcode() {
-        return this.rule.hashCode() + 31*this.count;
+        return this.rule.hashCode() + 31 * this.count;
     }
 
     /**
      * replace this non terminal with the contents of its rule;
      * works only if the rule is only used once
+     *
      * @param grammar
      */
     public void checkExpand(final Grammar grammar) {
@@ -90,7 +92,7 @@ class NonTerminal extends Symbol {
 
         grammar.removeDigram(this.prev);
         grammar.removeDigram(this);
-        
+
         // replace this non-terminal with the right side of the rule
         final Symbol newSymbol = this.rule.dummy.next.clone();
         newSymbol.count *= this.count;
@@ -103,25 +105,25 @@ class NonTerminal extends Symbol {
 
     @Override
     public boolean meltDigram(final Grammar grammar) {
-    	if (this.next instanceof NonTerminal) {
-    		final NonTerminal otherNonT = (NonTerminal) this.next;
-    		// check if both non-terminals are the same rule
-    		if (otherNonT.rule.equals(this.rule)) {
-    			final boolean hasPrev = !(this.prev instanceof Dummy);
-    			final boolean hasNextNext = !(otherNonT.next instanceof Dummy);
-    			if (hasPrev)
-    				grammar.removeDigram(this.prev);
-    			if (hasNextNext)
-    				grammar.removeDigram(otherNonT);
-    			this.count += otherNonT.count;
-    			otherNonT.remove();
-    			if (hasPrev)
-    				grammar.checkDigram(this.prev);
-    			if (hasNextNext)
-    				grammar.checkDigram(this);
-    			return true;
-    		}
-    	}
+        if (this.next instanceof NonTerminal) {
+            final NonTerminal otherNonT = (NonTerminal) this.next;
+            // check if both non-terminals are the same rule
+            if (otherNonT.rule.equals(this.rule)) {
+                final boolean hasPrev = !(this.prev instanceof Dummy);
+                final boolean hasNextNext = !(otherNonT.next instanceof Dummy);
+                if (hasPrev)
+                    grammar.removeDigram(this.prev);
+                if (hasNextNext)
+                    grammar.removeDigram(otherNonT);
+                this.count += otherNonT.count;
+                otherNonT.remove();
+                if (hasPrev)
+                    grammar.checkDigram(this.prev);
+                if (hasNextNext)
+                    grammar.checkDigram(this);
+                return true;
+            }
+        }
         return false;
     }
 
@@ -133,7 +135,7 @@ class NonTerminal extends Symbol {
 
     @Override
     public void writeOut(final ObjectOutputStream objOut, final Grammar grammar,
-            final ObjectWriter objectWriter, final Queue<Rule> queue) throws IOException {
+                         final ObjectWriter objectWriter, final Queue<Rule> queue) throws IOException {
         assert this.count >= 1;
         if (this.count != 1) {
             DataOutput.writeInt(objOut, this.count);

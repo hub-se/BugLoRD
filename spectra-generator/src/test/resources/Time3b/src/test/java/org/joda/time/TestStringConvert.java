@@ -17,7 +17,6 @@ package org.joda.time;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.convert.StringConvert;
 import org.joda.time.chrono.ISOChronology;
 

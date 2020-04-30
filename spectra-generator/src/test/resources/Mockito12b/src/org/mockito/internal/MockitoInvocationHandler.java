@@ -4,9 +4,9 @@
  */
 package org.mockito.internal;
 
-import java.io.Serializable;
-
 import org.mockito.internal.invocation.Invocation;
+
+import java.io.Serializable;
 
 public interface MockitoInvocationHandler extends Serializable {
 

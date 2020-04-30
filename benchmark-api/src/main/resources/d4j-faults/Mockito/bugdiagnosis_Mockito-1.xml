@@ -1,48 +1,48 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-1">
-			<tests>
-				<testfile path="org/mockitousage/basicapi/UsingVarargsTest">
-					<exception>java.lang.UnsupportedOperationException:-
-						org.mockito.internal.util.reflection.FieldInitializerTest::can_instantiate_class_with_parameterized_constructor:--&gt;
-						java.lang.UnsupportedOperationException:-
-						org.mockito.internal.util.reflection.ParameterizedConstructorInstantiatorTest::should_report_failure_if_constructor_throws_exception:--&gt;
-						java.lang.UnsupportedOperationException:-
-						org.mockito.internal.util.reflection.ParameterizedConstructorInstantiatorTest::should_fail_if_an_argument_instance_type_do_not_match_wanted_type:--&gt;
-						java.lang.UnsupportedOperationException:-
-						org.mockito.internal.util.reflection.ParameterizedConstructorInstantiatorTest::should_instantiate_type_with_vararg_constructor:--&gt;
-						java.lang.UnsupportedOperationException:-
-						org.mockito.internal.util.reflection.ParameterizedConstructorInstantiatorTest::should_instantiate_type_if_resolver_provide_matching_types:--&gt;
-						java.lang.UnsupportedOperationException:-
-						org.mockitousage.basicapi.ResetTest::shouldRemoveAllStubbing:--&gt;
-						java.lang.UnsupportedOperationException:-
-						org.mockitousage.basicapi.UsingVarargsTest::shouldVerifyWithNullVarArgArray:--&gt;
-						java.lang.UnsupportedOperationException:-
-						org.mockitousage.basicapi.UsingVarargsTest::shouldVerifyWithAnyObject:--&gt;
-						java.lang.UnsupportedOperationException:-
-						org.mockitousage.basicapi.UsingVarargsTest::shouldStubBooleanVarargs
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>963</number_tests>
-					<failed>26</failed>
-					<passed>937</passed>
-					<nodes>4491</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/internal/invocation/InvocationMatcher.java">
-					<delete>123</delete>
-					<insert numberlines="12">123-125</insert>
-					<bugtypes>
-						<id id="1.4" lines="123">
-							<description>In place of an exception a new feature was added.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-1">
+            <tests>
+                <testfile path="org/mockitousage/basicapi/UsingVarargsTest">
+                    <exception>java.lang.UnsupportedOperationException:-
+                        org.mockito.internal.util.reflection.FieldInitializerTest::can_instantiate_class_with_parameterized_constructor:--&gt;
+                        java.lang.UnsupportedOperationException:-
+                        org.mockito.internal.util.reflection.ParameterizedConstructorInstantiatorTest::should_report_failure_if_constructor_throws_exception:--&gt;
+                        java.lang.UnsupportedOperationException:-
+                        org.mockito.internal.util.reflection.ParameterizedConstructorInstantiatorTest::should_fail_if_an_argument_instance_type_do_not_match_wanted_type:--&gt;
+                        java.lang.UnsupportedOperationException:-
+                        org.mockito.internal.util.reflection.ParameterizedConstructorInstantiatorTest::should_instantiate_type_with_vararg_constructor:--&gt;
+                        java.lang.UnsupportedOperationException:-
+                        org.mockito.internal.util.reflection.ParameterizedConstructorInstantiatorTest::should_instantiate_type_if_resolver_provide_matching_types:--&gt;
+                        java.lang.UnsupportedOperationException:-
+                        org.mockitousage.basicapi.ResetTest::shouldRemoveAllStubbing:--&gt;
+                        java.lang.UnsupportedOperationException:-
+                        org.mockitousage.basicapi.UsingVarargsTest::shouldVerifyWithNullVarArgArray:--&gt;
+                        java.lang.UnsupportedOperationException:-
+                        org.mockitousage.basicapi.UsingVarargsTest::shouldVerifyWithAnyObject:--&gt;
+                        java.lang.UnsupportedOperationException:-
+                        org.mockitousage.basicapi.UsingVarargsTest::shouldStubBooleanVarargs
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>963</number_tests>
+                    <failed>26</failed>
+                    <passed>937</passed>
+                    <nodes>4491</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/internal/invocation/InvocationMatcher.java">
+                    <delete>123</delete>
+                    <insert numberlines="12">123-125</insert>
+                    <bugtypes>
+                        <id id="1.4" lines="123">
+                            <description>In place of an exception a new feature was added.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

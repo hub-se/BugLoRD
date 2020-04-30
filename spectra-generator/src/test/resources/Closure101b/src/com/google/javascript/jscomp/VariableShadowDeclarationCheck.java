@@ -16,8 +16,8 @@
 
 package com.google.javascript.jscomp;
 
-import com.google.javascript.jscomp.CheckLevel;
 import com.google.common.collect.Sets;
+import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.NodeTraversal.ScopedCallback;
 import com.google.javascript.jscomp.Scope.Var;
 import com.google.javascript.rhino.Node;
@@ -32,113 +32,111 @@ import java.util.Set;
  *
  * <p>Browser global variables such as {@code self} shouldn't be shadowed
  * because it is highly error prone to do so.
- *
-*
  */
 class VariableShadowDeclarationCheck implements CompilerPass {
 
-  static final DiagnosticType SHADOW_VAR_ERROR = DiagnosticType.error(
-      "JSC_REDECL_NOSHADOW_VARIABLE",
-      "Highly error prone shadowing of variable name {0}." +
-      "Consider using a different local variable name.");
+    static final DiagnosticType SHADOW_VAR_ERROR = DiagnosticType.error(
+            "JSC_REDECL_NOSHADOW_VARIABLE",
+            "Highly error prone shadowing of variable name {0}." +
+                    "Consider using a different local variable name.");
 
-  private final AbstractCompiler compiler;
-  private final CheckLevel checkLevel;
-  private final Set<String> externalNoShadowVariableNames;
+    private final AbstractCompiler compiler;
+    private final CheckLevel checkLevel;
+    private final Set<String> externalNoShadowVariableNames;
 
 
-  VariableShadowDeclarationCheck(AbstractCompiler compiler,
-      CheckLevel checkLevel) {
-    this.compiler = compiler;
-    this.checkLevel = checkLevel;
-    this.externalNoShadowVariableNames = Sets.newHashSet();
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, externs,
-                           new NoShadowAnnotationGatheringCallback());
-    NodeTraversal.traverse(compiler, root,
-                           new ShadowDeclarationCheckingCallback());
-  }
-
-  /**
-   * Callback that gathers @noshadow annotations that appear in the
-   * externs tree.
-   */
-  private class NoShadowAnnotationGatheringCallback implements ScopedCallback {
-    @Override
-    public void enterScope(NodeTraversal t) {
-      Scope scope = t.getScope();
-      for (Iterator<Var> vars = scope.getVars(); vars.hasNext();) {
-        Var var = vars.next();
-        if (var.isNoShadow()) {
-          externalNoShadowVariableNames.add(var.getName());
-        }
-      }
+    VariableShadowDeclarationCheck(AbstractCompiler compiler,
+                                   CheckLevel checkLevel) {
+        this.compiler = compiler;
+        this.checkLevel = checkLevel;
+        this.externalNoShadowVariableNames = Sets.newHashSet();
     }
 
     @Override
-    public void exitScope(NodeTraversal t) {
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, externs,
+                new NoShadowAnnotationGatheringCallback());
+        NodeTraversal.traverse(compiler, root,
+                new ShadowDeclarationCheckingCallback());
     }
 
-    @Override
-    public boolean shouldTraverse(
-        NodeTraversal nodeTraversal, Node n, Node parent) {
-      return true;
-    }
-
-    @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-    }
-  }
-
-  /**
-   * Callback that emits warnings for shadowed global variables
-   * with @noshadow annotations, and shadowed local variables.
-   */
-  private class ShadowDeclarationCheckingCallback implements ScopedCallback {
-    @Override
-    public void enterScope(NodeTraversal t) {
-      if (t.inGlobalScope()) {
-        return;
-      }
-
-      Scope scope = t.getScope();
-      Scope parentScope = scope.getParent();
-      for (Iterator<Var> vars = scope.getVars(); vars.hasNext();) {
-        Var var = vars.next();
-
-        if (externalNoShadowVariableNames.contains(var.getName())) {
-          compiler.report(JSError.make(t, var.nameNode, checkLevel,
-                                       SHADOW_VAR_ERROR,
-                                       var.getName()));
-          continue;
+    /**
+     * Callback that gathers @noshadow annotations that appear in the
+     * externs tree.
+     */
+    private class NoShadowAnnotationGatheringCallback implements ScopedCallback {
+        @Override
+        public void enterScope(NodeTraversal t) {
+            Scope scope = t.getScope();
+            for (Iterator<Var> vars = scope.getVars(); vars.hasNext(); ) {
+                Var var = vars.next();
+                if (var.isNoShadow()) {
+                    externalNoShadowVariableNames.add(var.getName());
+                }
+            }
         }
 
-        Var shadowedVar = parentScope.getVar(var.getName());
-        if ((shadowedVar != null) &&
-            (shadowedVar.isNoShadow() || shadowedVar.isLocal())) {
-          compiler.report(JSError.make(t, var.nameNode, checkLevel,
-                                       SHADOW_VAR_ERROR,
-                                       var.getName()));
-          continue;
+        @Override
+        public void exitScope(NodeTraversal t) {
         }
-      }
+
+        @Override
+        public boolean shouldTraverse(
+                NodeTraversal nodeTraversal, Node n, Node parent) {
+            return true;
+        }
+
+        @Override
+        public void visit(NodeTraversal t, Node n, Node parent) {
+        }
     }
 
-    @Override
-    public void exitScope(NodeTraversal t) {
-    }
+    /**
+     * Callback that emits warnings for shadowed global variables
+     * with @noshadow annotations, and shadowed local variables.
+     */
+    private class ShadowDeclarationCheckingCallback implements ScopedCallback {
+        @Override
+        public void enterScope(NodeTraversal t) {
+            if (t.inGlobalScope()) {
+                return;
+            }
 
-    @Override
-    public boolean shouldTraverse(
-        NodeTraversal nodeTraversal, Node n, Node parent) {
-      return true;
-    }
+            Scope scope = t.getScope();
+            Scope parentScope = scope.getParent();
+            for (Iterator<Var> vars = scope.getVars(); vars.hasNext(); ) {
+                Var var = vars.next();
 
-    @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
+                if (externalNoShadowVariableNames.contains(var.getName())) {
+                    compiler.report(JSError.make(t, var.nameNode, checkLevel,
+                            SHADOW_VAR_ERROR,
+                            var.getName()));
+                    continue;
+                }
+
+                Var shadowedVar = parentScope.getVar(var.getName());
+                if ((shadowedVar != null) &&
+                        (shadowedVar.isNoShadow() || shadowedVar.isLocal())) {
+                    compiler.report(JSError.make(t, var.nameNode, checkLevel,
+                            SHADOW_VAR_ERROR,
+                            var.getName()));
+                    continue;
+                }
+            }
+        }
+
+        @Override
+        public void exitScope(NodeTraversal t) {
+        }
+
+        @Override
+        public boolean shouldTraverse(
+                NodeTraversal nodeTraversal, Node n, Node parent) {
+            return true;
+        }
+
+        @Override
+        public void visit(NodeTraversal t, Node n, Node parent) {
+        }
     }
-  }
 }

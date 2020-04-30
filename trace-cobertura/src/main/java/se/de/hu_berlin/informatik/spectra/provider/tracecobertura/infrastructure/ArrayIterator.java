@@ -1,39 +1,41 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
 public class ArrayIterator<T> implements CloneableIterator<T> {
-	
-	private final T[] array;
-	private int index = 0;
 
-	public ArrayIterator(T[] array) {
-		this.array = array;
-	}
-	
-	// clone constructor
-	private ArrayIterator(ArrayIterator<T> iterator) {
-		array = iterator.array;
-		index = iterator.index;
-	}
+    private final T[] array;
+    private int index = 0;
 
-	public ArrayIterator<T> clone() {
-		return new ArrayIterator<>(this);
-	}
+    public ArrayIterator(T[] array) {
+        this.array = array;
+    }
 
-	@Override
-	public boolean hasNext() {
-		return index < array.length;
-	}
+    // clone constructor
+    private ArrayIterator(ArrayIterator<T> iterator) {
+        array = iterator.array;
+        index = iterator.index;
+    }
 
-	@Override
-	public T next() {
-		return array[index++];
-	}
-	
-	public T peek() {
-		return array[index];
-	}
+    public ArrayIterator<T> clone() {
+        return new ArrayIterator<>(this);
+    }
 
-	@Override
-	public void remove(){ throw new UnsupportedOperationException(); }
+    @Override
+    public boolean hasNext() {
+        return index < array.length;
+    }
+
+    @Override
+    public T next() {
+        return array[index++];
+    }
+
+    public T peek() {
+        return array[index];
+    }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
 
 }

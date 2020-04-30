@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,31 +36,30 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 /**
  * The {@code StaticSlot} interface must be implemented by variables that can
  * appear as members of a {@code StaticScope}.
  *
-*
-*
  * @param <T> The type of information stored about the slot
  */
 public interface StaticSlot<T> {
-  /**
-   * Gets the name of the slot.
-   */
-  String getName();
+    /**
+     * Gets the name of the slot.
+     */
+    String getName();
 
-  /**
-   * Returns the type information, if any, for this slot.
-   * @return The type or {@code null} if no type is declared for it.
-   */
-  T getType();
+    /**
+     * Returns the type information, if any, for this slot.
+     *
+     * @return The type or {@code null} if no type is declared for it.
+     */
+    T getType();
 
-  /**
-   * Returns whether the type has been inferred (as opposed to declared).
-   */
-  boolean isTypeInferred();
+    /**
+     * Returns whether the type has been inferred (as opposed to declared).
+     */
+    boolean isTypeInferred();
 }

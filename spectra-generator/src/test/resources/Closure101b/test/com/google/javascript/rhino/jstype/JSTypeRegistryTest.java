@@ -39,107 +39,111 @@
 package com.google.javascript.rhino.jstype;
 
 import com.google.javascript.rhino.SimpleErrorReporter;
-
 import junit.framework.TestCase;
 
 /**
  * Tests {@link JSTypeRegistry}.
- *
-*
  */
 public class JSTypeRegistryTest extends TestCase {
-  // TODO(user): extend this class with more tests, as JSTypeRegistry is
-  // now much larger
-  public void testGetBuiltInType() {
-    JSTypeRegistry typeRegistry = new JSTypeRegistry(null);
-    assertEquals(typeRegistry.getNativeType(JSTypeNative.BOOLEAN_TYPE),
-        typeRegistry.getType("boolean"));
-  }
+    // TODO(user): extend this class with more tests, as JSTypeRegistry is
+    // now much larger
+    public void testGetBuiltInType() {
+        JSTypeRegistry typeRegistry = new JSTypeRegistry(null);
+        assertEquals(typeRegistry.getNativeType(JSTypeNative.BOOLEAN_TYPE),
+                typeRegistry.getType("boolean"));
+    }
 
-  public void testGetDeclaredType() {
-    JSTypeRegistry typeRegistry = new JSTypeRegistry(null);
-    JSType type = typeRegistry.createAnonymousObjectType();
-    String name = "Foo";
-    typeRegistry.declareType(name, type);
-    assertEquals(type, typeRegistry.getType(name));
+    public void testGetDeclaredType() {
+        JSTypeRegistry typeRegistry = new JSTypeRegistry(null);
+        JSType type = typeRegistry.createAnonymousObjectType();
+        String name = "Foo";
+        typeRegistry.declareType(name, type);
+        assertEquals(type, typeRegistry.getType(name));
 
-    // Ensure different instances are independent.
-    JSTypeRegistry typeRegistry2 = new JSTypeRegistry(null);
-    assertEquals(null, typeRegistry2.getType(name));
-    assertEquals(type, typeRegistry.getType(name));
-  }
+        // Ensure different instances are independent.
+        JSTypeRegistry typeRegistry2 = new JSTypeRegistry(null);
+        assertEquals(null, typeRegistry2.getType(name));
+        assertEquals(type, typeRegistry.getType(name));
+    }
 
-  public void testGetDeclaredTypeInNamespace() {
-    JSTypeRegistry typeRegistry = new JSTypeRegistry(null);
-    JSType type = typeRegistry.createAnonymousObjectType();
-    String name = "a.b.Foo";
-    typeRegistry.declareType(name, type);
-    assertEquals(type, typeRegistry.getType(name));
-    assertTrue(typeRegistry.hasNamespace("a"));
-    assertTrue(typeRegistry.hasNamespace("a.b"));
-  }
+    public void testGetDeclaredTypeInNamespace() {
+        JSTypeRegistry typeRegistry = new JSTypeRegistry(null);
+        JSType type = typeRegistry.createAnonymousObjectType();
+        String name = "a.b.Foo";
+        typeRegistry.declareType(name, type);
+        assertEquals(type, typeRegistry.getType(name));
+        assertTrue(typeRegistry.hasNamespace("a"));
+        assertTrue(typeRegistry.hasNamespace("a.b"));
+    }
 
-  public void testTypeAsNamespace() {
-    JSTypeRegistry typeRegistry = new JSTypeRegistry(null);
+    public void testTypeAsNamespace() {
+        JSTypeRegistry typeRegistry = new JSTypeRegistry(null);
 
-    JSType type = typeRegistry.createAnonymousObjectType();
-    String name = "a.b.Foo";
-    typeRegistry.declareType(name, type);
-    assertEquals(type, typeRegistry.getType(name));
+        JSType type = typeRegistry.createAnonymousObjectType();
+        String name = "a.b.Foo";
+        typeRegistry.declareType(name, type);
+        assertEquals(type, typeRegistry.getType(name));
 
-    type = typeRegistry.createAnonymousObjectType();
-    name = "a.b.Foo.Bar";
-    typeRegistry.declareType(name, type);
-    assertEquals(type, typeRegistry.getType(name));
+        type = typeRegistry.createAnonymousObjectType();
+        name = "a.b.Foo.Bar";
+        typeRegistry.declareType(name, type);
+        assertEquals(type, typeRegistry.getType(name));
 
-    assertTrue(typeRegistry.hasNamespace("a"));
-    assertTrue(typeRegistry.hasNamespace("a.b"));
-    assertTrue(typeRegistry.hasNamespace("a.b.Foo"));
-  }
+        assertTrue(typeRegistry.hasNamespace("a"));
+        assertTrue(typeRegistry.hasNamespace("a.b"));
+        assertTrue(typeRegistry.hasNamespace("a.b.Foo"));
+    }
 
-  public void testGenerationIncrementing() {
-    SimpleErrorReporter reporter = new SimpleErrorReporter();
-    final JSTypeRegistry typeRegistry = new JSTypeRegistry(reporter);
+    public void testGenerationIncrementing() {
+        SimpleErrorReporter reporter = new SimpleErrorReporter();
+        final JSTypeRegistry typeRegistry = new JSTypeRegistry(reporter);
 
-    StaticScope<JSType> scope = new StaticScope<JSType>() {
-          public StaticSlot<JSType> getSlot(final String name) {
-            return new SimpleSlot(
-                name,
-                typeRegistry.getNativeType(JSTypeNative.UNKNOWN_TYPE),
-                false);
-          }
-          public StaticSlot<JSType> getOwnSlot(String name) {
-            return getSlot(name);
-          }
-          public StaticScope<JSType> getParentScope() { return null; }
-          public JSType getTypeOfThis() { return null; }
+        StaticScope<JSType> scope = new StaticScope<JSType>() {
+            public StaticSlot<JSType> getSlot(final String name) {
+                return new SimpleSlot(
+                        name,
+                        typeRegistry.getNativeType(JSTypeNative.UNKNOWN_TYPE),
+                        false);
+            }
+
+            public StaticSlot<JSType> getOwnSlot(String name) {
+                return getSlot(name);
+            }
+
+            public StaticScope<JSType> getParentScope() {
+                return null;
+            }
+
+            public JSType getTypeOfThis() {
+                return null;
+            }
         };
 
-    ObjectType namedType =
-        (ObjectType) typeRegistry.getType(scope, "Foo", null, 0, 0);
-    ObjectType subNamed =
-        typeRegistry.createObjectType(typeRegistry.createObjectType(namedType));
+        ObjectType namedType =
+                (ObjectType) typeRegistry.getType(scope, "Foo", null, 0, 0);
+        ObjectType subNamed =
+                typeRegistry.createObjectType(typeRegistry.createObjectType(namedType));
 
-    // Subclass of named type is initially unresolved.
-    typeRegistry.setLastGeneration(false);
-    typeRegistry.resolveTypesInScope(scope);
-    assertTrue(subNamed.isUnknownType());
+        // Subclass of named type is initially unresolved.
+        typeRegistry.setLastGeneration(false);
+        typeRegistry.resolveTypesInScope(scope);
+        assertTrue(subNamed.isUnknownType());
 
-    // Subclass of named type is still unresolved, even though the named type is
-    // now present in the registry.
-    typeRegistry.declareType("Foo", typeRegistry.createAnonymousObjectType());
-    typeRegistry.resolveTypesInScope(scope);
-    assertTrue(subNamed.isUnknownType());
+        // Subclass of named type is still unresolved, even though the named type is
+        // now present in the registry.
+        typeRegistry.declareType("Foo", typeRegistry.createAnonymousObjectType());
+        typeRegistry.resolveTypesInScope(scope);
+        assertTrue(subNamed.isUnknownType());
 
-    assertNull("Unexpected errors: " + reporter.errors(),
-        reporter.errors());
-    assertNull("Unexpected warnings: " + reporter.warnings(),
-        reporter.warnings());
+        assertNull("Unexpected errors: " + reporter.errors(),
+                reporter.errors());
+        assertNull("Unexpected warnings: " + reporter.warnings(),
+                reporter.warnings());
 
-    // After incrementing the generation, resolve works again.
-    typeRegistry.incrementGeneration();
-    typeRegistry.setLastGeneration(true);
-    typeRegistry.resolveTypesInScope(scope);
-    assertFalse(subNamed.isUnknownType());
-  }
+        // After incrementing the generation, resolve works again.
+        typeRegistry.incrementGeneration();
+        typeRegistry.setLastGeneration(true);
+        typeRegistry.resolveTypesInScope(scope);
+        assertFalse(subNamed.isUnknownType());
+    }
 }

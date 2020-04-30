@@ -26,152 +26,149 @@ import java.util.Map;
 /**
  * CodingConvention defines a set of hooks to customize the behavior of the
  * Compiler for a specific team/company.
- *
-*
-*
  */
 public class DefaultCodingConvention implements CodingConvention {
 
-  @Override
-  public boolean isConstant(String variableName) {
-    return false;
-  }
+    @Override
+    public boolean isConstant(String variableName) {
+        return false;
+    }
 
-  @Override
-  public boolean isValidEnumKey(String key) {
-    return key != null && key.length() > 0;
-  }
+    @Override
+    public boolean isValidEnumKey(String key) {
+        return key != null && key.length() > 0;
+    }
 
-  @Override
-  public boolean isOptionalParameter(Node parameter) {
-    // be as lax as possible, but this must be mutually exclusive from
-    // var_args parameters.
-    return !isVarArgsParameter(parameter);
-  }
+    @Override
+    public boolean isOptionalParameter(Node parameter) {
+        // be as lax as possible, but this must be mutually exclusive from
+        // var_args parameters.
+        return !isVarArgsParameter(parameter);
+    }
 
-  @Override
-  public boolean isVarArgsParameter(Node parameter) {
-    // be as lax as possible
-    return parameter.getParent().getLastChild() == parameter;
-  }
+    @Override
+    public boolean isVarArgsParameter(Node parameter) {
+        // be as lax as possible
+        return parameter.getParent().getLastChild() == parameter;
+    }
 
-  @Override
-  public boolean isExported(String name, boolean local) {
-    return local && name.startsWith("$super");
-  }
-  
-  @Override
-  public boolean isExported(String name) {
-    return isExported(name, false) || isExported(name, true);
-  }
+    @Override
+    public boolean isExported(String name, boolean local) {
+        return local && name.startsWith("$super");
+    }
 
-  @Override
-  public boolean isPrivate(String name) {
-    return false;
-  }
+    @Override
+    public boolean isExported(String name) {
+        return isExported(name, false) || isExported(name, true);
+    }
 
-  @Override
-  public SubclassRelationship getClassesDefinedByCall(Node callNode) {
-    return null;
-  }
+    @Override
+    public boolean isPrivate(String name) {
+        return false;
+    }
 
-  @Override
-  public boolean isSuperClassReference(String propertyName) {
-    return false;
-  }
+    @Override
+    public SubclassRelationship getClassesDefinedByCall(Node callNode) {
+        return null;
+    }
 
-  @Override
-  public String extractClassNameIfProvide(Node node, Node parent) {
-    String message = "only implemented in GoogleCodingConvention";
-    throw new UnsupportedOperationException(message);
-  }
+    @Override
+    public boolean isSuperClassReference(String propertyName) {
+        return false;
+    }
 
-  @Override
-  public String extractClassNameIfRequire(Node node, Node parent) {
-    String message = "only implemented in GoogleCodingConvention";
-    throw new UnsupportedOperationException(message);
-  }
+    @Override
+    public String extractClassNameIfProvide(Node node, Node parent) {
+        String message = "only implemented in GoogleCodingConvention";
+        throw new UnsupportedOperationException(message);
+    }
 
-  @Override
-  public String getExportPropertyFunction() {
-    return null;
-  }
+    @Override
+    public String extractClassNameIfRequire(Node node, Node parent) {
+        String message = "only implemented in GoogleCodingConvention";
+        throw new UnsupportedOperationException(message);
+    }
 
-  @Override
-  public String getExportSymbolFunction() {
-    return null;
-  }
+    @Override
+    public String getExportPropertyFunction() {
+        return null;
+    }
 
-  @Override
-  public List<String> identifyTypeDeclarationCall(Node n) {
-    return null;
-  }
+    @Override
+    public String getExportSymbolFunction() {
+        return null;
+    }
 
-  @Override
-  public String identifyTypeDefAssign(Node n) {
-    return null;
-  }
+    @Override
+    public List<String> identifyTypeDeclarationCall(Node n) {
+        return null;
+    }
 
-  @Override
-  public void applySubclassRelationship(FunctionType parentCtor,
-      FunctionType childCtor, SubclassType type) {
-    // do nothing
-  }
+    @Override
+    public String identifyTypeDefAssign(Node n) {
+        return null;
+    }
 
-  @Override
-  public String getAbstractMethodName() {
-    return null;
-  }
+    @Override
+    public void applySubclassRelationship(FunctionType parentCtor,
+                                          FunctionType childCtor, SubclassType type) {
+        // do nothing
+    }
 
-  @Override
-  public String getSingletonGetterClassName(Node callNode) {
-    return null;
-  }
+    @Override
+    public String getAbstractMethodName() {
+        return null;
+    }
 
-  @Override
-  public void applySingletonGetter(FunctionType functionType,
-      FunctionType getterType, ObjectType objectType) {
-    // do nothing.
-  }
+    @Override
+    public String getSingletonGetterClassName(Node callNode) {
+        return null;
+    }
 
-  @Override
-  public DelegateRelationship getDelegateRelationship(Node callNode) {
-    return null;
-  }
+    @Override
+    public void applySingletonGetter(FunctionType functionType,
+                                     FunctionType getterType, ObjectType objectType) {
+        // do nothing.
+    }
 
-  @Override
-  public void applyDelegateRelationship(
-      ObjectType delegateSuperclass, ObjectType delegateBase,
-      ObjectType delegator, FunctionType delegateProxy,
-      FunctionType findDelegate) {
-    // do nothing.
-  }
+    @Override
+    public DelegateRelationship getDelegateRelationship(Node callNode) {
+        return null;
+    }
 
-  @Override
-  public String getDelegateSuperclassName() {
-    return null;
-  }
+    @Override
+    public void applyDelegateRelationship(
+            ObjectType delegateSuperclass, ObjectType delegateBase,
+            ObjectType delegator, FunctionType delegateProxy,
+            FunctionType findDelegate) {
+        // do nothing.
+    }
 
-  @Override
-  public void defineDelegateProxyProperties(
-      JSTypeRegistry registry, Scope scope,
-      Map<ObjectType, ObjectType> delegateProxyMap) {
-    // do nothing.
-  }
+    @Override
+    public String getDelegateSuperclassName() {
+        return null;
+    }
 
-  @Override
-  public String getGlobalObject() {
-    return "window";
-  }
+    @Override
+    public void defineDelegateProxyProperties(
+            JSTypeRegistry registry, Scope scope,
+            Map<ObjectType, ObjectType> delegateProxyMap) {
+        // do nothing.
+    }
 
-  @Override
-  public boolean isPropertyTestFunction(Node call) {
-    return false;
-  }
+    @Override
+    public String getGlobalObject() {
+        return "window";
+    }
 
-  @Override
-  public ObjectLiteralCast getObjectLiteralCast(NodeTraversal t,
-      Node callNode) {
-    return null;
-  }
+    @Override
+    public boolean isPropertyTestFunction(Node call) {
+        return false;
+    }
+
+    @Override
+    public ObjectLiteralCast getObjectLiteralCast(NodeTraversal t,
+                                                  Node callNode) {
+        return null;
+    }
 }

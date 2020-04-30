@@ -22,7 +22,7 @@ public class JUnit45AndHigherRunnerImpl implements RunnerImpl {
     public JUnit45AndHigherRunnerImpl(Class<?> klass) throws InitializationError {
         runner = new BlockJUnit4ClassRunner(klass) {
             protected Statement withBefores(FrameworkMethod method, Object target,
-                    Statement statement) {
+                                            Statement statement) {
                 // init annotated mocks before tests
                 MockitoAnnotations.initMocks(target);
                 return super.withBefores(method, target, statement);
@@ -41,7 +41,7 @@ public class JUnit45AndHigherRunnerImpl implements RunnerImpl {
         return runner.getDescription();
     }
 
-	public void filter(Filter filter) throws NoTestsRemainException {
-		runner.filter(filter);
-	}
+    public void filter(Filter filter) throws NoTestsRemainException {
+        runner.filter(filter);
+    }
 }

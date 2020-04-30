@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,7 +36,7 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 /**
@@ -52,147 +52,146 @@ package com.google.javascript.rhino.jstype;
  * present in an expression.</p>
  *
  * @see <a href="http://en.wikipedia.org/wiki/Ternary_logic">Ternary Logic</a>
-*
  */
 public enum TernaryValue {
-  /**
-   * {@code false}
-   */
-  FALSE {
-    @Override
-    public TernaryValue and(TernaryValue that) {
-      return FALSE;
-    }
+    /**
+     * {@code false}
+     */
+    FALSE {
+        @Override
+        public TernaryValue and(TernaryValue that) {
+            return FALSE;
+        }
 
-    @Override
-    public TernaryValue not() {
-      return TRUE;
-    }
+        @Override
+        public TernaryValue not() {
+            return TRUE;
+        }
 
-    @Override
-    public TernaryValue or(TernaryValue that) {
-      return that;
-    }
+        @Override
+        public TernaryValue or(TernaryValue that) {
+            return that;
+        }
 
-    @Override
-    public TernaryValue xor(TernaryValue that) {
-      return that;
-    }
+        @Override
+        public TernaryValue xor(TernaryValue that) {
+            return that;
+        }
 
-    @Override
-    public boolean toBoolean(boolean unknown) {
-      return false;
-    }
+        @Override
+        public boolean toBoolean(boolean unknown) {
+            return false;
+        }
 
-    @Override
-    public String toString() {
-      return "false";
-    }
-  },
+        @Override
+        public String toString() {
+            return "false";
+        }
+    },
 
-  /**
-   * {@code true}
-   */
-  TRUE {
-    @Override
-    public TernaryValue and(TernaryValue that) {
-      return that;
-    }
+    /**
+     * {@code true}
+     */
+    TRUE {
+        @Override
+        public TernaryValue and(TernaryValue that) {
+            return that;
+        }
 
-    @Override
-    public TernaryValue not() {
-      return FALSE;
-    }
+        @Override
+        public TernaryValue not() {
+            return FALSE;
+        }
 
-    @Override
-    public TernaryValue or(TernaryValue that) {
-      return TRUE;
-    }
+        @Override
+        public TernaryValue or(TernaryValue that) {
+            return TRUE;
+        }
 
-    @Override
-    public TernaryValue xor(TernaryValue that) {
-      return that.not();
-    }
+        @Override
+        public TernaryValue xor(TernaryValue that) {
+            return that.not();
+        }
 
-    @Override
-    public boolean toBoolean(boolean unknown) {
-      return true;
-    }
+        @Override
+        public boolean toBoolean(boolean unknown) {
+            return true;
+        }
 
-    @Override
-    public String toString() {
-      return "true";
-    }
-  },
+        @Override
+        public String toString() {
+            return "true";
+        }
+    },
 
-  /**
-   * {@code unknown}, it represents lack of knowledge about whether this value
-   * is {@code true} or {@code false}.
-   */
-  UNKNOWN {
-    @Override
-    public TernaryValue and(TernaryValue that) {
-      return (FALSE.equals(that)) ? FALSE :  UNKNOWN;
-    }
+    /**
+     * {@code unknown}, it represents lack of knowledge about whether this value
+     * is {@code true} or {@code false}.
+     */
+    UNKNOWN {
+        @Override
+        public TernaryValue and(TernaryValue that) {
+            return (FALSE.equals(that)) ? FALSE : UNKNOWN;
+        }
 
-    @Override
-    public TernaryValue not() {
-      return UNKNOWN;
-    }
+        @Override
+        public TernaryValue not() {
+            return UNKNOWN;
+        }
 
-    @Override
-    public TernaryValue or(TernaryValue that) {
-      return (TRUE.equals(that)) ? TRUE : UNKNOWN;
-    }
+        @Override
+        public TernaryValue or(TernaryValue that) {
+            return (TRUE.equals(that)) ? TRUE : UNKNOWN;
+        }
 
-    @Override
-    public TernaryValue xor(TernaryValue that) {
-      return UNKNOWN;
-    }
+        @Override
+        public TernaryValue xor(TernaryValue that) {
+            return UNKNOWN;
+        }
 
-    @Override
-    public boolean toBoolean(boolean unknown) {
-      return unknown;
-    }
+        @Override
+        public boolean toBoolean(boolean unknown) {
+            return unknown;
+        }
 
-    @Override
-    public String toString() {
-      return "unknown";
-    }
-  };
+        @Override
+        public String toString() {
+            return "unknown";
+        }
+    };
 
-  /**
-   * Gets the {@code and} of {@code this} and {@code that}.
-   */
-  public abstract TernaryValue and(TernaryValue that);
+    /**
+     * Gets the {@code and} of {@code this} and {@code that}.
+     */
+    public abstract TernaryValue and(TernaryValue that);
 
-  /**
-   * Gets the {@code not} of {@code this}.
-   */
-  public abstract TernaryValue not();
+    /**
+     * Gets the {@code not} of {@code this}.
+     */
+    public abstract TernaryValue not();
 
-  /**
-   * Gets the {@code or} of {@code this} and {@code that}.
-   */
-  public abstract TernaryValue or(TernaryValue that);
+    /**
+     * Gets the {@code or} of {@code this} and {@code that}.
+     */
+    public abstract TernaryValue or(TernaryValue that);
 
-  /**
-   * Gets the {@code xor} of {@code this} and {@code that}.
-   */
-  public abstract TernaryValue xor(TernaryValue that);
+    /**
+     * Gets the {@code xor} of {@code this} and {@code that}.
+     */
+    public abstract TernaryValue xor(TernaryValue that);
 
-  /**
-   * Converts {@code this} ternary value to boolean. The {@code #TRUE} and
-   * {@code #FALSE} values are simply converted to {@code true} and
-   * {@code false} respectively, whilst the {@link #UNKNOWN} is converted
-   * to the specified {@code unknown} value.
-   *
-   * @param unknown the boolean value to which the {@link #UNKNOWN} value is
-   *     converted
-   * @return <pre>return
-   *     this == TRUE ? true :
-   *     this == FALSE ? false :
-   *     unknown</pre>
-   */
-  public abstract boolean toBoolean(boolean unknown);
+    /**
+     * Converts {@code this} ternary value to boolean. The {@code #TRUE} and
+     * {@code #FALSE} values are simply converted to {@code true} and
+     * {@code false} respectively, whilst the {@link #UNKNOWN} is converted
+     * to the specified {@code unknown} value.
+     *
+     * @param unknown the boolean value to which the {@link #UNKNOWN} value is
+     *                converted
+     * @return <pre>return
+     *     this == TRUE ? true :
+     *     this == FALSE ? false :
+     *     unknown</pre>
+     */
+    public abstract boolean toBoolean(boolean unknown);
 }

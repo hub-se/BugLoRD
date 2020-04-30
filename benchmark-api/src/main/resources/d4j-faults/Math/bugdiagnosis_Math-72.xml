@@ -1,34 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-72">
-			<tests>
-				<testfile path="org/apache/commons/math/analysis/solvers/BrentSolverTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;3.141592653589793&gt;
-						but was:&lt;1.2246467991473532E-16&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>214</number_tests>
-					<failed>1</failed>
-					<passed>213</passed>
-					<nodes>20136</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/analysis/solvers/BrentSolver.java">
-					<change>115</change>
-					<change>127</change>
-					<bugtypes>
-						<id id="1.5" lines="115">
-							<description>Incorrect computation.</description>
-						</id>
-						<id id="1.5" lines="127">
-							<description>Incorrect computation.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-72">
+            <tests>
+                <testfile path="org/apache/commons/math/analysis/solvers/BrentSolverTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;3.141592653589793&gt;
+                        but was:&lt;1.2246467991473532E-16&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>214</number_tests>
+                    <failed>1</failed>
+                    <passed>213</passed>
+                    <nodes>20136</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/analysis/solvers/BrentSolver.java">
+                    <change>115</change>
+                    <change>127</change>
+                    <bugtypes>
+                        <id id="1.5" lines="115">
+                            <description>Incorrect computation.</description>
+                        </id>
+                        <id id="1.5" lines="127">
+                            <description>Incorrect computation.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

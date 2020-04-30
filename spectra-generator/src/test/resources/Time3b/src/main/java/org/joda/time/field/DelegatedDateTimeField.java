@@ -15,12 +15,13 @@
  */
 package org.joda.time.field;
 
-import java.io.Serializable;
-import java.util.Locale;
 import org.joda.time.DateTimeField;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DurationField;
 import org.joda.time.ReadablePartial;
+
+import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * <code>DelegatedDateTimeField</code> delegates each method call to the
@@ -30,25 +31,33 @@ import org.joda.time.ReadablePartial;
  * be as well.
  *
  * @author Brian S O'Neill
- * @since 1.0
  * @see DecoratedDateTimeField
+ * @since 1.0
  */
 public class DelegatedDateTimeField extends DateTimeField implements Serializable {
 
-    /** Serialization version */
+    /**
+     * Serialization version
+     */
     private static final long serialVersionUID = -4730164440214502503L;
 
-    /** The DateTimeField being wrapped. */
+    /**
+     * The DateTimeField being wrapped.
+     */
     private final DateTimeField iField;
-    /** The range duration. */
+    /**
+     * The range duration.
+     */
     private final DurationField iRangeDurationField;
-    /** The override field type. */
+    /**
+     * The override field type.
+     */
     private final DateTimeFieldType iType;
 
     /**
      * Constructor.
-     * 
-     * @param field  the field being decorated
+     *
+     * @param field the field being decorated
      */
     public DelegatedDateTimeField(DateTimeField field) {
         this(field, null);
@@ -56,8 +65,8 @@ public class DelegatedDateTimeField extends DateTimeField implements Serializabl
 
     /**
      * Constructor.
-     * 
-     * @param field  the field being decorated
+     *
+     * @param field the field being decorated
      * @param type  the field type override
      */
     public DelegatedDateTimeField(DateTimeField field, DateTimeFieldType type) {
@@ -66,10 +75,10 @@ public class DelegatedDateTimeField extends DateTimeField implements Serializabl
 
     /**
      * Constructor.
-     * 
-     * @param field  the field being decorated
-     * @param rangeField  the range field, null to derive
-     * @param type  the field type override
+     *
+     * @param field      the field being decorated
+     * @param rangeField the range field, null to derive
+     * @param type       the field type override
      */
     public DelegatedDateTimeField(DateTimeField field, DurationField rangeField, DateTimeFieldType type) {
         super();
@@ -83,7 +92,7 @@ public class DelegatedDateTimeField extends DateTimeField implements Serializabl
 
     /**
      * Gets the wrapped date time field.
-     * 
+     *
      * @return the wrapped DateTimeField
      */
     public final DateTimeField getWrappedField() {

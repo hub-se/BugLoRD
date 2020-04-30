@@ -16,7 +16,6 @@
 package org.joda.time.chrono.gj;
 
 /**
- * 
  * @author Brian S O'Neill
  */
 class TestJulianDayOfMonthField extends TestGJDayOfMonthField {

@@ -1,49 +1,50 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-31">
-			<tests>
-				<testfile path="org/apache/commons/math3/distribution/FDistributionTest">
-					<exception>org.apache.commons.math3.exception.ConvergenceException:illegal
-						state:Continued fraction diverged to NaN for value 0.5:-
-						org.apache.commons.math3.distribution.FDistributionTest::testMath785:--&gt;
-						junit.framework.AssertionFailedError:Failing to calculate inverse
-						cumulative probability</exception>
-				</testfile>
-				<spectra>
-					<number_tests>317</number_tests>
-					<failed>2</failed>
-					<passed>315</passed>
-					<nodes>31922</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math3/util/ContinuedFraction.java">
-					<change>169-170</change>
-					<change>185</change>
-					<change>188,189</change>
-					<delete>134,135</delete>
-					<delete>143-167</delete>
-					<delete>186-189</delete>
-					<insert numberlines="9">142-169</insert>
-					<insert numberlines="2">184-191</insert>
-					<bugtypes>
-						<id id="3.1" lines="134,135">
-							<description>Unnecessary variables.</description>
-						</id>
-						<id id="1.5" lines="143-166">
-							<description>Incorrect calculation.</description>
-						</id>
-						<id id="1.5" lines="169,170">
-							<description>Incorrect calculation.</description>
-						</id>
-						<id id="3.1" lines="185-189">
-							<description>Incorrect initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-31">
+            <tests>
+                <testfile path="org/apache/commons/math3/distribution/FDistributionTest">
+                    <exception>org.apache.commons.math3.exception.ConvergenceException:illegal
+                        state:Continued fraction diverged to NaN for value 0.5:-
+                        org.apache.commons.math3.distribution.FDistributionTest::testMath785:--&gt;
+                        junit.framework.AssertionFailedError:Failing to calculate inverse
+                        cumulative probability
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>317</number_tests>
+                    <failed>2</failed>
+                    <passed>315</passed>
+                    <nodes>31922</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math3/util/ContinuedFraction.java">
+                    <change>169-170</change>
+                    <change>185</change>
+                    <change>188,189</change>
+                    <delete>134,135</delete>
+                    <delete>143-167</delete>
+                    <delete>186-189</delete>
+                    <insert numberlines="9">142-169</insert>
+                    <insert numberlines="2">184-191</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="134,135">
+                            <description>Unnecessary variables.</description>
+                        </id>
+                        <id id="1.5" lines="143-166">
+                            <description>Incorrect calculation.</description>
+                        </id>
+                        <id id="1.5" lines="169,170">
+                            <description>Incorrect calculation.</description>
+                        </id>
+                        <id id="3.1" lines="185-189">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

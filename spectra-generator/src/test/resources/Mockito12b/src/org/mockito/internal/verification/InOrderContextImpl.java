@@ -9,7 +9,7 @@ import org.mockito.internal.util.IdentitySet;
 import org.mockito.internal.verification.api.InOrderContext;
 
 public class InOrderContextImpl implements InOrderContext {
-    
+
     final IdentitySet verified = new IdentitySet();
 
     public boolean isVerified(Invocation invocation) {

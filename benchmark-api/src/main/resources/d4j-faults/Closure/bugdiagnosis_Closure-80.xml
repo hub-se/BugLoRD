@@ -1,36 +1,37 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-80">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/NodeUtilTest">
-					<exception>junit.framework.AssertionFailedError:-
-						com.google.javascript.jscomp.NodeUtilTest::testLocalValue1:--&gt;
-						java.lang.IllegalStateException:Unexpected expression nodeDELPROP
-						1 [sourcename:[testcode] ] [parenthesized:true]</exception>
-				</testfile>
-				<spectra>
-					<number_tests>5634</number_tests>
-					<failed>2</failed>
-					<passed>5632</passed>
-					<nodes>40691</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/NodeUtil.java">
-					<insert numberlines="1">1244-1262</insert>
-					<insert numberlines="1">2910-2912</insert>
-					<bugtypes>
-						<id id="1.1" lines="1261">
-							<description>Missing case.</description>
-						</id>
-						<id id="1.1" lines="2909">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-80">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/NodeUtilTest">
+                    <exception>junit.framework.AssertionFailedError:-
+                        com.google.javascript.jscomp.NodeUtilTest::testLocalValue1:--&gt;
+                        java.lang.IllegalStateException:Unexpected expression nodeDELPROP
+                        1 [sourcename:[testcode] ] [parenthesized:true]
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>5634</number_tests>
+                    <failed>2</failed>
+                    <passed>5632</passed>
+                    <nodes>40691</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/NodeUtil.java">
+                    <insert numberlines="1">1244-1262</insert>
+                    <insert numberlines="1">2910-2912</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="1261">
+                            <description>Missing case.</description>
+                        </id>
+                        <id id="1.1" lines="2909">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

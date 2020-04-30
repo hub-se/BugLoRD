@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,13 +17,14 @@
 
 package org.apache.commons.lang3.builder;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import org.junit.Test;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.builder.HashCodeBuilder}.
- * 
+ *
  * @version $Id$
  */
 public class HashCodeBuilderTest {
@@ -54,12 +55,12 @@ public class HashCodeBuilderTest {
 
     // -----------------------------------------------------------------------
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testConstructorEx1() {
         new HashCodeBuilder(0, 0);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testConstructorEx2() {
         new HashCodeBuilder(2, 2);
     }
@@ -127,7 +128,7 @@ public class HashCodeBuilderTest {
 
         @Override
         public int hashCode() {
-            return b*17 + super.hashCode();
+            return b * 17 + super.hashCode();
         }
 
     }
@@ -148,27 +149,27 @@ public class HashCodeBuilderTest {
                 123456, 7890, 0), true));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testReflectionHierarchyHashCodeEx1() {
         HashCodeBuilder.reflectionHashCode(0, 0, new TestSubObject(0, 0, 0), true);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testReflectionHierarchyHashCodeEx2() {
         HashCodeBuilder.reflectionHashCode(2, 2, new TestSubObject(0, 0, 0), true);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testReflectionHashCodeEx1() {
         HashCodeBuilder.reflectionHashCode(0, 0, new TestObject(0), true);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testReflectionHashCodeEx2() {
         HashCodeBuilder.reflectionHashCode(2, 2, new TestObject(0), true);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testReflectionHashCodeEx3() {
         HashCodeBuilder.reflectionHashCode(13, 19, null, true);
     }
@@ -187,7 +188,7 @@ public class HashCodeBuilderTest {
         obj = new Object();
         assertEquals(17 * 37 + obj.hashCode(), new HashCodeBuilder(17, 37).append(obj).toHashCode());
     }
-    
+
     @Test
     public void testObjectBuild() {
         Object obj = null;
@@ -521,7 +522,7 @@ public class HashCodeBuilderTest {
         ReflectionTestCycleB b = new ReflectionTestCycleB();
         a.b = b;
         b.a = a;
-        
+
         // Used to caused:
         // java.lang.StackOverflowError
         // at java.lang.ClassLoader.getCallerClassLoader(Native Method)
@@ -551,8 +552,8 @@ public class HashCodeBuilderTest {
     @Test
     public void testToHashCodeEqualsHashCode() {
         HashCodeBuilder hcb = new HashCodeBuilder(17, 37).append(new Object()).append('a');
-        assertEquals("hashCode() is no longer returning the same value as toHashCode() - see LANG-520", 
-                     hcb.toHashCode(), hcb.hashCode());
+        assertEquals("hashCode() is no longer returning the same value as toHashCode() - see LANG-520",
+                hcb.toHashCode(), hcb.hashCode());
     }
 
 }

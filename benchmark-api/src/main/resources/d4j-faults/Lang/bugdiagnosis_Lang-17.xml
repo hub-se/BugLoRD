@@ -1,44 +1,45 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-17">
-			<tests>
-				<testfile path="org/apache/commons/lang3/StringEscapeUtilsTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;𠮷[A]&gt;
-						but was:&lt;𠮷[?]&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>45</number_tests>
-					<failed>1</failed>
-					<passed>44</passed>
-					<nodes>10411</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/lang3/text/translate/CharSequenceTranslator.java">
-					<change>83</change>
-					<delete>90,101</delete>
-					<delete>94,96-98</delete>
-					<delete>102</delete>
-					<insert numberlines="2">88-89,89</insert>
-					<bugtypes>
-						<id id="3.1" lines="83">
-							<description>Incorrect initialization of len.</description>
-						</id>
-						<id id="1.2" lines="88">
-							<description>Incorrect case.</description>
-						</id>
-						<id id="1.2" lines="94,100">
-							<description>Unnecessary case handling.</description>
-						</id>
-						<id id="1.5" lines="102">
-							<description>Incorrect increase of variable.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>6</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-17">
+            <tests>
+                <testfile path="org/apache/commons/lang3/StringEscapeUtilsTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;𠮷[A]&gt;
+                        but was:&lt;𠮷[?]&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>45</number_tests>
+                    <failed>1</failed>
+                    <passed>44</passed>
+                    <nodes>10411</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/lang3/text/translate/CharSequenceTranslator.java">
+                    <change>83</change>
+                    <delete>90,101</delete>
+                    <delete>94,96-98</delete>
+                    <delete>102</delete>
+                    <insert numberlines="2">88-89,89</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="83">
+                            <description>Incorrect initialization of len.</description>
+                        </id>
+                        <id id="1.2" lines="88">
+                            <description>Incorrect case.</description>
+                        </id>
+                        <id id="1.2" lines="94,100">
+                            <description>Unnecessary case handling.</description>
+                        </id>
+                        <id id="1.5" lines="102">
+                            <description>Incorrect increase of variable.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>6</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

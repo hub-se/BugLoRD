@@ -15,21 +15,13 @@
  */
 package org.joda.time.chrono;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeField;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.DateTimeZone;
-import org.joda.time.DurationField;
-import org.joda.time.DurationFieldType;
+import org.joda.time.*;
 import org.joda.time.DateTime.Property;
+
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * This class is a Junit unit test for EthiopicChronology.
@@ -49,13 +41,13 @@ public class TestEthiopicChronology extends TestCase {
     private static final Chronology JULIAN_UTC = JulianChronology.getInstanceUTC();
     private static final Chronology ISO_UTC = ISOChronology.getInstanceUTC();
 
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * MILLIS_PER_DAY;
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * MILLIS_PER_DAY;
 
     private DateTimeZone originalDateTimeZone = null;
     private TimeZone originalTimeZone = null;
@@ -159,7 +151,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals("minutes", ethiopic.minutes().getName());
         assertEquals("seconds", ethiopic.seconds().getName());
         assertEquals("millis", ethiopic.millis().getName());
-        
+
         assertEquals(false, ethiopic.eras().isSupported());
         assertEquals(true, ethiopic.centuries().isSupported());
         assertEquals(true, ethiopic.years().isSupported());
@@ -172,7 +164,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(true, ethiopic.minutes().isSupported());
         assertEquals(true, ethiopic.seconds().isSupported());
         assertEquals(true, ethiopic.millis().isSupported());
-        
+
         assertEquals(false, ethiopic.centuries().isPrecise());
         assertEquals(false, ethiopic.years().isPrecise());
         assertEquals(false, ethiopic.weekyears().isPrecise());
@@ -184,7 +176,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(true, ethiopic.minutes().isPrecise());
         assertEquals(true, ethiopic.seconds().isPrecise());
         assertEquals(true, ethiopic.millis().isPrecise());
-        
+
         final EthiopicChronology ethiopicUTC = EthiopicChronology.getInstanceUTC();
         assertEquals(false, ethiopicUTC.centuries().isPrecise());
         assertEquals(false, ethiopicUTC.years().isPrecise());
@@ -197,7 +189,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(true, ethiopicUTC.minutes().isPrecise());
         assertEquals(true, ethiopicUTC.seconds().isPrecise());
         assertEquals(true, ethiopicUTC.millis().isPrecise());
-        
+
         final DateTimeZone gmt = DateTimeZone.forID("Etc/GMT");
         final EthiopicChronology ethiopicGMT = EthiopicChronology.getInstance(gmt);
         assertEquals(false, ethiopicGMT.centuries().isPrecise());
@@ -227,7 +219,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals("dayOfYear", ethiopic.dayOfYear().getName());
         assertEquals("dayOfMonth", ethiopic.dayOfMonth().getName());
         assertEquals("dayOfWeek", ethiopic.dayOfWeek().getName());
-        
+
         assertEquals(true, ethiopic.era().isSupported());
         assertEquals(true, ethiopic.centuryOfEra().isSupported());
         assertEquals(true, ethiopic.yearOfCentury().isSupported());
@@ -240,7 +232,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(true, ethiopic.dayOfYear().isSupported());
         assertEquals(true, ethiopic.dayOfMonth().isSupported());
         assertEquals(true, ethiopic.dayOfWeek().isSupported());
-        
+
         assertEquals(ethiopic.eras(), ethiopic.era().getDurationField());
         assertEquals(ethiopic.centuries(), ethiopic.centuryOfEra().getDurationField());
         assertEquals(ethiopic.years(), ethiopic.yearOfCentury().getDurationField());
@@ -253,7 +245,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(ethiopic.days(), ethiopic.dayOfYear().getDurationField());
         assertEquals(ethiopic.days(), ethiopic.dayOfMonth().getDurationField());
         assertEquals(ethiopic.days(), ethiopic.dayOfWeek().getDurationField());
-        
+
         assertEquals(null, ethiopic.era().getRangeDurationField());
         assertEquals(ethiopic.eras(), ethiopic.centuryOfEra().getRangeDurationField());
         assertEquals(ethiopic.centuries(), ethiopic.yearOfCentury().getRangeDurationField());
@@ -281,7 +273,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals("secondOfMinute", ethiopic.secondOfMinute().getName());
         assertEquals("millisOfDay", ethiopic.millisOfDay().getName());
         assertEquals("millisOfSecond", ethiopic.millisOfSecond().getName());
-        
+
         assertEquals(true, ethiopic.halfdayOfDay().isSupported());
         assertEquals(true, ethiopic.clockhourOfHalfday().isSupported());
         assertEquals(true, ethiopic.hourOfHalfday().isSupported());
@@ -306,10 +298,12 @@ public class TestEthiopicChronology extends TestCase {
         try {
             new DateTime(-1, 13, 5, 0, 0, 0, 0, ETHIOPIC_UTC);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Tests era, year, monthOfYear, dayOfMonth and dayOfWeek.
      */
@@ -344,12 +338,12 @@ public class TestEthiopicChronology extends TestCase {
             if (monthValue < 1 || monthValue > 13) {
                 fail("Bad month: " + millis);
             }
-            
+
             // test era
             assertEquals(1, era.get(millis));
             assertEquals("EE", era.getAsText(millis));
             assertEquals("EE", era.getAsShortText(millis));
-            
+
             // test date
             assertEquals(expectedYear, yearValue);
             assertEquals(expectedYear, yearOfEraValue);
@@ -357,10 +351,10 @@ public class TestEthiopicChronology extends TestCase {
             assertEquals(expectedDay, dayValue);
             assertEquals(expectedDOW, dowValue);
             assertEquals(expectedDOY, doyValue);
-            
+
             // test leap year
             assertEquals(yearValue % 4 == 3, year.isLeap(millis));
-            
+
             // test month length
             if (monthValue == 13) {
                 assertEquals(yearValue % 4 == 3, monthOfYear.isLeap(millis));
@@ -372,7 +366,7 @@ public class TestEthiopicChronology extends TestCase {
             } else {
                 assertEquals(30, monthLen);
             }
-            
+
             // recalculate date
             expectedDOW = (((expectedDOW + 1) - 1) % 7) + 1;
             expectedDay++;
@@ -403,14 +397,14 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(20, dt.getCenturyOfEra());  // TODO confirm
         assertEquals(96, dt.getYearOfCentury());
         assertEquals(1996, dt.getYearOfEra());
-        
+
         assertEquals(1996, dt.getYear());
         Property fld = dt.year();
         assertEquals(false, fld.isLeap());
         assertEquals(0, fld.getLeapAmount());
         assertEquals(DurationFieldType.days(), fld.getLeapDurationField().getType());
         assertEquals(new DateTime(1997, 10, 2, 0, 0, 0, 0, ETHIOPIC_UTC), fld.addToCopy(1));
-        
+
         assertEquals(10, dt.getMonthOfYear());
         fld = dt.monthOfYear();
         assertEquals(false, fld.isLeap());
@@ -422,7 +416,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(13, fld.getMaximumValueOverall());
         assertEquals(new DateTime(1997, 1, 2, 0, 0, 0, 0, ETHIOPIC_UTC), fld.addToCopy(4));
         assertEquals(new DateTime(1996, 1, 2, 0, 0, 0, 0, ETHIOPIC_UTC), fld.addWrapFieldToCopy(4));
-        
+
         assertEquals(2, dt.getDayOfMonth());
         fld = dt.dayOfMonth();
         assertEquals(false, fld.isLeap());
@@ -433,7 +427,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(30, fld.getMaximumValue());
         assertEquals(30, fld.getMaximumValueOverall());
         assertEquals(new DateTime(1996, 10, 3, 0, 0, 0, 0, ETHIOPIC_UTC), fld.addToCopy(1));
-        
+
         assertEquals(DateTimeConstants.WEDNESDAY, dt.getDayOfWeek());
         fld = dt.dayOfWeek();
         assertEquals(false, fld.isLeap());
@@ -444,7 +438,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(7, fld.getMaximumValue());
         assertEquals(7, fld.getMaximumValueOverall());
         assertEquals(new DateTime(1996, 10, 3, 0, 0, 0, 0, ETHIOPIC_UTC), fld.addToCopy(1));
-        
+
         assertEquals(9 * 30 + 2, dt.getDayOfYear());
         fld = dt.dayOfYear();
         assertEquals(false, fld.isLeap());
@@ -455,7 +449,7 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(365, fld.getMaximumValue());
         assertEquals(366, fld.getMaximumValueOverall());
         assertEquals(new DateTime(1996, 10, 3, 0, 0, 0, 0, ETHIOPIC_UTC), fld.addToCopy(1));
-        
+
         assertEquals(0, dt.getHourOfDay());
         assertEquals(0, dt.getMinuteOfHour());
         assertEquals(0, dt.getSecondOfMinute());
@@ -482,27 +476,27 @@ public class TestEthiopicChronology extends TestCase {
         DateTime dt98 = new DateTime(1998, 10, 2, 0, 0, 0, 0, ETHIOPIC_UTC);
         DateTime dt99 = new DateTime(1999, 10, 2, 0, 0, 0, 0, ETHIOPIC_UTC);
         DateTime dt00 = new DateTime(2000, 10, 2, 0, 0, 0, 0, ETHIOPIC_UTC);
-        
+
         DurationField fld = dt96.year().getDurationField();
         assertEquals(ETHIOPIC_UTC.years(), fld);
         assertEquals(1L * 365L * MILLIS_PER_DAY, fld.getMillis(1, dt96.getMillis()));
         assertEquals(2L * 365L * MILLIS_PER_DAY, fld.getMillis(2, dt96.getMillis()));
         assertEquals(3L * 365L * MILLIS_PER_DAY, fld.getMillis(3, dt96.getMillis()));
         assertEquals((4L * 365L + 1L) * MILLIS_PER_DAY, fld.getMillis(4, dt96.getMillis()));
-        
+
         assertEquals(((4L * 365L + 1L) * MILLIS_PER_DAY) / 4, fld.getMillis(1));
         assertEquals(((4L * 365L + 1L) * MILLIS_PER_DAY) / 2, fld.getMillis(2));
-        
+
         assertEquals(1L * 365L * MILLIS_PER_DAY, fld.getMillis(1L, dt96.getMillis()));
         assertEquals(2L * 365L * MILLIS_PER_DAY, fld.getMillis(2L, dt96.getMillis()));
         assertEquals(3L * 365L * MILLIS_PER_DAY, fld.getMillis(3L, dt96.getMillis()));
         assertEquals((4L * 365L + 1L) * MILLIS_PER_DAY, fld.getMillis(4L, dt96.getMillis()));
-        
+
         assertEquals(((4L * 365L + 1L) * MILLIS_PER_DAY) / 4, fld.getMillis(1L));
         assertEquals(((4L * 365L + 1L) * MILLIS_PER_DAY) / 2, fld.getMillis(2L));
-        
+
         assertEquals(((4L * 365L + 1L) * MILLIS_PER_DAY) / 4, fld.getUnitMillis());
-        
+
         assertEquals(0, fld.getValue(1L * 365L * MILLIS_PER_DAY - 1L, dt96.getMillis()));
         assertEquals(1, fld.getValue(1L * 365L * MILLIS_PER_DAY, dt96.getMillis()));
         assertEquals(1, fld.getValue(1L * 365L * MILLIS_PER_DAY + 1L, dt96.getMillis()));
@@ -515,12 +509,12 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(3, fld.getValue((4L * 365L + 1L) * MILLIS_PER_DAY - 1L, dt96.getMillis()));
         assertEquals(4, fld.getValue((4L * 365L + 1L) * MILLIS_PER_DAY, dt96.getMillis()));
         assertEquals(4, fld.getValue((4L * 365L + 1L) * MILLIS_PER_DAY + 1L, dt96.getMillis()));
-        
+
         assertEquals(dt97.getMillis(), fld.add(dt96.getMillis(), 1));
         assertEquals(dt98.getMillis(), fld.add(dt96.getMillis(), 2));
         assertEquals(dt99.getMillis(), fld.add(dt96.getMillis(), 3));
         assertEquals(dt00.getMillis(), fld.add(dt96.getMillis(), 4));
-        
+
         assertEquals(dt97.getMillis(), fld.add(dt96.getMillis(), 1L));
         assertEquals(dt98.getMillis(), fld.add(dt96.getMillis(), 2L));
         assertEquals(dt99.getMillis(), fld.add(dt96.getMillis(), 3L));
@@ -533,27 +527,27 @@ public class TestEthiopicChronology extends TestCase {
         DateTime dt12 = new DateTime(1999, 12, 2, 0, 0, 0, 0, ETHIOPIC_UTC);
         DateTime dt13 = new DateTime(1999, 13, 2, 0, 0, 0, 0, ETHIOPIC_UTC);
         DateTime dt01 = new DateTime(2000, 1, 2, 0, 0, 0, 0, ETHIOPIC_UTC);
-        
+
         DurationField fld = dt11.monthOfYear().getDurationField();
         assertEquals(ETHIOPIC_UTC.months(), fld);
         assertEquals(1L * 30L * MILLIS_PER_DAY, fld.getMillis(1, dt11.getMillis()));
         assertEquals(2L * 30L * MILLIS_PER_DAY, fld.getMillis(2, dt11.getMillis()));
         assertEquals((2L * 30L + 6L) * MILLIS_PER_DAY, fld.getMillis(3, dt11.getMillis()));
         assertEquals((3L * 30L + 6L) * MILLIS_PER_DAY, fld.getMillis(4, dt11.getMillis()));
-        
+
         assertEquals(1L * 30L * MILLIS_PER_DAY, fld.getMillis(1));
         assertEquals(2L * 30L * MILLIS_PER_DAY, fld.getMillis(2));
         assertEquals(13L * 30L * MILLIS_PER_DAY, fld.getMillis(13));
-        
+
         assertEquals(1L * 30L * MILLIS_PER_DAY, fld.getMillis(1L, dt11.getMillis()));
         assertEquals(2L * 30L * MILLIS_PER_DAY, fld.getMillis(2L, dt11.getMillis()));
         assertEquals((2L * 30L + 6L) * MILLIS_PER_DAY, fld.getMillis(3L, dt11.getMillis()));
         assertEquals((3L * 30L + 6L) * MILLIS_PER_DAY, fld.getMillis(4L, dt11.getMillis()));
-        
+
         assertEquals(1L * 30L * MILLIS_PER_DAY, fld.getMillis(1L));
         assertEquals(2L * 30L * MILLIS_PER_DAY, fld.getMillis(2L));
         assertEquals(13L * 30L * MILLIS_PER_DAY, fld.getMillis(13L));
-        
+
         assertEquals(0, fld.getValue(1L * 30L * MILLIS_PER_DAY - 1L, dt11.getMillis()));
         assertEquals(1, fld.getValue(1L * 30L * MILLIS_PER_DAY, dt11.getMillis()));
         assertEquals(1, fld.getValue(1L * 30L * MILLIS_PER_DAY + 1L, dt11.getMillis()));
@@ -566,11 +560,11 @@ public class TestEthiopicChronology extends TestCase {
         assertEquals(3, fld.getValue((3L * 30L + 6L) * MILLIS_PER_DAY - 1L, dt11.getMillis()));
         assertEquals(4, fld.getValue((3L * 30L + 6L) * MILLIS_PER_DAY, dt11.getMillis()));
         assertEquals(4, fld.getValue((3L * 30L + 6L) * MILLIS_PER_DAY + 1L, dt11.getMillis()));
-        
+
         assertEquals(dt12.getMillis(), fld.add(dt11.getMillis(), 1));
         assertEquals(dt13.getMillis(), fld.add(dt11.getMillis(), 2));
         assertEquals(dt01.getMillis(), fld.add(dt11.getMillis(), 3));
-        
+
         assertEquals(dt12.getMillis(), fld.add(dt11.getMillis(), 1L));
         assertEquals(dt13.getMillis(), fld.add(dt11.getMillis(), 2L));
         assertEquals(dt01.getMillis(), fld.add(dt11.getMillis(), 3L));

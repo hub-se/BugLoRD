@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,18 +16,16 @@
  */
 package org.apache.commons.lang3.exception;
 
-import org.junit.Test;
-import org.junit.Before;
-import static org.junit.Assert.*;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.Serializable;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -50,11 +48,11 @@ public abstract class AbstractExceptionContextTest<T extends ExceptionContext & 
     @Before
     public void setUp() throws Exception {
         exceptionContext
-            .addContextValue("test1", null)
-            .addContextValue("test2", "some value")
-            .addContextValue("test Date", new Date())
-            .addContextValue("test Nbr", Integer.valueOf(5))
-            .addContextValue("test Poorly written obj", new ObjectWithFaultyToString());
+                .addContextValue("test1", null)
+                .addContextValue("test2", "some value")
+                .addContextValue("test Date", new Date())
+                .addContextValue("test Nbr", Integer.valueOf(5))
+                .addContextValue("test Poorly written obj", new ObjectWithFaultyToString());
     }
 
     @Test
@@ -146,7 +144,7 @@ public abstract class AbstractExceptionContextTest<T extends ExceptionContext & 
     @Test
     public void testGetContextLabels() {
         assertEquals(5, exceptionContext.getContextEntries().size());
-        
+
         exceptionContext.addContextValue("test2", "different value");
 
         Set<String> labels = exceptionContext.getContextLabels();
@@ -161,7 +159,7 @@ public abstract class AbstractExceptionContextTest<T extends ExceptionContext & 
     @Test
     public void testGetContextEntries() {
         assertEquals(5, exceptionContext.getContextEntries().size());
-        
+
         exceptionContext.addContextValue("test2", "different value");
 
         List<Pair<String, Object>> entries = exceptionContext.getContextEntries();
@@ -173,11 +171,11 @@ public abstract class AbstractExceptionContextTest<T extends ExceptionContext & 
         assertEquals("test Poorly written obj", entries.get(4).getKey());
         assertEquals("test2", entries.get(5).getKey());
     }
-    
+
     @Test
     public void testJavaSerialization() {
         exceptionContext.setContextValue("test Poorly written obj", "serializable replacement");
-        
+
         T clone = SerializationUtils.deserialize(SerializationUtils.serialize(exceptionContext));
         assertEquals(exceptionContext.getFormattedExceptionMessage(null), clone.getFormattedExceptionMessage(null));
     }

@@ -4,11 +4,11 @@
  */
 package org.mockito.internal.creation.cglib;
 
+import org.mockito.cglib.proxy.MethodProxy;
+import org.mockito.internal.creation.MockitoMethodProxy;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
-
-import org.mockito.internal.creation.MockitoMethodProxy;
-import org.mockito.cglib.proxy.MethodProxy;
 
 public class CGLIBHacker implements Serializable {
 
@@ -27,7 +27,7 @@ public class CGLIBHacker implements Serializable {
             }
         } catch (Exception e) {
             throw new RuntimeException(
-                            "Unable to set MockitoNamingPolicy on cglib generator which creates FastClasses", e);
+                    "Unable to set MockitoNamingPolicy on cglib generator which creates FastClasses", e);
         }
     }
 

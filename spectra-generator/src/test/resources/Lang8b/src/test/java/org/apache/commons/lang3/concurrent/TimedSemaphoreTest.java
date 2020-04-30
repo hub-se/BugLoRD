@@ -16,20 +16,12 @@
  */
 package org.apache.commons.lang3.concurrent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.easymock.EasyMock;
 import org.junit.Test;
+
+import java.util.concurrent.*;
+
+import static org.junit.Assert.*;
 
 /**
  * Test class for TimedSemaphore.
@@ -37,13 +29,19 @@ import org.junit.Test;
  * @version $Id$
  */
 public class TimedSemaphoreTest {
-    /** Constant for the time period. */
+    /**
+     * Constant for the time period.
+     */
     private static final long PERIOD = 500;
 
-    /** Constant for the time unit. */
+    /**
+     * Constant for the time unit.
+     */
     private static final TimeUnit UNIT = TimeUnit.MILLISECONDS;
 
-    /** Constant for the default limit. */
+    /**
+     * Constant for the default limit.
+     */
     private static final int LIMIT = 10;
 
     /**
@@ -148,10 +146,10 @@ public class TimedSemaphoreTest {
      * Prepares an executor service mock to expect the start of the timer.
      *
      * @param service the mock
-     * @param future the future
+     * @param future  the future
      */
     private void prepareStartTimer(ScheduledExecutorService service,
-            ScheduledFuture<?> future) {
+                                   ScheduledFuture<?> future) {
         service.scheduleAtFixedRate((Runnable) EasyMock.anyObject(), EasyMock
                 .eq(PERIOD), EasyMock.eq(PERIOD), EasyMock.eq(UNIT));
         EasyMock.expectLastCall().andReturn(future);
@@ -371,22 +369,28 @@ public class TimedSemaphoreTest {
      * test.
      */
     private static class TimedSemaphoreTestImpl extends TimedSemaphore {
-        /** A mock scheduled future. */
+        /**
+         * A mock scheduled future.
+         */
         ScheduledFuture<?> schedFuture;
 
-        /** A latch for synchronizing with the main thread. */
+        /**
+         * A latch for synchronizing with the main thread.
+         */
         volatile CountDownLatch latch;
 
-        /** Counter for the endOfPeriod() invocations. */
+        /**
+         * Counter for the endOfPeriod() invocations.
+         */
         private int periodEnds;
 
         public TimedSemaphoreTestImpl(long timePeriod, TimeUnit timeUnit,
-                int limit) {
+                                      int limit) {
             super(timePeriod, timeUnit, limit);
         }
 
         public TimedSemaphoreTestImpl(ScheduledExecutorService service,
-                long timePeriod, TimeUnit timeUnit, int limit) {
+                                      long timePeriod, TimeUnit timeUnit, int limit) {
             super(service, timePeriod, timeUnit, limit);
         }
 
@@ -436,16 +440,24 @@ public class TimedSemaphoreTest {
      * When this is done, it can notify the main thread.
      */
     private static class SemaphoreThread extends Thread {
-        /** The semaphore. */
+        /**
+         * The semaphore.
+         */
         private final TimedSemaphore semaphore;
 
-        /** A latch for communication with the main thread. */
+        /**
+         * A latch for communication with the main thread.
+         */
         private final CountDownLatch latch;
 
-        /** The number of acquire() calls. */
+        /**
+         * The number of acquire() calls.
+         */
         private final int count;
 
-        /** The number of invocations of the latch. */
+        /**
+         * The number of invocations of the latch.
+         */
         private final int latchCount;
 
         public SemaphoreThread(TimedSemaphore b, CountDownLatch l, int c, int lc) {

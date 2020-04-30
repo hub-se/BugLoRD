@@ -4,9 +4,6 @@
  */
 package org.mockito.internal;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.mockito.InOrder;
 import org.mockito.MockSettings;
 import org.mockito.exceptions.Reporter;
@@ -27,12 +24,11 @@ import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.internal.verification.api.InOrderContext;
 import org.mockito.internal.verification.api.VerificationDataInOrder;
 import org.mockito.internal.verification.api.VerificationDataInOrderImpl;
-import org.mockito.stubbing.Answer;
-import org.mockito.stubbing.DeprecatedOngoingStubbing;
-import org.mockito.stubbing.OngoingStubbing;
-import org.mockito.stubbing.Stubber;
-import org.mockito.stubbing.VoidMethodStubbable;
+import org.mockito.stubbing.*;
 import org.mockito.verification.VerificationMode;
+
+import java.util.Arrays;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class MockitoCore {
@@ -40,13 +36,13 @@ public class MockitoCore {
     private final Reporter reporter = new Reporter();
     private final MockUtil mockUtil = new MockUtil();
     private final MockingProgress mockingProgress = new ThreadSafeMockingProgress();
-    
+
     public <T> T mock(Class<T> classToMock, MockSettings mockSettings) {
         T mock = mockUtil.createMock(classToMock, (MockSettingsImpl) mockSettings);
         mockingProgress.mockingStarted(mock, classToMock, mockSettings);
         return mock;
     }
-    
+
     public IOngoingStubbing stub() {
         IOngoingStubbing stubbing = mockingProgress.pullOngoingStubbing();
         if (stubbing == null) {
@@ -65,7 +61,7 @@ public class MockitoCore {
         mockingProgress.stubbingStarted();
         return (OngoingStubbing) stub();
     }
-    
+
     public <T> T verify(T mock, VerificationMode mode) {
         if (mock == null) {
             reporter.nullPassedToVerify();
@@ -75,17 +71,17 @@ public class MockitoCore {
         mockingProgress.verificationStarted(new MockAwareVerificationMode(mock, mode));
         return mock;
     }
-    
-    public <T> void reset(T ... mocks) {
+
+    public <T> void reset(T... mocks) {
         mockingProgress.validateState();
         mockingProgress.reset();
         mockingProgress.resetOngoingStubbing();
-        
+
         for (T m : mocks) {
             mockUtil.resetMock(m);
         }
     }
-    
+
     public void verifyNoMoreInteractions(Object... mocks) {
         assertMocksNotEmpty(mocks);
         mockingProgress.validateState();
@@ -108,14 +104,14 @@ public class MockitoCore {
         AllInvocationsFinder finder = new AllInvocationsFinder();
         VerificationDataInOrder data = new VerificationDataInOrderImpl(inOrderContext, finder.find(mocks), null);
         VerificationModeFactory.noMoreInteractions().verifyInOrder(data);
-    }    
-    
+    }
+
     private void assertMocksNotEmpty(Object[] mocks) {
         if (mocks == null || mocks.length == 0) {
             reporter.mocksHaveToBePassedToVerifyNoMoreInteractions();
         }
     }
-    
+
     public InOrder inOrder(Object... mocks) {
         if (mocks == null || mocks.length == 0) {
             reporter.mocksHaveToBePassedWhenCreatingInOrder();
@@ -129,13 +125,13 @@ public class MockitoCore {
         }
         return new InOrderImpl(Arrays.asList(mocks));
     }
-    
+
     public Stubber doAnswer(Answer answer) {
         mockingProgress.stubbingStarted();
         mockingProgress.resetOngoingStubbing();
         return new StubberImpl().doAnswer(answer);
     }
-    
+
     public <T> VoidMethodStubbable<T> stubVoid(T mock) {
         MockHandlerInterface<T> handler = mockUtil.getMockHandler(mock);
         mockingProgress.stubbingStarted();
@@ -148,11 +144,12 @@ public class MockitoCore {
 
     /**
      * For testing purposes only. Is not the part of main API.
+     *
      * @return last invocation
      */
     public Invocation getLastInvocation() {
         OngoingStubbingImpl ongoingStubbing = ((OngoingStubbingImpl) mockingProgress.pullOngoingStubbing());
         List<Invocation> allInvocations = ongoingStubbing.getRegisteredInvocations();
-        return allInvocations.get(allInvocations.size()-1);
+        return allInvocations.get(allInvocations.size() - 1);
     }
 }

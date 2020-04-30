@@ -4,8 +4,6 @@
  */
 package org.mockitousage.annotation;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -15,13 +13,15 @@ import org.mockitoutil.TestBase;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Mockito.*;
+
 @SuppressWarnings({"unchecked", "unused"})
 public class SpyAnnotationTest extends TestBase {
-	
-    @Spy
-	final List spiedList = new ArrayList();
 
-	@Test
+    @Spy
+    final List spiedList = new ArrayList();
+
+    @Test
     public void shouldInitSpies() throws Exception {
         doReturn("foo").when(spiedList).get(10);
 
@@ -31,26 +31,28 @@ public class SpyAnnotationTest extends TestBase {
 
     @Test(expected = MockitoException.class)
     public void shouldFailIfFieldIsNotInitialized() throws Exception {
-		class FailingSpy {
-			@Spy private List mySpy;
+        class FailingSpy {
+            @Spy
+            private List mySpy;
 
             public List getMySpy() {
-				return mySpy;
-			}
-		}
+                return mySpy;
+            }
+        }
 
-		MockitoAnnotations.initMocks(new FailingSpy());
+        MockitoAnnotations.initMocks(new FailingSpy());
     }
 
-	@Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void shouldResetSpies() throws Exception {
         spiedList.get(10); // see shouldInitSpy
     }
-	
-	@Test(expected=MockitoException.class)
+
+    @Test(expected = MockitoException.class)
     public void shouldProvideDecentExceptionWhenSpyInstanceIsNull() throws Exception {
         MockitoAnnotations.initMocks(new Object() {
-            @Spy String spy = null;
+            @Spy
+            String spy = null;
         });
     }
 }

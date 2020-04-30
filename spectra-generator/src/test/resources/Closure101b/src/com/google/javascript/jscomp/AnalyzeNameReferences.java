@@ -19,10 +19,10 @@ package com.google.javascript.jscomp;
 import com.google.common.collect.Sets;
 import com.google.javascript.jscomp.NameReferenceGraph.Name;
 import com.google.javascript.jscomp.NameReferenceGraph.Reference;
-import com.google.javascript.jscomp.graph.FixedPointGraphTraversal;
 import com.google.javascript.jscomp.graph.Annotation;
-import com.google.javascript.jscomp.graph.GraphNode;
+import com.google.javascript.jscomp.graph.FixedPointGraphTraversal;
 import com.google.javascript.jscomp.graph.FixedPointGraphTraversal.EdgeCallback;
+import com.google.javascript.jscomp.graph.GraphNode;
 import com.google.javascript.rhino.Node;
 
 /**
@@ -31,115 +31,116 @@ import com.google.javascript.rhino.Node;
  * <li>If the name is reachable from the {@link NameReferenceGraph#MAIN}.</li>
  * <li>as well as  the deepest common module that references it.</li>
  * </ol>
- *
+ * <p>
  * The two pieces of information will be annotated to {@link NameReferenceGraph}
  * by {@link NameInfo} objects.
- * 
+ * <p>
  * This is an analysis based on {@link AnalyzeNameReferences} using the more
  * accurate graph and will soon replace it.
- * 
-*
  */
 class AnalyzeNameReferences implements CompilerPass {
 
-  private NameReferenceGraph graph;
-  private final JSModuleGraph moduleGraph;
-  private final AbstractCompiler compiler;
-  
-  AnalyzeNameReferences(AbstractCompiler compiler) {
-    this.compiler = compiler;
-    this.moduleGraph = compiler.getModuleGraph();
-  }
+    private NameReferenceGraph graph;
+    private final JSModuleGraph moduleGraph;
+    private final AbstractCompiler compiler;
 
-  @Override
-  public void process(Node externs, Node root) {
-    NameReferenceGraphConstruction gc =
-        new NameReferenceGraphConstruction(compiler);
-    gc.process(externs, root);
-    graph = gc.getNameReferenceGraph();
-    FixedPointGraphTraversal<Name, Reference> t =
-        FixedPointGraphTraversal.newTraversal(new PropagateReferences());
-    getInfo(graph.MAIN).markReference(null);
-    t.computeFixedPoint(graph, Sets.newHashSet(graph.MAIN));
-  }
+    AnalyzeNameReferences(AbstractCompiler compiler) {
+        this.compiler = compiler;
+        this.moduleGraph = compiler.getModuleGraph();
+    }
 
-  public NameReferenceGraph getGraph() {
-    return graph;
-  }
-  
-  private class PropagateReferences implements EdgeCallback<Name, Reference> {
-    public boolean traverseEdge(Name start, Reference edge, Name dest) {
-      NameInfo startInfo = getInfo(start);
-      NameInfo destInfo = getInfo(dest);
-      if (startInfo.isReferenced()) {
-        JSModule startModule = startInfo.getDeepestCommonModuleRef();
-        if (startModule != null &&
-            moduleGraph.dependsOn(startModule, edge.getModule())) {
-          return destInfo.markReference(startModule);
-        } else {
-          return destInfo.markReference(edge.getModule());
+    @Override
+    public void process(Node externs, Node root) {
+        NameReferenceGraphConstruction gc =
+                new NameReferenceGraphConstruction(compiler);
+        gc.process(externs, root);
+        graph = gc.getNameReferenceGraph();
+        FixedPointGraphTraversal<Name, Reference> t =
+                FixedPointGraphTraversal.newTraversal(new PropagateReferences());
+        getInfo(graph.MAIN).markReference(null);
+        t.computeFixedPoint(graph, Sets.newHashSet(graph.MAIN));
+    }
+
+    public NameReferenceGraph getGraph() {
+        return graph;
+    }
+
+    private class PropagateReferences implements EdgeCallback<Name, Reference> {
+        public boolean traverseEdge(Name start, Reference edge, Name dest) {
+            NameInfo startInfo = getInfo(start);
+            NameInfo destInfo = getInfo(dest);
+            if (startInfo.isReferenced()) {
+                JSModule startModule = startInfo.getDeepestCommonModuleRef();
+                if (startModule != null &&
+                        moduleGraph.dependsOn(startModule, edge.getModule())) {
+                    return destInfo.markReference(startModule);
+                } else {
+                    return destInfo.markReference(edge.getModule());
+                }
+            }
+            return false;
         }
-      }
-      return false;
-    }
-  }
-
-  private NameInfo getInfo(Name symbol) {
-    GraphNode<Name, Reference> name = graph.getNode(symbol);
-    NameInfo info = name.getAnnotation();
-    if (info == null) {
-      info = new NameInfo();
-      name.setAnnotation(info);
-    }
-    return info;
-  }
-  
-  final class NameInfo implements Annotation {
-    private boolean referenced = false;
-    private JSModule deepestCommonModuleRef = null;
-
-    /** Determines whether we've marked a reference to this property name. */
-    boolean isReferenced() {
-      return referenced;
-    }
-    
-    /**
-     * Returns the deepest common module of all the references to this
-     * property.
-     */
-    JSModule getDeepestCommonModuleRef() {
-      return deepestCommonModuleRef;
     }
 
-    /**
-     * Mark a reference in a given module to this property name, and record
-     * the deepest common module reference.
-     * @param module The module where it was referenced.
-     * @return Whether the name info has changed.
-     */
-    boolean markReference(JSModule module) {
-      boolean hasChanged = false;
-      if (!referenced) {
-        referenced = true;
-        hasChanged = true;
-      }
+    private NameInfo getInfo(Name symbol) {
+        GraphNode<Name, Reference> name = graph.getNode(symbol);
+        NameInfo info = name.getAnnotation();
+        if (info == null) {
+            info = new NameInfo();
+            name.setAnnotation(info);
+        }
+        return info;
+    }
 
-      if (moduleGraph != null) {
-        JSModule originalDeepestCommon = deepestCommonModuleRef;
+    final class NameInfo implements Annotation {
+        private boolean referenced = false;
+        private JSModule deepestCommonModuleRef = null;
 
-        if (deepestCommonModuleRef == null) {
-          deepestCommonModuleRef = module;
-        } else {
-          deepestCommonModuleRef =
-              moduleGraph.getDeepestCommonDependencyInclusive(
-                  deepestCommonModuleRef, module);
+        /**
+         * Determines whether we've marked a reference to this property name.
+         */
+        boolean isReferenced() {
+            return referenced;
         }
 
-        if (originalDeepestCommon != deepestCommonModuleRef) {
-          hasChanged = true;
+        /**
+         * Returns the deepest common module of all the references to this
+         * property.
+         */
+        JSModule getDeepestCommonModuleRef() {
+            return deepestCommonModuleRef;
         }
-      }
-      return hasChanged;
+
+        /**
+         * Mark a reference in a given module to this property name, and record
+         * the deepest common module reference.
+         *
+         * @param module The module where it was referenced.
+         * @return Whether the name info has changed.
+         */
+        boolean markReference(JSModule module) {
+            boolean hasChanged = false;
+            if (!referenced) {
+                referenced = true;
+                hasChanged = true;
+            }
+
+            if (moduleGraph != null) {
+                JSModule originalDeepestCommon = deepestCommonModuleRef;
+
+                if (deepestCommonModuleRef == null) {
+                    deepestCommonModuleRef = module;
+                } else {
+                    deepestCommonModuleRef =
+                            moduleGraph.getDeepestCommonDependencyInclusive(
+                                    deepestCommonModuleRef, module);
+                }
+
+                if (originalDeepestCommon != deepestCommonModuleRef) {
+                    hasChanged = true;
+                }
+            }
+            return hasChanged;
+        }
     }
-  }
 }

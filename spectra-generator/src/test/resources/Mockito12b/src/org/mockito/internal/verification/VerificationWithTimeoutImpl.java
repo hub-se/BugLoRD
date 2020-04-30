@@ -5,7 +5,7 @@ import org.mockito.internal.verification.api.VerificationData;
 import org.mockito.verification.VerificationMode;
 
 public class VerificationWithTimeoutImpl {
-    
+
     VerificationMode delegate;
     int timeout;
     int treshhold;
@@ -41,7 +41,7 @@ public class VerificationWithTimeoutImpl {
             // oups. not much luck.
         }
     }
-    
+
     public VerificationMode getDelegate() {
         return delegate;
     }
@@ -52,5 +52,5 @@ public class VerificationWithTimeoutImpl {
 
     public int getTreshhold() {
         return treshhold;
-    }    
+    }
 }

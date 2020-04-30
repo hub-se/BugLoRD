@@ -15,17 +15,16 @@
  */
 package org.joda.time.format;
 
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * This class is a Junit unit test for DateTimeFormatterBuilder.
@@ -65,7 +64,8 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         try {
             bld.toFormatter();
             fail();
-        } catch (UnsupportedOperationException ex) {}
+        } catch (UnsupportedOperationException ex) {
+        }
         bld.appendLiteral('X');
         assertNotNull(bld.toFormatter());
     }
@@ -75,7 +75,8 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         try {
             bld.toPrinter();
             fail();
-        } catch (UnsupportedOperationException ex) {}
+        } catch (UnsupportedOperationException ex) {
+        }
         bld.appendLiteral('X');
         assertNotNull(bld.toPrinter());
     }
@@ -85,7 +86,8 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         try {
             bld.toParser();
             fail();
-        } catch (UnsupportedOperationException ex) {}
+        } catch (UnsupportedOperationException ex) {
+        }
         bld.appendLiteral('X');
         assertNotNull(bld.toParser());
     }
@@ -117,7 +119,7 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder();
         bld.appendLiteral('Y');
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTimeFormatterBuilder bld2 = new DateTimeFormatterBuilder();
         bld2.appendLiteral('X');
         bld2.append(f);
@@ -130,7 +132,7 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder();
         bld.appendLiteral('Y');
         DateTimePrinter p = bld.toPrinter();
-        
+
         DateTimeFormatterBuilder bld2 = new DateTimeFormatterBuilder();
         bld2.appendLiteral('X');
         bld2.append(p);
@@ -156,7 +158,7 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder();
         bld.appendLiteral('Y');
         DateTimeParser p = bld.toParser();
-        
+
         DateTimeFormatterBuilder bld2 = new DateTimeFormatterBuilder();
         bld2.appendLiteral('X');
         bld2.append(p);
@@ -182,7 +184,7 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder();
         bld.appendLiteral('Y');
         DateTimePrinter p = bld.toPrinter();
-        
+
         try {
             DateTimeFormatterBuilder bld2 = new DateTimeFormatterBuilder();
             bld2.append(p, (DateTimeParser) null);
@@ -196,7 +198,7 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder();
         bld.appendLiteral('Y');
         DateTimeParser p = bld.toParser();
-        
+
         try {
             DateTimeFormatterBuilder bld2 = new DateTimeFormatterBuilder();
             bld2.append((DateTimePrinter) null, p);
@@ -211,7 +213,7 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder();
         bld.appendLiteral('Y');
         DateTimeParser p = bld.toParser();
-        
+
         DateTimeFormatterBuilder bld2 = new DateTimeFormatterBuilder();
         bld2.appendLiteral('X');
         bld2.appendOptional(p);
@@ -317,7 +319,7 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder();
         bld.appendTimeZoneId();
         DateTimeFormatter f = bld.toFormatter();
-        
+
         assertEquals("Asia/Tokyo", f.print(new DateTime(2007, 3, 4, 0, 0, 0, TOKYO)));
         assertEquals(TOKYO, f.parseDateTime("Asia/Tokyo").getZone());
         try {
@@ -329,9 +331,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_printParseZoneTokyo() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneId();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneId();
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime dt = new DateTime(2007, 3, 4, 12, 30, 0, TOKYO);
         assertEquals("2007-03-04 12:30 Asia/Tokyo", f.print(dt));
         assertEquals(dt, f.parseDateTime("2007-03-04 12:30 Asia/Tokyo"));
@@ -339,9 +341,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_printParseZoneParis() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneId();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneId();
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime dt = new DateTime(2007, 3, 4, 12, 30, 0, PARIS);
         assertEquals("2007-03-04 12:30 Europe/Paris", f.print(dt));
         assertEquals(dt, f.parseDateTime("2007-03-04 12:30 Europe/Paris"));
@@ -350,9 +352,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_printParseZoneDawsonCreek() {  // clashes with shorter Dawson
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneId();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneId();
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime dt = new DateTime(2007, 3, 4, 12, 30, 0, DateTimeZone.forID("America/Dawson_Creek"));
         assertEquals("2007-03-04 12:30 America/Dawson_Creek", f.print(dt));
         assertEquals(dt, f.parseDateTime("2007-03-04 12:30 America/Dawson_Creek"));
@@ -360,9 +362,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_printParseZoneBahiaBanderas() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneId();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneId();
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime dt = new DateTime(2007, 3, 4, 12, 30, 0, DateTimeZone.forID("America/Bahia_Banderas"));
         assertEquals("2007-03-04 12:30 America/Bahia_Banderas", f.print(dt));
         assertEquals(dt, f.parseDateTime("2007-03-04 12:30 America/Bahia_Banderas"));
@@ -370,9 +372,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_printParseOffset() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2);
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2);
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime dt = new DateTime(2007, 3, 4, 12, 30, 0, TOKYO);
         assertEquals("2007-03-04 12:30 +09:00", f.print(dt));
         assertEquals(dt.withZone(DateTimeZone.getDefault()), f.parseDateTime("2007-03-04 12:30 +09:00"));
@@ -382,9 +384,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_printParseOffsetAndZone() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2).appendLiteral(' ').appendTimeZoneId();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2).appendLiteral(' ').appendTimeZoneId();
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime dt = new DateTime(2007, 3, 4, 12, 30, 0, TOKYO);
         assertEquals("2007-03-04 12:30 +09:00 Asia/Tokyo", f.print(dt));
         assertEquals(dt, f.withZone(TOKYO).parseDateTime("2007-03-04 12:30 +09:00 Asia/Tokyo"));
@@ -394,9 +396,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_parseWrongOffset() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2);
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2);
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime expected = new DateTime(2007, 3, 4, 12, 30, 0, DateTimeZone.forOffsetHours(7));
         // parses offset time then adjusts to requested zone
         assertEquals(expected.withZone(TOKYO), f.withZone(TOKYO).parseDateTime("2007-03-04 12:30 +07:00"));
@@ -408,9 +410,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_parseWrongOffsetAndZone() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2).appendLiteral(' ').appendTimeZoneId();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2).appendLiteral(' ').appendTimeZoneId();
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime expected = new DateTime(2007, 3, 4, 12, 30, 0, DateTimeZone.forOffsetHours(7));
         // parses offset time then adjusts to parsed zone
         assertEquals(expected.withZone(TOKYO), f.parseDateTime("2007-03-04 12:30 +07:00 Asia/Tokyo"));
@@ -423,24 +425,24 @@ public class TestDateTimeFormatterBuilder extends TestCase {
     //-----------------------------------------------------------------------
     public void test_localPrintParseZoneTokyo() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneId();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneId();
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime dt = new DateTime(2007, 3, 4, 12, 30, 0, TOKYO);
         assertEquals("2007-03-04 12:30 Asia/Tokyo", f.print(dt));
-        
+
         LocalDateTime expected = new LocalDateTime(2007, 3, 4, 12, 30);
         assertEquals(expected, f.parseLocalDateTime("2007-03-04 12:30 Asia/Tokyo"));
     }
 
     public void test_localPrintParseOffset() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2);
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2);
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime dt = new DateTime(2007, 3, 4, 12, 30, 0, TOKYO);
         assertEquals("2007-03-04 12:30 +09:00", f.print(dt));
-        
+
         LocalDateTime expected = new LocalDateTime(2007, 3, 4, 12, 30);
         assertEquals(expected, f.parseLocalDateTime("2007-03-04 12:30 +09:00"));
         assertEquals(expected, f.withZone(TOKYO).parseLocalDateTime("2007-03-04 12:30 +09:00"));
@@ -449,12 +451,12 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_localPrintParseOffsetAndZone() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2).appendLiteral(' ').appendTimeZoneId();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2).appendLiteral(' ').appendTimeZoneId();
         DateTimeFormatter f = bld.toFormatter();
-        
+
         DateTime dt = new DateTime(2007, 3, 4, 12, 30, 0, TOKYO);
         assertEquals("2007-03-04 12:30 +09:00 Asia/Tokyo", f.print(dt));
-        
+
         LocalDateTime expected = new LocalDateTime(2007, 3, 4, 12, 30);
         assertEquals(expected, f.withZone(TOKYO).parseLocalDateTime("2007-03-04 12:30 +09:00 Asia/Tokyo"));
         assertEquals(expected, f.withZone(PARIS).parseLocalDateTime("2007-03-04 12:30 +09:00 Asia/Tokyo"));
@@ -462,9 +464,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_localParseWrongOffsetAndZone() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2).appendLiteral(' ').appendTimeZoneId();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneOffset("Z", true, 2, 2).appendLiteral(' ').appendTimeZoneId();
         DateTimeFormatter f = bld.toFormatter();
-        
+
         LocalDateTime expected = new LocalDateTime(2007, 3, 4, 12, 30);
         // parses offset time then adjusts to parsed zone
         assertEquals(expected, f.parseLocalDateTime("2007-03-04 12:30 +07:00 Asia/Tokyo"));
@@ -477,9 +479,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
     //-----------------------------------------------------------------------
     public void test_printParseShortName() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneShortName();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneShortName();
         DateTimeFormatter f = bld.toFormatter().withLocale(Locale.ENGLISH);
-        
+
         assertEquals(true, f.isPrinter());
         assertEquals(false, f.isParser());
         DateTime dt1 = new DateTime(2011, 1, 4, 12, 30, 0, LONDON);
@@ -498,16 +500,16 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         lookup.put("GMT", LONDON);
         lookup.put("BST", LONDON);
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneShortName(lookup);
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneShortName(lookup);
         DateTimeFormatter f = bld.toFormatter().withLocale(Locale.ENGLISH);
-        
+
         assertEquals(true, f.isPrinter());
         assertEquals(true, f.isParser());
         DateTime dt1 = new DateTime(2011, 1, 4, 12, 30, 0, LONDON);
         assertEquals("2011-01-04 12:30 GMT", f.print(dt1));
         DateTime dt2 = new DateTime(2011, 7, 4, 12, 30, 0, LONDON);
         assertEquals("2011-07-04 12:30 BST", f.print(dt2));
-        
+
         assertEquals(dt1, f.parseDateTime("2011-01-04 12:30 GMT"));
         assertEquals(dt2, f.parseDateTime("2011-07-04 12:30 BST"));
         try {
@@ -519,9 +521,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
 
     public void test_printParseShortNameWithAutoLookup() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneShortName(null);
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneShortName(null);
         DateTimeFormatter f = bld.toFormatter().withLocale(Locale.ENGLISH);
-        
+
         assertEquals(true, f.isPrinter());
         assertEquals(true, f.isParser());
         DateTime dt1 = new DateTime(2011, 1, 4, 12, 30, 0, NEW_YORK);
@@ -534,7 +536,7 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         assertEquals("2011-07-04 12:30 PDT", f.print(dt4));
         DateTime dt5 = new DateTime(2011, 7, 4, 12, 30, 0, DateTimeZone.UTC);
         assertEquals("2011-07-04 12:30 UTC", f.print(dt5));
-        
+
         assertEquals(dt1.getZone() + " " + f.parseDateTime("2011-01-04 12:30 EST").getZone(), dt1, f.parseDateTime("2011-01-04 12:30 EST"));
         assertEquals(dt2, f.parseDateTime("2011-07-04 12:30 EDT"));
         assertEquals(dt3, f.parseDateTime("2011-01-04 12:30 PST"));
@@ -551,9 +553,9 @@ public class TestDateTimeFormatterBuilder extends TestCase {
     //-----------------------------------------------------------------------
     public void test_printParseLongName() {
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneName();
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneName();
         DateTimeFormatter f = bld.toFormatter().withLocale(Locale.ENGLISH);
-        
+
         assertEquals(true, f.isPrinter());
         assertEquals(false, f.isParser());
         DateTime dt1 = new DateTime(2011, 1, 4, 12, 30, 0, LONDON);
@@ -572,16 +574,16 @@ public class TestDateTimeFormatterBuilder extends TestCase {
         lookup.put("Greenwich Mean Time", LONDON);
         lookup.put("British Summer Time", LONDON);
         DateTimeFormatterBuilder bld = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneName(lookup);
+                .appendPattern("yyyy-MM-dd HH:mm ").appendTimeZoneName(lookup);
         DateTimeFormatter f = bld.toFormatter().withLocale(Locale.ENGLISH);
-        
+
         assertEquals(true, f.isPrinter());
         assertEquals(true, f.isParser());
         DateTime dt1 = new DateTime(2011, 1, 4, 12, 30, 0, LONDON);
         assertEquals("2011-01-04 12:30 Greenwich Mean Time", f.print(dt1));
         DateTime dt2 = new DateTime(2011, 7, 4, 12, 30, 0, LONDON);
         assertEquals("2011-07-04 12:30 British Summer Time", f.print(dt2));
-        
+
         assertEquals(dt1, f.parseDateTime("2011-01-04 12:30 Greenwich Mean Time"));
         assertEquals(dt2, f.parseDateTime("2011-07-04 12:30 British Summer Time"));
         try {

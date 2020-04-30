@@ -29,7 +29,7 @@ public class MockSettingsImpl implements MockSettings {
         if (extraInterfaces == null || extraInterfaces.length == 0) {
             new Reporter().extraInterfacesRequiresAtLeastOneInterface();
         }
-            
+
         for (Class<?> i : extraInterfaces) {
             if (i == null) {
                 new Reporter().extraInterfacesDoesNotAcceptNullParameters();
@@ -75,7 +75,7 @@ public class MockSettingsImpl implements MockSettings {
     public boolean isSerializable() {
         return serializable;
     }
-    
+
     public void initiateMockName(Class classToMock) {
         mockName = new MockName(name, classToMock);
     }

@@ -1,35 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-7">
-			<tests>
-				<testfile path="org/apache/commons/lang3/math/NumberUtilsTest">
-					<exception>junit.framework.AssertionFailedError:Expected
-						NumberFormatException
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>166</number_tests>
-					<failed>1</failed>
-					<passed>165</passed>
-					<nodes>11685</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/math/NumberUtils.java">
-					<delete>452-454</delete>
-					<insert numberlines="3">721-725</insert>
-					<bugtypes>
-						<id id="1.2" lines="452-454">
-							<description>Incorrect check for invalid format.</description>
-						</id>
-						<id id="1.1" lines="720,724">
-							<description>Missing check for invalid format.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-7">
+            <tests>
+                <testfile path="org/apache/commons/lang3/math/NumberUtilsTest">
+                    <exception>junit.framework.AssertionFailedError:Expected
+                        NumberFormatException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>166</number_tests>
+                    <failed>1</failed>
+                    <passed>165</passed>
+                    <nodes>11685</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/math/NumberUtils.java">
+                    <delete>452-454</delete>
+                    <insert numberlines="3">721-725</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="452-454">
+                            <description>Incorrect check for invalid format.</description>
+                        </id>
+                        <id id="1.1" lines="720,724">
+                            <description>Missing check for invalid format.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

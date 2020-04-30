@@ -1,42 +1,43 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-88">
-			<tests>
-				<testfile
-					path="com/google/javascript/jscomp/DeadAssignmentsEliminationTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297a:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297b:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297c:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297d:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297e:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297f:--&gt;
-						junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>92</number_tests>
-					<failed>7</failed>
-					<passed>85</passed>
-					<nodes>41412</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/DeadAssignmentsElimination.java">
-					<insert numberlines="6">327-330</insert>
-					<bugtypes>
-						<id id="1.2" lines="326,329">
-							<description>Incorrect case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-88">
+            <tests>
+                <testfile
+                        path="com/google/javascript/jscomp/DeadAssignmentsEliminationTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297a:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297b:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297c:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297d:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297e:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue297f:--&gt;
+                        junit.framework.AssertionFailedError:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>92</number_tests>
+                    <failed>7</failed>
+                    <passed>85</passed>
+                    <nodes>41412</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/DeadAssignmentsElimination.java">
+                    <insert numberlines="6">327-330</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="326,329">
+                            <description>Incorrect case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

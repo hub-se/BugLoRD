@@ -19,8 +19,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * 
- *
  * @author Brian S O'Neill
  */
 public class TestFieldUtils extends TestCase {
@@ -192,44 +190,44 @@ public class TestFieldUtils extends TestCase {
     //-----------------------------------------------------------------------
     public void testSafeMultiplyLongLong() {
         assertEquals(0L, FieldUtils.safeMultiply(0L, 0L));
-        
+
         assertEquals(1L, FieldUtils.safeMultiply(1L, 1L));
         assertEquals(3L, FieldUtils.safeMultiply(1L, 3L));
         assertEquals(3L, FieldUtils.safeMultiply(3L, 1L));
-        
+
         assertEquals(6L, FieldUtils.safeMultiply(2L, 3L));
         assertEquals(-6L, FieldUtils.safeMultiply(2L, -3L));
         assertEquals(-6L, FieldUtils.safeMultiply(-2L, 3L));
         assertEquals(6L, FieldUtils.safeMultiply(-2L, -3L));
-        
+
         assertEquals(Long.MAX_VALUE, FieldUtils.safeMultiply(Long.MAX_VALUE, 1L));
         assertEquals(Long.MIN_VALUE, FieldUtils.safeMultiply(Long.MIN_VALUE, 1L));
         assertEquals(-Long.MAX_VALUE, FieldUtils.safeMultiply(Long.MAX_VALUE, -1L));
-        
+
         try {
             FieldUtils.safeMultiply(Long.MIN_VALUE, -1L);
             fail();
         } catch (ArithmeticException e) {
         }
-        
+
         try {
             FieldUtils.safeMultiply(-1L, Long.MIN_VALUE);
             fail();
         } catch (ArithmeticException e) {
         }
-      
+
         try {
             FieldUtils.safeMultiply(Long.MIN_VALUE, 100L);
             fail();
         } catch (ArithmeticException e) {
         }
-        
+
         try {
             FieldUtils.safeMultiply(Long.MIN_VALUE, Long.MAX_VALUE);
             fail();
         } catch (ArithmeticException e) {
         }
-        
+
         try {
             FieldUtils.safeMultiply(Long.MAX_VALUE, Long.MIN_VALUE);
             fail();
@@ -240,40 +238,40 @@ public class TestFieldUtils extends TestCase {
     //-----------------------------------------------------------------------
     public void testSafeMultiplyLongInt() {
         assertEquals(0L, FieldUtils.safeMultiply(0L, 0));
-        
+
         assertEquals(1L, FieldUtils.safeMultiply(1L, 1));
         assertEquals(3L, FieldUtils.safeMultiply(1L, 3));
         assertEquals(3L, FieldUtils.safeMultiply(3L, 1));
-        
+
         assertEquals(6L, FieldUtils.safeMultiply(2L, 3));
         assertEquals(-6L, FieldUtils.safeMultiply(2L, -3));
         assertEquals(-6L, FieldUtils.safeMultiply(-2L, 3));
         assertEquals(6L, FieldUtils.safeMultiply(-2L, -3));
-        
+
         assertEquals(-1L * Integer.MIN_VALUE, FieldUtils.safeMultiply(-1L, Integer.MIN_VALUE));
-        
+
         assertEquals(Long.MAX_VALUE, FieldUtils.safeMultiply(Long.MAX_VALUE, 1));
         assertEquals(Long.MIN_VALUE, FieldUtils.safeMultiply(Long.MIN_VALUE, 1));
         assertEquals(-Long.MAX_VALUE, FieldUtils.safeMultiply(Long.MAX_VALUE, -1));
-        
+
         try {
             FieldUtils.safeMultiply(Long.MIN_VALUE, -1);
             fail();
         } catch (ArithmeticException e) {
         }
-        
+
         try {
             FieldUtils.safeMultiply(Long.MIN_VALUE, 100);
             fail();
         } catch (ArithmeticException e) {
         }
-        
+
         try {
             FieldUtils.safeMultiply(Long.MIN_VALUE, Integer.MAX_VALUE);
             fail();
         } catch (ArithmeticException e) {
         }
-        
+
         try {
             FieldUtils.safeMultiply(Long.MAX_VALUE, Integer.MIN_VALUE);
             fail();
@@ -284,36 +282,36 @@ public class TestFieldUtils extends TestCase {
     //-----------------------------------------------------------------------
     public void testSafeDivideLongLong() {
         assertEquals(1L, FieldUtils.safeDivide(1L, 1L));
-        
+
         assertEquals(1L, FieldUtils.safeDivide(3L, 3L));
         assertEquals(0L, FieldUtils.safeDivide(1L, 3L));
         assertEquals(3L, FieldUtils.safeDivide(3L, 1L));
-        
+
         assertEquals(1L, FieldUtils.safeDivide(5L, 3L));
         assertEquals(-1L, FieldUtils.safeDivide(5L, -3L));
         assertEquals(-1L, FieldUtils.safeDivide(-5L, 3L));
         assertEquals(1L, FieldUtils.safeDivide(-5L, -3L));
-        
+
         assertEquals(2L, FieldUtils.safeDivide(6L, 3L));
         assertEquals(-2L, FieldUtils.safeDivide(6L, -3L));
         assertEquals(-2L, FieldUtils.safeDivide(-6L, 3L));
         assertEquals(2L, FieldUtils.safeDivide(-6L, -3L));
-        
+
         assertEquals(2L, FieldUtils.safeDivide(7L, 3L));
         assertEquals(-2L, FieldUtils.safeDivide(7L, -3L));
         assertEquals(-2L, FieldUtils.safeDivide(-7L, 3L));
         assertEquals(2L, FieldUtils.safeDivide(-7L, -3L));
-        
+
         assertEquals(Long.MAX_VALUE, FieldUtils.safeDivide(Long.MAX_VALUE, 1L));
         assertEquals(Long.MIN_VALUE, FieldUtils.safeDivide(Long.MIN_VALUE, 1L));
         assertEquals(-Long.MAX_VALUE, FieldUtils.safeDivide(Long.MAX_VALUE, -1L));
-        
+
         try {
             FieldUtils.safeDivide(Long.MIN_VALUE, -1L);
             fail();
         } catch (ArithmeticException e) {
         }
-        
+
         try {
             FieldUtils.safeDivide(1L, 0L);
             fail();

@@ -1,28 +1,32 @@
-/** License information:
- *    Component: sequitur
- *    Package:   de.unisb.cs.st.sequitur.input
- *    Class:     Rule
- *    Filename:  sequitur/src/main/java/de/unisb/cs/st/sequitur/input/Rule.java
- *
+/**
+ * License information:
+ * Component: sequitur
+ * Package:   de.unisb.cs.st.sequitur.input
+ * Class:     Rule
+ * Filename:  sequitur/src/main/java/de/unisb/cs/st/sequitur/input/Rule.java
+ * <p>
  * This file is part of the Sequitur library developed by Clemens Hammacher
  * at Saarland University. It has been developed for use in the JavaSlicer
  * tool. See http://www.st.cs.uni-saarland.de/javaslicer/ for more information.
- *
+ * <p>
  * Sequitur is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Sequitur is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Sequitur. If not, see <http://www.gnu.org/licenses/>.
  */
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input;
 
+import de.hammacher.util.LongArrayList;
+import de.hammacher.util.LongHolder;
+import de.hammacher.util.streams.MyByteArrayInputStream;
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TObjectLongMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
@@ -31,10 +35,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import de.hammacher.util.LongArrayList;
-import de.hammacher.util.LongHolder;
-import de.hammacher.util.streams.MyByteArrayInputStream;
 
 // package-private
 class Rule {
@@ -51,7 +51,7 @@ class Rule {
         for (int i = this.symbols.length - 1; i >= 0; --i) {
             Symbol sym = this.symbols[i];
             if (sym instanceof NonTerminal)
-                this.symbols[i] = ((NonTerminal)sym).substituteRealRules(grammar);
+                this.symbols[i] = ((NonTerminal) sym).substituteRealRules(grammar);
         }
     }
 
@@ -63,7 +63,7 @@ class Rule {
         if (this.length != 0)
             return true;
         long len = 0;
-        for (final Symbol sym: this.symbols) {
+        for (final Symbol sym : this.symbols) {
             final long symLen = sym.getLength(false);
             if (symLen == 0)
                 return false;
@@ -83,9 +83,9 @@ class Rule {
 
         do {
             for (Rule rule : iteratedList) {
-                for (Symbol sym: rule.symbols) {
+                for (Symbol sym : rule.symbols) {
                     if (sym instanceof NonTerminal) {
-                        Rule newRule = ((NonTerminal)sym).getRule();
+                        Rule newRule = ((NonTerminal) sym).getRule();
                         if (rules.adjustOrPutValue(newRule, 1, 1) == 1) // increase counter. new rule?
                             newList.add(newRule);
                     }
@@ -104,13 +104,13 @@ class Rule {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("R").append(hashCode()).append(" -->");
-        for (final Symbol sym: this.symbols)
+        for (final Symbol sym : this.symbols)
             sb.append(' ').append(sym);
         return sb.toString();
     }
 
-    public static  LongArrayList<Rule> readAll(final ObjectInputStream objIn,
-            final ObjectReader objectReader) throws IOException {
+    public static LongArrayList<Rule> readAll(final ObjectInputStream objIn,
+                                              final ObjectReader objectReader) throws IOException {
 
         final LongArrayList<Rule> rules = new LongArrayList<Rule>();
         readRules:
@@ -118,21 +118,21 @@ class Rule {
             int header = objIn.read();
             int length;
             switch (header >> 6) {
-            case 0:
-                break readRules;
-            case 1:
-                length = DataInput.readInt(objIn);
-                break;
-            case 2:
-                length = 2;
-                break;
-            case 3:
-                length = 3;
-                break;
-            default:
-                if (header == -1)
-                    throw new IOException("Unexpected EOF");
-                throw new IOException("Corrupted data");
+                case 0:
+                    break readRules;
+                case 1:
+                    length = DataInput.readInt(objIn);
+                    break;
+                case 2:
+                    length = 2;
+                    break;
+                case 3:
+                    length = 3;
+                    break;
+                default:
+                    if (header == -1)
+                        throw new IOException("Unexpected EOF");
+                    throw new IOException("Corrupted data");
             }
             final int additionalHeaderBytes = length / 4;
             final MyByteArrayInputStream headerInputStream;
@@ -155,21 +155,21 @@ class Rule {
                     header = headerInputStream.read();
                     pos = 3;
                 }
-                switch ((header >> (2*pos)) & 3) {
-                case 0:
-                    symbols[i] = NonTerminal.readFrom(objIn, false);
-                    break;
-                case 1:
-                    symbols[i] = NonTerminal.readFrom(objIn, true);
-                    break;
-                case 2:
-                    symbols[i] = Terminal.readFrom(objIn, false, objectReader);
-                    break;
-                case 3:
-                    symbols[i] = Terminal.readFrom(objIn, true, objectReader);
-                    break;
-                default:
-                    throw new InternalError();
+                switch ((header >> (2 * pos)) & 3) {
+                    case 0:
+                        symbols[i] = NonTerminal.readFrom(objIn, false);
+                        break;
+                    case 1:
+                        symbols[i] = NonTerminal.readFrom(objIn, true);
+                        break;
+                    case 2:
+                        symbols[i] = Terminal.readFrom(objIn, false, objectReader);
+                        break;
+                    case 3:
+                        symbols[i] = Terminal.readFrom(objIn, true, objectReader);
+                        break;
+                    default:
+                        throw new InternalError();
                 }
             }
             rules.add(new Rule(symbols));
@@ -183,9 +183,9 @@ class Rule {
      * Returns the maximum offset (= index of a symbol in this rule), s.t. the number of
      * symbols before this offset is smaller or equal to the given position.
      *
-     * @param position the position to determine the offset for
+     * @param position       the position to determine the offset for
      * @param positionHolder an object where the position of the symbol at the returned
-     *                    offset is stored (may be <code>null</code>)
+     *                       offset is stored (may be <code>null</code>)
      * @return the maximum offset whose position is smaller or equal to the given position
      */
     public int findOffset(final long position, final LongHolder positionHolder) {
@@ -227,7 +227,7 @@ class Rule {
 
         if (positionHolder != null)
             positionHolder.set(this.positionAfter[left]);
-        return left+1;
+        return left + 1;
     }
 
 }

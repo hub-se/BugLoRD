@@ -18,59 +18,57 @@ package com.google.javascript.jscomp;
 
 import com.google.javascript.jscomp.CheckLevel;
 
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An error manager that logs errors and warnings using a logger in addition to
  * collecting them in memory. Errors are logged at the SEVERE level and warnings
  * are logged at the WARNING level.
- *
-*
  */
 public class LoggerErrorManager extends BasicErrorManager {
-  private final MessageFormatter formatter;
-  private final Logger logger;
+    private final MessageFormatter formatter;
+    private final Logger logger;
 
-  /**
-   * Creates an instance.
-   */
-  public LoggerErrorManager(MessageFormatter formatter, Logger logger) {
-    this.formatter = formatter;
-    this.logger = logger;
-  }
-
-  /**
-   * Creates an instance with a source-less error formatter.
-   */
-  public LoggerErrorManager(Logger logger) {
-    this(ErrorFormat.SOURCELESS.toFormatter(null, false), logger);
-  }
-
-  @Override
-  public void println(CheckLevel level, JSError error) {
-    switch (level) {
-      case ERROR:
-        logger.severe(error.format(level, formatter));
-        break;
-      case WARNING:
-        logger.warning(error.format(level, formatter));
-        break;
+    /**
+     * Creates an instance.
+     */
+    public LoggerErrorManager(MessageFormatter formatter, Logger logger) {
+        this.formatter = formatter;
+        this.logger = logger;
     }
-  }
 
-  @Override
-  protected void printSummary() {
-    Level level = (getErrorCount() + getWarningCount() == 0) ?
-        Level.INFO : Level.WARNING;
-    if (getTypedPercent() > 0.0) {
-      logger.log(level, "{0} error(s), {1} warning(s), {2,number,#.#}% typed",
-          new Object[] {getErrorCount(), getWarningCount(), getTypedPercent()});
-    } else {
-      if (getErrorCount() + getWarningCount() > 0) {
-        logger.log(level, "{0} error(s), {1} warning(s)",
-            new Object[] {getErrorCount(), getWarningCount()});
-      }
+    /**
+     * Creates an instance with a source-less error formatter.
+     */
+    public LoggerErrorManager(Logger logger) {
+        this(ErrorFormat.SOURCELESS.toFormatter(null, false), logger);
     }
-  }
+
+    @Override
+    public void println(CheckLevel level, JSError error) {
+        switch (level) {
+            case ERROR:
+                logger.severe(error.format(level, formatter));
+                break;
+            case WARNING:
+                logger.warning(error.format(level, formatter));
+                break;
+        }
+    }
+
+    @Override
+    protected void printSummary() {
+        Level level = (getErrorCount() + getWarningCount() == 0) ?
+                Level.INFO : Level.WARNING;
+        if (getTypedPercent() > 0.0) {
+            logger.log(level, "{0} error(s), {1} warning(s), {2,number,#.#}% typed",
+                    new Object[]{getErrorCount(), getWarningCount(), getTypedPercent()});
+        } else {
+            if (getErrorCount() + getWarningCount() > 0) {
+                logger.log(level, "{0} error(s), {1} warning(s)",
+                        new Object[]{getErrorCount(), getWarningCount()});
+            }
+        }
+    }
 }

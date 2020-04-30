@@ -1,34 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-64">
-			<tests>
-				<testfile path="org/apache/commons/lang/enums/ValuedEnumTest">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>73</number_tests>
-					<failed>1</failed>
-					<passed>72</passed>
-					<nodes>9422</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang/enums/ValuedEnum.java">
-					<insert numberlines="10">183</insert>
-					<insert numberlines="11"></insert>
-					<bugtypes>
-						<id id="1.1" lines="182">
-							<description>Missing cases.</description>
-						</id>
-						<id id="1.4" lines="191-194">
-							<description>Missing function for values in different class
-								loaders.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>5</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-64">
+            <tests>
+                <testfile path="org/apache/commons/lang/enums/ValuedEnumTest">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>73</number_tests>
+                    <failed>1</failed>
+                    <passed>72</passed>
+                    <nodes>9422</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang/enums/ValuedEnum.java">
+                    <insert numberlines="10">183</insert>
+                    <insert numberlines="11"></insert>
+                    <bugtypes>
+                        <id id="1.1" lines="182">
+                            <description>Missing cases.</description>
+                        </id>
+                        <id id="1.4" lines="191-194">
+                            <description>Missing function for values in different class
+                                loaders.
+                            </description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>5</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

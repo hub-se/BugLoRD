@@ -18,7 +18,7 @@ import org.mockito.stubbing.Answer;
  */
 @SuppressWarnings("deprecation")//supressed until ReturnValues are removed
 public class DefaultMockitoConfiguration implements IMockitoConfiguration {
-    
+
     /* (non-Javadoc)
      * @see org.mockito.IMockitoConfiguration#getReturnValues()
      */
@@ -31,7 +31,7 @@ public class DefaultMockitoConfiguration implements IMockitoConfiguration {
     public Answer<Object> getDefaultAnswer() {
         return new ReturnsEmptyValues();
     }
-    
+
     /* (non-Javadoc)
      * @see org.mockito.IMockitoConfiguration#getAnnotationEngine()
      */

@@ -16,12 +16,12 @@
  */
 package org.apache.commons.lang3.text;
 
-import static java.util.FormattableFlags.LEFT_JUSTIFY;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.Formatter;
 
-import org.junit.Test;
+import static java.util.FormattableFlags.LEFT_JUSTIFY;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests {@link FormattableUtils}.
@@ -46,7 +46,7 @@ public class FormattableUtilsTest {
 
     @Test
     public void testAlternatePadCharacter() {
-        char pad='_';
+        char pad = '_';
         assertEquals("foo", FormattableUtils.append("foo", new Formatter(), 0, -1, -1, pad).toString());
         assertEquals("fo", FormattableUtils.append("foo", new Formatter(), 0, -1, 2, pad).toString());
         assertEquals("_foo", FormattableUtils.append("foo", new Formatter(), 0, 4, -1, pad).toString());
@@ -84,7 +84,7 @@ public class FormattableUtilsTest {
         assertEquals("+*   ", FormattableUtils.append("foo", new Formatter(), LEFT_JUSTIFY, 5, 2, "+*").toString());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testIllegalEllipsis() {
         FormattableUtils.append("foo", new Formatter(), 0, -1, 1, "xx");
     }

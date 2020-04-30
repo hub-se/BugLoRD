@@ -6,8 +6,8 @@ package org.mockitousage;
 
 import javax.swing.text.ChangedCharSetException;
 import java.io.IOException;
-import java.util.*;
 import java.nio.charset.CharacterCodingException;
+import java.util.*;
 
 public class MethodsImpl implements IMethods {
     public boolean booleanReturningMethod() {
@@ -247,11 +247,11 @@ public class MethodsImpl implements IMethods {
     }
 
     public void twoArgumentMethod(int one, int two) {
-      
+
     }
 
     public void arrayMethod(String[] strings) {
-      
+
     }
 
     public String oneArray(boolean[] array) {
@@ -299,7 +299,7 @@ public class MethodsImpl implements IMethods {
     }
 
     public void varargsString(int i, String... string) {
-      
+
     }
 
     public Object varargsObject(int i, Object... object) {
@@ -330,7 +330,7 @@ public class MethodsImpl implements IMethods {
     }
 
     public void voidMethod() {
-      
+
     }
 
     public String forList(List<String> list) {
@@ -378,11 +378,11 @@ public class MethodsImpl implements IMethods {
     }
 
     public void longArg(long longArg) {
-      
+
     }
 
     public void intArgumentMethod(int i) {
-      
+
     }
 
     public boolean equals(String str) {

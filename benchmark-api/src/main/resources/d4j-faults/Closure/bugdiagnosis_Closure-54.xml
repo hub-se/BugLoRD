@@ -1,57 +1,58 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-54">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/TypedScopeCreatorTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;[Function
-						Foo.prototype.method:called with 1 argument(s). Function requires
-						at least 0 argument(s) and no more than 0 argument(s).]&gt; but
-						was:&lt;[Property baz never defined on Bar]&gt;:-
-						com.google.javascript.jscomp.TypeCheckTest::testIssue537b:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;[Function
-						Bar.prototype.baz:called with 1 argument(s). Function requires at
-						least 0 argument(s) and no more than 0 argument(s).]&gt; but
-						was:&lt;[Property baz never defined on Bar]&gt;:-
-						com.google.javascript.jscomp.TypedScopeCreatorTest::testPropertyOnUnknownSuperClass2:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;[?]&gt; but
-						was:&lt;[number]&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>6965</number_tests>
-					<failed>3</failed>
-					<passed>6962</passed>
-					<nodes>47337</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/TypedScopeCreator.java">
-					<change>1413</change>
-					<insert numberlines="7">1408-1413</insert>
-					<bugtypes>
-						<id id="1.2" lines="1413">
-							<description>Incorrect condition and case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="com/google/javascript/rhino/jstype/FunctionType.java">
-					<change>366</change>
-					<delete parent="340-344">341</delete>
-					<insert numberlines="1,3">365-366,371-375</insert>
-					<bugtypes>
-						<id id="1.2" lines="341">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="3.1" lines="366">
-							<description>Incorrect initialization.</description>
-						</id>
-						<id id="1.1" lines="371,373">
-							<description>Missing check for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>5</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-54">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/TypedScopeCreatorTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;[Function
+                        Foo.prototype.method:called with 1 argument(s). Function requires
+                        at least 0 argument(s) and no more than 0 argument(s).]&gt; but
+                        was:&lt;[Property baz never defined on Bar]&gt;:-
+                        com.google.javascript.jscomp.TypeCheckTest::testIssue537b:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;[Function
+                        Bar.prototype.baz:called with 1 argument(s). Function requires at
+                        least 0 argument(s) and no more than 0 argument(s).]&gt; but
+                        was:&lt;[Property baz never defined on Bar]&gt;:-
+                        com.google.javascript.jscomp.TypedScopeCreatorTest::testPropertyOnUnknownSuperClass2:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;[?]&gt; but
+                        was:&lt;[number]&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>6965</number_tests>
+                    <failed>3</failed>
+                    <passed>6962</passed>
+                    <nodes>47337</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/TypedScopeCreator.java">
+                    <change>1413</change>
+                    <insert numberlines="7">1408-1413</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="1413">
+                            <description>Incorrect condition and case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="com/google/javascript/rhino/jstype/FunctionType.java">
+                    <change>366</change>
+                    <delete parent="340-344">341</delete>
+                    <insert numberlines="1,3">365-366,371-375</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="341">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="3.1" lines="366">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                        <id id="1.1" lines="371,373">
+                            <description>Missing check for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>5</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

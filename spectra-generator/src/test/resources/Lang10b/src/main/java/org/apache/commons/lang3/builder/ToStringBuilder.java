@@ -83,8 +83,8 @@ import org.apache.commons.lang3.ObjectUtils;
  * <p>The exact format of the <code>toString</code> is determined by
  * the {@link ToStringStyle} passed into the constructor.</p>
  *
- * @since 1.0
  * @version $Id$
+ * @since 1.0
  */
 public class ToStringBuilder implements Builder<String> {
 
@@ -129,7 +129,7 @@ public class ToStringBuilder implements Builder<String> {
      * Internally, a <code>volatile</code> variable is used to provide the guarantee
      * that the latest value set is the value returned from {@link #getDefaultStyle}.</p>
      *
-     * @param style  the default <code>ToStringStyle</code>
+     * @param style the default <code>ToStringStyle</code>
      * @throws IllegalArgumentException if the style is <code>null</code>
      */
     public static void setDefaultStyle(ToStringStyle style) {
@@ -140,11 +140,12 @@ public class ToStringBuilder implements Builder<String> {
     }
 
     //----------------------------------------------------------------------------
+
     /**
      * <p>Uses <code>ReflectionToStringBuilder</code> to generate a
      * <code>toString</code> for the specified object.</p>
      *
-     * @param object  the Object to be output
+     * @param object the Object to be output
      * @return the String result
      * @see ReflectionToStringBuilder#toString(Object)
      */
@@ -156,10 +157,10 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Uses <code>ReflectionToStringBuilder</code> to generate a
      * <code>toString</code> for the specified object.</p>
      *
-     * @param object  the Object to be output
+     * @param object the Object to be output
      * @param style  the style of the <code>toString</code> to create, may be <code>null</code>
      * @return the String result
-     * @see ReflectionToStringBuilder#toString(Object,ToStringStyle)
+     * @see ReflectionToStringBuilder#toString(Object, ToStringStyle)
      */
     public static String reflectionToString(Object object, ToStringStyle style) {
         return ReflectionToStringBuilder.toString(object, style);
@@ -169,11 +170,11 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Uses <code>ReflectionToStringBuilder</code> to generate a
      * <code>toString</code> for the specified object.</p>
      *
-     * @param object  the Object to be output
-     * @param style  the style of the <code>toString</code> to create, may be <code>null</code>
-     * @param outputTransients  whether to include transient fields
+     * @param object           the Object to be output
+     * @param style            the style of the <code>toString</code> to create, may be <code>null</code>
+     * @param outputTransients whether to include transient fields
      * @return the String result
-     * @see ReflectionToStringBuilder#toString(Object,ToStringStyle,boolean)
+     * @see ReflectionToStringBuilder#toString(Object, ToStringStyle, boolean)
      */
     public static String reflectionToString(Object object, ToStringStyle style, boolean outputTransients) {
         return ReflectionToStringBuilder.toString(object, style, outputTransients, false, null);
@@ -183,20 +184,20 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Uses <code>ReflectionToStringBuilder</code> to generate a
      * <code>toString</code> for the specified object.</p>
      *
-     * @param <T> the type of the object
-     * @param object  the Object to be output
-     * @param style  the style of the <code>toString</code> to create, may be <code>null</code>
-     * @param outputTransients  whether to include transient fields
-     * @param reflectUpToClass  the superclass to reflect up to (inclusive), may be <code>null</code>
+     * @param <T>              the type of the object
+     * @param object           the Object to be output
+     * @param style            the style of the <code>toString</code> to create, may be <code>null</code>
+     * @param outputTransients whether to include transient fields
+     * @param reflectUpToClass the superclass to reflect up to (inclusive), may be <code>null</code>
      * @return the String result
-     * @see ReflectionToStringBuilder#toString(Object,ToStringStyle,boolean,boolean,Class)
+     * @see ReflectionToStringBuilder#toString(Object, ToStringStyle, boolean, boolean, Class)
      * @since 2.0
      */
     public static <T> String reflectionToString(
-        T object,
-        ToStringStyle style,
-        boolean outputTransients,
-        Class<? super T> reflectUpToClass) {
+            T object,
+            ToStringStyle style,
+            boolean outputTransients,
+            Class<? super T> reflectUpToClass) {
         return ReflectionToStringBuilder.toString(object, style, outputTransients, false, reflectUpToClass);
     }
 
@@ -220,7 +221,7 @@ public class ToStringBuilder implements Builder<String> {
      *
      * <p>This default style is obtained from {@link #getDefaultStyle()}.</p>
      *
-     * @param object  the Object to build a <code>toString</code> for, not recommended to be null
+     * @param object the Object to build a <code>toString</code> for, not recommended to be null
      */
     public ToStringBuilder(Object object) {
         this(object, null, null);
@@ -231,7 +232,7 @@ public class ToStringBuilder implements Builder<String> {
      *
      * <p>If the style is <code>null</code>, the default style is used.</p>
      *
-     * @param object  the Object to build a <code>toString</code> for, not recommended to be null
+     * @param object the Object to build a <code>toString</code> for, not recommended to be null
      * @param style  the style of the <code>toString</code> to create, null uses the default style
      */
     public ToStringBuilder(Object object, ToStringStyle style) {
@@ -245,9 +246,9 @@ public class ToStringBuilder implements Builder<String> {
      *
      * <p>If the buffer is <code>null</code>, a new one is created.</p>
      *
-     * @param object  the Object to build a <code>toString</code> for, not recommended to be null
+     * @param object the Object to build a <code>toString</code> for, not recommended to be null
      * @param style  the style of the <code>toString</code> to create, null uses the default style
-     * @param buffer  the <code>StringBuffer</code> to populate, may be null
+     * @param buffer the <code>StringBuffer</code> to populate, may be null
      */
     public ToStringBuilder(Object object, ToStringStyle style, StringBuffer buffer) {
         if (style == null) {
@@ -269,7 +270,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>boolean</code>
      * value.</p>
      *
-     * @param value  the value to add to the <code>toString</code>
+     * @param value the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(boolean value) {
@@ -283,7 +284,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>boolean</code>
      * array.</p>
      *
-     * @param array  the array to add to the <code>toString</code>
+     * @param array the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(boolean[] array) {
@@ -297,7 +298,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>byte</code>
      * value.</p>
      *
-     * @param value  the value to add to the <code>toString</code>
+     * @param value the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(byte value) {
@@ -311,7 +312,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>byte</code>
      * array.</p>
      *
-     * @param array  the array to add to the <code>toString</code>
+     * @param array the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(byte[] array) {
@@ -325,7 +326,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>char</code>
      * value.</p>
      *
-     * @param value  the value to add to the <code>toString</code>
+     * @param value the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(char value) {
@@ -339,7 +340,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>char</code>
      * array.</p>
      *
-     * @param array  the array to add to the <code>toString</code>
+     * @param array the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(char[] array) {
@@ -353,7 +354,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>double</code>
      * value.</p>
      *
-     * @param value  the value to add to the <code>toString</code>
+     * @param value the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(double value) {
@@ -367,7 +368,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>double</code>
      * array.</p>
      *
-     * @param array  the array to add to the <code>toString</code>
+     * @param array the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(double[] array) {
@@ -381,7 +382,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>float</code>
      * value.</p>
      *
-     * @param value  the value to add to the <code>toString</code>
+     * @param value the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(float value) {
@@ -395,7 +396,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>float</code>
      * array.</p>
      *
-     * @param array  the array to add to the <code>toString</code>
+     * @param array the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(float[] array) {
@@ -409,7 +410,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>int</code>
      * value.</p>
      *
-     * @param value  the value to add to the <code>toString</code>
+     * @param value the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(int value) {
@@ -423,7 +424,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>int</code>
      * array.</p>
      *
-     * @param array  the array to add to the <code>toString</code>
+     * @param array the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(int[] array) {
@@ -437,7 +438,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>long</code>
      * value.</p>
      *
-     * @param value  the value to add to the <code>toString</code>
+     * @param value the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(long value) {
@@ -451,7 +452,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>long</code>
      * array.</p>
      *
-     * @param array  the array to add to the <code>toString</code>
+     * @param array the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(long[] array) {
@@ -465,7 +466,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>Object</code>
      * value.</p>
      *
-     * @param obj  the value to add to the <code>toString</code>
+     * @param obj the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(Object obj) {
@@ -479,7 +480,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>Object</code>
      * array.</p>
      *
-     * @param array  the array to add to the <code>toString</code>
+     * @param array the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(Object[] array) {
@@ -493,7 +494,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>short</code>
      * value.</p>
      *
-     * @param value  the value to add to the <code>toString</code>
+     * @param value the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(short value) {
@@ -507,7 +508,7 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>short</code>
      * array.</p>
      *
-     * @param array  the array to add to the <code>toString</code>
+     * @param array the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(short[] array) {
@@ -519,8 +520,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>boolean</code>
      * value.</p>
      *
-     * @param fieldName  the field name
-     * @param value  the value to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param value     the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, boolean value) {
@@ -532,8 +533,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>boolean</code>
      * array.</p>
      *
-     * @param fieldName  the field name
-     * @param array  the array to add to the <code>hashCode</code>
+     * @param fieldName the field name
+     * @param array     the array to add to the <code>hashCode</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, boolean[] array) {
@@ -551,9 +552,9 @@ public class ToStringBuilder implements Builder<String> {
      * the array.</p>
      *
      * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
-     * @param fullDetail  <code>true</code> for detail, <code>false</code>
-     *  for summary info
+     * @param array      the array to add to the <code>toString</code>
+     * @param fullDetail <code>true</code> for detail, <code>false</code>
+     *                   for summary info
      * @return this
      */
     public ToStringBuilder append(String fieldName, boolean[] array, boolean fullDetail) {
@@ -565,8 +566,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>byte</code>
      * value.</p>
      *
-     * @param fieldName  the field name
-     * @param value  the value to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param value     the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, byte value) {
@@ -577,8 +578,8 @@ public class ToStringBuilder implements Builder<String> {
     /**
      * <p>Append to the <code>toString</code> a <code>byte</code> array.</p>
      *
-     * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param array     the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, byte[] array) {
@@ -596,9 +597,9 @@ public class ToStringBuilder implements Builder<String> {
      * the array.
      *
      * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
-     * @param fullDetail  <code>true</code> for detail, <code>false</code>
-     *  for summary info
+     * @param array      the array to add to the <code>toString</code>
+     * @param fullDetail <code>true</code> for detail, <code>false</code>
+     *                   for summary info
      * @return this
      */
     public ToStringBuilder append(String fieldName, byte[] array, boolean fullDetail) {
@@ -610,8 +611,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>char</code>
      * value.</p>
      *
-     * @param fieldName  the field name
-     * @param value  the value to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param value     the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, char value) {
@@ -623,8 +624,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>char</code>
      * array.</p>
      *
-     * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param array     the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, char[] array) {
@@ -642,9 +643,9 @@ public class ToStringBuilder implements Builder<String> {
      * the array.</p>
      *
      * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
-     * @param fullDetail  <code>true</code> for detail, <code>false</code>
-     *  for summary info
+     * @param array      the array to add to the <code>toString</code>
+     * @param fullDetail <code>true</code> for detail, <code>false</code>
+     *                   for summary info
      * @return this
      */
     public ToStringBuilder append(String fieldName, char[] array, boolean fullDetail) {
@@ -656,8 +657,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>double</code>
      * value.</p>
      *
-     * @param fieldName  the field name
-     * @param value  the value to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param value     the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, double value) {
@@ -669,8 +670,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>double</code>
      * array.</p>
      *
-     * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param array     the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, double[] array) {
@@ -688,9 +689,9 @@ public class ToStringBuilder implements Builder<String> {
      * the array.</p>
      *
      * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
-     * @param fullDetail  <code>true</code> for detail, <code>false</code>
-     *  for summary info
+     * @param array      the array to add to the <code>toString</code>
+     * @param fullDetail <code>true</code> for detail, <code>false</code>
+     *                   for summary info
      * @return this
      */
     public ToStringBuilder append(String fieldName, double[] array, boolean fullDetail) {
@@ -702,8 +703,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>float</code>
      * value.</p>
      *
-     * @param fieldName  the field name
-     * @param value  the value to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param value     the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, float value) {
@@ -715,8 +716,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>float</code>
      * array.</p>
      *
-     * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param array     the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, float[] array) {
@@ -734,9 +735,9 @@ public class ToStringBuilder implements Builder<String> {
      * the array.</p>
      *
      * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
-     * @param fullDetail  <code>true</code> for detail, <code>false</code>
-     *  for summary info
+     * @param array      the array to add to the <code>toString</code>
+     * @param fullDetail <code>true</code> for detail, <code>false</code>
+     *                   for summary info
      * @return this
      */
     public ToStringBuilder append(String fieldName, float[] array, boolean fullDetail) {
@@ -748,8 +749,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>int</code>
      * value.</p>
      *
-     * @param fieldName  the field name
-     * @param value  the value to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param value     the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, int value) {
@@ -761,8 +762,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>int</code>
      * array.</p>
      *
-     * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param array     the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, int[] array) {
@@ -780,9 +781,9 @@ public class ToStringBuilder implements Builder<String> {
      * the array.</p>
      *
      * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
-     * @param fullDetail  <code>true</code> for detail, <code>false</code>
-     *  for summary info
+     * @param array      the array to add to the <code>toString</code>
+     * @param fullDetail <code>true</code> for detail, <code>false</code>
+     *                   for summary info
      * @return this
      */
     public ToStringBuilder append(String fieldName, int[] array, boolean fullDetail) {
@@ -794,8 +795,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>long</code>
      * value.</p>
      *
-     * @param fieldName  the field name
-     * @param value  the value to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param value     the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, long value) {
@@ -807,8 +808,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>long</code>
      * array.</p>
      *
-     * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param array     the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, long[] array) {
@@ -826,9 +827,9 @@ public class ToStringBuilder implements Builder<String> {
      * the array.</p>
      *
      * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
-     * @param fullDetail  <code>true</code> for detail, <code>false</code>
-     *  for summary info
+     * @param array      the array to add to the <code>toString</code>
+     * @param fullDetail <code>true</code> for detail, <code>false</code>
+     *                   for summary info
      * @return this
      */
     public ToStringBuilder append(String fieldName, long[] array, boolean fullDetail) {
@@ -840,8 +841,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>Object</code>
      * value.</p>
      *
-     * @param fieldName  the field name
-     * @param obj  the value to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param obj       the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, Object obj) {
@@ -854,9 +855,9 @@ public class ToStringBuilder implements Builder<String> {
      * value.</p>
      *
      * @param fieldName  the field name
-     * @param obj  the value to add to the <code>toString</code>
-     * @param fullDetail  <code>true</code> for detail,
-     *  <code>false</code> for summary info
+     * @param obj        the value to add to the <code>toString</code>
+     * @param fullDetail <code>true</code> for detail,
+     *                   <code>false</code> for summary info
      * @return this
      */
     public ToStringBuilder append(String fieldName, Object obj, boolean fullDetail) {
@@ -868,8 +869,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>Object</code>
      * array.</p>
      *
-     * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param array     the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, Object[] array) {
@@ -887,9 +888,9 @@ public class ToStringBuilder implements Builder<String> {
      * the array.</p>
      *
      * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
-     * @param fullDetail  <code>true</code> for detail, <code>false</code>
-     *  for summary info
+     * @param array      the array to add to the <code>toString</code>
+     * @param fullDetail <code>true</code> for detail, <code>false</code>
+     *                   for summary info
      * @return this
      */
     public ToStringBuilder append(String fieldName, Object[] array, boolean fullDetail) {
@@ -901,8 +902,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> an <code>short</code>
      * value.</p>
      *
-     * @param fieldName  the field name
-     * @param value  the value to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param value     the value to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, short value) {
@@ -914,8 +915,8 @@ public class ToStringBuilder implements Builder<String> {
      * <p>Append to the <code>toString</code> a <code>short</code>
      * array.</p>
      *
-     * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
+     * @param fieldName the field name
+     * @param array     the array to add to the <code>toString</code>
      * @return this
      */
     public ToStringBuilder append(String fieldName, short[] array) {
@@ -933,9 +934,9 @@ public class ToStringBuilder implements Builder<String> {
      * the array.
      *
      * @param fieldName  the field name
-     * @param array  the array to add to the <code>toString</code>
-     * @param fullDetail  <code>true</code> for detail, <code>false</code>
-     *  for summary info
+     * @param array      the array to add to the <code>toString</code>
+     * @param fullDetail <code>true</code> for detail, <code>false</code>
+     *                   for summary info
      * @return this
      */
     public ToStringBuilder append(String fieldName, short[] array, boolean fullDetail) {
@@ -948,7 +949,7 @@ public class ToStringBuilder implements Builder<String> {
      * </code> method. Appends the class name followed by
      * {@link System#identityHashCode(java.lang.Object)}.</p>
      *
-     * @param object  the <code>Object</code> whose class name and id to output
+     * @param object the <code>Object</code> whose class name and id to output
      * @return this
      * @since 2.0
      */
@@ -967,7 +968,7 @@ public class ToStringBuilder implements Builder<String> {
      *
      * <p>If <code>superToString</code> is <code>null</code>, no change is made.</p>
      *
-     * @param superToString  the result of <code>super.toString()</code>
+     * @param superToString the result of <code>super.toString()</code>
      * @return this
      * @since 2.0
      */
@@ -1001,7 +1002,7 @@ public class ToStringBuilder implements Builder<String> {
      *
      * <p>If the <code>toString</code> is <code>null</code>, no change is made.</p>
      *
-     * @param toString  the result of <code>toString()</code> on another object
+     * @param toString the result of <code>toString()</code> on another object
      * @return this
      * @since 2.0
      */
@@ -1068,9 +1069,7 @@ public class ToStringBuilder implements Builder<String> {
      * default implementation utilizes the {@link #toString()} implementation.
      *
      * @return the String <code>toString</code>
-     *
      * @see #toString()
-     *
      * @since 3.0
      */
     @Override

@@ -4,9 +4,6 @@
  */
 package org.mockito.internal.util;
 
-import static org.mockito.Mockito.RETURNS_DEFAULTS;
-import static org.mockito.Mockito.withSettings;
-
 import org.mockito.cglib.proxy.*;
 import org.mockito.exceptions.misusing.NotAMockException;
 import org.mockito.internal.MockHandler;
@@ -18,15 +15,18 @@ import org.mockito.internal.util.reflection.LenientCopyTool;
 
 import java.io.Serializable;
 
+import static org.mockito.Mockito.RETURNS_DEFAULTS;
+import static org.mockito.Mockito.withSettings;
+
 @SuppressWarnings("unchecked")
 public class MockUtil {
-    
+
     private final MockCreationValidator creationValidator;
 
     public MockUtil(MockCreationValidator creationValidator) {
         this.creationValidator = creationValidator;
     }
-    
+
     public MockUtil() {
         this(new MockCreationValidator());
     }
@@ -44,27 +44,27 @@ public class MockUtil {
 
         Class<?>[] ancillaryTypes;
         if (settings.isSerializable()) {
-            ancillaryTypes = interfaces == null ? new Class<?>[] {Serializable.class} : new ArrayUtils().concat(interfaces, Serializable.class);
+            ancillaryTypes = interfaces == null ? new Class<?>[]{Serializable.class} : new ArrayUtils().concat(interfaces, Serializable.class);
         } else {
             ancillaryTypes = interfaces == null ? new Class<?>[0] : interfaces;
         }
 
         Object spiedInstance = settings.getSpiedInstance();
-        
+
         T mock = ClassImposterizer.INSTANCE.imposterise(filter, classToMock, ancillaryTypes);
-        
+
         if (spiedInstance != null) {
             new LenientCopyTool().copyToMock(spiedInstance, mock);
         }
-        
+
         return mock;
     }
 
     public <T> void resetMock(T mock) {
         MockHandlerInterface<T> oldMockHandler = getMockHandler(mock);
         MockHandler<T> newMockHandler = new MockHandler<T>(oldMockHandler);
-        MethodInterceptorFilter newFilter = new MethodInterceptorFilter(newMockHandler, 
-                        (MockSettingsImpl) withSettings().defaultAnswer(RETURNS_DEFAULTS));
+        MethodInterceptorFilter newFilter = new MethodInterceptorFilter(newMockHandler,
+                (MockSettingsImpl) withSettings().defaultAnswer(RETURNS_DEFAULTS));
         ((Factory) mock).setCallback(0, newFilter);
     }
 

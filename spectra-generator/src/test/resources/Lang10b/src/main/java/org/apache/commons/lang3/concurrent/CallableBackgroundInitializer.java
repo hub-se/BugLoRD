@@ -61,12 +61,14 @@ import java.util.concurrent.ExecutorService;
  *
  * </p>
  *
- * @since 3.0
- * @version $Id$
  * @param <T> the type of the object managed by this initializer class
+ * @version $Id$
+ * @since 3.0
  */
 public class CallableBackgroundInitializer<T> extends BackgroundInitializer<T> {
-    /** The Callable to be executed. */
+    /**
+     * The Callable to be executed.
+     */
     private final Callable<T> callable;
 
     /**
@@ -89,7 +91,7 @@ public class CallableBackgroundInitializer<T> extends BackgroundInitializer<T> {
      *
      * @param call the {@code Callable} (must not be <b>null</b>)
      * @param exec an external {@code ExecutorService} to be used for task
-     * execution
+     *             execution
      * @throws IllegalArgumentException if the {@code Callable} is <b>null</b>
      */
     public CallableBackgroundInitializer(Callable<T> call, ExecutorService exec) {

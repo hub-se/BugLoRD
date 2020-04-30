@@ -1,83 +1,84 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-30">
-			<tests>
-				<testfile path="org/apache/commons/lang3/StringUtilsEqualsIndexOfTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;true&gt;
-						but was:&lt;false&gt;:-
-						org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsNone_StringWithSupplementaryChars:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;true&gt; but
-						was:&lt;false&gt;:-
-						org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAny_StringCharArrayWithBadSupplementaryChars:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;false&gt; but
-						was:&lt;true&gt;:-
-						org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAnyBut_StringStringWithSupplementaryChars:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;2&gt; but
-						was:&lt;3&gt;:-
-						org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAny_StringWithBadSupplementaryChars:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;false&gt; but
-						was:&lt;true&gt;:-
-						org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAny_StringCharArrayWithSupplementaryChars:--&gt;
-						junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>582</number_tests>
-					<failed>10</failed>
-					<passed>572</passed>
-					<nodes>9675</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/StringUtils.java">
-					<change>1443</change>
-					<change>1455</change>
-					<change>1457</change>
-					<change>1497</change>
-					<change>1576</change>
-					<insert numberlines="1">1376-1377</insert>
-					<insert numberlines="1">1377</insert>
-					<insert numberlines="5,1">1381-1382,1383</insert>
-					<insert numberlines="3">1456-1457</insert>
-					<insert numberlines="1">1533-1534</insert>
-					<insert numberlines="1">1534</insert>
-					<insert numberlines="5,1">1539,1540</insert>
-					<insert numberlines="8">1576,1579</insert>
-					<insert numberlines="1">1678-1679</insert>
-					<insert numberlines="1">1679</insert>
-					<insert numberlines="8,1">1683-1685,1686</insert>
-					<bugtypes>
-						<id id="1.1" lines="1375,1376,1380,1381,1382">
-							<description>Missing check for last positions.</description>
-						</id>
-						<id id="2.1" lines="1443">
-							<description>Incorrect parameters passed.</description>
-						</id>
-						<id id="1.2" lines="1455">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.2" lines="1457">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="2.1" lines="1497">
-							<description>Incorrect parameters passed.</description>
-						</id>
-						<id id="1.1" lines="1532,1533,1538,1539">
-							<description>Missing check for last positions.</description>
-						</id>
-						<id id="1.2" lines="1576">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.1" lines="1577">
-							<description>Missing else case.</description>
-						</id>
-						<id id="1.1" lines="1677,1678,1682,1683,1685">
-							<description>Missing check for last positions.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>20</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-30">
+            <tests>
+                <testfile path="org/apache/commons/lang3/StringUtilsEqualsIndexOfTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;true&gt;
+                        but was:&lt;false&gt;:-
+                        org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsNone_StringWithSupplementaryChars:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;true&gt; but
+                        was:&lt;false&gt;:-
+                        org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAny_StringCharArrayWithBadSupplementaryChars:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;false&gt; but
+                        was:&lt;true&gt;:-
+                        org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAnyBut_StringStringWithSupplementaryChars:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;2&gt; but
+                        was:&lt;3&gt;:-
+                        org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAny_StringWithBadSupplementaryChars:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;false&gt; but
+                        was:&lt;true&gt;:-
+                        org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAny_StringCharArrayWithSupplementaryChars:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>582</number_tests>
+                    <failed>10</failed>
+                    <passed>572</passed>
+                    <nodes>9675</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/StringUtils.java">
+                    <change>1443</change>
+                    <change>1455</change>
+                    <change>1457</change>
+                    <change>1497</change>
+                    <change>1576</change>
+                    <insert numberlines="1">1376-1377</insert>
+                    <insert numberlines="1">1377</insert>
+                    <insert numberlines="5,1">1381-1382,1383</insert>
+                    <insert numberlines="3">1456-1457</insert>
+                    <insert numberlines="1">1533-1534</insert>
+                    <insert numberlines="1">1534</insert>
+                    <insert numberlines="5,1">1539,1540</insert>
+                    <insert numberlines="8">1576,1579</insert>
+                    <insert numberlines="1">1678-1679</insert>
+                    <insert numberlines="1">1679</insert>
+                    <insert numberlines="8,1">1683-1685,1686</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="1375,1376,1380,1381,1382">
+                            <description>Missing check for last positions.</description>
+                        </id>
+                        <id id="2.1" lines="1443">
+                            <description>Incorrect parameters passed.</description>
+                        </id>
+                        <id id="1.2" lines="1455">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.2" lines="1457">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="2.1" lines="1497">
+                            <description>Incorrect parameters passed.</description>
+                        </id>
+                        <id id="1.1" lines="1532,1533,1538,1539">
+                            <description>Missing check for last positions.</description>
+                        </id>
+                        <id id="1.2" lines="1576">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.1" lines="1577">
+                            <description>Missing else case.</description>
+                        </id>
+                        <id id="1.1" lines="1677,1678,1682,1683,1685">
+                            <description>Missing check for last positions.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>20</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

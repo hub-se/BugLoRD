@@ -1,72 +1,73 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-3">
-			<tests>
-				<testfile path="org/joda/time/TestMutableDateTime_Adds">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;...10-30T02:30:00.000+0[1]:00&gt;
-						but was:&lt;...10-30T02:30:00.000+0[2]:00&gt;:-
-						org.joda.time.TestMutableDateTime_Adds::testAddDays_int_dstOverlapWinter_addZero:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;...10-30T02:30:00.000+0[1]:00&gt;
-						but was:&lt;...10-30T02:30:00.000+0[2]:00&gt;:-
-						org.joda.time.TestMutableDateTime_Adds::testAddWeeks_int_dstOverlapWinter_addZero:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;...10-30T02:30:00.000+0[1]:00&gt;
-						but was:&lt;...10-30T02:30:00.000+0[2]:00&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1307</number_tests>
-					<failed>5</failed>
-					<passed>1302</passed>
-					<nodes>13612</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/MutableDateTime.java">
-					<insert numberlines="1,1">639,640</insert>
-					<insert numberlines="1,1">660,661</insert>
-					<insert numberlines="1,1">681,682</insert>
-					<insert numberlines="1,1">702,703</insert>
-					<insert numberlines="1,1">723,724</insert>
-					<insert numberlines="1,1">764,765</insert>
-					<insert numberlines="1,1">785,786</insert>
-					<insert numberlines="1,1">816,817</insert>
-					<insert numberlines="1,1">847,848</insert>
-					<insert numberlines="1,1">880,881</insert>
-					<bugtypes>
-						<id id="1.1" lines="638,639">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="659,660">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="680,681">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="701,702">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="722,723">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="763,764">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="784,785">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="815,816">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="846,847">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="879,880">
-							<description>Missing check for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>20</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-3">
+            <tests>
+                <testfile path="org/joda/time/TestMutableDateTime_Adds">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;...10-30T02:30:00.000+0[1]:00&gt;
+                        but was:&lt;...10-30T02:30:00.000+0[2]:00&gt;:-
+                        org.joda.time.TestMutableDateTime_Adds::testAddDays_int_dstOverlapWinter_addZero:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;...10-30T02:30:00.000+0[1]:00&gt;
+                        but was:&lt;...10-30T02:30:00.000+0[2]:00&gt;:-
+                        org.joda.time.TestMutableDateTime_Adds::testAddWeeks_int_dstOverlapWinter_addZero:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;...10-30T02:30:00.000+0[1]:00&gt;
+                        but was:&lt;...10-30T02:30:00.000+0[2]:00&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1307</number_tests>
+                    <failed>5</failed>
+                    <passed>1302</passed>
+                    <nodes>13612</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/MutableDateTime.java">
+                    <insert numberlines="1,1">639,640</insert>
+                    <insert numberlines="1,1">660,661</insert>
+                    <insert numberlines="1,1">681,682</insert>
+                    <insert numberlines="1,1">702,703</insert>
+                    <insert numberlines="1,1">723,724</insert>
+                    <insert numberlines="1,1">764,765</insert>
+                    <insert numberlines="1,1">785,786</insert>
+                    <insert numberlines="1,1">816,817</insert>
+                    <insert numberlines="1,1">847,848</insert>
+                    <insert numberlines="1,1">880,881</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="638,639">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="659,660">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="680,681">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="701,702">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="722,723">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="763,764">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="784,785">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="815,816">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="846,847">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="879,880">
+                            <description>Missing check for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>20</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

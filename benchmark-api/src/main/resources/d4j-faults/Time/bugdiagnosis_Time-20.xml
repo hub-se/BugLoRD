@@ -1,34 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-20">
-			<tests>
-				<testfile path="org/joda/time/format/TestDateTimeFormatterBuilder">
-					<exception>java.lang.IllegalArgumentException:Invalid
-						format:"2007-03-04 12:30 America/Dawson_Creek" is malformed at
-						"_Creek"</exception>
-				</testfile>
-				<spectra>
-					<number_tests>2577</number_tests>
-					<failed>1</failed>
-					<passed>2576</passed>
-					<nodes>13242</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/format/DateTimeFormatterBuilder.java">
-					<delete>2544-2545</delete>
-					<insert numberlines="1">2541-2542</insert>
-					<insert numberlines="3">2546</insert>
-					<insert numberlines="4">2548</insert>
-					<bugtypes>
-						<id id="1.1" lines="2541,2244-2546">
-							<description>Missing check for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-20">
+            <tests>
+                <testfile path="org/joda/time/format/TestDateTimeFormatterBuilder">
+                    <exception>java.lang.IllegalArgumentException:Invalid
+                        format:"2007-03-04 12:30 America/Dawson_Creek" is malformed at
+                        "_Creek"
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>2577</number_tests>
+                    <failed>1</failed>
+                    <passed>2576</passed>
+                    <nodes>13242</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/format/DateTimeFormatterBuilder.java">
+                    <delete>2544-2545</delete>
+                    <insert numberlines="1">2541-2542</insert>
+                    <insert numberlines="3">2546</insert>
+                    <insert numberlines="4">2548</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="2541,2244-2546">
+                            <description>Missing check for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

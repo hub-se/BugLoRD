@@ -1,31 +1,32 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-38">
-			<tests>
-				<testfile path="org/apache/commons/lang3/time/FastDateFormatTest">
-					<exception>junit.framework.ComparisonFailure:dateTime
-						expected:&lt;2009-10-16T[16]:42:16.000Z&gt; but
-						was:&lt;2009-10-16T[08]:42:16.000Z&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>59</number_tests>
-					<failed>1</failed>
-					<passed>58</passed>
-					<nodes>9402</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/time/FastDateFormat.java">
-					<insert numberlines="1">872</insert>
-					<bugtypes>
-						<id id="1.2" lines="871">
-							<description>Incorrect case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-38">
+            <tests>
+                <testfile path="org/apache/commons/lang3/time/FastDateFormatTest">
+                    <exception>junit.framework.ComparisonFailure:dateTime
+                        expected:&lt;2009-10-16T[16]:42:16.000Z&gt; but
+                        was:&lt;2009-10-16T[08]:42:16.000Z&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>59</number_tests>
+                    <failed>1</failed>
+                    <passed>58</passed>
+                    <nodes>9402</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/time/FastDateFormat.java">
+                    <insert numberlines="1">872</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="871">
+                            <description>Incorrect case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

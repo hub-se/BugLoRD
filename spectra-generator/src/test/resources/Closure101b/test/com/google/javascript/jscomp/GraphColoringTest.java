@@ -17,141 +17,137 @@
 package com.google.javascript.jscomp;
 
 import com.google.javascript.jscomp.graph.Graph;
-import com.google.javascript.jscomp.graph.GraphColoring;
-import com.google.javascript.jscomp.graph.LinkedUndirectedGraph;
-import com.google.javascript.jscomp.graph.GraphNode;
 import com.google.javascript.jscomp.graph.Graph.GraphEdge;
+import com.google.javascript.jscomp.graph.GraphColoring;
 import com.google.javascript.jscomp.graph.GraphColoring.Color;
 import com.google.javascript.jscomp.graph.GraphColoring.GreedyGraphColoring;
-
+import com.google.javascript.jscomp.graph.GraphNode;
+import com.google.javascript.jscomp.graph.LinkedUndirectedGraph;
 import junit.framework.TestCase;
-
-import java.util.Comparator;
 
 /**
  * Tests for {@link GraphColoring}.
- *
-*
  */
 public class GraphColoringTest extends TestCase {
 
-  public void testNoEdge() {
-    Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
-    for (int i = 0; i < 5; i++) {
-      graph.createNode("Node " + i);
-      // All node with same color.
-      GraphColoring<String, String> coloring =
-          new GreedyGraphColoring<String, String>(graph);
-      assertEquals(1, coloring.color());
-      validateColoring(graph);
-      for (int j = 0; j < i; j++) {
-        assertEquals("Node 0", coloring.getPartitionSuperNode("Node 0"));
-      }
-    }
-  }
-
-  public void testTwoNodesConnected() {
-    Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
-    graph.createNode("A");
-    graph.createNode("B");
-    graph.connect("A", "--", "B");
-    GraphColoring<String, String> coloring =
-        new GreedyGraphColoring<String, String>(graph);
-    assertEquals(2, coloring.color());
-    validateColoring(graph);
-    assertEquals("A", coloring.getPartitionSuperNode("A"));
-    assertEquals("B", coloring.getPartitionSuperNode("B"));
-  }
-
-  public void testGreedy() {
-    Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
-    graph.createNode("A");
-    graph.createNode("B");
-    graph.createNode("C");
-    graph.createNode("D");
-    graph.connect("A", "--", "C");
-    graph.connect("B", "--", "C");
-    graph.connect("B", "--", "D");
-    GraphColoring<String, String> coloring =
-        new GreedyGraphColoring<String, String>(graph);
-    assertEquals(2, coloring.color());
-    validateColoring(graph);
-    assertEquals("A", coloring.getPartitionSuperNode("A"));
-    assertEquals("A", coloring.getPartitionSuperNode("B"));
-    assertEquals("C", coloring.getPartitionSuperNode("C"));
-  }
-
-  public void testFullyConnected() {
-    final int count = 100;
-    Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
-    for (int i = 0; i < count; i++) {
-      graph.createNode("Node " + i);
-      for (int j = 0; j < count; j++) {
-        graph.createNode("Node " + j);
-        if (i != j) {
-          graph.connect("Node " + i, null, "Node " + j);
+    public void testNoEdge() {
+        Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
+        for (int i = 0; i < 5; i++) {
+            graph.createNode("Node " + i);
+            // All node with same color.
+            GraphColoring<String, String> coloring =
+                    new GreedyGraphColoring<String, String>(graph);
+            assertEquals(1, coloring.color());
+            validateColoring(graph);
+            for (int j = 0; j < i; j++) {
+                assertEquals("Node 0", coloring.getPartitionSuperNode("Node 0"));
+            }
         }
-      }
     }
-    GraphColoring<String, String> coloring =
-        new GreedyGraphColoring<String, String>(graph);
-    assertEquals(count, coloring.color());
-    validateColoring(graph);
-    for (int i = 0; i < count; i++) {
-      assertEquals("Node " + i, coloring.getPartitionSuperNode("Node " + i));
-    }
-  }
 
-  public void testAllConnectedToOneNode() {
-    final int count = 10;
-    Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
-    graph.createNode("Center");
-    for (int i = 0; i < count; i++) {
-      graph.createNode("Node " + i);
-      graph.connect("Center", null, "Node " + i);
+    public void testTwoNodesConnected() {
+        Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
+        graph.createNode("A");
+        graph.createNode("B");
+        graph.connect("A", "--", "B");
+        GraphColoring<String, String> coloring =
+                new GreedyGraphColoring<String, String>(graph);
+        assertEquals(2, coloring.color());
+        validateColoring(graph);
+        assertEquals("A", coloring.getPartitionSuperNode("A"));
+        assertEquals("B", coloring.getPartitionSuperNode("B"));
     }
-    GraphColoring<String, String> coloring =
-        new GreedyGraphColoring<String, String>(graph);
-    assertEquals(2, coloring.color());
-    validateColoring(graph);
-    assertEquals("Center", coloring.getPartitionSuperNode("Center"));
-    for (int i = 0; i < count; i++) {
-      assertEquals("Node 0", coloring.getPartitionSuperNode("Node " + i));
-    }
-  }
 
-  public void testTwoFullyConnected() {
-    final int count = 100;
-    // A graph with two disconnected disjunct cliques.
-    Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
-    for (int i = 0; i < count; i++) {
-      graph.createNode("Node Left " + i);
-      graph.createNode("Node Right " + i);
-      for (int j = 0; j < count; j++) {
-        graph.createNode("Node Left " + j);
-        graph.createNode("Node Right " + j);
-        if (i != j) {
-          graph.connect("Node Left " + i, null, "Node Left " + j);
-          graph.connect("Node Right " + i, null, "Node Right " + j);
+    public void testGreedy() {
+        Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
+        graph.createNode("A");
+        graph.createNode("B");
+        graph.createNode("C");
+        graph.createNode("D");
+        graph.connect("A", "--", "C");
+        graph.connect("B", "--", "C");
+        graph.connect("B", "--", "D");
+        GraphColoring<String, String> coloring =
+                new GreedyGraphColoring<String, String>(graph);
+        assertEquals(2, coloring.color());
+        validateColoring(graph);
+        assertEquals("A", coloring.getPartitionSuperNode("A"));
+        assertEquals("A", coloring.getPartitionSuperNode("B"));
+        assertEquals("C", coloring.getPartitionSuperNode("C"));
+    }
+
+    public void testFullyConnected() {
+        final int count = 100;
+        Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
+        for (int i = 0; i < count; i++) {
+            graph.createNode("Node " + i);
+            for (int j = 0; j < count; j++) {
+                graph.createNode("Node " + j);
+                if (i != j) {
+                    graph.connect("Node " + i, null, "Node " + j);
+                }
+            }
         }
-      }
+        GraphColoring<String, String> coloring =
+                new GreedyGraphColoring<String, String>(graph);
+        assertEquals(count, coloring.color());
+        validateColoring(graph);
+        for (int i = 0; i < count; i++) {
+            assertEquals("Node " + i, coloring.getPartitionSuperNode("Node " + i));
+        }
     }
-    assertEquals(count, new GreedyGraphColoring<String, String>(graph).color());
-    validateColoring(graph);
 
-    // Connect the two cliques.
-    for (int i = 0; i < count; i++) {
-      graph.connect("Node Left " + i, null, "Node Right " + i);
+    public void testAllConnectedToOneNode() {
+        final int count = 10;
+        Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
+        graph.createNode("Center");
+        for (int i = 0; i < count; i++) {
+            graph.createNode("Node " + i);
+            graph.connect("Center", null, "Node " + i);
+        }
+        GraphColoring<String, String> coloring =
+                new GreedyGraphColoring<String, String>(graph);
+        assertEquals(2, coloring.color());
+        validateColoring(graph);
+        assertEquals("Center", coloring.getPartitionSuperNode("Center"));
+        for (int i = 0; i < count; i++) {
+            assertEquals("Node 0", coloring.getPartitionSuperNode("Node " + i));
+        }
     }
-    // Think of two exactly same graph with the same coloring side by side.
-    // If we circularly shift the colors of one of the graph by 1, we can
-    // connect the isomorphic nodes and still have a valid coloring in the
-    // resulting graph.
-    assertEquals(count, new GreedyGraphColoring<String, String>(graph).color());
-    validateColoring(graph);
-  }
 
-  public void testDeterministic() {}
+    public void testTwoFullyConnected() {
+        final int count = 100;
+        // A graph with two disconnected disjunct cliques.
+        Graph<String, String> graph = new LinkedUndirectedGraph<String, String>();
+        for (int i = 0; i < count; i++) {
+            graph.createNode("Node Left " + i);
+            graph.createNode("Node Right " + i);
+            for (int j = 0; j < count; j++) {
+                graph.createNode("Node Left " + j);
+                graph.createNode("Node Right " + j);
+                if (i != j) {
+                    graph.connect("Node Left " + i, null, "Node Left " + j);
+                    graph.connect("Node Right " + i, null, "Node Right " + j);
+                }
+            }
+        }
+        assertEquals(count, new GreedyGraphColoring<String, String>(graph).color());
+        validateColoring(graph);
+
+        // Connect the two cliques.
+        for (int i = 0; i < count; i++) {
+            graph.connect("Node Left " + i, null, "Node Right " + i);
+        }
+        // Think of two exactly same graph with the same coloring side by side.
+        // If we circularly shift the colors of one of the graph by 1, we can
+        // connect the isomorphic nodes and still have a valid coloring in the
+        // resulting graph.
+        assertEquals(count, new GreedyGraphColoring<String, String>(graph).color());
+        validateColoring(graph);
+    }
+
+    public void testDeterministic() {
+    }
 // Defects4J: flaky method
 //   public void testDeterministic() {
 //     // A pentagon.
@@ -196,20 +192,20 @@ public class GraphColoringTest extends TestCase {
 //     assertFalse("A".equals(coloring.getPartitionSuperNode("C")));
 //   }
 
-  /**
-   * Validate that each node has been colored and connected nodes have different
-   * coloring.
-   */
-  private static <N, E> void validateColoring(Graph<N, E> graph) {
-    for (GraphNode<N, E> node : graph.getNodes()) {
-      assertTrue(node.getAnnotation() != null);
+    /**
+     * Validate that each node has been colored and connected nodes have different
+     * coloring.
+     */
+    private static <N, E> void validateColoring(Graph<N, E> graph) {
+        for (GraphNode<N, E> node : graph.getNodes()) {
+            assertTrue(node.getAnnotation() != null);
+        }
+        for (GraphEdge<N, E> edge : graph.getEdges()) {
+            Color c1 = edge.getNodeA().getAnnotation();
+            Color c2 = edge.getNodeB().getAnnotation();
+            assertTrue(c1 != null);
+            assertTrue(c2 != null);
+            assertTrue(!c1.equals(c2));
+        }
     }
-    for (GraphEdge<N, E> edge : graph.getEdges()) {
-      Color c1 = edge.getNodeA().getAnnotation();
-      Color c2 = edge.getNodeB().getAnnotation();
-      assertTrue(c1 != null);
-      assertTrue(c2 != null);
-      assertTrue(!c1.equals(c2));
-    }
-  }
 }

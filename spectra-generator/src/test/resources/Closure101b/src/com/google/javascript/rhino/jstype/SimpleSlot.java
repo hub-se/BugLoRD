@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,7 +36,7 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 /**
@@ -45,25 +45,25 @@ package com.google.javascript.rhino.jstype;
  * @author nicksantos@google.com (Nick Santos)
  */
 public class SimpleSlot implements StaticSlot<JSType> {
-  final String name;
-  final JSType type;
-  final boolean inferred;
+    final String name;
+    final JSType type;
+    final boolean inferred;
 
-  public SimpleSlot(String name, JSType type, boolean inferred) {
-    this.name = name;
-    this.type = type;
-    this.inferred = inferred;
-  }
+    public SimpleSlot(String name, JSType type, boolean inferred) {
+        this.name = name;
+        this.type = type;
+        this.inferred = inferred;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public JSType getType() {
-    return type;
-  }
+    public JSType getType() {
+        return type;
+    }
 
-  public boolean isTypeInferred() {
-    return inferred;
-  }
+    public boolean isTypeInferred() {
+        return inferred;
+    }
 }

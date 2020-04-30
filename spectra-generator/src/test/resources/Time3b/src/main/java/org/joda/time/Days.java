@@ -41,39 +41,64 @@ import org.joda.time.format.PeriodFormatter;
  */
 public final class Days extends BaseSingleFieldPeriod {
 
-    /** Constant representing zero days. */
+    /**
+     * Constant representing zero days.
+     */
     public static final Days ZERO = new Days(0);
-    /** Constant representing one day. */
+    /**
+     * Constant representing one day.
+     */
     public static final Days ONE = new Days(1);
-    /** Constant representing two days. */
+    /**
+     * Constant representing two days.
+     */
     public static final Days TWO = new Days(2);
-    /** Constant representing three days. */
+    /**
+     * Constant representing three days.
+     */
     public static final Days THREE = new Days(3);
-    /** Constant representing four days. */
+    /**
+     * Constant representing four days.
+     */
     public static final Days FOUR = new Days(4);
-    /** Constant representing five days. */
+    /**
+     * Constant representing five days.
+     */
     public static final Days FIVE = new Days(5);
-    /** Constant representing six days. */
+    /**
+     * Constant representing six days.
+     */
     public static final Days SIX = new Days(6);
-    /** Constant representing seven days. */
+    /**
+     * Constant representing seven days.
+     */
     public static final Days SEVEN = new Days(7);
-    /** Constant representing the maximum number of days that can be stored in this object. */
+    /**
+     * Constant representing the maximum number of days that can be stored in this object.
+     */
     public static final Days MAX_VALUE = new Days(Integer.MAX_VALUE);
-    /** Constant representing the minimum number of days that can be stored in this object. */
+    /**
+     * Constant representing the minimum number of days that can be stored in this object.
+     */
     public static final Days MIN_VALUE = new Days(Integer.MIN_VALUE);
 
-    /** The paser to use for this class. */
+    /**
+     * The paser to use for this class.
+     */
     private static final PeriodFormatter PARSER = ISOPeriodFormat.standard().withParseType(PeriodType.days());
-    /** Serialization version. */
+    /**
+     * Serialization version.
+     */
     private static final long serialVersionUID = 87525275727380865L;
 
     //-----------------------------------------------------------------------
+
     /**
      * Obtains an instance of <code>Days</code> that may be cached.
      * <code>Days</code> is immutable, so instances can be cached and shared.
      * This factory method provides access to shared instances.
      *
-     * @param days  the number of days to obtain an instance for
+     * @param days the number of days to obtain an instance for
      * @return the instance of Days
      */
     public static Days days(int days) {
@@ -104,13 +129,14 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Creates a <code>Days</code> representing the number of whole days
      * between the two specified datetimes. This method corectly handles
      * any daylight savings time changes that may occur during the interval.
      *
-     * @param start  the start instant, must not be null
-     * @param end  the end instant, must not be null
+     * @param start the start instant, must not be null
+     * @param end   the end instant, must not be null
      * @return the period in days
      * @throws IllegalArgumentException if the instants are null or invalid
      */
@@ -126,13 +152,13 @@ public final class Days extends BaseSingleFieldPeriod {
      * The two partials must contain the same fields, for example you can specify
      * two <code>LocalDate</code> objects.
      *
-     * @param start  the start partial date, must not be null
-     * @param end  the end partial date, must not be null
+     * @param start the start partial date, must not be null
+     * @param end   the end partial date, must not be null
      * @return the period in days
      * @throws IllegalArgumentException if the partials are null or invalid
      */
     public static Days daysBetween(ReadablePartial start, ReadablePartial end) {
-        if (start instanceof LocalDate && end instanceof LocalDate)   {
+        if (start instanceof LocalDate && end instanceof LocalDate) {
             Chronology chrono = DateTimeUtils.getChronology(start.getChronology());
             int days = chrono.days().getDifference(
                     ((LocalDate) end).getLocalMillis(), ((LocalDate) start).getLocalMillis());
@@ -147,12 +173,12 @@ public final class Days extends BaseSingleFieldPeriod {
      * in the specified interval. This method corectly handles any daylight
      * savings time changes that may occur during the interval.
      *
-     * @param interval  the interval to extract days from, null returns zero
+     * @param interval the interval to extract days from, null returns zero
      * @return the period in days
      * @throws IllegalArgumentException if the partials are null or invalid
      */
     public static Days daysIn(ReadableInterval interval) {
-        if (interval == null)   {
+        if (interval == null) {
             return Days.ZERO;
         }
         int amount = BaseSingleFieldPeriod.between(interval.getStart(), interval.getEnd(), DurationFieldType.days());
@@ -175,7 +201,7 @@ public final class Days extends BaseSingleFieldPeriod {
      * </ul>
      * Months and Years are imprecise and periods containing these values cannot be converted.
      *
-     * @param period  the period to get the number of hours from, null returns zero
+     * @param period the period to get the number of hours from, null returns zero
      * @return the period in days
      * @throws IllegalArgumentException if the period contains imprecise duration values
      */
@@ -191,7 +217,7 @@ public final class Days extends BaseSingleFieldPeriod {
      * days component may be non-zero. If any other component is non-zero, an exception
      * will be thrown.
      *
-     * @param periodStr  the period string, null returns zero
+     * @param periodStr the period string, null returns zero
      * @return the period in days
      * @throws IllegalArgumentException if the string format is invalid
      */
@@ -205,12 +231,13 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Creates a new instance representing a number of days.
      * You should consider using the factory method {@link #days(int)}
      * instead of the constructor.
      *
-     * @param days  the number of days to represent
+     * @param days the number of days to represent
      */
     private Days(int days) {
         super(days);
@@ -218,7 +245,7 @@ public final class Days extends BaseSingleFieldPeriod {
 
     /**
      * Resolves singletons.
-     * 
+     *
      * @return the singleton instance
      */
     private Object readResolve() {
@@ -226,6 +253,7 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the duration field type, which is <code>days</code>.
      *
@@ -245,6 +273,7 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Converts this period in days to a period in weeks assuming a
      * 7 day week.
@@ -254,7 +283,7 @@ public final class Days extends BaseSingleFieldPeriod {
      * 7 days long.
      * This may not be true for some unusual chronologies. However, it is included
      * as it is a useful operation for many applications and business rules.
-     * 
+     *
      * @return a period representing the number of weeks for this number of days
      */
     public Weeks toStandardWeeks() {
@@ -270,7 +299,7 @@ public final class Days extends BaseSingleFieldPeriod {
      * This is not true when daylight savings is considered and may also not
      * be true for some unusual chronologies. However, it is included
      * as it is a useful operation for many applications and business rules.
-     * 
+     *
      * @return a period representing the number of hours for this number of days
      * @throws ArithmeticException if the number of hours is too large to be represented
      */
@@ -288,7 +317,7 @@ public final class Days extends BaseSingleFieldPeriod {
      * This is not true when daylight savings is considered and may also not
      * be true for some unusual chronologies. However, it is included
      * as it is a useful operation for many applications and business rules.
-     * 
+     *
      * @return a period representing the number of minutes for this number of days
      * @throws ArithmeticException if the number of minutes is too large to be represented
      */
@@ -306,7 +335,7 @@ public final class Days extends BaseSingleFieldPeriod {
      * This is not true when daylight savings is considered and may also not
      * be true for some unusual chronologies. However, it is included
      * as it is a useful operation for many applications and business rules.
-     * 
+     *
      * @return a period representing the number of seconds for this number of days
      * @throws ArithmeticException if the number of seconds is too large to be represented
      */
@@ -315,6 +344,7 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Converts this period in days to a duration in milliseconds assuming a
      * 24 hour day, 60 minute hour and 60 second minute.
@@ -325,7 +355,7 @@ public final class Days extends BaseSingleFieldPeriod {
      * This is not true when daylight savings time is considered, and may also
      * not be true for some unusual chronologies. However, it is included as it
      * is a useful operation for many applications and business rules.
-     * 
+     *
      * @return a duration equivalent to this number of days
      */
     public Duration toStandardDuration() {
@@ -334,6 +364,7 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the number of days that this period represents.
      *
@@ -344,12 +375,13 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a new instance with the specified number of days added.
      * <p>
      * This instance is immutable and unaffected by this method call.
      *
-     * @param days  the amount of days to add, may be negative
+     * @param days the amount of days to add, may be negative
      * @return the new period plus the specified number of days
      * @throws ArithmeticException if the result overflows an int
      */
@@ -365,7 +397,7 @@ public final class Days extends BaseSingleFieldPeriod {
      * <p>
      * This instance is immutable and unaffected by this method call.
      *
-     * @param days  the amount of days to add, may be negative, null means zero
+     * @param days the amount of days to add, may be negative, null means zero
      * @return the new period plus the specified number of days
      * @throws ArithmeticException if the result overflows an int
      */
@@ -377,12 +409,13 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a new instance with the specified number of days taken away.
      * <p>
      * This instance is immutable and unaffected by this method call.
      *
-     * @param days  the amount of days to take away, may be negative
+     * @param days the amount of days to take away, may be negative
      * @return the new period minus the specified number of days
      * @throws ArithmeticException if the result overflows an int
      */
@@ -395,7 +428,7 @@ public final class Days extends BaseSingleFieldPeriod {
      * <p>
      * This instance is immutable and unaffected by this method call.
      *
-     * @param days  the amount of days to take away, may be negative, null means zero
+     * @param days the amount of days to take away, may be negative, null means zero
      * @return the new period minus the specified number of days
      * @throws ArithmeticException if the result overflows an int
      */
@@ -407,12 +440,13 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a new instance with the days multiplied by the specified scalar.
      * <p>
      * This instance is immutable and unaffected by this method call.
      *
-     * @param scalar  the amount to multiply by, may be negative
+     * @param scalar the amount to multiply by, may be negative
      * @return the new period multiplied by the specified scalar
      * @throws ArithmeticException if the result overflows an int
      */
@@ -426,7 +460,7 @@ public final class Days extends BaseSingleFieldPeriod {
      * <p>
      * This instance is immutable and unaffected by this method call.
      *
-     * @param divisor  the amount to divide by, may be negative
+     * @param divisor the amount to divide by, may be negative
      * @return the new period divided by the specified divisor
      * @throws ArithmeticException if the divisor is zero
      */
@@ -438,6 +472,7 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a new instance with the days value negated.
      *
@@ -449,10 +484,11 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Is this days instance greater than the specified number of days.
      *
-     * @param other  the other period, null means zero
+     * @param other the other period, null means zero
      * @return true if this days instance is greater than the specified one
      */
     public boolean isGreaterThan(Days other) {
@@ -465,7 +501,7 @@ public final class Days extends BaseSingleFieldPeriod {
     /**
      * Is this days instance less than the specified number of days.
      *
-     * @param other  the other period, null means zero
+     * @param other the other period, null means zero
      * @return true if this days instance is less than the specified one
      */
     public boolean isLessThan(Days other) {
@@ -476,6 +512,7 @@ public final class Days extends BaseSingleFieldPeriod {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets this instance as a String in the ISO8601 duration format.
      * <p>

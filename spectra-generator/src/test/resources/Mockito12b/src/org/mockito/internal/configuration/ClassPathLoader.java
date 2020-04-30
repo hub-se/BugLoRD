@@ -8,7 +8,7 @@ import org.mockito.configuration.IMockitoConfiguration;
 import org.mockito.exceptions.misusing.MockitoConfigurationException;
 
 public class ClassPathLoader {
-    
+
     /**
      * @return configuration loaded from classpath or null
      */
@@ -22,7 +22,7 @@ public class ClassPathLoader {
             //that's ok, it means there is no global config, using default one. 
             return null;
         }
-        
+
         try {
             return (IMockitoConfiguration) configClass.newInstance();
         } catch (ClassCastException e) {

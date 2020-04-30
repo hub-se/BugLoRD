@@ -16,7 +16,7 @@ import org.mockito.internal.runners.util.FrameworkUsageValidator;
 @SuppressWarnings("deprecation")
 public class JUnit44RunnerImpl implements RunnerImpl {
 
-	JUnit4ClassRunner runner;
+    JUnit4ClassRunner runner;
 
     public JUnit44RunnerImpl(Class<?> klass) throws InitializationError {
         this.runner = new JUnit4ClassRunner(klass) {
@@ -40,7 +40,7 @@ public class JUnit44RunnerImpl implements RunnerImpl {
         return runner.getDescription();
     }
 
-	public void filter(Filter filter) throws NoTestsRemainException {
-		runner.filter(filter);
-	}
+    public void filter(Filter filter) throws NoTestsRemainException {
+        runner.filter(filter);
+    }
 }

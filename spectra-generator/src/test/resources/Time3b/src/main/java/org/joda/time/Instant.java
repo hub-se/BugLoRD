@@ -15,8 +15,6 @@
  */
 package org.joda.time;
 
-import java.io.Serializable;
-
 import org.joda.convert.FromString;
 import org.joda.time.base.AbstractInstant;
 import org.joda.time.chrono.ISOChronology;
@@ -24,6 +22,8 @@ import org.joda.time.convert.ConverterManager;
 import org.joda.time.convert.InstantConverter;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
+import java.io.Serializable;
 
 /**
  * Instant is the standard implementation of a fully immutable instant in time.
@@ -56,16 +56,21 @@ public final class Instant
         extends AbstractInstant
         implements ReadableInstant, Serializable {
 
-    /** Serialization lock */
+    /**
+     * Serialization lock
+     */
     private static final long serialVersionUID = 3299096530934209741L;
 
-    /** The millis from 1970-01-01T00:00:00Z */
+    /**
+     * The millis from 1970-01-01T00:00:00Z
+     */
     private final long iMillis;
 
     //-----------------------------------------------------------------------
+
     /**
      * Obtains an {@code Instant} set to the current system millisecond time.
-     * 
+     *
      * @return the current instant, not null
      * @since 2.0
      */
@@ -74,12 +79,13 @@ public final class Instant
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Parses a {@code Instant} from the specified string.
      * <p>
      * This uses {@link ISODateTimeFormat#dateTimeParser()}.
-     * 
-     * @param str  the string to parse, not null
+     *
+     * @param str the string to parse, not null
      * @since 2.0
      */
     @FromString
@@ -89,9 +95,9 @@ public final class Instant
 
     /**
      * Parses a {@code Instant} from the specified string using a formatter.
-     * 
-     * @param str  the string to parse, not null
-     * @param formatter  the formatter to use, not null
+     *
+     * @param str       the string to parse, not null
+     * @param formatter the formatter to use, not null
      * @since 2.0
      */
     public static Instant parse(String str, DateTimeFormatter formatter) {
@@ -99,9 +105,10 @@ public final class Instant
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Constructs an instance set to the current system millisecond time.
-     * 
+     *
      * @see #now()
      */
     public Instant() {
@@ -111,8 +118,8 @@ public final class Instant
 
     /**
      * Constructs an instance set to the milliseconds from 1970-01-01T00:00:00Z.
-     * 
-     * @param instant  the milliseconds from 1970-01-01T00:00:00Z
+     *
+     * @param instant the milliseconds from 1970-01-01T00:00:00Z
      */
     public Instant(long instant) {
         super();
@@ -125,7 +132,7 @@ public final class Instant
      * The recognised object types are defined in {@link ConverterManager} and
      * include String, Calendar and Date.
      *
-     * @param instant  the datetime object, null means now
+     * @param instant the datetime object, null means now
      * @throws IllegalArgumentException if the instant is invalid
      */
     public Instant(Object instant) {
@@ -135,9 +142,10 @@ public final class Instant
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Get this object as an Instant by returning <code>this</code>.
-     * 
+     *
      * @return <code>this</code>
      */
     public Instant toInstant() {
@@ -145,12 +153,13 @@ public final class Instant
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets a copy of this instant with different millis.
      * <p>
      * The returned object will be either be a new Instant or <code>this</code>.
      *
-     * @param newMillis  the new millis, from 1970-01-01T00:00:00Z
+     * @param newMillis the new millis, from 1970-01-01T00:00:00Z
      * @return a copy of this instant with different millis
      */
     public Instant withMillis(long newMillis) {
@@ -161,9 +170,9 @@ public final class Instant
      * Gets a copy of this instant with the specified duration added.
      * <p>
      * If the addition is zero, then <code>this</code> is returned.
-     * 
-     * @param durationToAdd  the duration to add to this one
-     * @param scalar  the amount of times to add, such as -1 to subtract once
+     *
+     * @param durationToAdd the duration to add to this one
+     * @param scalar        the amount of times to add, such as -1 to subtract once
      * @return a copy of this instant with the duration added
      * @throws ArithmeticException if the new instant exceeds the capacity of a long
      */
@@ -179,9 +188,9 @@ public final class Instant
      * Gets a copy of this instant with the specified duration added.
      * <p>
      * If the addition is zero, then <code>this</code> is returned.
-     * 
-     * @param durationToAdd  the duration to add to this one, null means zero
-     * @param scalar  the amount of times to add, such as -1 to subtract once
+     *
+     * @param durationToAdd the duration to add to this one, null means zero
+     * @param scalar        the amount of times to add, such as -1 to subtract once
      * @return a copy of this instant with the duration added
      * @throws ArithmeticException if the new instant exceeds the capacity of a long
      */
@@ -193,12 +202,13 @@ public final class Instant
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets a copy of this instant with the specified duration added.
      * <p>
      * If the amount is zero or null, then <code>this</code> is returned.
-     * 
-     * @param duration  the duration to add to this one
+     *
+     * @param duration the duration to add to this one
      * @return a copy of this instant with the duration added
      * @throws ArithmeticException if the new instant exceeds the capacity of a long
      */
@@ -210,8 +220,8 @@ public final class Instant
      * Gets a copy of this instant with the specified duration added.
      * <p>
      * If the amount is zero or null, then <code>this</code> is returned.
-     * 
-     * @param duration  the duration to add to this one, null means zero
+     *
+     * @param duration the duration to add to this one, null means zero
      * @return a copy of this instant with the duration added
      * @throws ArithmeticException if the new instant exceeds the capacity of a long
      */
@@ -220,12 +230,13 @@ public final class Instant
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets a copy of this instant with the specified duration taken away.
      * <p>
      * If the amount is zero or null, then <code>this</code> is returned.
-     * 
-     * @param duration  the duration to reduce this instant by
+     *
+     * @param duration the duration to reduce this instant by
      * @return a copy of this instant with the duration taken away
      * @throws ArithmeticException if the new instant exceeds the capacity of a long
      */
@@ -237,8 +248,8 @@ public final class Instant
      * Gets a copy of this instant with the specified duration taken away.
      * <p>
      * If the amount is zero or null, then <code>this</code> is returned.
-     * 
-     * @param duration  the duration to reduce this instant by
+     *
+     * @param duration the duration to reduce this instant by
      * @return a copy of this instant with the duration taken away
      * @throws ArithmeticException if the new instant exceeds the capacity of a long
      */
@@ -247,9 +258,10 @@ public final class Instant
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the milliseconds of the instant.
-     * 
+     *
      * @return the number of milliseconds since 1970-01-01T00:00:00Z
      */
     public long getMillis() {
@@ -261,7 +273,7 @@ public final class Instant
      * <p>
      * This method returns {@link ISOChronology#getInstanceUTC()} which
      * corresponds to the definition of the Java epoch 1970-01-01T00:00:00Z.
-     * 
+     *
      * @return ISO in the UTC zone
      */
     public Chronology getChronology() {
@@ -269,6 +281,7 @@ public final class Instant
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Get this object as a DateTime using ISOChronology in the default zone.
      * <p>

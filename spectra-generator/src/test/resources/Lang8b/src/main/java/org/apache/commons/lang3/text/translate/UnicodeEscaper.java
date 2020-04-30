@@ -22,8 +22,8 @@ import java.io.Writer;
 /**
  * Translates codepoints to their Unicode escaped value.
  *
- * @since 3.0
  * @version $Id$
+ * @since 3.0
  */
 public class UnicodeEscaper extends CodePointTranslator {
 
@@ -34,7 +34,7 @@ public class UnicodeEscaper extends CodePointTranslator {
     /**
      * <p>Constructs a <code>UnicodeEscaper</code> for all characters. </p>
      */
-    public UnicodeEscaper(){
+    public UnicodeEscaper() {
         this(0, Integer.MAX_VALUE, true);
     }
 
@@ -44,8 +44,8 @@ public class UnicodeEscaper extends CodePointTranslator {
      * and <code>above</code> boundaries are inclusive when <code>between</code> is
      * <code>true</code> and exclusive when it is <code>false</code>. </p>
      *
-     * @param below int value representing the lowest codepoint boundary
-     * @param above int value representing the highest codepoint boundary
+     * @param below   int value representing the lowest codepoint boundary
+     * @param above   int value representing the highest codepoint boundary
      * @param between whether to escape between the boundaries or outside them
      */
     private UnicodeEscaper(int below, int above, boolean between) {
@@ -77,7 +77,7 @@ public class UnicodeEscaper extends CodePointTranslator {
     /**
      * <p>Constructs a <code>UnicodeEscaper</code> outside of the specified values (exclusive). </p>
      *
-     * @param codepointLow below which to escape
+     * @param codepointLow  below which to escape
      * @param codepointHigh above which to escape
      * @return the newly created {@code UnicodeEscaper} instance
      */
@@ -88,7 +88,7 @@ public class UnicodeEscaper extends CodePointTranslator {
     /**
      * <p>Constructs a <code>UnicodeEscaper</code> between the specified values (inclusive). </p>
      *
-     * @param codepointLow above which to escape
+     * @param codepointLow  above which to escape
      * @param codepointHigh below which to escape
      * @return the newly created {@code UnicodeEscaper} instance
      */
@@ -101,7 +101,7 @@ public class UnicodeEscaper extends CodePointTranslator {
      */
     @Override
     public boolean translate(int codepoint, Writer out) throws IOException {
-        if(between) {
+        if (between) {
             if (codepoint < below || codepoint > above) {
                 return false;
             }

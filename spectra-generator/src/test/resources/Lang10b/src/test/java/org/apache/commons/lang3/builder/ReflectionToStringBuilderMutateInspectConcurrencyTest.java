@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,11 +17,11 @@
 
 package org.apache.commons.lang3.builder;
 
-import java.util.LinkedList;
-import java.util.Random;
-
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.LinkedList;
+import java.util.Random;
 
 /**
  * Tests concurrent access for {@link ReflectionToStringBuilder}.
@@ -29,11 +29,11 @@ import org.junit.Test;
  * The {@link ToStringStyle} class includes a registry to avoid infinite loops for objects with circular references. We
  * want to make sure that we do not get concurrency exceptions accessing this registry.
  * </p>
- * 
- * @see <a href="https://issues.apache.org/jira/browse/LANG-762">[LANG-762] Handle or document ReflectionToStringBuilder
- *      and ToStringBuilder for collections that are not thread safe</a>
- * @since 3.1
+ *
  * @version $Id$
+ * @see <a href="https://issues.apache.org/jira/browse/LANG-762">[LANG-762] Handle or document ReflectionToStringBuilder
+ * and ToStringBuilder for collections that are not thread safe</a>
+ * @since 3.1
  */
 public class ReflectionToStringBuilderMutateInspectConcurrencyTest {
 

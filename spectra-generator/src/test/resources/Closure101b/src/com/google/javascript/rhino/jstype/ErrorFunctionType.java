@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,30 +36,28 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 import static com.google.javascript.rhino.jstype.JSTypeNative.ALL_TYPE;
 
 /**
  * This type is for built-in error constructors.
-*
-*
  */
 class ErrorFunctionType extends FunctionType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  ErrorFunctionType(JSTypeRegistry registry, String name) {
-    super(registry, name, null,
-          registry.createOptionalParameters(
-              registry.getNativeType(ALL_TYPE),
-              registry.getNativeType(ALL_TYPE),
-              registry.getNativeType(ALL_TYPE)),
-          null, null, null, true, true);
-  }
+    ErrorFunctionType(JSTypeRegistry registry, String name) {
+        super(registry, name, null,
+                registry.createOptionalParameters(
+                        registry.getNativeType(ALL_TYPE),
+                        registry.getNativeType(ALL_TYPE),
+                        registry.getNativeType(ALL_TYPE)),
+                null, null, null, true, true);
+    }
 
-  @Override
-  public JSType getReturnType() {
-    return getInstanceType();
-  }
+    @Override
+    public JSType getReturnType() {
+        return getInstanceType();
+    }
 }

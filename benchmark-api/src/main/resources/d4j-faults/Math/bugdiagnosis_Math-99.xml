@@ -1,37 +1,37 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-99">
-			<tests>
-				<testfile path="org/apache/commons/math/util/MathUtilsTest">
-					<exception>junit.framework.AssertionFailedError:expecting
-						ArithmeticException:-
-						org.apache.commons.math.util.MathUtilsTest::testLcm:--&gt;
-						junit.framework.AssertionFailedError:Expecting ArithmeticException
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>560</number_tests>
-					<failed>2</failed>
-					<passed>558</passed>
-					<nodes>14439</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/util/MathUtils.java">
-					<insert numberlines="5">543</insert>
-					<insert numberlines="3">714</insert>
-					<bugtypes>
-						<id id="1.1" lines="542">
-							<description>Missing check for equality of value and minimum.</description>
-						</id>
-						<id id="1.1" lines="713">
-							<description>Missing case for equality of value and minimum.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-99">
+            <tests>
+                <testfile path="org/apache/commons/math/util/MathUtilsTest">
+                    <exception>junit.framework.AssertionFailedError:expecting
+                        ArithmeticException:-
+                        org.apache.commons.math.util.MathUtilsTest::testLcm:--&gt;
+                        junit.framework.AssertionFailedError:Expecting ArithmeticException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>560</number_tests>
+                    <failed>2</failed>
+                    <passed>558</passed>
+                    <nodes>14439</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/util/MathUtils.java">
+                    <insert numberlines="5">543</insert>
+                    <insert numberlines="3">714</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="542">
+                            <description>Missing check for equality of value and minimum.</description>
+                        </id>
+                        <id id="1.1" lines="713">
+                            <description>Missing case for equality of value and minimum.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

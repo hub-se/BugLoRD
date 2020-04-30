@@ -18,90 +18,88 @@ package com.google.javascript.jscomp;
 
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
-
 import junit.framework.TestCase;
 
 /**
  * Tests for {@link SyntacticScopeCreator}.
- *
-*
  */
 public class SyntacticScopeCreatorTest extends TestCase {
 
-  /**
-   * Helper to create a top level scope from a javascript string
-   */
-  private static Scope getScope(String js) {
-    Compiler compiler = new Compiler();
-    Node root = compiler.parseTestCode(js);
-    assertEquals(0, compiler.getErrorCount());
+    /**
+     * Helper to create a top level scope from a javascript string
+     */
+    private static Scope getScope(String js) {
+        Compiler compiler = new Compiler();
+        Node root = compiler.parseTestCode(js);
+        assertEquals(0, compiler.getErrorCount());
 
-    Scope scope =
-        new SyntacticScopeCreator(compiler).createScope(root, null);
-    return scope;
-  }
+        Scope scope =
+                new SyntacticScopeCreator(compiler).createScope(root, null);
+        return scope;
+    }
 
-  public void testFunctionScope() {
-    Scope scope = getScope("function foo() {}\n" +
-                           "var x = function bar(a1) {};" +
-                           "[function bar2() { var y; }];" +
-                           "if (true) { function z() {} }"
-                           );
-    assertTrue(scope.isDeclared("foo", false));
-    assertTrue(scope.isDeclared("x", false));
-    assertTrue(scope.isDeclared("z", false));
+    public void testFunctionScope() {
+        Scope scope = getScope("function foo() {}\n" +
+                "var x = function bar(a1) {};" +
+                "[function bar2() { var y; }];" +
+                "if (true) { function z() {} }"
+        );
+        assertTrue(scope.isDeclared("foo", false));
+        assertTrue(scope.isDeclared("x", false));
+        assertTrue(scope.isDeclared("z", false));
 
-    // The following should not be declared in this scope
-    assertFalse(scope.isDeclared("a1", false));
-    assertFalse(scope.isDeclared("bar", false));
-    assertFalse(scope.isDeclared("bar2", false));
-    assertFalse(scope.isDeclared("y", false));
-    assertFalse(scope.isDeclared("", false));
-  }
+        // The following should not be declared in this scope
+        assertFalse(scope.isDeclared("a1", false));
+        assertFalse(scope.isDeclared("bar", false));
+        assertFalse(scope.isDeclared("bar2", false));
+        assertFalse(scope.isDeclared("y", false));
+        assertFalse(scope.isDeclared("", false));
+    }
 
-  public void testScopeRootNode() {
-    String js = "function foo() {\n" +
-        " var x = 10;" +
-        "}";
-    Compiler compiler = new Compiler();
-    Node root = compiler.parseTestCode(js);
-    assertEquals(0, compiler.getErrorCount());
+    public void testScopeRootNode() {
+        String js = "function foo() {\n" +
+                " var x = 10;" +
+                "}";
+        Compiler compiler = new Compiler();
+        Node root = compiler.parseTestCode(js);
+        assertEquals(0, compiler.getErrorCount());
 
-    Scope globalScope =
-        new SyntacticScopeCreator(compiler).createScope(root, null);
-    assertEquals(root, globalScope.getRootNode());
+        Scope globalScope =
+                new SyntacticScopeCreator(compiler).createScope(root, null);
+        assertEquals(root, globalScope.getRootNode());
 
-    Node fooNode = root.getFirstChild();
-    assertEquals(Token.FUNCTION, fooNode.getType());
-    Scope fooScope =
-        new SyntacticScopeCreator(compiler).createScope(fooNode, null);
-    assertEquals(fooNode, fooScope.getRootNode());
-    assertTrue(fooScope.isDeclared("x", false));
-  }
+        Node fooNode = root.getFirstChild();
+        assertEquals(Token.FUNCTION, fooNode.getType());
+        Scope fooScope =
+                new SyntacticScopeCreator(compiler).createScope(fooNode, null);
+        assertEquals(fooNode, fooScope.getRootNode());
+        assertTrue(fooScope.isDeclared("x", false));
+    }
 
-  public void testRedeclaration1() {
-     String js = "var a; var a;";
-     int errors = createGlobalScopeHelper(js);
-     assertEquals(1, errors);
-  }
+    public void testRedeclaration1() {
+        String js = "var a; var a;";
+        int errors = createGlobalScopeHelper(js);
+        assertEquals(1, errors);
+    }
 
-  public void testRedeclaration2() {
-    String js = "var a; /** @suppress {duplicate} */ var a;";
-    int errors = createGlobalScopeHelper(js);
-    assertEquals(0, errors);
- }
+    public void testRedeclaration2() {
+        String js = "var a; /** @suppress {duplicate} */ var a;";
+        int errors = createGlobalScopeHelper(js);
+        assertEquals(0, errors);
+    }
 
-  /**
-   * Parse the supplied js and create the global SyntaticScope object.
-   * @return The error count.
-   */
-  private int createGlobalScopeHelper(String js) {
-    Compiler compiler = new Compiler();
-    Node root = compiler.parseTestCode(js);
-    assertEquals(0, compiler.getErrorCount());
-    Scope globalScope =
-      new SyntacticScopeCreator(compiler).createScope(root, null);
-    assertEquals(root, globalScope.getRootNode());
-    return compiler.getErrorCount();
-  }
+    /**
+     * Parse the supplied js and create the global SyntaticScope object.
+     *
+     * @return The error count.
+     */
+    private int createGlobalScopeHelper(String js) {
+        Compiler compiler = new Compiler();
+        Node root = compiler.parseTestCode(js);
+        assertEquals(0, compiler.getErrorCount());
+        Scope globalScope =
+                new SyntacticScopeCreator(compiler).createScope(root, null);
+        assertEquals(root, globalScope.getRootNode());
+        return compiler.getErrorCount();
+    }
 }

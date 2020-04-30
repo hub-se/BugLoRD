@@ -30,55 +30,55 @@ import java.util.Set;
  */
 public class Config {
 
-  /**
-   * Central registry for type info.
-   */
-  final JSTypeRegistry registry;
+    /**
+     * Central registry for type info.
+     */
+    final JSTypeRegistry registry;
 
-  /**
-   * Whether to parse the descriptions of jsdoc comments.
-   */
-  final boolean parseJsDocDocumentation;
+    /**
+     * Whether to parse the descriptions of jsdoc comments.
+     */
+    final boolean parseJsDocDocumentation;
 
-  /**
-   * Whether we're in ide mode.
-   */
-  final boolean isIdeMode;
+    /**
+     * Whether we're in ide mode.
+     */
+    final boolean isIdeMode;
 
-  /**
-   * Recognized JSDoc annotations, mapped from their name to their internal
-   * representation.
-   */
-  final Map<String, Annotation> annotationNames;
+    /**
+     * Recognized JSDoc annotations, mapped from their name to their internal
+     * representation.
+     */
+    final Map<String, Annotation> annotationNames;
 
-  /**
-   * Annotation names.
-   */
+    /**
+     * Annotation names.
+     */
 
-  Config(JSTypeRegistry registry, Set<String> annotationWhitelist,
-      boolean isIdeMode) {
-    this.registry = registry;
-    this.annotationNames = buildAnnotationNames(annotationWhitelist);
-    this.parseJsDocDocumentation = isIdeMode;
-    this.isIdeMode = isIdeMode;
-  }
-
-  /**
-   * Create the annotation names from the user-specified
-   * annotation whitelist.
-   */
-  private static Map<String, Annotation> buildAnnotationNames(
-      Set<String> annotationWhitelist) {
-    ImmutableMap.Builder<String, Annotation> annotationBuilder =
-        ImmutableMap.builder();
-    annotationBuilder.putAll(Annotation.recognizedAnnotations);
-    for (String unrecognizedAnnotation : annotationWhitelist) {
-      if (!Annotation.recognizedAnnotations.containsKey(
-              unrecognizedAnnotation)) {
-        annotationBuilder.put(
-            unrecognizedAnnotation, Annotation.NOT_IMPLEMENTED);
-      }
+    Config(JSTypeRegistry registry, Set<String> annotationWhitelist,
+           boolean isIdeMode) {
+        this.registry = registry;
+        this.annotationNames = buildAnnotationNames(annotationWhitelist);
+        this.parseJsDocDocumentation = isIdeMode;
+        this.isIdeMode = isIdeMode;
     }
-    return annotationBuilder.build();
-  }
+
+    /**
+     * Create the annotation names from the user-specified
+     * annotation whitelist.
+     */
+    private static Map<String, Annotation> buildAnnotationNames(
+            Set<String> annotationWhitelist) {
+        ImmutableMap.Builder<String, Annotation> annotationBuilder =
+                ImmutableMap.builder();
+        annotationBuilder.putAll(Annotation.recognizedAnnotations);
+        for (String unrecognizedAnnotation : annotationWhitelist) {
+            if (!Annotation.recognizedAnnotations.containsKey(
+                    unrecognizedAnnotation)) {
+                annotationBuilder.put(
+                        unrecognizedAnnotation, Annotation.NOT_IMPLEMENTED);
+            }
+        }
+        return annotationBuilder.build();
+    }
 }

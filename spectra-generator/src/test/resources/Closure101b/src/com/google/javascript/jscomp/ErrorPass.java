@@ -20,25 +20,23 @@ import com.google.javascript.rhino.Node;
 
 /**
  * A compiler pass that just reports an error.
- *
-*
  */
 
 class ErrorPass implements CompilerPass {
-  private final AbstractCompiler compiler;
-  private final JSError error;
+    private final AbstractCompiler compiler;
+    private final JSError error;
 
-  ErrorPass(AbstractCompiler compiler, DiagnosticType error) {
-    this(compiler, JSError.make(error));
-  }
+    ErrorPass(AbstractCompiler compiler, DiagnosticType error) {
+        this(compiler, JSError.make(error));
+    }
 
-  ErrorPass(AbstractCompiler compiler, JSError error) {
-    this.compiler = compiler;
-    this.error = error;
-  }
+    ErrorPass(AbstractCompiler compiler, JSError error) {
+        this.compiler = compiler;
+        this.error = error;
+    }
 
-  @Override
-  public void process(Node externs, Node root) {
-    compiler.report(error);
-  }
+    @Override
+    public void process(Node externs, Node root) {
+        compiler.report(error);
+    }
 }

@@ -33,130 +33,130 @@ import java.util.List;
  *        informative error, this pass allows some binary size reduction by
  *        removing these methods altogether for production builds.</li>
  * </ul>
- *
-*
  */
 final class GoogleCodeRemoval implements CompilerPass {
 
-  /** Reference to the JS compiler */
-  private final AbstractCompiler compiler;
-
-  /** Name used to denote an abstract function */
-  static final String ABSTRACT_METHOD_NAME = "goog.abstractMethod";
-
-  /**
-   * List of names referenced in successive generations of finding referenced
-   * nodes
-   */
-  private final List<RemovableAssignment> abstractMethodAssignmentNodes =
-      Lists.newArrayList();
-
-
-  /**
-   * Utility class to track a node and its parent.
-   */
-  private class RemovableAssignment {
     /**
-     * The node
+     * Reference to the JS compiler
      */
-    final Node node;
+    private final AbstractCompiler compiler;
 
     /**
-     * Its parent
+     * Name used to denote an abstract function
      */
-    final Node parent;
+    static final String ABSTRACT_METHOD_NAME = "goog.abstractMethod";
 
     /**
-     * Full chain of ASSIGN ancestors
+     * List of names referenced in successive generations of finding referenced
+     * nodes
      */
-    final List<Node> assignAncestors = Lists.newArrayList();
+    private final List<RemovableAssignment> abstractMethodAssignmentNodes =
+            Lists.newArrayList();
+
 
     /**
-     * The last ancestor
+     * Utility class to track a node and its parent.
      */
-    final Node lastAncestor;
+    private class RemovableAssignment {
+        /**
+         * The node
+         */
+        final Node node;
+
+        /**
+         * Its parent
+         */
+        final Node parent;
+
+        /**
+         * Full chain of ASSIGN ancestors
+         */
+        final List<Node> assignAncestors = Lists.newArrayList();
+
+        /**
+         * The last ancestor
+         */
+        final Node lastAncestor;
+
+        /**
+         * Data structure for information about a removable assignment.
+         *
+         * @param nameNode   The LHS
+         * @param assignNode The parent ASSIGN node
+         * @param traversal  Access to further levels, assumed to start at 1
+         */
+        public RemovableAssignment(Node nameNode, Node assignNode,
+                                   NodeTraversal traversal) {
+            this.node = nameNode;
+            this.parent = assignNode;
+
+            Node ancestor = assignNode;
+            do {
+                ancestor = ancestor.getParent();
+                assignAncestors.add(ancestor);
+            } while (ancestor.getType() == Token.ASSIGN &&
+                    ancestor.getFirstChild().isQualifiedName());
+            lastAncestor = ancestor.getParent();
+        }
+
+        /**
+         * Remove this node.
+         */
+        public void remove() {
+            Node rhs = node.getNext();
+            Node last = parent;
+            for (Node ancestor : assignAncestors) {
+                if (NodeUtil.isExpressionNode(ancestor)) {
+                    lastAncestor.removeChild(ancestor);
+                } else {
+                    rhs.detachFromParent();
+                    ancestor.replaceChild(last, rhs);
+                }
+                last = ancestor;
+            }
+            compiler.reportCodeChange();
+        }
+    }
+
 
     /**
-     * Data structure for information about a removable assignment.
+     * Identifies all assignments of the abstract method to a variable.
+     */
+    private class FindAbstractMethods extends AbstractPostOrderCallback {
+
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            if (n.getType() == Token.ASSIGN) {
+                Node nameNode = n.getFirstChild();
+                Node valueNode = n.getLastChild();
+
+                if (nameNode.isQualifiedName() &&
+                        valueNode.isQualifiedName() &&
+                        ABSTRACT_METHOD_NAME.equals(valueNode.getQualifiedName())) {
+                    abstractMethodAssignmentNodes.add(new RemovableAssignment(
+                            n.getFirstChild(), n, t));
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Creates an google code remover.
      *
-     * @param nameNode The LHS
-     * @param assignNode The parent ASSIGN node
-     * @param traversal Access to further levels, assumed to start at 1
+     * @param compiler The AbstractCompiler
      */
-    public RemovableAssignment(Node nameNode, Node assignNode,
-        NodeTraversal traversal) {
-      this.node = nameNode;
-      this.parent = assignNode;
-
-      Node ancestor = assignNode;
-      do {
-        ancestor = ancestor.getParent();
-        assignAncestors.add(ancestor);
-      } while (ancestor.getType() == Token.ASSIGN &&
-               ancestor.getFirstChild().isQualifiedName());
-      lastAncestor = ancestor.getParent();
+    GoogleCodeRemoval(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
 
     /**
-     * Remove this node.
+     * {@inheritDoc}
      */
-    public void remove() {
-      Node rhs = node.getNext();
-      Node last = parent;
-      for (Node ancestor : assignAncestors) {
-        if (NodeUtil.isExpressionNode(ancestor)) {
-          lastAncestor.removeChild(ancestor);
-        } else {
-          rhs.detachFromParent();
-          ancestor.replaceChild(last, rhs);
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, root, new FindAbstractMethods());
+
+        for (RemovableAssignment assignment : abstractMethodAssignmentNodes) {
+            assignment.remove();
         }
-        last = ancestor;
-      }
-      compiler.reportCodeChange();
     }
-  }
-
-
-
-  /**
-   * Identifies all assignments of the abstract method to a variable.
-   */
-  private class FindAbstractMethods extends AbstractPostOrderCallback {
-
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.getType() == Token.ASSIGN) {
-        Node nameNode = n.getFirstChild();
-        Node valueNode = n.getLastChild();
-
-        if (nameNode.isQualifiedName() &&
-            valueNode.isQualifiedName() &&
-            ABSTRACT_METHOD_NAME.equals(valueNode.getQualifiedName())) {
-          abstractMethodAssignmentNodes.add(new RemovableAssignment(
-              n.getFirstChild(), n, t));
-        }
-      }
-    }
-  }
-
-
-
-  /**
-   * Creates an google code remover.
-   *
-   * @param compiler The AbstractCompiler
-   */
-  GoogleCodeRemoval(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, root, new FindAbstractMethods());
-
-    for (RemovableAssignment assignment : abstractMethodAssignmentNodes) {
-      assignment.remove();
-    }
-  }
 }

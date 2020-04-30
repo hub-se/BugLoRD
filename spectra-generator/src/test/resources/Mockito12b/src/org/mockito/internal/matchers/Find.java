@@ -4,11 +4,11 @@
  */
 package org.mockito.internal.matchers;
 
-import java.io.Serializable;
-import java.util.regex.Pattern;
-
 import org.hamcrest.Description;
 import org.mockito.ArgumentMatcher;
+
+import java.io.Serializable;
+import java.util.regex.Pattern;
 
 public class Find extends ArgumentMatcher<String> implements Serializable {
 

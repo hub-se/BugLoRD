@@ -1,4 +1,5 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data;
+
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Arguments;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CodeInstrumentationTask;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.CoverageDataFileHandler;
@@ -26,49 +27,50 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 
 public class Cobertura {
 
-	private final Arguments args;
-	private ProjectData projectData;
-	private final CodeInstrumentationTask instrumentationTask;
+    private final Arguments args;
+    private ProjectData projectData;
+    private final CodeInstrumentationTask instrumentationTask;
 
-	public Cobertura(Arguments arguments) {
-		args = arguments;
-		instrumentationTask = new CodeInstrumentationTask(args.collectExecutionTraces());
-	}
+    public Cobertura(Arguments arguments) {
+        args = arguments;
+        instrumentationTask = new CodeInstrumentationTask(args.collectExecutionTraces());
+    }
 
-	/**
-	 * Instruments the code. Should be invoked after compiling.
-	 * Classes to be instrumented are taken from constructor args
-	 * @return this Cobertura instance
-	 * @throws Throwable
-	 * if one is thrown
-	 */
-	public Cobertura instrumentCode() throws Throwable {
-		instrumentationTask.instrument(args, getProjectDataInstance());
-		return this;
-	}
+    /**
+     * Instruments the code. Should be invoked after compiling.
+     * Classes to be instrumented are taken from constructor args
+     *
+     * @return this Cobertura instance
+     * @throws Throwable if one is thrown
+     */
+    public Cobertura instrumentCode() throws Throwable {
+        instrumentationTask.instrument(args, getProjectDataInstance());
+        return this;
+    }
 
-	/**
-	 * Serializes project data to file specified in constructor args
-	 * @return this Cobertura instance
-	 */
-	public Cobertura saveProjectData() {
-		CoverageDataFileHandler.saveCoverageData(getProjectDataInstance(), args
-				.getDataFile());
-		return this;
-	}
+    /**
+     * Serializes project data to file specified in constructor args
+     *
+     * @return this Cobertura instance
+     */
+    public Cobertura saveProjectData() {
+        CoverageDataFileHandler.saveCoverageData(getProjectDataInstance(), args
+                .getDataFile());
+        return this;
+    }
 
-	/*  Aux methods  */
-	private ProjectData getProjectDataInstance() {
-		// Load project data; see notes at the beginning of CodeInstrumentationTask class
-		if (projectData != null) {
-			return projectData;
-		}
-		if (args.getDataFile().isFile())
-			projectData = CoverageDataFileHandler.loadCoverageData(args
-					.getDataFile());
-		if (projectData == null)
-			projectData = new ProjectData();
+    /*  Aux methods  */
+    private ProjectData getProjectDataInstance() {
+        // Load project data; see notes at the beginning of CodeInstrumentationTask class
+        if (projectData != null) {
+            return projectData;
+        }
+        if (args.getDataFile().isFile())
+            projectData = CoverageDataFileHandler.loadCoverageData(args
+                    .getDataFile());
+        if (projectData == null)
+            projectData = new ProjectData();
 
-		return projectData;
-	}
+        return projectData;
+    }
 }

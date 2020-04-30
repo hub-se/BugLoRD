@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,11 @@
  * limitations under the License.
  */
 package org.apache.commons.lang3.exception;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -25,20 +30,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-
 /**
- * <p>Provides utilities for manipulating and examining 
+ * <p>Provides utilities for manipulating and examining
  * <code>Throwable</code> objects.</p>
  *
- * @since 1.0
  * @version $Id$
+ * @since 1.0
  */
 public class ExceptionUtils {
-    
+
     /**
      * <p>Used when printing stack frames to denote the start of a
      * wrapped exception.</p>
@@ -52,18 +52,18 @@ public class ExceptionUtils {
      */
     // TODO: Remove in Lang 4.0
     private static final String[] CAUSE_METHOD_NAMES = {
-        "getCause",
-        "getNextException",
-        "getTargetException",
-        "getException",
-        "getSourceException",
-        "getRootCause",
-        "getCausedByException",
-        "getNested",
-        "getLinkedException",
-        "getNestedException",
-        "getLinkedCause",
-        "getThrowable",
+            "getCause",
+            "getNextException",
+            "getTargetException",
+            "getException",
+            "getSourceException",
+            "getRootCause",
+            "getCausedByException",
+            "getNested",
+            "getLinkedException",
+            "getNestedException",
+            "getLinkedCause",
+            "getThrowable",
     };
 
     /**
@@ -77,6 +77,7 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Returns the default names used when searching for the cause of an exception.</p>
      *
@@ -92,10 +93,11 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Introspects the <code>Throwable</code> to obtain the cause.</p>
      *
-     * <p>The method searches for methods with specific names that return a 
+     * <p>The method searches for methods with specific names that return a
      * <code>Throwable</code> object. This will pick up most wrapping exceptions,
      * including those from JDK 1.4.
      *
@@ -110,12 +112,12 @@ public class ExceptionUtils {
      *  <li><code>getCausedByException()</code></li>
      *  <li><code>getNested()</code></li>
      * </ul>
-     * 
+     *
      * <p>If none of the above is found, returns <code>null</code>.</p>
      *
-     * @param throwable  the throwable to introspect for a cause, may be null
+     * @param throwable the throwable to introspect for a cause, may be null
      * @return the cause of the <code>Throwable</code>,
-     *  <code>null</code> if none found or null throwable input
+     * <code>null</code> if none found or null throwable input
      * @since 1.0
      * @deprecated This feature will be removed in Lang 4.0
      */
@@ -130,10 +132,10 @@ public class ExceptionUtils {
      * <p>A <code>null</code> set of method names means use the default set.
      * A <code>null</code> in the set of method names will be ignored.</p>
      *
-     * @param throwable  the throwable to introspect for a cause, may be null
-     * @param methodNames  the method names, null treated as default set
+     * @param throwable   the throwable to introspect for a cause, may be null
+     * @param methodNames the method names, null treated as default set
      * @return the cause of the <code>Throwable</code>,
-     *  <code>null</code> if none found or null throwable input
+     * <code>null</code> if none found or null throwable input
      * @since 1.0
      * @deprecated This feature will be removed in Lang 4.0
      */
@@ -172,20 +174,20 @@ public class ExceptionUtils {
      * parameter cause chain loops, the last element in the chain before the
      * loop is returned.</p>
      *
-     * @param throwable  the throwable to get the root cause for, may be null
+     * @param throwable the throwable to get the root cause for, may be null
      * @return the root cause of the <code>Throwable</code>,
-     *  <code>null</code> if none found or null throwable input
+     * <code>null</code> if none found or null throwable input
      */
     public static Throwable getRootCause(Throwable throwable) {
         List<Throwable> list = getThrowableList(throwable);
-        return list.size() < 2 ? null : (Throwable)list.get(list.size() - 1);
+        return list.size() < 2 ? null : (Throwable) list.get(list.size() - 1);
     }
 
     /**
      * <p>Finds a <code>Throwable</code> by method name.</p>
      *
      * @param throwable  the exception to examine
-     * @param methodName  the name of the method to find and invoke
+     * @param methodName the name of the method to find and invoke
      * @return the wrapped exception, or <code>null</code> if not found
      */
     // TODO: Remove in Lang 4.0
@@ -214,6 +216,7 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Counts the number of <code>Throwable</code> objects in the
      * exception chain.</p>
@@ -227,7 +230,7 @@ public class ExceptionUtils {
      * processed until the end is reached, or until the next item in the
      * chain is already in the result set.</p>
      *
-     * @param throwable  the throwable to inspect, may be null
+     * @param throwable the throwable to inspect, may be null
      * @return the count of throwables, zero if null input
      */
     public static int getThrowableCount(Throwable throwable) {
@@ -249,9 +252,9 @@ public class ExceptionUtils {
      * processed until the end is reached, or until the next item in the
      * chain is already in the result set.</p>
      *
-     * @see #getThrowableList(Throwable)
-     * @param throwable  the throwable to inspect, may be null
+     * @param throwable the throwable to inspect, may be null
      * @return the array of throwables, never null
+     * @see #getThrowableList(Throwable)
      */
     public static Throwable[] getThrowables(Throwable throwable) {
         List<Throwable> list = getThrowableList(throwable);
@@ -273,7 +276,7 @@ public class ExceptionUtils {
      * the end is reached, or until the next item in the chain is already
      * in the result set.</p>
      *
-     * @param throwable  the throwable to inspect, may be null
+     * @param throwable the throwable to inspect, may be null
      * @return the list of throwables, never null
      * @since Commons Lang 2.2
      */
@@ -287,6 +290,7 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Returns the (zero based) index of the first <code>Throwable</code>
      * that matches the specified class (exactly) in the exception chain.
@@ -297,8 +301,8 @@ public class ExceptionUtils {
      * A <code>null</code> type returns <code>-1</code>.
      * No match in the chain returns <code>-1</code>.</p>
      *
-     * @param throwable  the throwable to inspect, may be null
-     * @param clazz  the class to search for, subclasses do not match, null returns -1
+     * @param throwable the throwable to inspect, may be null
+     * @param clazz     the class to search for, subclasses do not match, null returns -1
      * @return the index into the throwable chain, -1 if no match or null input
      */
     public static int indexOfThrowable(Throwable throwable, Class<?> clazz) {
@@ -318,10 +322,10 @@ public class ExceptionUtils {
      * A negative start index is treated as zero.
      * A start index greater than the number of throwables returns <code>-1</code>.</p>
      *
-     * @param throwable  the throwable to inspect, may be null
-     * @param clazz  the class to search for, subclasses do not match, null returns -1
-     * @param fromIndex  the (zero based) index of the starting position,
-     *  negative treated as zero, larger than chain size returns -1
+     * @param throwable the throwable to inspect, may be null
+     * @param clazz     the class to search for, subclasses do not match, null returns -1
+     * @param fromIndex the (zero based) index of the starting position,
+     *                  negative treated as zero, larger than chain size returns -1
      * @return the index into the throwable chain, -1 if no match or null input
      */
     public static int indexOfThrowable(Throwable throwable, Class<?> clazz, int fromIndex) {
@@ -329,6 +333,7 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Returns the (zero based) index of the first <code>Throwable</code>
      * that matches the specified class or subclass in the exception chain.
@@ -339,8 +344,8 @@ public class ExceptionUtils {
      * A <code>null</code> type returns <code>-1</code>.
      * No match in the chain returns <code>-1</code>.</p>
      *
-     * @param throwable  the throwable to inspect, may be null
-     * @param type  the type to search for, subclasses match, null returns -1
+     * @param throwable the throwable to inspect, may be null
+     * @param type      the type to search for, subclasses match, null returns -1
      * @return the index into the throwable chain, -1 if no match or null input
      * @since 2.1
      */
@@ -361,10 +366,10 @@ public class ExceptionUtils {
      * A negative start index is treated as zero.
      * A start index greater than the number of throwables returns <code>-1</code>.</p>
      *
-     * @param throwable  the throwable to inspect, may be null
-     * @param type  the type to search for, subclasses match, null returns -1
-     * @param fromIndex  the (zero based) index of the starting position,
-     *  negative treated as zero, larger than chain size returns -1
+     * @param throwable the throwable to inspect, may be null
+     * @param type      the type to search for, subclasses match, null returns -1
+     * @param fromIndex the (zero based) index of the starting position,
+     *                  negative treated as zero, larger than chain size returns -1
      * @return the index into the throwable chain, -1 if no match or null input
      * @since 2.1
      */
@@ -375,12 +380,12 @@ public class ExceptionUtils {
     /**
      * <p>Worker method for the <code>indexOfType</code> methods.</p>
      *
-     * @param throwable  the throwable to inspect, may be null
-     * @param type  the type to search for, subclasses match, null returns -1
-     * @param fromIndex  the (zero based) index of the starting position,
-     *  negative treated as zero, larger than chain size returns -1
-     * @param subclass if <code>true</code>, compares with {@link Class#isAssignableFrom(Class)}, otherwise compares
-     * using references
+     * @param throwable the throwable to inspect, may be null
+     * @param type      the type to search for, subclasses match, null returns -1
+     * @param fromIndex the (zero based) index of the starting position,
+     *                  negative treated as zero, larger than chain size returns -1
+     * @param subclass  if <code>true</code>, compares with {@link Class#isAssignableFrom(Class)}, otherwise compares
+     *                  using references
      * @return index of the <code>type</code> within throwables nested withing the specified <code>throwable</code>
      */
     private static int indexOf(Throwable throwable, Class<?> type, int fromIndex, boolean subclass) {
@@ -411,6 +416,7 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Prints a compact stack trace for the root cause of a throwable
      * to <code>System.err</code>.</p>
@@ -426,7 +432,7 @@ public class ExceptionUtils {
      * <p>The method is equivalent to <code>printStackTrace</code> for throwables
      * that don't have nested causes.</p>
      *
-     * @param throwable  the throwable to output
+     * @param throwable the throwable to output
      * @since 2.0
      */
     public static void printRootCauseStackTrace(Throwable throwable) {
@@ -447,8 +453,8 @@ public class ExceptionUtils {
      * <p>The method is equivalent to <code>printStackTrace</code> for throwables
      * that don't have nested causes.</p>
      *
-     * @param throwable  the throwable to output, may be null
-     * @param stream  the stream to output to, may not be null
+     * @param throwable the throwable to output, may be null
+     * @param stream    the stream to output to, may not be null
      * @throws IllegalArgumentException if the stream is <code>null</code>
      * @since 2.0
      */
@@ -480,8 +486,8 @@ public class ExceptionUtils {
      * <p>The method is equivalent to <code>printStackTrace</code> for throwables
      * that don't have nested causes.</p>
      *
-     * @param throwable  the throwable to output, may be null
-     * @param writer  the writer to output to, may not be null
+     * @param throwable the throwable to output, may be null
+     * @param writer    the writer to output to, may not be null
      * @throws IllegalArgumentException if the writer is <code>null</code>
      * @since 2.0
      */
@@ -500,6 +506,7 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Creates a compact stack trace for the root cause of the supplied
      * <code>Throwable</code>.</p>
@@ -509,7 +516,7 @@ public class ExceptionUtils {
      * exceptions separated by '[wrapped]'. Note that this is the opposite
      * order to the JDK1.4 display.</p>
      *
-     * @param throwable  the throwable to examine, may be null
+     * @param throwable the throwable to examine, may be null
      * @return an array of stack trace frames, never null
      * @since 2.0
      */
@@ -521,7 +528,7 @@ public class ExceptionUtils {
         int count = throwables.length;
         List<String> frames = new ArrayList<String>();
         List<String> nextTrace = getStackFrameList(throwables[count - 1]);
-        for (int i = count; --i >= 0;) {
+        for (int i = count; --i >= 0; ) {
             List<String> trace = nextTrace;
             if (i != 0) {
                 nextTrace = getStackFrameList(throwables[i - 1]);
@@ -542,8 +549,8 @@ public class ExceptionUtils {
     /**
      * <p>Removes common frames from the cause trace given the two stack traces.</p>
      *
-     * @param causeFrames  stack trace of a cause throwable
-     * @param wrapperFrames  stack trace of a wrapper throwable
+     * @param causeFrames   stack trace of a cause throwable
+     * @param wrapperFrames stack trace of a wrapper throwable
      * @throws IllegalArgumentException if either argument is null
      * @since 2.0
      */
@@ -567,6 +574,7 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Gets the stack trace from a Throwable as a String.</p>
      *
@@ -575,9 +583,9 @@ public class ExceptionUtils {
      * On JDK1.3 and earlier, the cause exception will not be shown
      * unless the specified throwable alters printStackTrace.</p>
      *
-     * @param throwable  the <code>Throwable</code> to be examined
+     * @param throwable the <code>Throwable</code> to be examined
      * @return the stack trace as generated by the exception's
-     *  <code>printStackTrace(PrintWriter)</code> method
+     * <code>printStackTrace(PrintWriter)</code> method
      */
     public static String getStackTrace(Throwable throwable) {
         StringWriter sw = new StringWriter();
@@ -596,7 +604,7 @@ public class ExceptionUtils {
      * On JDK1.3 and earlier, the cause exception will not be shown
      * unless the specified throwable alters printStackTrace.</p>
      *
-     * @param throwable  the <code>Throwable</code> to examine, may be null
+     * @param throwable the <code>Throwable</code> to examine, may be null
      * @return an array of strings describing each stack frame, never null
      */
     public static String[] getStackFrames(Throwable throwable) {
@@ -607,12 +615,13 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Returns an array where each element is a line from the argument.</p>
      *
      * <p>The end of line is determined by the value of {@link SystemUtils#LINE_SEPARATOR}.</p>
      *
-     * @param stackTrace  a stack trace String
+     * @param stackTrace a stack trace String
      * @return an array where each element is a line from the argument
      */
     static String[] getStackFrames(String stackTrace) {
@@ -633,7 +642,7 @@ public class ExceptionUtils {
      * <p>This works in most cases - it will only fail if the exception
      * message contains a line that starts with:
      * <code>&quot;&nbsp;&nbsp;&nbsp;at&quot;.</code></p>
-     * 
+     *
      * @param t is any throwable
      * @return List of stack frames
      */
@@ -658,13 +667,14 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets a short message summarising the exception.
      * <p>
      * The message returned is of the form
      * {ClassNameWithoutPackage}: {ThrowableMessage}
      *
-     * @param th  the throwable to get a message for, null returns empty string
+     * @param th the throwable to get a message for, null returns empty string
      * @return the message, non-null
      * @since Commons Lang 2.2
      */
@@ -678,13 +688,14 @@ public class ExceptionUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets a short message summarising the root cause exception.
      * <p>
      * The message returned is of the form
      * {ClassNameWithoutPackage}: {ThrowableMessage}
      *
-     * @param th  the throwable to get a message for, null returns empty string
+     * @param th the throwable to get a message for, null returns empty string
      * @return the message, non-null
      * @since Commons Lang 2.2
      */

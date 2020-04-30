@@ -1,38 +1,38 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-98">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/InlineVariablesTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>373</number_tests>
-					<failed>1</failed>
-					<passed>372</passed>
-					<nodes>35892</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="com/google/javascript/jscomp/ReferenceCollectingCallback.java">
-					<insert numberlines="8">359-362</insert>
-					<insert numberlines="2"></insert>
-					<insert numberlines="9">556-562</insert>
-					<bugtypes>
-						<id id="1.1" lines="360">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="3.1" lines="544,560">
-							<description>Missing initialization.</description>
-						</id>
-						<id id="1.1" lines="548,561">
-							<description>Missing check for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>5</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-98">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/InlineVariablesTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>373</number_tests>
+                    <failed>1</failed>
+                    <passed>372</passed>
+                    <nodes>35892</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="com/google/javascript/jscomp/ReferenceCollectingCallback.java">
+                    <insert numberlines="8">359-362</insert>
+                    <insert numberlines="2"></insert>
+                    <insert numberlines="9">556-562</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="360">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="3.1" lines="544,560">
+                            <description>Missing initialization.</description>
+                        </id>
+                        <id id="1.1" lines="548,561">
+                            <description>Missing check for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>5</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

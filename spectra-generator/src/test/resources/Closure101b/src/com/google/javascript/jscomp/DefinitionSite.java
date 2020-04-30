@@ -23,26 +23,24 @@ import com.google.javascript.rhino.Node;
  * Information about the context in which a Definition appears.
  * Includes the definition node, and context in which the definition
  * occurs - including the definition module.
- *
-*
  */
 
 class DefinitionSite {
-  final Node node;
-  final Definition definition;
-  final JSModule module;
-  final boolean inGlobalScope;
-  final boolean inExterns;
+    final Node node;
+    final Definition definition;
+    final JSModule module;
+    final boolean inGlobalScope;
+    final boolean inExterns;
 
-  DefinitionSite(Node node,
-                 Definition definition,
-                 JSModule module,
-                 boolean inGlobalScope,
-                 boolean inExterns) {
-    this.node = node;
-    this.definition = definition;
-    this.module = module;
-    this.inGlobalScope = inGlobalScope;
-    this.inExterns = inExterns;
-  }
+    DefinitionSite(Node node,
+                   Definition definition,
+                   JSModule module,
+                   boolean inGlobalScope,
+                   boolean inExterns) {
+        this.node = node;
+        this.definition = definition;
+        this.module = module;
+        this.inGlobalScope = inGlobalScope;
+        this.inExterns = inExterns;
+    }
 }

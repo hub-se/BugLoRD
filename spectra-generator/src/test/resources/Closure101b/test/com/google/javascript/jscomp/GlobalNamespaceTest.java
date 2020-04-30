@@ -18,7 +18,6 @@ package com.google.javascript.jscomp;
 
 import com.google.javascript.jscomp.GlobalNamespace.Name;
 import com.google.javascript.jscomp.GlobalNamespace.Ref;
-
 import junit.framework.TestCase;
 
 /**
@@ -28,45 +27,45 @@ import junit.framework.TestCase;
  */
 public class GlobalNamespaceTest extends TestCase {
 
-  public void testRemoveDeclaration1() {
-    Name n = new Name("a", null, false);
-    Ref set1 = createNodelessRef(Ref.Type.SET_FROM_GLOBAL);
-    Ref set2 = createNodelessRef(Ref.Type.SET_FROM_GLOBAL);
+    public void testRemoveDeclaration1() {
+        Name n = new Name("a", null, false);
+        Ref set1 = createNodelessRef(Ref.Type.SET_FROM_GLOBAL);
+        Ref set2 = createNodelessRef(Ref.Type.SET_FROM_GLOBAL);
 
-    n.addRef(set1);
-    n.addRef(set2);
+        n.addRef(set1);
+        n.addRef(set2);
 
-    assertEquals(set1, n.declaration);
-    assertEquals(2, n.globalSets);
-    assertEquals(1, n.refs.size());
+        assertEquals(set1, n.declaration);
+        assertEquals(2, n.globalSets);
+        assertEquals(1, n.refs.size());
 
-    n.removeRef(set1);
+        n.removeRef(set1);
 
-    assertEquals(set2, n.declaration);
-    assertEquals(1, n.globalSets);
-    assertEquals(0, n.refs.size());
-  }
+        assertEquals(set2, n.declaration);
+        assertEquals(1, n.globalSets);
+        assertEquals(0, n.refs.size());
+    }
 
-  public void testRemoveDeclaration2() {
-    Name n = new Name("a", null, false);
-    Ref set1 = createNodelessRef(Ref.Type.SET_FROM_GLOBAL);
-    Ref set2 = createNodelessRef(Ref.Type.SET_FROM_LOCAL);
+    public void testRemoveDeclaration2() {
+        Name n = new Name("a", null, false);
+        Ref set1 = createNodelessRef(Ref.Type.SET_FROM_GLOBAL);
+        Ref set2 = createNodelessRef(Ref.Type.SET_FROM_LOCAL);
 
-    n.addRef(set1);
-    n.addRef(set2);
+        n.addRef(set1);
+        n.addRef(set2);
 
-    assertEquals(set1, n.declaration);
-    assertEquals(1, n.globalSets);
-    assertEquals(1, n.localSets);
-    assertEquals(1, n.refs.size());
+        assertEquals(set1, n.declaration);
+        assertEquals(1, n.globalSets);
+        assertEquals(1, n.localSets);
+        assertEquals(1, n.refs.size());
 
-    n.removeRef(set1);
+        n.removeRef(set1);
 
-    assertEquals(null, n.declaration);
-    assertEquals(0, n.globalSets);
-  }
+        assertEquals(null, n.declaration);
+        assertEquals(0, n.globalSets);
+    }
 
-  private Ref createNodelessRef(Ref.Type type) {
-    return Ref.createRefForTesting(type);
-  }
+    private Ref createNodelessRef(Ref.Type type) {
+        return Ref.createRefForTesting(type);
+    }
 }

@@ -4,16 +4,15 @@
  */
 package org.mockitousage.stubbing;
 
-import static org.mockito.BDDMockito.*;
+import org.junit.Test;
+import org.mockitoutil.TestBase;
 
+import javax.net.SocketFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import javax.net.SocketFactory;
-
-import org.junit.Test;
-import org.mockitoutil.TestBase;
+import static org.mockito.BDDMockito.*;
 
 
 public class DeepStubbingTest extends TestBase {
@@ -24,12 +23,12 @@ public class DeepStubbingTest extends TestBase {
         public Address getAddress() {
             return address;
         }
-        
+
         public FinalClass getFinalClass() {
             return null;
         }
     }
-    
+
     static class Address {
         Street street;
 
@@ -37,17 +36,20 @@ public class DeepStubbingTest extends TestBase {
             return street;
         }
     }
-    
+
     static class Street {
         String name;
 
         public String getName() {
             return name;
         }
-    }    
-    
-    static final class FinalClass {};    
-    
+    }
+
+    static final class FinalClass {
+    }
+
+    ;
+
     @Test
     public void myTest() throws Exception {
         SocketFactory sf = mock(SocketFactory.class, RETURNS_DEEP_STUBS);
@@ -177,36 +179,36 @@ public class DeepStubbingTest extends TestBase {
         assertEquals(c, sf.createSocket("stackoverflow.com", 8080).getPort());
         assertEquals(a, sf.createSocket("stackoverflow.com", 80).getPort());
     }
-    
+
     Person person = mock(Person.class, RETURNS_DEEP_STUBS);
-       
+
     @Test
     public void shouldStubbingBasicallyWorkFine() throws Exception {
         //given
         given(person.getAddress().getStreet().getName()).willReturn("Norymberska");
-        
+
         //when
         String street = person.getAddress().getStreet().getName();
-        
+
         //then
         assertEquals("Norymberska", street);
-    }    
-    
+    }
+
     @Test
     public void shouldVerificationBasicallyWorkFine() throws Exception {
         //given
         person.getAddress().getStreet().getName();
-        
+
         //then
         verify(person.getAddress().getStreet()).getName();
-    }   
-    
+    }
+
     @Test
     public void shouldFailGracefullyWhenClassIsFinal() throws Exception {
         //when        
         FinalClass value = new FinalClass();
         given(person.getFinalClass()).willReturn(value);
-        
+
         //then
         assertEquals(value, person.getFinalClass());
     }

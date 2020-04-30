@@ -1,31 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-30">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/stat/inference/MannWhitneyUTestTest">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>3</number_tests>
-					<failed>1</failed>
-					<passed>2</passed>
-					<nodes>31976</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/stat/inference/MannWhitneyUTest.java">
-					<change>173</change>
-					<bugtypes>
-						<id id="3.1" lines="173">
-							<description>Incorrect variable type.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-30">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/stat/inference/MannWhitneyUTestTest">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>3</number_tests>
+                    <failed>1</failed>
+                    <passed>2</passed>
+                    <nodes>31976</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/stat/inference/MannWhitneyUTest.java">
+                    <change>173</change>
+                    <bugtypes>
+                        <id id="3.1" lines="173">
+                            <description>Incorrect variable type.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

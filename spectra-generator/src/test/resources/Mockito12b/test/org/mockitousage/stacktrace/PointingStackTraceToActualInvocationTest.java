@@ -4,8 +4,6 @@
  */
 package org.mockitousage.stacktrace;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,13 +13,17 @@ import org.mockito.runners.MockitoJUnit44Runner;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Mockito.*;
+
 //This is required to make sure stack trace is well filtered when runner is ON
 @SuppressWarnings("deprecation")
 @RunWith(MockitoJUnit44Runner.class)
 public class PointingStackTraceToActualInvocationTest extends TestBase {
-    
-    @Mock private IMethods mock;
-    @Mock private IMethods mockTwo;
+
+    @Mock
+    private IMethods mock;
+    @Mock
+    private IMethods mockTwo;
 
     @Before
     public void setup() {
@@ -34,16 +36,19 @@ public class PointingStackTraceToActualInvocationTest extends TestBase {
     private void first() {
         mock.simpleMethod(1);
     }
+
     private void second() {
         mockTwo.simpleMethod(2);
     }
+
     private void third() {
         mock.simpleMethod(3);
     }
+
     private void fourth() {
         mockTwo.simpleMethod(4);
     }
-    
+
     @Test
     public void shouldPointToTooManyInvocationsChunkOnError() {
         try {
@@ -52,8 +57,8 @@ public class PointingStackTraceToActualInvocationTest extends TestBase {
         } catch (NeverWantedButInvoked e) {
             assertContains("first(", e.getMessage());
         }
-    }   
-    
+    }
+
     @Test
     public void shouldNotPointStackTracesToRunnersCode() {
         try {
@@ -62,5 +67,5 @@ public class PointingStackTraceToActualInvocationTest extends TestBase {
         } catch (NeverWantedButInvoked e) {
             assertNotContains(".runners.", e.getMessage());
         }
-    }   
+    }
 }

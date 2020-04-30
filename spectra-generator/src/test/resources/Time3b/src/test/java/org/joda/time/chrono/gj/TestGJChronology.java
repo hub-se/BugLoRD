@@ -84,7 +84,9 @@ abstract class TestGJChronology extends BaseChronology {
         return (mod == 0) ? divisor : mod;
     }
 
-    /** Milliseconds from 0001-01-01 to the epoch. */
+    /**
+     * Milliseconds from 0001-01-01 to the epoch.
+     */
     private final long iEpochMillis;
 
     public TestGJChronology(int epochYear, int epochMonth, int epochDay) {
@@ -123,7 +125,7 @@ abstract class TestGJChronology extends BaseChronology {
     }
 
     public DateTimeField dayOfMonth() {
-        return new TestGJDayOfMonthField(this); 
+        return new TestGJDayOfMonthField(this);
     }
 
     public DateTimeField dayOfYear() {
@@ -248,9 +250,9 @@ abstract class TestGJChronology extends BaseChronology {
     }
 
     /**
-     * @param date days from 0001-01-01
+     * @param date    days from 0001-01-01
      * @param weekday 0=Sunday, 1=Monday, 2=Tuesday ... 6=Saturday, 7=Sunday
-     * @param date days from 0001-01-01, on or before weekday
+     * @param date    days from 0001-01-01, on or before weekday
      */
     long weekdayOnOrBefore(long date, int weekday) {
         return date - mod(date - mod(weekday, 7), 7);
@@ -273,14 +275,13 @@ abstract class TestGJChronology extends BaseChronology {
     }
 
     long nthWeekday(int n, int weekday,
-                    int year, int monthOfYear, int dayOfMonth)
-    {
+                    int year, int monthOfYear, int dayOfMonth) {
         if (n > 0) {
             return 7 * n + weekdayBefore
-                (fixedFromGJ(year, monthOfYear, dayOfMonth), weekday);
+                    (fixedFromGJ(year, monthOfYear, dayOfMonth), weekday);
         } else {
             return 7 * n + weekdayAfter
-                (fixedFromGJ(year, monthOfYear, dayOfMonth), weekday);
+                    (fixedFromGJ(year, monthOfYear, dayOfMonth), weekday);
         }
     }
 

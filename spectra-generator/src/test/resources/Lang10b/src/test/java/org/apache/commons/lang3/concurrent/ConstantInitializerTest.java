@@ -16,13 +16,13 @@
  */
 package org.apache.commons.lang3.concurrent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.regex.Pattern;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for {@code ConstantInitializer}.
@@ -30,10 +30,14 @@ import org.junit.Test;
  * @version $Id$
  */
 public class ConstantInitializerTest {
-    /** Constant for the object managed by the initializer. */
+    /**
+     * Constant for the object managed by the initializer.
+     */
     private static final Integer VALUE = 42;
 
-    /** The initializer to be tested. */
+    /**
+     * The initializer to be tested.
+     */
     private ConstantInitializer<Integer> init;
 
     @Before
@@ -44,7 +48,7 @@ public class ConstantInitializerTest {
     /**
      * Helper method for testing equals() and hashCode().
      *
-     * @param obj the object to compare with the test instance
+     * @param obj      the object to compare with the test instance
      * @param expected the expected result
      */
     private void checkEquals(Object obj, boolean expected) {

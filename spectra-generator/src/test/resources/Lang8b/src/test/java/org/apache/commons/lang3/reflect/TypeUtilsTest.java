@@ -16,19 +16,6 @@
  */
 package org.apache.commons.lang3.reflect;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.reflect.testbed.Foo;
 import org.apache.commons.lang3.reflect.testbed.GenericParent;
@@ -37,11 +24,20 @@ import org.apache.commons.lang3.reflect.testbed.StringParameterizedChild;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.net.URI;
+import java.util.*;
+
 /**
  * Test TypeUtils
+ *
  * @version $Id$
  */
-@SuppressWarnings({ "unchecked", "unused" , "rawtypes", "null"})
+@SuppressWarnings({"unchecked", "unused", "rawtypes", "null"})
 //raw types, where used, are used purposely
 public class TypeUtilsTest<B> {
 
@@ -97,10 +93,10 @@ public class TypeUtilsTest<B> {
     public static URI uri;
 
     public void dummyMethod(List list0, List<Object> list1, List<?> list2,
-            List<? super Object> list3, List<String> list4, List<? extends String> list5,
-            List<? super String> list6, List[] list7, List<Object>[] list8, List<?>[] list9,
-            List<? super Object>[] list10, List<String>[] list11, List<? extends String>[] list12,
-            List<? super String>[] list13) {
+                            List<? super Object> list3, List<String> list4, List<? extends String> list5,
+                            List<? super String> list6, List[] list7, List<Object>[] list8, List<?>[] list9,
+                            List<? super Object>[] list10, List<String>[] list11, List<? extends String>[] list12,
+                            List<? super String>[] list13) {
     }
 
     @SuppressWarnings("boxing") // deliberately used here

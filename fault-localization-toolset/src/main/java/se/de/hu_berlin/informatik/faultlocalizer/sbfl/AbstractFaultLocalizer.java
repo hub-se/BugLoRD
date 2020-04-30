@@ -18,48 +18,47 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingValue
 /**
  * Class is used to simplify the creation of (spectrum based) fault localizers.
  *
- * @param <T>
- * type used to identify nodes in the system
+ * @param <T> type used to identify nodes in the system
  */
 public abstract class AbstractFaultLocalizer<T> implements IFaultLocalizer<T> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Ranking<INode<T>> localize(final ISpectra<T,?> spectra, ComputationStrategies strategy) {
-		final Ranking<INode<T>> ranking = new NodeRanking<>();
-		for (final INode<T> node : spectra.getNodes()) {
-			final double suspiciousness = this.suspiciousness(node, strategy);
-			ranking.add(node, suspiciousness);
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Ranking<INode<T>> localize(final ISpectra<T, ?> spectra, ComputationStrategies strategy) {
+        final Ranking<INode<T>> ranking = new NodeRanking<>();
+        for (final INode<T> node : spectra.getNodes()) {
+            final double suspiciousness = this.suspiciousness(node, strategy);
+            ranking.add(node, suspiciousness);
+        }
 
-		// treats NaN values as being negative infinity
-		return Ranking.getRankingWithStrategies(
-				ranking, RankingValueReplacementStrategy.NEGATIVE_INFINITY, RankingValueReplacementStrategy.INFINITY,
-				RankingValueReplacementStrategy.NEGATIVE_INFINITY);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Ranking<INode<T>> localize(final ILocalizerCache<T> localizer, ComputationStrategies strategy) {
-		final Ranking<INode<T>> ranking = new NodeRanking<>();
-		for (final INode<T> node : localizer.getNodes()) {
-			final double suspiciousness = this.suspiciousness(node, strategy);
-			ranking.add(node, suspiciousness);
-		}
+        // treats NaN values as being negative infinity
+        return Ranking.getRankingWithStrategies(
+                ranking, RankingValueReplacementStrategy.NEGATIVE_INFINITY, RankingValueReplacementStrategy.INFINITY,
+                RankingValueReplacementStrategy.NEGATIVE_INFINITY);
+    }
 
-		// treats NaN values as being negative infinity
-		return Ranking.getRankingWithStrategies(
-				ranking, RankingValueReplacementStrategy.NEGATIVE_INFINITY, RankingValueReplacementStrategy.INFINITY,
-				RankingValueReplacementStrategy.NEGATIVE_INFINITY);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Ranking<INode<T>> localize(final ILocalizerCache<T> localizer, ComputationStrategies strategy) {
+        final Ranking<INode<T>> ranking = new NodeRanking<>();
+        for (final INode<T> node : localizer.getNodes()) {
+            final double suspiciousness = this.suspiciousness(node, strategy);
+            ranking.add(node, suspiciousness);
+        }
 
-	@Override
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
-	
+        // treats NaN values as being negative infinity
+        return Ranking.getRankingWithStrategies(
+                ranking, RankingValueReplacementStrategy.NEGATIVE_INFINITY, RankingValueReplacementStrategy.INFINITY,
+                RankingValueReplacementStrategy.NEGATIVE_INFINITY);
+    }
+
+    @Override
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
+
 }

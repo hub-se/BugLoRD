@@ -17,41 +17,24 @@ package org.joda.example.time;
 /*
  * Import required Java packages.
  */
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.WindowConstants;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
 import org.joda.time.DateTime;
 
-/** DateTimeBrowser is a Java Swing application which reads a file contining
+import javax.swing.*;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+/**
+ * DateTimeBrowser is a Java Swing application which reads a file contining
  * strings and displays DateTime values in a JTable.<p>
  * The input strings must be suitable for instantiation
  * of DateTime objects.  The file is read, and an attempt is made
@@ -71,7 +54,7 @@ public class DateTimeBrowser extends JFrame {
     private String[] mainArgs = null;           // Copy of args[] reference.
     //
     private LoadedFile currFile = null;         // New ones possible at
-                                                // runtime.
+    // runtime.
     private JScrollPane mainSP = null;          // Swapped around at runtime
     //
     /**
@@ -127,16 +110,16 @@ public class DateTimeBrowser extends JFrame {
          * transgressions.
          *
          */
-            if ( args.length < 1 ) {
-                System.err.println("File name is required!");
-                usage();
-                System.exit(1);
-            }
+        if (args.length < 1) {
+            System.err.println("File name is required!");
+            usage();
+            System.exit(1);
+        }
         /*
          * Instantiate a DateTimeBrowser and invoke it's go method,
          * passing the input argument list.
          */
-        new DateTimeBrowser().go( args );
+        new DateTimeBrowser().go(args);
     } // main
 
     /*
@@ -144,22 +127,22 @@ public class DateTimeBrowser extends JFrame {
      * the user before an error exit.
      */
     private static void usage() {
-            System.err.println("Usage:");
-            System.err.print("java <options> ");
-            System.err.print(DateTimeBrowser.class.getName());
-            System.err.println(" <filename>");
-            System.err.println("<filename> contains a list of Strings");
-            System.err.println("\twhich are valid for DateTime instantiation.");
-            System.err.println("<optons>");
-            System.err.println("\t-Duse.time.zone=");
-            System.err.println("\t\tA valid timezone name.  If not specified");
-            System.err.println("\t\tthe OS/user default is used.  If sepcified");
-            System.err.println("\t\tincorrectly, GMT is quietly used.");
-            System.err.println("\t-Duse.view=");
-            System.err.println("\t\tAn initial view to be displayed.");
-            System.err.println("\t\tValid names are: getter, hex, date, cal");
-            System.err.println("\t\tIf incorrectly specified, getter is used.");
-            System.err.println("\t\tThis becomes the default view.");
+        System.err.println("Usage:");
+        System.err.print("java <options> ");
+        System.err.print(DateTimeBrowser.class.getName());
+        System.err.println(" <filename>");
+        System.err.println("<filename> contains a list of Strings");
+        System.err.println("\twhich are valid for DateTime instantiation.");
+        System.err.println("<optons>");
+        System.err.println("\t-Duse.time.zone=");
+        System.err.println("\t\tA valid timezone name.  If not specified");
+        System.err.println("\t\tthe OS/user default is used.  If sepcified");
+        System.err.println("\t\tincorrectly, GMT is quietly used.");
+        System.err.println("\t-Duse.view=");
+        System.err.println("\t\tAn initial view to be displayed.");
+        System.err.println("\t\tValid names are: getter, hex, date, cal");
+        System.err.println("\t\tIf incorrectly specified, getter is used.");
+        System.err.println("\t\tThis becomes the default view.");
     } // usage
 
     /*
@@ -177,33 +160,32 @@ public class DateTimeBrowser extends JFrame {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         //
         JMenuBar menuBar = new JMenuBar();
-        setJMenuBar( menuBar );
-        addMenus( menuBar );
+        setJMenuBar(menuBar);
+        addMenus(menuBar);
         /*
          * Add a fast close listener
          */
 
-        addWindowListener( new WindowAdapter() {
-                    public void windowClosing(WindowEvent e)
-                    {
-                        setVisible( false );
-                        dispose();
-                        System.exit(0);
-                    }
-                }
-            );
+        addWindowListener(new WindowAdapter() {
+                              public void windowClosing(WindowEvent e) {
+                                  setVisible(false);
+                                  dispose();
+                                  System.exit(0);
+                              }
+                          }
+        );
 
         //
         // Load current file, prime tables and JFrame.
         //
-        currFile = new LoadedFile( mainArgs[0] );
+        currFile = new LoadedFile(mainArgs[0]);
         TableView tView = getDefaultTableView();
-        resetDefaults( tView );
+        resetDefaults(tView);
         //
         // Set max size at start, and display the window.
         //
         Dimension screenMax = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize ( screenMax );
+        setSize(screenMax);
         setVisible(true);
     }
 
@@ -217,60 +199,58 @@ public class DateTimeBrowser extends JFrame {
     private TableView getDefaultTableView() {
         // No user input.
         String viewStr = System.getProperty("use.view");
-        if ( viewStr == null ) {
-            jmiGetter.setEnabled( false );
-            return new GetterTableView( currFile );
+        if (viewStr == null) {
+            jmiGetter.setEnabled(false);
+            return new GetterTableView(currFile);
         }
         // Valid user input.
-        if ( viewStr.equalsIgnoreCase("hex") ) {
-            jmiHex.setEnabled( false );
-            return new HexTableView( currFile );
-        }
-        else if ( viewStr.equalsIgnoreCase("date") ) {
-            jmiDate.setEnabled( false );
-            return new DateTableView( currFile );
-        }
-        else if ( viewStr.equalsIgnoreCase("cal") ) {
-            jmiCal.setEnabled( false );
-            return new CalTableView( currFile );
-        }
-        else if ( viewStr.equalsIgnoreCase("getter") ) {
-            jmiGetter.setEnabled( false );
-            return new GetterTableView( currFile );
-        }
-        else { // error by user
+        if (viewStr.equalsIgnoreCase("hex")) {
+            jmiHex.setEnabled(false);
+            return new HexTableView(currFile);
+        } else if (viewStr.equalsIgnoreCase("date")) {
+            jmiDate.setEnabled(false);
+            return new DateTableView(currFile);
+        } else if (viewStr.equalsIgnoreCase("cal")) {
+            jmiCal.setEnabled(false);
+            return new CalTableView(currFile);
+        } else if (viewStr.equalsIgnoreCase("getter")) {
+            jmiGetter.setEnabled(false);
+            return new GetterTableView(currFile);
+        } else { // error by user
             System.err.println("View name: " + viewStr + " invalid.");
-            jmiGetter.setEnabled( false );
-            return new GetterTableView( currFile );
+            jmiGetter.setEnabled(false);
+            return new GetterTableView(currFile);
         }
     }
+
     /*
-    * setDefaultTableView
-    */
+     * setDefaultTableView
+     */
     private void setDefaultTableView(String newView) {
-        System.setProperty( "use.view", newView );
+        System.setProperty("use.view", newView);
     }
+
     /*
      * setDefaultTimeZone
      */
     private void setDefaultTimeZone() {
         String tzName = System.getProperty("use.time.zone");
-        if ( tzName == null ) return;   // Use OS/user default.
+        if (tzName == null) return;   // Use OS/user default.
         //
         // If tzName is bogus, not understood by the JRE,
         // 'getTimeZone' returns GMT.
         //
-        TimeZone toSet = TimeZone.getTimeZone( tzName );
+        TimeZone toSet = TimeZone.getTimeZone(tzName);
         //
         // Set default to whatever was returned.
         //
-        TimeZone.setDefault( toSet );
+        TimeZone.setDefault(toSet);
     }
 
     /*
      * addMenus
      */
-    private void addMenus( JMenuBar menuBar) {
+    private void addMenus(JMenuBar menuBar) {
         //
         // Create all the menus.
         //
@@ -279,46 +259,46 @@ public class DateTimeBrowser extends JFrame {
         //
         // Add them to the menubar in order.
         //
-        menuBar.add( fileMenu );
-        menuBar.add( viewMenu );
+        menuBar.add(fileMenu);
+        menuBar.add(viewMenu);
         //
         // Create action objects and menu items.
         //
         Action open = new OpenAction();
-        JMenuItem jmiOpen = new JMenuItem( open );
+        JMenuItem jmiOpen = new JMenuItem(open);
         Action exit = new ExitAction();
-        JMenuItem jmiExit = new JMenuItem( exit );
+        JMenuItem jmiExit = new JMenuItem(exit);
         //
         // Next Menu
         //
         Action getter = new GetterAction();
-        jmiGetter = new JMenuItem( getter );
-        getter.setEnabled( true );
+        jmiGetter = new JMenuItem(getter);
+        getter.setEnabled(true);
         //
         Action hex = new HexAction();
-        jmiHex = new JMenuItem( hex );
-        hex.setEnabled( true );
+        jmiHex = new JMenuItem(hex);
+        hex.setEnabled(true);
         //
         Action date = new DateAction();
-        jmiDate = new JMenuItem( date );
-        date.setEnabled( true );
+        jmiDate = new JMenuItem(date);
+        date.setEnabled(true);
         //
         Action cal = new CalAction();
-        jmiCal = new JMenuItem( cal );
-        cal.setEnabled( true );
+        jmiCal = new JMenuItem(cal);
+        cal.setEnabled(true);
         //
         // Build the file menu.
         //
-        fileMenu.add( jmiOpen );
+        fileMenu.add(jmiOpen);
         fileMenu.addSeparator();
-        fileMenu.add( jmiExit );
+        fileMenu.add(jmiExit);
         //
         // Build the view menu.
         //
-        viewMenu.add( jmiGetter );
-        viewMenu.add( jmiHex );
-        viewMenu.add( jmiDate );
-        viewMenu.add( jmiCal );
+        viewMenu.add(jmiGetter);
+        viewMenu.add(jmiHex);
+        viewMenu.add(jmiDate);
+        viewMenu.add(jmiCal);
         //
         // *temp Developer's code
         //
@@ -334,11 +314,11 @@ public class DateTimeBrowser extends JFrame {
      * if desired by the developer
      * @param objs The array of arrays to be dumped.
      */
-    private void dumpObjs(Object[][] objs, PrintStream out ) {
+    private void dumpObjs(Object[][] objs, PrintStream out) {
         for (int i = 0; i < objs.length; ++i) {
             for (int j = 0; j < objs[i].length; ++j) {
                 out.println(i + " " + j + " "
-                    + objs[i][j]);
+                        + objs[i][j]);
             } // for j
         } // for i
     }
@@ -347,10 +327,10 @@ public class DateTimeBrowser extends JFrame {
      * enableAll
      */
     private void enableAllViews() {
-        jmiGetter.setEnabled( true );
-        jmiHex.setEnabled( true );
-        jmiDate.setEnabled( true );
-        jmiCal.setEnabled( true );
+        jmiGetter.setEnabled(true);
+        jmiHex.setEnabled(true);
+        jmiDate.setEnabled(true);
+        jmiCal.setEnabled(true);
     } // end of enableAllViews
 
     /*
@@ -360,16 +340,15 @@ public class DateTimeBrowser extends JFrame {
      */
     private DateTime getADate(String s) {
         DateTime retDT = null;
-        try
-        {
-            retDT = new DateTime( s );
+        try {
+            retDT = new DateTime(s);
         } // the try
-        catch(IllegalArgumentException pe)
-        {
+        catch (IllegalArgumentException pe) {
             // ignore it here, caller sees null
         } // the catch
         return retDT;
     } // getADate
+
     //
     private static final String PADCHARS = "00000000000000000000000000000000";
 
@@ -387,17 +366,17 @@ public class DateTimeBrowser extends JFrame {
     /*
      * resetDefaults
      */
-    private void resetDefaults( TableView tView ) {
+    private void resetDefaults(TableView tView) {
         Object[] colNames = tView.getColNames();
         Object[][] tableValues = tView.getCalcdValues();
         // dumpObjs( tableValues, System.out);
-        JTable table = new JTable( tableValues, colNames );
-        tView.setViewColumnsWidth( table );
-        setTitle( tView.getViewTitle() );
+        JTable table = new JTable(tableValues, colNames);
+        tView.setViewColumnsWidth(table);
+        setTitle(tView.getViewTitle());
         //
-        if ( mainSP != null ) getContentPane().remove( mainSP );
-        mainSP = new JScrollPane( table );
-        getContentPane().add( mainSP, "Center" );
+        if (mainSP != null) getContentPane().remove(mainSP);
+        mainSP = new JScrollPane(table);
+        getContentPane().add(mainSP, "Center");
         validate();
     } // end of resetDefaults
 
@@ -420,41 +399,38 @@ public class DateTimeBrowser extends JFrame {
          * LoadedFile constructor.
          */
         LoadedFile(String fileName) {
-            validateFile( fileName );
+            validateFile(fileName);
             this.fileName = fileName;
             //
-            fileStrings = new ArrayList( lineGuess );
-            dtObjects = new ArrayList( lineGuess );
+            fileStrings = new ArrayList(lineGuess);
+            dtObjects = new ArrayList(lineGuess);
 
-            try
-            {
-                BufferedReader  rdr =
-                    new BufferedReader( new FileReader( fileName ) );
+            try {
+                BufferedReader rdr =
+                        new BufferedReader(new FileReader(fileName));
                 String inputLine = null;
                 DateTime calculatedDT = null;
                 int currLine = 0;
-                while( (inputLine = rdr.readLine()) != null ) {
+                while ((inputLine = rdr.readLine()) != null) {
                     currLine++;
                     inputLine = inputLine.trim();
                     // Ignore blank and comment lines
-                    if ( inputLine.length() == 0 ) continue;
-                    if ( inputLine.charAt(0) == '#' ) continue;
+                    if (inputLine.length() == 0) continue;
+                    if (inputLine.charAt(0) == '#') continue;
                     // Ignore lines which fail DateTime construction
-                    if ( (calculatedDT = getADate(inputLine)) == null ) {
+                    if ((calculatedDT = getADate(inputLine)) == null) {
                         System.err.println("Parse failed for: " + inputLine
-                            + " at line number " + currLine);
+                                + " at line number " + currLine);
                         continue;
                     }
                     // Add the input file string and DateTime to lists
-                    fileStrings.add( inputLine );
-                    dtObjects.add( calculatedDT );
+                    fileStrings.add(inputLine);
+                    dtObjects.add(calculatedDT);
                 }
                 rdr.close();
-            }
-            catch(IOException ioe)
-            {
+            } catch (IOException ioe) {
                 System.err.println("Load of file: "
-                    + fileName + " failed!");
+                        + fileName + " failed!");
                 ioe.printStackTrace();
                 System.exit(100);
             }
@@ -462,18 +438,32 @@ public class DateTimeBrowser extends JFrame {
             // Try to be efficient (?really?)
             fileStrings.trimToSize();
             dtObjects.trimToSize();
-            } // end of LoadedFile() constructor
+        } // end of LoadedFile() constructor
+
         /*
          * General getters.
          */
-        public String getFileName() { return fileName; }
-        public int getLineGuess() { return lineGuess; }
-        public ArrayList getFileStrings() { return fileStrings; }
-        public ArrayList getDtObjects() { return dtObjects; }
+        public String getFileName() {
+            return fileName;
+        }
+
+        public int getLineGuess() {
+            return lineGuess;
+        }
+
+        public ArrayList getFileStrings() {
+            return fileStrings;
+        }
+
+        public ArrayList getDtObjects() {
+            return dtObjects;
+        }
+
         public int getLoadedFileSize() {
-            if ( dtObjects == null ) return 0;
+            if (dtObjects == null) return 0;
             return dtObjects.size();
         }
+
         /*
          * validateFile
          */
@@ -482,10 +472,10 @@ public class DateTimeBrowser extends JFrame {
              * Verify the user specified file exists and can
              * be read.
              */
-            File f = new File( fileName );
-            if ( !f.exists() || !f.canRead() ) {
+            File f = new File(fileName);
+            if (!f.exists() || !f.canRead()) {
                 System.err.println("File: " + mainArgs[0]
-                    + " does not exist or cannot be read!");
+                        + " does not exist or cannot be read!");
                 usage();
                 System.exit(2);
             }
@@ -496,12 +486,12 @@ public class DateTimeBrowser extends JFrame {
             // Java does not do this right IMO.  The number of bytes in a
             // file is a
             // long, but the length of a string is an int.  Why?
-            lineGuess = (int)(f.length() / (long)"YYYY-MM-DDTHH:MM:SS".length());
+            lineGuess = (int) (f.length() / (long) "YYYY-MM-DDTHH:MM:SS".length());
             lineGuess += (lineGuess / 10);
             //
             // Debugging
             //
-            if ( false ) {
+            if (false) {
                 System.out.println("Line guess is: " + lineGuess);
             }
         } // end of validateFile(String)
@@ -516,21 +506,28 @@ public class DateTimeBrowser extends JFrame {
         protected Object[] colNames = null;
         protected Object[][] calcdValues = null;
         protected LoadedFile lddFile = null;
+
         //
         TableView(LoadedFile lddFile) {
             this.lddFile = lddFile;
         }
+
         //
         public Object[] getColNames() {
             return colNames;
         }
+
         public Object[][] getCalcdValues() {
             return calcdValues;
         }
+
         //
         abstract Object[] genColNames();
+
         abstract Object[][] genCalcdValues();
+
         abstract String getViewTitle();
+
         abstract void setViewColumnsWidth(JTable jt);
         //
     } // end of abstract class TableView
@@ -543,7 +540,7 @@ public class DateTimeBrowser extends JFrame {
         //
         GetterTableView(LoadedFile lddFile) {
             super(lddFile);
-            setDefaultTableView( "getter" );
+            setDefaultTableView("getter");
             colNames = genColNames();
             calcdValues = genCalcdValues();
         }
@@ -569,36 +566,36 @@ public class DateTimeBrowser extends JFrame {
              * secondary array for each of the primary array's
              * elements.
              */
-            for (int nextStrNum = 0; nextStrNum < fileStrings.size(); ++ nextStrNum) {
+            for (int nextStrNum = 0; nextStrNum < fileStrings.size(); ++nextStrNum) {
                 retValues[nextStrNum] = new Object[numCols]; // get the 'col' array
                 //****
                 //* This needs to be sync'd with the colNames array.
                 //****
                 // Current row, 1st column
                 int column = 0; // working row value
-                String fileString = (String)fileStrings.get(nextStrNum);
+                String fileString = (String) fileStrings.get(nextStrNum);
                 retValues[nextStrNum][column++] = fileString;
                 // Current row, 2nd column
-                DateTime adt = (DateTime)dtObjects.get(nextStrNum);
+                DateTime adt = (DateTime) dtObjects.get(nextStrNum);
                 String adtStr = adt.toString();
                 retValues[nextStrNum][column++] = adtStr;
                 // Current row, other columns.
                 // Order here must match that specified in the colNames
                 // array.
-                retValues[nextStrNum][column++]  = new Integer( adt.getMillisOfSecond() );
-                retValues[nextStrNum][column++]  = new Integer( adt.getSecondOfMinute() );
-                retValues[nextStrNum][column++]  = new Integer( adt.getMinuteOfHour() );
-                retValues[nextStrNum][column++]  = new Integer( adt.getHourOfDay() );
-                retValues[nextStrNum][column++]  = new Integer( adt.getDayOfWeek() );
-                retValues[nextStrNum][column++]  = new Integer( adt.getDayOfMonth() );
-                retValues[nextStrNum][column++]  = new Integer( adt.getDayOfYear() );
-                retValues[nextStrNum][column++]  = new Integer( adt.getWeekOfWeekyear() );
-                retValues[nextStrNum][column++] = new Integer( adt.getWeekyear() );
-                retValues[nextStrNum][column++] = new Integer( adt.getMonthOfYear() );
-                retValues[nextStrNum][column++] = new Integer( adt.getYear() );
+                retValues[nextStrNum][column++] = new Integer(adt.getMillisOfSecond());
+                retValues[nextStrNum][column++] = new Integer(adt.getSecondOfMinute());
+                retValues[nextStrNum][column++] = new Integer(adt.getMinuteOfHour());
+                retValues[nextStrNum][column++] = new Integer(adt.getHourOfDay());
+                retValues[nextStrNum][column++] = new Integer(adt.getDayOfWeek());
+                retValues[nextStrNum][column++] = new Integer(adt.getDayOfMonth());
+                retValues[nextStrNum][column++] = new Integer(adt.getDayOfYear());
+                retValues[nextStrNum][column++] = new Integer(adt.getWeekOfWeekyear());
+                retValues[nextStrNum][column++] = new Integer(adt.getWeekyear());
+                retValues[nextStrNum][column++] = new Integer(adt.getMonthOfYear());
+                retValues[nextStrNum][column++] = new Integer(adt.getYear());
                 //
             } // the for
-            if ( debugf ) dumpObjs( retValues, System.err );
+            if (debugf) dumpObjs(retValues, System.err);
             return retValues;
         } // end of genTBValues
 
@@ -607,19 +604,19 @@ public class DateTimeBrowser extends JFrame {
          */
         Object[] genColNames() {
             Object[] retVal = {
-                "FileString",
-                "toString()",
-                "MillisOfSec",
-                "SecOfMin",
-                "MinOfHr",
-                "HrOfDay",
-                "DayOfWk",
-                "DayOfMon",
-                "DayOfYr",
-                "WeekOfWY",
-                "Weekyear",
-                "MonOfYr",
-                "Year"
+                    "FileString",
+                    "toString()",
+                    "MillisOfSec",
+                    "SecOfMin",
+                    "MinOfHr",
+                    "HrOfDay",
+                    "DayOfWk",
+                    "DayOfMon",
+                    "DayOfYr",
+                    "WeekOfWY",
+                    "Weekyear",
+                    "MonOfYr",
+                    "Year"
             };
             return retVal;
         }
@@ -629,12 +626,13 @@ public class DateTimeBrowser extends JFrame {
          */
         String getViewTitle() {
             return "DateTime.getXXX() Method Calculations"
-                + " : "
-                + TimeZone.getDefault().getDisplayName()
-                + " : "
-                + " Record Count "
-                + currFile.getLoadedFileSize();
+                    + " : "
+                    + TimeZone.getDefault().getDisplayName()
+                    + " : "
+                    + " Record Count "
+                    + currFile.getLoadedFileSize();
         }
+
         /*
          * setViewColumnLengths
          */
@@ -660,7 +658,7 @@ public class DateTimeBrowser extends JFrame {
         //
         HexTableView(LoadedFile lddFile) {
             super(lddFile);
-            setDefaultTableView( "hex" );
+            setDefaultTableView("hex");
             colNames = genColNames();
             calcdValues = genCalcdValues();
         }
@@ -682,57 +680,54 @@ public class DateTimeBrowser extends JFrame {
             int numCols = colNames.length;
             // System.err.println("NumCols : " + numCols);
             String fs = "yyyy-MM-dd'T'HH:mm:ss";
-            DateFormat df = new SimpleDateFormat( fs );
+            DateFormat df = new SimpleDateFormat(fs);
             /*
              * Prime the array of arrays of Objects, allocating a new
              * secondary array for each of the primary array's
              * elements.
              */
-            for (int nextStrNum = 0; nextStrNum < fileStrings.size(); ++ nextStrNum) {
+            for (int nextStrNum = 0; nextStrNum < fileStrings.size(); ++nextStrNum) {
                 retValues[nextStrNum] = new Object[numCols]; // get the 'col' array
                 //****
                 //* This needs to be sync'd with the colNames array.
                 //****
                 // Current row, 1st column
                 int column = 0;
-                String fileString = (String)fileStrings.get(nextStrNum);
+                String fileString = (String) fileStrings.get(nextStrNum);
                 retValues[nextStrNum][column++] = fileString;
                 // Current row, 2nd column
-                DateTime adt = (DateTime)dtObjects.get(nextStrNum);
+                DateTime adt = (DateTime) dtObjects.get(nextStrNum);
                 String adtStr = adt.toString();
                 retValues[nextStrNum][column++] = adtStr;
                 // Current row, other columns.
                 // Order here must match that specified in the colNames
                 // array.
                 long lVal = adt.getMillis();
-                Long millis = new Long( lVal );
-                retValues[nextStrNum][column++]  = millis;
-                String hexVal = Long.toHexString( lVal );
-                String octalVal = Long.toOctalString( lVal );
-                retValues[nextStrNum][column++]  = "0"+ LPad(octalVal,22);
-                retValues[nextStrNum][column++]  = "0x" + LPad(hexVal,16);
+                Long millis = new Long(lVal);
+                retValues[nextStrNum][column++] = millis;
+                String hexVal = Long.toHexString(lVal);
+                String octalVal = Long.toOctalString(lVal);
+                retValues[nextStrNum][column++] = "0" + LPad(octalVal, 22);
+                retValues[nextStrNum][column++] = "0x" + LPad(hexVal, 16);
                 //
                 Date javaDate = null;
-                try
-                {
-                    javaDate = df.parse( fileString );
-                }
-                catch(ParseException e)
-                {
+                try {
+                    javaDate = df.parse(fileString);
+                } catch (ParseException e) {
                     System.err.println("Parse failed for : " + fileString);
                     // pe.printStackTrace();
                 }
                 //
                 lVal = javaDate.getTime();
-                millis = new Long( lVal );
-                hexVal = Long.toHexString( lVal );
-                octalVal = Long.toOctalString( lVal );
-                retValues[nextStrNum][column++]  = millis;
-                retValues[nextStrNum][column++]  = "0"+ LPad(octalVal,22);
-                retValues[nextStrNum][column++]  = "0x" + LPad(hexVal,16);
+                millis = new Long(lVal);
+                hexVal = Long.toHexString(lVal);
+                octalVal = Long.toOctalString(lVal);
+                retValues[nextStrNum][column++] = millis;
+                retValues[nextStrNum][column++] = "0" + LPad(octalVal, 22);
+                retValues[nextStrNum][column++] = "0x" + LPad(hexVal, 16);
                 //
             } // the for
-            if ( debugf ) dumpObjs( retValues, System.err );
+            if (debugf) dumpObjs(retValues, System.err);
             return retValues;
         } // end of genTBValues
 
@@ -741,14 +736,14 @@ public class DateTimeBrowser extends JFrame {
          */
         Object[] genColNames() {
             Object[] retVal = {
-                "FileString",
-                "toString()",
-                "JDT-millis",
-                "JDT-Oct",
-                "JDT-Hex",
-                "Date-millis",
-                "Date-Oct",
-                "Date-Hex"
+                    "FileString",
+                    "toString()",
+                    "JDT-millis",
+                    "JDT-Oct",
+                    "JDT-Hex",
+                    "Date-millis",
+                    "Date-Oct",
+                    "Date-Hex"
             };
             return retVal;
         }
@@ -758,12 +753,13 @@ public class DateTimeBrowser extends JFrame {
          */
         String getViewTitle() {
             return "View the long values"
-                + " : "
-                + TimeZone.getDefault().getDisplayName()
-                + " : "
-                + " Record Count "
-                + currFile.getLoadedFileSize();
+                    + " : "
+                    + TimeZone.getDefault().getDisplayName()
+                    + " : "
+                    + " Record Count "
+                    + currFile.getLoadedFileSize();
         }
+
         /*
          * setViewColumnLengths
          */
@@ -781,7 +777,7 @@ public class DateTimeBrowser extends JFrame {
         //
         DateTableView(LoadedFile lddFile) {
             super(lddFile);
-            setDefaultTableView( "date" );
+            setDefaultTableView("date");
             colNames = genColNames();
             calcdValues = genCalcdValues();
         }
@@ -807,34 +803,34 @@ public class DateTimeBrowser extends JFrame {
              * secondary array for each of the primary array's
              * elements.
              */
-            for (int nextStrNum = 0; nextStrNum < fileStrings.size(); ++ nextStrNum) {
+            for (int nextStrNum = 0; nextStrNum < fileStrings.size(); ++nextStrNum) {
                 retValues[nextStrNum] = new Object[numCols]; // get the 'col' array
                 //****
                 //* This needs to be sync'd with the colNames array.
                 //****
                 // Current row, 1st column
                 int column = 0;
-                String fileString = (String)fileStrings.get(nextStrNum);
+                String fileString = (String) fileStrings.get(nextStrNum);
                 retValues[nextStrNum][column++] = fileString;
                 // Current row, 2nd column
-                DateTime adt = (DateTime)dtObjects.get(nextStrNum);
+                DateTime adt = (DateTime) dtObjects.get(nextStrNum);
                 String adtStr = adt.toString();
                 retValues[nextStrNum][column++] = adtStr;
                 // Current row, other columns.
                 // Order here must match that specified in the colNames
                 // array.
                 long lVal = adt.getMillis();
-                java.util.Date jDate = new java.util.Date( lVal );
-                retValues[nextStrNum][column++] = new Integer( jDate.getSeconds() );
-                retValues[nextStrNum][column++] = new Integer( jDate.getMinutes() );
-                retValues[nextStrNum][column++] = new Integer( jDate.getHours() );
-                retValues[nextStrNum][column++] = new Integer( jDate.getDay() );
-                retValues[nextStrNum][column++] = new Integer( jDate.getDate() );
-                retValues[nextStrNum][column++] = new Integer( jDate.getMonth() );
-                retValues[nextStrNum][column++] = new Integer( jDate.getYear() );
+                java.util.Date jDate = new java.util.Date(lVal);
+                retValues[nextStrNum][column++] = new Integer(jDate.getSeconds());
+                retValues[nextStrNum][column++] = new Integer(jDate.getMinutes());
+                retValues[nextStrNum][column++] = new Integer(jDate.getHours());
+                retValues[nextStrNum][column++] = new Integer(jDate.getDay());
+                retValues[nextStrNum][column++] = new Integer(jDate.getDate());
+                retValues[nextStrNum][column++] = new Integer(jDate.getMonth());
+                retValues[nextStrNum][column++] = new Integer(jDate.getYear());
                 //
             } // the for
-            if ( debugf ) dumpObjs( retValues, System.err );
+            if (debugf) dumpObjs(retValues, System.err);
             return retValues;
         } // end of genTBValues
 
@@ -843,15 +839,15 @@ public class DateTimeBrowser extends JFrame {
          */
         Object[] genColNames() {
             Object[] retVal = {
-                "FileString",   // 0
-                "toString()",   // 1
-                "Seconds",      // 2
-                "Minutes",      // 3
-                "Hours",        // 4
-                "Day Of Week",          // 5
-                "Day Of Month",         // 6
-                "Month",        // 7
-                "Year"          // 8
+                    "FileString",   // 0
+                    "toString()",   // 1
+                    "Seconds",      // 2
+                    "Minutes",      // 3
+                    "Hours",        // 4
+                    "Day Of Week",          // 5
+                    "Day Of Month",         // 6
+                    "Month",        // 7
+                    "Year"          // 8
             };
             return retVal;
         }
@@ -861,12 +857,13 @@ public class DateTimeBrowser extends JFrame {
          */
         String getViewTitle() {
             return "java.util.Date getXXX"
-                + " : "
-                + TimeZone.getDefault().getDisplayName()
-                + " : "
-                + " Record Count "
-                + currFile.getLoadedFileSize();
+                    + " : "
+                    + TimeZone.getDefault().getDisplayName()
+                    + " : "
+                    + " Record Count "
+                    + currFile.getLoadedFileSize();
         }
+
         /*
          * setViewColumnLengths
          */
@@ -892,7 +889,7 @@ public class DateTimeBrowser extends JFrame {
         //
         CalTableView(LoadedFile lddFile) {
             super(lddFile);
-            setDefaultTableView( "cal" );
+            setDefaultTableView("cal");
             colNames = genColNames();
             calcdValues = genCalcdValues();
         }
@@ -918,17 +915,17 @@ public class DateTimeBrowser extends JFrame {
              * secondary array for each of the primary array's
              * elements.
              */
-            for (int nextStrNum = 0; nextStrNum < fileStrings.size(); ++ nextStrNum) {
+            for (int nextStrNum = 0; nextStrNum < fileStrings.size(); ++nextStrNum) {
                 retValues[nextStrNum] = new Object[numCols]; // get the 'col' array
                 //****
                 //* This needs to be sync'd with the colNames array.
                 //****
                 // Current row, 1st column
                 int column = 0;
-                String fileString = (String)fileStrings.get(nextStrNum);
+                String fileString = (String) fileStrings.get(nextStrNum);
                 retValues[nextStrNum][column++] = fileString;
                 // Current row, 2nd column
-                DateTime adt = (DateTime)dtObjects.get(nextStrNum);
+                DateTime adt = (DateTime) dtObjects.get(nextStrNum);
                 String adtStr = adt.toString();
                 retValues[nextStrNum][column++] = adtStr;
                 // Current row, other columns.
@@ -936,31 +933,31 @@ public class DateTimeBrowser extends JFrame {
                 // array.
                 long lVal = adt.getMillis();
                 GregorianCalendar cal = new GregorianCalendar();
-                cal.setTime( new Date( lVal ) );
+                cal.setTime(new Date(lVal));
                 cal.setMinimalDaysInFirstWeek(4);
-                retValues[nextStrNum][column++]  = new Integer( cal.get(
-                    Calendar.MILLISECOND ) );
-                retValues[nextStrNum][column++]  = new Integer( cal.get(
-                    Calendar.SECOND ) );
-                retValues[nextStrNum][column++]  = new Integer( cal.get(
-                    Calendar.MINUTE ) );
-                retValues[nextStrNum][column++]  = new Integer( cal.get(
-                    Calendar.HOUR_OF_DAY ) );
-                retValues[nextStrNum][column++]  = new Integer( cal.get(
-                    Calendar.DAY_OF_WEEK ) );
-                retValues[nextStrNum][column++]  = new Integer( cal.get(
-                    Calendar.DAY_OF_MONTH ) );
-                retValues[nextStrNum][column++]  = new Integer( cal.get(
-                    Calendar.DAY_OF_YEAR ) );
-                retValues[nextStrNum][column++]  = new Integer( cal.get(
-                    Calendar.WEEK_OF_YEAR ) );
-                retValues[nextStrNum][column++]  = new Integer( cal.get(
-                    Calendar.MONTH ) );
-                retValues[nextStrNum][column++]  = new Integer( cal.get(
-                    Calendar.YEAR ) );
+                retValues[nextStrNum][column++] = new Integer(cal.get(
+                        Calendar.MILLISECOND));
+                retValues[nextStrNum][column++] = new Integer(cal.get(
+                        Calendar.SECOND));
+                retValues[nextStrNum][column++] = new Integer(cal.get(
+                        Calendar.MINUTE));
+                retValues[nextStrNum][column++] = new Integer(cal.get(
+                        Calendar.HOUR_OF_DAY));
+                retValues[nextStrNum][column++] = new Integer(cal.get(
+                        Calendar.DAY_OF_WEEK));
+                retValues[nextStrNum][column++] = new Integer(cal.get(
+                        Calendar.DAY_OF_MONTH));
+                retValues[nextStrNum][column++] = new Integer(cal.get(
+                        Calendar.DAY_OF_YEAR));
+                retValues[nextStrNum][column++] = new Integer(cal.get(
+                        Calendar.WEEK_OF_YEAR));
+                retValues[nextStrNum][column++] = new Integer(cal.get(
+                        Calendar.MONTH));
+                retValues[nextStrNum][column++] = new Integer(cal.get(
+                        Calendar.YEAR));
                 //
             } // the for
-            if ( debugf ) dumpObjs( retValues, System.err );
+            if (debugf) dumpObjs(retValues, System.err);
             return retValues;
         } // end of genTBValues
 
@@ -969,18 +966,18 @@ public class DateTimeBrowser extends JFrame {
          */
         Object[] genColNames() {
             Object[] retVal = {
-                "FileString",   // 0
-                "toString()",   // 1
-                "Millis",       // 2
-                "Sec",          // 3
-                "Min",          // 4
-                "HrOfDay",      // 5
-                "DayOfWeek",    // 6
-                "DayOfMon",     // 7
-                "DayOfYr",      // 8
-                "WkofYr",       // 9
-                "MonOfYr",      // 10
-                "Year"          // 11
+                    "FileString",   // 0
+                    "toString()",   // 1
+                    "Millis",       // 2
+                    "Sec",          // 3
+                    "Min",          // 4
+                    "HrOfDay",      // 5
+                    "DayOfWeek",    // 6
+                    "DayOfMon",     // 7
+                    "DayOfYr",      // 8
+                    "WkofYr",       // 9
+                    "MonOfYr",      // 10
+                    "Year"          // 11
             };
             return retVal;
         }
@@ -990,12 +987,13 @@ public class DateTimeBrowser extends JFrame {
          */
         String getViewTitle() {
             return "java.util.Calendar.get(int)"
-                + " : "
-                + TimeZone.getDefault().getDisplayName()
-                + " : "
-                + " Record Count "
-                + currFile.getLoadedFileSize();
+                    + " : "
+                    + TimeZone.getDefault().getDisplayName()
+                    + " : "
+                    + " Record Count "
+                    + currFile.getLoadedFileSize();
         }
+
         /*
          * setViewColumnLengths
          */
@@ -1028,24 +1026,21 @@ public class DateTimeBrowser extends JFrame {
          * actionPerformed
          */
         public void actionPerformed(ActionEvent e) {
-            int result = chooser.showOpenDialog( DateTimeBrowser.this );
+            int result = chooser.showOpenDialog(DateTimeBrowser.this);
             String canPath = null;
-            if ( result == JFileChooser.APPROVE_OPTION ) {
+            if (result == JFileChooser.APPROVE_OPTION) {
                 File chosenFile = chooser.getSelectedFile();
-                try
-                {
+                try {
                     canPath = chosenFile.getCanonicalPath();
-                }
-                catch(IOException ioe)
-                {
-                    System.err.println( "I/O Error on file: "
-                        + chosenFile );
+                } catch (IOException ioe) {
+                    System.err.println("I/O Error on file: "
+                            + chosenFile);
                     // Ignore it for now.
                 }
                 enableAllViews();
-                currFile = new LoadedFile( canPath );
+                currFile = new LoadedFile(canPath);
                 TableView tView = getDefaultTableView();
-                resetDefaults( tView );
+                resetDefaults(tView);
             } // end of if a file actually chosen.
         } // end of actionPerformed
     } // end of class OpenAction
@@ -1065,7 +1060,7 @@ public class DateTimeBrowser extends JFrame {
          * actionPerformed
          */
         public void actionPerformed(ActionEvent e) {
-            DateTimeBrowser.this.setVisible( false );
+            DateTimeBrowser.this.setVisible(false);
             DateTimeBrowser.this.dispose();
             System.exit(0);
         } // end of actionPerformed
@@ -1086,10 +1081,10 @@ public class DateTimeBrowser extends JFrame {
          * actionPerformed
          */
         public void actionPerformed(ActionEvent e) {
-            TableView tView = new GetterTableView( currFile );
-            resetDefaults( tView );
+            TableView tView = new GetterTableView(currFile);
+            resetDefaults(tView);
             enableAllViews();
-            jmiGetter.setEnabled( false );
+            jmiGetter.setEnabled(false);
         } // end of actionPerformed
     } // end of class OpenAction
 
@@ -1108,10 +1103,10 @@ public class DateTimeBrowser extends JFrame {
          * actionPerformed
          */
         public void actionPerformed(ActionEvent e) {
-            TableView tView = new HexTableView( currFile );
-            resetDefaults( tView );
+            TableView tView = new HexTableView(currFile);
+            resetDefaults(tView);
             enableAllViews();
-            jmiHex.setEnabled( false );
+            jmiHex.setEnabled(false);
         } // end of actionPerformed
     } // end of class OpenAction
 
@@ -1130,10 +1125,10 @@ public class DateTimeBrowser extends JFrame {
          * actionPerformed
          */
         public void actionPerformed(ActionEvent e) {
-            TableView tView = new DateTableView( currFile );
-            resetDefaults( tView );
+            TableView tView = new DateTableView(currFile);
+            resetDefaults(tView);
             enableAllViews();
-            jmiDate.setEnabled( false );
+            jmiDate.setEnabled(false);
         } // end of actionPerformed
     } // end of class DateAction
 
@@ -1152,10 +1147,10 @@ public class DateTimeBrowser extends JFrame {
          * actionPerformed
          */
         public void actionPerformed(ActionEvent e) {
-            TableView tView = new CalTableView( currFile );
-            resetDefaults( tView );
+            TableView tView = new CalTableView(currFile);
+            resetDefaults(tView);
             enableAllViews();
-            jmiCal.setEnabled( false );
+            jmiCal.setEnabled(false);
         } // end of actionPerformed
     } // end of class CalAction
 

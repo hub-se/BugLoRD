@@ -15,16 +15,15 @@
  */
 package org.joda.time;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.chrono.CopticChronology;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.chrono.CopticChronology;
 
 /**
  * This class is a Junit unit test for Chronology.
@@ -287,18 +286,19 @@ public class TestDateTimeFieldType extends TestCase {
         Class cls = DateTimeFieldType.class.getDeclaredClasses()[0];
         assertEquals(1, cls.getDeclaredConstructors().length);
         Constructor con = cls.getDeclaredConstructors()[0];
-        Object[] params = new Object[] {
-            "other", new Byte((byte) 128), DurationFieldType.hours(), DurationFieldType.months()};
+        Object[] params = new Object[]{
+                "other", new Byte((byte) 128), DurationFieldType.hours(), DurationFieldType.months()};
         con.setAccessible(true);  // for Apache Harmony JVM
         DateTimeFieldType type = (DateTimeFieldType) con.newInstance(params);
-        
+
         assertEquals("other", type.getName());
         assertSame(DurationFieldType.hours(), type.getDurationType());
         assertSame(DurationFieldType.months(), type.getRangeDurationType());
         try {
             type.getField(CopticChronology.getInstanceUTC());
             fail();
-        } catch (InternalError ex) {}
+        } catch (InternalError ex) {
+        }
         DateTimeFieldType result = doSerialization(type);
         assertEquals(type.getName(), result.getName());
         assertNotSame(type, result);
@@ -316,7 +316,7 @@ public class TestDateTimeFieldType extends TestCase {
         oos.writeObject(type);
         byte[] bytes = baos.toByteArray();
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);
         DateTimeFieldType result = (DateTimeFieldType) ois.readObject();

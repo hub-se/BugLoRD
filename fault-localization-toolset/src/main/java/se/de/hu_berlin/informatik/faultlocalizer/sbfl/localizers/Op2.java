@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Op2 (Naish et. al) fault localizer $\EF -\frac{\EP}{\EP+\NP+1}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Op2<T> extends AbstractFaultLocalizer<T> {
 

@@ -2,11 +2,7 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 
 import org.objectweb.asm.Label;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.JumpTouchPointDescriptor;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.LineTouchPointDescriptor;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.SwitchTouchPointDescriptor;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TouchPointDescriptor;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TryCatchTouchPointDescriptor;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.*;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 
 import java.util.*;
@@ -20,472 +16,471 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ClassMap {
 //	private static final Logger logger = LoggerFactory
 //			.getLogger(ClassMap.class);
-	/**
-	 * Simple name of source-file that was used to generate that value
-	 */
-	private String source;
+    /**
+     * Simple name of source-file that was used to generate that value
+     */
+    private String source;
 
-	/**
-	 * We map every eventId that is connected to instruction that created touch-point to the touch-point
-	 */
-	private final Map<Integer, TouchPointDescriptor> eventId2touchPointDescriptor = new HashMap<>();
+    /**
+     * We map every eventId that is connected to instruction that created touch-point to the touch-point
+     */
+    private final Map<Integer, TouchPointDescriptor> eventId2touchPointDescriptor = new HashMap<>();
 
-	/**
-	 * Contains map of label into set of {@link JumpTouchPointDescriptor} 
-	 * or {@link SwitchTouchPointDescriptor} that the label could be destination of
-	 * 
-	 * <p>The labels used here are {@link Label} created during {@link BuildClassMapClassVisitor} pass. 
-	 * Don't try to compare it with labels created by other instrumentation passes.
-	 * Instead you should use eventId and {@link #eventId2label} to get the label created 
-	 * in the first pass and lookup using the label.</p>
-	 */
-	private final Map<Label, Set<TouchPointDescriptor>> label2sourcePoints = new HashMap<>();
+    /**
+     * Contains map of label into set of {@link JumpTouchPointDescriptor}
+     * or {@link SwitchTouchPointDescriptor} that the label could be destination of
+     *
+     * <p>The labels used here are {@link Label} created during {@link BuildClassMapClassVisitor} pass.
+     * Don't try to compare it with labels created by other instrumentation passes.
+     * Instead you should use eventId and {@link #eventId2label} to get the label created
+     * in the first pass and lookup using the label.</p>
+     */
+    private final Map<Label, Set<TouchPointDescriptor>> label2sourcePoints = new HashMap<>();
 
-	/**
-	 * Maps eventId to code label from BuildClassMapClassInstrumenter pass
-	 */
-	private final Map<Integer, Label> eventId2label = new HashMap<>();
+    /**
+     * Maps eventId to code label from BuildClassMapClassInstrumenter pass
+     */
+    private final Map<Integer, Label> eventId2label = new HashMap<>();
 
-	/**
-	 * List of line numbers (not lineIds) of lines that are not allowed to contain touch-point. This
-	 * lines was probably excluded from coverage using 'ignore' stuff.
-	 */
-	private final Set<Integer> blockedLines = new HashSet<>();
+    /**
+     * List of line numbers (not lineIds) of lines that are not allowed to contain touch-point. This
+     * lines was probably excluded from coverage using 'ignore' stuff.
+     */
+    private final Set<Integer> blockedLines = new HashSet<>();
 
-	/**
-	 * List of touch-points stored in given line.
-	 */
-	private final SortedMap<Integer, List<TouchPointDescriptor>> line2touchPoints = new TreeMap<>();
+    /**
+     * List of touch-points stored in given line.
+     */
+    private final SortedMap<Integer, List<TouchPointDescriptor>> line2touchPoints = new TreeMap<>();
 
-	/**
-	 * Set of eventIds that has bean already registered.
-	 */
-	private final Set<Integer> alreadyRegisteredEvents = new HashSet<>();
+    /**
+     * Set of eventIds that has bean already registered.
+     */
+    private final Set<Integer> alreadyRegisteredEvents = new HashSet<>();
 
-	/*from duplicate to origin*/
-	private final Map<Label, Label> labelDuplicates2orginMap = new HashMap<>();
-	private final Map<Label, Set<Label>> labelDuplicates2duplicateMap = new HashMap<>();
+    /*from duplicate to origin*/
+    private final Map<Label, Label> labelDuplicates2orginMap = new HashMap<>();
+    private final Map<Label, Set<Label>> labelDuplicates2duplicateMap = new HashMap<>();
 
-	private String className;
+    private String className;
 
-	private int maxCounterId = 0;
+    private int maxCounterId = 0;
 
-	private final int classId;
-	
-	public ClassMap(int classId) {
-		this.classId = classId;
-	}
+    private final int classId;
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+    public ClassMap(int classId) {
+        this.classId = classId;
+    }
 
-	public void registerNewJump(int eventId, int currentLine,
-			Label destinationLabel) {
-		if (alreadyRegisteredEvents.add(eventId)) {
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public void registerNewJump(int eventId, int currentLine,
+                                Label destinationLabel) {
+        if (alreadyRegisteredEvents.add(eventId)) {
 //			logger.debug(className + ":" + currentLine + ": Registering JUMP ("
 //					+ eventId + ") to " + destinationLabel);
-			JumpTouchPointDescriptor descriptor = new JumpTouchPointDescriptor(
-					eventId, currentLine/*,destinationLabel*/);
-			eventId2touchPointDescriptor.put(eventId, descriptor);
-			getOrCreateSourcePoints(destinationLabel).add(descriptor);
-			getOrCreateLineTouchPoints(currentLine).add(descriptor);
-		} else {
+            JumpTouchPointDescriptor descriptor = new JumpTouchPointDescriptor(
+                    eventId, currentLine/*,destinationLabel*/);
+            eventId2touchPointDescriptor.put(eventId, descriptor);
+            getOrCreateSourcePoints(destinationLabel).add(descriptor);
+            getOrCreateLineTouchPoints(currentLine).add(descriptor);
+        } else {
 //			logger.debug(className + ":" + currentLine
 //					+ ": NOT registering (already done) JUMP (" + eventId
 //					+ ") to " + destinationLabel);
-		}
-	}
+        }
+    }
 
-	private List<TouchPointDescriptor> getOrCreateLineTouchPoints(
-			int currentLine) {
-		List<TouchPointDescriptor> res = line2touchPoints.get(currentLine);
-		if (res == null) {
-			res = new LinkedList<>();
-			line2touchPoints.put(currentLine, res);
-		}
-		return res;
-	}
+    private List<TouchPointDescriptor> getOrCreateLineTouchPoints(
+            int currentLine) {
+        List<TouchPointDescriptor> res = line2touchPoints.get(currentLine);
+        if (res == null) {
+            res = new LinkedList<>();
+            line2touchPoints.put(currentLine, res);
+        }
+        return res;
+    }
 
-	private Set<TouchPointDescriptor> getOrCreateSourcePoints(Label label) {
-		Set<TouchPointDescriptor> res = label2sourcePoints.get(label);
-		if (res == null) {
-			res = new HashSet<>();
-			label2sourcePoints.put(label, res);
-		}
-		return res;
-	}
+    private Set<TouchPointDescriptor> getOrCreateSourcePoints(Label label) {
+        Set<TouchPointDescriptor> res = label2sourcePoints.get(label);
+        if (res == null) {
+            res = new HashSet<>();
+            label2sourcePoints.put(label, res);
+        }
+        return res;
+    }
 
-	public void registerNewLabel(int eventId, int currentLine, Label label) {
+    public void registerNewLabel(int eventId, int currentLine, Label label) {
 //		logger.debug(className + ":" + currentLine + ": Registering label ("
 //				+ eventId + ") " + label);
-		if (alreadyRegisteredEvents.add(eventId)) {
-			eventId2label.put(eventId, label);
-			putIntoDuplicatesMaps(label, label);
-		} else {
-			putIntoDuplicatesMaps(label, eventId2label.get(eventId));
-		}
-	}
+        if (alreadyRegisteredEvents.add(eventId)) {
+            eventId2label.put(eventId, label);
+            putIntoDuplicatesMaps(label, label);
+        } else {
+            putIntoDuplicatesMaps(label, eventId2label.get(eventId));
+        }
+    }
 
-	public void registerNewTryCatchBlock(int eventId, int currentLine, Label label) {
+    public void registerNewTryCatchBlock(int eventId, int currentLine, Label label) {
 //		logger.debug(className + ":" + currentLine + ": Registering catch block label ("
 //				+ eventId + ") " + label);
-		if (alreadyRegisteredEvents.add(eventId)) {
-			TryCatchTouchPointDescriptor descriptor = new TryCatchTouchPointDescriptor(
-					eventId, currentLine/*,destinationLabel*/);
-			eventId2touchPointDescriptor.put(eventId, descriptor);
-			getOrCreateSourcePoints(label).add(descriptor);
-			// makes no sense to associate currentLine == 0 with try catch block...?!
-			// and it causes errors... :(
+        if (alreadyRegisteredEvents.add(eventId)) {
+            TryCatchTouchPointDescriptor descriptor = new TryCatchTouchPointDescriptor(
+                    eventId, currentLine/*,destinationLabel*/);
+            eventId2touchPointDescriptor.put(eventId, descriptor);
+            getOrCreateSourcePoints(label).add(descriptor);
+            // makes no sense to associate currentLine == 0 with try catch block...?!
+            // and it causes errors... :(
 //			getOrCreateLineTouchPoints(currentLine).add(descriptor);
 
-			// needed? good?
-			eventId2label.put(eventId, label);
-			putIntoDuplicatesMaps(label, label);
-		} else {
+            // needed? good?
+            eventId2label.put(eventId, label);
+            putIntoDuplicatesMaps(label, label);
+        } else {
 //			logger.debug(className + ":" + currentLine
 //			+ ": NOT registering (already done) TryCatchBlock (" + eventId
 //			+ ") to " + label);
-			putIntoDuplicatesMaps(label, eventId2label.get(eventId));
-		}
-	}
-	
-	public void putIntoDuplicatesMaps(Label label, Label orgin) {
-		labelDuplicates2orginMap.put(label, orgin); //For coherence
-		Set<Label> list = labelDuplicates2duplicateMap.get(orgin);
-		if (list == null) {
-			list = new HashSet<>();
-			labelDuplicates2duplicateMap.put(orgin, list);
-		}
-		list.add(label);
-	}
+            putIntoDuplicatesMaps(label, eventId2label.get(eventId));
+        }
+    }
 
-	public void registerLineNumber(int eventId, int currentLine, Label label,
-			String methodName, String methodSignature) {
+    public void putIntoDuplicatesMaps(Label label, Label orgin) {
+        labelDuplicates2orginMap.put(label, orgin); //For coherence
+        Set<Label> list = labelDuplicates2duplicateMap.get(orgin);
+        if (list == null) {
+            list = new HashSet<>();
+            labelDuplicates2duplicateMap.put(orgin, list);
+        }
+        list.add(label);
+    }
+
+    public void registerLineNumber(int eventId, int currentLine, Label label,
+                                   String methodName, String methodSignature) {
 //		logger.debug(className + ":" + currentLine + ": Registering line ("
 //				+ eventId + ") " + label);
-		if (alreadyRegisteredEvents.add(eventId)) {
-			if (!blockedLines.contains(currentLine)) {
-				LineTouchPointDescriptor line = new LineTouchPointDescriptor(
-						eventId, currentLine, methodName, methodSignature);
-				eventId2label.put(eventId, label);
-				eventId2touchPointDescriptor.put(eventId, line);
-				getOrCreateLineTouchPoints(currentLine).add(line);
-			}
-		}
-	}
+        if (alreadyRegisteredEvents.add(eventId)) {
+            if (!blockedLines.contains(currentLine)) {
+                LineTouchPointDescriptor line = new LineTouchPointDescriptor(
+                        eventId, currentLine, methodName, methodSignature);
+                eventId2label.put(eventId, label);
+                eventId2touchPointDescriptor.put(eventId, line);
+                getOrCreateLineTouchPoints(currentLine).add(line);
+            }
+        }
+    }
 
-	public void unregisterLine(int eventId, int currentLine) {
-		if (alreadyRegisteredEvents.add(eventId)) {
-			blockedLines.add(currentLine);
-			List<TouchPointDescriptor> res = line2touchPoints.get(currentLine);
-			if (res != null) {
-				Iterator<TouchPointDescriptor> iter = res.iterator();
-				while (iter.hasNext()) {
-					TouchPointDescriptor desc = iter.next();
-					if (desc instanceof LineTouchPointDescriptor) {
-						iter.remove();
-						eventId2touchPointDescriptor.remove(desc.getEventId());
-						eventId2label.remove(desc.getEventId());
-					}
-				}
-			}
-		}
-	}
+    public void unregisterLine(int eventId, int currentLine) {
+        if (alreadyRegisteredEvents.add(eventId)) {
+            blockedLines.add(currentLine);
+            List<TouchPointDescriptor> res = line2touchPoints.get(currentLine);
+            if (res != null) {
+                Iterator<TouchPointDescriptor> iter = res.iterator();
+                while (iter.hasNext()) {
+                    TouchPointDescriptor desc = iter.next();
+                    if (desc instanceof LineTouchPointDescriptor) {
+                        iter.remove();
+                        eventId2touchPointDescriptor.remove(desc.getEventId());
+                        eventId2label.remove(desc.getEventId());
+                    }
+                }
+            }
+        }
+    }
 
-	public void registerSwitch(int eventId, int currentLine, Label def,
-			Label[] labels, String conditionType) {
-		if (alreadyRegisteredEvents.add(eventId)) {
-			SwitchTouchPointDescriptor swi = new SwitchTouchPointDescriptor(
-					eventId, currentLine, def, labels, conditionType);
-			eventId2touchPointDescriptor.put(eventId, swi);
-			getOrCreateLineTouchPoints(currentLine).add(swi);
-			getOrCreateSourcePoints(def).add(swi);
-			for (Label l : labels) {
-				//				System.out.println("Registering label to switch:"+l);
-				getOrCreateSourcePoints(l).add(swi);
-			}
-		}
-	}
+    public void registerSwitch(int eventId, int currentLine, Label def,
+                               Label[] labels, String conditionType) {
+        if (alreadyRegisteredEvents.add(eventId)) {
+            SwitchTouchPointDescriptor swi = new SwitchTouchPointDescriptor(
+                    eventId, currentLine, def, labels, conditionType);
+            eventId2touchPointDescriptor.put(eventId, swi);
+            getOrCreateLineTouchPoints(currentLine).add(swi);
+            getOrCreateSourcePoints(def).add(swi);
+            for (Label l : labels) {
+                //				System.out.println("Registering label to switch:"+l);
+                getOrCreateSourcePoints(l).add(swi);
+            }
+        }
+    }
 
-	//======================= data retrieval =====================================================	
+    //======================= data retrieval =====================================================	
 
-	public Integer getCounterIdForFalseBranchJump(int eventId) {
-		if (eventId2touchPointDescriptor.get(eventId) instanceof JumpTouchPointDescriptor) {
-			JumpTouchPointDescriptor jumpTouchPointDescriptor = (JumpTouchPointDescriptor) eventId2touchPointDescriptor
-					.get(eventId);
-			if (jumpTouchPointDescriptor != null) {
-				return jumpTouchPointDescriptor.getCounterIdForTrue();
-			}
-		}
-		return null;
-	}
+    public Integer getCounterIdForFalseBranchJump(int eventId) {
+        if (eventId2touchPointDescriptor.get(eventId) instanceof JumpTouchPointDescriptor) {
+            JumpTouchPointDescriptor jumpTouchPointDescriptor = (JumpTouchPointDescriptor) eventId2touchPointDescriptor
+                    .get(eventId);
+            if (jumpTouchPointDescriptor != null) {
+                return jumpTouchPointDescriptor.getCounterIdForTrue();
+            }
+        }
+        return null;
+    }
 
-	public Integer getCounterIdForTrueBranchJump(int eventId) {
-		if (eventId2touchPointDescriptor.get(eventId) instanceof JumpTouchPointDescriptor) {
-			JumpTouchPointDescriptor jumpTouchPointDescriptor = (JumpTouchPointDescriptor) eventId2touchPointDescriptor
-					.get(eventId);
-			if (jumpTouchPointDescriptor != null) {
-				return jumpTouchPointDescriptor.getCounterIdForFalse();
-			}
-		}
-		return null;
-	}
+    public Integer getCounterIdForTrueBranchJump(int eventId) {
+        if (eventId2touchPointDescriptor.get(eventId) instanceof JumpTouchPointDescriptor) {
+            JumpTouchPointDescriptor jumpTouchPointDescriptor = (JumpTouchPointDescriptor) eventId2touchPointDescriptor
+                    .get(eventId);
+            if (jumpTouchPointDescriptor != null) {
+                return jumpTouchPointDescriptor.getCounterIdForFalse();
+            }
+        }
+        return null;
+    }
 
-	public boolean isJumpDestinationLabel(int eventId) {
-		Label label_local = eventId2label.get(eventId);
+    public boolean isJumpDestinationLabel(int eventId) {
+        Label label_local = eventId2label.get(eventId);
 //		logger.debug("Label found for eventId:" + eventId + ":" + label_local);
-		if (labelDuplicates2duplicateMap.containsKey(label_local)) {
-			for (Label label : labelDuplicates2duplicateMap.get(label_local)) {
-				if (label != null) {
-					Set<TouchPointDescriptor> res = label2sourcePoints
-							.get(label);
+        if (labelDuplicates2duplicateMap.containsKey(label_local)) {
+            for (Label label : labelDuplicates2duplicateMap.get(label_local)) {
+                if (label != null) {
+                    Set<TouchPointDescriptor> res = label2sourcePoints
+                            .get(label);
 //					logger
 //							.debug("label2sourcePoints.get(" + label + "):"
 //									+ res);
-					if (res != null) {
-						for (TouchPointDescriptor r : res) {
-							if (r instanceof JumpTouchPointDescriptor) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-	
-	public boolean isCatchBlockLabel(int eventId) {
-		Label label_local = eventId2label.get(eventId);
+                    if (res != null) {
+                        for (TouchPointDescriptor r : res) {
+                            if (r instanceof JumpTouchPointDescriptor) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isCatchBlockLabel(int eventId) {
+        Label label_local = eventId2label.get(eventId);
 //		logger.debug("Label found for eventId:" + eventId + ":" + label_local);
-		if (labelDuplicates2duplicateMap.containsKey(label_local)) {
-			for (Label label : labelDuplicates2duplicateMap.get(label_local)) {
-				if (label != null) {
-					Set<TouchPointDescriptor> res = label2sourcePoints
-							.get(label);
+        if (labelDuplicates2duplicateMap.containsKey(label_local)) {
+            for (Label label : labelDuplicates2duplicateMap.get(label_local)) {
+                if (label != null) {
+                    Set<TouchPointDescriptor> res = label2sourcePoints
+                            .get(label);
 //					logger
 //							.debug("label2sourcePoints.get(" + label + "):"
 //									+ res);
-					if (res != null) {
-						for (TouchPointDescriptor r : res) {
-							if (r instanceof TryCatchTouchPointDescriptor) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
+                    if (res != null) {
+                        for (TouchPointDescriptor r : res) {
+                            if (r instanceof TryCatchTouchPointDescriptor) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
-	public Integer getCounterIdForSwitch(int eventId) {
-		if (eventId2touchPointDescriptor.get(eventId) instanceof SwitchTouchPointDescriptor) {
-			SwitchTouchPointDescriptor point = (SwitchTouchPointDescriptor) eventId2touchPointDescriptor
-					.get(eventId);
-			if (point != null) {
-				return point.getCounterId();
-			}
-		}
-		return null;
-	}
+    public Integer getCounterIdForSwitch(int eventId) {
+        if (eventId2touchPointDescriptor.get(eventId) instanceof SwitchTouchPointDescriptor) {
+            SwitchTouchPointDescriptor point = (SwitchTouchPointDescriptor) eventId2touchPointDescriptor
+                    .get(eventId);
+            if (point != null) {
+                return point.getCounterId();
+            }
+        }
+        return null;
+    }
 
-	public Integer getCounterIdForLineEventId(int eventId) {
-		if (eventId2touchPointDescriptor.get(eventId) instanceof LineTouchPointDescriptor) {
-			LineTouchPointDescriptor point = (LineTouchPointDescriptor) eventId2touchPointDescriptor
-					.get(eventId);
-			if (point != null) {
-				return point.getCounterId();
-			}
-		}
-		return null;
-	}
+    public Integer getCounterIdForLineEventId(int eventId) {
+        if (eventId2touchPointDescriptor.get(eventId) instanceof LineTouchPointDescriptor) {
+            LineTouchPointDescriptor point = (LineTouchPointDescriptor) eventId2touchPointDescriptor
+                    .get(eventId);
+            if (point != null) {
+                return point.getCounterId();
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Returns map:   switchCounterId to counterId
-	 *
-	 * @param labelEventId id
-	 *
-	 * @return map:   switchCounterId to counterId
-	 */
-	public Map<Integer, Integer> getBranchLabelDescriptorsForLabelEvent(
-			int labelEventId) {
-		Label label_local = eventId2label.get(labelEventId);
-		if (label_local != null) {
-			if (labelDuplicates2duplicateMap.containsKey(label_local)) {
-				for (Label label : labelDuplicates2duplicateMap
-						.get(label_local)) {
-					Set<TouchPointDescriptor> list = label2sourcePoints
-							.get(label);
-					if (list != null) {
-						Map<Integer, Integer> res = new HashMap<>();
-						for (TouchPointDescriptor r : list) {
-							if (r instanceof SwitchTouchPointDescriptor) {
-								SwitchTouchPointDescriptor swi = (SwitchTouchPointDescriptor) r;
-								res.put(swi.getCounterId(), swi
-										.getCounterIdForLabel(label));
-							}
-						}
-						return res;
-					}
-				}
-			}
-		}
-		return null;
-	}
+    /**
+     * Returns map:   switchCounterId to counterId
+     *
+     * @param labelEventId id
+     * @return map:   switchCounterId to counterId
+     */
+    public Map<Integer, Integer> getBranchLabelDescriptorsForLabelEvent(
+            int labelEventId) {
+        Label label_local = eventId2label.get(labelEventId);
+        if (label_local != null) {
+            if (labelDuplicates2duplicateMap.containsKey(label_local)) {
+                for (Label label : labelDuplicates2duplicateMap
+                        .get(label_local)) {
+                    Set<TouchPointDescriptor> list = label2sourcePoints
+                            .get(label);
+                    if (list != null) {
+                        Map<Integer, Integer> res = new HashMap<>();
+                        for (TouchPointDescriptor r : list) {
+                            if (r instanceof SwitchTouchPointDescriptor) {
+                                SwitchTouchPointDescriptor swi = (SwitchTouchPointDescriptor) r;
+                                res.put(swi.getCounterId(), swi
+                                        .getCounterIdForLabel(label));
+                            }
+                        }
+                        return res;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Iterates over all touch-points created during class analysis and assigns
-	 * hit-counter identifiers to each of the touchpoint (some of them needs mode then one
-	 * hit-counter).
-	 * 
-	 * This class assign hit-counter ids to each touch-point and upgrades maxCounterId to
-	 * reflect the greatest assigned Id.
-	 * @return 
-	 * an array that maps counter IDs to actual line numbers
-	 */
-	public int[][] assignCounterIds() {
-		AtomicInteger idGenerator = new AtomicInteger(0);
-		for (List<TouchPointDescriptor> tpd : line2touchPoints.values()) {
-			for (TouchPointDescriptor t : tpd) {
-				t.assignCounters(idGenerator);
-			}
-		}
-		maxCounterId = idGenerator.get();
-		
-		int[][] result = new int[maxCounterId+1][3];
-		// set to -1
-		for (int i = 0; i < result.length; i++) {
-			result[i][0] = -1;
-			result[i][1] = -1;
-			result[i][2] = -1;
-		}
-		
-		int currentMethodId = 0;
-		Map<String, Integer> methodToIdMap = new HashMap<>();
-		for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {
-			if (tpd instanceof LineTouchPointDescriptor) {
-				String methodName = ((LineTouchPointDescriptor) tpd).getMethodName() 
-						+ ((LineTouchPointDescriptor) tpd).getMethodSignature();
-				Integer id = methodToIdMap.get(methodName);
-				if (id == null) {
-					methodToIdMap.put(methodName, ++currentMethodId);
-				}
-			}
-		}
-		
-		// map counter IDs to actual line numbers
-		for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {
-			if (tpd instanceof LineTouchPointDescriptor) {
-				Integer id = ((LineTouchPointDescriptor) tpd).getCounterId();
-				result[id][0] = tpd.getLineNumber();
-				result[id][1] = CoberturaStatementEncoding.NORMAL_ID;
-				result[id][2] = methodToIdMap.get(((LineTouchPointDescriptor) tpd).getMethodName() 
-						+ ((LineTouchPointDescriptor) tpd).getMethodSignature());
-			} else if (tpd instanceof JumpTouchPointDescriptor) {
-				int idForTrue = ((JumpTouchPointDescriptor) tpd).getCounterIdForTrue();
-				result[idForTrue][0] = tpd.getLineNumber();
-				result[idForTrue][1] = CoberturaStatementEncoding.BRANCH_ID;
-				int idForFalse = ((JumpTouchPointDescriptor) tpd).getCounterIdForFalse();
-				result[idForFalse][0] = tpd.getLineNumber();
-				result[idForFalse][1] = CoberturaStatementEncoding.JUMP_ID;
-			} else if (tpd instanceof SwitchTouchPointDescriptor) {
-				Integer switchId = ((SwitchTouchPointDescriptor) tpd).getCounterId();
-				result[switchId][0] = tpd.getLineNumber();
-				result[switchId][1] = CoberturaStatementEncoding.SWITCH_ID;
-				for (int id : ((SwitchTouchPointDescriptor) tpd).getCountersForLabels()) {
-					result[id][0] = tpd.getLineNumber();
-					result[id][1] = CoberturaStatementEncoding.SWITCH_ID;
-				}
-			}
-		}
-		
-		return result;
-	}
+    /**
+     * Iterates over all touch-points created during class analysis and assigns
+     * hit-counter identifiers to each of the touchpoint (some of them needs mode then one
+     * hit-counter).
+     * <p>
+     * This class assign hit-counter ids to each touch-point and upgrades maxCounterId to
+     * reflect the greatest assigned Id.
+     *
+     * @return an array that maps counter IDs to actual line numbers
+     */
+    public int[][] assignCounterIds() {
+        AtomicInteger idGenerator = new AtomicInteger(0);
+        for (List<TouchPointDescriptor> tpd : line2touchPoints.values()) {
+            for (TouchPointDescriptor t : tpd) {
+                t.assignCounters(idGenerator);
+            }
+        }
+        maxCounterId = idGenerator.get();
 
-	public int getMaxCounterId() {
-		return maxCounterId;
-	}
+        int[][] result = new int[maxCounterId + 1][3];
+        // set to -1
+        for (int i = 0; i < result.length; i++) {
+            result[i][0] = -1;
+            result[i][1] = -1;
+            result[i][2] = -1;
+        }
 
-	public String getClassName() {
-		return className;
-	}
+        int currentMethodId = 0;
+        Map<String, Integer> methodToIdMap = new HashMap<>();
+        for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {
+            if (tpd instanceof LineTouchPointDescriptor) {
+                String methodName = ((LineTouchPointDescriptor) tpd).getMethodName()
+                        + ((LineTouchPointDescriptor) tpd).getMethodSignature();
+                Integer id = methodToIdMap.get(methodName);
+                if (id == null) {
+                    methodToIdMap.put(methodName, ++currentMethodId);
+                }
+            }
+        }
 
-	public void setClassName(String className) {
-		this.className = className;
-	}
+        // map counter IDs to actual line numbers
+        for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {
+            if (tpd instanceof LineTouchPointDescriptor) {
+                Integer id = ((LineTouchPointDescriptor) tpd).getCounterId();
+                result[id][0] = tpd.getLineNumber();
+                result[id][1] = CoberturaStatementEncoding.NORMAL_ID;
+                result[id][2] = methodToIdMap.get(((LineTouchPointDescriptor) tpd).getMethodName()
+                        + ((LineTouchPointDescriptor) tpd).getMethodSignature());
+            } else if (tpd instanceof JumpTouchPointDescriptor) {
+                int idForTrue = ((JumpTouchPointDescriptor) tpd).getCounterIdForTrue();
+                result[idForTrue][0] = tpd.getLineNumber();
+                result[idForTrue][1] = CoberturaStatementEncoding.BRANCH_ID;
+                int idForFalse = ((JumpTouchPointDescriptor) tpd).getCounterIdForFalse();
+                result[idForFalse][0] = tpd.getLineNumber();
+                result[idForFalse][1] = CoberturaStatementEncoding.JUMP_ID;
+            } else if (tpd instanceof SwitchTouchPointDescriptor) {
+                Integer switchId = ((SwitchTouchPointDescriptor) tpd).getCounterId();
+                result[switchId][0] = tpd.getLineNumber();
+                result[switchId][1] = CoberturaStatementEncoding.SWITCH_ID;
+                for (int id : ((SwitchTouchPointDescriptor) tpd).getCountersForLabels()) {
+                    result[id][0] = tpd.getLineNumber();
+                    result[id][1] = CoberturaStatementEncoding.SWITCH_ID;
+                }
+            }
+        }
 
-	public String getSource() {
-		return source;
-	}
+        return result;
+    }
 
-	public List<TouchPointDescriptor> getTouchPointsInLineOrder() {
-		LinkedList<TouchPointDescriptor> res = new LinkedList<>();
-		for (List<TouchPointDescriptor> tpd : line2touchPoints.values()) {
-			for (TouchPointDescriptor t : tpd) {
-				if (t instanceof LineTouchPointDescriptor) {
-					res.add(t);
-				}
-			}
-			for (TouchPointDescriptor t : tpd) {
-				if (!(t instanceof LineTouchPointDescriptor)) {
-					res.add(t);
-				}
-			}
-		}
-		return res;
-	}
+    public int getMaxCounterId() {
+        return maxCounterId;
+    }
 
-	/*
-	 * Upgrades {@link ProjectData} to contain all information found in class during class instrumentation.
-	 * 
-	 * <p>I don't like the idea of creating ser file during the instrumentation, but we need to do it,
-	 * to be compatible with tools that expect that (such as cobertura-maven-plugin)</p>
-	 *
-	 * @param projectData
-	 */
-	public ClassData applyOnProjectData(ProjectData projectData,
-			boolean instrumented) {
-		ClassData classData = projectData.getOrCreateClassData(className
-				.replace('/', '.'), classId);
-		if (source != null) {
-			classData.setSourceFileName(source);
-		}
-		if (instrumented) {
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public List<TouchPointDescriptor> getTouchPointsInLineOrder() {
+        LinkedList<TouchPointDescriptor> res = new LinkedList<>();
+        for (List<TouchPointDescriptor> tpd : line2touchPoints.values()) {
+            for (TouchPointDescriptor t : tpd) {
+                if (t instanceof LineTouchPointDescriptor) {
+                    res.add(t);
+                }
+            }
+            for (TouchPointDescriptor t : tpd) {
+                if (!(t instanceof LineTouchPointDescriptor)) {
+                    res.add(t);
+                }
+            }
+        }
+        return res;
+    }
+
+    /*
+     * Upgrades {@link ProjectData} to contain all information found in class during class instrumentation.
+     *
+     * <p>I don't like the idea of creating ser file during the instrumentation, but we need to do it,
+     * to be compatible with tools that expect that (such as cobertura-maven-plugin)</p>
+     *
+     * @param projectData
+     */
+    public ClassData applyOnProjectData(ProjectData projectData,
+                                        boolean instrumented) {
+        ClassData classData = projectData.getOrCreateClassData(className
+                .replace('/', '.'), classId);
+        if (source != null) {
+            classData.setSourceFileName(source);
+        }
+        if (instrumented) {
 //			classData.counterIdToLineNumberMap = new HashMap<>();
-			classData.setContainsInstrumentationInfo();
-			int lastLine = 0;
+            classData.setContainsInstrumentationInfo();
+            int lastLine = 0;
 //			int jumpsInLine = 0;
 //			int toucesInLine = 0;
 
-			for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {
-				if (tpd.getLineNumber() != lastLine) {
+            for (TouchPointDescriptor tpd : getTouchPointsInLineOrder()) {
+                if (tpd.getLineNumber() != lastLine) {
 //					jumpsInLine = 0;
 //					toucesInLine = 0;
-					lastLine = tpd.getLineNumber();
-				}
-				if (tpd instanceof LineTouchPointDescriptor) {
-					classData.addLine(tpd.getLineNumber(),
-							((LineTouchPointDescriptor) tpd).getMethodName(),
-							((LineTouchPointDescriptor) tpd).getMethodSignature());
-				} else if (tpd instanceof JumpTouchPointDescriptor) {
+                    lastLine = tpd.getLineNumber();
+                }
+                if (tpd instanceof LineTouchPointDescriptor) {
+                    classData.addLine(tpd.getLineNumber(),
+                            ((LineTouchPointDescriptor) tpd).getMethodName(),
+                            ((LineTouchPointDescriptor) tpd).getMethodSignature());
+                } else if (tpd instanceof JumpTouchPointDescriptor) {
 //					classData.addLineJump(tpd.getLineNumber(), jumpsInLine++);
-				} else if (tpd instanceof SwitchTouchPointDescriptor) {
+                } else if (tpd instanceof SwitchTouchPointDescriptor) {
 //					int countersCnt = ((SwitchTouchPointDescriptor) tpd)
 //							.getCountersForLabelsCnt();
 //					//TODO(ptab): instead of Integer.MAX_VALUE should be length of Enum.
 //					classData.addLineSwitch(tpd.getLineNumber(),
 //							toucesInLine++, 0, countersCnt - 2,
 //							Integer.MAX_VALUE);
-				}
-			}
-		}
-		return classData;
-	}
+                }
+            }
+        }
+        return classData;
+    }
 
-	public int getClassId() {
-		return classId;
-	}
+    public int getClassId() {
+        return classId;
+    }
 
 }

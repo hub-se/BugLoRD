@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,15 +16,15 @@
  */
 package org.apache.commons.lang3.builder;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests {@link org.apache.commons.lang3.builder.HashCodeBuilder} and
  * {@link org.apache.commons.lang3.builder.EqualsBuilderTest} to insure that equal
  * objects must have equal hash codes.
- * 
+ *
  * @version $Id$
  */
 public class HashCodeBuilderAndEqualsBuilderTest {
@@ -60,25 +60,25 @@ public class HashCodeBuilderAndEqualsBuilderTest {
     private void testFixture(boolean testTransients) {
         assertEqualsAndHashCodeContract(new TestFixture(2, 'c', "Test", (short) 2), new TestFixture(2, 'c', "Test", (short) 2), testTransients);
         assertEqualsAndHashCodeContract(
-            new AllTransientFixture(2, 'c', "Test", (short) 2),
-            new AllTransientFixture(2, 'c', "Test", (short) 2),
-            testTransients);
+                new AllTransientFixture(2, 'c', "Test", (short) 2),
+                new AllTransientFixture(2, 'c', "Test", (short) 2),
+                testTransients);
         assertEqualsAndHashCodeContract(
-            new SubTestFixture(2, 'c', "Test", (short) 2, "Same"),
-            new SubTestFixture(2, 'c', "Test", (short) 2, "Same"),
-            testTransients);
+                new SubTestFixture(2, 'c', "Test", (short) 2, "Same"),
+                new SubTestFixture(2, 'c', "Test", (short) 2, "Same"),
+                testTransients);
         assertEqualsAndHashCodeContract(
-            new SubAllTransientFixture(2, 'c', "Test", (short) 2, "Same"),
-            new SubAllTransientFixture(2, 'c', "Test", (short) 2, "Same"),
-            testTransients);
+                new SubAllTransientFixture(2, 'c', "Test", (short) 2, "Same"),
+                new SubAllTransientFixture(2, 'c', "Test", (short) 2, "Same"),
+                testTransients);
     }
 
     /**
-     * Asserts that if <code>lhs</code> equals <code>rhs</code> 
+     * Asserts that if <code>lhs</code> equals <code>rhs</code>
      * then their hash codes MUST be identical.
-     * 
-     * @param lhs The Left-Hand-Side of the equals test
-     * @param rhs The Right-Hand-Side of the equals test
+     *
+     * @param lhs            The Left-Hand-Side of the equals test
+     * @param rhs            The Right-Hand-Side of the equals test
      * @param testTransients wether to test transient fields
      */
     private void assertEqualsAndHashCodeContract(Object lhs, Object rhs, boolean testTransients) {

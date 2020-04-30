@@ -18,40 +18,39 @@ import java.util.Iterator;
  */
 public abstract class RegexUtil {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(RegexUtil.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(RegexUtil.class);
 
-	private final static Perl5Matcher pm = new Perl5Matcher();
+    private final static Perl5Matcher pm = new Perl5Matcher();
 
-	/**
-	 * <p>
-	 * Check to see if one of the regular expressions in a collection match
-	 * an input string.
-	 * </p>
-	 *
-	 * @param regexs The collection of regular expressions.
-	 * @param str    The string to check for a match.
-	 *
-	 * @return True if a match is found.
-	 */
-	public static boolean matches(Collection<Pattern> regexs, String str) {
-        for (Iterator<Pattern> iterator = regexs.iterator(); iterator.hasNext();) {
-			if (pm.matches(str, iterator.next())) {
+    /**
+     * <p>
+     * Check to see if one of the regular expressions in a collection match
+     * an input string.
+     * </p>
+     *
+     * @param regexs The collection of regular expressions.
+     * @param str    The string to check for a match.
+     * @return True if a match is found.
+     */
+    public static boolean matches(Collection<Pattern> regexs, String str) {
+        for (Iterator<Pattern> iterator = regexs.iterator(); iterator.hasNext(); ) {
+            if (pm.matches(str, iterator.next())) {
                 return true;
             }
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 
-	public static void addRegex(Collection<Pattern> list, String regex) {
-		try {
-			Perl5Compiler pc = new Perl5Compiler();
-			Pattern pattern = pc.compile(regex);
-			list.add(pattern);
-		} catch (MalformedPatternException e) {
-			logger.warn("The regular expression " + regex + " is invalid: "
-					+ e.getLocalizedMessage());
-		}
-	}
+    public static void addRegex(Collection<Pattern> list, String regex) {
+        try {
+            Perl5Compiler pc = new Perl5Compiler();
+            Pattern pattern = pc.compile(regex);
+            list.add(pattern);
+        } catch (MalformedPatternException e) {
+            logger.warn("The regular expression " + regex + " is invalid: "
+                    + e.getLocalizedMessage());
+        }
+    }
 
 }

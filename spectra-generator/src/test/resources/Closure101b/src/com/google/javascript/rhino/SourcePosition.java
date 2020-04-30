@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,91 +36,89 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino;
 
 /**
  * Represents a position in some piece of source code, with an associated
  * item of type T found at that position.
- *
-*
  */
 public abstract class SourcePosition<T> {
-  /**
-   * The (well typed) item found at the source position.
-   */
-  private T item = null;
+    /**
+     * The (well typed) item found at the source position.
+     */
+    private T item = null;
 
-  /**
-   * The starting line number.
-   */
-  private int startLineno = 0;
+    /**
+     * The starting line number.
+     */
+    private int startLineno = 0;
 
-  /**
-   * The character position on the starting line.
-   */
-  private int startCharno = 0;
+    /**
+     * The character position on the starting line.
+     */
+    private int startCharno = 0;
 
-  /**
-   * The ending line number.
-   */
-  private int endLineno = 0;
+    /**
+     * The ending line number.
+     */
+    private int endLineno = 0;
 
-  /**
-   * The character position on the ending line.
-   */
-  private int endCharno = 0;
+    /**
+     * The character position on the ending line.
+     */
+    private int endCharno = 0;
 
-  /**
-   * Sets the item that this source position references.
-   */
-  public void setItem(T item) {
-    this.item = item;
-  }
+    /**
+     * Sets the item that this source position references.
+     */
+    public void setItem(T item) {
+        this.item = item;
+    }
 
-  /**
-   * Sets the position information contained in this source position.
-   */
-  public void setPositionInformation(int startLineno, int startCharno,
-                                     int endLineno, int endCharno) {
-    this.startLineno = startLineno;
-    this.startCharno = startCharno;
-    this.endLineno = endLineno;
-    this.endCharno = endCharno;
-  }
+    /**
+     * Sets the position information contained in this source position.
+     */
+    public void setPositionInformation(int startLineno, int startCharno,
+                                       int endLineno, int endCharno) {
+        this.startLineno = startLineno;
+        this.startCharno = startCharno;
+        this.endLineno = endLineno;
+        this.endCharno = endCharno;
+    }
 
-  /**
-   * Returns the item found at this source position.
-   */
-  public T getItem() {
-    return item;
-  }
+    /**
+     * Returns the item found at this source position.
+     */
+    public T getItem() {
+        return item;
+    }
 
-  /**
-   * Returns the starting line number of this position.
-   */
-  public int getStartLine() {
-    return startLineno;
-  }
+    /**
+     * Returns the starting line number of this position.
+     */
+    public int getStartLine() {
+        return startLineno;
+    }
 
-  /**
-   * Returns the character position on the starting line.
-   */
-  public int getPositionOnStartLine() {
-    return startCharno;
-  }
+    /**
+     * Returns the character position on the starting line.
+     */
+    public int getPositionOnStartLine() {
+        return startCharno;
+    }
 
-  /**
-   * Returns the ending line number of this position.
-   */
-  public int getEndLine() {
-    return endLineno;
-  }
+    /**
+     * Returns the ending line number of this position.
+     */
+    public int getEndLine() {
+        return endLineno;
+    }
 
-  /**
-   * Returns the character position on the ending line.
-   */
-  public int getPositionOnEndLine() {
-    return endCharno;
-  }
+    /**
+     * Returns the character position on the ending line.
+     */
+    public int getPositionOnEndLine() {
+        return endCharno;
+    }
 }

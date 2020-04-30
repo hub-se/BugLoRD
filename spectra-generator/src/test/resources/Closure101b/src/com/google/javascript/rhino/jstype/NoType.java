@@ -42,13 +42,13 @@ package com.google.javascript.rhino.jstype;
 
 /**
  * Bottom type, representing the subclass of any value or object.
- *
+ * <p>
  * Although JavaScript programmers can't explicitly denote the bottom type,
  * it comes up in static analysis. For example, if we have:
  * <code>
  * var x = null;
  * if (x) {
- *   f(x);
+ * f(x);
  * }
  * </code>
  * We need to be able to assign {@code x} a type within the {@code f(x)}
@@ -56,76 +56,75 @@ package com.google.javascript.rhino.jstype;
  * so that {@code f(x)} is legal no matter what the type of {@code f}'s
  * first argument is.
  *
-*
  * @see <a href="http://en.wikipedia.org/wiki/Bottom_type">Bottom types</a>
  */
 public final class NoType extends NoObjectType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  NoType(JSTypeRegistry registry) {
-    super(registry);
-  }
-
-  @Override
-  public boolean isNoObjectType() {
-    return false;
-  }
-
-  @Override
-  public boolean isNoType() {
-    return true;
-  }
-
-  @Override
-  public boolean isNullable() {
-    return true;
-  }
-
-  @Override
-  public boolean isSubtype(JSType that) {
-    return true;
-  }
-
-  @Override
-  public JSType getLeastSupertype(JSType that) {
-    return that;
-  }
-
-  @Override
-  public JSType getGreatestSubtype(JSType that) {
-    if (that.isUnknownType()) {
-      return registry.getNativeType(JSTypeNative.UNKNOWN_TYPE);
+    NoType(JSTypeRegistry registry) {
+        super(registry);
     }
-    return this;
-  }
 
-  @Override
-  public BooleanLiteralSet getPossibleToBooleanOutcomes() {
-    return BooleanLiteralSet.EMPTY;
-  }
+    @Override
+    public boolean isNoObjectType() {
+        return false;
+    }
 
-  @Override
-  public boolean matchesNumberContext() {
-    return true;
-  }
+    @Override
+    public boolean isNoType() {
+        return true;
+    }
 
-  @Override
-  public boolean matchesObjectContext() {
-    return true;
-  }
+    @Override
+    public boolean isNullable() {
+        return true;
+    }
 
-  @Override
-  public boolean matchesStringContext() {
-    return true;
-  }
+    @Override
+    public boolean isSubtype(JSType that) {
+        return true;
+    }
 
-  @Override
-  public <T> T visit(Visitor<T> visitor) {
-    return visitor.caseNoType();
-  }
+    @Override
+    public JSType getLeastSupertype(JSType that) {
+        return that;
+    }
 
-  @Override
-  public String toString() {
-    return "None";
-  }
+    @Override
+    public JSType getGreatestSubtype(JSType that) {
+        if (that.isUnknownType()) {
+            return registry.getNativeType(JSTypeNative.UNKNOWN_TYPE);
+        }
+        return this;
+    }
+
+    @Override
+    public BooleanLiteralSet getPossibleToBooleanOutcomes() {
+        return BooleanLiteralSet.EMPTY;
+    }
+
+    @Override
+    public boolean matchesNumberContext() {
+        return true;
+    }
+
+    @Override
+    public boolean matchesObjectContext() {
+        return true;
+    }
+
+    @Override
+    public boolean matchesStringContext() {
+        return true;
+    }
+
+    @Override
+    public <T> T visit(Visitor<T> visitor) {
+        return visitor.caseNoType();
+    }
+
+    @Override
+    public String toString() {
+        return "None";
+    }
 }

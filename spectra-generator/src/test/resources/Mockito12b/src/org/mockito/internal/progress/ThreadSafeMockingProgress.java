@@ -4,16 +4,16 @@
  */
 package org.mockito.internal.progress;
 
-import java.io.Serializable;
-
 import org.mockito.MockSettings;
 import org.mockito.internal.invocation.Invocation;
 import org.mockito.internal.listeners.MockingProgressListener;
 import org.mockito.verification.VerificationMode;
 
+import java.io.Serializable;
+
 @SuppressWarnings("unchecked")
 public class ThreadSafeMockingProgress implements MockingProgress, Serializable {
-    
+
     private static final long serialVersionUID = 6839454041642082618L;
     private static ThreadLocal<MockingProgress> mockingProgress = new ThreadLocal<MockingProgress>();
 
@@ -23,7 +23,7 @@ public class ThreadSafeMockingProgress implements MockingProgress, Serializable 
         }
         return mockingProgress.get();
     }
-    
+
     public void reportOngoingStubbing(IOngoingStubbing iOngoingStubbing) {
         threadSafely().reportOngoingStubbing(iOngoingStubbing);
     }
@@ -31,7 +31,7 @@ public class ThreadSafeMockingProgress implements MockingProgress, Serializable 
     public IOngoingStubbing pullOngoingStubbing() {
         return threadSafely().pullOngoingStubbing();
     }
-    
+
     public void verificationStarted(VerificationMode verify) {
         threadSafely().verificationStarted(verify);
     }
@@ -51,7 +51,7 @@ public class ThreadSafeMockingProgress implements MockingProgress, Serializable 
     public void stubbingCompleted(Invocation invocation) {
         threadSafely().stubbingCompleted(invocation);
     }
-    
+
     public String toString() {
         return threadSafely().toString();
     }
@@ -67,7 +67,7 @@ public class ThreadSafeMockingProgress implements MockingProgress, Serializable 
     public ArgumentMatcherStorage getArgumentMatcherStorage() {
         return threadSafely().getArgumentMatcherStorage();
     }
-    
+
     public void mockingStarted(Object mock, Class classToMock, MockSettings mockSettings) {
         threadSafely().mockingStarted(mock, classToMock, mockSettings);
     }

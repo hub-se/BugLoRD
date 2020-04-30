@@ -2,8 +2,8 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 public interface CloneableRepetitionIterator<T> extends CloneableIterator<T> {
 
-	public boolean isStartOfRepetition();
-	
-	public boolean isEndOfRepetition();
-	
+    public boolean isStartOfRepetition();
+
+    public boolean isEndOfRepetition();
+
 }

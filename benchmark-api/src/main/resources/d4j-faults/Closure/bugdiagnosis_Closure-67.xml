@@ -1,30 +1,30 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-67">
-			<tests>
-				<testfile
-					path="com/google/javascript/jscomp/RemoveUnusedPrototypePropertiesTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>134</number_tests>
-					<failed>1</failed>
-					<passed>133</passed>
-					<nodes>45033</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/AnalyzePrototypeProperties.java">
-					<change parent="316-318">318</change>
-					<bugtypes>
-						<id id="1.2" lines="318">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-67">
+            <tests>
+                <testfile
+                        path="com/google/javascript/jscomp/RemoveUnusedPrototypePropertiesTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>134</number_tests>
+                    <failed>1</failed>
+                    <passed>133</passed>
+                    <nodes>45033</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/AnalyzePrototypeProperties.java">
+                    <change parent="316-318">318</change>
+                    <bugtypes>
+                        <id id="1.2" lines="318">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

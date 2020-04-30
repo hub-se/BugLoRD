@@ -15,14 +15,13 @@
  */
 package org.joda.time;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.chrono.CopticChronology;
 import org.joda.time.chrono.ISOChronology;
+
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * This class is a JUnit test for MutableDuration.
@@ -35,32 +34,32 @@ public class TestMutablePeriod_Constructors extends TestCase {
 
     private static final DateTimeZone PARIS = DateTimeZone.forID("Europe/Paris");
     private static final DateTimeZone LONDON = DateTimeZone.forID("Europe/London");
-    
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
-    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365 + 365;
-    
+
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
+    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365;
+
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
-            
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
+
     // 2002-04-05
     private long TEST_TIME1 =
-            (y2002days + 31L + 28L + 31L + 5L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 12L * DateTimeConstants.MILLIS_PER_HOUR
-            + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (y2002days + 31L + 28L + 31L + 5L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 12L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     // 2003-05-06
     private long TEST_TIME2 =
-            (y2003days + 31L + 28L + 31L + 30L + 6L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 14L * DateTimeConstants.MILLIS_PER_HOUR
-            + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
-    
+            (y2003days + 31L + 28L + 31L + 30L + 6L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 14L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     private DateTimeZone originalDateTimeZone = null;
     private TimeZone originalTimeZone = null;
     private Locale originalLocale = null;
@@ -103,6 +102,7 @@ public class TestMutablePeriod_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor ()
      */
@@ -120,6 +120,7 @@ public class TestMutablePeriod_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (PeriodType)
      */
@@ -170,8 +171,8 @@ public class TestMutablePeriod_Constructors extends TestCase {
     public void testConstructor_long2() throws Throwable {
         long length =
                 5 * DateTimeConstants.MILLIS_PER_HOUR +
-                6 * DateTimeConstants.MILLIS_PER_MINUTE +
-                7 * DateTimeConstants.MILLIS_PER_SECOND + 8;
+                        6 * DateTimeConstants.MILLIS_PER_MINUTE +
+                        7 * DateTimeConstants.MILLIS_PER_SECOND + 8;
         MutablePeriod test = new MutablePeriod(length);
         assertEquals(PeriodType.standard(), test.getPeriodType());
         assertEquals(0, test.getYears());
@@ -186,10 +187,10 @@ public class TestMutablePeriod_Constructors extends TestCase {
 
     public void testConstructor_long3() throws Throwable {
         long length =
-            (4L + (3L * 7L) + (2L * 30L) + 365L) * DateTimeConstants.MILLIS_PER_DAY +
-            5L * DateTimeConstants.MILLIS_PER_HOUR +
-            6L * DateTimeConstants.MILLIS_PER_MINUTE +
-            7L * DateTimeConstants.MILLIS_PER_SECOND + 8L;
+                (4L + (3L * 7L) + (2L * 30L) + 365L) * DateTimeConstants.MILLIS_PER_DAY +
+                        5L * DateTimeConstants.MILLIS_PER_HOUR +
+                        6L * DateTimeConstants.MILLIS_PER_MINUTE +
+                        7L * DateTimeConstants.MILLIS_PER_SECOND + 8L;
         MutablePeriod test = new MutablePeriod(length);
         assertEquals(PeriodType.standard(), test.getPeriodType());
         // only time fields are precise in AllType
@@ -258,8 +259,8 @@ public class TestMutablePeriod_Constructors extends TestCase {
     public void testConstructor_long_PeriodType4() throws Throwable {
         long length =
                 5 * DateTimeConstants.MILLIS_PER_HOUR +
-                6 * DateTimeConstants.MILLIS_PER_MINUTE +
-                7 * DateTimeConstants.MILLIS_PER_SECOND + 8;
+                        6 * DateTimeConstants.MILLIS_PER_MINUTE +
+                        7 * DateTimeConstants.MILLIS_PER_SECOND + 8;
         MutablePeriod test = new MutablePeriod(length, PeriodType.standard().withMillisRemoved());
         assertEquals(PeriodType.standard().withMillisRemoved(), test.getPeriodType());
         assertEquals(0, test.getYears());
@@ -394,6 +395,7 @@ public class TestMutablePeriod_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (4ints)
      */
@@ -411,6 +413,7 @@ public class TestMutablePeriod_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (8ints)
      */
@@ -428,6 +431,7 @@ public class TestMutablePeriod_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (8ints)
      */
@@ -461,7 +465,8 @@ public class TestMutablePeriod_Constructors extends TestCase {
         try {
             new MutablePeriod(1, 2, 3, 4, 5, 6, 7, 8, PeriodType.dayTime());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -820,6 +825,7 @@ public class TestMutablePeriod_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (Object)
      */
@@ -877,6 +883,7 @@ public class TestMutablePeriod_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (Object,PeriodType)
      */
@@ -935,10 +942,10 @@ public class TestMutablePeriod_Constructors extends TestCase {
     //-----------------------------------------------------------------------
     public void testConstructor_Object_Chronology1() throws Throwable {
         long length =
-            (4L + (3L * 7L) + (2L * 30L) + 365L) * DateTimeConstants.MILLIS_PER_DAY +
-            5L * DateTimeConstants.MILLIS_PER_HOUR +
-            6L * DateTimeConstants.MILLIS_PER_MINUTE +
-            7L * DateTimeConstants.MILLIS_PER_SECOND + 8L;
+                (4L + (3L * 7L) + (2L * 30L) + 365L) * DateTimeConstants.MILLIS_PER_DAY +
+                        5L * DateTimeConstants.MILLIS_PER_HOUR +
+                        6L * DateTimeConstants.MILLIS_PER_MINUTE +
+                        7L * DateTimeConstants.MILLIS_PER_SECOND + 8L;
         MutablePeriod test = new MutablePeriod(new Duration(length), ISOChronology.getInstance());
         assertEquals(PeriodType.standard(), test.getPeriodType());
         assertEquals(0, test.getYears());  // (4 + (3 * 7) + (2 * 30) + 365) == 450
@@ -953,10 +960,10 @@ public class TestMutablePeriod_Constructors extends TestCase {
 
     public void testConstructor_Object_Chronology2() throws Throwable {
         long length =
-            (4L + (3L * 7L) + (2L * 30L) + 365L) * DateTimeConstants.MILLIS_PER_DAY +
-            5L * DateTimeConstants.MILLIS_PER_HOUR +
-            6L * DateTimeConstants.MILLIS_PER_MINUTE +
-            7L * DateTimeConstants.MILLIS_PER_SECOND + 8L;
+                (4L + (3L * 7L) + (2L * 30L) + 365L) * DateTimeConstants.MILLIS_PER_DAY +
+                        5L * DateTimeConstants.MILLIS_PER_HOUR +
+                        6L * DateTimeConstants.MILLIS_PER_MINUTE +
+                        7L * DateTimeConstants.MILLIS_PER_SECOND + 8L;
         MutablePeriod test = new MutablePeriod(new Duration(length), ISOChronology.getInstanceUTC());
         assertEquals(PeriodType.standard(), test.getPeriodType());
         assertEquals(0, test.getYears());  // (4 + (3 * 7) + (2 * 30) + 365) == 450

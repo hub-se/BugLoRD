@@ -16,19 +16,13 @@
  */
 package org.apache.commons.lang3.concurrent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.util.concurrent.ThreadFactory;
-
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.concurrent.ThreadFactory;
+
+import static org.junit.Assert.*;
 
 /**
  * Test class for {@code BasicThreadFactory}.
@@ -36,10 +30,14 @@ import org.junit.Test;
  * @version $Id$
  */
 public class BasicThreadFactoryTest {
-    /** Constant for the test naming pattern. */
+    /**
+     * Constant for the test naming pattern.
+     */
     private static final String PATTERN = "testThread-%d";
 
-    /** The builder for creating a thread factory. */
+    /**
+     * The builder for creating a thread factory.
+     */
     private BasicThreadFactory.Builder builder;
 
     @Before

@@ -4,10 +4,10 @@
  */
 package org.mockito.internal.matchers;
 
-import java.math.BigDecimal;
-
 import org.junit.Test;
 import org.mockitoutil.TestBase;
+
+import java.math.BigDecimal;
 
 public class ComparableMatchersTest extends TestBase {
 
@@ -43,7 +43,7 @@ public class ComparableMatchersTest extends TestBase {
     }
 
     private void test(CompareTo<String> compareTo, boolean lower, boolean higher,
-            boolean equals, String name) {
+                      boolean equals, String name) {
 
         assertEquals(lower, compareTo.matches("a"));
         assertEquals(equals, compareTo.matches("b"));

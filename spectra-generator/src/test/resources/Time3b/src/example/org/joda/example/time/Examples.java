@@ -15,10 +15,10 @@
  */
 package org.joda.example.time;
 
-import java.util.Locale;
-
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+
+import java.util.Locale;
 
 /**
  * Example code demonstrating how to use Joda-Time.
@@ -41,7 +41,7 @@ public class Examples {
         runDateTime();
         System.out.println();
     }
-    
+
     private void runInstant() {
         System.out.println("Instant");
         System.out.println("=======");

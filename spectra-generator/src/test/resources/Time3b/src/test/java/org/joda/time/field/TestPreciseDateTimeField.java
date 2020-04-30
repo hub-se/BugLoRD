@@ -15,17 +15,16 @@
  */
 package org.joda.time.field;
 
-import java.util.Arrays;
-import java.util.Locale;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DurationField;
 import org.joda.time.DurationFieldType;
 import org.joda.time.TimeOfDay;
 import org.joda.time.chrono.ISOChronology;
+
+import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * This class is a Junit unit test for PreciseDateTimeField.
@@ -55,68 +54,73 @@ public class TestPreciseDateTimeField extends TestCase {
     //-----------------------------------------------------------------------
     public void test_constructor() {
         BaseDateTimeField field = new PreciseDateTimeField(
-            DateTimeFieldType.secondOfMinute(),
-            ISOChronology.getInstanceUTC().millis(),
-            ISOChronology.getInstanceUTC().hours()
+                DateTimeFieldType.secondOfMinute(),
+                ISOChronology.getInstanceUTC().millis(),
+                ISOChronology.getInstanceUTC().hours()
         );
         assertEquals(DateTimeFieldType.secondOfMinute(), field.getType());
         try {
             field = new PreciseDateTimeField(null, null, null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             field = new PreciseDateTimeField(
-                DateTimeFieldType.minuteOfHour(),
-                new MockImpreciseDurationField(DurationFieldType.minutes()),
-                ISOChronology.getInstanceUTC().hours());
+                    DateTimeFieldType.minuteOfHour(),
+                    new MockImpreciseDurationField(DurationFieldType.minutes()),
+                    ISOChronology.getInstanceUTC().hours());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             field = new PreciseDateTimeField(
-                DateTimeFieldType.minuteOfHour(),
-                ISOChronology.getInstanceUTC().hours(),
-                new MockImpreciseDurationField(DurationFieldType.minutes()));
+                    DateTimeFieldType.minuteOfHour(),
+                    ISOChronology.getInstanceUTC().hours(),
+                    new MockImpreciseDurationField(DurationFieldType.minutes()));
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             field = new PreciseDateTimeField(
-                DateTimeFieldType.minuteOfHour(),
-                ISOChronology.getInstanceUTC().hours(),
-                ISOChronology.getInstanceUTC().hours());
+                    DateTimeFieldType.minuteOfHour(),
+                    ISOChronology.getInstanceUTC().hours(),
+                    ISOChronology.getInstanceUTC().hours());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             field = new PreciseDateTimeField(
-                DateTimeFieldType.minuteOfHour(),
-                new MockZeroDurationField(DurationFieldType.minutes()),
-                ISOChronology.getInstanceUTC().hours());
+                    DateTimeFieldType.minuteOfHour(),
+                    new MockZeroDurationField(DurationFieldType.minutes()),
+                    ISOChronology.getInstanceUTC().hours());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void test_getType() {
         BaseDateTimeField field = new PreciseDateTimeField(
-            DateTimeFieldType.secondOfDay(),
-            ISOChronology.getInstanceUTC().millis(),
-            ISOChronology.getInstanceUTC().hours()
+                DateTimeFieldType.secondOfDay(),
+                ISOChronology.getInstanceUTC().millis(),
+                ISOChronology.getInstanceUTC().hours()
         );
         assertEquals(DateTimeFieldType.secondOfDay(), field.getType());
     }
 
     public void test_getName() {
         BaseDateTimeField field = new PreciseDateTimeField(
-            DateTimeFieldType.secondOfDay(),
-            ISOChronology.getInstanceUTC().millis(),
-            ISOChronology.getInstanceUTC().hours()
+                DateTimeFieldType.secondOfDay(),
+                ISOChronology.getInstanceUTC().millis(),
+                ISOChronology.getInstanceUTC().hours()
         );
         assertEquals("secondOfDay", field.getName());
     }
 
     public void test_toString() {
         BaseDateTimeField field = new PreciseDateTimeField(
-            DateTimeFieldType.secondOfDay(),
-            ISOChronology.getInstanceUTC().millis(),
-            ISOChronology.getInstanceUTC().hours()
+                DateTimeFieldType.secondOfDay(),
+                ISOChronology.getInstanceUTC().millis(),
+                ISOChronology.getInstanceUTC().hours()
         );
         assertEquals("DateTimeField[secondOfDay]", field.toString());
     }
@@ -214,43 +218,45 @@ public class TestPreciseDateTimeField extends TestCase {
     }
 
     public void test_add_RP_int_intarray_int() {
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         BaseDateTimeField field = new MockStandardDateTimeField();
         int[] result = field.add(new TimeOfDay(), 2, values, 0);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 31, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 31, 40};
         result = field.add(new TimeOfDay(), 2, values, 1);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 21, 0, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 21, 0, 40};
         result = field.add(new TimeOfDay(), 2, values, 30);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {23, 59, 30, 40};
+
+        values = new int[]{23, 59, 30, 40};
         try {
             field.add(new TimeOfDay(), 2, values, 30);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 29, 40};
+        } catch (IllegalArgumentException ex) {
+        }
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 29, 40};
         result = field.add(new TimeOfDay(), 2, values, -1);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 19, 59, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 19, 59, 40};
         result = field.add(new TimeOfDay(), 2, values, -31);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {0, 0, 30, 40};
+
+        values = new int[]{0, 0, 30, 40};
         try {
             field.add(new TimeOfDay(), 2, values, -31);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -263,23 +269,23 @@ public class TestPreciseDateTimeField extends TestCase {
 
     public void test_addWrapField_RP_int_intarray_int() {
         BaseDateTimeField field = new MockPreciseDateTimeField();
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         int[] result = field.addWrapField(new TimeOfDay(), 2, values, 0);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 59, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 59, 40};
         result = field.addWrapField(new TimeOfDay(), 2, values, 29);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 0, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 0, 40};
         result = field.addWrapField(new TimeOfDay(), 2, values, 30);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 1, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 1, 40};
         result = field.addWrapField(new TimeOfDay(), 2, values, 31);
         assertEquals(true, Arrays.equals(result, expected));
     }
@@ -308,30 +314,32 @@ public class TestPreciseDateTimeField extends TestCase {
 
     public void test_set_RP_int_intarray_int() {
         BaseDateTimeField field = new MockPreciseDateTimeField();
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         int[] result = field.set(new TimeOfDay(), 2, values, 30);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 29, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 29, 40};
         result = field.set(new TimeOfDay(), 2, values, 29);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, 60);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, -1);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
     }
 
@@ -349,30 +357,32 @@ public class TestPreciseDateTimeField extends TestCase {
 
     public void test_set_RP_int_intarray_String_Locale() {
         BaseDateTimeField field = new MockPreciseDateTimeField();
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         int[] result = field.set(new TimeOfDay(), 2, values, "30", null);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 29, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 29, 40};
         result = field.set(new TimeOfDay(), 2, values, "29", Locale.ENGLISH);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, "60", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, "-1", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
     }
 
@@ -383,11 +393,13 @@ public class TestPreciseDateTimeField extends TestCase {
         try {
             field.convertText("2A", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             field.convertText(null, null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //------------------------------------------------------------------------
@@ -534,9 +546,10 @@ public class TestPreciseDateTimeField extends TestCase {
     static class MockPreciseDateTimeField extends PreciseDateTimeField {
         protected MockPreciseDateTimeField() {
             super(DateTimeFieldType.secondOfMinute(),
-                new MockCountingDurationField(DurationFieldType.seconds(), 60),
-                new MockCountingDurationField(DurationFieldType.minutes(), 60 * 60));
+                    new MockCountingDurationField(DurationFieldType.seconds(), 60),
+                    new MockCountingDurationField(DurationFieldType.minutes(), 60 * 60));
         }
+
         protected MockPreciseDateTimeField(
                 DateTimeFieldType type, DurationField dur, DurationField range) {
             super(type, dur, range);
@@ -547,9 +560,11 @@ public class TestPreciseDateTimeField extends TestCase {
         protected MockStandardDateTimeField() {
             super();
         }
+
         public DurationField getDurationField() {
             return ISOChronology.getInstanceUTC().seconds();
         }
+
         public DurationField getRangeDurationField() {
             return ISOChronology.getInstanceUTC().minutes();
         }
@@ -561,34 +576,42 @@ public class TestPreciseDateTimeField extends TestCase {
         static int add_long = 0;
         static int difference_long = 0;
         int unit;
-        
+
         protected MockCountingDurationField(DurationFieldType type, int unit) {
             super(type);
             this.unit = unit;
         }
+
         public boolean isPrecise() {
             return true;
         }
+
         public long getUnitMillis() {
             return unit;
         }
+
         public long getValueAsLong(long duration, long instant) {
             return 0;
         }
+
         public long getMillis(int value, long instant) {
             return 0;
         }
+
         public long getMillis(long value, long instant) {
             return 0;
         }
+
         public long add(long instant, int value) {
             add_int++;
             return instant + (value * 60L);
         }
+
         public long add(long instant, long value) {
             add_long++;
             return instant + (value * 60L);
         }
+
         public long getDifferenceAsLong(long minuendInstant, long subtrahendInstant) {
             difference_long++;
             return 30;
@@ -600,27 +623,35 @@ public class TestPreciseDateTimeField extends TestCase {
         protected MockZeroDurationField(DurationFieldType type) {
             super(type);
         }
+
         public boolean isPrecise() {
             return true;
         }
+
         public long getUnitMillis() {
             return 0;  // this is zero
         }
+
         public long getValueAsLong(long duration, long instant) {
             return 0;
         }
+
         public long getMillis(int value, long instant) {
             return 0;
         }
+
         public long getMillis(long value, long instant) {
             return 0;
         }
+
         public long add(long instant, int value) {
             return 0;
         }
+
         public long add(long instant, long value) {
             return 0;
         }
+
         public long getDifferenceAsLong(long minuendInstant, long subtrahendInstant) {
             return 0;
         }
@@ -631,27 +662,35 @@ public class TestPreciseDateTimeField extends TestCase {
         protected MockImpreciseDurationField(DurationFieldType type) {
             super(type);
         }
+
         public boolean isPrecise() {
             return false;  // this is false
         }
+
         public long getUnitMillis() {
             return 0;
         }
+
         public long getValueAsLong(long duration, long instant) {
             return 0;
         }
+
         public long getMillis(int value, long instant) {
             return 0;
         }
+
         public long getMillis(long value, long instant) {
             return 0;
         }
+
         public long add(long instant, int value) {
             return 0;
         }
+
         public long add(long instant, long value) {
             return 0;
         }
+
         public long getDifferenceAsLong(long minuendInstant, long subtrahendInstant) {
             return 0;
         }

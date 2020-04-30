@@ -4,15 +4,15 @@
  */
 package org.mockitousage.spies;
 
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.mockitoutil.TestBase;
+
+import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings({"unchecked"})
 public class SpyingOnInterfacesTest extends TestBase {
@@ -25,25 +25,27 @@ public class SpyingOnInterfacesTest extends TestBase {
             when(list.get(0)).thenCallRealMethod();
             //then
             fail();
-        } catch (MockitoException e) {}
+        } catch (MockitoException e) {
+        }
     }
-    
+
     @Test
     public void shouldFailInRuntimeWhenCallingRealMethodOnInterface() throws Exception {
         //given
         List list = mock(List.class);
         when(list.get(0)).thenAnswer(
-            new Answer() {
-                public Object answer(InvocationOnMock invocation) throws Throwable {
-                    return invocation.callRealMethod();
+                new Answer() {
+                    public Object answer(InvocationOnMock invocation) throws Throwable {
+                        return invocation.callRealMethod();
+                    }
                 }
-            }
         );
         try {
             //when
-            list.get(0);            
+            list.get(0);
             //then
             fail();
-        } catch (MockitoException e) {}
+        } catch (MockitoException e) {
+        }
     }
 }

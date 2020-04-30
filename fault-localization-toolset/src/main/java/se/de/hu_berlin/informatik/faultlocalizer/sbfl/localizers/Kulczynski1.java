@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Kulczynski1 fault localizer $\frac{\EF}{\NF+\EP}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Kulczynski1<T> extends AbstractFaultLocalizer<T> {
 
@@ -30,9 +29,9 @@ public class Kulczynski1<T> extends AbstractFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-    	if (node.getEF(strategy) == 0) {
-    		return 0;
-    	}
+        if (node.getEF(strategy) == 0) {
+            return 0;
+        }
         return node.getEF(strategy) / (node.getNF(strategy) + node.getEP(strategy));
     }
 

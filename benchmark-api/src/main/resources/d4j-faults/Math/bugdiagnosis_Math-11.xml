@@ -1,32 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-11">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/distribution/MultivariateNormalDistributionTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;0.13915687747739694&gt;
-						but was:&lt;0.348814563694205&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>10</number_tests>
-					<failed>1</failed>
-					<passed>9</passed>
-					<nodes>39025</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/distribution/MultivariateNormalDistribution.java">
-					<change parent="183-185">183</change>
-					<bugtypes>
-						<id id="2.2" lines="183">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-11">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/distribution/MultivariateNormalDistributionTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;0.13915687747739694&gt;
+                        but was:&lt;0.348814563694205&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>10</number_tests>
+                    <failed>1</failed>
+                    <passed>9</passed>
+                    <nodes>39025</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/distribution/MultivariateNormalDistribution.java">
+                    <change parent="183-185">183</change>
+                    <bugtypes>
+                        <id id="2.2" lines="183">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

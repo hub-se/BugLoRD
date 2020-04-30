@@ -52,8 +52,6 @@ import java.util.ResourceBundle;
 
 /**
  * This is the class that implements the runtime.
- *
-*
  */
 
 public class ScriptRuntime {
@@ -65,8 +63,7 @@ public class ScriptRuntime {
     }
 
     // It is public so NativeRegExp can access it .
-    public static boolean isJSLineTerminator(int c)
-    {
+    public static boolean isJSLineTerminator(int c) {
         // Optimization for faster check for eol character:
         // they do not have 0xDFD0 bits set
         if ((c & 0xDFD0) != 0) {
@@ -80,11 +77,11 @@ public class ScriptRuntime {
     // Double.NaN to be converted to 1.0.
     // So we use ScriptRuntime.NaN instead of Double.NaN.
     public static final double
-        NaN = Double.longBitsToDouble(0x7ff8000000000000L);
+            NaN = Double.longBitsToDouble(0x7ff8000000000000L);
 
     // A similar problem exists for negative zero.
     public static final double
-        negativeZero = Double.longBitsToDouble(0x8000000000000000L);
+            negativeZero = Double.longBitsToDouble(0x8000000000000000L);
 
     public static final Double NaNobj = new Double(NaN);
 
@@ -106,7 +103,7 @@ public class ScriptRuntime {
         }
         int end;
         double sum = 0.0;
-        for (end=start; end < len; end++) {
+        for (end = start; end < len; end++) {
             char c = s.charAt(end);
             int newDigit;
             if ('0' <= c && c <= digitMax)
@@ -117,7 +114,7 @@ public class ScriptRuntime {
                 newDigit = c - 'A' + 10;
             else
                 break;
-            sum = sum*radix + newDigit;
+            sum = sum * radix + newDigit;
         }
         if (start == end) {
             return NaN;
@@ -135,8 +132,7 @@ public class ScriptRuntime {
                     return NaN;
                 }
             } else if (radix == 2 || radix == 4 || radix == 8 ||
-                       radix == 16 || radix == 32)
-            {
+                    radix == 16 || radix == 32) {
                 /* The number may also be inaccurate for one of these bases.
                  * This happens if the addition in value*radix + digit causes
                  * a round-down to an even least significant mantissa bit
@@ -152,7 +148,7 @@ public class ScriptRuntime {
 
                 final int SKIP_LEADING_ZEROS = 0;
                 final int FIRST_EXACT_53_BITS = 1;
-                final int AFTER_BIT_53         = 2;
+                final int AFTER_BIT_53 = 2;
                 final int ZEROS_AFTER_54 = 3;
                 final int MIXED_AFTER_54 = 4;
 
@@ -163,7 +159,7 @@ public class ScriptRuntime {
                 // bit54 is the 54th bit (the first dropped from the mantissa)
                 boolean bit54 = false;
 
-                for (;;) {
+                for (; ; ) {
                     if (bitShiftInChar == 1) {
                         if (start == end)
                             break;
@@ -180,60 +176,60 @@ public class ScriptRuntime {
                     boolean bit = (digit & bitShiftInChar) != 0;
 
                     switch (state) {
-                      case SKIP_LEADING_ZEROS:
-                          if (bit) {
+                        case SKIP_LEADING_ZEROS:
+                            if (bit) {
+                                --exactBitsLimit;
+                                sum = 1.0;
+                                state = FIRST_EXACT_53_BITS;
+                            }
+                            break;
+                        case FIRST_EXACT_53_BITS:
+                            sum *= 2.0;
+                            if (bit)
+                                sum += 1.0;
                             --exactBitsLimit;
-                            sum = 1.0;
-                            state = FIRST_EXACT_53_BITS;
-                        }
-                        break;
-                      case FIRST_EXACT_53_BITS:
-                           sum *= 2.0;
-                        if (bit)
-                            sum += 1.0;
-                        --exactBitsLimit;
-                        if (exactBitsLimit == 0) {
-                            bit53 = bit;
-                            state = AFTER_BIT_53;
-                        }
-                        break;
-                      case AFTER_BIT_53:
-                        bit54 = bit;
-                        factor = 2.0;
-                        state = ZEROS_AFTER_54;
-                        break;
-                      case ZEROS_AFTER_54:
-                        if (bit) {
-                            state = MIXED_AFTER_54;
-                        }
-                        // fallthrough
-                      case MIXED_AFTER_54:
-                        factor *= 2;
-                        break;
+                            if (exactBitsLimit == 0) {
+                                bit53 = bit;
+                                state = AFTER_BIT_53;
+                            }
+                            break;
+                        case AFTER_BIT_53:
+                            bit54 = bit;
+                            factor = 2.0;
+                            state = ZEROS_AFTER_54;
+                            break;
+                        case ZEROS_AFTER_54:
+                            if (bit) {
+                                state = MIXED_AFTER_54;
+                            }
+                            // fallthrough
+                        case MIXED_AFTER_54:
+                            factor *= 2;
+                            break;
                     }
                 }
                 switch (state) {
-                  case SKIP_LEADING_ZEROS:
-                    sum = 0.0;
-                    break;
-                  case FIRST_EXACT_53_BITS:
-                  case AFTER_BIT_53:
-                    // do nothing
-                    break;
-                  case ZEROS_AFTER_54:
-                    // x1.1 -> x1 + 1 (round up)
-                    // x0.1 -> x0 (round down)
-                    if (bit54 & bit53)
-                        sum += 1.0;
-                    sum *= factor;
-                    break;
-                  case MIXED_AFTER_54:
-                    // x.100...1.. -> x + 1 (round up)
-                    // x.0anything -> x (round down)
-                    if (bit54)
-                        sum += 1.0;
-                    sum *= factor;
-                    break;
+                    case SKIP_LEADING_ZEROS:
+                        sum = 0.0;
+                        break;
+                    case FIRST_EXACT_53_BITS:
+                    case AFTER_BIT_53:
+                        // do nothing
+                        break;
+                    case ZEROS_AFTER_54:
+                        // x1.1 -> x1 + 1 (round up)
+                        // x0.1 -> x0 (round down)
+                        if (bit54 & bit53)
+                            sum += 1.0;
+                        sum *= factor;
+                        break;
+                    case MIXED_AFTER_54:
+                        // x.100...1.. -> x + 1 (round up)
+                        // x.0anything -> x (round down)
+                        if (bit54)
+                            sum += 1.0;
+                        sum *= factor;
+                        break;
                 }
             }
             /* We don't worry about inaccurate numbers for any other base. */
@@ -241,8 +237,7 @@ public class ScriptRuntime {
         return sum;
     }
 
-    public static String escapeString(String s)
-    {
+    public static String escapeString(String s) {
         return escapeString(s, '"');
     }
 
@@ -250,19 +245,18 @@ public class ScriptRuntime {
      * For escaping strings printed by object and array literals; not quite
      * the same as 'escape.'
      */
-    public static String escapeString(String s, char escapeQuote)
-    {
+    public static String escapeString(String s, char escapeQuote) {
         if (!(escapeQuote == '"' || escapeQuote == '\'')) Kit.codeBug();
         StringBuffer sb = null;
 
-        for(int i = 0, L = s.length(); i != L; ++i) {
+        for (int i = 0, L = s.length(); i != L; ++i) {
             int c = s.charAt(i);
 
             if (' ' <= c && c <= '~' && c != escapeQuote && c != '\\') {
                 // an ordinary print character (like C isprint()) and not "
                 // or \ .
                 if (sb != null) {
-                    sb.append((char)c);
+                    sb.append((char) c);
                 }
                 continue;
             }
@@ -274,19 +268,35 @@ public class ScriptRuntime {
 
             int escape = -1;
             switch (c) {
-                case '\b':  escape = 'b';  break;
-                case '\f':  escape = 'f';  break;
-                case '\n':  escape = 'n';  break;
-                case '\r':  escape = 'r';  break;
-                case '\t':  escape = 't';  break;
-                case 0xb:   escape = 'v';  break; // Java lacks \v.
-                case ' ':   escape = ' ';  break;
-                case '\\':  escape = '\\'; break;
+                case '\b':
+                    escape = 'b';
+                    break;
+                case '\f':
+                    escape = 'f';
+                    break;
+                case '\n':
+                    escape = 'n';
+                    break;
+                case '\r':
+                    escape = 'r';
+                    break;
+                case '\t':
+                    escape = 't';
+                    break;
+                case 0xb:
+                    escape = 'v';
+                    break; // Java lacks \v.
+                case ' ':
+                    escape = ' ';
+                    break;
+                case '\\':
+                    escape = '\\';
+                    break;
             }
             if (escape >= 0) {
                 // an \escaped sort of character
                 sb.append('\\');
-                sb.append((char)escape);
+                sb.append((char) escape);
             } else if (c == escapeQuote) {
                 sb.append('\\');
                 sb.append(escapeQuote);
@@ -305,15 +315,14 @@ public class ScriptRuntime {
                 for (int shift = (hexSize - 1) * 4; shift >= 0; shift -= 4) {
                     int digit = 0xf & (c >> shift);
                     int hc = (digit < 10) ? '0' + digit : 'a' - 10 + digit;
-                    sb.append((char)hc);
+                    sb.append((char) hc);
                 }
             }
         }
         return (sb == null) ? s : sb.toString();
     }
 
-    static boolean isValidIdentifierName(String s)
-    {
+    static boolean isValidIdentifierName(String s) {
         int L = s.length();
         if (L == 0)
             return false;
@@ -328,21 +337,21 @@ public class ScriptRuntime {
 
     /**
      * Convert the value to a string.
-     *
+     * <p>
      * See ECMA 9.8.
      */
     public static String toString(Object val) {
-        for (;;) {
+        for (; ; ) {
             if (val == null) {
                 return "null";
             }
             if (val instanceof String) {
-                return (String)val;
+                return (String) val;
             }
             if (val instanceof Number) {
                 // XXX should we just teach NativeNumber.stringValue()
                 // about Numbers?
-                return numberToString(((Number)val).doubleValue(), 10);
+                return numberToString(((Number) val).doubleValue(), 10);
             }
             return val.toString();
         }
@@ -360,7 +369,7 @@ public class ScriptRuntime {
 
         if ((base < 2) || (base > 36)) {
             throw Context.reportRuntimeError1(
-                "msg.bad.radix", Integer.toString(base));
+                    "msg.bad.radix", Integer.toString(base));
         }
 
         if (base != 10) {
@@ -377,8 +386,7 @@ public class ScriptRuntime {
      * If str is a decimal presentation of Uint32 value, return it as long.
      * Othewise return -1L;
      */
-    public static long testUint32String(String str)
-    {
+    public static long testUint32String(String str) {
         // The length of the decimal string representation of
         //  UINT32_MAX_VALUE, 4294967296
         final int MAX_VALUE_LENGTH = 10;
@@ -409,8 +417,7 @@ public class ScriptRuntime {
         return -1;
     }
 
-    static boolean isSpecialProperty(String s)
-    {
+    static boolean isSpecialProperty(String s) {
         return s.equals("__proto__") || s.equals("__parent__");
     }
 
@@ -418,34 +425,29 @@ public class ScriptRuntime {
     // Statements
     // ------------------
 
-    public static String getMessage0(String messageId)
-    {
+    public static String getMessage0(String messageId) {
         return getMessage(messageId, null);
     }
 
-    public static String getMessage1(String messageId, Object arg1)
-    {
+    public static String getMessage1(String messageId, Object arg1) {
         Object[] arguments = {arg1};
         return getMessage(messageId, arguments);
     }
 
     public static String getMessage2(
-        String messageId, Object arg1, Object arg2)
-    {
+            String messageId, Object arg1, Object arg2) {
         Object[] arguments = {arg1, arg2};
         return getMessage(messageId, arguments);
     }
 
     public static String getMessage3(
-        String messageId, Object arg1, Object arg2, Object arg3)
-    {
+            String messageId, Object arg1, Object arg2, Object arg3) {
         Object[] arguments = {arg1, arg2, arg3};
         return getMessage(messageId, arguments);
     }
 
     public static String getMessage4(
-        String messageId, Object arg1, Object arg2, Object arg3, Object arg4)
-    {
+            String messageId, Object arg1, Object arg2, Object arg3, Object arg4) {
         Object[] arguments = {arg1, arg2, arg3, arg4};
         return getMessage(messageId, arguments);
     }
@@ -454,10 +456,9 @@ public class ScriptRuntime {
      * make sense to use a ListResourceBundle instead of a properties
      * file to avoid (synchronized) text parsing.
      */
-    public static String getMessage(String messageId, Object[] arguments)
-    {
+    public static String getMessage(String messageId, Object[] arguments) {
         final String defaultResource
-            = "rhino_ast.java.com.google.javascript.rhino.Messages";
+                = "rhino_ast.java.com.google.javascript.rhino.Messages";
 
         Context cx = Context.getCurrentContext();
         Locale locale = cx != null ? cx.getLocale() : Locale.getDefault();
@@ -470,7 +471,7 @@ public class ScriptRuntime {
             formatString = rb.getString(messageId);
         } catch (java.util.MissingResourceException mre) {
             throw new RuntimeException
-                ("no message resource found for message property "+ messageId);
+                    ("no message resource found for message property " + messageId);
         }
 
         /*
@@ -483,8 +484,7 @@ public class ScriptRuntime {
         return formatter.format(arguments);
     }
 
-    public static EcmaError constructError(String error, String message)
-    {
+    public static EcmaError constructError(String error, String message) {
         int[] linep = new int[1];
         String filename = Context.getSourcePositionFromStack(linep);
         return constructError(error, message, filename, linep[0], null, 0);
@@ -495,94 +495,80 @@ public class ScriptRuntime {
                                            String sourceName,
                                            int lineNumber,
                                            String lineSource,
-                                           int columnNumber)
-    {
+                                           int columnNumber) {
         return new EcmaError(error, message, sourceName,
-                             lineNumber, lineSource, columnNumber);
+                lineNumber, lineSource, columnNumber);
     }
 
-    public static EcmaError typeError(String message)
-    {
+    public static EcmaError typeError(String message) {
         return constructError("TypeError", message);
     }
 
-    public static EcmaError typeError0(String messageId)
-    {
+    public static EcmaError typeError0(String messageId) {
         String msg = getMessage0(messageId);
         return typeError(msg);
     }
 
-    public static EcmaError typeError1(String messageId, String arg1)
-    {
+    public static EcmaError typeError1(String messageId, String arg1) {
         String msg = getMessage1(messageId, arg1);
         return typeError(msg);
     }
 
     public static EcmaError typeError2(String messageId, String arg1,
-                                       String arg2)
-    {
+                                       String arg2) {
         String msg = getMessage2(messageId, arg1, arg2);
         return typeError(msg);
     }
 
     public static EcmaError typeError3(String messageId, String arg1,
-                                       String arg2, String arg3)
-    {
+                                       String arg2, String arg3) {
         String msg = getMessage3(messageId, arg1, arg2, arg3);
         return typeError(msg);
     }
 
-    public static RuntimeException undefReadError(Object object, Object id)
-    {
+    public static RuntimeException undefReadError(Object object, Object id) {
         String idStr = (id == null) ? "null" : id.toString();
         return typeError2("msg.undef.prop.read", toString(object), idStr);
     }
 
-    public static RuntimeException undefCallError(Object object, Object id)
-    {
+    public static RuntimeException undefCallError(Object object, Object id) {
         String idStr = (id == null) ? "null" : id.toString();
         return typeError2("msg.undef.method.call", toString(object), idStr);
     }
 
     public static RuntimeException undefWriteError(Object object,
                                                    Object id,
-                                                   Object value)
-    {
+                                                   Object value) {
         String idStr = (id == null) ? "null" : id.toString();
         String valueStr = toString(value);
         return typeError3("msg.undef.prop.write", toString(object), idStr,
-                          valueStr);
+                valueStr);
     }
 
-    public static RuntimeException notFunctionError(Object value)
-    {
+    public static RuntimeException notFunctionError(Object value) {
         return notFunctionError(value, value);
     }
 
     public static RuntimeException notFunctionError(Object value,
-                                                    Object messageHelper)
-    {
+                                                    Object messageHelper) {
         // XXX Use value for better error reporting
         String msg = (messageHelper == null)
-                     ? "null" : messageHelper.toString();
+                ? "null" : messageHelper.toString();
         return typeError2("msg.isnt.function", msg,
                 value == null ? "null" : value.getClass().getName());
     }
 
-    static int lastIndexResult(Context cx)
-    {
+    static int lastIndexResult(Context cx) {
         return cx.scratchIndex;
     }
 
-    public static void storeUint32Result(Context cx, long value)
-    {
+    public static void storeUint32Result(Context cx, long value) {
         if ((value >>> 32) != 0)
             throw new IllegalArgumentException();
         cx.scratchUint32 = value;
     }
 
-    public static long lastUint32Result(Context cx)
-    {
+    public static long lastUint32Result(Context cx) {
         long value = cx.scratchUint32;
         if ((value >>> 32) != 0)
             throw new IllegalStateException();
@@ -590,12 +576,11 @@ public class ScriptRuntime {
     }
 
     static String makeUrlForGeneratedScript
-        (boolean isEval, String masterScriptUrl, int masterScriptLine)
-    {
+            (boolean isEval, String masterScriptUrl, int masterScriptLine) {
         if (isEval) {
-            return masterScriptUrl+'#'+masterScriptLine+"(eval)";
+            return masterScriptUrl + '#' + masterScriptLine + "(eval)";
         } else {
-            return masterScriptUrl+'#'+masterScriptLine+"(Function)";
+            return masterScriptUrl + '#' + masterScriptLine + "(Function)";
         }
     }
 
@@ -603,7 +588,7 @@ public class ScriptRuntime {
         // ALERT: this may clash with a valid URL containing (eval) or
         // (Function)
         return sourceUrl.indexOf("(eval)") >= 0
-               || sourceUrl.indexOf("(Function)") >= 0;
+                || sourceUrl.indexOf("(Function)") >= 0;
     }
 
     public static final Object[] emptyArgs = new Object[0];

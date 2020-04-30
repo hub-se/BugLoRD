@@ -16,11 +16,11 @@ public abstract class BaseStubbing<T> implements OngoingStubbing<T>, DeprecatedO
     }
 
     public OngoingStubbing<T> thenReturn(T value, T... values) {
-        OngoingStubbing<T> stubbing = thenReturn(value);            
+        OngoingStubbing<T> stubbing = thenReturn(value);
         if (values == null) {
             return stubbing.thenReturn(null);
         }
-        for (T v: values) {
+        for (T v : values) {
             stubbing = stubbing.thenReturn(v);
         }
         return stubbing;
@@ -35,15 +35,15 @@ public abstract class BaseStubbing<T> implements OngoingStubbing<T>, DeprecatedO
             thenThrow((Throwable) null);
         }
         OngoingStubbing<T> stubbing = null;
-        for (Throwable t: throwables) {
+        for (Throwable t : throwables) {
             if (stubbing == null) {
-                stubbing = thenThrow(t);                    
+                stubbing = thenThrow(t);
             } else {
                 stubbing = stubbing.thenThrow(t);
             }
         }
         return stubbing;
-    }        
+    }
 
     public OngoingStubbing<T> thenCallRealMethod() {
         return thenAnswer(new CallsRealMethods());

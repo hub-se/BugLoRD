@@ -1,35 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-9">
-			<tests>
-				<testfile path="org/apache/commons/lang3/time/FastDateParserTest">
-					<exception>junit.framework.AssertionFailedError:Parsed dates should
-						be equal expected:&lt;null&gt; but was:&lt;Fri Jan 02 21:00:00 PST
-						1970&gt;:-
-						org.apache.commons.lang3.time.FastDateParserTest::testLANG_832:--&gt;
-						junit.framework.AssertionFailedError:Expected FDF failure, but got
-						Fri Jan 02 21:00:00 PST 1970 for ['d'd',d3] using d(\p{IsNd}++)
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>165</number_tests>
-					<failed>2</failed>
-					<passed>163</passed>
-					<nodes>11083</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/time/FastDateParser.java">
-					<insert numberlines="3">144</insert>
-					<bugtypes>
-						<id id="1.1" lines="143">
-							<description>Missing case for inequality of patterns.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-9">
+            <tests>
+                <testfile path="org/apache/commons/lang3/time/FastDateParserTest">
+                    <exception>junit.framework.AssertionFailedError:Parsed dates should
+                        be equal expected:&lt;null&gt; but was:&lt;Fri Jan 02 21:00:00 PST
+                        1970&gt;:-
+                        org.apache.commons.lang3.time.FastDateParserTest::testLANG_832:--&gt;
+                        junit.framework.AssertionFailedError:Expected FDF failure, but got
+                        Fri Jan 02 21:00:00 PST 1970 for ['d'd',d3] using d(\p{IsNd}++)
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>165</number_tests>
+                    <failed>2</failed>
+                    <passed>163</passed>
+                    <nodes>11083</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/time/FastDateParser.java">
+                    <insert numberlines="3">144</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="143">
+                            <description>Missing case for inequality of patterns.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -4,19 +4,20 @@
  */
 package org.mockito.internal.matchers;
 
-import java.io.Serializable;
-
 import org.hamcrest.Description;
 import org.mockito.ArgumentMatcher;
+
+import java.io.Serializable;
 
 @SuppressWarnings("unchecked")
 public class Any extends ArgumentMatcher implements Serializable {
 
     private static final long serialVersionUID = -4062420125651019029L;
-    public static final Any ANY = new Any();    
-    
-    private Any() {}
-    
+    public static final Any ANY = new Any();
+
+    private Any() {
+    }
+
     public boolean matches(Object actual) {
         return true;
     }

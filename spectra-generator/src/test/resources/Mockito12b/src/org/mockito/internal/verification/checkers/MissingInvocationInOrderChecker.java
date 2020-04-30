@@ -4,8 +4,6 @@
  */
 package org.mockito.internal.verification.checkers;
 
-import java.util.List;
-
 import org.mockito.exceptions.Reporter;
 import org.mockito.internal.invocation.Invocation;
 import org.mockito.internal.invocation.InvocationMatcher;
@@ -15,27 +13,29 @@ import org.mockito.internal.verification.api.InOrderContext;
 import org.mockito.internal.verification.argumentmatching.ArgumentMatchingTool;
 import org.mockito.verification.VerificationMode;
 
+import java.util.List;
+
 public class MissingInvocationInOrderChecker {
-    
+
     private final Reporter reporter;
     private final InvocationsFinder finder;
-    
+
     public MissingInvocationInOrderChecker() {
         this(new InvocationsFinder(), new Reporter());
     }
-    
+
     MissingInvocationInOrderChecker(InvocationsFinder finder, Reporter reporter) {
         this.finder = finder;
         this.reporter = reporter;
     }
-    
+
     public void check(List<Invocation> invocations, InvocationMatcher wanted, VerificationMode mode, InOrderContext context) {
         List<Invocation> chunk = finder.findAllMatchingUnverifiedChunks(invocations, wanted, context);
-        
+
         if (!chunk.isEmpty()) {
             return;
         }
-        
+
         Invocation previousInOrder = finder.findPreviousVerifiedInOrder(invocations, context);
         if (previousInOrder == null) {
             /**
@@ -45,19 +45,19 @@ public class MissingInvocationInOrderChecker {
              * is missing, then this method checks if the arguments are different or if the order
              * is not invoked.
              */
-             List<Invocation> actualInvocations = finder.findInvocations(invocations, wanted);
-             if (actualInvocations == null || actualInvocations.isEmpty())  {
-                 Invocation similar = finder.findSimilarInvocation(invocations, wanted);
-                 if (similar != null) {
-                     Integer[] indicesOfSimilarMatchingArguments =
-                             new ArgumentMatchingTool().getSuspiciouslyNotMatchingArgsIndexes(wanted.getMatchers(),
-                                     similar.getArguments());
-                     SmartPrinter smartPrinter = new SmartPrinter(wanted, similar, indicesOfSimilarMatchingArguments);
-                     reporter.argumentsAreDifferent(smartPrinter.getWanted(), smartPrinter.getActual(), similar.getLocation());
-                 } else {
-                     reporter.wantedButNotInvoked(wanted);
-                 }
-             }
+            List<Invocation> actualInvocations = finder.findInvocations(invocations, wanted);
+            if (actualInvocations == null || actualInvocations.isEmpty()) {
+                Invocation similar = finder.findSimilarInvocation(invocations, wanted);
+                if (similar != null) {
+                    Integer[] indicesOfSimilarMatchingArguments =
+                            new ArgumentMatchingTool().getSuspiciouslyNotMatchingArgsIndexes(wanted.getMatchers(),
+                                    similar.getArguments());
+                    SmartPrinter smartPrinter = new SmartPrinter(wanted, similar, indicesOfSimilarMatchingArguments);
+                    reporter.argumentsAreDifferent(smartPrinter.getWanted(), smartPrinter.getActual(), similar.getLocation());
+                } else {
+                    reporter.wantedButNotInvoked(wanted);
+                }
+            }
         } else {
             reporter.wantedButNotInvokedInOrder(wanted, previousInOrder);
         }

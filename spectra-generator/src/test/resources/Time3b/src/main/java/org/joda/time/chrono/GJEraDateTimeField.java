@@ -15,8 +15,6 @@
  */
 package org.joda.time.chrono;
 
-import java.util.Locale;
-
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DurationField;
@@ -24,6 +22,8 @@ import org.joda.time.DurationFieldType;
 import org.joda.time.field.BaseDateTimeField;
 import org.joda.time.field.FieldUtils;
 import org.joda.time.field.UnsupportedDurationField;
+
+import java.util.Locale;
 
 /**
  * Provides time calculations for the era component of time.
@@ -33,8 +33,10 @@ import org.joda.time.field.UnsupportedDurationField;
  * @since 1.0
  */
 final class GJEraDateTimeField extends BaseDateTimeField {
-    
-    /** Serialization version */
+
+    /**
+     * Serialization version
+     */
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 4240986525305515528L;
 
@@ -54,8 +56,8 @@ final class GJEraDateTimeField extends BaseDateTimeField {
 
     /**
      * Get the Era component of the specified time instant.
-     * 
-     * @param instant  the time instant in millis to query.
+     *
+     * @param instant the time instant in millis to query.
      */
     public int get(long instant) {
         if (iChronology.getYear(instant) <= 0) {
@@ -71,15 +73,15 @@ final class GJEraDateTimeField extends BaseDateTimeField {
 
     /**
      * Set the Era component of the specified time instant.
-     * 
-     * @param instant  the time instant in millis to update.
-     * @param era  the era to update the time to.
+     *
+     * @param instant the time instant in millis to update.
+     * @param era     the era to update the time to.
      * @return the updated time instant.
-     * @throws IllegalArgumentException  if era is invalid.
+     * @throws IllegalArgumentException if era is invalid.
      */
     public long set(long instant, int era) {
         FieldUtils.verifyValueBounds(this, era, DateTimeConstants.BCE, DateTimeConstants.CE);
-            
+
         int oldEra = get(instant);
         if (oldEra != era) {
             int year = iChronology.getYear(instant);

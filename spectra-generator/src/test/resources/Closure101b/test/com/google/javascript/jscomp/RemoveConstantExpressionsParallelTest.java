@@ -20,41 +20,39 @@ package com.google.javascript.jscomp;
  * Unit test for {@linke RemoveConstantExpressionsParallel}. It does not verify
  * the correctness of {@link RemoveConstantExpressions} since that's the job
  * of {@link RemoveConstantExpressionsTest}.
- *
-*
  */
 public class RemoveConstantExpressionsParallelTest extends CompilerTestCase {
 
-  @Override
-  protected CompilerPass getProcessor(Compiler compiler) {
-    return new RemoveConstantExpressionsParallel(compiler, 4);
-  }
-
-  public void testOneFile() {
-    runInParallel(1);
-  }
-
-  public void testTwoFiles() {
-    runInParallel(2);
-  }
-
-  public void testFourFiles() {
-    runInParallel(4);
-  }
-
-  public void testManyFiles() {
-    runInParallel(100);
-  }
-
-  private void runInParallel(int numFiles) {
-    String input = "1 + (x.a = 2)";
-    String expected = "x.a = 2";
-    String[] inputFiles = new String[numFiles];
-    String[] expectedFiles = new String[numFiles];
-    for (int i = 0; i < numFiles; i++) {
-      inputFiles[i] = input;
-      expectedFiles[i] = expected;
+    @Override
+    protected CompilerPass getProcessor(Compiler compiler) {
+        return new RemoveConstantExpressionsParallel(compiler, 4);
     }
-    test(inputFiles, expectedFiles);
-  }
+
+    public void testOneFile() {
+        runInParallel(1);
+    }
+
+    public void testTwoFiles() {
+        runInParallel(2);
+    }
+
+    public void testFourFiles() {
+        runInParallel(4);
+    }
+
+    public void testManyFiles() {
+        runInParallel(100);
+    }
+
+    private void runInParallel(int numFiles) {
+        String input = "1 + (x.a = 2)";
+        String expected = "x.a = 2";
+        String[] inputFiles = new String[numFiles];
+        String[] expectedFiles = new String[numFiles];
+        for (int i = 0; i < numFiles; i++) {
+            inputFiles[i] = input;
+            expectedFiles[i] = expected;
+        }
+        test(inputFiles, expectedFiles);
+    }
 }

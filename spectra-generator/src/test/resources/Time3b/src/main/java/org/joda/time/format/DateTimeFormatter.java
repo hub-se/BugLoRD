@@ -15,21 +15,11 @@
  */
 package org.joda.time.format;
 
+import org.joda.time.*;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Locale;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
-import org.joda.time.MutableDateTime;
-import org.joda.time.ReadWritableInstant;
-import org.joda.time.ReadableInstant;
-import org.joda.time.ReadablePartial;
 
 /**
  * Controls the printing and parsing of a datetime to and from a string.
@@ -68,7 +58,7 @@ import org.joda.time.ReadablePartial;
  * String dateStr = formatter.withLocale(Locale.FRENCH).print(dt);
  * // print using the UTC zone
  * String dateStr = formatter.withZone(DateTimeZone.UTC).print(dt);
- * 
+ *
  * // parse using the Paris zone
  * DateTime date = formatter.withZone(DateTimeZone.forID("Europe/Paris")).parseDateTime(str);
  * </pre>
@@ -78,10 +68,9 @@ import org.joda.time.ReadablePartial;
  * This design means that day-of-month is set before day-of-week.
  * As such, if both the day-of-month and day-of-week are parsed, and the day-of-week
  * is incorrect, then the day-of-week overrides the day-of-month.
- * 
+ * <p>
  * This has a side effect if the input is not consistent.
- * 
- * 
+ *
  * @author Brian S O'Neill
  * @author Stephen Colebourne
  * @author Fredrik Borgh
@@ -89,28 +78,44 @@ import org.joda.time.ReadablePartial;
  */
 public class DateTimeFormatter {
 
-    /** The internal printer used to output the datetime. */
+    /**
+     * The internal printer used to output the datetime.
+     */
     private final DateTimePrinter iPrinter;
-    /** The internal parser used to output the datetime. */
+    /**
+     * The internal parser used to output the datetime.
+     */
     private final DateTimeParser iParser;
-    /** The locale to use for printing and parsing. */
+    /**
+     * The locale to use for printing and parsing.
+     */
     private final Locale iLocale;
-    /** Whether the offset is parsed. */
+    /**
+     * Whether the offset is parsed.
+     */
     private final boolean iOffsetParsed;
-    /** The chronology to use as an override. */
+    /**
+     * The chronology to use as an override.
+     */
     private final Chronology iChrono;
-    /** The zone to use as an override. */
+    /**
+     * The zone to use as an override.
+     */
     private final DateTimeZone iZone;
-    /** The pivot year to use for two-digit year parsing. */
+    /**
+     * The pivot year to use for two-digit year parsing.
+     */
     private final Integer iPivotYear;
-    /** The default year for parsing month/day without year. */
+    /**
+     * The default year for parsing month/day without year.
+     */
     private final int iDefaultYear;
 
     /**
      * Creates a new formatter, however you will normally use the factory
      * or the builder.
-     * 
-     * @param printer  the internal printer, null if cannot print
+     *
+     * @param printer the internal printer, null if cannot print
      * @param parser  the internal parser, null if cannot parse
      */
     public DateTimeFormatter(
@@ -146,9 +151,10 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Is this formatter capable of printing.
-     * 
+     *
      * @return true if this is a printer
      */
     public boolean isPrinter() {
@@ -157,7 +163,7 @@ public class DateTimeFormatter {
 
     /**
      * Gets the internal printer object that performs the real printing work.
-     * 
+     *
      * @return the internal printer; is null if printing not supported
      */
     public DateTimePrinter getPrinter() {
@@ -166,7 +172,7 @@ public class DateTimeFormatter {
 
     /**
      * Is this formatter capable of parsing.
-     * 
+     *
      * @return true if this is a parser
      */
     public boolean isParser() {
@@ -175,7 +181,7 @@ public class DateTimeFormatter {
 
     /**
      * Gets the internal parser object that performs the real parsing work.
-     * 
+     *
      * @return the internal parser; is null if parsing not supported
      */
     public DateTimeParser getParser() {
@@ -183,15 +189,16 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a new formatter with a different locale that will be used
      * for printing and parsing.
      * <p>
      * A DateTimeFormatter is immutable, so a new instance is returned,
      * and the original is unaltered and still usable.
-     * 
+     *
      * @param locale the locale to use; if null, formatter uses default locale
-     * at invocation time
+     *               at invocation time
      * @return the new formatter
      */
     public DateTimeFormatter withLocale(Locale locale) {
@@ -204,7 +211,7 @@ public class DateTimeFormatter {
 
     /**
      * Gets the locale that will be used for printing and parsing.
-     * 
+     *
      * @return the locale to use; if null, formatter uses default locale at
      * invocation time
      */
@@ -213,6 +220,7 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a new formatter that will create a datetime with a time zone
      * equal to that of the offset of the parsed string.
@@ -224,7 +232,7 @@ public class DateTimeFormatter {
      * <p>
      * Calling this method sets the override zone to null.
      * Calling the override zone method sets this flag off.
-     * 
+     *
      * @return the new formatter
      */
     public DateTimeFormatter withOffsetParsed() {
@@ -238,7 +246,7 @@ public class DateTimeFormatter {
     /**
      * Checks whether the offset from the string is used as the zone of
      * the parsed datetime.
-     * 
+     *
      * @return true if the offset from the string is used as the zone
      */
     public boolean isOffsetParsed() {
@@ -246,6 +254,7 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a new formatter that will use the specified chronology in
      * preference to that of the printed object, or ISO on a parse.
@@ -258,8 +267,8 @@ public class DateTimeFormatter {
      * A null chronology means no-override.
      * If both an override chronology and an override zone are set, the
      * override zone will take precedence over the zone in the chronology.
-     * 
-     * @param chrono  the chronology to use as an override
+     *
+     * @param chrono the chronology to use as an override
      * @return the new formatter
      */
     public DateTimeFormatter withChronology(Chronology chrono) {
@@ -272,7 +281,7 @@ public class DateTimeFormatter {
 
     /**
      * Gets the chronology to use as an override.
-     * 
+     *
      * @return the chronology to use as an override
      */
     public Chronology getChronology() {
@@ -281,7 +290,7 @@ public class DateTimeFormatter {
 
     /**
      * Gets the chronology to use as an override.
-     * 
+     *
      * @return the chronology to use as an override
      * @deprecated Use the method with the correct spelling
      */
@@ -291,6 +300,7 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a new formatter that will use the UTC zone in preference
      * to the zone of the printed object, or default zone on a parse.
@@ -302,7 +312,7 @@ public class DateTimeFormatter {
      * <p>
      * If both an override chronology and an override zone are set, the
      * override zone will take precedence over the zone in the chronology.
-     * 
+     *
      * @return the new formatter, never null
      * @since 2.0
      */
@@ -322,8 +332,8 @@ public class DateTimeFormatter {
      * A null zone means of no-override.
      * If both an override chronology and an override zone are set, the
      * override zone will take precedence over the zone in the chronology.
-     * 
-     * @param zone  the zone to use as an override
+     *
+     * @param zone the zone to use as an override
      * @return the new formatter
      */
     public DateTimeFormatter withZone(DateTimeZone zone) {
@@ -336,7 +346,7 @@ public class DateTimeFormatter {
 
     /**
      * Gets the zone to use as an override.
-     * 
+     *
      * @return the zone to use as an override
      */
     public DateTimeZone getZone() {
@@ -344,6 +354,7 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a new formatter that will use the specified pivot year for two
      * digit year parsing in preference to that stored in the parser.
@@ -369,7 +380,7 @@ public class DateTimeFormatter {
      * 2050      2000..2099      2000    2020    2040    2060    2080
      * </pre>
      *
-     * @param pivotYear  the pivot year to use as an override when parsing
+     * @param pivotYear the pivot year to use as an override when parsing
      * @return the new formatter
      * @since 1.1
      */
@@ -406,7 +417,7 @@ public class DateTimeFormatter {
      * 2050      2000..2099      2000    2020    2040    2060    2080
      * </pre>
      *
-     * @param pivotYear  the pivot year to use as an override when parsing
+     * @param pivotYear the pivot year to use as an override when parsing
      * @return the new formatter
      * @since 1.1
      */
@@ -421,10 +432,11 @@ public class DateTimeFormatter {
      * @since 1.1
      */
     public Integer getPivotYear() {
-      return iPivotYear;
+        return iPivotYear;
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a new formatter that will use the specified default year.
      * <p>
@@ -439,7 +451,7 @@ public class DateTimeFormatter {
      * <p>
      * This setting has no effect when printing.
      *
-     * @param defaultYear  the default year to use
+     * @param defaultYear the default year to use
      * @return the new formatter, not null
      * @since 2.0
      */
@@ -455,15 +467,16 @@ public class DateTimeFormatter {
      * @since 2.0
      */
     public int getDefaultYear() {
-      return iDefaultYear;
+        return iDefaultYear;
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Prints a ReadableInstant, using the chronology supplied by the instant.
      *
-     * @param buf  the destination to format to, not null
-     * @param instant  instant to format, null means now
+     * @param buf     the destination to format to, not null
+     * @param instant instant to format, null means now
      */
     public void printTo(StringBuffer buf, ReadableInstant instant) {
         long millis = DateTimeUtils.getInstantMillis(instant);
@@ -474,8 +487,8 @@ public class DateTimeFormatter {
     /**
      * Prints a ReadableInstant, using the chronology supplied by the instant.
      *
-     * @param out  the destination to format to, not null
-     * @param instant  instant to format, null means now
+     * @param out     the destination to format to, not null
+     * @param instant instant to format, null means now
      */
     public void printTo(Writer out, ReadableInstant instant) throws IOException {
         long millis = DateTimeUtils.getInstantMillis(instant);
@@ -486,8 +499,8 @@ public class DateTimeFormatter {
     /**
      * Prints a ReadableInstant, using the chronology supplied by the instant.
      *
-     * @param appendable  the destination to format to, not null
-     * @param instant  instant to format, null means now
+     * @param appendable the destination to format to, not null
+     * @param instant    instant to format, null means now
      * @since 2.0
      */
     public void printTo(Appendable appendable, ReadableInstant instant) throws IOException {
@@ -495,12 +508,13 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Prints an instant from milliseconds since 1970-01-01T00:00:00Z,
      * using ISO chronology in the default DateTimeZone.
      *
-     * @param buf  the destination to format to, not null
-     * @param instant  millis since 1970-01-01T00:00:00Z
+     * @param buf     the destination to format to, not null
+     * @param instant millis since 1970-01-01T00:00:00Z
      */
     public void printTo(StringBuffer buf, long instant) {
         printTo(buf, instant, null);
@@ -510,8 +524,8 @@ public class DateTimeFormatter {
      * Prints an instant from milliseconds since 1970-01-01T00:00:00Z,
      * using ISO chronology in the default DateTimeZone.
      *
-     * @param out  the destination to format to, not null
-     * @param instant  millis since 1970-01-01T00:00:00Z
+     * @param out     the destination to format to, not null
+     * @param instant millis since 1970-01-01T00:00:00Z
      */
     public void printTo(Writer out, long instant) throws IOException {
         printTo(out, instant, null);
@@ -521,8 +535,8 @@ public class DateTimeFormatter {
      * Prints an instant from milliseconds since 1970-01-01T00:00:00Z,
      * using ISO chronology in the default DateTimeZone.
      *
-     * @param appendable  the destination to format to, not null
-     * @param instant  millis since 1970-01-01T00:00:00Z
+     * @param appendable the destination to format to, not null
+     * @param instant    millis since 1970-01-01T00:00:00Z
      * @since 2.0
      */
     public void printTo(Appendable appendable, long instant) throws IOException {
@@ -530,14 +544,15 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Prints a ReadablePartial.
      * <p>
      * Neither the override chronology nor the override zone are used
      * by this method.
      *
-     * @param buf  the destination to format to, not null
-     * @param partial  partial to format
+     * @param buf     the destination to format to, not null
+     * @param partial partial to format
      */
     public void printTo(StringBuffer buf, ReadablePartial partial) {
         DateTimePrinter printer = requirePrinter();
@@ -553,8 +568,8 @@ public class DateTimeFormatter {
      * Neither the override chronology nor the override zone are used
      * by this method.
      *
-     * @param out  the destination to format to, not null
-     * @param partial  partial to format
+     * @param out     the destination to format to, not null
+     * @param partial partial to format
      */
     public void printTo(Writer out, ReadablePartial partial) throws IOException {
         DateTimePrinter printer = requirePrinter();
@@ -570,8 +585,8 @@ public class DateTimeFormatter {
      * Neither the override chronology nor the override zone are used
      * by this method.
      *
-     * @param appendable  the destination to format to, not null
-     * @param partial  partial to format
+     * @param appendable the destination to format to, not null
+     * @param partial    partial to format
      * @since 2.0
      */
     public void printTo(Appendable appendable, ReadablePartial partial) throws IOException {
@@ -579,13 +594,14 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Prints a ReadableInstant to a String.
      * <p>
      * This method will use the override zone and the override chronololgy if
      * they are set. Otherwise it will use the chronology and zone of the instant.
      *
-     * @param instant  instant to format, null means now
+     * @param instant instant to format, null means now
      * @return the printed result
      */
     public String print(ReadableInstant instant) {
@@ -600,7 +616,7 @@ public class DateTimeFormatter {
      * This method will use the override zone and the override chronololgy if
      * they are set. Otherwise it will use the ISO chronology and default zone.
      *
-     * @param instant  millis since 1970-01-01T00:00:00Z
+     * @param instant millis since 1970-01-01T00:00:00Z
      * @return the printed result
      */
     public String print(long instant) {
@@ -615,7 +631,7 @@ public class DateTimeFormatter {
      * Neither the override chronology nor the override zone are used
      * by this method.
      *
-     * @param partial  partial to format
+     * @param partial partial to format
      * @return the printed result
      */
     public String print(ReadablePartial partial) {
@@ -660,7 +676,7 @@ public class DateTimeFormatter {
 
     /**
      * Checks whether printing is supported.
-     * 
+     *
      * @throws UnsupportedOperationException if printing is not supported
      */
     private DateTimePrinter requirePrinter() {
@@ -672,6 +688,7 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Parses a datetime from the given text, at the given position, saving the
      * result into the fields of the given ReadWritableInstant. If the parse
@@ -697,28 +714,28 @@ public class DateTimeFormatter {
      * The parse will use the chronology of the instant.
      *
      * @param instant  an instant that will be modified, not null
-     * @param text  the text to parse
-     * @param position  position to start parsing from
+     * @param text     the text to parse
+     * @param position position to start parsing from
      * @return new position, negative value means parse failed -
-     *  apply complement operator (~) to get position of failure
+     * apply complement operator (~) to get position of failure
      * @throws UnsupportedOperationException if parsing is not supported
-     * @throws IllegalArgumentException if the instant is null
-     * @throws IllegalArgumentException if any field is out of range
+     * @throws IllegalArgumentException      if the instant is null
+     * @throws IllegalArgumentException      if any field is out of range
      */
     public int parseInto(ReadWritableInstant instant, String text, int position) {
         DateTimeParser parser = requireParser();
         if (instant == null) {
             throw new IllegalArgumentException("Instant must not be null");
         }
-        
+
         long instantMillis = instant.getMillis();
         Chronology chrono = instant.getChronology();
         int defaultYear = DateTimeUtils.getChronology(chrono).year().get(instantMillis);
         long instantLocal = instantMillis + chrono.getZone().getOffset(instantMillis);
         chrono = selectChronology(chrono);
-        
+
         DateTimeParserBucket bucket = new DateTimeParserBucket(
-            instantLocal, chrono, iLocale, iPivotYear, defaultYear);
+                instantLocal, chrono, iLocale, iPivotYear, defaultYear);
         int newPos = parser.parseInto(bucket, text, position);
         instant.setMillis(bucket.computeMillis(false, text));
         if (iOffsetParsed && bucket.getOffsetInteger() != null) {
@@ -742,14 +759,14 @@ public class DateTimeFormatter {
      * The parse will use the ISO chronology, and the default time zone.
      * If the text contains a time zone string then that will be taken into account.
      *
-     * @param text  text to parse
+     * @param text text to parse
      * @return parsed value expressed in milliseconds since the epoch
      * @throws UnsupportedOperationException if parsing is not supported
-     * @throws IllegalArgumentException if the text to parse is invalid
+     * @throws IllegalArgumentException      if the text to parse is invalid
      */
     public long parseMillis(String text) {
         DateTimeParser parser = requireParser();
-        
+
         Chronology chrono = selectChronology(iChrono);
         DateTimeParserBucket bucket = new DateTimeParserBucket(0, chrono, iLocale, iPivotYear, iDefaultYear);
         int newPos = parser.parseInto(bucket, text, 0);
@@ -771,10 +788,10 @@ public class DateTimeFormatter {
      * This means that any parsed time, time-zone or offset field is completely ignored.
      * It also means that the zone and offset-parsed settings are ignored.
      *
-     * @param text  the text to parse, not null
+     * @param text the text to parse, not null
      * @return the parsed date, never null
      * @throws UnsupportedOperationException if parsing is not supported
-     * @throws IllegalArgumentException if the text to parse is invalid
+     * @throws IllegalArgumentException      if the text to parse is invalid
      * @since 2.0
      */
     public LocalDate parseLocalDate(String text) {
@@ -789,10 +806,10 @@ public class DateTimeFormatter {
      * This means that any parsed date, time-zone or offset field is completely ignored.
      * It also means that the zone and offset-parsed settings are ignored.
      *
-     * @param text  the text to parse, not null
+     * @param text the text to parse, not null
      * @return the parsed time, never null
      * @throws UnsupportedOperationException if parsing is not supported
-     * @throws IllegalArgumentException if the text to parse is invalid
+     * @throws IllegalArgumentException      if the text to parse is invalid
      * @since 2.0
      */
     public LocalTime parseLocalTime(String text) {
@@ -807,15 +824,15 @@ public class DateTimeFormatter {
      * This means that any parsed time-zone or offset field is completely ignored.
      * It also means that the zone and offset-parsed settings are ignored.
      *
-     * @param text  the text to parse, not null
+     * @param text the text to parse, not null
      * @return the parsed date-time, never null
      * @throws UnsupportedOperationException if parsing is not supported
-     * @throws IllegalArgumentException if the text to parse is invalid
+     * @throws IllegalArgumentException      if the text to parse is invalid
      * @since 2.0
      */
     public LocalDateTime parseLocalDateTime(String text) {
         DateTimeParser parser = requireParser();
-        
+
         Chronology chrono = selectChronology(null).withUTC();  // always use UTC, avoiding DST gaps
         DateTimeParserBucket bucket = new DateTimeParserBucket(0, chrono, iLocale, iPivotYear, iDefaultYear);
         int newPos = parser.parseInto(bucket, text, 0);
@@ -849,14 +866,14 @@ public class DateTimeFormatter {
      * Otherwise the resulting DateTime will have the zone of this formatter,
      * but the parsed zone may have caused the time to be adjusted.
      *
-     * @param text  the text to parse, not null
+     * @param text the text to parse, not null
      * @return the parsed date-time, never null
      * @throws UnsupportedOperationException if parsing is not supported
-     * @throws IllegalArgumentException if the text to parse is invalid
+     * @throws IllegalArgumentException      if the text to parse is invalid
      */
     public DateTime parseDateTime(String text) {
         DateTimeParser parser = requireParser();
-        
+
         Chronology chrono = selectChronology(null);
         DateTimeParserBucket bucket = new DateTimeParserBucket(0, chrono, iLocale, iPivotYear, iDefaultYear);
         int newPos = parser.parseInto(bucket, text, 0);
@@ -894,14 +911,14 @@ public class DateTimeFormatter {
      * Otherwise the resulting DateTime will have the zone of this formatter,
      * but the parsed zone may have caused the time to be adjusted.
      *
-     * @param text  the text to parse, not null
+     * @param text the text to parse, not null
      * @return the parsed date-time, never null
      * @throws UnsupportedOperationException if parsing is not supported
-     * @throws IllegalArgumentException if the text to parse is invalid
+     * @throws IllegalArgumentException      if the text to parse is invalid
      */
     public MutableDateTime parseMutableDateTime(String text) {
         DateTimeParser parser = requireParser();
-        
+
         Chronology chrono = selectChronology(null);
         DateTimeParserBucket bucket = new DateTimeParserBucket(0, chrono, iLocale, iPivotYear, iDefaultYear);
         int newPos = parser.parseInto(bucket, text, 0);
@@ -929,7 +946,7 @@ public class DateTimeFormatter {
 
     /**
      * Checks whether parsing is supported.
-     * 
+     *
      * @throws UnsupportedOperationException if parsing is not supported
      */
     private DateTimeParser requireParser() {
@@ -941,10 +958,11 @@ public class DateTimeFormatter {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Determines the correct chronology to use.
      *
-     * @param chrono  the proposed chronology
+     * @param chrono the proposed chronology
      * @return the actual chronology
      */
     private Chronology selectChronology(Chronology chrono) {

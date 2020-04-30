@@ -24,70 +24,68 @@ import com.google.javascript.rhino.Token;
  * Rewrites
  * <code>new JSCompiler_ObjectPropertyString(window, foo.prototype.bar)</code>
  * to <code>new JSCompiler_ObjectPropertyString(foo.prototype, 'bar')</code>
- *
+ * <p>
  * Rewrites
  * <code>new JSCompiler_ObjectPropertyString(window, foo[bar])</code>
  * to <code>new JSCompiler_ObjectPropertyString(foo, bar)</code>
-
+ * <p>
  * Rewrites
  * <code>new JSCompiler_ObjectPropertyString(window, foo$bar$baz)</code> to
  * <code>new JSCompiler_ObjectPropertyString(window, 'foo$bar$baz')</code>
  *
  * @see ObjectPropertyStringPreprocess
- *
-*
  */
 class ObjectPropertyStringPostprocess implements CompilerPass {
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  public ObjectPropertyStringPostprocess(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, root, new Callback());
-  }
-
-  private class Callback extends AbstractPostOrderCallback {
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.getType() != Token.NEW) {
-        return;
-      }
-
-      Node objectName = n.getFirstChild();
-
-      if (!ObjectPropertyStringPreprocess.EXTERN_OBJECT_PROPERTY_STRING.equals(
-              objectName.getQualifiedName())) {
-        return;
-      }
-
-      Node firstArgument = objectName.getNext();
-      Node secondArgument = firstArgument.getNext();
-      int secondArgumentType = secondArgument.getType();
-      if (secondArgumentType == Token.GETPROP) {
-        // Rewrite "new goog.testing.ObjectPropertyString(window, foo.bar)"
-        // as "new goog.testing.ObjectPropertyString(foo, 'bar')".
-        Node newChild = secondArgument.getFirstChild();
-        secondArgument.removeChild(newChild);
-        n.replaceChild(firstArgument, newChild);
-        n.replaceChild(secondArgument,
-            Node.newString(secondArgument.getFirstChild().getString()));
-      } else if (secondArgumentType == Token.GETELEM) {
-        // Rewrite "new goog.testing.ObjectPropertyString(window, foo[bar])"
-        // as "new goog.testing.ObjectPropertyString(foo, bar)".
-        Node newFirstArgument = secondArgument.getFirstChild();
-        secondArgument.removeChild(newFirstArgument);
-        Node newSecondArgument = secondArgument.getLastChild();
-        secondArgument.removeChild(newSecondArgument);
-        n.replaceChild(firstArgument, newFirstArgument);
-        n.replaceChild(secondArgument, newSecondArgument);
-      } else {
-        // Rewrite "new goog.testing.ObjectPropertyString(window, foo)" as
-        // "new goog.testing.ObjectPropertyString(window, 'foo')"
-        n.replaceChild(secondArgument,
-            Node.newString(secondArgument.getString()));
-      }
-      compiler.reportCodeChange();
+    public ObjectPropertyStringPostprocess(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
-  }
+
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, root, new Callback());
+    }
+
+    private class Callback extends AbstractPostOrderCallback {
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            if (n.getType() != Token.NEW) {
+                return;
+            }
+
+            Node objectName = n.getFirstChild();
+
+            if (!ObjectPropertyStringPreprocess.EXTERN_OBJECT_PROPERTY_STRING.equals(
+                    objectName.getQualifiedName())) {
+                return;
+            }
+
+            Node firstArgument = objectName.getNext();
+            Node secondArgument = firstArgument.getNext();
+            int secondArgumentType = secondArgument.getType();
+            if (secondArgumentType == Token.GETPROP) {
+                // Rewrite "new goog.testing.ObjectPropertyString(window, foo.bar)"
+                // as "new goog.testing.ObjectPropertyString(foo, 'bar')".
+                Node newChild = secondArgument.getFirstChild();
+                secondArgument.removeChild(newChild);
+                n.replaceChild(firstArgument, newChild);
+                n.replaceChild(secondArgument,
+                        Node.newString(secondArgument.getFirstChild().getString()));
+            } else if (secondArgumentType == Token.GETELEM) {
+                // Rewrite "new goog.testing.ObjectPropertyString(window, foo[bar])"
+                // as "new goog.testing.ObjectPropertyString(foo, bar)".
+                Node newFirstArgument = secondArgument.getFirstChild();
+                secondArgument.removeChild(newFirstArgument);
+                Node newSecondArgument = secondArgument.getLastChild();
+                secondArgument.removeChild(newSecondArgument);
+                n.replaceChild(firstArgument, newFirstArgument);
+                n.replaceChild(secondArgument, newSecondArgument);
+            } else {
+                // Rewrite "new goog.testing.ObjectPropertyString(window, foo)" as
+                // "new goog.testing.ObjectPropertyString(window, 'foo')"
+                n.replaceChild(secondArgument,
+                        Node.newString(secondArgument.getString()));
+            }
+            compiler.reportCodeChange();
+        }
+    }
 }

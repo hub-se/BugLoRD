@@ -4,10 +4,10 @@
  */
 package org.mockito;
 
-import java.util.List;
-
 import org.mockito.internal.matchers.CapturingMatcher;
 import org.mockito.internal.progress.HandyReturnValues;
+
+import java.util.List;
 
 /**
  * Use it to capture argument values for further assertions.
@@ -28,9 +28,9 @@ import org.mockito.internal.progress.HandyReturnValues;
  * Also it may reduce defect localization because if stubbed method was not called then no argument is captured.
  * <p>
  * In a way ArgumentCaptor is related to custom argument matchers (see javadoc for {@link ArgumentMatcher} class).
- * Both techniques can be used for making sure certain arguments where passed to mocks. 
+ * Both techniques can be used for making sure certain arguments where passed to mocks.
  * However, ArgumentCaptor may be a better fit if:
- * <ul>  
+ * <ul>
  * <li>custom argument matcher is not likely to be reused</li>
  * <li>you just need it to assert on argument values to complete verification</li>
  * </ul>
@@ -38,19 +38,17 @@ import org.mockito.internal.progress.HandyReturnValues;
  * <p>
  * There is an <b>annotation</b> that you might find useful: &#64;{@link Captor}
  * <p>
- * See the full documentation on Mockito in javadoc for {@link Mockito} class.    
+ * See the full documentation on Mockito in javadoc for {@link Mockito} class.
  */
 public class ArgumentCaptor<T> {
-    
+
     HandyReturnValues handyReturnValues = new HandyReturnValues();
 
     private final CapturingMatcher<T> capturingMatcher = new CapturingMatcher<T>();
     private final Class<T> clazz;
 
     /**
-     * @deprecated
-     * 
-     * <b>Please use factory method {@link ArgumentCaptor#forClass(Class)} to create captors</b>
+     * @deprecated <b>Please use factory method {@link ArgumentCaptor#forClass(Class)} to create captors</b>
      * <p>
      * This is required to avoid NullPointerExceptions when autoUnboxing primitive types.
      * See issue 99.
@@ -75,10 +73,10 @@ public class ArgumentCaptor<T> {
      * Use it to capture the argument. This method <b>must be used inside of verification</b>.
      * <p>
      * Internally, this method registers a special implementation of an {@link ArgumentMatcher}.
-     * This argument matcher stores the argument value so that you can use it later to perform assertions.  
+     * This argument matcher stores the argument value so that you can use it later to perform assertions.
      * <p>
      * See examples in javadoc for {@link ArgumentCaptor} class.
-     * 
+     *
      * @return null
      */
     public T capture() {
@@ -92,7 +90,7 @@ public class ArgumentCaptor<T> {
      * If the method was called multiple times then it returns the latest captured value
      * <p>
      * See examples in javadoc for {@link ArgumentCaptor} class.
-     * 
+     *
      * @return captured argument value
      */
     public T getValue() {
@@ -102,17 +100,17 @@ public class ArgumentCaptor<T> {
     /**
      * Returns all captured values. Use it in case the verified method was called multiple times.
      * <p>
-     * Example: 
+     * Example:
      * <pre>
      *   ArgumentCaptor&lt;Person&gt; peopleCaptor = ArgumentCaptor.forClass(Person.class);
      *   verify(mock, times(2)).doSomething(peopleCaptor.capture());
-     *   
+     *
      *   List&lt;Person&gt; capturedPeople = peopleCaptor.getAllValues();
      *   assertEquals("John", capturedPeople.get(0).getName());
      *   assertEquals("Jane", capturedPeople.get(1).getName());
      * </pre>
      * See more examples in javadoc for {@link ArgumentCaptor} class.
-     * 
+     *
      * @return captured argument value
      */
     public List<T> getAllValues() {

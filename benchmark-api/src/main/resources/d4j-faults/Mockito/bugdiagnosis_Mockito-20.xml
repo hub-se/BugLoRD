@@ -1,49 +1,49 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-20">
-			<tests>
-				<testfile
-					path="org/mockitousage/constructor/CreatingMocksWithConstructorTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;[inner]
-						strength&gt; but was:&lt;[null] strength&gt;:-
-						org.mockitousage.annotation.SpyAnnotationTest::should_report_when_constructor_is_explosive:--&gt;
-						junit.framework.AssertionFailedError:-
-						org.mockitousage.constructor.CreatingMocksWithConstructorTest::can_spy_abstract_classes:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;hey!&gt; but
-						was:&lt;null&gt;:-
-						org.mockitousage.constructor.CreatingMocksWithConstructorTest::exception_message_when_constructor_not_found:--&gt;
-						junit.framework.AssertionFailedError:-
-						org.mockitousage.constructor.CreatingMocksWithConstructorTest::can_create_mock_with_constructor:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;hey!&gt; but
-						was:&lt;null&gt;:-
-						org.mockitousage.constructor.CreatingMocksWithConstructorTest::can_mock_inner_classes:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;hey!&gt; but
-						was:&lt;null&gt;:-
-						org.mockitousage.constructor.CreatingMocksWithConstructorTest::mocking_inner_classes_with_wrong_outer_instance
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1308</number_tests>
-					<failed>10</failed>
-					<passed>1298</passed>
-					<nodes>4674</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/mockito/internal/creation/bytebuddy/ByteBuddyMockMaker.java">
-					<change>34</change>
-					<change parent="40-49">45</change>
-					<insert numberlines="1">32-33</insert>
-					<bugtypes>
-						<id id="3.1" lines="31,34,45">
-							<description>Incorrect variable used.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-20">
+            <tests>
+                <testfile
+                        path="org/mockitousage/constructor/CreatingMocksWithConstructorTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;[inner]
+                        strength&gt; but was:&lt;[null] strength&gt;:-
+                        org.mockitousage.annotation.SpyAnnotationTest::should_report_when_constructor_is_explosive:--&gt;
+                        junit.framework.AssertionFailedError:-
+                        org.mockitousage.constructor.CreatingMocksWithConstructorTest::can_spy_abstract_classes:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;hey!&gt; but
+                        was:&lt;null&gt;:-
+                        org.mockitousage.constructor.CreatingMocksWithConstructorTest::exception_message_when_constructor_not_found:--&gt;
+                        junit.framework.AssertionFailedError:-
+                        org.mockitousage.constructor.CreatingMocksWithConstructorTest::can_create_mock_with_constructor:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;hey!&gt; but
+                        was:&lt;null&gt;:-
+                        org.mockitousage.constructor.CreatingMocksWithConstructorTest::can_mock_inner_classes:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;hey!&gt; but
+                        was:&lt;null&gt;:-
+                        org.mockitousage.constructor.CreatingMocksWithConstructorTest::mocking_inner_classes_with_wrong_outer_instance
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1308</number_tests>
+                    <failed>10</failed>
+                    <passed>1298</passed>
+                    <nodes>4674</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/mockito/internal/creation/bytebuddy/ByteBuddyMockMaker.java">
+                    <change>34</change>
+                    <change parent="40-49">45</change>
+                    <insert numberlines="1">32-33</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="31,34,45">
+                            <description>Incorrect variable used.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

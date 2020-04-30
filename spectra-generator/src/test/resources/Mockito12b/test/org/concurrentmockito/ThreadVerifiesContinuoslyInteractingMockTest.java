@@ -4,21 +4,22 @@
  */
 package org.concurrentmockito;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Mockito.*;
+
 //this test exposes the problem most of the time
 public class ThreadVerifiesContinuoslyInteractingMockTest extends TestBase {
 
-    @Mock private IMethods mock;
+    @Mock
+    private IMethods mock;
 
     @Test
     public void shouldAllowVerifyingInThreads() throws Exception {
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < 100; i++) {
             performTest();
         }
     }
@@ -41,9 +42,9 @@ public class ThreadVerifiesContinuoslyInteractingMockTest extends TestBase {
             };
             listeners[i].start();
         }
-        
+
         verify(mock, atLeastOnce()).simpleMethod();
-        
+
         for (int i = 0; i < listeners.length; i++) {
             listeners[i].join();
         }

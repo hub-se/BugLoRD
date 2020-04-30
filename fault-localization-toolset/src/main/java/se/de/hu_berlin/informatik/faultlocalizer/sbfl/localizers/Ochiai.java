@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Ochiai fault localizer $\frac{\EF}{\sqrt{(\EF+\NF)\cdot(\EF+\EP)}}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Ochiai<T> extends AbstractFaultLocalizer<T> {
 
@@ -30,9 +29,9 @@ public class Ochiai<T> extends AbstractFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-    	if (node.getEF(strategy) == 0) {
-    		return 0;
-    	}
+        if (node.getEF(strategy) == 0) {
+            return 0;
+        }
         return node.getEF(strategy)
                 / Math.sqrt((node.getEF(strategy) + node.getNF(strategy)) * (node.getEF(strategy) + node.getEP(strategy)));
     }

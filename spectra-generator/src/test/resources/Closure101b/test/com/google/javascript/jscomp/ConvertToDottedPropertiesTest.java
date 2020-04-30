@@ -18,48 +18,47 @@ package com.google.javascript.jscomp;
 
 /**
  * Tests for {@link ConvertToDottedProperties}.
- *
-*
  */
 public class ConvertToDottedPropertiesTest extends CompilerTestCase {
-  @Override public CompilerPass getProcessor(Compiler compiler) {
-    return new ConvertToDottedProperties(compiler);
-  }
+    @Override
+    public CompilerPass getProcessor(Compiler compiler) {
+        return new ConvertToDottedProperties(compiler);
+    }
 
-  public void testConvert() {
-    test("a['p']", "a.p");
-    test("a['_p_']", "a._p_");
-    test("a['_']", "a._");
-    test("a['$']", "a.$");
-    test("a.b.c['p']", "a.b.c.p");
-    test("a.b['c'].p", "a.b.c.p");
-    test("a['p']();", "a.p();");
-    test("a()['p']", "a().p");
-    // ASCII in Unicode is safe.
-    test("a['\u0041A']", "a.AA");
-  }
+    public void testConvert() {
+        test("a['p']", "a.p");
+        test("a['_p_']", "a._p_");
+        test("a['_']", "a._");
+        test("a['$']", "a.$");
+        test("a.b.c['p']", "a.b.c.p");
+        test("a.b['c'].p", "a.b.c.p");
+        test("a['p']();", "a.p();");
+        test("a()['p']", "a().p");
+        // ASCII in Unicode is safe.
+        test("a['\u0041A']", "a.AA");
+    }
 
-  public void testDoNotConvert() {
-    testSame("a[0]");
-    testSame("a['']");
-    testSame("a[' ']");
-    testSame("a[',']");
-    testSame("a[';']");
-    testSame("a[':']");
-    testSame("a['.']");
-    testSame("a['0']");
-    testSame("a['p ']");
-    testSame("a['p' + '']");
-    testSame("a[p]");
-    testSame("a[P]");
-    testSame("a[$]");
-    testSame("a[p()]");
-    testSame("a['default']");
-    // upper case lower half of o from phonetic extensions set.
-    // valid in Safari, not in Firefox, IE.
-    test("a['\u1d17A']", "a['\u1d17A']");
-    // Latin capital N with tilde - nice if we handled it, but for now let's
-    // only allow simple Latin (aka ASCII) to be converted.
-    test("a['\u00d1StuffAfter']", "a['\u00d1StuffAfter']");
-  }
+    public void testDoNotConvert() {
+        testSame("a[0]");
+        testSame("a['']");
+        testSame("a[' ']");
+        testSame("a[',']");
+        testSame("a[';']");
+        testSame("a[':']");
+        testSame("a['.']");
+        testSame("a['0']");
+        testSame("a['p ']");
+        testSame("a['p' + '']");
+        testSame("a[p]");
+        testSame("a[P]");
+        testSame("a[$]");
+        testSame("a[p()]");
+        testSame("a['default']");
+        // upper case lower half of o from phonetic extensions set.
+        // valid in Safari, not in Firefox, IE.
+        test("a['\u1d17A']", "a['\u1d17A']");
+        // Latin capital N with tilde - nice if we handled it, but for now let's
+        // only allow simple Latin (aka ASCII) to be converted.
+        test("a['\u00d1StuffAfter']", "a['\u00d1StuffAfter']");
+    }
 }

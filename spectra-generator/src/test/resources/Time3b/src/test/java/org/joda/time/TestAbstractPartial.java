@@ -17,7 +17,6 @@ package org.joda.time;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.base.AbstractPartial;
 import org.joda.time.chrono.BuddhistChronology;
 import org.joda.time.chrono.ISOChronology;
@@ -31,20 +30,20 @@ import org.joda.time.field.AbstractPartialFieldProperty;
 public class TestAbstractPartial extends TestCase {
 
     private static final DateTimeZone PARIS = DateTimeZone.forID("Europe/Paris");
-    
+
     private long TEST_TIME_NOW =
-            (31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
-            
+            (31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
+
     private long TEST_TIME1 =
-        (31L + 28L + 31L + 6L -1L) * DateTimeConstants.MILLIS_PER_DAY
-        + 12L * DateTimeConstants.MILLIS_PER_HOUR
-        + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (31L + 28L + 31L + 6L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 12L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     private long TEST_TIME2 =
-        (365L + 31L + 28L + 31L + 30L + 7L -1L) * DateTimeConstants.MILLIS_PER_DAY
-        + 14L * DateTimeConstants.MILLIS_PER_HOUR
-        + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (365L + 31L + 28L + 31L + 30L + 7L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 14L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     private DateTimeZone zone = null;
 
     public static void main(String[] args) {
@@ -76,15 +75,17 @@ public class TestAbstractPartial extends TestCase {
         MockPartial mock = new MockPartial();
         assertEquals(1970, mock.getValue(0));
         assertEquals(1, mock.getValue(1));
-        
+
         try {
             mock.getValue(-1);
             fail();
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
         try {
             mock.getValue(2);
             fail();
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
     }
 
     public void testGetValues() throws Throwable {
@@ -99,30 +100,34 @@ public class TestAbstractPartial extends TestCase {
         MockPartial mock = new MockPartial();
         assertEquals(BuddhistChronology.getInstanceUTC().year(), mock.getField(0));
         assertEquals(BuddhistChronology.getInstanceUTC().monthOfYear(), mock.getField(1));
-        
+
         try {
             mock.getField(-1);
             fail();
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
         try {
             mock.getField(2);
             fail();
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
     }
 
     public void testGetFieldType() throws Throwable {
         MockPartial mock = new MockPartial();
         assertEquals(DateTimeFieldType.year(), mock.getFieldType(0));
         assertEquals(DateTimeFieldType.monthOfYear(), mock.getFieldType(1));
-        
+
         try {
             mock.getFieldType(-1);
             fail();
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
         try {
             mock.getFieldType(2);
             fail();
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
     }
 
     public void testGetFieldTypes() throws Throwable {
@@ -147,9 +152,9 @@ public class TestAbstractPartial extends TestCase {
 
     //-----------------------------------------------------------------------
     static class MockPartial extends AbstractPartial {
-        
-        int[] val = new int[] {1970, 1};
-        
+
+        int[] val = new int[]{1970, 1};
+
         MockPartial() {
             super();
         }
@@ -168,7 +173,7 @@ public class TestAbstractPartial extends TestCase {
         public int size() {
             return 2;
         }
-        
+
         public int getValue(int index) {
             return val[index];
         }
@@ -181,41 +186,51 @@ public class TestAbstractPartial extends TestCase {
             return BuddhistChronology.getInstanceUTC();
         }
     }
-    
+
     static class MockProperty0 extends AbstractPartialFieldProperty {
         MockPartial partial = new MockPartial();
+
         public DateTimeField getField() {
             return partial.getField(0);
         }
+
         public ReadablePartial getReadablePartial() {
             return partial;
         }
+
         public int get() {
             return partial.getValue(0);
         }
     }
+
     static class MockProperty1 extends AbstractPartialFieldProperty {
         MockPartial partial = new MockPartial();
+
         public DateTimeField getField() {
             return partial.getField(1);
         }
+
         public ReadablePartial getReadablePartial() {
             return partial;
         }
+
         public int get() {
             return partial.getValue(1);
         }
     }
+
     static class MockProperty0Field extends MockProperty0 {
         public DateTimeField getField() {
             return BuddhistChronology.getInstanceUTC().hourOfDay();
         }
     }
+
     static class MockProperty0Val extends MockProperty0 {
         public int get() {
             return 99;
         }
     }
+
     static class MockProperty0Chrono extends MockProperty0 {
         public ReadablePartial getReadablePartial() {
             return new MockPartial() {

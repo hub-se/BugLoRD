@@ -17,29 +17,28 @@ package com.google.javascript.jscomp;
 
 /**
  * Simple region.
-*
  */
 public class SimpleRegion implements Region {
-  private final int beginningLineNumber;
-  private final int endingLineNumber;
-  private final String source;
+    private final int beginningLineNumber;
+    private final int endingLineNumber;
+    private final String source;
 
-  public SimpleRegion(int beginningLineNumber, int endingLineNumber,
-      String source) {
-    this.beginningLineNumber = beginningLineNumber;
-    this.endingLineNumber = endingLineNumber;
-    this.source = source;
-  }
+    public SimpleRegion(int beginningLineNumber, int endingLineNumber,
+                        String source) {
+        this.beginningLineNumber = beginningLineNumber;
+        this.endingLineNumber = endingLineNumber;
+        this.source = source;
+    }
 
-  public int getBeginningLineNumber() {
-    return beginningLineNumber;
-  }
+    public int getBeginningLineNumber() {
+        return beginningLineNumber;
+    }
 
-  public int getEndingLineNumber() {
-    return endingLineNumber;
-  }
+    public int getEndingLineNumber() {
+        return endingLineNumber;
+    }
 
-  public String getSourceExcerpt() {
-    return source;
-  }
+    public String getSourceExcerpt() {
+        return source;
+    }
 }

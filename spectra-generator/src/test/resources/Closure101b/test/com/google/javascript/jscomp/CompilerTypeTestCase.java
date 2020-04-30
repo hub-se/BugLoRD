@@ -21,40 +21,42 @@ import com.google.javascript.rhino.testing.BaseJSTypeTestCase;
 
 abstract class CompilerTypeTestCase extends BaseJSTypeTestCase {
 
-  static final String CLOSURE_DEFS =
-      "var goog = {};" +
-      "goog.inherits = function(x, y) {};" +
-      "goog.abstractMethod = function() {};" +
-      "goog.isArray = function(x) {};" +
-      "goog.isDef = function(x) {};" +
-      "goog.isFunction = function(x) {};" +
-      "goog.isNull = function(x) {};" +
-      "goog.isString = function(x) {};" +
-      "goog.isObject = function(x) {};" +
-      "goog.isDefAndNotNull = function(x) {};";
+    static final String CLOSURE_DEFS =
+            "var goog = {};" +
+                    "goog.inherits = function(x, y) {};" +
+                    "goog.abstractMethod = function() {};" +
+                    "goog.isArray = function(x) {};" +
+                    "goog.isDef = function(x) {};" +
+                    "goog.isFunction = function(x) {};" +
+                    "goog.isNull = function(x) {};" +
+                    "goog.isString = function(x) {};" +
+                    "goog.isObject = function(x) {};" +
+                    "goog.isDefAndNotNull = function(x) {};";
 
-  /** A default set of externs for testing. */
-  static final String DEFAULT_EXTERNS =
-      "/** @constructor \n * @param {*} var_args */ " +
-      "function Function(var_args) {}" +
-      "/** @type {!Function} */ Function.prototype.apply;" +
-      "/** @type {!Function} */ Function.prototype.call;" +
-      "/** @constructor \n * @param {*} arg \n @return {string} */" +
-      "function String(arg) {}" +
-      "/** @type {number} */ String.prototype.length;" +
-      "/** @constructor \n * @param {*} var_args \n @return {!Array} */" +
-      "function Array(var_args) {}" +
-      "/** @type {number} */ Array.prototype.length;";
+    /**
+     * A default set of externs for testing.
+     */
+    static final String DEFAULT_EXTERNS =
+            "/** @constructor \n * @param {*} var_args */ " +
+                    "function Function(var_args) {}" +
+                    "/** @type {!Function} */ Function.prototype.apply;" +
+                    "/** @type {!Function} */ Function.prototype.call;" +
+                    "/** @constructor \n * @param {*} arg \n @return {string} */" +
+                    "function String(arg) {}" +
+                    "/** @type {number} */ String.prototype.length;" +
+                    "/** @constructor \n * @param {*} var_args \n @return {!Array} */" +
+                    "function Array(var_args) {}" +
+                    "/** @type {number} */ Array.prototype.length;";
 
-  protected Compiler compiler;
+    protected Compiler compiler;
 
-  @Override
-  protected void setUp() throws Exception {
-    compiler = new Compiler();
-    compiler.initCompilerOptionsIfTesting();
-    compiler.getOptions().setWarningLevel(
-        DiagnosticGroups.MISSING_PROPERTIES, CheckLevel.WARNING);
-    registry = compiler.getTypeRegistry();
-    initTypes();
-  }
+    @Override
+    protected void setUp() throws Exception {
+        compiler = new Compiler();
+        compiler.initCompilerOptionsIfTesting();
+        compiler.getOptions().setWarningLevel(
+                DiagnosticGroups.MISSING_PROPERTIES, CheckLevel.WARNING);
+        registry = compiler.getTypeRegistry();
+        initTypes();
+    }
 }

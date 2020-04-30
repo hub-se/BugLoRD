@@ -24,10 +24,10 @@ import java.util.Map;
 
 /**
  * Memoize a scope creator.
- *
+ * <p>
  * This allows you to make multiple passes, without worrying about
  * the expense of generating Scope objects over and over again.
- *
+ * <p>
  * On the other hand, you also have to be more aware of what your passes
  * are doing. Scopes are memoized stupidly, so if the underlying tree
  * changes, the scope may be out of sync.
@@ -36,25 +36,25 @@ import java.util.Map;
  */
 class MemoizedScopeCreator implements ScopeCreator {
 
-  private final Map<Node, Scope> scopes = Maps.newHashMap();
-  private final ScopeCreator delegate;
+    private final Map<Node, Scope> scopes = Maps.newHashMap();
+    private final ScopeCreator delegate;
 
-  /**
-   * @param delegate The real source of Scope objects.
-   */
-  MemoizedScopeCreator(ScopeCreator delegate) {
-    this.delegate = delegate;
-  }
-
-  @Override
-  public Scope createScope(Node n, Scope parent) {
-    Scope scope = scopes.get(n);
-    if (scope == null) {
-      scope = delegate.createScope(n, parent);
-      scopes.put(n, scope);
-    } else {
-      Preconditions.checkState(parent == scope.getParent());
+    /**
+     * @param delegate The real source of Scope objects.
+     */
+    MemoizedScopeCreator(ScopeCreator delegate) {
+        this.delegate = delegate;
     }
-    return scope;
-  }
+
+    @Override
+    public Scope createScope(Node n, Scope parent) {
+        Scope scope = scopes.get(n);
+        if (scope == null) {
+            scope = delegate.createScope(n, parent);
+            scopes.put(n, scope);
+        } else {
+            Preconditions.checkState(parent == scope.getParent());
+        }
+        return scope;
+    }
 }

@@ -1,8 +1,6 @@
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
-import java.nio.file.Path;
 import org.apache.commons.cli.Option;
-
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
@@ -25,148 +23,155 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.threaded.SemaphoreThreadLimit;
 import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
 
+import java.nio.file.Path;
+
 /**
  * Stores the generated spectra for future usage.
- * 
+ *
  * @author SimHigh
  */
 public class BuildCoherentSpectras {
 
-	public enum CmdOptions implements OptionWrapperInterface {
-		/* add options here according to your needs */
+    public enum CmdOptions implements OptionWrapperInterface {
+        /* add options here according to your needs */
 //		OUTPUT("o", "output", true, "Path to output csv statistics file (e.g. '~/outputDir/project/bugID/data.csv').", true)
-		FILTER_SPECTRA("f", "filter", false, "Whether the altered spectra should be filtered.", false);
-		;
-		
-		/* the following code blocks should not need to be changed */
-		final private OptionWrapper option;
+        FILTER_SPECTRA("f", "filter", false, "Whether the altered spectra should be filtered.", false);;
 
-		//adds an option that is not part of any group
-		CmdOptions(final String opt, final String longOpt, 
-				final boolean hasArg, final String description, final boolean required) {
-			this.option = new OptionWrapper(
-					Option.builder(opt).longOpt(longOpt).required(required).
-					hasArg(hasArg).desc(description).build(), NO_GROUP);
-		}
+        /* the following code blocks should not need to be changed */
+        final private OptionWrapper option;
 
-		//adds an option that is part of the group with the specified index (positive integer)
-		//a negative index means that this option is part of no group
-		//this option will not be required, however, the group itself will be
-		CmdOptions(final String opt, final String longOpt, 
-				final boolean hasArg, final String description, int groupId) {
-			this.option = new OptionWrapper(
-					Option.builder(opt).longOpt(longOpt).required(false).
-					hasArg(hasArg).desc(description).build(), groupId);
-		}
+        //adds an option that is not part of any group
+        CmdOptions(final String opt, final String longOpt,
+                   final boolean hasArg, final String description, final boolean required) {
+            this.option = new OptionWrapper(
+                    Option.builder(opt).longOpt(longOpt).required(required).
+                            hasArg(hasArg).desc(description).build(), NO_GROUP);
+        }
 
-		//adds the given option that will be part of the group with the given id
-		CmdOptions(Option option, int groupId) {
-			this.option = new OptionWrapper(option, groupId);
-		}
+        //adds an option that is part of the group with the specified index (positive integer)
+        //a negative index means that this option is part of no group
+        //this option will not be required, however, the group itself will be
+        CmdOptions(final String opt, final String longOpt,
+                   final boolean hasArg, final String description, int groupId) {
+            this.option = new OptionWrapper(
+                    Option.builder(opt).longOpt(longOpt).required(false).
+                            hasArg(hasArg).desc(description).build(), groupId);
+        }
 
-		//adds the given option that will be part of no group
-		CmdOptions(Option option) {
-			this(option, NO_GROUP);
-		}
+        //adds the given option that will be part of the group with the given id
+        CmdOptions(Option option, int groupId) {
+            this.option = new OptionWrapper(option, groupId);
+        }
 
-		@Override public String toString() { return option.getOption().getOpt(); }
-		@Override public OptionWrapper getOptionWrapper() { return option; }
-	}
+        //adds the given option that will be part of no group
+        CmdOptions(Option option) {
+            this(option, NO_GROUP);
+        }
 
-	/**
-	 * @param args
-	 * command line arguments
-	 */
-	public static void main(String[] args) {
+        @Override
+        public String toString() {
+            return option.getOption().getOpt();
+        }
 
-		OptionParser options = OptionParser.getOptions("BuildCoherentSpectras", true, CmdOptions.class, args);
+        @Override
+        public OptionWrapper getOptionWrapper() {
+            return option;
+        }
+    }
 
-		//		AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
-		//		
-		//		File archiveMainDir = mainEntity.getBenchmarkDir(false).toFile();
-		//		
-		//		if (!archiveMainDir.exists()) {
-		//			Log.abort(GenerateSpectraArchive.class, 
-		//					"Archive main directory doesn't exist: '" + mainEntity.getBenchmarkDir(false) + "'.");
-		//		}
+    /**
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
 
-		/* #====================================================================================
-		 * # load the compressed spectra files and generate/save coherent spectras
-		 * #==================================================================================== */
+        OptionParser options = OptionParser.getOptions("BuildCoherentSpectras", true, CmdOptions.class, args);
 
-		int numberOfThreads = options.getNumberOfThreads();
-		ThreadLimit limit = new SemaphoreThreadLimit(numberOfThreads);
-		
-		PipeLinker linker = new PipeLinker().append(
-				new ThreadedProcessor<>(numberOfThreads, limit,
-						new CoherentProcessor(null, options.hasOption(CmdOptions.FILTER_SPECTRA))),
-				new ThreadedProcessor<>(numberOfThreads, limit,
-						new CoherentProcessor(BugLoRDConstants.DIR_NAME_JACOCO, options.hasOption(CmdOptions.FILTER_SPECTRA))),
-				new ThreadedProcessor<>(numberOfThreads, limit,
-						new CoherentProcessor(BugLoRDConstants.DIR_NAME_COBERTURA, options.hasOption(CmdOptions.FILTER_SPECTRA))),
-				new ThreadedProcessor<>(numberOfThreads, limit,
-						new CoherentProcessor(BugLoRDConstants.DIR_NAME_TRACE_COBERTURA, options.hasOption(CmdOptions.FILTER_SPECTRA)))
-				);
+        //		AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
+        //		
+        //		File archiveMainDir = mainEntity.getBenchmarkDir(false).toFile();
+        //		
+        //		if (!archiveMainDir.exists()) {
+        //			Log.abort(GenerateSpectraArchive.class, 
+        //					"Archive main directory doesn't exist: '" + mainEntity.getBenchmarkDir(false) + "'.");
+        //		}
 
-		//iterate over all projects
-		for (String project : Defects4J.getAllProjects()) {
-			String[] ids = Defects4J.getAllBugIDs(project); 
-			for (String id : ids) {
-				linker.submit(new Defects4JBuggyFixedEntity(project, id));
-			}
-		}
-		linker.shutdown();
+        /* #====================================================================================
+         * # load the compressed spectra files and generate/save coherent spectras
+         * #==================================================================================== */
 
-		Log.out(BuildCoherentSpectras.class, "All done!");
+        int numberOfThreads = options.getNumberOfThreads();
+        ThreadLimit limit = new SemaphoreThreadLimit(numberOfThreads);
 
-	}
+        PipeLinker linker = new PipeLinker().append(
+                new ThreadedProcessor<>(numberOfThreads, limit,
+                        new CoherentProcessor(null, options.hasOption(CmdOptions.FILTER_SPECTRA))),
+                new ThreadedProcessor<>(numberOfThreads, limit,
+                        new CoherentProcessor(BugLoRDConstants.DIR_NAME_JACOCO, options.hasOption(CmdOptions.FILTER_SPECTRA))),
+                new ThreadedProcessor<>(numberOfThreads, limit,
+                        new CoherentProcessor(BugLoRDConstants.DIR_NAME_COBERTURA, options.hasOption(CmdOptions.FILTER_SPECTRA))),
+                new ThreadedProcessor<>(numberOfThreads, limit,
+                        new CoherentProcessor(BugLoRDConstants.DIR_NAME_TRACE_COBERTURA, options.hasOption(CmdOptions.FILTER_SPECTRA)))
+        );
 
-	private static class CoherentProcessor extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
-		
-		private final String subDirName;
-		private boolean filterSpectra;
-		
-		public CoherentProcessor(String subDirName, boolean filterSpectra) {
-			this.subDirName = subDirName;
-			this.filterSpectra = filterSpectra;
-		}
+        //iterate over all projects
+        for (String project : Defects4J.getAllProjects()) {
+            String[] ids = Defects4J.getAllBugIDs(project);
+            for (String id : ids) {
+                linker.submit(new Defects4JBuggyFixedEntity(project, id));
+            }
+        }
+        linker.shutdown();
 
-		@Override
-		public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> input) {
-			Log.out(BuildCoherentSpectras.class, "Processing %s with sub directory '%s'.", 
-					input, subDirName == null ? "<none>" : subDirName);
-			Entity bug = input.getBuggyVersion();
-			Path spectraFile = BugLoRD.getSpectraFilePath(bug, subDirName);
-				
-			if (!spectraFile.toFile().exists()) {
-				Log.err(BuildCoherentSpectras.class, "Spectra file does not exist for %s with sub directory '%s'.", 
-					input, subDirName == null ? "<none>" : subDirName);
-				return input;
-			}
-			
-			//load the full spectra
-			ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
-			
-			//generate the coherent version
-			spectra = new BuildCoherentSpectraModule().submit(spectra).getResult();
-			
-			//save the coherent full spectra
-			new SaveSpectraModule<>(spectraFile).submit(spectra);
+        Log.out(BuildCoherentSpectras.class, "All done!");
 
-			if (filterSpectra) {
-				Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
+    }
 
-				//generate the filtered coherent spectra
-				//(building a coherent spectra from an already filtered spectra may yield wrong results
-				//by generating blocks that reach over filtered out nodes...)
-				spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
+    private static class CoherentProcessor extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
 
-				//save the filtered spectra
-				new SaveSpectraModule<>(spectraFileFiltered).submit(spectra);
-			}
+        private final String subDirName;
+        private boolean filterSpectra;
 
-			return input;
-		}
-	}
+        public CoherentProcessor(String subDirName, boolean filterSpectra) {
+            this.subDirName = subDirName;
+            this.filterSpectra = filterSpectra;
+        }
+
+        @Override
+        public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> input) {
+            Log.out(BuildCoherentSpectras.class, "Processing %s with sub directory '%s'.",
+                    input, subDirName == null ? "<none>" : subDirName);
+            Entity bug = input.getBuggyVersion();
+            Path spectraFile = BugLoRD.getSpectraFilePath(bug, subDirName);
+
+            if (!spectraFile.toFile().exists()) {
+                Log.err(BuildCoherentSpectras.class, "Spectra file does not exist for %s with sub directory '%s'.",
+                        input, subDirName == null ? "<none>" : subDirName);
+                return input;
+            }
+
+            //load the full spectra
+            ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+
+            //generate the coherent version
+            spectra = new BuildCoherentSpectraModule().submit(spectra).getResult();
+
+            //save the coherent full spectra
+            new SaveSpectraModule<>(spectraFile).submit(spectra);
+
+            if (filterSpectra) {
+                Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
+
+                //generate the filtered coherent spectra
+                //(building a coherent spectra from an already filtered spectra may yield wrong results
+                //by generating blocks that reach over filtered out nodes...)
+                spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
+
+                //save the filtered spectra
+                new SaveSpectraModule<>(spectraFileFiltered).submit(spectra);
+            }
+
+            return input;
+        }
+    }
 
 }

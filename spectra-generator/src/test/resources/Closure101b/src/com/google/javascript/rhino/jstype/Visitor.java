@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,16 +36,13 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
-
-
-
 
 
 /**
  * A type visitor.<p>
- *
+ * <p>
  * This code will calculate a specific value of type {@code T} from a type
  * based on its structure:
  *
@@ -53,72 +50,70 @@ package com.google.javascript.rhino.jstype;
  * T value = type.visit(new Visitor&lt;T&gt;() {
  * &nbsp;&nbsp;&hellip;
  * });</pre>
- *
-*
  */
 public interface Visitor<T> {
-  /**
-   * Bottom type's case.
-   */
-  T caseNoType();
+    /**
+     * Bottom type's case.
+     */
+    T caseNoType();
 
-  /**
-   * Enum element type's case.
-   */
-  T caseEnumElementType(EnumElementType type);
+    /**
+     * Enum element type's case.
+     */
+    T caseEnumElementType(EnumElementType type);
 
-  /**
-   * All type's case.
-   */
-  T caseAllType();
+    /**
+     * All type's case.
+     */
+    T caseAllType();
 
-  /**
-   * Boolean value type's case.
-   */
-  T caseBooleanType();
+    /**
+     * Boolean value type's case.
+     */
+    T caseBooleanType();
 
-  /**
-   * Bottom Object type's case.
-   */
-  T caseNoObjectType();
+    /**
+     * Bottom Object type's case.
+     */
+    T caseNoObjectType();
 
-  /**
-   * Function type's case.
-   */
-  T caseFunctionType(FunctionType type);
+    /**
+     * Function type's case.
+     */
+    T caseFunctionType(FunctionType type);
 
-  /**
-   * Object type's case.
-   */
-  T caseObjectType(ObjectType type);
+    /**
+     * Object type's case.
+     */
+    T caseObjectType(ObjectType type);
 
-  /**
-   * Unknown type's case.
-   */
-  T caseUnknownType();
+    /**
+     * Unknown type's case.
+     */
+    T caseUnknownType();
 
-  /**
-   * Null type's case.
-   */
-  T caseNullType();
+    /**
+     * Null type's case.
+     */
+    T caseNullType();
 
-  /**
-   * Number value type's case.
-   */
-  T caseNumberType();
+    /**
+     * Number value type's case.
+     */
+    T caseNumberType();
 
-  /**
-   * String value type's case.
-   */
-  T caseStringType();
+    /**
+     * String value type's case.
+     */
+    T caseStringType();
 
-  /**
-   * Void type's case.
-   */
-  T caseVoidType();
+    /**
+     * Void type's case.
+     */
+    T caseVoidType();
 
-  /**
-   * Union type's case.
-   */
-  T caseUnionType(UnionType type);
+    /**
+     * Union type's case.
+     */
+    T caseUnionType(UnionType type);
 }

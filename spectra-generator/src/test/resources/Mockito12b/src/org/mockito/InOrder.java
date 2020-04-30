@@ -8,17 +8,17 @@ import org.mockito.verification.VerificationMode;
 
 /**
  * Allows verification in order. E.g:
- * 
+ *
  * <pre>
  * InOrder inOrder = inOrder(firstMock, secondMock);
- * 
+ *
  * inOrder.verify(firstMock).add("was called first");
  * inOrder.verify(secondMock).add("was called second");
  * </pre>
- * 
+ * <p>
  * As of Mockito 1.8.4 you can verifyNoMoreInvocations() in order-sensitive way. Read more: {@link InOrder#verifyNoMoreInteractions()}
  * <p>
- * 
+ * <p>
  * See examples in javadoc for {@link Mockito} class
  */
 public interface InOrder {
@@ -30,41 +30,39 @@ public interface InOrder {
      * Example:
      * <pre>
      * InOrder inOrder = inOrder(firstMock, secondMock);
-     * 
+     *
      * inOrder.verify(firstMock).someMethod("was called first");
      * inOrder.verify(secondMock).someMethod("was called second");
      * </pre>
-     * 
+     * <p>
      * See examples in javadoc for {@link Mockito} class
-     * 
+     *
      * @param mock to be verified
-     * 
      * @return mock object itself
      */
     <T> T verify(T mock);
 
     /**
      * Verifies interaction in order. E.g:
-     * 
+     *
      * <pre>
      * InOrder inOrder = inOrder(firstMock, secondMock);
-     * 
+     *
      * inOrder.verify(firstMock, times(2)).someMethod("was called first two times");
      * inOrder.verify(secondMock, atLeastOnce()).someMethod("was called second at least once");
      * </pre>
-     * 
+     * <p>
      * See examples in javadoc for {@link Mockito} class
-     * 
+     *
      * @param mock to be verified
      * @param mode for example times(x) or atLeastOnce()
-     * 
      * @return mock object itself
      */
     <T> T verify(T mock, VerificationMode mode);
 
-    
+
     /**
-     * Verifies that no more interactions happened <b>in order</b>. 
+     * Verifies that no more interactions happened <b>in order</b>.
      * Different from {@link Mockito#verifyNoMoreInteractions(Object...)} because the order of verification matters.
      * <p>
      * Example:
@@ -72,15 +70,15 @@ public interface InOrder {
      * mock.foo(); //1st
      * mock.bar(); //2nd
      * mock.baz(); //3rd
-     * 
+     *
      * InOrder inOrder = inOrder(mock);
-     * 
+     *
      * inOrder.verify(mock).bar(); //2n
      * inOrder.verify(mock).baz(); //3rd (last method)
-     * 
+     *
      * //passes because there are no more interactions after last method:
      * inOrder.verifyNoMoreInteractions();
-     * 
+     *
      * //however this fails because 1st method was not verified:
      * Mockito.verifyNoMoreInteractions(mock);
      * </pre>

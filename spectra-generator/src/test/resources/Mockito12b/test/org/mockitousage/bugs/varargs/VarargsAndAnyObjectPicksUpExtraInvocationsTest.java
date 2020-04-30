@@ -4,12 +4,12 @@
  */
 package org.mockitousage.bugs.varargs;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockitoutil.TestBase;
+
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 public class VarargsAndAnyObjectPicksUpExtraInvocationsTest extends TestBase {
     public interface TableBuilder {
@@ -24,7 +24,7 @@ public class VarargsAndAnyObjectPicksUpExtraInvocationsTest extends TestBase {
         //when
         table.newRow("qux", "foo", "bar", "baz");
         table.newRow("abc", "def");
-        
+
         //then
         verify(table, times(2)).newRow(anyString(), (String[]) anyVararg());
     }
@@ -44,7 +44,7 @@ public class VarargsAndAnyObjectPicksUpExtraInvocationsTest extends TestBase {
         //when
         table.newRow("qux", "foo", "bar", "baz");
         table.newRow("abc", "def");
-        
+
         //then
         verify(table).newRow(anyString(), eq("foo"), anyString(), anyString());
         verify(table).newRow(anyString(), anyString());

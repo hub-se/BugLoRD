@@ -31,61 +31,60 @@ import java.nio.charset.Charset;
  * JSCompiler.
  *
  * @author nicksantos@google.com (Nick Santos)
-*
  */
 public class JSSourceFile extends SourceFile {
 
-  public static JSSourceFile fromFile(String fileName, Charset charSet) {
-    return new JSSourceFile(SourceFile.fromFile(fileName, charSet));
-  }
+    public static JSSourceFile fromFile(String fileName, Charset charSet) {
+        return new JSSourceFile(SourceFile.fromFile(fileName, charSet));
+    }
 
-  public static JSSourceFile fromFile(String fileName) {
-    return new JSSourceFile(SourceFile.fromFile(fileName, Charsets.UTF_8));
-  }
+    public static JSSourceFile fromFile(String fileName) {
+        return new JSSourceFile(SourceFile.fromFile(fileName, Charsets.UTF_8));
+    }
 
-  public static JSSourceFile fromFile(File file, Charset charSet) {
-    return new JSSourceFile(SourceFile.fromFile(file, charSet));
-  }
+    public static JSSourceFile fromFile(File file, Charset charSet) {
+        return new JSSourceFile(SourceFile.fromFile(file, charSet));
+    }
 
-  public static JSSourceFile fromFile(File file) {
-    return new JSSourceFile(SourceFile.fromFile(file, Charsets.UTF_8));
-  }
+    public static JSSourceFile fromFile(File file) {
+        return new JSSourceFile(SourceFile.fromFile(file, Charsets.UTF_8));
+    }
 
-  public static JSSourceFile fromCode(String fileName, String code) {
-    return new JSSourceFile(SourceFile.fromCode(fileName, code));
-  }
+    public static JSSourceFile fromCode(String fileName, String code) {
+        return new JSSourceFile(SourceFile.fromCode(fileName, code));
+    }
 
-  public static JSSourceFile fromInputStream(String fileName, InputStream s)
-      throws IOException {
-    return new JSSourceFile(SourceFile.fromInputStream(fileName, s));
-  }
+    public static JSSourceFile fromInputStream(String fileName, InputStream s)
+            throws IOException {
+        return new JSSourceFile(SourceFile.fromInputStream(fileName, s));
+    }
 
-  public static JSSourceFile fromGenerator(String fileName,
-      Generator generator) {
-    return new JSSourceFile(SourceFile.fromGenerator(fileName, generator));
-  }
+    public static JSSourceFile fromGenerator(String fileName,
+                                             Generator generator) {
+        return new JSSourceFile(SourceFile.fromGenerator(fileName, generator));
+    }
 
 
-  private SourceFile referenced;
+    private SourceFile referenced;
 
-  private JSSourceFile(SourceFile referenced) {
-    super(referenced.getName());
-    this.referenced = referenced;
-  }
+    private JSSourceFile(SourceFile referenced) {
+        super(referenced.getName());
+        this.referenced = referenced;
+    }
 
-  @Override
-  public String getCode() throws IOException {
-    return referenced.getCode();
-  }
+    @Override
+    public String getCode() throws IOException {
+        return referenced.getCode();
+    }
 
-  @Override
-  public void clearCachedSource() {
-    referenced.clearCachedSource();
-  }
+    @Override
+    public void clearCachedSource() {
+        referenced.clearCachedSource();
+    }
 
-  @Override
-  @VisibleForTesting
-  String getCodeNoCache() {
-    return referenced.getCodeNoCache();
-  }
+    @Override
+    @VisibleForTesting
+    String getCodeNoCache() {
+        return referenced.getCodeNoCache();
+    }
 }

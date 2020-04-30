@@ -19,22 +19,22 @@
 
 package org.apache.commons.lang3;
 
+import junit.framework.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.apache.commons.lang3.JavaVersion.JAVA_1_4;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Locale;
 
-import junit.framework.Assert;
+import static org.apache.commons.lang3.JavaVersion.JAVA_1_4;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.SystemUtils}.
- * 
+ * <p>
  * Only limited testing can be performed.
- * 
+ *
  * @version $Id$
  */
 public class SystemUtilsTest {

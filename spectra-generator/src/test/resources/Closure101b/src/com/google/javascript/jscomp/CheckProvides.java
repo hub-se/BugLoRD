@@ -27,91 +27,89 @@ import java.util.Map;
 
 /**
  * Insures '@constructor X' has a 'goog.provide("X")' .
- *
-*
  */
 class CheckProvides implements CompilerPass {
-  private final AbstractCompiler compiler;
-  private final CheckLevel checkLevel;
-  private final CodingConvention codingConvention;
+    private final AbstractCompiler compiler;
+    private final CheckLevel checkLevel;
+    private final CodingConvention codingConvention;
 
-  static final DiagnosticType MISSING_PROVIDE_WARNING = DiagnosticType.disabled(
-      "JSC_MISSING_PROVIDE",
-      "missing goog.provide(''{0}'')");
+    static final DiagnosticType MISSING_PROVIDE_WARNING = DiagnosticType.disabled(
+            "JSC_MISSING_PROVIDE",
+            "missing goog.provide(''{0}'')");
 
-  CheckProvides(AbstractCompiler compiler, CheckLevel checkLevel) {
-    this.compiler = compiler;
-    this.checkLevel = checkLevel;
-    this.codingConvention = compiler.getCodingConvention();
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    CheckProvidesCallback callback =
-      new CheckProvidesCallback(codingConvention);
-    new NodeTraversal(compiler, callback).traverse(root);
-  }
-
-  private class CheckProvidesCallback extends AbstractShallowCallback {
-    private final Map<String, Node> provides = Maps.newHashMap();
-    private final Map<String, Node> ctors = Maps.newHashMap();
-    private final CodingConvention convention;
-
-    CheckProvidesCallback(CodingConvention convention){
-      this.convention = convention;
+    CheckProvides(AbstractCompiler compiler, CheckLevel checkLevel) {
+        this.compiler = compiler;
+        this.checkLevel = checkLevel;
+        this.codingConvention = compiler.getCodingConvention();
     }
 
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      switch (n.getType()) {
-        case Token.CALL:
-          String providedClassName =
-            codingConvention.extractClassNameIfProvide(n, parent);
-          if (providedClassName != null) {
-            provides.put(providedClassName, n);
-          }
-          break;
-        case Token.FUNCTION:
-          visitFunctionNode(n, parent);
-          break;
-        case Token.SCRIPT:
-          visitScriptNode(t, n);
-      }
+    public void process(Node externs, Node root) {
+        CheckProvidesCallback callback =
+                new CheckProvidesCallback(codingConvention);
+        new NodeTraversal(compiler, callback).traverse(root);
     }
 
-    private void visitFunctionNode(Node n, Node parent) {
-      Node name = null;
-      JSDocInfo info = parent.getJSDocInfo();
-      if (info != null && info.isConstructor()) {
-        name = parent.getFirstChild();
-      } else {
-        // look to the child, maybe it's a named function
-        info = n.getJSDocInfo();
-        if (info != null && info.isConstructor()) {
-          name = n.getFirstChild();
-        }
-      }
-      if (name != null && name.isQualifiedName()) {
-        String qualifiedName = name.getQualifiedName();
-        if (!this.convention.isPrivate(qualifiedName)) {
-          Visibility visibility = info.getVisibility();
-          if (!visibility.equals(JSDocInfo.Visibility.PRIVATE)) {
-            ctors.put(qualifiedName, name);
-          }
-        }
-      }
-    }
+    private class CheckProvidesCallback extends AbstractShallowCallback {
+        private final Map<String, Node> provides = Maps.newHashMap();
+        private final Map<String, Node> ctors = Maps.newHashMap();
+        private final CodingConvention convention;
 
-    private void visitScriptNode(NodeTraversal t, Node n) {
-      for (String ctorName : ctors.keySet()) {
-        if (!provides.containsKey(ctorName)) {
-          compiler.report(
-              JSError.make(t, ctors.get(ctorName), checkLevel,
-                           MISSING_PROVIDE_WARNING, ctorName));
+        CheckProvidesCallback(CodingConvention convention) {
+            this.convention = convention;
         }
-      }
-      provides.clear();
-      ctors.clear();
+
+        @Override
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            switch (n.getType()) {
+                case Token.CALL:
+                    String providedClassName =
+                            codingConvention.extractClassNameIfProvide(n, parent);
+                    if (providedClassName != null) {
+                        provides.put(providedClassName, n);
+                    }
+                    break;
+                case Token.FUNCTION:
+                    visitFunctionNode(n, parent);
+                    break;
+                case Token.SCRIPT:
+                    visitScriptNode(t, n);
+            }
+        }
+
+        private void visitFunctionNode(Node n, Node parent) {
+            Node name = null;
+            JSDocInfo info = parent.getJSDocInfo();
+            if (info != null && info.isConstructor()) {
+                name = parent.getFirstChild();
+            } else {
+                // look to the child, maybe it's a named function
+                info = n.getJSDocInfo();
+                if (info != null && info.isConstructor()) {
+                    name = n.getFirstChild();
+                }
+            }
+            if (name != null && name.isQualifiedName()) {
+                String qualifiedName = name.getQualifiedName();
+                if (!this.convention.isPrivate(qualifiedName)) {
+                    Visibility visibility = info.getVisibility();
+                    if (!visibility.equals(JSDocInfo.Visibility.PRIVATE)) {
+                        ctors.put(qualifiedName, name);
+                    }
+                }
+            }
+        }
+
+        private void visitScriptNode(NodeTraversal t, Node n) {
+            for (String ctorName : ctors.keySet()) {
+                if (!provides.containsKey(ctorName)) {
+                    compiler.report(
+                            JSError.make(t, ctors.get(ctorName), checkLevel,
+                                    MISSING_PROVIDE_WARNING, ctorName));
+                }
+            }
+            provides.clear();
+            ctors.clear();
+        }
     }
-  }
 }

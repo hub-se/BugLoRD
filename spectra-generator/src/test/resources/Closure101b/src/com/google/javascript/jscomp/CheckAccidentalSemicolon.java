@@ -27,49 +27,46 @@ import com.google.javascript.rhino.Token;
  * if (foo()); act_now();
  * </pre>
  * and generates warnings.
- *
-*
-*
  */
 final class CheckAccidentalSemicolon extends AbstractPostOrderCallback {
 
-  static final DiagnosticType SUSPICIOUS_SEMICOLON = DiagnosticType.warning(
-      "JSC_SUSPICIOUS_SEMICOLON",
-      "If this if/for/while really shouldn't have a body, use {}");
+    static final DiagnosticType SUSPICIOUS_SEMICOLON = DiagnosticType.warning(
+            "JSC_SUSPICIOUS_SEMICOLON",
+            "If this if/for/while really shouldn't have a body, use {}");
 
-  private final CheckLevel level;
+    private final CheckLevel level;
 
-  CheckAccidentalSemicolon(CheckLevel level) {
-    this.level = level;
-  }
-
-  public void visit(NodeTraversal t, Node n, Node parent) {
-    Node child;
-    switch (n.getType()) {
-      case Token.IF:
-        child = n.getFirstChild().getNext();  // skip the condition child
-        break;
-
-      case Token.WHILE:
-      case Token.FOR:
-        child = NodeUtil.getLoopCodeBlock(n);
-        break;
-
-      default:
-        return;  // don't check other types
+    CheckAccidentalSemicolon(CheckLevel level) {
+        this.level = level;
     }
 
-    // semicolons cause VOID children. Empty blocks are allowed because
-    // that's usually intentional, especially with loops.
-    for (; child != null; child = child.getNext()) {
-      if ((child.getType() == Token.BLOCK) && (!child.hasChildren())) {
-        // Only warn on empty blocks that replaced EMPTY nodes.  BLOCKs with no
-        // children are considered OK.
-        if (child.wasEmptyNode()) {
-          t.getCompiler().report(
-              JSError.make(t, n, level, SUSPICIOUS_SEMICOLON));
+    public void visit(NodeTraversal t, Node n, Node parent) {
+        Node child;
+        switch (n.getType()) {
+            case Token.IF:
+                child = n.getFirstChild().getNext();  // skip the condition child
+                break;
+
+            case Token.WHILE:
+            case Token.FOR:
+                child = NodeUtil.getLoopCodeBlock(n);
+                break;
+
+            default:
+                return;  // don't check other types
         }
-      }
+
+        // semicolons cause VOID children. Empty blocks are allowed because
+        // that's usually intentional, especially with loops.
+        for (; child != null; child = child.getNext()) {
+            if ((child.getType() == Token.BLOCK) && (!child.hasChildren())) {
+                // Only warn on empty blocks that replaced EMPTY nodes.  BLOCKs with no
+                // children are considered OK.
+                if (child.wasEmptyNode()) {
+                    t.getCompiler().report(
+                            JSError.make(t, n, level, SUSPICIOUS_SEMICOLON));
+                }
+            }
+        }
     }
-  }
 }

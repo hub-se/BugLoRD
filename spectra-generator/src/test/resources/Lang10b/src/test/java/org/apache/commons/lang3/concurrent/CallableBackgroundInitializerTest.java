@@ -16,28 +16,30 @@
  */
 package org.apache.commons.lang3.concurrent;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test class for {@code CallableBackgroundInitializer}
  *
  * @version $Id$
  */
-public class CallableBackgroundInitializerTest  {
-    /** Constant for the result of the call() invocation. */
+public class CallableBackgroundInitializerTest {
+    /**
+     * Constant for the result of the call() invocation.
+     */
     private static final Integer RESULT = Integer.valueOf(42);
 
     /**
      * Tries to create an instance without a Callable. This should cause an
      * exception.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testInitNullCallable() {
         new CallableBackgroundInitializer<Object>(null);
     }
@@ -58,7 +60,7 @@ public class CallableBackgroundInitializerTest  {
      * Tries to pass a null Callable to the constructor that takes an executor.
      * This should cause an exception.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testInitExecutorNullCallable() {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         new CallableBackgroundInitializer<Integer>(null, exec);
@@ -81,7 +83,9 @@ public class CallableBackgroundInitializerTest  {
      * implementation of the initialize() method.
      */
     private static class TestCallable implements Callable<Integer> {
-        /** A counter for the number of call() invocations. */
+        /**
+         * A counter for the number of call() invocations.
+         */
         int callCount;
 
         /**

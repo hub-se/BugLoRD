@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,7 +36,7 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 import static com.google.javascript.rhino.jstype.TernaryValue.FALSE;
@@ -45,65 +45,64 @@ import static com.google.javascript.rhino.jstype.TernaryValue.UNKNOWN;
 
 /**
  * String type.
-*
  */
 public final class StringType extends ValueType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  StringType(JSTypeRegistry registry) {
-    super(registry);
-  }
-
-  @Override
-  public TernaryValue testForEquality(JSType that) {
-    if (UNKNOWN.equals(super.testForEquality(that))) {
-      return UNKNOWN;
+    StringType(JSTypeRegistry registry) {
+        super(registry);
     }
-    if (that.isUnknownType() || that.isSubtype(
-            getNativeType(JSTypeNative.OBJECT_NUMBER_STRING_BOOLEAN))) {
-      return UNKNOWN;
+
+    @Override
+    public TernaryValue testForEquality(JSType that) {
+        if (UNKNOWN.equals(super.testForEquality(that))) {
+            return UNKNOWN;
+        }
+        if (that.isUnknownType() || that.isSubtype(
+                getNativeType(JSTypeNative.OBJECT_NUMBER_STRING_BOOLEAN))) {
+            return UNKNOWN;
+        }
+        return FALSE;
     }
-    return FALSE;
-  }
 
-  @Override
-  public boolean isStringValueType() {
-    return true;
-  }
+    @Override
+    public boolean isStringValueType() {
+        return true;
+    }
 
-  @Override
-  public boolean matchesNumberContext() {
-    return true;
-  }
+    @Override
+    public boolean matchesNumberContext() {
+        return true;
+    }
 
-  @Override
-  public boolean matchesStringContext() {
-    return true;
-  }
+    @Override
+    public boolean matchesStringContext() {
+        return true;
+    }
 
-  @Override
-  public boolean matchesObjectContext() {
-    // TODO(user): Revisit this for ES4, which is stricter.
-    return true;
-  }
+    @Override
+    public boolean matchesObjectContext() {
+        // TODO(user): Revisit this for ES4, which is stricter.
+        return true;
+    }
 
-  @Override
-  public String toString() {
-    return "string";
-  }
+    @Override
+    public String toString() {
+        return "string";
+    }
 
-  @Override
-  public JSType autoboxesTo() {
-    return getNativeType(JSTypeNative.STRING_OBJECT_TYPE);
-  }
+    @Override
+    public JSType autoboxesTo() {
+        return getNativeType(JSTypeNative.STRING_OBJECT_TYPE);
+    }
 
-  @Override
-  public BooleanLiteralSet getPossibleToBooleanOutcomes() {
-    return BooleanLiteralSet.BOTH;
-  }
+    @Override
+    public BooleanLiteralSet getPossibleToBooleanOutcomes() {
+        return BooleanLiteralSet.BOTH;
+    }
 
-  @Override
-  public <T> T visit(Visitor<T> visitor) {
-    return visitor.caseStringType();
-  }
+    @Override
+    public <T> T visit(Visitor<T> visitor) {
+        return visitor.caseStringType();
+    }
 }

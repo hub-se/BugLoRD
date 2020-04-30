@@ -15,18 +15,17 @@
  */
 package org.joda.time.format;
 
-import java.text.DateFormat;
-import java.util.Locale;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
+
+import java.text.DateFormat;
+import java.util.Locale;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 /**
  * This class is a Junit unit test for DateTimeFormat styles.
@@ -44,13 +43,13 @@ public class TestDateTimeFormatStyle extends TestCase {
     private static final DateTimeZone TOKYO = DateTimeZone.forID("Asia/Tokyo");
     private static final DateTimeZone NEWYORK = DateTimeZone.forID("America/New_York");
 
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
 
     private DateTimeZone originalDateTimeZone = null;
     private TimeZone originalTimeZone = null;
@@ -93,34 +92,41 @@ public class TestDateTimeFormatStyle extends TestCase {
         try {
             DateTimeFormat.forStyle(null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             DateTimeFormat.forStyle("");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             DateTimeFormat.forStyle("S");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             DateTimeFormat.forStyle("SSS");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testForStyle_invalidStrings() {
         try {
             DateTimeFormat.forStyle("AA");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             DateTimeFormat.forStyle("--");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             DateTimeFormat.forStyle("ss");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -135,7 +141,7 @@ public class TestDateTimeFormatStyle extends TestCase {
         assertEquals(expect, f.withLocale(US).print(dt));
         expect = DateFormat.getDateInstance(DateFormat.SHORT, FRANCE).format(dt.toDate());
         assertEquals(expect, f.withLocale(FRANCE).print(dt));
-        
+
         DateTime date = new DateTime(
                 DateFormat.getDateInstance(DateFormat.SHORT, FRANCE).parse(expect));
         assertEquals(date, f.withLocale(FRANCE).parseDateTime(expect));
@@ -152,12 +158,12 @@ public class TestDateTimeFormatStyle extends TestCase {
         assertEquals(expect, f.withLocale(US).print(dt));
         expect = DateFormat.getTimeInstance(DateFormat.SHORT, FRANCE).format(dt.toDate());
         assertEquals(expect, f.withLocale(FRANCE).print(dt));
-        
+
         if (TimeZone.getDefault() instanceof SimpleTimeZone) {
             // skip test, as it needs historical time zone info
         } else {
             DateTime date = new DateTime(
-                DateFormat.getTimeInstance(DateFormat.SHORT, FRANCE).parse(expect));
+                    DateFormat.getTimeInstance(DateFormat.SHORT, FRANCE).parse(expect));
             assertEquals(date, f.withLocale(FRANCE).parseDateTime(expect));
         }
     }
@@ -173,9 +179,9 @@ public class TestDateTimeFormatStyle extends TestCase {
         assertEquals(expect, f.withLocale(US).print(dt));
         expect = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, FRANCE).format(dt.toDate());
         assertEquals(expect, f.withLocale(FRANCE).print(dt));
-        
+
         DateTime date = new DateTime(
-            DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, FRANCE).parse(expect));
+                DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, FRANCE).parse(expect));
         assertEquals(date, f.withLocale(FRANCE).parseDateTime(expect));
     }
 

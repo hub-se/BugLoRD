@@ -31,51 +31,51 @@ import java.util.Set;
  * @author johnlenz@google.com (John Lenz)
  */
 class GatherRawExports extends AbstractPostOrderCallback
-    implements CompilerPass {
+        implements CompilerPass {
 
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  private static final String GLOBAL_THIS_NAME = "window";
+    private static final String GLOBAL_THIS_NAME = "window";
 
-  private final Set<String> exportedVariables = Sets.newHashSet();
+    private final Set<String> exportedVariables = Sets.newHashSet();
 
-  GatherRawExports(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    Preconditions.checkState(compiler.isNormalized());
-    NodeTraversal.traverse(compiler, root, this);
-  }
-
-  @Override
-  public void visit(NodeTraversal t, Node n, Node parent) {
-    Node sibling = n.getNext();
-    if (sibling != null
-        && sibling.getType() == Token.STRING
-        && NodeUtil.isGet(parent)) {
-      // TODO(johnlenz): Should we warn if we see a property name that
-      // hasn't been exported?
-      if (isGlobalThisObject(t, n)) {
-        exportedVariables.add(sibling.getString());
-      }
+    GatherRawExports(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
-  }
 
-  private boolean isGlobalThisObject(NodeTraversal t, Node n) {
-    if (n.getType() == Token.THIS) {
-      return t.inGlobalScope();
-    } else if (n.getType() == Token.NAME && !NodeUtil.isLabelName(n)) {
-      String varName = n.getString();
-      if (varName.equals(GLOBAL_THIS_NAME)) {
-        return true;
-      }
+    @Override
+    public void process(Node externs, Node root) {
+        Preconditions.checkState(compiler.isNormalized());
+        NodeTraversal.traverse(compiler, root, this);
     }
-    return false;
-  }
 
-  public Set<String> getExportedVariableNames() {
-    return exportedVariables;
-  }
+    @Override
+    public void visit(NodeTraversal t, Node n, Node parent) {
+        Node sibling = n.getNext();
+        if (sibling != null
+                && sibling.getType() == Token.STRING
+                && NodeUtil.isGet(parent)) {
+            // TODO(johnlenz): Should we warn if we see a property name that
+            // hasn't been exported?
+            if (isGlobalThisObject(t, n)) {
+                exportedVariables.add(sibling.getString());
+            }
+        }
+    }
+
+    private boolean isGlobalThisObject(NodeTraversal t, Node n) {
+        if (n.getType() == Token.THIS) {
+            return t.inGlobalScope();
+        } else if (n.getType() == Token.NAME && !NodeUtil.isLabelName(n)) {
+            String varName = n.getString();
+            if (varName.equals(GLOBAL_THIS_NAME)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Set<String> getExportedVariableNames() {
+        return exportedVariables;
+    }
 }

@@ -15,24 +15,12 @@
  */
 package org.joda.time.chrono;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.joda.time.*;
 
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.DateTimeZone;
-import org.joda.time.DurationField;
-import org.joda.time.DurationFieldType;
-import org.joda.time.IllegalFieldValueException;
-import org.joda.time.Instant;
-import org.joda.time.Period;
-import org.joda.time.TimeOfDay;
-import org.joda.time.YearMonthDay;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * This class is a Junit unit test for GJChronology.
@@ -46,13 +34,13 @@ public class TestGJChronology extends TestCase {
     private static final DateTimeZone LONDON = DateTimeZone.forID("Europe/London");
     private static final DateTimeZone TOKYO = DateTimeZone.forID("Asia/Tokyo");
 
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
 
     private DateTimeZone originalDateTimeZone = null;
     private TimeZone originalTimeZone = null;
@@ -114,15 +102,17 @@ public class TestGJChronology extends TestCase {
         assertEquals(new Instant(0L), chrono.getGregorianCutover());
         assertEquals(2, chrono.getMinimumDaysInFirstWeek());
         assertSame(GJChronology.class, GJChronology.getInstance(TOKYO, 0L, 2).getClass());
-        
+
         try {
             GJChronology.getInstance(TOKYO, 0L, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             GJChronology.getInstance(TOKYO, 0L, 8);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testFactory_Zone_RI() {
@@ -130,7 +120,7 @@ public class TestGJChronology extends TestCase {
         assertEquals(TOKYO, chrono.getZone());
         assertEquals(new Instant(0L), chrono.getGregorianCutover());
         assertSame(GJChronology.class, GJChronology.getInstance(TOKYO, new Instant(0L)).getClass());
-        
+
         DateTime cutover = new DateTime(1582, 10, 15, 0, 0, 0, 0, DateTimeZone.UTC);
         chrono = GJChronology.getInstance(TOKYO, null);
         assertEquals(TOKYO, chrono.getZone());
@@ -143,21 +133,23 @@ public class TestGJChronology extends TestCase {
         assertEquals(new Instant(0L), chrono.getGregorianCutover());
         assertEquals(2, chrono.getMinimumDaysInFirstWeek());
         assertSame(GJChronology.class, GJChronology.getInstance(TOKYO, new Instant(0L), 2).getClass());
-        
+
         DateTime cutover = new DateTime(1582, 10, 15, 0, 0, 0, 0, DateTimeZone.UTC);
         chrono = GJChronology.getInstance(TOKYO, null, 2);
         assertEquals(TOKYO, chrono.getZone());
         assertEquals(cutover.toInstant(), chrono.getGregorianCutover());
         assertEquals(2, chrono.getMinimumDaysInFirstWeek());
-        
+
         try {
             GJChronology.getInstance(TOKYO, new Instant(0L), 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             GJChronology.getInstance(TOKYO, new Instant(0L), 8);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -209,7 +201,7 @@ public class TestGJChronology extends TestCase {
         assertEquals("minutes", gj.minutes().getName());
         assertEquals("seconds", gj.seconds().getName());
         assertEquals("millis", gj.millis().getName());
-        
+
         assertEquals(false, gj.eras().isSupported());
         assertEquals(true, gj.centuries().isSupported());
         assertEquals(true, gj.years().isSupported());
@@ -222,7 +214,7 @@ public class TestGJChronology extends TestCase {
         assertEquals(true, gj.minutes().isSupported());
         assertEquals(true, gj.seconds().isSupported());
         assertEquals(true, gj.millis().isSupported());
-        
+
         assertEquals(false, gj.centuries().isPrecise());
         assertEquals(false, gj.years().isPrecise());
         assertEquals(false, gj.weekyears().isPrecise());
@@ -234,7 +226,7 @@ public class TestGJChronology extends TestCase {
         assertEquals(true, gj.minutes().isPrecise());
         assertEquals(true, gj.seconds().isPrecise());
         assertEquals(true, gj.millis().isPrecise());
-        
+
         final GJChronology gjUTC = GJChronology.getInstanceUTC();
         assertEquals(false, gjUTC.centuries().isPrecise());
         assertEquals(false, gjUTC.years().isPrecise());
@@ -247,7 +239,7 @@ public class TestGJChronology extends TestCase {
         assertEquals(true, gjUTC.minutes().isPrecise());
         assertEquals(true, gjUTC.seconds().isPrecise());
         assertEquals(true, gjUTC.millis().isPrecise());
-        
+
         final DateTimeZone gmt = DateTimeZone.forID("Etc/GMT");
         final GJChronology gjGMT = GJChronology.getInstance(gmt);
         assertEquals(false, gjGMT.centuries().isPrecise());
@@ -277,7 +269,7 @@ public class TestGJChronology extends TestCase {
         assertEquals("dayOfYear", gj.dayOfYear().getName());
         assertEquals("dayOfMonth", gj.dayOfMonth().getName());
         assertEquals("dayOfWeek", gj.dayOfWeek().getName());
-        
+
         assertEquals(true, gj.era().isSupported());
         assertEquals(true, gj.centuryOfEra().isSupported());
         assertEquals(true, gj.yearOfCentury().isSupported());
@@ -290,7 +282,7 @@ public class TestGJChronology extends TestCase {
         assertEquals(true, gj.dayOfYear().isSupported());
         assertEquals(true, gj.dayOfMonth().isSupported());
         assertEquals(true, gj.dayOfWeek().isSupported());
-        
+
         assertEquals(gj.eras(), gj.era().getDurationField());
         assertEquals(gj.centuries(), gj.centuryOfEra().getDurationField());
         assertEquals(gj.years(), gj.yearOfCentury().getDurationField());
@@ -303,7 +295,7 @@ public class TestGJChronology extends TestCase {
         assertEquals(gj.days(), gj.dayOfYear().getDurationField());
         assertEquals(gj.days(), gj.dayOfMonth().getDurationField());
         assertEquals(gj.days(), gj.dayOfWeek().getDurationField());
-        
+
         assertEquals(null, gj.era().getRangeDurationField());
         assertEquals(gj.eras(), gj.centuryOfEra().getRangeDurationField());
         assertEquals(gj.centuries(), gj.yearOfCentury().getRangeDurationField());
@@ -331,7 +323,7 @@ public class TestGJChronology extends TestCase {
         assertEquals("secondOfMinute", gj.secondOfMinute().getName());
         assertEquals("millisOfDay", gj.millisOfDay().getName());
         assertEquals("millisOfSecond", gj.millisOfSecond().getName());
-        
+
         assertEquals(true, gj.halfdayOfDay().isSupported());
         assertEquals(true, gj.clockhourOfHalfday().isSupported());
         assertEquals(true, gj.hourOfHalfday().isSupported());
@@ -372,8 +364,8 @@ public class TestGJChronology extends TestCase {
                            int year, int month, int day,
                            int hour, int minute, int second, int millis) {
         assertEquals(new DateTime(str, GJChronology.getInstance(DateTimeZone.UTC)),
-                     new DateTime(year, month, day, hour, minute, second, millis,
-                                  GJChronology.getInstance(DateTimeZone.UTC)));
+                new DateTime(year, month, day, hour, minute, second, millis,
+                        GJChronology.getInstance(DateTimeZone.UTC)));
     }
 
     public void testCutoverAddYears() {
@@ -460,7 +452,7 @@ public class TestGJChronology extends TestCase {
     public void testYearEndAddDays() {
         testAdd("1582-11-05", DurationFieldType.days(), 28, "1582-12-03");
         testAdd("1582-12-05", DurationFieldType.days(), 28, "1583-01-02");
-        
+
         testAdd("2005-11-05", DurationFieldType.days(), 28, "2005-12-03");
         testAdd("2005-12-05", DurationFieldType.days(), 28, "2006-01-02");
     }
@@ -470,9 +462,9 @@ public class TestGJChronology extends TestCase {
         // duration field did not match the monthOfYear duration field. This
         // caused an exception to be thrown when subtracting days.
         DateTime dt = new DateTime
-            (1112306400000L, GJChronology.getInstance(DateTimeZone.forID("Europe/Berlin")));
+                (1112306400000L, GJChronology.getInstance(DateTimeZone.forID("Europe/Berlin")));
         YearMonthDay ymd = dt.toYearMonthDay();
-        while (ymd.toDateTimeAtMidnight().getDayOfWeek() != DateTimeConstants.MONDAY) { 
+        while (ymd.toDateTimeAtMidnight().getDayOfWeek() != DateTimeConstants.MONDAY) {
             ymd = ymd.minus(Period.days(1));
         }
     }
@@ -486,10 +478,10 @@ public class TestGJChronology extends TestCase {
         DurationField field = type.getField(GJChronology.getInstance(DateTimeZone.UTC));
         int diff = field.getDifference(dtEnd.getMillis(), dtStart.getMillis());
         assertEquals(amt, diff);
-        
+
         if (type == DurationFieldType.years() ||
-            type == DurationFieldType.months() ||
-            type == DurationFieldType.days()) {
+                type == DurationFieldType.months() ||
+                type == DurationFieldType.days()) {
             YearMonthDay ymdStart = new YearMonthDay(start, GJChronology.getInstance(DateTimeZone.UTC));
             YearMonthDay ymdEnd = new YearMonthDay(end, GJChronology.getInstance(DateTimeZone.UTC));
             assertEquals(ymdEnd, ymdStart.withFieldAdded(type, amt));

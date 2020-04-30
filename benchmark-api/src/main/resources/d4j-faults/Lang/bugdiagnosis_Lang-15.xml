@@ -1,40 +1,41 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-15">
-			<tests>
-				<testfile path="org/apache/commons/lang3/reflect/TypeUtilsTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;2&gt;
-						but was:&lt;0&gt;:-
-						org.apache.commons.lang3.reflect.TypeUtilsTest::testIsAssignable:--&gt;
-						junit.framework.AssertionFailedError:type class
-						org.apache.commons.lang3.reflect.TypeUtilsTest$Thing not
-						assignable to
-						org.apache.commons.lang3.reflect.TypeUtilsTest.org.apache.commons.lang3.reflect.TypeUtilsTest$This&lt;java.lang.String,
-						java.lang.String&gt;!</exception>
-				</testfile>
-				<spectra>
-					<number_tests>10</number_tests>
-					<failed>2</failed>
-					<passed>8</passed>
-					<nodes>10742</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/reflect/TypeUtils.java">
-					<change>219-221</change>
-					<change>675</change>
-					<bugtypes>
-						<id id="2.1" lines="221">
-							<description>Incorrect interface used.</description>
-						</id>
-						<id id="1.2" lines="675">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-15">
+            <tests>
+                <testfile path="org/apache/commons/lang3/reflect/TypeUtilsTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;2&gt;
+                        but was:&lt;0&gt;:-
+                        org.apache.commons.lang3.reflect.TypeUtilsTest::testIsAssignable:--&gt;
+                        junit.framework.AssertionFailedError:type class
+                        org.apache.commons.lang3.reflect.TypeUtilsTest$Thing not
+                        assignable to
+                        org.apache.commons.lang3.reflect.TypeUtilsTest.org.apache.commons.lang3.reflect.TypeUtilsTest$This&lt;java.lang.String,
+                        java.lang.String&gt;!
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>10</number_tests>
+                    <failed>2</failed>
+                    <passed>8</passed>
+                    <nodes>10742</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/reflect/TypeUtils.java">
+                    <change>219-221</change>
+                    <change>675</change>
+                    <bugtypes>
+                        <id id="2.1" lines="221">
+                            <description>Incorrect interface used.</description>
+                        </id>
+                        <id id="1.2" lines="675">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

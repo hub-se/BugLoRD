@@ -15,22 +15,21 @@
  */
 package org.joda.time;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Arrays;
-import java.util.Locale;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.chrono.BuddhistChronology;
 import org.joda.time.chrono.CopticChronology;
 import org.joda.time.chrono.GregorianChronology;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * This class is a Junit unit test for YearMonth.
@@ -46,17 +45,17 @@ public class TestYearMonth_Basics extends TestCase {
     private static final Chronology COPTIC_LONDON = CopticChronology.getInstance(LONDON);
     private static final Chronology COPTIC_TOKYO = CopticChronology.getInstance(TOKYO);
     private static final Chronology COPTIC_UTC = CopticChronology.getInstanceUTC();
-//    private static final Chronology ISO_PARIS = ISOChronology.getInstance(PARIS);
+    //    private static final Chronology ISO_PARIS = ISOChronology.getInstance(PARIS);
 //    private static final Chronology ISO_LONDON = ISOChronology.getInstance(LONDON);
 //    private static final Chronology ISO_TOKYO = ISOChronology.getInstance(TOKYO);
     private static final Chronology ISO_UTC = ISOChronology.getInstanceUTC();
-//    private static final Chronology BUDDHIST_PARIS = BuddhistChronology.getInstance(PARIS);
+    //    private static final Chronology BUDDHIST_PARIS = BuddhistChronology.getInstance(PARIS);
 //    private static final Chronology BUDDHIST_LONDON = BuddhistChronology.getInstance(LONDON);
     private static final Chronology BUDDHIST_TOKYO = BuddhistChronology.getInstance(TOKYO);
     private static final Chronology BUDDHIST_UTC = BuddhistChronology.getInstanceUTC();
-    
+
     private long TEST_TIME_NOW =
-            (31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
+            (31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
 
     private DateTimeZone zone = null;
 
@@ -92,11 +91,13 @@ public class TestYearMonth_Basics extends TestCase {
         try {
             test.get(null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             test.get(DateTimeFieldType.dayOfMonth());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSize() {
@@ -110,10 +111,12 @@ public class TestYearMonth_Basics extends TestCase {
         assertSame(DateTimeFieldType.monthOfYear(), test.getFieldType(1));
         try {
             test.getFieldType(-1);
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
         try {
             test.getFieldType(2);
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
     }
 
     public void testGetFieldTypes() {
@@ -131,10 +134,12 @@ public class TestYearMonth_Basics extends TestCase {
         assertSame(COPTIC_UTC.monthOfYear(), test.getField(1));
         try {
             test.getField(-1);
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
         try {
             test.getField(2);
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
     }
 
     public void testGetFields() {
@@ -152,10 +157,12 @@ public class TestYearMonth_Basics extends TestCase {
         assertEquals(6, test.getValue(1));
         try {
             test.getValue(-1);
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
         try {
             test.getValue(2);
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
     }
 
     public void testGetValues() {
@@ -185,7 +192,7 @@ public class TestYearMonth_Basics extends TestCase {
         assertEquals(true, test1.hashCode() == test2.hashCode());
         assertEquals(true, test1.hashCode() == test1.hashCode());
         assertEquals(true, test2.hashCode() == test2.hashCode());
-        
+
         YearMonth test3 = new YearMonth(1971, 6);
         assertEquals(false, test1.equals(test3));
         assertEquals(false, test2.equals(test3));
@@ -193,24 +200,26 @@ public class TestYearMonth_Basics extends TestCase {
         assertEquals(false, test3.equals(test2));
         assertEquals(false, test1.hashCode() == test3.hashCode());
         assertEquals(false, test2.hashCode() == test3.hashCode());
-        
+
         assertEquals(false, test1.equals("Hello"));
         assertEquals(true, test1.equals(new MockYM()));
         assertEquals(false, test1.equals(MockPartial.EMPTY_INSTANCE));
     }
-    
+
     class MockYM extends MockPartial {
         public Chronology getChronology() {
             return COPTIC_UTC;
         }
+
         public DateTimeField[] getFields() {
-            return new DateTimeField[] {
-                COPTIC_UTC.year(),
-                COPTIC_UTC.monthOfYear(),
+            return new DateTimeField[]{
+                    COPTIC_UTC.year(),
+                    COPTIC_UTC.monthOfYear(),
             };
         }
+
         public int[] getValues() {
-            return new int[] {1970, 6};
+            return new int[]{1970, 6};
         }
     }
 
@@ -222,41 +231,44 @@ public class TestYearMonth_Basics extends TestCase {
         assertEquals(0, test1a.compareTo(test1));
         assertEquals(0, test1.compareTo(test1));
         assertEquals(0, test1a.compareTo(test1a));
-        
+
         YearMonth test2 = new YearMonth(2005, 7);
         assertEquals(-1, test1.compareTo(test2));
         assertEquals(+1, test2.compareTo(test1));
-        
+
         YearMonth test3 = new YearMonth(2005, 7, GregorianChronology.getInstanceUTC());
         assertEquals(-1, test1.compareTo(test3));
         assertEquals(+1, test3.compareTo(test1));
         assertEquals(0, test3.compareTo(test2));
-        
-        DateTimeFieldType[] types = new DateTimeFieldType[] {
-            DateTimeFieldType.year(),
-            DateTimeFieldType.monthOfYear(),
+
+        DateTimeFieldType[] types = new DateTimeFieldType[]{
+                DateTimeFieldType.year(),
+                DateTimeFieldType.monthOfYear(),
         };
-        int[] values = new int[] {2005, 6};
+        int[] values = new int[]{2005, 6};
         Partial p = new Partial(types, values);
         assertEquals(0, test1.compareTo(p));
         try {
             test1.compareTo(null);
             fail();
-        } catch (NullPointerException ex) {}
+        } catch (NullPointerException ex) {
+        }
         try {
             test1.compareTo(new LocalTime());
             fail();
-        } catch (ClassCastException ex) {}
+        } catch (ClassCastException ex) {
+        }
         Partial partial = new Partial()
-            .with(DateTimeFieldType.centuryOfEra(), 1)
-            .with(DateTimeFieldType.halfdayOfDay(), 0)
-            .with(DateTimeFieldType.dayOfMonth(), 9);
+                .with(DateTimeFieldType.centuryOfEra(), 1)
+                .with(DateTimeFieldType.halfdayOfDay(), 0)
+                .with(DateTimeFieldType.dayOfMonth(), 9);
         try {
             new YearMonth(1970, 6).compareTo(partial);
             fail();
-        } catch (ClassCastException ex) {}
+        } catch (ClassCastException ex) {
+        }
     }
-    
+
     //-----------------------------------------------------------------------
     public void testIsEqual_YM() {
         YearMonth test1 = new YearMonth(2005, 6);
@@ -265,22 +277,23 @@ public class TestYearMonth_Basics extends TestCase {
         assertEquals(true, test1a.isEqual(test1));
         assertEquals(true, test1.isEqual(test1));
         assertEquals(true, test1a.isEqual(test1a));
-        
+
         YearMonth test2 = new YearMonth(2005, 7);
         assertEquals(false, test1.isEqual(test2));
         assertEquals(false, test2.isEqual(test1));
-        
+
         YearMonth test3 = new YearMonth(2005, 7, GregorianChronology.getInstanceUTC());
         assertEquals(false, test1.isEqual(test3));
         assertEquals(false, test3.isEqual(test1));
         assertEquals(true, test3.isEqual(test2));
-        
+
         try {
             new YearMonth(2005, 7).isEqual(null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
-    
+
     //-----------------------------------------------------------------------
     public void testIsBefore_YM() {
         YearMonth test1 = new YearMonth(2005, 6);
@@ -289,22 +302,23 @@ public class TestYearMonth_Basics extends TestCase {
         assertEquals(false, test1a.isBefore(test1));
         assertEquals(false, test1.isBefore(test1));
         assertEquals(false, test1a.isBefore(test1a));
-        
+
         YearMonth test2 = new YearMonth(2005, 7);
         assertEquals(true, test1.isBefore(test2));
         assertEquals(false, test2.isBefore(test1));
-        
+
         YearMonth test3 = new YearMonth(2005, 7, GregorianChronology.getInstanceUTC());
         assertEquals(true, test1.isBefore(test3));
         assertEquals(false, test3.isBefore(test1));
         assertEquals(false, test3.isBefore(test2));
-        
+
         try {
             new YearMonth(2005, 7).isBefore(null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
-    
+
     //-----------------------------------------------------------------------
     public void testIsAfter_YM() {
         YearMonth test1 = new YearMonth(2005, 6);
@@ -313,22 +327,23 @@ public class TestYearMonth_Basics extends TestCase {
         assertEquals(false, test1a.isAfter(test1));
         assertEquals(false, test1.isAfter(test1));
         assertEquals(false, test1a.isAfter(test1a));
-        
+
         YearMonth test2 = new YearMonth(2005, 7);
         assertEquals(false, test1.isAfter(test2));
         assertEquals(true, test2.isAfter(test1));
-        
+
         YearMonth test3 = new YearMonth(2005, 7, GregorianChronology.getInstanceUTC());
         assertEquals(false, test1.isAfter(test3));
         assertEquals(true, test3.isAfter(test1));
         assertEquals(false, test3.isAfter(test2));
-        
+
         try {
             new YearMonth(2005, 7).isAfter(null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
-    
+
     //-----------------------------------------------------------------------
     public void testWithChronologyRetainFields_Chrono() {
         YearMonth base = new YearMonth(2005, 6, COPTIC_PARIS);
@@ -368,7 +383,7 @@ public class TestYearMonth_Basics extends TestCase {
     public void testWithField() {
         YearMonth test = new YearMonth(2004, 6);
         YearMonth result = test.withField(DateTimeFieldType.year(), 2006);
-        
+
         assertEquals(new YearMonth(2004, 6), test);
         assertEquals(new YearMonth(2006, 6), result);
     }
@@ -378,7 +393,8 @@ public class TestYearMonth_Basics extends TestCase {
         try {
             test.withField(null, 6);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testWithField_unknownField() {
@@ -386,7 +402,8 @@ public class TestYearMonth_Basics extends TestCase {
         try {
             test.withField(DateTimeFieldType.hourOfDay(), 6);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testWithField_same() {
@@ -400,7 +417,7 @@ public class TestYearMonth_Basics extends TestCase {
     public void testWithFieldAdded() {
         YearMonth test = new YearMonth(2004, 6);
         YearMonth result = test.withFieldAdded(DurationFieldType.years(), 6);
-        
+
         assertEquals(new YearMonth(2004, 6), test);
         assertEquals(new YearMonth(2010, 6), result);
     }
@@ -410,7 +427,8 @@ public class TestYearMonth_Basics extends TestCase {
         try {
             test.withFieldAdded(null, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testWithFieldAdded_nullField_nonZero() {
@@ -418,7 +436,8 @@ public class TestYearMonth_Basics extends TestCase {
         try {
             test.withFieldAdded(null, 6);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testWithFieldAdded_zero() {
@@ -432,7 +451,8 @@ public class TestYearMonth_Basics extends TestCase {
         try {
             test.withFieldAdded(DurationFieldType.hours(), 6);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -441,7 +461,7 @@ public class TestYearMonth_Basics extends TestCase {
         YearMonth result = test.plus(new Period(1, 2, 3, 4, 5, 6, 7, 8));
         YearMonth expected = new YearMonth(2003, 7, BuddhistChronology.getInstance());
         assertEquals(expected, result);
-        
+
         result = test.plus((ReadablePeriod) null);
         assertSame(test, result);
     }
@@ -451,7 +471,7 @@ public class TestYearMonth_Basics extends TestCase {
         YearMonth result = test.plusYears(1);
         YearMonth expected = new YearMonth(2003, 5, BuddhistChronology.getInstance());
         assertEquals(expected, result);
-        
+
         result = test.plusYears(0);
         assertSame(test, result);
     }
@@ -461,7 +481,7 @@ public class TestYearMonth_Basics extends TestCase {
         YearMonth result = test.plusMonths(1);
         YearMonth expected = new YearMonth(2002, 6, BuddhistChronology.getInstance());
         assertEquals(expected, result);
-        
+
         result = test.plusMonths(0);
         assertSame(test, result);
     }
@@ -472,7 +492,7 @@ public class TestYearMonth_Basics extends TestCase {
         YearMonth result = test.minus(new Period(1, 1, 1, 1, 1, 1, 1, 1));
         YearMonth expected = new YearMonth(2001, 4, BuddhistChronology.getInstance());
         assertEquals(expected, result);
-        
+
         result = test.minus((ReadablePeriod) null);
         assertSame(test, result);
     }
@@ -482,7 +502,7 @@ public class TestYearMonth_Basics extends TestCase {
         YearMonth result = test.minusYears(1);
         YearMonth expected = new YearMonth(2001, 5, BuddhistChronology.getInstance());
         assertEquals(expected, result);
-        
+
         result = test.minusYears(0);
         assertSame(test, result);
     }
@@ -492,7 +512,7 @@ public class TestYearMonth_Basics extends TestCase {
         YearMonth result = test.minusMonths(1);
         YearMonth expected = new YearMonth(2002, 4, BuddhistChronology.getInstance());
         assertEquals(expected, result);
-        
+
         result = test.minusMonths(0);
         assertSame(test, result);
     }
@@ -505,14 +525,15 @@ public class TestYearMonth_Basics extends TestCase {
         try {
             base.toLocalDate(0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
     public void testToDateTime_RI() {
         YearMonth base = new YearMonth(2005, 6, COPTIC_PARIS);
         DateTime dt = new DateTime(2002, 1, 3, 4, 5, 6, 7);
-        
+
         DateTime test = base.toDateTime(dt);
         check(base, 2005, 6);
         DateTime expected = dt;
@@ -525,7 +546,7 @@ public class TestYearMonth_Basics extends TestCase {
         YearMonth base = new YearMonth(2005, 6);
         DateTime dt = new DateTime(2002, 1, 3, 4, 5, 6, 7);
         DateTimeUtils.setCurrentMillisFixed(dt.getMillis());
-        
+
         DateTime test = base.toDateTime((ReadableInstant) null);
         check(base, 2005, 6);
         DateTime expected = dt;
@@ -574,11 +595,13 @@ public class TestYearMonth_Basics extends TestCase {
         try {
             test.withMonthOfYear(0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             test.withMonthOfYear(13);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -589,28 +612,30 @@ public class TestYearMonth_Basics extends TestCase {
         try {
             test.property(DateTimeFieldType.millisOfDay());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             test.property(null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
     public void testSerialization() throws Exception {
         YearMonth test = new YearMonth(1972, 6, COPTIC_PARIS);
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(test);
         byte[] bytes = baos.toByteArray();
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);
         YearMonth result = (YearMonth) ois.readObject();
         ois.close();
-        
+
         assertEquals(test, result);
         assertTrue(Arrays.equals(test.getValues(), result.getValues()));
         assertTrue(Arrays.equals(test.getFields(), result.getFields()));

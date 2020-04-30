@@ -18,22 +18,20 @@ package com.google.javascript.jscomp;
 
 /**
  * Source code region.
- *
-*
  */
 public interface Region {
-  /**
-   * Get the source region.
-   */
-  String getSourceExcerpt();
+    /**
+     * Get the source region.
+     */
+    String getSourceExcerpt();
 
-  /**
-   * Get the beginning line number.
-   */
-  int getBeginningLineNumber();
+    /**
+     * Get the beginning line number.
+     */
+    int getBeginningLineNumber();
 
-  /**
-   * Get the ending line number.
-   */
-  int getEndingLineNumber();
+    /**
+     * Get the ending line number.
+     */
+    int getEndingLineNumber();
 }

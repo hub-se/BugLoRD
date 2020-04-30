@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,20 +16,19 @@
  */
 package org.apache.commons.lang3.exception;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * JUnit tests for ContextedException.
  */
 public class ContextedExceptionTest extends AbstractExceptionContextTest<ContextedException> {
-    
+
     @Override
     public void setUp() throws Exception {
         exceptionContext = new ContextedException(new Exception(TEST_MESSAGE));
@@ -41,7 +40,7 @@ public class ContextedExceptionTest extends AbstractExceptionContextTest<Context
         exceptionContext = new ContextedException();
         String message = exceptionContext.getMessage();
         String trace = ExceptionUtils.getStackTrace(exceptionContext);
-        assertTrue(trace.indexOf("ContextedException")>=0);
+        assertTrue(trace.indexOf("ContextedException") >= 0);
         assertTrue(StringUtils.isEmpty(message));
     }
 
@@ -49,9 +48,9 @@ public class ContextedExceptionTest extends AbstractExceptionContextTest<Context
     public void testContextedExceptionString() {
         exceptionContext = new ContextedException(TEST_MESSAGE);
         assertEquals(TEST_MESSAGE, exceptionContext.getMessage());
-        
+
         String trace = ExceptionUtils.getStackTrace(exceptionContext);
-        assertTrue(trace.indexOf(TEST_MESSAGE)>=0);
+        assertTrue(trace.indexOf(TEST_MESSAGE) >= 0);
     }
 
     @Test
@@ -59,9 +58,9 @@ public class ContextedExceptionTest extends AbstractExceptionContextTest<Context
         exceptionContext = new ContextedException(new Exception(TEST_MESSAGE));
         String message = exceptionContext.getMessage();
         String trace = ExceptionUtils.getStackTrace(exceptionContext);
-        assertTrue(trace.indexOf("ContextedException")>=0);
-        assertTrue(trace.indexOf(TEST_MESSAGE)>=0);
-        assertTrue(message.indexOf(TEST_MESSAGE)>=0);
+        assertTrue(trace.indexOf("ContextedException") >= 0);
+        assertTrue(trace.indexOf(TEST_MESSAGE) >= 0);
+        assertTrue(message.indexOf(TEST_MESSAGE) >= 0);
     }
 
     @Test
@@ -69,32 +68,32 @@ public class ContextedExceptionTest extends AbstractExceptionContextTest<Context
         exceptionContext = new ContextedException(TEST_MESSAGE_2, new Exception(TEST_MESSAGE));
         String message = exceptionContext.getMessage();
         String trace = ExceptionUtils.getStackTrace(exceptionContext);
-        assertTrue(trace.indexOf("ContextedException")>=0);
-        assertTrue(trace.indexOf(TEST_MESSAGE)>=0);
-        assertTrue(trace.indexOf(TEST_MESSAGE_2)>=0);
-        assertTrue(message.indexOf(TEST_MESSAGE_2)>=0);
+        assertTrue(trace.indexOf("ContextedException") >= 0);
+        assertTrue(trace.indexOf(TEST_MESSAGE) >= 0);
+        assertTrue(trace.indexOf(TEST_MESSAGE_2) >= 0);
+        assertTrue(message.indexOf(TEST_MESSAGE_2) >= 0);
     }
-    
+
     @Test
     public void testContextedExceptionStringThrowableContext() {
         exceptionContext = new ContextedException(TEST_MESSAGE_2, new Exception(TEST_MESSAGE), new DefaultExceptionContext());
         String message = exceptionContext.getMessage();
         String trace = ExceptionUtils.getStackTrace(exceptionContext);
-        assertTrue(trace.indexOf("ContextedException")>=0);
-        assertTrue(trace.indexOf(TEST_MESSAGE)>=0);
-        assertTrue(trace.indexOf(TEST_MESSAGE_2)>=0);
-        assertTrue(message.indexOf(TEST_MESSAGE_2)>=0);
+        assertTrue(trace.indexOf("ContextedException") >= 0);
+        assertTrue(trace.indexOf(TEST_MESSAGE) >= 0);
+        assertTrue(trace.indexOf(TEST_MESSAGE_2) >= 0);
+        assertTrue(message.indexOf(TEST_MESSAGE_2) >= 0);
     }
 
     @Test
     public void testNullExceptionPassing() {
         exceptionContext = new ContextedException(TEST_MESSAGE_2, new Exception(TEST_MESSAGE), null)
-        .addContextValue("test1", null)
-        .addContextValue("test2", "some value")
-        .addContextValue("test Date", new Date())
-        .addContextValue("test Nbr", Integer.valueOf(5))
-        .addContextValue("test Poorly written obj", new ObjectWithFaultyToString());
-        
+                .addContextValue("test1", null)
+                .addContextValue("test2", "some value")
+                .addContextValue("test Date", new Date())
+                .addContextValue("test Nbr", Integer.valueOf(5))
+                .addContextValue("test Poorly written obj", new ObjectWithFaultyToString());
+
         String message = exceptionContext.getMessage();
         assertTrue(message != null);
     }

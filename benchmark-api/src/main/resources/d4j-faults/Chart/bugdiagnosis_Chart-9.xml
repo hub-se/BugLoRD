@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-9">
-			<tests>
-				<testfile path="org/jfree/data/time/junit/TimeSeriesTests">
-					<exception>java.lang.IllegalArgumentException:Requires start &lt;=
-						end.</exception>
-				</testfile>
-				<spectra>
-					<number_tests>64</number_tests>
-					<failed>1</failed>
-					<passed>63</passed>
-					<nodes>45241</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/jfree/data/time/TimeSeries.java">
-					<change>944</change>
-					<bugtypes>
-						<id id="1.2" lines="944">
-							<description>Incorrect condition for an empty range.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-9">
+            <tests>
+                <testfile path="org/jfree/data/time/junit/TimeSeriesTests">
+                    <exception>java.lang.IllegalArgumentException:Requires start &lt;=
+                        end.
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>64</number_tests>
+                    <failed>1</failed>
+                    <passed>63</passed>
+                    <nodes>45241</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/jfree/data/time/TimeSeries.java">
+                    <change>944</change>
+                    <bugtypes>
+                        <id id="1.2" lines="944">
+                            <description>Incorrect condition for an empty range.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

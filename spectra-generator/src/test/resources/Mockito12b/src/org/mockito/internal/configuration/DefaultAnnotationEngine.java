@@ -4,20 +4,15 @@
  */
 package org.mockito.internal.configuration;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockSettings;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.configuration.AnnotationEngine;
 import org.mockito.exceptions.Reporter;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.internal.util.reflection.GenericMaster;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
 /**
  * Initializes fields annotated with &#64;{@link org.mockito.Mock} or &#64;{@link org.mockito.Captor}.
@@ -28,8 +23,8 @@ import org.mockito.internal.util.reflection.GenericMaster;
 public class DefaultAnnotationEngine implements AnnotationEngine {
 
     /* (non-Javadoc)
-    * @see org.mockito.AnnotationEngine#createMockFor(java.lang.annotation.Annotation, java.lang.reflect.Field)
-    */
+     * @see org.mockito.AnnotationEngine#createMockFor(java.lang.annotation.Annotation, java.lang.reflect.Field)
+     */
     @SuppressWarnings("deprecation")
     public Object createMockFor(Annotation annotation, Field field) {
         if (annotation instanceof Mock) {
@@ -40,11 +35,11 @@ public class DefaultAnnotationEngine implements AnnotationEngine {
         }
         if (annotation instanceof Captor) {
             return processAnnotationOn((Captor) annotation, field);
-        }        
+        }
 
         return null;
     }
-    
+
     private Object processAnnotationOn(Mock annotation, Field field) {
         MockSettings mockSettings = Mockito.withSettings();
         if (annotation.extraInterfaces().length > 0) { // never null
@@ -65,7 +60,7 @@ public class DefaultAnnotationEngine implements AnnotationEngine {
     private Object processAnnotationOn(org.mockito.MockitoAnnotations.Mock annotation, Field field) {
         return Mockito.mock(field.getType(), field.getName());
     }
-    
+
     private Object processAnnotationOn(Captor annotation, Field field) {
         Class<?> type = field.getType();
         if (!ArgumentCaptor.class.isAssignableFrom(type)) {
@@ -73,30 +68,30 @@ public class DefaultAnnotationEngine implements AnnotationEngine {
                     + field.getName() + "' has wrong type\n"
                     + "For info how to use @Captor annotations see examples in javadoc for MockitoAnnotations class.");
         }
-        Class cls = new GenericMaster().getGenericType(field);        
-        return ArgumentCaptor.forClass(cls);    
-    }           
+        Class cls = new GenericMaster().getGenericType(field);
+        return ArgumentCaptor.forClass(cls);
+    }
 
     public void process(Class<?> clazz, Object testClass) {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             boolean alreadyAssigned = false;
-            for(Annotation annotation : field.getAnnotations()) {           
+            for (Annotation annotation : field.getAnnotations()) {
                 Object mock = createMockFor(annotation, field);
                 if (mock != null) {
-                    throwIfAlreadyAssigned(field, alreadyAssigned);                    
-                    alreadyAssigned = true;                    
+                    throwIfAlreadyAssigned(field, alreadyAssigned);
+                    alreadyAssigned = true;
                     try {
                         new FieldSetter(testClass, field).set(mock);
                     } catch (Exception e) {
                         throw new MockitoException("Problems setting field " + field.getName() + " annotated with "
                                 + annotation, e);
                     }
-                }        
+                }
             }
         }
     }
-    
+
     void throwIfAlreadyAssigned(Field field, boolean alreadyAssigned) {
         if (alreadyAssigned) {
             new Reporter().moreThanOneAnnotationNotAllowed(field.getName());

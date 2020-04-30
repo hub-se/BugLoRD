@@ -24,101 +24,99 @@ import java.util.List;
  * An object which can be visualized as a graph should implement this interface.
  * The <code>DotFormatter.toDot</code> function can be used to get a
  * visualization of the object for debugging purpose.
- *
-*
  */
 public interface GraphvizGraph {
 
-  /**
-   * Name of the graph.
-   *
-   * @return Name of the graph.
-   */
-  String getName();
-
-  /**
-   * Graph type.
-   *
-   * @return True if the graph is a directed graph.
-   */
-  boolean isDirected();
-
-  /**
-   * Retrieve a list of nodes in the graph.
-   *
-   * @return A list of nodes in the graph.
-   */
-  List<GraphvizNode> getGraphvizNodes();
-
-  /**
-   * Retrieve a list of edges in the graph.
-   *
-   * @return A list of edges in the graph.
-   */
-  List<GraphvizEdge> getGraphvizEdges();
-
-
-  /**
-   * A Graphviz node.
-   */
-  interface GraphvizNode {
+    /**
+     * Name of the graph.
+     *
+     * @return Name of the graph.
+     */
+    String getName();
 
     /**
-     * Retrieves the unique ID.
+     * Graph type.
      *
-     * @return A the unique ID of the node.
+     * @return True if the graph is a directed graph.
      */
-    String getId();
+    boolean isDirected();
 
     /**
-     * Retrieves color of the node.
+     * Retrieve a list of nodes in the graph.
      *
-     * @return The color of the node.
+     * @return A list of nodes in the graph.
      */
-    String getColor();
+    List<GraphvizNode> getGraphvizNodes();
 
     /**
-     * Retrieves the label of the node.
+     * Retrieve a list of edges in the graph.
      *
-     * @return Label of the node.
+     * @return A list of edges in the graph.
      */
-    String getLabel();
-  }
+    List<GraphvizEdge> getGraphvizEdges();
 
-
-  /**
-   * A Graphviz edge.
-   */
-  interface GraphvizEdge {
 
     /**
-     * Get the first node in the edge. In a directed node, this will be the
-     * source node.
-     *
-     * @return First node in the edge.
+     * A Graphviz node.
      */
-    String getNode1Id();
+    interface GraphvizNode {
+
+        /**
+         * Retrieves the unique ID.
+         *
+         * @return A the unique ID of the node.
+         */
+        String getId();
+
+        /**
+         * Retrieves color of the node.
+         *
+         * @return The color of the node.
+         */
+        String getColor();
+
+        /**
+         * Retrieves the label of the node.
+         *
+         * @return Label of the node.
+         */
+        String getLabel();
+    }
+
 
     /**
-     * Get the second node in the edge. In a directed node, this will be the
-     * destination node.
-     *
-     * @return First node in the edge.
+     * A Graphviz edge.
      */
-    String getNode2Id();
+    interface GraphvizEdge {
 
-    /**
-     * Retrieves color of the edge.
-     *
-     * @return The color of the edge.
-     */
-    String getColor();
+        /**
+         * Get the first node in the edge. In a directed node, this will be the
+         * source node.
+         *
+         * @return First node in the edge.
+         */
+        String getNode1Id();
 
-    /**
-     * Retrieves the label of the edge.
-     *
-     * @return Label of the edge.
-     */
-    String getLabel();
-  }
+        /**
+         * Get the second node in the edge. In a directed node, this will be the
+         * destination node.
+         *
+         * @return First node in the edge.
+         */
+        String getNode2Id();
+
+        /**
+         * Retrieves color of the edge.
+         *
+         * @return The color of the edge.
+         */
+        String getColor();
+
+        /**
+         * Retrieves the label of the edge.
+         *
+         * @return Label of the edge.
+         */
+        String getLabel();
+    }
 }

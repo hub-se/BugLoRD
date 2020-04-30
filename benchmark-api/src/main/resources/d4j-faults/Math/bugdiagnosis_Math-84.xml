@@ -1,38 +1,39 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-84">
-			<tests>
-				<testfile
-					path="org/apache/commons/math/optimization/direct/MultiDirectionalTest">
-					<exception>junit.framework.AssertionFailedError:-
-						org.apache.commons.math.optimization.direct.MultiDirectionalTest::testMath283:--&gt;
-						org.apache.commons.math.optimization.OptimizationException:org.apache.commons.math.MaxIterationsExceededException:Maximal
-						number of iterations (100) exceeded</exception>
-				</testfile>
-				<spectra>
-					<number_tests>5</number_tests>
-					<failed>2</failed>
-					<passed>3</passed>
-					<nodes>20097</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math/optimization/direct/MultiDirectional.java">
-					<insert numberlines="1">63-64</insert>
-					<insert numberlines="8">92-97</insert>
-					<bugtypes>
-						<id id="1.1" lines="63,93">
-							<description>Missing case handling.</description>
-						</id>
-						<id id="1.2" lines="91">
-							<description>Incorrect case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-84">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math/optimization/direct/MultiDirectionalTest">
+                    <exception>junit.framework.AssertionFailedError:-
+                        org.apache.commons.math.optimization.direct.MultiDirectionalTest::testMath283:--&gt;
+                        org.apache.commons.math.optimization.OptimizationException:org.apache.commons.math.MaxIterationsExceededException:Maximal
+                        number of iterations (100) exceeded
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>5</number_tests>
+                    <failed>2</failed>
+                    <passed>3</passed>
+                    <nodes>20097</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math/optimization/direct/MultiDirectional.java">
+                    <insert numberlines="1">63-64</insert>
+                    <insert numberlines="8">92-97</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="63,93">
+                            <description>Missing case handling.</description>
+                        </id>
+                        <id id="1.2" lines="91">
+                            <description>Incorrect case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -7,7 +7,7 @@ package org.mockito.internal.util.reflection;
 import java.lang.reflect.Field;
 
 public class AccessibilityChanger {
-    
+
     private Boolean wasAccessible = null;
 
     /**

@@ -41,33 +41,31 @@
  * For functions with function(this: T, ...) and T as arguments, type inference
  * will set the type of this on a function literal argument to the actual type
  * of T.
- *
-*
  */
 package com.google.javascript.rhino.jstype;
 
 public class TemplateType extends ProxyObjectType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private final String name;
+    private final String name;
 
-  TemplateType(JSTypeRegistry registry, String name) {
-    super(registry, registry.getNativeObjectType(JSTypeNative.UNKNOWN_TYPE));
-    this.name = name;
-  }
+    TemplateType(JSTypeRegistry registry, String name) {
+        super(registry, registry.getNativeObjectType(JSTypeNative.UNKNOWN_TYPE));
+        this.name = name;
+    }
 
-  @Override
-  public String getReferenceName() {
-    return name;
-  }
+    @Override
+    public String getReferenceName() {
+        return name;
+    }
 
-  @Override
-  public String toString() {
-    return name;
-  }
+    @Override
+    public String toString() {
+        return name;
+    }
 
-  @Override
-  public boolean isTemplateType() {
-    return true;
-  }
+    @Override
+    public boolean isTemplateType() {
+        return true;
+    }
 }

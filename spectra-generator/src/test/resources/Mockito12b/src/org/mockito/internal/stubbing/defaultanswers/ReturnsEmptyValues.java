@@ -4,22 +4,6 @@
  */
 package org.mockito.internal.stubbing.defaultanswers;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import org.mockito.internal.creation.ClassNameFinder;
 import org.mockito.internal.invocation.Invocation;
 import org.mockito.internal.util.MockName;
@@ -27,6 +11,9 @@ import org.mockito.internal.util.MockUtil;
 import org.mockito.internal.util.Primitives;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Default answer of every Mockito mock.
@@ -49,7 +36,7 @@ import org.mockito.stubbing.Answer;
  * </ul>
  */
 public class ReturnsEmptyValues implements Answer<Object>, Serializable {
-    
+
     private static final long serialVersionUID = 1998191268711234347L;
 
     /* (non-Javadoc)
@@ -65,18 +52,18 @@ public class ReturnsEmptyValues implements Answer<Object>, Serializable {
                 return name.toString();
             }
         }
-        
+
         Class<?> returnType = invocation.getMethod().getReturnType();
         return returnValueFor(returnType);
     }
-    
+
     Object returnValueFor(Class<?> type) {
         if (type.isPrimitive()) {
             return primitiveOf(type);
         } else if (Primitives.isPrimitiveWrapper(type)) {
             return Primitives.primitiveWrapperOf(type);
-        //new instances are used instead of Collections.emptyList(), etc.
-        //to avoid UnsupportedOperationException if code under test modifies returned collection
+            //new instances are used instead of Collections.emptyList(), etc.
+            //to avoid UnsupportedOperationException if code under test modifies returned collection
         } else if (type == Collection.class) {
             return new LinkedList<Object>();
         } else if (type == Set.class) {
@@ -105,7 +92,7 @@ public class ReturnsEmptyValues implements Answer<Object>, Serializable {
             return new TreeMap<Object, Object>();
         } else if (type == LinkedHashMap.class) {
             return new LinkedHashMap<Object, Object>();
-        }       
+        }
         //Let's not care about the rest of collections.
         return null;
     }
@@ -117,6 +104,6 @@ public class ReturnsEmptyValues implements Answer<Object>, Serializable {
             return (char) 0;
         } else {
             return 0;
-        } 
+        }
     }
 }

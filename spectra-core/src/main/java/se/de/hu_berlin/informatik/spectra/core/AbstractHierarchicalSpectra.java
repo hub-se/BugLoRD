@@ -10,33 +10,29 @@
 package se.de.hu_berlin.informatik.spectra.core;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 /**
- *
- * @param <P>
- *            parent node identifier type
- * @param <C>
- *            child node identifier type
- * @param <K>
- * type of traces
+ * @param <P> parent node identifier type
+ * @param <C> child node identifier type
+ * @param <K> type of traces
  */
-public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> extends AbstractSpectra<P,K> {
+public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> extends AbstractSpectra<P, K> {
 
-    /** Holds the child spectra information */
-    private final ISpectra<C,?> childSpectra;
+    /**
+     * Holds the child spectra information
+     */
+    private final ISpectra<C, ?> childSpectra;
 
-    /** Holds the parent->child node relation */
+    /**
+     * Holds the parent->child node relation
+     */
     final Map<INode<P>, Set<INode<C>>> relation = new HashMap<>();
 
-    /** Holds a map of all child traces that are mapped to hierarchical traces of this spectra. */
+    /**
+     * Holds a map of all child traces that are mapped to hierarchical traces of this spectra.
+     */
     final Map<ITrace<C>, K> traceMap = new HashMap<>();
 
 //    /**
@@ -49,27 +45,25 @@ public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> ext
 //        super(null);
 //        this.childSpectra = childSpectra;
 //    }
-    
-    public AbstractHierarchicalSpectra(final ISpectra<C,?> childSpectra, Path spectraZipFile) {
-    	super(spectraZipFile);
+
+    public AbstractHierarchicalSpectra(final ISpectra<C, ?> childSpectra, Path spectraZipFile) {
+        super(spectraZipFile);
         this.childSpectra = childSpectra;
     }
 
     @Override
-	public INode<P> getOrCreateNode(P identifier) {
-    	INode<P> node = super.getOrCreateNode(identifier);
-    	//need to invalidate cached values, possibly
-    	node.invalidateCachedValues();
-		return node;
-	}
+    public INode<P> getOrCreateNode(P identifier) {
+        INode<P> node = super.getOrCreateNode(identifier);
+        //need to invalidate cached values, possibly
+        node.invalidateCachedValues();
+        return node;
+    }
 
-	/**
+    /**
      * Adds childNode as child of parentNode to this hierarchical spectra.
      *
-     * @param parentIdentifier
-     *            the parent node
-     * @param childIdentifier
-     *            the child node to be added under the parent node
+     * @param parentIdentifier the parent node
+     * @param childIdentifier  the child node to be added under the parent node
      */
     public void setParent(final P parentIdentifier, final C childIdentifier) {
         this.setParent(this.getOrCreateNode(parentIdentifier), this.childSpectra.getOrCreateNode(childIdentifier));
@@ -78,10 +72,8 @@ public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> ext
     /**
      * Adds childNode as child of parentNode to this hierarchical spectra.
      *
-     * @param parentNode
-     *            the parent node
-     * @param childNode
-     *            the child node to be added under the parent node
+     * @param parentNode the parent node
+     * @param childNode  the child node to be added under the parent node
      */
     public void setParent(final INode<P> parentNode, final INode<C> childNode) {
         this.childrenOf(parentNode).add(childNode);
@@ -90,8 +82,7 @@ public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> ext
     /**
      * Returns all children of the parent node.
      *
-     * @param parent
-     *            the parent node to fetch the children of
+     * @param parent the parent node to fetch the children of
      * @return all children of the parent
      */
     private Set<INode<C>> childrenOf(final INode<P> parent) {
@@ -103,11 +94,10 @@ public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> ext
 
     /**
      * Returns all children of the given parent node.
-     *
+     * <p>
      * The returned set of children is not modifiable.
      *
-     * @param parent
-     *            the parent node to fetch the children of
+     * @param parent the parent node to fetch the children of
      * @return all children of the parent
      */
     public Set<INode<C>> getChildrenOf(final INode<P> parent) {
@@ -131,19 +121,19 @@ public abstract class AbstractHierarchicalSpectra<P, C, K extends ITrace<P>> ext
     }
 
     protected abstract K createNewHierarchicalTrace(AbstractHierarchicalSpectra<P, C, K> abstractHierarchicalSpectra,
-			ITrace<C> childTrace);
+                                                    ITrace<C> childTrace);
 
-	/**
+    /**
      * Returns the child spectra of this hierarchical spectra.
      *
      * @return child spectra
      */
-    public ISpectra<C,?> getChildSpectra() {
+    public ISpectra<C, ?> getChildSpectra() {
         return this.childSpectra;
     }
 
-	@Override
-	public K createNewTrace(String identifier, int traceIndex, boolean successful) {
-		throw new IllegalStateException("Cannot add new trace in hierarchical spectra");
-	}
+    @Override
+    public K createNewTrace(String identifier, int traceIndex, boolean successful) {
+        throw new IllegalStateException("Cannot add new trace in hierarchical spectra");
+    }
 }

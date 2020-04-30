@@ -33,185 +33,183 @@ import java.util.Map;
 /**
  * Simple name-based definition gatherer that implements
  * {@link DefinitionProvider}.
- *
+ * <p>
  * It treats all variable writes as happening in the global scope and
  * treats all objects as capable of having the same set of properties.
  * The current implementation only handles definitions whose right
  * hand side is an immutable value or function expression.  All
  * complex definitions are treated as unknowns.
- *
-*
  */
 class SimpleDefinitionFinder implements CompilerPass, DefinitionProvider {
-  private final AbstractCompiler compiler;
-  private final Map<Node, DefinitionSite> definitionSiteMap;
-  private final Multimap<String, Definition> nameDefinitionMultimap;
-  private final Multimap<String, UseSite> nameUseSiteMultimap;
+    private final AbstractCompiler compiler;
+    private final Map<Node, DefinitionSite> definitionSiteMap;
+    private final Multimap<String, Definition> nameDefinitionMultimap;
+    private final Multimap<String, UseSite> nameUseSiteMultimap;
 
-  public SimpleDefinitionFinder(AbstractCompiler compiler) {
-    this.compiler = compiler;
-    this.definitionSiteMap = Maps.newHashMap();
-    this.nameDefinitionMultimap = HashMultimap.create();
-    this.nameUseSiteMultimap = HashMultimap.create();
-  }
-
-  /**
-   * Returns the collection of definition sites found during traversal.
-   *
-   * @return definition site collection.
-   */
-  public Collection<DefinitionSite> getDefinitionSites() {
-    return definitionSiteMap.values();
-  }
-
-  @Override
-  public Collection<Definition> getDefinitionsReferencedAt(Node useSite) {
-    if (definitionSiteMap.containsKey(useSite)) {
-      return null;
+    public SimpleDefinitionFinder(AbstractCompiler compiler) {
+        this.compiler = compiler;
+        this.definitionSiteMap = Maps.newHashMap();
+        this.nameDefinitionMultimap = HashMultimap.create();
+        this.nameUseSiteMultimap = HashMultimap.create();
     }
 
-    if (NodeUtil.isGetProp(useSite)) {
-      String propName = useSite.getLastChild().getString();
-      if (propName.equals("apply") || propName.equals("call")) {
-        useSite = useSite.getFirstChild();
-      }
-    }
-
-    String name = getSimplifiedName(useSite);
-    if (name != null) {
-      Collection<Definition> defs = nameDefinitionMultimap.get(name);
-      if (!defs.isEmpty()) {
-        return defs;
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
-
-  @Override
-  public void process(Node externs, Node source) {
-    NodeTraversal.traverse(
-        compiler, externs, new DefinitionGatheringCallback(true));
-    NodeTraversal.traverse(
-        compiler, source, new DefinitionGatheringCallback(false));
-    NodeTraversal.traverse(
-        compiler, source, new UseSiteGatheringCallback());
-  }
-
-  /**
-   * Returns a collection of use sites that may refer to provided
-   * definition.  Returns an empty collection if the definition is not
-   * used anywhere.
-   *
-   * @param definition Definition of insterest.
-   * @return use site collection.
-   */
-  Collection<UseSite> getUseSites(Definition definition) {
-    String name = getSimplifiedName(definition.getLValue());
-    return nameUseSiteMultimap.get(name);
-  }
-
-  /**
-   * Extract a name from a node.  In the case of GETPROP nodes,
-   * replace the namespace or object expression with "this" for
-   * simplicity and correctness at the expense of inefficiencies due
-   * to higher chances of name collisions.
-   *
-   * TODO(user) revisit.  it would be helpful to at least use fully
-   * qualified names in the case of namespaces.  Might not matter as
-   * much if this pass runs after "collapsing properties".
-   */
-  private static String getSimplifiedName(Node node) {
-    if (NodeUtil.isName(node)) {
-      String name = node.getString();
-      if (name != null && !name.isEmpty()) {
-        return name;
-      } else {
-        return null;
-      }
-    } else if (NodeUtil.isGetProp(node)) {
-      return "this." + node.getLastChild().getString();
-    }
-    return null;
-  }
-
-  private class DefinitionGatheringCallback extends AbstractPostOrderCallback {
-    private boolean inExterns;
-
-    DefinitionGatheringCallback(boolean inExterns) {
-      this.inExterns = inExterns;
+    /**
+     * Returns the collection of definition sites found during traversal.
+     *
+     * @return definition site collection.
+     */
+    public Collection<DefinitionSite> getDefinitionSites() {
+        return definitionSiteMap.values();
     }
 
     @Override
-    public void visit(NodeTraversal traversal, Node node, Node parent) {
-      // Arguments of external functions should not count as name
-      // definitions.  They are placeholder names for documentation
-      // purposes only which are not reachable from anywhere.
-      if (inExterns && NodeUtil.isName(node) && parent.getType() == Token.LP) {
-        return;
-      }
-
-      Definition def =
-          DefinitionsRemover.getDefinition(node, parent);
-      if (def != null) {
-        String name = getSimplifiedName(def.getLValue());
-        if (name != null) {
-          Node rValue = def.getRValue();
-          if ((rValue != null) &&
-              !NodeUtil.isImmutableValue(rValue) &&
-              !NodeUtil.isFunction(rValue)) {
-
-            // Unhandled complex expression
-            Definition unknownDef = new UnknownDefinition(def.getLValue());
-            def = unknownDef;
-          }
-
-          nameDefinitionMultimap.put(name, def);
-          definitionSiteMap.put(node,
-                                new DefinitionSite(node,
-                                                   def,
-                                                   traversal.getModule(),
-                                                   traversal.inGlobalScope(),
-                                                   inExterns));
+    public Collection<Definition> getDefinitionsReferencedAt(Node useSite) {
+        if (definitionSiteMap.containsKey(useSite)) {
+            return null;
         }
-      }
 
-      if (inExterns && (parent != null) && NodeUtil.isExpressionNode(parent)) {
-        String name = getSimplifiedName(node);
-        if (name != null) {
-
-          // Incomplete definition
-          Definition definition = new ExternalNameOnlyDefinition(node);
-          nameDefinitionMultimap.put(name, definition);
-          definitionSiteMap.put(node,
-                                new DefinitionSite(node,
-                                                   definition,
-                                                   traversal.getModule(),
-                                                   traversal.inGlobalScope(),
-                                                   inExterns));
+        if (NodeUtil.isGetProp(useSite)) {
+            String propName = useSite.getLastChild().getString();
+            if (propName.equals("apply") || propName.equals("call")) {
+                useSite = useSite.getFirstChild();
+            }
         }
-      }
+
+        String name = getSimplifiedName(useSite);
+        if (name != null) {
+            Collection<Definition> defs = nameDefinitionMultimap.get(name);
+            if (!defs.isEmpty()) {
+                return defs;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
-  }
 
-  private class UseSiteGatheringCallback extends AbstractPostOrderCallback {
     @Override
-    public void visit(NodeTraversal traversal, Node node, Node parent) {
-
-      Collection<Definition> defs = getDefinitionsReferencedAt(node);
-      if (defs == null) {
-        return;
-      }
-
-      Definition first = defs.iterator().next();
-
-      String name = getSimplifiedName(first.getLValue());
-      Preconditions.checkNotNull(name);
-      nameUseSiteMultimap.put(
-          name,
-          new UseSite(node, traversal.getModule()));
+    public void process(Node externs, Node source) {
+        NodeTraversal.traverse(
+                compiler, externs, new DefinitionGatheringCallback(true));
+        NodeTraversal.traverse(
+                compiler, source, new DefinitionGatheringCallback(false));
+        NodeTraversal.traverse(
+                compiler, source, new UseSiteGatheringCallback());
     }
-  }
+
+    /**
+     * Returns a collection of use sites that may refer to provided
+     * definition.  Returns an empty collection if the definition is not
+     * used anywhere.
+     *
+     * @param definition Definition of insterest.
+     * @return use site collection.
+     */
+    Collection<UseSite> getUseSites(Definition definition) {
+        String name = getSimplifiedName(definition.getLValue());
+        return nameUseSiteMultimap.get(name);
+    }
+
+    /**
+     * Extract a name from a node.  In the case of GETPROP nodes,
+     * replace the namespace or object expression with "this" for
+     * simplicity and correctness at the expense of inefficiencies due
+     * to higher chances of name collisions.
+     * <p>
+     * TODO(user) revisit.  it would be helpful to at least use fully
+     * qualified names in the case of namespaces.  Might not matter as
+     * much if this pass runs after "collapsing properties".
+     */
+    private static String getSimplifiedName(Node node) {
+        if (NodeUtil.isName(node)) {
+            String name = node.getString();
+            if (name != null && !name.isEmpty()) {
+                return name;
+            } else {
+                return null;
+            }
+        } else if (NodeUtil.isGetProp(node)) {
+            return "this." + node.getLastChild().getString();
+        }
+        return null;
+    }
+
+    private class DefinitionGatheringCallback extends AbstractPostOrderCallback {
+        private boolean inExterns;
+
+        DefinitionGatheringCallback(boolean inExterns) {
+            this.inExterns = inExterns;
+        }
+
+        @Override
+        public void visit(NodeTraversal traversal, Node node, Node parent) {
+            // Arguments of external functions should not count as name
+            // definitions.  They are placeholder names for documentation
+            // purposes only which are not reachable from anywhere.
+            if (inExterns && NodeUtil.isName(node) && parent.getType() == Token.LP) {
+                return;
+            }
+
+            Definition def =
+                    DefinitionsRemover.getDefinition(node, parent);
+            if (def != null) {
+                String name = getSimplifiedName(def.getLValue());
+                if (name != null) {
+                    Node rValue = def.getRValue();
+                    if ((rValue != null) &&
+                            !NodeUtil.isImmutableValue(rValue) &&
+                            !NodeUtil.isFunction(rValue)) {
+
+                        // Unhandled complex expression
+                        Definition unknownDef = new UnknownDefinition(def.getLValue());
+                        def = unknownDef;
+                    }
+
+                    nameDefinitionMultimap.put(name, def);
+                    definitionSiteMap.put(node,
+                            new DefinitionSite(node,
+                                    def,
+                                    traversal.getModule(),
+                                    traversal.inGlobalScope(),
+                                    inExterns));
+                }
+            }
+
+            if (inExterns && (parent != null) && NodeUtil.isExpressionNode(parent)) {
+                String name = getSimplifiedName(node);
+                if (name != null) {
+
+                    // Incomplete definition
+                    Definition definition = new ExternalNameOnlyDefinition(node);
+                    nameDefinitionMultimap.put(name, definition);
+                    definitionSiteMap.put(node,
+                            new DefinitionSite(node,
+                                    definition,
+                                    traversal.getModule(),
+                                    traversal.inGlobalScope(),
+                                    inExterns));
+                }
+            }
+        }
+    }
+
+    private class UseSiteGatheringCallback extends AbstractPostOrderCallback {
+        @Override
+        public void visit(NodeTraversal traversal, Node node, Node parent) {
+
+            Collection<Definition> defs = getDefinitionsReferencedAt(node);
+            if (defs == null) {
+                return;
+            }
+
+            Definition first = defs.iterator().next();
+
+            String name = getSimplifiedName(first.getLValue());
+            Preconditions.checkNotNull(name);
+            nameUseSiteMultimap.put(
+                    name,
+                    new UseSite(node, traversal.getModule()));
+        }
+    }
 }

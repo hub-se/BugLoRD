@@ -1,50 +1,52 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-23">
-			<tests>
-				<testfile path="org/mockitousage/stubbing/DeepStubsSerializableTest">
-					<exception>java.io.NotSerializableException:org.mockito.internal.stubbing.defaultanswers.ReturnsDeepStubs$2
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1053</number_tests>
-					<failed>1</failed>
-					<passed>1052</passed>
-					<nodes>4237</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java">
-					<change>44,45</change>
-					<change>99-100</change>
-					<change>114</change>
-					<insert numberlines="2">48-52</insert>
-					<insert numberlines="5"></insert>
-					<insert numberlines="5"></insert>
-					<insert numberlines="2"></insert>
-					<bugtypes>
-						<id id="3.1" lines="44,45">
-							<description>Incorrect initialization.</description>
-						</id>
-						<id id="1.4" lines="51,58">
-							<description>Missing function for checking if MockitoCore is
-								null.</description>
-						</id>
-						<id id="1.4" lines="51,59">
-							<description>Missing function for checking if delegate is null.</description>
-						</id>
-						<id id="2.1" lines="99">
-							<description>Missing parameter.</description>
-						</id>
-						<id id="1.4" lines="114,122,123">
-							<description>Missing abstract class.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>8</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-23">
+            <tests>
+                <testfile path="org/mockitousage/stubbing/DeepStubsSerializableTest">
+                    <exception>
+                        java.io.NotSerializableException:org.mockito.internal.stubbing.defaultanswers.ReturnsDeepStubs$2
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1053</number_tests>
+                    <failed>1</failed>
+                    <passed>1052</passed>
+                    <nodes>4237</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/mockito/internal/stubbing/defaultanswers/ReturnsDeepStubs.java">
+                    <change>44,45</change>
+                    <change>99-100</change>
+                    <change>114</change>
+                    <insert numberlines="2">48-52</insert>
+                    <insert numberlines="5"></insert>
+                    <insert numberlines="5"></insert>
+                    <insert numberlines="2"></insert>
+                    <bugtypes>
+                        <id id="3.1" lines="44,45">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                        <id id="1.4" lines="51,58">
+                            <description>Missing function for checking if MockitoCore is
+                                null.
+                            </description>
+                        </id>
+                        <id id="1.4" lines="51,59">
+                            <description>Missing function for checking if delegate is null.</description>
+                        </id>
+                        <id id="2.1" lines="99">
+                            <description>Missing parameter.</description>
+                        </id>
+                        <id id="1.4" lines="114,122,123">
+                            <description>Missing abstract class.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>8</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

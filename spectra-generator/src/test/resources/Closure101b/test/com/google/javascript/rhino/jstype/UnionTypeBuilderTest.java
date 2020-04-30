@@ -47,64 +47,64 @@ import com.google.javascript.rhino.testing.BaseJSTypeTestCase;
  */
 public class UnionTypeBuilderTest extends BaseJSTypeTestCase {
 
-  public void testAllType() {
-    assertUnion("*", ALL_TYPE);
-    assertUnion("*", NUMBER_TYPE, ALL_TYPE);
-    assertUnion("*", ALL_TYPE, NUMBER_TYPE);
-    assertUnion("*", ALL_TYPE, NUMBER_TYPE, NO_TYPE);
-  }
-
-  public void testEmptyUnion() {
-    assertUnion("None");
-    assertUnion("None", NO_TYPE, NO_TYPE);
-  }
-
-  public void testUnionTypes() {
-    JSType union = registry.createUnionType(STRING_TYPE, OBJECT_TYPE);
-
-    assertUnion("*", ALL_TYPE, union);
-    assertUnion("(Object|string)", OBJECT_TYPE, union);
-    assertUnion("(Object|string)", union, OBJECT_TYPE);
-    assertUnion("(Object|number|string)", NUMBER_TYPE, union);
-    assertUnion("(Object|number|string)", union, NUMBER_TYPE);
-    assertUnion("(Object|boolean|number|string)", union,
-        registry.createUnionType(NUMBER_TYPE, BOOLEAN_TYPE));
-    assertUnion("(Object|boolean|number|string)",
-        registry.createUnionType(NUMBER_TYPE, BOOLEAN_TYPE), union);
-    assertUnion("(Object|string)", union, STRING_OBJECT_TYPE);
-  }
-
-  public void testUnknownTypes() {
-    JSType unresolvedNameA1 =
-        new NamedType(registry, "not.resolved.A", null, -1, -1);
-    JSType unresolvedNameA2 =
-        new NamedType(registry, "not.resolved.A", null, -1, -1);
-    JSType unresolvedNameB =
-        new NamedType(registry, "not.resolved.B", null, -1, -1);
-
-    assertUnion("?", UNKNOWN_TYPE);
-    assertUnion("?", UNKNOWN_TYPE, UNKNOWN_TYPE);
-
-    // NOTE: "(?)" means there are multiple unknown types in the union.
-    assertUnion("?", UNKNOWN_TYPE, unresolvedNameA1);
-    assertUnion("not.resolved.A", unresolvedNameA1, unresolvedNameA2);
-    assertUnion("(not.resolved.A|not.resolved.B)",
-        unresolvedNameA1, unresolvedNameB);
-    assertUnion("(Object|not.resolved.A)", unresolvedNameA1, OBJECT_TYPE);
-  }
-
-  public void testRemovalOfDupes() {
-    JSType stringAndObject =
-        registry.createUnionType(STRING_TYPE, OBJECT_TYPE);
-    assertUnion("(Object|string)", stringAndObject, STRING_OBJECT_TYPE);
-    assertUnion("(Object|string)", STRING_OBJECT_TYPE, stringAndObject);
-  }
-
-  public void assertUnion(String expected, JSType ... types) {
-    UnionTypeBuilder builder = new UnionTypeBuilder(registry);
-    for (JSType type : types) {
-      builder.addAlternate(type);
+    public void testAllType() {
+        assertUnion("*", ALL_TYPE);
+        assertUnion("*", NUMBER_TYPE, ALL_TYPE);
+        assertUnion("*", ALL_TYPE, NUMBER_TYPE);
+        assertUnion("*", ALL_TYPE, NUMBER_TYPE, NO_TYPE);
     }
-    assertEquals(expected, builder.build().toString());
-  }
+
+    public void testEmptyUnion() {
+        assertUnion("None");
+        assertUnion("None", NO_TYPE, NO_TYPE);
+    }
+
+    public void testUnionTypes() {
+        JSType union = registry.createUnionType(STRING_TYPE, OBJECT_TYPE);
+
+        assertUnion("*", ALL_TYPE, union);
+        assertUnion("(Object|string)", OBJECT_TYPE, union);
+        assertUnion("(Object|string)", union, OBJECT_TYPE);
+        assertUnion("(Object|number|string)", NUMBER_TYPE, union);
+        assertUnion("(Object|number|string)", union, NUMBER_TYPE);
+        assertUnion("(Object|boolean|number|string)", union,
+                registry.createUnionType(NUMBER_TYPE, BOOLEAN_TYPE));
+        assertUnion("(Object|boolean|number|string)",
+                registry.createUnionType(NUMBER_TYPE, BOOLEAN_TYPE), union);
+        assertUnion("(Object|string)", union, STRING_OBJECT_TYPE);
+    }
+
+    public void testUnknownTypes() {
+        JSType unresolvedNameA1 =
+                new NamedType(registry, "not.resolved.A", null, -1, -1);
+        JSType unresolvedNameA2 =
+                new NamedType(registry, "not.resolved.A", null, -1, -1);
+        JSType unresolvedNameB =
+                new NamedType(registry, "not.resolved.B", null, -1, -1);
+
+        assertUnion("?", UNKNOWN_TYPE);
+        assertUnion("?", UNKNOWN_TYPE, UNKNOWN_TYPE);
+
+        // NOTE: "(?)" means there are multiple unknown types in the union.
+        assertUnion("?", UNKNOWN_TYPE, unresolvedNameA1);
+        assertUnion("not.resolved.A", unresolvedNameA1, unresolvedNameA2);
+        assertUnion("(not.resolved.A|not.resolved.B)",
+                unresolvedNameA1, unresolvedNameB);
+        assertUnion("(Object|not.resolved.A)", unresolvedNameA1, OBJECT_TYPE);
+    }
+
+    public void testRemovalOfDupes() {
+        JSType stringAndObject =
+                registry.createUnionType(STRING_TYPE, OBJECT_TYPE);
+        assertUnion("(Object|string)", stringAndObject, STRING_OBJECT_TYPE);
+        assertUnion("(Object|string)", STRING_OBJECT_TYPE, stringAndObject);
+    }
+
+    public void assertUnion(String expected, JSType... types) {
+        UnionTypeBuilder builder = new UnionTypeBuilder(registry);
+        for (JSType type : types) {
+            builder.addAlternate(type);
+        }
+        assertEquals(expected, builder.build().toString());
+    }
 }

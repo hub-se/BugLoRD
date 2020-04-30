@@ -4,17 +4,18 @@
  */
 package org.mockitousage.stacktrace;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.exceptions.verification.junit.ArgumentsAreDifferent;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Mockito.*;
+
 public class ClickableStackTracesTest extends TestBase {
-    
-    @Mock private IMethods mock;
+
+    @Mock
+    private IMethods mock;
 
     private void callMethodOnMock(String param) {
         mock.simpleMethod(param);
@@ -23,7 +24,7 @@ public class ClickableStackTracesTest extends TestBase {
     private void verifyTheMock(int times, String param) {
         verify(mock, times(times)).simpleMethod(param);
     }
-    
+
     @Test
     public void shouldShowActualAndExpectedWhenArgumentsAreDifferent() {
         callMethodOnMock("foo");

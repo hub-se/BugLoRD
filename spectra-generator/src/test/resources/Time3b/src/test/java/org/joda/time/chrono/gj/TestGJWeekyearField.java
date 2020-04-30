@@ -19,7 +19,6 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.DurationField;
 
 /**
- * 
  * @author Brian S O'Neill
  */
 class TestGJWeekyearField extends TestGJDateTimeField {
@@ -34,7 +33,7 @@ class TestGJWeekyearField extends TestGJDateTimeField {
     public long set(long millis, int value) {
         int[] wwd = iChronology.isoFromMillis(millis);
         millis = iChronology.getTimeOnlyMillis(millis)
-            + iChronology.millisFromISO(value, wwd[1], wwd[2]);
+                + iChronology.millisFromISO(value, wwd[1], wwd[2]);
         if (wwd[1] == 53) {
             int[] wwd2 = iChronology.isoFromMillis(millis);
             if (wwd2[0] != value) {
@@ -46,7 +45,7 @@ class TestGJWeekyearField extends TestGJDateTimeField {
     }
 
     public long add(long millis, long value) {
-        return set(millis, (int)(get(millis) + value));
+        return set(millis, (int) (get(millis) + value));
     }
 
     public boolean isLeap(long millis) {
@@ -55,7 +54,7 @@ class TestGJWeekyearField extends TestGJDateTimeField {
 
     public int getLeapAmount(long millis) {
         return iChronology.weekOfWeekyear().getMaximumValue(millis) - 52;
-    } 
+    }
 
     public DurationField getLeapDurationField() {
         return iChronology.weeks();

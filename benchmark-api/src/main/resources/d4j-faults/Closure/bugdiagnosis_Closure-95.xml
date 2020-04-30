@@ -1,35 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-95">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/TypedScopeCreatorTest">
-					<exception>junit.framework.AssertionFailedError:expected a
-						warning:-
-						com.google.javascript.jscomp.TypedScopeCreatorTest::testGlobalQualifiedNameInLocalScope:--&gt;
-						junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>2285</number_tests>
-					<failed>2</failed>
-					<passed>2283</passed>
-					<nodes>38377</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/TypedScopeCreator.java">
-					<insert numberlines="7">899-904</insert>
-					<bugtypes>
-						<id id="1.1" lines="898">
-							<description>Missing case.</description>
-						</id>
-						<id id="1.1" lines="901">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-95">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/TypedScopeCreatorTest">
+                    <exception>junit.framework.AssertionFailedError:expected a
+                        warning:-
+                        com.google.javascript.jscomp.TypedScopeCreatorTest::testGlobalQualifiedNameInLocalScope:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>2285</number_tests>
+                    <failed>2</failed>
+                    <passed>2283</passed>
+                    <nodes>38377</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/TypedScopeCreator.java">
+                    <insert numberlines="7">899-904</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="898">
+                            <description>Missing case.</description>
+                        </id>
+                        <id id="1.1" lines="901">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

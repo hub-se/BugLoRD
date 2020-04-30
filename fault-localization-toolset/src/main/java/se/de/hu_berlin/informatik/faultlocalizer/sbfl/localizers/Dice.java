@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Dice fault localizer $\frac{2\EF}{\EF+\NF+\EP}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Dice<T> extends AbstractFaultLocalizer<T> {
 
@@ -30,10 +29,10 @@ public class Dice<T> extends AbstractFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-    	double numerator = 2.0d * node.getEF(strategy);
-    	if (numerator == 0) {
-    		return 0;
-    	}
+        double numerator = 2.0d * node.getEF(strategy);
+        if (numerator == 0) {
+            return 0;
+        }
         return numerator / (node.getEF(strategy) + node.getNF(strategy) + node.getEP(strategy));
     }
 

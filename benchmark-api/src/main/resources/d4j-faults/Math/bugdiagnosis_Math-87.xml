@@ -1,37 +1,38 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-87">
-			<tests>
-				<testfile
-					path="org/apache/commons/math/optimization/linear/SimplexSolverTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;10.0&gt;
-						but was:&lt;0.0&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>16</number_tests>
-					<failed>1</failed>
-					<passed>15</passed>
-					<nodes>18890</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math/optimization/linear/SimplexTableau.java">
-					<change>275</change>
-					<delete>276,278,280</delete>
-					<insert numberlines="1">279</insert>
-					<bugtypes>
-						<id id="1.2" lines="275,276,280">
-							<description>Incorrect condition and case handling.</description>
-						</id>
-						<id id="1.2" lines="278">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-87">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math/optimization/linear/SimplexSolverTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;10.0&gt;
+                        but was:&lt;0.0&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>16</number_tests>
+                    <failed>1</failed>
+                    <passed>15</passed>
+                    <nodes>18890</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math/optimization/linear/SimplexTableau.java">
+                    <change>275</change>
+                    <delete>276,278,280</delete>
+                    <insert numberlines="1">279</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="275,276,280">
+                            <description>Incorrect condition and case handling.</description>
+                        </id>
+                        <id id="1.2" lines="278">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -21,7 +21,7 @@ public class PrintSettings {
         return multiline;
     }
 
-    public static PrintSettings verboseMatchers(Integer ... indexesOfMatchers) {
+    public static PrintSettings verboseMatchers(Integer... indexesOfMatchers) {
         PrintSettings settings = new PrintSettings();
         settings.setMatchersToBeDescribedWithExtraTypeInfo(indexesOfMatchers);
         return settings;

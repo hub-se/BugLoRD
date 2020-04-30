@@ -22,67 +22,67 @@ package com.google.javascript.jscomp;
  */
 public class RenameLabelsTest extends CompilerTestCase {
 
-  @Override
-  protected CompilerPass getProcessor(Compiler compiler) {
-    return new RenameLabels(compiler);
-  }
+    @Override
+    protected CompilerPass getProcessor(Compiler compiler) {
+        return new RenameLabels(compiler);
+    }
 
 
-  public void testRenameInFunction() {
-    test("function x(){ Foo:a(); }",
-         "function x(){ a(); }");
-    test("function x(){ Foo:{ a(); break Foo; } }",
-         "function x(){ a:{ a(); break a; } }");
-    test("function x() { " +
-            "Foo:{ " +
-              "function goo() {" +
-                "Foo: {" +
-                  "a(); " +
-                  "break Foo; " +
-                "}" +
-              "}" +
-            "}" +
-          "}",
-          "function x(){function goo(){a:{ a(); break a; }}}");
-    test("function x() { " +
-          "Foo:{ " +
-            "function goo() {" +
-              "Foo: {" +
-                "a(); " +
-                "break Foo; " +
-              "}" +
-            "}" +
-            "break Foo;" +
-          "}" +
-        "}",
-        "function x(){a:{function goo(){a:{ a(); break a; }} break a;}}");
-  }
+    public void testRenameInFunction() {
+        test("function x(){ Foo:a(); }",
+                "function x(){ a(); }");
+        test("function x(){ Foo:{ a(); break Foo; } }",
+                "function x(){ a:{ a(); break a; } }");
+        test("function x() { " +
+                        "Foo:{ " +
+                        "function goo() {" +
+                        "Foo: {" +
+                        "a(); " +
+                        "break Foo; " +
+                        "}" +
+                        "}" +
+                        "}" +
+                        "}",
+                "function x(){function goo(){a:{ a(); break a; }}}");
+        test("function x() { " +
+                        "Foo:{ " +
+                        "function goo() {" +
+                        "Foo: {" +
+                        "a(); " +
+                        "break Foo; " +
+                        "}" +
+                        "}" +
+                        "break Foo;" +
+                        "}" +
+                        "}",
+                "function x(){a:{function goo(){a:{ a(); break a; }} break a;}}");
+    }
 
-  public void testRenameGlobals() {
-    test("Foo:{a();}",
-         "a();");
-    test("Foo:{a(); break Foo;}",
-         "a:{a(); break a;}");
-    test("Foo:{Goo:a(); break Foo;}",
-         "a:{a(); break a;}");
-    test("Foo:{Goo:while(1){a(); continue Goo; break Foo;}}",
-         "a:{b:while(1){a(); continue b;break a;}}");
-    test("Foo:Goo:while(1){a(); continue Goo; break Foo;}",
-         "a:b:while(1){a(); continue b;break a;}");
+    public void testRenameGlobals() {
+        test("Foo:{a();}",
+                "a();");
+        test("Foo:{a(); break Foo;}",
+                "a:{a(); break a;}");
+        test("Foo:{Goo:a(); break Foo;}",
+                "a:{a(); break a;}");
+        test("Foo:{Goo:while(1){a(); continue Goo; break Foo;}}",
+                "a:{b:while(1){a(); continue b;break a;}}");
+        test("Foo:Goo:while(1){a(); continue Goo; break Foo;}",
+                "a:b:while(1){a(); continue b;break a;}");
 
-    test("Foo:Bar:X:{ break Bar; }",
-         "a:break a;");
-    test("Foo:Bar:X:{ break Bar; break X; }",
-         "a:b:{ break a; break b;}");
-    test("Foo:Bar:X:{ break Bar; break Foo; }",
-         "a:b:{ break b; break a;}");
+        test("Foo:Bar:X:{ break Bar; }",
+                "a:break a;");
+        test("Foo:Bar:X:{ break Bar; break X; }",
+                "a:b:{ break a; break b;}");
+        test("Foo:Bar:X:{ break Bar; break Foo; }",
+                "a:b:{ break b; break a;}");
 
-    test("Foo:while (1){a(); break;}",
-         "while (1){a(); break;}");
+        test("Foo:while (1){a(); break;}",
+                "while (1){a(); break;}");
 
-    // Remove label that is not referenced.
-    test("Foo:{a(); while (1) break;}",
-         "a(); while (1) break;");
-  }
+        // Remove label that is not referenced.
+        test("Foo:{a(); while (1) break;}",
+                "a(); while (1) break;");
+    }
 
 }

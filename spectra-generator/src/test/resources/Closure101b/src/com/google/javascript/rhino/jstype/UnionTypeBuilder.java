@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,22 +36,19 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.javascript.rhino.jstype.UnionType;
 
-import static com.google.javascript.rhino.jstype.JSTypeNative.ALL_TYPE;
-import static com.google.javascript.rhino.jstype.JSTypeNative.CHECKED_UNKNOWN_TYPE;
-import static com.google.javascript.rhino.jstype.JSTypeNative.NO_TYPE;
-import static com.google.javascript.rhino.jstype.JSTypeNative.UNKNOWN_TYPE;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import static com.google.javascript.rhino.jstype.JSTypeNative.*;
 
 /**
  * A builder for union types.
@@ -59,106 +56,107 @@ import java.util.Set;
  * @author nicksantos@google.com (Nick Santos)
  */
 class UnionTypeBuilder implements Serializable {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  // If the best we can do is say "this object is one of twenty things",
-  // then we should just give up and admit that we have no clue.
-  private static final int MAX_UNION_SIZE = 20;
+    // If the best we can do is say "this object is one of twenty things",
+    // then we should just give up and admit that we have no clue.
+    private static final int MAX_UNION_SIZE = 20;
 
-  private final JSTypeRegistry registry;
-  private final List<JSType> alternates = Lists.newArrayList();
-  private boolean isAllType = false;
-  private boolean isNativeUnknownType = false;
-  private boolean areAllUnknownsChecked = true;
+    private final JSTypeRegistry registry;
+    private final List<JSType> alternates = Lists.newArrayList();
+    private boolean isAllType = false;
+    private boolean isNativeUnknownType = false;
+    private boolean areAllUnknownsChecked = true;
 
-  // Memoize the result, in case build() is called multiple times.
-  private JSType result = null;
+    // Memoize the result, in case build() is called multiple times.
+    private JSType result = null;
 
-  UnionTypeBuilder(JSTypeRegistry registry) {
-    this.registry = registry;
-  }
-
-  /**
-   * Adds an alternate to the union type under construction. Returns this
-   * for easy chaining.
-   */
-  UnionTypeBuilder addAlternate(JSType alternate) {
-    // build() returns the bottom type by default, so we can
-    // just bail out early here.
-    if (alternate.isNoType()) {
-      return this;
+    UnionTypeBuilder(JSTypeRegistry registry) {
+        this.registry = registry;
     }
 
-    isAllType = isAllType || alternate.isAllType();
-
-    boolean isAlternateUnknown = alternate instanceof UnknownType;
-    isNativeUnknownType = isNativeUnknownType || isAlternateUnknown;
-    if (isAlternateUnknown) {
-      areAllUnknownsChecked = areAllUnknownsChecked &&
-          alternate.isCheckedUnknownType();
-    }
-    if (!isAllType && !isNativeUnknownType) {
-      if (alternate instanceof UnionType) {
-        UnionType union = (UnionType) alternate;
-        for (JSType unionAlt : union.getAlternates()) {
-          addAlternate(unionAlt);
+    /**
+     * Adds an alternate to the union type under construction. Returns this
+     * for easy chaining.
+     */
+    UnionTypeBuilder addAlternate(JSType alternate) {
+        // build() returns the bottom type by default, so we can
+        // just bail out early here.
+        if (alternate.isNoType()) {
+            return this;
         }
-      } else {
-        if (!alternate.isUnknownType()) {
-          Iterator<JSType> it = alternates.iterator();
-          while (it.hasNext()) {
-            JSType current = it.next();
-            if (!current.isUnknownType()) {
-              if (alternate.isSubtype(current)) {
-                // Alternate is unnecessary.
-                return this;
-              } else if (current.isSubtype(alternate)) {
-                // Alternate makes current obsolete
-                it.remove();
-              }
+
+        isAllType = isAllType || alternate.isAllType();
+
+        boolean isAlternateUnknown = alternate instanceof UnknownType;
+        isNativeUnknownType = isNativeUnknownType || isAlternateUnknown;
+        if (isAlternateUnknown) {
+            areAllUnknownsChecked = areAllUnknownsChecked &&
+                    alternate.isCheckedUnknownType();
+        }
+        if (!isAllType && !isNativeUnknownType) {
+            if (alternate instanceof UnionType) {
+                UnionType union = (UnionType) alternate;
+                for (JSType unionAlt : union.getAlternates()) {
+                    addAlternate(unionAlt);
+                }
+            } else {
+                if (!alternate.isUnknownType()) {
+                    Iterator<JSType> it = alternates.iterator();
+                    while (it.hasNext()) {
+                        JSType current = it.next();
+                        if (!current.isUnknownType()) {
+                            if (alternate.isSubtype(current)) {
+                                // Alternate is unnecessary.
+                                return this;
+                            } else if (current.isSubtype(alternate)) {
+                                // Alternate makes current obsolete
+                                it.remove();
+                            }
+                        }
+                    }
+                }
+                alternates.add(alternate);
+                result = null; // invalidate the memoized result
             }
-          }
+        } else {
+            result = null;
         }
-        alternates.add(alternate);
-        result = null; // invalidate the memoized result
-      }
-    } else {
-      result = null;
+        return this;
     }
-    return this;
-  }
 
-  /**
-   * Creates a union.
-   * @return A UnionType if it has two or more alternates, the
-   *    only alternate if it has one and otherwise {@code NO_TYPE}.
-   */
-  JSType build() {
-    if (result == null) {
-      if (isAllType) {
-        result = registry.getNativeType(ALL_TYPE);
-      } else if (isNativeUnknownType) {
-        if (areAllUnknownsChecked) {
-          result = registry.getNativeType(CHECKED_UNKNOWN_TYPE);
-        } else {
-          result = registry.getNativeType(UNKNOWN_TYPE);
+    /**
+     * Creates a union.
+     *
+     * @return A UnionType if it has two or more alternates, the
+     * only alternate if it has one and otherwise {@code NO_TYPE}.
+     */
+    JSType build() {
+        if (result == null) {
+            if (isAllType) {
+                result = registry.getNativeType(ALL_TYPE);
+            } else if (isNativeUnknownType) {
+                if (areAllUnknownsChecked) {
+                    result = registry.getNativeType(CHECKED_UNKNOWN_TYPE);
+                } else {
+                    result = registry.getNativeType(UNKNOWN_TYPE);
+                }
+            } else {
+                Set<JSType> alternateSet = Sets.newUnmodifiableHashSet(alternates);
+                int size = alternateSet.size();
+                if (size > MAX_UNION_SIZE) {
+                    result = registry.getNativeType(UNKNOWN_TYPE);
+                } else {
+                    if (size > 1) {
+                        result = new UnionType(registry, alternateSet);
+                    } else if (size == 1) {
+                        result = alternates.iterator().next();
+                    } else {
+                        result = registry.getNativeType(NO_TYPE);
+                    }
+                }
+            }
         }
-      } else {
-        Set<JSType> alternateSet = Sets.newUnmodifiableHashSet(alternates);
-        int size = alternateSet.size();
-        if (size > MAX_UNION_SIZE) {
-          result = registry.getNativeType(UNKNOWN_TYPE);
-        } else {
-          if (size > 1) {
-            result = new UnionType(registry, alternateSet);
-          } else if (size == 1) {
-            result = alternates.iterator().next();
-          } else {
-            result = registry.getNativeType(NO_TYPE);
-          }
-        }
-      }
+        return result;
     }
-    return result;
-  }
 }

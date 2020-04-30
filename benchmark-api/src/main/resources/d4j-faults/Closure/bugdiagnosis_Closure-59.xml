@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-59">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/CommandLineRunnerTest">
-					<exception>junit.framework.AssertionFailedError:Expected no
-						warnings or errors</exception>
-				</testfile>
-				<spectra>
-					<number_tests>6042</number_tests>
-					<failed>1</failed>
-					<passed>6041</passed>
-					<nodes>46511</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/Compiler.java">
-					<change>255</change>
-					<bugtypes>
-						<id id="1.2" lines="255">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-59">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/CommandLineRunnerTest">
+                    <exception>junit.framework.AssertionFailedError:Expected no
+                        warnings or errors
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>6042</number_tests>
+                    <failed>1</failed>
+                    <passed>6041</passed>
+                    <nodes>46511</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/Compiler.java">
+                    <change>255</change>
+                    <bugtypes>
+                        <id id="1.2" lines="255">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

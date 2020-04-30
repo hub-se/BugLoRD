@@ -4,12 +4,12 @@
  */
 package org.mockito.internal.matchers;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
 import org.mockito.internal.reporting.PrintSettings;
 import org.mockitoutil.TestBase;
+
+import java.util.Arrays;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class MatchersPrinterTest extends TestBase {

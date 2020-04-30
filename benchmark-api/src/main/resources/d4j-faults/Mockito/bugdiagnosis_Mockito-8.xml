@@ -1,32 +1,32 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-8">
-			<tests>
-				<testfile
-					path="org/mockito/internal/util/reflection/GenericMetadataSupportTest">
-					<exception>java.lang.StackOverflowError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>46</number_tests>
-					<failed>1</failed>
-					<passed>45</passed>
-					<nodes>4433</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/mockito/internal/util/reflection/GenericMetadataSupport.java">
-					<change>79</change>
-					<bugtypes>
-						<id id="1.2" lines="79">
-							<description>Incorrect check for the inequality of the parameter.
-							</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-8">
+            <tests>
+                <testfile
+                        path="org/mockito/internal/util/reflection/GenericMetadataSupportTest">
+                    <exception>java.lang.StackOverflowError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>46</number_tests>
+                    <failed>1</failed>
+                    <passed>45</passed>
+                    <nodes>4433</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/mockito/internal/util/reflection/GenericMetadataSupport.java">
+                    <change>79</change>
+                    <bugtypes>
+                        <id id="1.2" lines="79">
+                            <description>Incorrect check for the inequality of the parameter.
+                            </description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -1,44 +1,44 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-21">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/linear/RectangularCholeskyDecompositionTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;0.0&gt;
-						but was:&lt;0.0180652917341963&gt;:-
-						org.apache.commons.math3.linear.RectangularCholeskyDecompositionTest::testFullRank:--&gt;
-						junit.framework.AssertionFailedError
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>24</number_tests>
-					<failed>2</failed>
-					<passed>22</passed>
-					<nodes>33864</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/linear/RectangularCholeskyDecomposition.java">
-					<change>79</change>
-					<change>82-84</change>
-					<change>90-93</change>
-					<change>128</change>
-					<delete>69</delete>
-					<insert numberlines="3">94</insert>
-					<insert numberlines="1">119-124</insert>
-					<bugtypes>
-						<id id="1.5" lines="69,79,82-84,90-93">
-							<description>Incorrect computation.</description>
-						</id>
-						<id id="1.5" lines="123,128">
-							<description>Incorrect calculation.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>6</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-21">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/linear/RectangularCholeskyDecompositionTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;0.0&gt;
+                        but was:&lt;0.0180652917341963&gt;:-
+                        org.apache.commons.math3.linear.RectangularCholeskyDecompositionTest::testFullRank:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>24</number_tests>
+                    <failed>2</failed>
+                    <passed>22</passed>
+                    <nodes>33864</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/linear/RectangularCholeskyDecomposition.java">
+                    <change>79</change>
+                    <change>82-84</change>
+                    <change>90-93</change>
+                    <change>128</change>
+                    <delete>69</delete>
+                    <insert numberlines="3">94</insert>
+                    <insert numberlines="1">119-124</insert>
+                    <bugtypes>
+                        <id id="1.5" lines="69,79,82-84,90-93">
+                            <description>Incorrect computation.</description>
+                        </id>
+                        <id id="1.5" lines="123,128">
+                            <description>Incorrect calculation.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>6</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

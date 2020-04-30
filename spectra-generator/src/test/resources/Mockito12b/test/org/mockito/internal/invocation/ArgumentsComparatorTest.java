@@ -4,21 +4,23 @@
  */
 package org.mockito.internal.invocation;
 
-import org.mockitoutil.TestBase;
 import org.junit.Test;
-import org.mockito.internal.matchers.*;
 import org.mockito.Mock;
+import org.mockito.internal.matchers.*;
 import org.mockitousage.IMethods;
+import org.mockitoutil.TestBase;
 
 import java.util.List;
+
 import static java.util.Arrays.asList;
 
 @SuppressWarnings("unchecked")
 public class ArgumentsComparatorTest extends TestBase {
 
-    @Mock IMethods mock;
+    @Mock
+    IMethods mock;
     ArgumentsComparator comparator = new ArgumentsComparator();
-    
+
     @Test
     public void shouldKnowWhenArgumentsMatch() {
         //given

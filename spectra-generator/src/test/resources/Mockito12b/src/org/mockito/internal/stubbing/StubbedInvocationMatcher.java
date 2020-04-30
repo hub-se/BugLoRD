@@ -4,14 +4,14 @@
  */
 package org.mockito.internal.stubbing;
 
-import java.io.Serializable;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.mockito.exceptions.PrintableInvocation;
 import org.mockito.internal.invocation.InvocationMatcher;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import java.io.Serializable;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @SuppressWarnings("unchecked")
 public class StubbedInvocationMatcher extends InvocationMatcher implements Answer, Serializable {
@@ -27,7 +27,7 @@ public class StubbedInvocationMatcher extends InvocationMatcher implements Answe
 
     public Object answer(InvocationOnMock invocation) throws Throwable {
         //see ThreadsShareGenerouslyStubbedMockTest
-        synchronized(answers) {
+        synchronized (answers) {
             return answers.size() == 1 ? answers.peek().answer(invocation) : answers.poll().answer(invocation);
         }
     }

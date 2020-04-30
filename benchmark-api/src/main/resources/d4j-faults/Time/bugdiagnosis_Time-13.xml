@@ -1,35 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-13">
-			<tests>
-				<testfile path="org/joda/time/format/TestISOPeriodFormat">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;PT[-]0.008S&gt;
-						but was:&lt;PT[]0.008S&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>972</number_tests>
-					<failed>1</failed>
-					<passed>971</passed>
-					<nodes>13313</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/format/PeriodFormatterBuilder.java">
-					<change>1098</change>
-					<insert numberlines="1">1133-1134,1139</insert>
-					<insert numberlines="3">1142</insert>
-					<bugtypes>
-						<id id="1.1" lines="1098">
-							<description>Missing check for value below zero.</description>
-						</id>
-						<id id="1.1" lines="1132,1141">
-							<description>Missing check for value below zero.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-13">
+            <tests>
+                <testfile path="org/joda/time/format/TestISOPeriodFormat">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;PT[-]0.008S&gt;
+                        but was:&lt;PT[]0.008S&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>972</number_tests>
+                    <failed>1</failed>
+                    <passed>971</passed>
+                    <nodes>13313</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/format/PeriodFormatterBuilder.java">
+                    <change>1098</change>
+                    <insert numberlines="1">1133-1134,1139</insert>
+                    <insert numberlines="3">1142</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="1098">
+                            <description>Missing check for value below zero.</description>
+                        </id>
+                        <id id="1.1" lines="1132,1141">
+                            <description>Missing check for value below zero.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

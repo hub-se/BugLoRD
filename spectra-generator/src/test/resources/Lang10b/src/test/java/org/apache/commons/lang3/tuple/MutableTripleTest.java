@@ -16,20 +16,18 @@
  */
 package org.apache.commons.lang3.tuple;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Test the MutableTriple class.
+ *
  * @version $Id$
  */
 public class MutableTripleTest {
@@ -53,7 +51,7 @@ public class MutableTripleTest {
         assertNull(triple.getMiddle());
         assertNull(triple.getRight());
     }
-    
+
     @Test
     public void testMutate() throws Exception {
         MutableTriple<Integer, String, Boolean> triple = new MutableTriple<Integer, String, Boolean>(0, "foo", Boolean.TRUE);

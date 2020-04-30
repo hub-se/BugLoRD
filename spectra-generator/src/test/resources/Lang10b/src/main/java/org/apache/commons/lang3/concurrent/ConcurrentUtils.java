@@ -27,8 +27,8 @@ import java.util.concurrent.TimeUnit;
  * java.util.concurrent} package.
  * </p>
  *
- * @since 3.0
  * @version $Id$
+ * @since 3.0
  */
 public class ConcurrentUtils {
 
@@ -99,7 +99,7 @@ public class ConcurrentUtils {
      *
      * @param ex the exception to be handled
      * @throws ConcurrentException if the cause of the {@code
-     * ExecutionException} is a checked exception
+     *                             ExecutionException} is a checked exception
      */
     public static void handleCause(ExecutionException ex)
             throws ConcurrentException {
@@ -120,8 +120,8 @@ public class ConcurrentUtils {
      *
      * @param ex the exception to be handled
      * @throws ConcurrentRuntimeException if the cause of the {@code
-     * ExecutionException} is a checked exception; this exception is then
-     * wrapped in the thrown runtime exception
+     *                                    ExecutionException} is a checked exception; this exception is then
+     *                                    wrapped in the thrown runtime exception
      */
     public static void handleCauseUnchecked(ExecutionException ex) {
         ConcurrentRuntimeException crex = extractCauseUnchecked(ex);
@@ -138,7 +138,7 @@ public class ConcurrentUtils {
      * @param ex the {@code Throwable} to check
      * @return a flag whether the passed in exception is a checked exception
      * @throws IllegalArgumentException if the {@code Throwable} is not a
-     * checked exception
+     *                                  checked exception
      */
     static Throwable checkedException(Throwable ex) {
         if (ex != null && !(ex instanceof RuntimeException)
@@ -166,6 +166,7 @@ public class ConcurrentUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Invokes the specified {@code ConcurrentInitializer} and returns the
      * object produced by the initializer. This method just invokes the {@code
@@ -173,11 +174,11 @@ public class ConcurrentUtils {
      * <b>null</b>-safe: if the argument is <b>null</b>, result is also
      * <b>null</b>.
      *
-     * @param <T> the type of the object produced by the initializer
+     * @param <T>         the type of the object produced by the initializer
      * @param initializer the {@code ConcurrentInitializer} to be invoked
      * @return the object managed by the {@code ConcurrentInitializer}
      * @throws ConcurrentException if the {@code ConcurrentInitializer} throws
-     * an exception
+     *                             an exception
      */
     public static <T> T initialize(ConcurrentInitializer<T> initializer)
             throws ConcurrentException {
@@ -192,7 +193,7 @@ public class ConcurrentUtils {
      * caught, and the cause is wrapped in a {@link ConcurrentRuntimeException}.
      * So client code does not have to deal with checked exceptions.
      *
-     * @param <T> the type of the object produced by the initializer
+     * @param <T>         the type of the object produced by the initializer
      * @param initializer the {@code ConcurrentInitializer} to be invoked
      * @return the object managed by the {@code ConcurrentInitializer}
      * @throws ConcurrentRuntimeException if the initializer throws an exception
@@ -206,6 +207,7 @@ public class ConcurrentUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>
      * Puts a value in the specified {@code ConcurrentMap} if the key is not yet
@@ -221,7 +223,7 @@ public class ConcurrentUtils {
      *     return map.get(key);
      * }
      * </pre>
-     *
+     * <p>
      * except that the action is performed atomically. So this method always
      * returns the value which is stored in the map.
      * </p>
@@ -231,10 +233,10 @@ public class ConcurrentUtils {
      * <b>null</b>, too.
      * </p>
      *
-     * @param <K> the type of the keys of the map
-     * @param <V> the type of the values of the map
-     * @param map the map to be modified
-     * @param key the key of the value to be added
+     * @param <K>   the type of the keys of the map
+     * @param <V>   the type of the values of the map
+     * @param map   the map to be modified
+     * @param key   the key of the value to be added
      * @param value the value to be added
      * @return the value stored in the map after this operation
      */
@@ -258,17 +260,17 @@ public class ConcurrentUtils {
      * the map. Both the map and the initializer can be <b>null</b>; in this
      * case this method simply returns <b>null</b>.
      *
-     * @param <K> the type of the keys of the map
-     * @param <V> the type of the values of the map
-     * @param map the map to be modified
-     * @param key the key of the value to be added
+     * @param <K>  the type of the keys of the map
+     * @param <V>  the type of the values of the map
+     * @param map  the map to be modified
+     * @param key  the key of the value to be added
      * @param init the {@link ConcurrentInitializer} for creating the value
      * @return the value stored in the map after this operation; this may or may
      * not be the object created by the {@link ConcurrentInitializer}
      * @throws ConcurrentException if the initializer throws an exception
      */
     public static <K, V> V createIfAbsent(ConcurrentMap<K, V> map, K key,
-            ConcurrentInitializer<V> init) throws ConcurrentException {
+                                          ConcurrentInitializer<V> init) throws ConcurrentException {
         if (map == null || init == null) {
             return null;
         }
@@ -286,17 +288,17 @@ public class ConcurrentUtils {
      * {@code createIfAbsent()}. If a {@link ConcurrentException} is thrown, it
      * is caught and re-thrown as a {@link ConcurrentRuntimeException}.
      *
-     * @param <K> the type of the keys of the map
-     * @param <V> the type of the values of the map
-     * @param map the map to be modified
-     * @param key the key of the value to be added
+     * @param <K>  the type of the keys of the map
+     * @param <V>  the type of the values of the map
+     * @param map  the map to be modified
+     * @param key  the key of the value to be added
      * @param init the {@link ConcurrentInitializer} for creating the value
      * @return the value stored in the map after this operation; this may or may
      * not be the object created by the {@link ConcurrentInitializer}
      * @throws ConcurrentRuntimeException if the initializer throws an exception
      */
     public static <K, V> V createIfAbsentUnchecked(ConcurrentMap<K, V> map,
-            K key, ConcurrentInitializer<V> init) {
+                                                   K key, ConcurrentInitializer<V> init) {
         try {
             return createIfAbsent(map, key, init);
         } catch (ConcurrentException cex) {
@@ -305,6 +307,7 @@ public class ConcurrentUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>
      * Gets an implementation of <code>Future</code> that is immediately done
@@ -316,8 +319,8 @@ public class ConcurrentUtils {
      * A constant future can also be useful in testing.
      * </p>
      *
-     * @param <T> the type of the value used by this {@code Future} object
-     * @param value  the constant value to return, may be null
+     * @param <T>   the type of the value used by this {@code Future} object
+     * @param value the constant value to return, may be null
      * @return an instance of Future that will return the value, never null
      */
     public static <T> Future<T> constantFuture(T value) {
@@ -326,10 +329,13 @@ public class ConcurrentUtils {
 
     /**
      * A specialized {@code Future} implementation which wraps a constant value.
+     *
      * @param <T> the type of the value wrapped by this class
      */
     static final class ConstantFuture<T> implements Future<T> {
-        /** The constant value. */
+        /**
+         * The constant value.
+         */
         private final T value;
 
         /**

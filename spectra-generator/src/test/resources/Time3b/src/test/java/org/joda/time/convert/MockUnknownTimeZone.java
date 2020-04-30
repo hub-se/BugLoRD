@@ -25,14 +25,15 @@ import java.util.TimeZone;
  * @author Stephen Colebourne
  */
 class MockUnknownTimeZone extends TimeZone {
-    
+
     MockUnknownTimeZone() {
         super();
     }
-    
+
     public String getID() {
         return "!!!";
     }
+
     public String getDisplayName(boolean daylight, int style, Locale locale) {
         return "!!!";
     }
@@ -40,16 +41,20 @@ class MockUnknownTimeZone extends TimeZone {
     public int getOffset(int era, int year, int month, int day, int dayOfWeek, int milliseconds) {
         return 0;
     }
+
     public void setRawOffset(int offsetMillis) {
     }
+
     public int getRawOffset() {
         return 0;
     }
+
     public boolean useDaylightTime() {
         return false;
     }
+
     public boolean inDaylightTime(Date date) {
         return false;
     }
-    
+
 }

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,13 +16,7 @@
  */
 package org.apache.commons.lang3;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -33,18 +27,22 @@ import java.util.concurrent.ConcurrentMap;
  * An exception will not be thrown for a {@code null} input.
  * Each method documents its behaviour in more detail.</p>
  *
- * @since 2.2
  * @version $Id$
+ * @since 2.2
  */
 public class LocaleUtils {
 
-    /** Concurrent map of language locales by country. */
-    private static final ConcurrentMap<String, List<Locale>> cLanguagesByCountry = 
-        new ConcurrentHashMap<String, List<Locale>>();
+    /**
+     * Concurrent map of language locales by country.
+     */
+    private static final ConcurrentMap<String, List<Locale>> cLanguagesByCountry =
+            new ConcurrentHashMap<String, List<Locale>>();
 
-    /** Concurrent map of country locales by language. */
-    private static final ConcurrentMap<String, List<Locale>> cCountriesByLanguage = 
-        new ConcurrentHashMap<String, List<Locale>>();
+    /**
+     * Concurrent map of country locales by language.
+     */
+    private static final ConcurrentMap<String, List<Locale>> cCountriesByLanguage =
+            new ConcurrentHashMap<String, List<Locale>>();
 
     /**
      * <p>{@code LocaleUtils} instances should NOT be constructed in standard programming.
@@ -54,10 +52,11 @@ public class LocaleUtils {
      * to operate.</p>
      */
     public LocaleUtils() {
-      super();
+        super();
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Converts a String to a Locale.</p>
      *
@@ -81,7 +80,7 @@ public class LocaleUtils {
      * The length must be correct.
      * </p>
      *
-     * @param str  the locale String to convert, null returns null
+     * @param str the locale String to convert, null returns null
      * @return a Locale, null if null input
      * @throws IllegalArgumentException if the string is an invalid format
      */
@@ -124,6 +123,7 @@ public class LocaleUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Obtains the list of locales to search through when performing
      * a locale search.</p>
@@ -133,7 +133,7 @@ public class LocaleUtils {
      *   = [Locale("fr","CA","xxx"), Locale("fr","CA"), Locale("fr")]
      * </pre>
      *
-     * @param locale  the locale to start from
+     * @param locale the locale to start from
      * @return the unmodifiable list of Locale objects, 0 being locale, not null
      */
     public static List<Locale> localeLookupList(Locale locale) {
@@ -141,6 +141,7 @@ public class LocaleUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Obtains the list of locales to search through when performing
      * a locale search.</p>
@@ -154,8 +155,8 @@ public class LocaleUtils {
      * next more general and so on, finishing with the default locale.
      * The list will never contain the same locale twice.</p>
      *
-     * @param locale  the locale to start from, null returns empty list
-     * @param defaultLocale  the default locale to use if no other is found
+     * @param locale        the locale to start from, null returns empty list
+     * @param defaultLocale the default locale to use if no other is found
      * @return the unmodifiable list of Locale objects, 0 being locale, not null
      */
     public static List<Locale> localeLookupList(Locale locale, Locale defaultLocale) {
@@ -176,9 +177,10 @@ public class LocaleUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Obtains an unmodifiable list of installed locales.</p>
-     * 
+     *
      * <p>This method is a wrapper around {@link Locale#getAvailableLocales()}.
      * It is more efficient, as the JDK method must create a new array each
      * time it is called.</p>
@@ -190,9 +192,10 @@ public class LocaleUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Obtains an unmodifiable set of installed locales.</p>
-     * 
+     *
      * <p>This method is a wrapper around {@link Locale#getAvailableLocales()}.
      * It is more efficient, as the JDK method must create a new array each
      * time it is called.</p>
@@ -204,6 +207,7 @@ public class LocaleUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Checks if the locale specified is in the list of available locales.</p>
      *
@@ -215,13 +219,14 @@ public class LocaleUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Obtains the list of languages supported for a given country.</p>
      *
      * <p>This method takes a country code and searches to find the
      * languages available for that country. Variant locales are removed.</p>
      *
-     * @param countryCode  the 2 letter country code, null returns empty
+     * @param countryCode the 2 letter country code, null returns empty
      * @return an unmodifiable List of Locale objects, not null
      */
     public static List<Locale> languagesByCountry(String countryCode) {
@@ -247,13 +252,14 @@ public class LocaleUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Obtains the list of countries supported for a given language.</p>
-     * 
+     *
      * <p>This method takes a language code and searches to find the
      * countries available for that language. Variant locales are removed.</p>
      *
-     * @param languageCode  the 2 letter language code, null returns empty
+     * @param languageCode the 2 letter language code, null returns empty
      * @return an unmodifiable List of Locale objects, not null
      */
     public static List<Locale> countriesByLanguage(String languageCode) {
@@ -282,11 +288,15 @@ public class LocaleUtils {
     //-----------------------------------------------------------------------
     // class to avoid synchronization (Init on demand)
     static class SyncAvoid {
-        /** Unmodifiable list of available locales. */
+        /**
+         * Unmodifiable list of available locales.
+         */
         private static final List<Locale> AVAILABLE_LOCALE_LIST;
-        /** Unmodifiable set of available locales. */
+        /**
+         * Unmodifiable set of available locales.
+         */
         private static final Set<Locale> AVAILABLE_LOCALE_SET;
-        
+
         static {
             List<Locale> list = new ArrayList<Locale>(Arrays.asList(Locale.getAvailableLocales()));  // extra safe
             AVAILABLE_LOCALE_LIST = Collections.unmodifiableList(list);

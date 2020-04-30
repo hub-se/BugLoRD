@@ -1,31 +1,38 @@
-/** License information:
- *    Component: sequitur
- *    Package:   de.unisb.cs.st
- *    Class:     RandomIntegrationTest
- *    Filename:  sequitur/src/test/java/de/unisb/cs/st/RandomIntegrationTest.java
- *
+/**
+ * License information:
+ * Component: sequitur
+ * Package:   de.unisb.cs.st
+ * Class:     RandomIntegrationTest
+ * Filename:  sequitur/src/test/java/de/unisb/cs/st/RandomIntegrationTest.java
+ * <p>
  * This file is part of the Sequitur library developed by Clemens Hammacher
  * at Saarland University. It has been developed for use in the JavaSlicer
  * tool. See http://www.st.cs.uni-saarland.de/javaslicer/ for more information.
- *
+ * <p>
  * Sequitur is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Sequitur is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Sequitur. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,16 +42,7 @@ import java.util.AbstractList;
 import java.util.Collection;
 import java.util.Random;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
+import static org.junit.Assert.*;
 
 
 @RunWith(Parameterized.class)
@@ -69,7 +67,7 @@ public class RandomIntegrationTest {
 
             @Override
             public Object[] get(int index) {
-                return new Object[] { this.random.nextInt(1+index / 10), this.random.nextLong() };
+                return new Object[]{this.random.nextInt(1 + index / 10), this.random.nextLong()};
             }
 
             @Override
@@ -88,7 +86,7 @@ public class RandomIntegrationTest {
             OutputSequence outSeq = new OutputSequence();
             int[] ints = new int[this.length];
             for (int i = 0; i < this.length; ++i) {
-                ints[i] = rand.nextInt(1+this.length/20);
+                ints[i] = rand.nextInt(1 + this.length / 20);
                 outSeq.append(ints[i]);
             }
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -131,13 +129,13 @@ public class RandomIntegrationTest {
             int[] written = new int[numSequences];
 
             for (long i = 0; i < overall; ) {
-            	int seq = rand.nextInt(numSequences);
-            	if (written[seq] < this.length) {
-                    ints[seq][written[seq]] = rand.nextInt(this.length/5);
+                int seq = rand.nextInt(numSequences);
+                if (written[seq] < this.length) {
+                    ints[seq][written[seq]] = rand.nextInt(this.length / 5);
                     outSeqs[seq].append(ints[seq][written[seq]]);
                     ++written[seq];
                     ++i;
-            	}
+                }
             }
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
             ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
@@ -150,7 +148,7 @@ public class RandomIntegrationTest {
             ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
             ObjectInputStream objIn = new ObjectInputStream(byteIn);
             InputSequence[] inSeqs = (InputSequence[]) new InputSequence[numSequences];
-            SharedInputGrammar inGrammar = (SharedInputGrammar)SharedInputGrammar.readFrom(objIn);
+            SharedInputGrammar inGrammar = (SharedInputGrammar) SharedInputGrammar.readFrom(objIn);
             for (int k = 0; k < numSequences; ++k) {
                 inSeqs[k] = InputSequence.readFrom(objIn, inGrammar);
             }

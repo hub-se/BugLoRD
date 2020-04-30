@@ -1,33 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-25">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/optimization/fitting/HarmonicFitterTest">
-					<exception>junit.framework.AssertionFailedError:Expected
-						exception:org.apache.commons.math3.exception.MathIllegalStateException
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>7</number_tests>
-					<failed>1</failed>
-					<passed>6</passed>
-					<nodes>33520</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/optimization/fitting/HarmonicFitter.java">
-					<insert numberlines="3">323-326</insert>
-					<bugtypes>
-						<id id="1.1" lines="322,324">
-							<description>Missing check for zero value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-25">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/optimization/fitting/HarmonicFitterTest">
+                    <exception>junit.framework.AssertionFailedError:Expected
+                        exception:org.apache.commons.math3.exception.MathIllegalStateException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>7</number_tests>
+                    <failed>1</failed>
+                    <passed>6</passed>
+                    <nodes>33520</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/optimization/fitting/HarmonicFitter.java">
+                    <insert numberlines="3">323-326</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="322,324">
+                            <description>Missing check for zero value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

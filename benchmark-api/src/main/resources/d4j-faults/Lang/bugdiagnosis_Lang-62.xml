@@ -1,42 +1,43 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-62">
-			<tests>
-				<testfile path="org/apache/commons/lang/EntitiesTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;[&amp;#12345678;]&gt;
-						but was:&lt;[慎]&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>47</number_tests>
-					<failed>1</failed>
-					<passed>46</passed>
-					<nodes>9554</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang/Entities.java">
-					<insert numberlines="3">850</insert>
-					<insert numberlines="1">920</insert>
-					<insert numberlines="3">925</insert>
-					<insert numberlines="1">926</insert>
-					<bugtypes>
-						<id id="1.1" lines="849">
-							<description>Missing check for entity value.</description>
-						</id>
-						<id id="1.2" lines="919">
-							<description>Missing break.</description>
-						</id>
-						<id id="1.1" lines="924">
-							<description>Missing check for entity value.</description>
-						</id>
-						<id id="1.3" lines="925">
-							<description>Missing exception handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-62">
+            <tests>
+                <testfile path="org/apache/commons/lang/EntitiesTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;[&amp;#12345678;]&gt;
+                        but was:&lt;[慎]&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>47</number_tests>
+                    <failed>1</failed>
+                    <passed>46</passed>
+                    <nodes>9554</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang/Entities.java">
+                    <insert numberlines="3">850</insert>
+                    <insert numberlines="1">920</insert>
+                    <insert numberlines="3">925</insert>
+                    <insert numberlines="1">926</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="849">
+                            <description>Missing check for entity value.</description>
+                        </id>
+                        <id id="1.2" lines="919">
+                            <description>Missing break.</description>
+                        </id>
+                        <id id="1.1" lines="924">
+                            <description>Missing check for entity value.</description>
+                        </id>
+                        <id id="1.3" lines="925">
+                            <description>Missing exception handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

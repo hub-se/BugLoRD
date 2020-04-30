@@ -16,10 +16,10 @@
 
 package com.google.javascript.jscomp;
 
-import static com.google.javascript.jscomp.CheckGlobalNames.UNDEFINED_NAME_WARNING;
-import static com.google.javascript.jscomp.CheckGlobalNames.STRICT_MODULE_DEP_QNAME;
-
 import com.google.javascript.rhino.Node;
+
+import static com.google.javascript.jscomp.CheckGlobalNames.STRICT_MODULE_DEP_QNAME;
+import static com.google.javascript.jscomp.CheckGlobalNames.UNDEFINED_NAME_WARNING;
 
 /**
  * Tests for {@code CheckGlobalNames.java}.
@@ -28,159 +28,160 @@ import com.google.javascript.rhino.Node;
  */
 public class CheckGlobalNamesTest extends CompilerTestCase {
 
-  private boolean injectNamespace = false;
+    private boolean injectNamespace = false;
 
-  public CheckGlobalNamesTest() {
-    super("function alert() {}");
-  }
-
-  @Override
-  protected CompilerPass getProcessor(final Compiler compiler) {
-    final CheckGlobalNames checkGlobalNames = new CheckGlobalNames(
-        compiler, CheckLevel.WARNING);
-    if (injectNamespace) {
-      return new CompilerPass() {
-        public void process(Node externs, Node js) {
-          checkGlobalNames.injectNamespace(
-              new GlobalNamespace(compiler, js))
-              .process(externs, js);
-        }
-      };
-    } else {
-      return checkGlobalNames;
+    public CheckGlobalNamesTest() {
+        super("function alert() {}");
     }
-  }
 
-  @Override
-  public void setUp() {
-    injectNamespace = false;
-    STRICT_MODULE_DEP_QNAME.level = CheckLevel.WARNING;
-  }
+    @Override
+    protected CompilerPass getProcessor(final Compiler compiler) {
+        final CheckGlobalNames checkGlobalNames = new CheckGlobalNames(
+                compiler, CheckLevel.WARNING);
+        if (injectNamespace) {
+            return new CompilerPass() {
+                public void process(Node externs, Node js) {
+                    checkGlobalNames.injectNamespace(
+                            new GlobalNamespace(compiler, js))
+                            .process(externs, js);
+                }
+            };
+        } else {
+            return checkGlobalNames;
+        }
+    }
 
-  private static final String NAMES = "var a = {d: 1}; a.b = 3; a.c = {e: 5};";
+    @Override
+    public void setUp() {
+        injectNamespace = false;
+        STRICT_MODULE_DEP_QNAME.level = CheckLevel.WARNING;
+    }
 
-  public void testRefToDefinedProperties1() {
-    testSame(NAMES + "alert(a.b); alert(a.c.e);");
-  }
+    private static final String NAMES = "var a = {d: 1}; a.b = 3; a.c = {e: 5};";
 
-  public void testRefToDefinedProperties2() {
-    testSame(NAMES + "a.x={}; alert(a.x);");
-  }
+    public void testRefToDefinedProperties1() {
+        testSame(NAMES + "alert(a.b); alert(a.c.e);");
+    }
 
-  public void testRefToDefinedProperties3() {
-    testSame(NAMES + "alert(a.d);");
-  }
+    public void testRefToDefinedProperties2() {
+        testSame(NAMES + "a.x={}; alert(a.x);");
+    }
 
-  public void testRefToMethod1() {
-    testSame("function foo() {}; foo.call();");
-  }
+    public void testRefToDefinedProperties3() {
+        testSame(NAMES + "alert(a.d);");
+    }
 
-  public void testRefToMethod2() {
-    testSame("function foo() {}; foo.call.call();");
-  }
+    public void testRefToMethod1() {
+        testSame("function foo() {}; foo.call();");
+    }
 
-  public void testCallUndefinedFunctionGivesNoWaring() {
-    // We don't bother checking undeclared variables--there's another
-    // pass that does this already.
-    testSame("foo();");
-  }
+    public void testRefToMethod2() {
+        testSame("function foo() {}; foo.call.call();");
+    }
 
-  public void testRefToPropertyOfAliasedName() {
-    // this is ok, because "a" was aliased
-    testSame(NAMES + "alert(a); alert(a.x);");
-  }
+    public void testCallUndefinedFunctionGivesNoWaring() {
+        // We don't bother checking undeclared variables--there's another
+        // pass that does this already.
+        testSame("foo();");
+    }
 
-  public void testRefToUndefinedProperty1() {
-    testSame(NAMES + "alert(a.x);", UNDEFINED_NAME_WARNING);
-  }
+    public void testRefToPropertyOfAliasedName() {
+        // this is ok, because "a" was aliased
+        testSame(NAMES + "alert(a); alert(a.x);");
+    }
 
-  public void testRefToUndefinedProperty2() {
-    testSame(NAMES + "a.x();", UNDEFINED_NAME_WARNING);
-  }
+    public void testRefToUndefinedProperty1() {
+        testSame(NAMES + "alert(a.x);", UNDEFINED_NAME_WARNING);
+    }
 
-  public void testRefToUndefinedProperty3() {
-    testSame(NAMES + "alert(a.c.x);", UNDEFINED_NAME_WARNING);
-  }
+    public void testRefToUndefinedProperty2() {
+        testSame(NAMES + "a.x();", UNDEFINED_NAME_WARNING);
+    }
 
-  public void testRefToDescendantOfUndefinedProperty1() {
-    testSame(NAMES + "var c = a.x.b;", UNDEFINED_NAME_WARNING);
-  }
+    public void testRefToUndefinedProperty3() {
+        testSame(NAMES + "alert(a.c.x);", UNDEFINED_NAME_WARNING);
+    }
 
-  public void testRefToDescendantOfUndefinedProperty2() {
-    testSame(NAMES + "a.x.b();", UNDEFINED_NAME_WARNING);
-  }
+    public void testRefToDescendantOfUndefinedProperty1() {
+        testSame(NAMES + "var c = a.x.b;", UNDEFINED_NAME_WARNING);
+    }
 
-  public void testRefToDescendantOfUndefinedProperty3() {
-    testSame(NAMES + "a.x.b = 3;", UNDEFINED_NAME_WARNING);
-  }
+    public void testRefToDescendantOfUndefinedProperty2() {
+        testSame(NAMES + "a.x.b();", UNDEFINED_NAME_WARNING);
+    }
 
-  public void testUndefinedPrototypeMethodRefGivesNoWarning() {
-    testSame("function Foo() {} var a = new Foo(); a.bar();");
-  }
+    public void testRefToDescendantOfUndefinedProperty3() {
+        testSame(NAMES + "a.x.b = 3;", UNDEFINED_NAME_WARNING);
+    }
 
-  public void testComplexPropAssignGivesNoWarning() {
-    testSame("var a = {}; var b = a.b = 3;");
-  }
+    public void testUndefinedPrototypeMethodRefGivesNoWarning() {
+        testSame("function Foo() {} var a = new Foo(); a.bar();");
+    }
 
-  public void testTypedefGivesNoWarning() {
-    testSame("var a = {}; /** @typedef {number} */ a.b;");
-  }
+    public void testComplexPropAssignGivesNoWarning() {
+        testSame("var a = {}; var b = a.b = 3;");
+    }
 
-  public void testRefToDescendantOfUndefinedPropertyGivesCorrectWarning() {
-    testSame("", NAMES + "a.x.b = 3;", UNDEFINED_NAME_WARNING,
-             UNDEFINED_NAME_WARNING.format("a.x"));
-  }
+    public void testTypedefGivesNoWarning() {
+        testSame("var a = {}; /** @typedef {number} */ a.b;");
+    }
 
-  public void testNamespaceInjection() {
-    injectNamespace = true;
-    testSame(NAMES + "var c = a.x.b;", UNDEFINED_NAME_WARNING);
-  }
+    public void testRefToDescendantOfUndefinedPropertyGivesCorrectWarning() {
+        testSame("", NAMES + "a.x.b = 3;", UNDEFINED_NAME_WARNING,
+                UNDEFINED_NAME_WARNING.format("a.x"));
+    }
 
-  public void testNoWarningForSimpleVarModuleDep1() {
-    testSame(createModuleChain(
-        NAMES,
-        "var c = a;"
-    ));
-  }
+    public void testNamespaceInjection() {
+        injectNamespace = true;
+        testSame(NAMES + "var c = a.x.b;", UNDEFINED_NAME_WARNING);
+    }
 
-  public void testNoWarningForSimpleVarModuleDep2() {
-    testSame(createModuleChain(
-        "var c = a;",
-        NAMES
-    ));
-  }
-  public void testNoWarningForGoodModuleDep1() {
-    testSame(createModuleChain(
-        NAMES,
-        "var c = a.b;"
-    ));
-  }
+    public void testNoWarningForSimpleVarModuleDep1() {
+        testSame(createModuleChain(
+                NAMES,
+                "var c = a;"
+        ));
+    }
 
-  public void testBadModuleDep1() {
-    testSame(createModuleChain(
-        "var c = a.b;",
-        NAMES
-    ), STRICT_MODULE_DEP_QNAME);
-  }
+    public void testNoWarningForSimpleVarModuleDep2() {
+        testSame(createModuleChain(
+                "var c = a;",
+                NAMES
+        ));
+    }
 
-  public void testBadModuleDep2() {
-    testSame(createModuleStar(
-        NAMES,
-        "a.xxx = 3;",
-        "var x = a.xxx;"
-    ), STRICT_MODULE_DEP_QNAME);
-  }
+    public void testNoWarningForGoodModuleDep1() {
+        testSame(createModuleChain(
+                NAMES,
+                "var c = a.b;"
+        ));
+    }
 
-  public void testSelfModuleDep() {
-    testSame(createModuleChain(
-        NAMES + "var c = a.b;"
-    ));
-  }
+    public void testBadModuleDep1() {
+        testSame(createModuleChain(
+                "var c = a.b;",
+                NAMES
+        ), STRICT_MODULE_DEP_QNAME);
+    }
 
-  public void testUndefinedModuleDep1() {
-    testSame(createModuleChain(
-        "var c = a.xxx;",
-        NAMES
-    ), UNDEFINED_NAME_WARNING);
-  }
+    public void testBadModuleDep2() {
+        testSame(createModuleStar(
+                NAMES,
+                "a.xxx = 3;",
+                "var x = a.xxx;"
+        ), STRICT_MODULE_DEP_QNAME);
+    }
+
+    public void testSelfModuleDep() {
+        testSame(createModuleChain(
+                NAMES + "var c = a.b;"
+        ));
+    }
+
+    public void testUndefinedModuleDep1() {
+        testSame(createModuleChain(
+                "var c = a.xxx;",
+                NAMES
+        ), UNDEFINED_NAME_WARNING);
+    }
 }

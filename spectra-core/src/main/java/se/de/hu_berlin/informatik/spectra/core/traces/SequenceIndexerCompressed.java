@@ -1,24 +1,29 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
-import java.util.Collection;
-import java.util.Iterator;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
 import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 public interface SequenceIndexerCompressed {
 
-	public void removeFromSequences(int index);
-	
-	public void removeFromSequences(Collection<Integer> nodeIndicesToRemove);
+    public void removeFromSequences(int index);
 
-	CachedMap<int[]> getNodeIdSequences();
+    public void removeFromSequences(Collection<Integer> nodeIndicesToRemove);
 
-	int[] getNodeIdSequence(int subTraceIndex);
+    CachedMap<int[]> getNodeIdSequences();
 
-	SharedInputGrammar getExecutionTraceInputGrammar();
+    int[] getNodeIdSequence(int subTraceIndex);
 
-	public Iterator<Integer> getNodeIdSequenceIterator(int subTraceId);
+    CachedMap<int[]> getSubTraceIdSequences();
 
-	byte[] getGrammarByteArray();
+    int[] getSubTraceIdSequence(int subTraceIndex);
+
+    SharedInputGrammar getExecutionTraceInputGrammar();
+
+    public Iterator<Integer> getNodeIdSequenceIterator(int subTraceId);
+
+    byte[] getGrammarByteArray();
 
 }

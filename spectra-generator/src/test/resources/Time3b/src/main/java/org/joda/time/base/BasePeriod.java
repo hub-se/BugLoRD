@@ -15,30 +15,20 @@
  */
 package org.joda.time.base;
 
-import java.io.Serializable;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.Duration;
-import org.joda.time.DurationFieldType;
-import org.joda.time.MutablePeriod;
-import org.joda.time.PeriodType;
-import org.joda.time.ReadWritablePeriod;
-import org.joda.time.ReadableDuration;
-import org.joda.time.ReadableInstant;
-import org.joda.time.ReadablePartial;
-import org.joda.time.ReadablePeriod;
+import org.joda.time.*;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.convert.ConverterManager;
 import org.joda.time.convert.PeriodConverter;
 import org.joda.time.field.FieldUtils;
+
+import java.io.Serializable;
 
 /**
  * BasePeriod is an abstract implementation of ReadablePeriod that stores
  * data in a <code>PeriodType</code> and an <code>int[]</code>.
  * <p>
  * This class should generally not be used directly by API users.
- * The {@link ReadablePeriod} interface should be used when different 
+ * The {@link ReadablePeriod} interface should be used when different
  * kinds of period objects are to be referenced.
  * <p>
  * BasePeriod subclasses may be mutable and not thread-safe.
@@ -51,36 +41,46 @@ public abstract class BasePeriod
         extends AbstractPeriod
         implements ReadablePeriod, Serializable {
 
-    /** Serialization version */
+    /**
+     * Serialization version
+     */
     private static final long serialVersionUID = -2110953284060001145L;
-    /** Serialization version */
+    /**
+     * Serialization version
+     */
     private static final ReadablePeriod DUMMY_PERIOD = new AbstractPeriod() {
         public int getValue(int index) {
             return 0;
         }
+
         public PeriodType getPeriodType() {
             return PeriodType.time();
         }
     };
 
-    /** The type of period */
+    /**
+     * The type of period
+     */
     private final PeriodType iType;
-    /** The values */
+    /**
+     * The values
+     */
     private final int[] iValues;
 
     //-----------------------------------------------------------------------
+
     /**
      * Creates a period from a set of field values.
      *
-     * @param years  amount of years in this period, which must be zero if unsupported
+     * @param years   amount of years in this period, which must be zero if unsupported
      * @param months  amount of months in this period, which must be zero if unsupported
-     * @param weeks  amount of weeks in this period, which must be zero if unsupported
-     * @param days  amount of days in this period, which must be zero if unsupported
-     * @param hours  amount of hours in this period, which must be zero if unsupported
-     * @param minutes  amount of minutes in this period, which must be zero if unsupported
-     * @param seconds  amount of seconds in this period, which must be zero if unsupported
+     * @param weeks   amount of weeks in this period, which must be zero if unsupported
+     * @param days    amount of days in this period, which must be zero if unsupported
+     * @param hours   amount of hours in this period, which must be zero if unsupported
+     * @param minutes amount of minutes in this period, which must be zero if unsupported
+     * @param seconds amount of seconds in this period, which must be zero if unsupported
      * @param millis  amount of milliseconds in this period, which must be zero if unsupported
-     * @param type  which set of fields this period supports
+     * @param type    which set of fields this period supports
      * @throws IllegalArgumentException if period type is invalid
      * @throws IllegalArgumentException if an unsupported field's value is non-zero
      */
@@ -96,10 +96,10 @@ public abstract class BasePeriod
     /**
      * Creates a period from the given interval endpoints.
      *
-     * @param startInstant  interval start, in milliseconds
-     * @param endInstant  interval end, in milliseconds
-     * @param type  which set of fields this period supports, null means standard
-     * @param chrono  the chronology to use, null means ISO default
+     * @param startInstant interval start, in milliseconds
+     * @param endInstant   interval end, in milliseconds
+     * @param type         which set of fields this period supports, null means standard
+     * @param chrono       the chronology to use, null means ISO default
      * @throws IllegalArgumentException if period type is invalid
      */
     protected BasePeriod(long startInstant, long endInstant, PeriodType type, Chronology chrono) {
@@ -113,9 +113,9 @@ public abstract class BasePeriod
     /**
      * Creates a period from the given interval endpoints.
      *
-     * @param startInstant  interval start, null means now
-     * @param endInstant  interval end, null means now
-     * @param type  which set of fields this period supports, null means standard
+     * @param startInstant interval start, null means now
+     * @param endInstant   interval end, null means now
+     * @param type         which set of fields this period supports, null means standard
      * @throws IllegalArgumentException if period type is invalid
      */
     protected BasePeriod(ReadableInstant startInstant, ReadableInstant endInstant, PeriodType type) {
@@ -145,8 +145,8 @@ public abstract class BasePeriod
      * {@link DateTimeUtils#isContiguous(ReadablePartial)} for a
      * definition. Both <code>LocalDate</code> and <code>LocalTime</code> are contiguous.
      *
-     * @param start  the start of the period, must not be null
-     * @param end  the end of the period, must not be null
+     * @param start the start of the period, must not be null
+     * @param end   the end of the period, must not be null
      * @param type  which set of fields this period supports, null means standard
      * @throws IllegalArgumentException if the partials are null or invalid
      * @since 1.1
@@ -186,9 +186,9 @@ public abstract class BasePeriod
     /**
      * Creates a period from the given start point and duration.
      *
-     * @param startInstant  the interval start, null means now
-     * @param duration  the duration of the interval, null means zero-length
-     * @param type  which set of fields this period supports, null means standard
+     * @param startInstant the interval start, null means now
+     * @param duration     the duration of the interval, null means zero-length
+     * @param type         which set of fields this period supports, null means standard
      */
     protected BasePeriod(ReadableInstant startInstant, ReadableDuration duration, PeriodType type) {
         super();
@@ -204,9 +204,9 @@ public abstract class BasePeriod
     /**
      * Creates a period from the given duration and end point.
      *
-     * @param duration  the duration of the interval, null means zero-length
-     * @param endInstant  the interval end, null means now
-     * @param type  which set of fields this period supports, null means standard
+     * @param duration   the duration of the interval, null means zero-length
+     * @param endInstant the interval end, null means now
+     * @param type       which set of fields this period supports, null means standard
      */
     protected BasePeriod(ReadableDuration duration, ReadableInstant endInstant, PeriodType type) {
         super();
@@ -225,7 +225,7 @@ public abstract class BasePeriod
      * <p>
      * The calculation uses the hour, minute, second and millisecond fields.
      *
-     * @param duration  the duration, in milliseconds
+     * @param duration the duration, in milliseconds
      */
     protected BasePeriod(long duration) {
         super();
@@ -245,9 +245,9 @@ public abstract class BasePeriod
      * Only fields that are precise will be used.
      * Thus the largest precise field may have a large value.
      *
-     * @param duration  the duration, in milliseconds
-     * @param type  which set of fields this period supports, null means standard
-     * @param chrono  the chronology to use, null means ISO default
+     * @param duration the duration, in milliseconds
+     * @param type     which set of fields this period supports, null means standard
+     * @param chrono   the chronology to use, null means ISO default
      * @throws IllegalArgumentException if period type is invalid
      */
     protected BasePeriod(long duration, PeriodType type, Chronology chrono) {
@@ -261,9 +261,9 @@ public abstract class BasePeriod
     /**
      * Creates a new period based on another using the {@link ConverterManager}.
      *
-     * @param period  the period to convert
-     * @param type  which set of fields this period supports, null means use type from object
-     * @param chrono  the chronology to use, null means ISO default
+     * @param period the period to convert
+     * @param type   which set of fields this period supports, null means use type from object
+     * @param chrono the chronology to use, null means ISO default
      * @throws IllegalArgumentException if period is invalid
      * @throws IllegalArgumentException if an unsupported field's value is non-zero
      */
@@ -286,8 +286,8 @@ public abstract class BasePeriod
      * Constructor used when we trust ourselves.
      * Do not expose publically.
      *
-     * @param values  the values to use, not null, not cloned
-     * @param type  which set of fields this period supports, not null
+     * @param values the values to use, not null, not cloned
+     * @param type   which set of fields this period supports, not null
      */
     protected BasePeriod(int[] values, PeriodType type) {
         super();
@@ -296,11 +296,12 @@ public abstract class BasePeriod
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Validates a period type, converting nulls to a default value and
      * checking the type is suitable for this instance.
-     * 
-     * @param type  the type to check, may be null
+     *
+     * @param type the type to check, may be null
      * @return the validated type to use, not null
      * @throws IllegalArgumentException if the period type is invalid
      */
@@ -309,6 +310,7 @@ public abstract class BasePeriod
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the period type.
      *
@@ -321,7 +323,7 @@ public abstract class BasePeriod
     /**
      * Gets the value at the specified index.
      *
-     * @param index  the index to retrieve
+     * @param index the index to retrieve
      * @return the value of the field at the specified index
      * @throws IndexOutOfBoundsException if the index is invalid
      */
@@ -330,6 +332,7 @@ public abstract class BasePeriod
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the total millisecond duration of this period relative to a start instant.
      * <p>
@@ -342,7 +345,7 @@ public abstract class BasePeriod
      * Similarly, a day can vary at Daylight Savings cutover, typically between
      * 23 and 25 hours.
      *
-     * @param startInstant  the instant to add the period to, thus obtaining the duration
+     * @param startInstant the instant to add the period to, thus obtaining the duration
      * @return the total length of the period as a duration relative to the start instant
      * @throws ArithmeticException if the millis exceeds the capacity of the duration
      */
@@ -366,7 +369,7 @@ public abstract class BasePeriod
      * Similarly, a day can vary at Daylight Savings cutover, typically between
      * 23 and 25 hours.
      *
-     * @param endInstant  the instant to subtract the period from, thus obtaining the duration
+     * @param endInstant the instant to subtract the period from, thus obtaining the duration
      * @return the total length of the period as a duration relative to the end instant
      * @throws ArithmeticException if the millis exceeds the capacity of the duration
      */
@@ -378,20 +381,21 @@ public abstract class BasePeriod
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Checks whether a field type is supported, and if so adds the new value
      * to the relevant index in the specified array.
-     * 
-     * @param type  the field type
-     * @param values  the array to update
-     * @param newValue  the new value to store if successful
+     *
+     * @param type     the field type
+     * @param values   the array to update
+     * @param newValue the new value to store if successful
      */
     private void checkAndUpdate(DurationFieldType type, int[] values, int newValue) {
         int index = indexOf(type);
         if (index == -1) {
             if (newValue != 0) {
                 throw new IllegalArgumentException(
-                    "Period does not support field '" + type.getName() + "'");
+                        "Period does not support field '" + type.getName() + "'");
             }
         } else {
             values[index] = newValue;
@@ -399,10 +403,11 @@ public abstract class BasePeriod
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Sets all the fields of this period from another.
-     * 
-     * @param period  the period to copy from, not null
+     *
+     * @param period the period to copy from, not null
      * @throws IllegalArgumentException if an unsupported field's value is non-zero
      */
     protected void setPeriod(ReadablePeriod period) {
@@ -428,14 +433,14 @@ public abstract class BasePeriod
 
     /**
      * Sets the eight standard the fields in one go.
-     * 
-     * @param years  amount of years in this period, which must be zero if unsupported
+     *
+     * @param years   amount of years in this period, which must be zero if unsupported
      * @param months  amount of months in this period, which must be zero if unsupported
-     * @param weeks  amount of weeks in this period, which must be zero if unsupported
-     * @param days  amount of days in this period, which must be zero if unsupported
-     * @param hours  amount of hours in this period, which must be zero if unsupported
-     * @param minutes  amount of minutes in this period, which must be zero if unsupported
-     * @param seconds  amount of seconds in this period, which must be zero if unsupported
+     * @param weeks   amount of weeks in this period, which must be zero if unsupported
+     * @param days    amount of days in this period, which must be zero if unsupported
+     * @param hours   amount of hours in this period, which must be zero if unsupported
+     * @param minutes amount of minutes in this period, which must be zero if unsupported
+     * @param seconds amount of seconds in this period, which must be zero if unsupported
      * @param millis  amount of milliseconds in this period, which must be zero if unsupported
      * @throws IllegalArgumentException if an unsupported field's value is non-zero
      */
@@ -449,7 +454,7 @@ public abstract class BasePeriod
      * Private method called from constructor.
      */
     private int[] setPeriodInternal(int years, int months, int weeks, int days,
-                                   int hours, int minutes, int seconds, int millis) {
+                                    int hours, int minutes, int seconds, int millis) {
         int[] newValues = new int[size()];
         checkAndUpdate(DurationFieldType.years(), newValues, years);
         checkAndUpdate(DurationFieldType.months(), newValues, months);
@@ -463,11 +468,12 @@ public abstract class BasePeriod
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Sets the value of a field in this period.
-     * 
-     * @param field  the field to set
-     * @param value  the value to set
+     *
+     * @param field the field to set
+     * @param value the value to set
      * @throws IllegalArgumentException if field is is null or not supported.
      */
     protected void setField(DurationFieldType field, int value) {
@@ -476,8 +482,8 @@ public abstract class BasePeriod
 
     /**
      * Sets the value of a field in this period.
-     * 
-     * @param values  the array of values to update
+     *
+     * @param values the array of values to update
      * @param field  the field to set
      * @param value  the value to set
      * @throws IllegalArgumentException if field is null or not supported.
@@ -487,7 +493,7 @@ public abstract class BasePeriod
         if (index == -1) {
             if (value != 0 || field == null) {
                 throw new IllegalArgumentException(
-                    "Period does not support field '" + field + "'");
+                        "Period does not support field '" + field + "'");
             }
         } else {
             values[index] = value;
@@ -496,9 +502,9 @@ public abstract class BasePeriod
 
     /**
      * Adds the value of a field in this period.
-     * 
-     * @param field  the field to set
-     * @param value  the value to set
+     *
+     * @param field the field to set
+     * @param value the value to set
      * @throws IllegalArgumentException if field is is null or not supported.
      */
     protected void addField(DurationFieldType field, int value) {
@@ -507,8 +513,8 @@ public abstract class BasePeriod
 
     /**
      * Adds the value of a field in this period.
-     * 
-     * @param values  the array of values to update
+     *
+     * @param values the array of values to update
      * @param field  the field to set
      * @param value  the value to set
      * @throws IllegalArgumentException if field is is null or not supported.
@@ -518,7 +524,7 @@ public abstract class BasePeriod
         if (index == -1) {
             if (value != 0 || field == null) {
                 throw new IllegalArgumentException(
-                    "Period does not support field '" + field + "'");
+                        "Period does not support field '" + field + "'");
             }
         } else {
             values[index] = FieldUtils.safeAdd(values[index], value);
@@ -527,8 +533,8 @@ public abstract class BasePeriod
 
     /**
      * Merges the fields from another period.
-     * 
-     * @param period  the period to add from, not null
+     *
+     * @param period the period to add from, not null
      * @throws IllegalArgumentException if an unsupported field's value is non-zero
      */
     protected void mergePeriod(ReadablePeriod period) {
@@ -539,9 +545,9 @@ public abstract class BasePeriod
 
     /**
      * Merges the fields from another period.
-     * 
-     * @param values  the array of values to update
-     * @param period  the period to add from, not null
+     *
+     * @param values the array of values to update
+     * @param period the period to add from, not null
      * @return the updated values
      * @throws IllegalArgumentException if an unsupported field's value is non-zero
      */
@@ -556,8 +562,8 @@ public abstract class BasePeriod
 
     /**
      * Adds the fields from another period.
-     * 
-     * @param period  the period to add from, not null
+     *
+     * @param period the period to add from, not null
      * @throws IllegalArgumentException if an unsupported field's value is non-zero
      */
     protected void addPeriod(ReadablePeriod period) {
@@ -568,9 +574,9 @@ public abstract class BasePeriod
 
     /**
      * Adds the fields from another period.
-     * 
-     * @param values  the array of values to update
-     * @param period  the period to add from, not null
+     *
+     * @param values the array of values to update
+     * @param period the period to add from, not null
      * @return the updated values
      * @throws IllegalArgumentException if an unsupported field's value is non-zero
      */
@@ -582,7 +588,7 @@ public abstract class BasePeriod
                 int index = indexOf(type);
                 if (index == -1) {
                     throw new IllegalArgumentException(
-                        "Period does not support field '" + type.getName() + "'");
+                            "Period does not support field '" + type.getName() + "'");
                 } else {
                     values[index] = FieldUtils.safeAdd(getValue(index), value);
                 }
@@ -592,11 +598,12 @@ public abstract class BasePeriod
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Sets the value of the field at the specified index.
-     * 
-     * @param index  the index
-     * @param value  the value to set
+     *
+     * @param index the index
+     * @param value the value to set
      * @throws IndexOutOfBoundsException if the index is invalid
      */
     protected void setValue(int index, int value) {
@@ -609,8 +616,8 @@ public abstract class BasePeriod
      * In version 2.0 and later, this method copies the array into the original.
      * This is because the instance variable has been changed to be final to satisfy the Java Memory Model.
      * This only impacts subclasses that are mutable.
-     * 
-     * @param values  the array of values
+     *
+     * @param values the array of values
      */
     protected void setValues(int[] values) {
         System.arraycopy(values, 0, iValues, 0, iValues.length);

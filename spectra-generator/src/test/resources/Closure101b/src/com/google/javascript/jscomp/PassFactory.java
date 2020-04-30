@@ -19,7 +19,6 @@ package com.google.javascript.jscomp;
 import com.google.common.base.Preconditions;
 
 
-
 /**
  * A factory for creating JSCompiler passes based on the Options
  * injected.  Contains all meta-data about compiler passes (like
@@ -30,63 +29,63 @@ import com.google.common.base.Preconditions;
  */
 public abstract class PassFactory {
 
-  private final String name;
-  private final boolean isOneTimePass;
-  private boolean isCreated = false;
+    private final String name;
+    private final boolean isOneTimePass;
+    private boolean isCreated = false;
 
-  /**
-   * @param name The name of the pass that this factory creates.
-   * @param isOneTimePass If true, the pass produced by this factory can
-   *     only be run once.
-   */
-  protected PassFactory(String name, boolean isOneTimePass) {
-    this.name = name;
-    this.isOneTimePass = isOneTimePass;
-  }
-
-  /**
-   * @return The name of this pass.
-   */
-  String getName() {
-    return name;
-  }
-
-  /**
-   * @return Whether the pass produced by this factory can only be run once.
-   */
-  boolean isOneTimePass() {
-    return isOneTimePass;
-  }
-
-  /**
-   * Make a new pass factory that only creates one-time passes.
-   */
-  PassFactory makeOneTimePass() {
-    if (isOneTimePass()) {
-      return this;
+    /**
+     * @param name          The name of the pass that this factory creates.
+     * @param isOneTimePass If true, the pass produced by this factory can
+     *                      only be run once.
+     */
+    protected PassFactory(String name, boolean isOneTimePass) {
+        this.name = name;
+        this.isOneTimePass = isOneTimePass;
     }
 
-    final PassFactory self = this;
-    return new PassFactory(name, true /* one time pass */) {
-      @Override
-      protected CompilerPass createInternal(AbstractCompiler compiler) {
-        return self.createInternal(compiler);
-      }
-    };
-  }
+    /**
+     * @return The name of this pass.
+     */
+    String getName() {
+        return name;
+    }
 
-  /**
-   * Creates a new compiler pass to be run.
-   */
-  final CompilerPass create(AbstractCompiler compiler) {
-    Preconditions.checkState(!isCreated || !isOneTimePass,
-        "One-time passes cannot be run multiple times: " + name);
-    isCreated = true;
-    return createInternal(compiler);
-  }
+    /**
+     * @return Whether the pass produced by this factory can only be run once.
+     */
+    boolean isOneTimePass() {
+        return isOneTimePass;
+    }
 
-  /**
-   * Creates a new compiler pass to be run.
-   */
-  abstract protected CompilerPass createInternal(AbstractCompiler compiler);
+    /**
+     * Make a new pass factory that only creates one-time passes.
+     */
+    PassFactory makeOneTimePass() {
+        if (isOneTimePass()) {
+            return this;
+        }
+
+        final PassFactory self = this;
+        return new PassFactory(name, true /* one time pass */) {
+            @Override
+            protected CompilerPass createInternal(AbstractCompiler compiler) {
+                return self.createInternal(compiler);
+            }
+        };
+    }
+
+    /**
+     * Creates a new compiler pass to be run.
+     */
+    final CompilerPass create(AbstractCompiler compiler) {
+        Preconditions.checkState(!isCreated || !isOneTimePass,
+                "One-time passes cannot be run multiple times: " + name);
+        isCreated = true;
+        return createInternal(compiler);
+    }
+
+    /**
+     * Creates a new compiler pass to be run.
+     */
+    abstract protected CompilerPass createInternal(AbstractCompiler compiler);
 }

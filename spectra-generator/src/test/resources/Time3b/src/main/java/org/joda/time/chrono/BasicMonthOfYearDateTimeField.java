@@ -15,11 +15,7 @@
  */
 package org.joda.time.chrono;
 
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.DurationField;
-import org.joda.time.ReadablePartial;
+import org.joda.time.*;
 import org.joda.time.field.FieldUtils;
 import org.joda.time.field.ImpreciseDateTimeField;
 
@@ -33,7 +29,9 @@ import org.joda.time.field.ImpreciseDateTimeField;
  */
 class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
 
-    /** Serialization version */
+    /**
+     * Serialization version
+     */
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -8258715387168736L;
 
@@ -45,7 +43,7 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
 
     /**
      * Restricted constructor.
-     * 
+     *
      * @param leapMonth the month of year that leaps
      */
     BasicMonthOfYearDateTimeField(BasicChronology chronology, int leapMonth) {
@@ -61,19 +59,21 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Get the Month component of the specified time instant.
      *
+     * @param instant the time instant in millis to query.
+     * @return the month extracted from the input.
      * @see org.joda.time.DateTimeField#get(long)
      * @see org.joda.time.ReadableDateTime#getMonthOfYear()
-     * @param instant  the time instant in millis to query.
-     * @return the month extracted from the input.
      */
     public int get(long instant) {
         return iChronology.getMonthOfYear(instant);
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Add the specified month to the specified time instant.
      * The amount added may be negative.<p>
@@ -82,12 +82,12 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
      * sane value. e.g.<p>
      * 07-31 - (1 month) = 06-30<p>
      * 03-31 - (1 month) = 02-28 or 02-29 depending<p>
-     * 
-     * @see org.joda.time.DateTimeField#add
-     * @see org.joda.time.ReadWritableDateTime#addMonths(int)
-     * @param instant  the time instant in millis to update.
+     *
+     * @param instant the time instant in millis to update.
      * @param months  the months to add (can be negative).
      * @return the updated time instant.
+     * @see org.joda.time.DateTimeField#add
+     * @see org.joda.time.ReadWritableDateTime#addMonths(int)
      */
     public long add(long instant, int months) {
         if (months == 0) {
@@ -143,13 +143,13 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
         // get proper date part, and return result
         //
         long datePart =
-            iChronology.getYearMonthDayMillis(yearToUse, monthToUse, dayToUse);
+                iChronology.getYearMonthDayMillis(yearToUse, monthToUse, dayToUse);
         return datePart + timePart;
     }
 
     //-----------------------------------------------------------------------
     public long add(long instant, long months) {
-        int i_months = (int)months;
+        int i_months = (int) months;
         if (i_months == months) {
             return add(instant, i_months);
         }
@@ -169,7 +169,7 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
         } else {
             yearToUse = thisYear + (monthToUse / iMax) - 1;
             monthToUse = Math.abs(monthToUse);
-            int remMonthToUse = (int)(monthToUse % iMax);
+            int remMonthToUse = (int) (monthToUse % iMax);
             if (remMonthToUse == 0) {
                 remMonthToUse = iMax;
             }
@@ -180,14 +180,14 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
         }
 
         if (yearToUse < iChronology.getMinYear() ||
-            yearToUse > iChronology.getMaxYear()) {
+                yearToUse > iChronology.getMaxYear()) {
 
             throw new IllegalArgumentException
-                ("Magnitude of add amount is too large: " + months);
+                    ("Magnitude of add amount is too large: " + months);
         }
 
-        int i_yearToUse = (int)yearToUse;
-        int i_monthToUse = (int)monthToUse;
+        int i_yearToUse = (int) yearToUse;
+        int i_monthToUse = (int) monthToUse;
 
         int dayToUse = iChronology.getDayOfMonth(instant, thisYear, thisMonth);
         int maxDay = iChronology.getDaysInYearMonth(i_yearToUse, i_monthToUse);
@@ -196,7 +196,7 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
         }
 
         long datePart =
-            iChronology.getYearMonthDayMillis(i_yearToUse, i_monthToUse, dayToUse);
+                iChronology.getYearMonthDayMillis(i_yearToUse, i_monthToUse, dayToUse);
         return datePart + timePart;
     }
 
@@ -226,14 +226,15 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Add to the Month component of the specified time instant
      * wrapping around within that component if necessary.
-     * 
-     * @see org.joda.time.DateTimeField#addWrapField
-     * @param instant  the time instant in millis to update.
+     *
+     * @param instant the time instant in millis to update.
      * @param months  the months to add (can be negative).
      * @return the updated time instant.
+     * @see org.joda.time.DateTimeField#addWrapField
      */
     public long addWrapField(long instant, int months) {
         return set(instant, FieldUtils.getWrappedValue(get(instant), months, MIN, iMax));
@@ -255,11 +256,11 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
         // Before adjusting for remainder, account for special case of add
         // where the day-of-month is forced to the nearest sane value.
         int minuendDom = iChronology.getDayOfMonth
-            (minuendInstant, minuendYear, minuendMonth);
+                (minuendInstant, minuendYear, minuendMonth);
         if (minuendDom == iChronology.getDaysInYearMonth(minuendYear, minuendMonth)) {
             // Last day of the minuend month...
             int subtrahendDom = iChronology.getDayOfMonth
-                (subtrahendInstant, subtrahendYear, subtrahendMonth);
+                    (subtrahendInstant, subtrahendYear, subtrahendMonth);
             if (subtrahendDom > minuendDom) {
                 // ...and day of subtrahend month is larger.
                 // Note: This works fine, but it ideally shouldn't invoke other
@@ -270,9 +271,9 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
 
         // Inlined remainder method to avoid duplicate calls.
         long minuendRem = minuendInstant
-            - iChronology.getYearMonthMillis(minuendYear, minuendMonth);
+                - iChronology.getYearMonthMillis(minuendYear, minuendMonth);
         long subtrahendRem = subtrahendInstant
-            - iChronology.getYearMonthMillis(subtrahendYear, subtrahendMonth);
+                - iChronology.getYearMonthMillis(subtrahendYear, subtrahendMonth);
 
         if (minuendRem < subtrahendRem) {
             difference--;
@@ -282,6 +283,7 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Set the Month component of the specified time instant.<p>
      * If the new month has less total days than the specified
@@ -289,11 +291,11 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
      * sane value. e.g.<p>
      * 07-31 to month 6 = 06-30<p>
      * 03-31 to month 2 = 02-28 or 02-29 depending<p>
-     * 
-     * @param instant  the time instant in millis to update.
-     * @param month  the month (1,12) to update the time to.
+     *
+     * @param instant the time instant in millis to update.
+     * @param month   the month (1,12) to update the time to.
      * @return the updated time instant.
-     * @throws IllegalArgumentException  if month is invalid
+     * @throws IllegalArgumentException if month is invalid
      */
     public long set(long instant, int month) {
         FieldUtils.verifyValueBounds(this, month, MIN, iMax);
@@ -308,7 +310,7 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
         }
         // Return newly calculated millis value
         return iChronology.getYearMonthDayMillis(thisYear, month, thisDom) +
-            iChronology.getMillisOfDay(instant);
+                iChronology.getMillisOfDay(instant);
     }
 
     //-----------------------------------------------------------------------
@@ -358,6 +360,7 @@ class BasicMonthOfYearDateTimeField extends ImpreciseDateTimeField {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Serialization singleton
      */

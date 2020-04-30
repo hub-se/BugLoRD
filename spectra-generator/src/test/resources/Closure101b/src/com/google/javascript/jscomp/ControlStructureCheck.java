@@ -22,58 +22,56 @@ import com.google.javascript.rhino.Token;
 
 /**
  * Check for invalid breaks and continues in the program.
- *
-*
  */
 class ControlStructureCheck implements CompilerPass {
 
-  private AbstractCompiler compiler;
+    private AbstractCompiler compiler;
 
-  private String sourceName = null;
+    private String sourceName = null;
 
-  static final DiagnosticType USE_OF_WITH = DiagnosticType.warning(
-      "JSC_USE_OF_WITH",
-      "The use of the 'with' structure should be avoided.");
+    static final DiagnosticType USE_OF_WITH = DiagnosticType.warning(
+            "JSC_USE_OF_WITH",
+            "The use of the 'with' structure should be avoided.");
 
-  ControlStructureCheck(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
+    ControlStructureCheck(AbstractCompiler compiler) {
+        this.compiler = compiler;
+    }
 
-  @Override
-  public void process(Node externs, Node root) {
-    check(root);
-  }
+    @Override
+    public void process(Node externs, Node root) {
+        check(root);
+    }
 
-  /**
-   * Reports errors for any invalid use of control structures.
-   *
-   * @param node Current node to check.
-   */
-  private void check(Node node) {
-    switch (node.getType()) {
-      case Token.WITH:
-        JSDocInfo info = node.getJSDocInfo();
-        boolean allowWith =
-            info != null && info.getSuppressions().contains("with");
-        if (!allowWith) {
-          report(node, USE_OF_WITH);
+    /**
+     * Reports errors for any invalid use of control structures.
+     *
+     * @param node Current node to check.
+     */
+    private void check(Node node) {
+        switch (node.getType()) {
+            case Token.WITH:
+                JSDocInfo info = node.getJSDocInfo();
+                boolean allowWith =
+                        info != null && info.getSuppressions().contains("with");
+                if (!allowWith) {
+                    report(node, USE_OF_WITH);
+                }
+                break;
+
+            case Token.SCRIPT:
+                // Remember the source file name in case we need to report an error.
+                sourceName = (String) node.getProp(Node.SOURCENAME_PROP);
+                break;
         }
-        break;
 
-      case Token.SCRIPT:
-        // Remember the source file name in case we need to report an error.
-        sourceName = (String) node.getProp(Node.SOURCENAME_PROP);
-        break;
+        for (Node bChild = node.getFirstChild(); bChild != null; ) {
+            Node next = bChild.getNext();
+            check(bChild);
+            bChild = next;
+        }
     }
 
-    for (Node bChild = node.getFirstChild(); bChild != null;) {
-      Node next = bChild.getNext();
-      check(bChild);
-      bChild = next;
+    private void report(Node n, DiagnosticType error) {
+        compiler.report(JSError.make(sourceName, n, error));
     }
-  }
-
-  private void report(Node n, DiagnosticType error) {
-    compiler.report(JSError.make(sourceName, n, error));
-  }
 }

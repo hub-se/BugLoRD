@@ -42,35 +42,40 @@ package com.google.javascript.rhino.testing;
 import com.google.javascript.rhino.ErrorReporter;
 import com.google.javascript.rhino.jstype.JSType;
 import com.google.javascript.rhino.jstype.StaticScope;
-
 import junit.framework.Assert;
 
 /**
  * Helper methods for making assertions about the validity of types.
+ *
  * @author nicksantos@google.com (Nick Santos)
  */
 public class Asserts {
-  private Asserts() {} // all static
+    private Asserts() {
+    } // all static
 
-  public static JSType assertResolvesToSame(JSType type) {
-    Assert.assertSame(type, assertValidResolve(type));
-    return type;
-  }
+    public static JSType assertResolvesToSame(JSType type) {
+        Assert.assertSame(type, assertValidResolve(type));
+        return type;
+    }
 
-  /** @return The resolved type */
-  public static JSType assertValidResolve(JSType type) {
-    return assertValidResolve(type, new EmptyScope());
-  }
+    /**
+     * @return The resolved type
+     */
+    public static JSType assertValidResolve(JSType type) {
+        return assertValidResolve(type, new EmptyScope());
+    }
 
-  /** @return The resolved type */
-  public static JSType assertValidResolve(
-      JSType type, StaticScope<JSType> scope) {
-    ErrorReporter t = TestErrorReporter.forNoExpectedReports();
-    JSType resolvedType = type.resolve(t, scope);
-    Assert.assertEquals("JSType#resolve should not affect object equality",
-        type, resolvedType);
-    Assert.assertEquals("JSType#resolve should not affect hash codes",
-        type.hashCode(), resolvedType.hashCode());
-    return resolvedType;
-  }
+    /**
+     * @return The resolved type
+     */
+    public static JSType assertValidResolve(
+            JSType type, StaticScope<JSType> scope) {
+        ErrorReporter t = TestErrorReporter.forNoExpectedReports();
+        JSType resolvedType = type.resolve(t, scope);
+        Assert.assertEquals("JSType#resolve should not affect object equality",
+                type, resolvedType);
+        Assert.assertEquals("JSType#resolve should not affect hash codes",
+                type.hashCode(), resolvedType.hashCode());
+        return resolvedType;
+    }
 }

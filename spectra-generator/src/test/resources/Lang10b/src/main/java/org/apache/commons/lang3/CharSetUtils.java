@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,11 +22,12 @@ package org.apache.commons.lang3;
  * <p>This class handles {@code null} input gracefully.
  * An exception will not be thrown for a {@code null} input.
  * Each method documents its behaviour in more detail.</p>
- * 
+ *
  * <p>#ThreadSafe#</p>
+ *
+ * @version $Id$
  * @see CharSet
  * @since 1.0
- * @version $Id$
  */
 public class CharSetUtils {
 
@@ -38,11 +39,12 @@ public class CharSetUtils {
      * to operate.</p>
      */
     public CharSetUtils() {
-      super();
+        super();
     }
 
     // Squeeze
     //-----------------------------------------------------------------------
+
     /**
      * <p>Squeezes any repetitions of a character that is mentioned in the
      * supplied set.</p>
@@ -56,10 +58,10 @@ public class CharSetUtils {
      * CharSetUtils.squeeze("hello", "a-e") = "hello"
      * </pre>
      *
-     * @see CharSet#getInstance(java.lang.String...) for set-syntax.
-     * @param str  the string to squeeze, may be null
-     * @param set  the character set to use for manipulation, may be null
+     * @param str the string to squeeze, may be null
+     * @param set the character set to use for manipulation, may be null
      * @return the modified String, {@code null} if null string input
+     * @see CharSet#getInstance(java.lang.String...) for set-syntax.
      */
     public static String squeeze(String str, String... set) {
         if (StringUtils.isEmpty(str) || deepEmpty(set)) {
@@ -85,6 +87,7 @@ public class CharSetUtils {
 
     // Count
     //-----------------------------------------------------------------------
+
     /**
      * <p>Takes an argument in set-syntax, see evaluateSet,
      * and returns the number of characters present in the specified string.</p>
@@ -98,10 +101,10 @@ public class CharSetUtils {
      * CharSetUtils.count("hello", "a-e") = 1
      * </pre>
      *
-     * @see CharSet#getInstance(java.lang.String...) for set-syntax.
-     * @param str  String to count characters in, may be null
-     * @param set  String[] set of characters to count, may be null
+     * @param str String to count characters in, may be null
+     * @param set String[] set of characters to count, may be null
      * @return the character count, zero if null string input
+     * @see CharSet#getInstance(java.lang.String...) for set-syntax.
      */
     public static int count(String str, String... set) {
         if (StringUtils.isEmpty(str) || deepEmpty(set)) {
@@ -119,6 +122,7 @@ public class CharSetUtils {
 
     // Keep
     //-----------------------------------------------------------------------
+
     /**
      * <p>Takes an argument in set-syntax, see evaluateSet,
      * and keeps any of characters present in the specified string.</p>
@@ -132,10 +136,10 @@ public class CharSetUtils {
      * CharSetUtils.keep("hello", "le")  = "ell"
      * </pre>
      *
-     * @see CharSet#getInstance(java.lang.String...) for set-syntax.
-     * @param str  String to keep characters from, may be null
-     * @param set  String[] set of characters to keep, may be null
+     * @param str String to keep characters from, may be null
+     * @param set String[] set of characters to keep, may be null
      * @return the modified String, {@code null} if null string input
+     * @see CharSet#getInstance(java.lang.String...) for set-syntax.
      * @since 2.0
      */
     public static String keep(String str, String... set) {
@@ -150,6 +154,7 @@ public class CharSetUtils {
 
     // Delete
     //-----------------------------------------------------------------------
+
     /**
      * <p>Takes an argument in set-syntax, see evaluateSet,
      * and deletes any of characters present in the specified string.</p>
@@ -163,10 +168,10 @@ public class CharSetUtils {
      * CharSetUtils.delete("hello", "le")  = "ho"
      * </pre>
      *
-     * @see CharSet#getInstance(java.lang.String...) for set-syntax.
-     * @param str  String to delete characters from, may be null
-     * @param set  String[] set of characters to delete, may be null
+     * @param str String to delete characters from, may be null
+     * @param set String[] set of characters to delete, may be null
      * @return the modified String, {@code null} if null string input
+     * @see CharSet#getInstance(java.lang.String...) for set-syntax.
      */
     public static String delete(String str, String... set) {
         if (StringUtils.isEmpty(str) || deepEmpty(set)) {
@@ -176,11 +181,12 @@ public class CharSetUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Implementation of delete and keep
      *
-     * @param str String to modify characters within
-     * @param set String[] set of characters to modify
+     * @param str    String to modify characters within
+     * @param set    String[] set of characters to modify
      * @param expect whether to evaluate on match, or non-match
      * @return the modified String, not null
      */
@@ -189,16 +195,16 @@ public class CharSetUtils {
         StringBuilder buffer = new StringBuilder(str.length());
         char[] chrs = str.toCharArray();
         int sz = chrs.length;
-        for(int i=0; i<sz; i++) {
-            if(chars.contains(chrs[i]) == expect) {
+        for (int i = 0; i < sz; i++) {
+            if (chars.contains(chrs[i]) == expect) {
                 buffer.append(chrs[i]);
             }
         }
         return buffer.toString();
     }
 
-    /** 
-     * Determines whether or not all the Strings in an array are 
+    /**
+     * Determines whether or not all the Strings in an array are
      * empty or not.
      *
      * @param strings String[] whose elements are being checked for emptiness

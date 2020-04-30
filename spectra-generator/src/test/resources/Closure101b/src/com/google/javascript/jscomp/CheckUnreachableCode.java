@@ -16,70 +16,68 @@
 
 package com.google.javascript.jscomp;
 
-import com.google.javascript.jscomp.ControlFlowGraph.Branch;
 import com.google.javascript.jscomp.CheckLevel;
+import com.google.javascript.jscomp.ControlFlowGraph.Branch;
 import com.google.javascript.jscomp.NodeTraversal.ScopedCallback;
-import com.google.javascript.jscomp.graph.GraphReachability;
 import com.google.javascript.jscomp.graph.GraphNode;
+import com.google.javascript.jscomp.graph.GraphReachability;
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
 
 /**
  * Use {@link ControlFlowGraph} and {@link GraphReachability} to inform user
  * about unreachable code.
- *
-*
  */
 class CheckUnreachableCode implements ScopedCallback {
 
-  static final DiagnosticType UNREACHABLE_CODE = DiagnosticType.error(
-      "JSC_UNREACHABLE_CODE", "unreachable code");
+    static final DiagnosticType UNREACHABLE_CODE = DiagnosticType.error(
+            "JSC_UNREACHABLE_CODE", "unreachable code");
 
-  private final AbstractCompiler compiler;
-  private final CheckLevel level;
+    private final AbstractCompiler compiler;
+    private final CheckLevel level;
 
-  CheckUnreachableCode(AbstractCompiler compiler, CheckLevel level) {
-    this.compiler = compiler;
-    this.level = level;
-  }
-
-  @Override
-  public void enterScope(NodeTraversal t) {
-    new GraphReachability<Node, ControlFlowGraph.Branch>(
-        t.getControlFlowGraph()).compute(
-            t.getControlFlowGraph().getEntry().getValue());
-  }
-
-  @Override
-  public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
-    GraphNode<Node, Branch> gNode = t.getControlFlowGraph().getNode(n);
-    if (gNode != null && gNode.getAnnotation() != GraphReachability.REACHABLE) {
-
-      // Only report error when there are some line number informations.
-      // There are synthetic nodes with no line number informations, nodes
-      // introduce by other passes (although not likely since this pass should
-      // be executed early) or some rhino bug.
-      if (n.getLineno() != -1 &&
-          // Allow spurious semi-colons and spurious breaks.
-          n.getType() != Token.EMPTY && n.getType() != Token.BREAK) {
-        compiler.report(JSError.make(t, n, level, UNREACHABLE_CODE));
-        // From now on, we are going to assume the user fixed the error and not
-        // give more warning related to code section reachable from this node.
-        new GraphReachability<Node, ControlFlowGraph.Branch>(
-            t.getControlFlowGraph()).recompute(n);
-
-        // Saves time by not traversing children.
-        return false;
-      }
+    CheckUnreachableCode(AbstractCompiler compiler, CheckLevel level) {
+        this.compiler = compiler;
+        this.level = level;
     }
-    return true;
-  }
 
-  @Override
-  public void exitScope(NodeTraversal t) {
-  }
+    @Override
+    public void enterScope(NodeTraversal t) {
+        new GraphReachability<Node, ControlFlowGraph.Branch>(
+                t.getControlFlowGraph()).compute(
+                t.getControlFlowGraph().getEntry().getValue());
+    }
 
-  @Override
-  public void visit(NodeTraversal t, Node n, Node parent) {
-  }
+    @Override
+    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+        GraphNode<Node, Branch> gNode = t.getControlFlowGraph().getNode(n);
+        if (gNode != null && gNode.getAnnotation() != GraphReachability.REACHABLE) {
+
+            // Only report error when there are some line number informations.
+            // There are synthetic nodes with no line number informations, nodes
+            // introduce by other passes (although not likely since this pass should
+            // be executed early) or some rhino bug.
+            if (n.getLineno() != -1 &&
+                    // Allow spurious semi-colons and spurious breaks.
+                    n.getType() != Token.EMPTY && n.getType() != Token.BREAK) {
+                compiler.report(JSError.make(t, n, level, UNREACHABLE_CODE));
+                // From now on, we are going to assume the user fixed the error and not
+                // give more warning related to code section reachable from this node.
+                new GraphReachability<Node, ControlFlowGraph.Branch>(
+                        t.getControlFlowGraph()).recompute(n);
+
+                // Saves time by not traversing children.
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void exitScope(NodeTraversal t) {
+    }
+
+    @Override
+    public void visit(NodeTraversal t, Node n, Node parent) {
+    }
 }

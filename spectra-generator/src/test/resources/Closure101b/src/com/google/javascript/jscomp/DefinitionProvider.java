@@ -23,17 +23,15 @@ import java.util.Collection;
 
 /**
  * Maps variable uses sites to variable definition sites.
- *
-*
  */
 interface DefinitionProvider {
-  /**
-   * Returns a collection of definitions that characterize the
-   * possible values of a variable or property.  If information is
-   * unavailable or incomplete, return null.  This function should
-   * never return an empty collection.
-   *
-   * @return non-empty definition collection, or null.
-   */
-  Collection<Definition> getDefinitionsReferencedAt(Node useSite);
+    /**
+     * Returns a collection of definitions that characterize the
+     * possible values of a variable or property.  If information is
+     * unavailable or incomplete, return null.  This function should
+     * never return an empty collection.
+     *
+     * @return non-empty definition collection, or null.
+     */
+    Collection<Definition> getDefinitionsReferencedAt(Node useSite);
 }

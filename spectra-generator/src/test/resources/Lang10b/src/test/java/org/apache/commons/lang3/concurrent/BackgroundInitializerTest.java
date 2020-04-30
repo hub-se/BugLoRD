@@ -17,12 +17,14 @@
 package org.apache.commons.lang3.concurrent;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.*;
 
 public class BackgroundInitializerTest {
     /**
@@ -156,7 +158,7 @@ public class BackgroundInitializerTest {
     /**
      * Tests calling get() before start(). This should cause an exception.
      */
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testGetBeforeStart() throws ConcurrentException {
         BackgroundInitializerTestImpl init = new BackgroundInitializerTestImpl();
         init.get();
@@ -269,13 +271,19 @@ public class BackgroundInitializerTest {
      */
     private static class BackgroundInitializerTestImpl extends
             BackgroundInitializer<Integer> {
-        /** An exception to be thrown by initialize(). */
+        /**
+         * An exception to be thrown by initialize().
+         */
         Exception ex;
 
-        /** A flag whether the background task should sleep a while. */
+        /**
+         * A flag whether the background task should sleep a while.
+         */
         boolean shouldSleep;
 
-        /** The number of invocations of initialize(). */
+        /**
+         * The number of invocations of initialize().
+         */
         volatile int initializeCalls;
 
         public BackgroundInitializerTestImpl() {

@@ -15,9 +15,9 @@ import org.mockito.stubbing.Answer;
 import java.io.Serializable;
 
 public class ReturnsDeepStubs implements Answer<Object>, Serializable {
-    
+
     private static final long serialVersionUID = -6926328908792880098L;
-    
+
     private Answer<Object> delegate = new ReturnsEmptyValues();
 
     public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -32,7 +32,7 @@ public class ReturnsDeepStubs implements Answer<Object>, Serializable {
         final Object mock = Mockito.mock(clz, this);
 
         MockHandlerInterface<Object> handler = new MockUtil().getMockHandler(invocation.getMock());
-        InvocationContainerImpl container = (InvocationContainerImpl)handler.getInvocationContainer();
+        InvocationContainerImpl container = (InvocationContainerImpl) handler.getInvocationContainer();
         container.addAnswer(new Answer<Object>() {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 return mock;

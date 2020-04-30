@@ -7,7 +7,7 @@ package org.mockito.internal.verification;
 import org.mockito.verification.VerificationMode;
 
 public class VerificationModeFactory {
-    
+
     public static VerificationMode atLeastOnce() {
         return atLeast(1);
     }

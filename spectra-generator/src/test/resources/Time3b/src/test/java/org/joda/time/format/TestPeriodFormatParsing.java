@@ -15,17 +15,12 @@
  */
 package org.joda.time.format;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.joda.time.*;
 
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * This class is a Junit unit test for PeriodFormat.
@@ -45,10 +40,10 @@ public class TestPeriodFormatParsing extends TestCase {
     private static final DateTimeZone LONDON = DateTimeZone.forID("Europe/London");
     private static final DateTimeZone TOKYO = DateTimeZone.forID("Asia/Tokyo");
 
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
     // 2002-06-09
     private long TEST_TIME_NOW = (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
 
@@ -89,7 +84,8 @@ public class TestPeriodFormatParsing extends TestCase {
     }
 
     //-----------------------------------------------------------------------
-    public void testParseStandard1() {}
+    public void testParseStandard1() {
+    }
 // Defects4J: flaky method
 //     public void testParseStandard1() {
 //         PeriodFormatter parser = PeriodFormat.getDefault();
@@ -99,12 +95,12 @@ public class TestPeriodFormatParsing extends TestCase {
 
     public void testParseCustom1() {
         PeriodFormatter formatter = new PeriodFormatterBuilder()
-            .printZeroAlways()
-            .appendHours()
-            .appendSuffix(":")
-            .minimumPrintedDigits(2)
-            .appendMinutes()
-            .toFormatter();
+                .printZeroAlways()
+                .appendHours()
+                .appendSuffix(":")
+                .minimumPrintedDigits(2)
+                .appendMinutes()
+                .toFormatter();
 
         Period p;
 

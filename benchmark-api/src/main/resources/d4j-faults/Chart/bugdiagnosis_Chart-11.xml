@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-11">
-			<tests>
-				<testfile path="org/jfree/chart/util/junit/ShapeUtilitiesTests">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>543</number_tests>
-					<failed>1</failed>
-					<passed>542</passed>
-					<nodes>45239</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/jfree/chart/util/ShapeUtilities.java">
-					<change>275</change>
-					<bugtypes>
-						<id id="3.1" lines="275">
-							<description>Incorrect variable used. Possible typographical
-								error.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-11">
+            <tests>
+                <testfile path="org/jfree/chart/util/junit/ShapeUtilitiesTests">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>543</number_tests>
+                    <failed>1</failed>
+                    <passed>542</passed>
+                    <nodes>45239</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/jfree/chart/util/ShapeUtilities.java">
+                    <change>275</change>
+                    <bugtypes>
+                        <id id="3.1" lines="275">
+                            <description>Incorrect variable used. Possible typographical
+                                error.
+                            </description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

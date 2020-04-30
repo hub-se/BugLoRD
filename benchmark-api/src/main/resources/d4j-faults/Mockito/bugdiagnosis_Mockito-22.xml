@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-22">
-			<tests>
-				<testfile path="org/mockito/internal/matchers/EqualityTest">
-					<exception>java.lang.RuntimeException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>567</number_tests>
-					<failed>1</failed>
-					<passed>566</passed>
-					<nodes>4263</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/internal/matchers/Equality.java">
-					<insert numberlines="3">13</insert>
-					<bugtypes>
-						<id id="1.2" lines="13">
-							<description>Incorrect conditions.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-22">
+            <tests>
+                <testfile path="org/mockito/internal/matchers/EqualityTest">
+                    <exception>java.lang.RuntimeException</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>567</number_tests>
+                    <failed>1</failed>
+                    <passed>566</passed>
+                    <nodes>4263</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/internal/matchers/Equality.java">
+                    <insert numberlines="3">13</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="13">
+                            <description>Incorrect conditions.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

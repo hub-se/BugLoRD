@@ -4,9 +4,9 @@
  */
 package org.mockito.internal.matchers;
 
-import java.io.Serializable;
-
 import org.hamcrest.Matcher;
+
+import java.io.Serializable;
 
 @SuppressWarnings("unchecked")
 public interface MatcherDecorator extends Serializable {

@@ -1,37 +1,38 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-36">
-			<tests>
-				<testfile path="org/apache/commons/math/fraction/BigFractionTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;5.0&gt;
-						but was:&lt;NaN&gt;:-
-						org.apache.commons.math.fraction.BigFractionTest::testDoubleValueForLargeNumeratorAndDenominator:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;5.0&gt; but
-						was:&lt;NaN&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>94</number_tests>
-					<failed>2</failed>
-					<passed>92</passed>
-					<nodes>31706</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/fraction/BigFraction.java">
-					<insert numberlines="6">686-688</insert>
-					<insert numberlines="6">733-735</insert>
-					<bugtypes>
-						<id id="1.1" lines="685,687">
-							<description>Missing check for not a number.</description>
-						</id>
-						<id id="1.1" lines="732,734">
-							<description>Missing check for not a number.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-36">
+            <tests>
+                <testfile path="org/apache/commons/math/fraction/BigFractionTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;5.0&gt;
+                        but was:&lt;NaN&gt;:-
+                        org.apache.commons.math.fraction.BigFractionTest::testDoubleValueForLargeNumeratorAndDenominator:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;5.0&gt; but
+                        was:&lt;NaN&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>94</number_tests>
+                    <failed>2</failed>
+                    <passed>92</passed>
+                    <nodes>31706</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/fraction/BigFraction.java">
+                    <insert numberlines="6">686-688</insert>
+                    <insert numberlines="6">733-735</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="685,687">
+                            <description>Missing check for not a number.</description>
+                        </id>
+                        <id id="1.1" lines="732,734">
+                            <description>Missing check for not a number.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

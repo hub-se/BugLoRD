@@ -18,5 +18,5 @@ public class SBFLNormalizedRanking<T> extends NormalizedRanking<INode<T>> {
     public SBFLNormalizedRanking(final Ranking<INode<T>> toNormalize, final NormalizationStrategy strategy) {
         super(toNormalize, strategy);
     }
-    
+
 }

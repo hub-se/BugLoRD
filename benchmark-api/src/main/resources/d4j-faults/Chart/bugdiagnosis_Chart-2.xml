@@ -1,51 +1,52 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-2">
-			<tests>
-				<testfile path="org/jfree/data/general/junit/DatasetUtilitiesTests">
-					<exception>java.lang.NullPointerException:-
-						org.jfree.data.general.junit.DatasetUtilitiesTests::testBug2849731_3:--&gt;
-						java.lang.NullPointerException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>555</number_tests>
-					<failed>2</failed>
-					<passed>553</passed>
-					<nodes>52074</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/jfree/data/general/DatasetUtilities.java">
-					<insert numberlines="5">755-757</insert>
-					<insert numberlines="1">758-759</insert>
-					<insert numberlines="1">761-762</insert>
-					<insert numberlines="5">1242-1244</insert>
-					<insert numberlines="1">1245-1246</insert>
-					<insert numberlines="1">1248-1249</insert>
-					<bugtypes>
-						<id id="1.1" lines="754,756">
-							<description>Missing case for value check.</description>
-						</id>
-						<id id="3.4" lines="758">
-							<description>Incorrect maximum value.</description>
-						</id>
-						<id id="3.4" lines="760">
-							<description>Incorrect minimum value.</description>
-						</id>
-						<id id="1.1" lines="1241,1243">
-							<description>Missing case for value check.</description>
-						</id>
-						<id id="3.4" lines="1245">
-							<description>Incorrect maximum value.</description>
-						</id>
-						<id id="3.4" lines="1247">
-							<description>Incorrect minimum value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>8</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-2">
+            <tests>
+                <testfile path="org/jfree/data/general/junit/DatasetUtilitiesTests">
+                    <exception>java.lang.NullPointerException:-
+                        org.jfree.data.general.junit.DatasetUtilitiesTests::testBug2849731_3:--&gt;
+                        java.lang.NullPointerException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>555</number_tests>
+                    <failed>2</failed>
+                    <passed>553</passed>
+                    <nodes>52074</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/jfree/data/general/DatasetUtilities.java">
+                    <insert numberlines="5">755-757</insert>
+                    <insert numberlines="1">758-759</insert>
+                    <insert numberlines="1">761-762</insert>
+                    <insert numberlines="5">1242-1244</insert>
+                    <insert numberlines="1">1245-1246</insert>
+                    <insert numberlines="1">1248-1249</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="754,756">
+                            <description>Missing case for value check.</description>
+                        </id>
+                        <id id="3.4" lines="758">
+                            <description>Incorrect maximum value.</description>
+                        </id>
+                        <id id="3.4" lines="760">
+                            <description>Incorrect minimum value.</description>
+                        </id>
+                        <id id="1.1" lines="1241,1243">
+                            <description>Missing case for value check.</description>
+                        </id>
+                        <id id="3.4" lines="1245">
+                            <description>Incorrect maximum value.</description>
+                        </id>
+                        <id id="3.4" lines="1247">
+                            <description>Incorrect minimum value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>8</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

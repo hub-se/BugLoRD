@@ -30,9 +30,9 @@ import java.nio.charset.IllegalCharsetNameException;
  * Consult the release documentation for your implementation to see if any other encodings are supported.
  * </cite></p>
  *
+ * @version $Id$
  * @see <a href="http://download.oracle.com/javase/1.3/docs/guide/intl/encoding.doc.html">JRE character encoding names</a>
  * @since 2.1
- * @version $Id$
  */
 public class CharEncoding {
 
@@ -81,6 +81,7 @@ public class CharEncoding {
     public static final String UTF_8 = "UTF-8";
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Returns whether the named charset is supported.</p>
      *
@@ -88,7 +89,7 @@ public class CharEncoding {
      * href="http://download.oracle.com/javase/1.4.2/docs/api/java/nio/charset/Charset.html#isSupported%28java.lang.String%29">
      * java.nio.charset.Charset.isSupported(String)</a> but handles more formats</p>
      *
-     * @param name  the name of the requested charset; may be either a canonical name or an alias, null returns false
+     * @param name the name of the requested charset; may be either a canonical name or an alias, null returns false
      * @return {@code true} if the charset is available in the current Java virtual machine
      */
     public static boolean isSupported(String name) {

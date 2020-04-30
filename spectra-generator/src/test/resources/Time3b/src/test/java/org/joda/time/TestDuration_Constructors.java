@@ -15,11 +15,11 @@
  */
 package org.joda.time;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * This class is a JUnit test for Duration.
@@ -32,32 +32,32 @@ public class TestDuration_Constructors extends TestCase {
 
     private static final DateTimeZone PARIS = DateTimeZone.forID("Europe/Paris");
     private static final DateTimeZone LONDON = DateTimeZone.forID("Europe/London");
-    
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
-    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365 + 365;
-    
+
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
+    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365;
+
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
-            
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
+
     // 2002-04-05
     private long TEST_TIME1 =
-            (y2002days + 31L + 28L + 31L + 5L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 12L * DateTimeConstants.MILLIS_PER_HOUR
-            + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (y2002days + 31L + 28L + 31L + 5L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 12L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     // 2003-05-06
     private long TEST_TIME2 =
-            (y2003days + 31L + 28L + 31L + 30L + 6L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 14L * DateTimeConstants.MILLIS_PER_HOUR
-            + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
-    
+            (y2003days + 31L + 28L + 31L + 30L + 6L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 14L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     private DateTimeZone originalDateTimeZone = null;
     private TimeZone originalTimeZone = null;
     private Locale originalLocale = null;
@@ -95,6 +95,7 @@ public class TestDuration_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor ()
      */
@@ -113,10 +114,10 @@ public class TestDuration_Constructors extends TestCase {
     public void testFactory_standardDays_long() throws Throwable {
         Duration test = Duration.standardDays(1);
         assertEquals(24L * 60L * 60L * 1000L, test.getMillis());
-        
+
         test = Duration.standardDays(2);
         assertEquals(2L * 24L * 60L * 60L * 1000L, test.getMillis());
-        
+
         test = Duration.standardDays(0);
         assertSame(Duration.ZERO, test);
     }
@@ -125,10 +126,10 @@ public class TestDuration_Constructors extends TestCase {
     public void testFactory_standardHours_long() throws Throwable {
         Duration test = Duration.standardHours(1);
         assertEquals(60L * 60L * 1000L, test.getMillis());
-        
+
         test = Duration.standardHours(2);
         assertEquals(2L * 60L * 60L * 1000L, test.getMillis());
-        
+
         test = Duration.standardHours(0);
         assertSame(Duration.ZERO, test);
     }
@@ -137,10 +138,10 @@ public class TestDuration_Constructors extends TestCase {
     public void testFactory_standardMinutes_long() throws Throwable {
         Duration test = Duration.standardMinutes(1);
         assertEquals(60L * 1000L, test.getMillis());
-        
+
         test = Duration.standardMinutes(2);
         assertEquals(2L * 60L * 1000L, test.getMillis());
-        
+
         test = Duration.standardMinutes(0);
         assertSame(Duration.ZERO, test);
     }
@@ -149,10 +150,10 @@ public class TestDuration_Constructors extends TestCase {
     public void testFactory_standardSeconds_long() throws Throwable {
         Duration test = Duration.standardSeconds(1);
         assertEquals(1000L, test.getMillis());
-        
+
         test = Duration.standardSeconds(2);
         assertEquals(2L * 1000L, test.getMillis());
-        
+
         test = Duration.standardSeconds(0);
         assertSame(Duration.ZERO, test);
     }
@@ -161,10 +162,10 @@ public class TestDuration_Constructors extends TestCase {
     public void testFactory_millis_long() throws Throwable {
         Duration test = Duration.millis(1);
         assertEquals(1L, test.getMillis());
-        
+
         test = Duration.millis(2);
         assertEquals(2L, test.getMillis());
-        
+
         test = Duration.millis(0);
         assertSame(Duration.ZERO, test);
     }
@@ -217,6 +218,7 @@ public class TestDuration_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (Object)
      */

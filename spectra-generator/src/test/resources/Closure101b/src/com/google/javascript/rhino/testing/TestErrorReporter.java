@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,12 +36,11 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.testing;
 
 import com.google.javascript.rhino.ErrorReporter;
 import com.google.javascript.rhino.EvaluatorException;
-
 import junit.framework.Assert;
 
 /**
@@ -55,72 +54,70 @@ import junit.framework.Assert;
  * ...
  * assertTrue(e.hasEncounteredAllWarnings());
  * </pre>
- *
-*
  */
 public final class TestErrorReporter extends Assert implements ErrorReporter {
-  private String[] errors;
-  private String[] warnings;
-  private int errorsIndex = 0;
-  private int warningsIndex = 0;
+    private String[] errors;
+    private String[] warnings;
+    private int errorsIndex = 0;
+    private int warningsIndex = 0;
 
-  public TestErrorReporter(String[] errors, String[] warnings) {
-    this.errors = errors;
-    this.warnings = warnings;
-  }
-
-  public static TestErrorReporter forNoExpectedReports() {
-    return new TestErrorReporter(null, null);
-  }
-
-  public void setErrors(String[] errors) {
-    this.errors = errors;
-    errorsIndex = 0;
-  }
-
-  public void setWarnings(String[] warnings) {
-    this.warnings = warnings;
-    warningsIndex = 0;
-  }
-
-  public void error(String message, String sourceName, int line,
-      String lineSource, int lineOffset) {
-    if (errors != null && errorsIndex < errors.length) {
-      assertEquals(errors[errorsIndex++], message);
-    } else {
-      fail("extra error: " + message);
+    public TestErrorReporter(String[] errors, String[] warnings) {
+        this.errors = errors;
+        this.warnings = warnings;
     }
-  }
 
-  public void warning(String message, String sourceName, int line,
-      String lineSource, int lineOffset) {
-    if (warnings != null && warningsIndex < warnings.length) {
-      assertEquals(warnings[warningsIndex++], message);
-    } else {
-      fail("extra warning: " + message);
+    public static TestErrorReporter forNoExpectedReports() {
+        return new TestErrorReporter(null, null);
     }
-  }
 
-  public EvaluatorException runtimeError(String message, String sourceName,
-      int line, String lineSource, int lineOffset) {
-    throw new UnsupportedOperationException();
-  }
+    public void setErrors(String[] errors) {
+        this.errors = errors;
+        errorsIndex = 0;
+    }
 
-  /**
-   * Returns whether all warnings were reported to this reporter.
-   */
-  public boolean hasEncounteredAllWarnings() {
-    return (warnings == null) ?
-        warningsIndex == 0 :
-        warnings.length == warningsIndex;
-  }
+    public void setWarnings(String[] warnings) {
+        this.warnings = warnings;
+        warningsIndex = 0;
+    }
 
-  /**
-   * Returns whether all errors were reported to this reporter.
-   */
-  public boolean hasEncounteredAllErrors() {
-    return (errors == null) ?
-        errorsIndex == 0 :
-        errors.length == errorsIndex;
-  }
+    public void error(String message, String sourceName, int line,
+                      String lineSource, int lineOffset) {
+        if (errors != null && errorsIndex < errors.length) {
+            assertEquals(errors[errorsIndex++], message);
+        } else {
+            fail("extra error: " + message);
+        }
+    }
+
+    public void warning(String message, String sourceName, int line,
+                        String lineSource, int lineOffset) {
+        if (warnings != null && warningsIndex < warnings.length) {
+            assertEquals(warnings[warningsIndex++], message);
+        } else {
+            fail("extra warning: " + message);
+        }
+    }
+
+    public EvaluatorException runtimeError(String message, String sourceName,
+                                           int line, String lineSource, int lineOffset) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns whether all warnings were reported to this reporter.
+     */
+    public boolean hasEncounteredAllWarnings() {
+        return (warnings == null) ?
+                warningsIndex == 0 :
+                warnings.length == warningsIndex;
+    }
+
+    /**
+     * Returns whether all errors were reported to this reporter.
+     */
+    public boolean hasEncounteredAllErrors() {
+        return (errors == null) ?
+                errorsIndex == 0 :
+                errors.length == errorsIndex;
+    }
 }

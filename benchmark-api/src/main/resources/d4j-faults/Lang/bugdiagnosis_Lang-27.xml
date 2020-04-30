@@ -1,34 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-27">
-			<tests>
-				<testfile path="org/apache/commons/lang3/math/NumberUtilsTest">
-					<exception>java.lang.StringIndexOutOfBoundsException:String index
-						out of range:4</exception>
-				</testfile>
-				<spectra>
-					<number_tests>110</number_tests>
-					<failed>1</failed>
-					<passed>109</passed>
-					<nodes>10083</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/math/NumberUtils.java">
-					<change>479</change>
-					<insert numberlines="3">489</insert>
-					<bugtypes>
-						<id id="1.2" lines="479">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.1" lines="488">
-							<description>Missing check for String length.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-27">
+            <tests>
+                <testfile path="org/apache/commons/lang3/math/NumberUtilsTest">
+                    <exception>java.lang.StringIndexOutOfBoundsException:String index
+                        out of range:4
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>110</number_tests>
+                    <failed>1</failed>
+                    <passed>109</passed>
+                    <nodes>10083</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/math/NumberUtils.java">
+                    <change>479</change>
+                    <insert numberlines="3">489</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="479">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.1" lines="488">
+                            <description>Missing check for String length.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

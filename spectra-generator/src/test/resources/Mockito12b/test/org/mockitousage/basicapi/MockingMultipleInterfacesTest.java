@@ -4,30 +4,35 @@
  */
 package org.mockitousage.basicapi;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.*;
+
 public class MockingMultipleInterfacesTest extends TestBase {
 
-    class Foo {}
-    interface IFoo {}
-    interface IBar {}
-    
+    class Foo {
+    }
+
+    interface IFoo {
+    }
+
+    interface IBar {
+    }
+
     @Test
     public void shouldAllowMultipleInterfaces() {
         //when
         Foo mock = mock(Foo.class, withSettings().extraInterfaces(IFoo.class, IBar.class));
-        
+
         //then
         assertThat(mock, is(IFoo.class));
         assertThat(mock, is(IBar.class));
     }
-    
+
     @Test
     public void shouldScreamWhenNullPassedInsteadOfAnInterface() {
         try {
@@ -39,7 +44,7 @@ public class MockingMultipleInterfacesTest extends TestBase {
             assertContains("extraInterfaces() does not accept null parameters", e.getMessage());
         }
     }
-    
+
     @Test
     public void shouldScreamWhenNoArgsPassed() {
         try {
@@ -51,7 +56,7 @@ public class MockingMultipleInterfacesTest extends TestBase {
             assertContains("extraInterfaces() requires at least one interface", e.getMessage());
         }
     }
-    
+
     @Test
     public void shouldScreamWhenNullPassedInsteadOfAnArray() {
         try {
@@ -63,7 +68,7 @@ public class MockingMultipleInterfacesTest extends TestBase {
             assertContains("extraInterfaces() requires at least one interface", e.getMessage());
         }
     }
-    
+
     @Test
     public void shouldScreamWhenNonInterfacePassed() {
         try {
@@ -75,7 +80,7 @@ public class MockingMultipleInterfacesTest extends TestBase {
             assertContains("Foo which is not an interface", e.getMessage());
         }
     }
-    
+
     @Test
     public void shouldScreamWhenTheSameInterfacesPassed() {
         try {

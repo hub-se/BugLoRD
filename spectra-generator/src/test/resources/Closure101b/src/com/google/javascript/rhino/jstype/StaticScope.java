@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,7 +36,7 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 /**
@@ -45,27 +45,32 @@ package com.google.javascript.rhino.jstype;
  * from the {@code Scriptable} class that Rhino normally uses to represent a
  * runtime scope.
  *
-*
-*
  * @param <T> The type of information stored about the slot
  */
 public interface StaticScope<T> {
-  /** Returns the scope enclosing this one or null if none. */
-  StaticScope<T> getParentScope();
+    /**
+     * Returns the scope enclosing this one or null if none.
+     */
+    StaticScope<T> getParentScope();
 
-  /**
-   * Returns any defined slot within this scope for this name.  This call
-   * continues searching through parent scopes if a slot with this name is not
-   * found in the current scope.
-   * @param name The name of the variable slot to look up.
-   * @return The defined slot for the variable, or {@code null} if no
-   *         definition exists.
-   */
-  StaticSlot<T> getSlot(String name);
+    /**
+     * Returns any defined slot within this scope for this name.  This call
+     * continues searching through parent scopes if a slot with this name is not
+     * found in the current scope.
+     *
+     * @param name The name of the variable slot to look up.
+     * @return The defined slot for the variable, or {@code null} if no
+     * definition exists.
+     */
+    StaticSlot<T> getSlot(String name);
 
-  /** Like {@code getSlot} but does not recurse into parent scopes. */
-  StaticSlot<T> getOwnSlot(String name);
+    /**
+     * Like {@code getSlot} but does not recurse into parent scopes.
+     */
+    StaticSlot<T> getOwnSlot(String name);
 
-  /** Returns the expected type of {@code this} in the current scope. */
-  T getTypeOfThis();
+    /**
+     * Returns the expected type of {@code this} in the current scope.
+     */
+    T getTypeOfThis();
 }

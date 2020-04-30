@@ -38,9 +38,9 @@ public class Whitebox {
         }
         if (f == null) {
             throw new RuntimeException(
-                    "You want me to set value to this field: '" + field + 
-                    "' on this class: '" + clazz.getSimpleName() + 
-                    "' but this field is not declared withing hierarchy of this class!");
+                    "You want me to set value to this field: '" + field +
+                            "' on this class: '" + clazz.getSimpleName() +
+                            "' but this field is not declared withing hierarchy of this class!");
         }
         return f;
     }

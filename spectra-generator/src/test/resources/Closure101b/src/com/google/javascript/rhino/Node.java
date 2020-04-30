@@ -46,53 +46,45 @@ import com.google.javascript.rhino.jstype.JSType;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class implements the root of the intermediate representation.
- *
-*
-*
  */
 
-public class Node implements Cloneable, Serializable
-{
+public class Node implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public static final int
-        // Rhino's AST captures data flow. These are the annotations
-        // it used. We've mostly torn them out.
-        LOCAL_BLOCK_PROP  = -3,
-        OBJECT_IDS_PROP   = -2,
-        CATCH_SCOPE_PROP  = -1,
-        LABEL_ID_PROP     =  0,
+            // Rhino's AST captures data flow. These are the annotations
+            // it used. We've mostly torn them out.
+            LOCAL_BLOCK_PROP = -3,
+            OBJECT_IDS_PROP = -2,
+            CATCH_SCOPE_PROP = -1,
+            LABEL_ID_PROP = 0,
 
-        TARGET_PROP       =  1,
-        BREAK_PROP        =  2,
-        CONTINUE_PROP     =  3,
-        ENUM_PROP         =  4,
-        FUNCTION_PROP     =  5,
-        TEMP_PROP         =  6,
-        LOCAL_PROP        =  7,
-        CODEOFFSET_PROP   =  8,
-        FIXUPS_PROP       =  9,
-        VARS_PROP         = 10,
-        USES_PROP         = 11,
-        REGEXP_PROP       = 12,
-        CASES_PROP        = 13,
-        DEFAULT_PROP      = 14,
-        CASEARRAY_PROP    = 15,
-        SOURCENAME_PROP   = 16,
-        TYPE_PROP         = 17,
-        SPECIAL_PROP_PROP = 18,
-        LABEL_PROP        = 19,
-        FINALLY_PROP      = 20,
-        LOCALCOUNT_PROP   = 21,
+    TARGET_PROP = 1,
+            BREAK_PROP = 2,
+            CONTINUE_PROP = 3,
+            ENUM_PROP = 4,
+            FUNCTION_PROP = 5,
+            TEMP_PROP = 6,
+            LOCAL_PROP = 7,
+            CODEOFFSET_PROP = 8,
+            FIXUPS_PROP = 9,
+            VARS_PROP = 10,
+            USES_PROP = 11,
+            REGEXP_PROP = 12,
+            CASES_PROP = 13,
+            DEFAULT_PROP = 14,
+            CASEARRAY_PROP = 15,
+            SOURCENAME_PROP = 16,
+            TYPE_PROP = 17,
+            SPECIAL_PROP_PROP = 18,
+            LABEL_PROP = 19,
+            FINALLY_PROP = 20,
+            LOCALCOUNT_PROP = 21,
     /*
         the following properties are defined and manipulated by the
         optimizer -
@@ -107,133 +99,184 @@ public class Node implements Cloneable, Serializable
                           matches.
     */
 
-        TARGETBLOCK_PROP  = 22,
-        VARIABLE_PROP     = 23,
-        LASTUSE_PROP      = 24,
-        ISNUMBER_PROP     = 25,
-        DIRECTCALL_PROP   = 26,
+    TARGETBLOCK_PROP = 22,
+            VARIABLE_PROP = 23,
+            LASTUSE_PROP = 24,
+            ISNUMBER_PROP = 25,
+            DIRECTCALL_PROP = 26,
 
-        SPECIALCALL_PROP  = 27,
-        DEBUGSOURCE_PROP  = 28,
-        JSDOC_INFO_PROP   = 29,     // contains a TokenStream.JSDocInfo object
-        VAR_ARGS_NAME     = 29,     // the name node is a variable length
-                                    // argument placeholder. It can never be
-                                    // used in conjunction with JSDOC_INFO_PROP.
-        SKIP_INDEXES_PROP  = 30,    // array of skipped indexes of array literal
-        INCRDECR_PROP      = 31,    // pre or post type of increment/decrement
-        MEMBER_TYPE_PROP   = 32,    // type of element access operation
-        NAME_PROP          = 33,    // property name
-        PARENTHESIZED_PROP = 34,    // expression is parenthesized
-        QUOTED_PROP        = 35,    // set to indicate a quoted object lit key
-        OPT_ARG_NAME       = 36,    // The name node is an optional argument.
-        SYNTHETIC_BLOCK_PROP = 37,  // A synthetic block. Used to make
-                                    // processing simpler, and does not
-                                    // represent a real block in the source.
-        SOURCEFILE_PROP    = 38,    // Contains the path of the source file
-                                    // from which the current node was parsed.
-        EMPTY_BLOCK        = 39,    // Used to indicate BLOCK that replaced
-                                    // EMPTY nodes.
-        ORIGINALNAME_PROP  = 40,    // The original name of the node, before
-                                    // renaming.
-        BRACELESS_TYPE     = 41,    // The type syntax without curly braces.
-        NO_SIDE_EFFECTS_CALL = 42,  // Function or constructor call has no
-                                    // side effects.
-        // Coding convention props
-        IS_CONSTANT_NAME   = 43,    // The variable or property is constant.
-        IS_OPTIONAL_PARAM  = 44,    // The parameter is optional.
-        IS_VAR_ARGS_PARAM  = 45,    // The parameter is a var_args.
-        IS_NAMESPACE       = 46,    // The variable creates a namespace.
-        IS_DISPATCHER      = 47,    // The function is a dispatcher function,
-                                    // probably generated from Java code, and
-                                    // should be resolved to the proper
-                                    // overload if possible.
-        DIRECTIVES         = 48,    // The ES5 directives on this node.
-        DIRECT_EVAL        = 49,    // ES5 distinguishes between direct and
-                                    // indirect calls to eval.
-        LAST_PROP          = 49;
+    SPECIALCALL_PROP = 27,
+            DEBUGSOURCE_PROP = 28,
+            JSDOC_INFO_PROP = 29,     // contains a TokenStream.JSDocInfo object
+            VAR_ARGS_NAME = 29,     // the name node is a variable length
+    // argument placeholder. It can never be
+    // used in conjunction with JSDOC_INFO_PROP.
+    SKIP_INDEXES_PROP = 30,    // array of skipped indexes of array literal
+            INCRDECR_PROP = 31,    // pre or post type of increment/decrement
+            MEMBER_TYPE_PROP = 32,    // type of element access operation
+            NAME_PROP = 33,    // property name
+            PARENTHESIZED_PROP = 34,    // expression is parenthesized
+            QUOTED_PROP = 35,    // set to indicate a quoted object lit key
+            OPT_ARG_NAME = 36,    // The name node is an optional argument.
+            SYNTHETIC_BLOCK_PROP = 37,  // A synthetic block. Used to make
+    // processing simpler, and does not
+    // represent a real block in the source.
+    SOURCEFILE_PROP = 38,    // Contains the path of the source file
+    // from which the current node was parsed.
+    EMPTY_BLOCK = 39,    // Used to indicate BLOCK that replaced
+    // EMPTY nodes.
+    ORIGINALNAME_PROP = 40,    // The original name of the node, before
+    // renaming.
+    BRACELESS_TYPE = 41,    // The type syntax without curly braces.
+            NO_SIDE_EFFECTS_CALL = 42,  // Function or constructor call has no
+    // side effects.
+    // Coding convention props
+    IS_CONSTANT_NAME = 43,    // The variable or property is constant.
+            IS_OPTIONAL_PARAM = 44,    // The parameter is optional.
+            IS_VAR_ARGS_PARAM = 45,    // The parameter is a var_args.
+            IS_NAMESPACE = 46,    // The variable creates a namespace.
+            IS_DISPATCHER = 47,    // The function is a dispatcher function,
+    // probably generated from Java code, and
+    // should be resolved to the proper
+    // overload if possible.
+    DIRECTIVES = 48,    // The ES5 directives on this node.
+            DIRECT_EVAL = 49,    // ES5 distinguishes between direct and
+    // indirect calls to eval.
+    LAST_PROP = 49;
 
     // values of ISNUMBER_PROP to specify
     // which of the children are Number types
     public static final int
-        BOTH = 0,
-        LEFT = 1,
-        RIGHT = 2;
+            BOTH = 0,
+            LEFT = 1,
+            RIGHT = 2;
 
     public static final int    // values for SPECIALCALL_PROP
-        NON_SPECIALCALL  = 0,
-        SPECIALCALL_EVAL = 1,
-        SPECIALCALL_WITH = 2;
+            NON_SPECIALCALL = 0,
+            SPECIALCALL_EVAL = 1,
+            SPECIALCALL_WITH = 2;
 
     public static final int   // flags for INCRDECR_PROP
-        DECR_FLAG = 0x1,
-        POST_FLAG = 0x2;
+            DECR_FLAG = 0x1,
+            POST_FLAG = 0x2;
 
     public static final int   // flags for MEMBER_TYPE_PROP
-        PROPERTY_FLAG    = 0x1, // property access: element is valid name
-        ATTRIBUTE_FLAG   = 0x2, // x.@y or x..@y
-        DESCENDANTS_FLAG = 0x4; // x..y or x..@i
+            PROPERTY_FLAG = 0x1, // property access: element is valid name
+            ATTRIBUTE_FLAG = 0x2, // x.@y or x..@y
+            DESCENDANTS_FLAG = 0x4; // x..y or x..@i
 
     private static final String propToString(int propType) {
         switch (propType) {
-            case LOCAL_BLOCK_PROP:   return "local_block";
-            case OBJECT_IDS_PROP:    return "object_ids_prop";
-            case CATCH_SCOPE_PROP:   return "catch_scope_prop";
-            case LABEL_ID_PROP:      return "label_id_prop";
-            case TARGET_PROP:        return "target";
-            case BREAK_PROP:         return "break";
-            case CONTINUE_PROP:      return "continue";
-            case ENUM_PROP:          return "enum";
-            case FUNCTION_PROP:      return "function";
-            case TEMP_PROP:          return "temp";
-            case LOCAL_PROP:         return "local";
-            case CODEOFFSET_PROP:    return "codeoffset";
-            case FIXUPS_PROP:        return "fixups";
-            case VARS_PROP:          return "vars";
-            case USES_PROP:          return "uses";
-            case REGEXP_PROP:        return "regexp";
-            case CASES_PROP:         return "cases";
-            case DEFAULT_PROP:       return "default";
-            case CASEARRAY_PROP:     return "casearray";
-            case SOURCENAME_PROP:    return "sourcename";
-            case TYPE_PROP:          return "type";
-            case SPECIAL_PROP_PROP:  return "special_prop";
-            case LABEL_PROP:         return "label";
-            case FINALLY_PROP:       return "finally";
-            case LOCALCOUNT_PROP:    return "localcount";
+            case LOCAL_BLOCK_PROP:
+                return "local_block";
+            case OBJECT_IDS_PROP:
+                return "object_ids_prop";
+            case CATCH_SCOPE_PROP:
+                return "catch_scope_prop";
+            case LABEL_ID_PROP:
+                return "label_id_prop";
+            case TARGET_PROP:
+                return "target";
+            case BREAK_PROP:
+                return "break";
+            case CONTINUE_PROP:
+                return "continue";
+            case ENUM_PROP:
+                return "enum";
+            case FUNCTION_PROP:
+                return "function";
+            case TEMP_PROP:
+                return "temp";
+            case LOCAL_PROP:
+                return "local";
+            case CODEOFFSET_PROP:
+                return "codeoffset";
+            case FIXUPS_PROP:
+                return "fixups";
+            case VARS_PROP:
+                return "vars";
+            case USES_PROP:
+                return "uses";
+            case REGEXP_PROP:
+                return "regexp";
+            case CASES_PROP:
+                return "cases";
+            case DEFAULT_PROP:
+                return "default";
+            case CASEARRAY_PROP:
+                return "casearray";
+            case SOURCENAME_PROP:
+                return "sourcename";
+            case TYPE_PROP:
+                return "type";
+            case SPECIAL_PROP_PROP:
+                return "special_prop";
+            case LABEL_PROP:
+                return "label";
+            case FINALLY_PROP:
+                return "finally";
+            case LOCALCOUNT_PROP:
+                return "localcount";
 
-            case TARGETBLOCK_PROP:   return "targetblock";
-            case VARIABLE_PROP:      return "variable";
-            case LASTUSE_PROP:       return "lastuse";
-            case ISNUMBER_PROP:      return "isnumber";
-            case DIRECTCALL_PROP:    return "directcall";
+            case TARGETBLOCK_PROP:
+                return "targetblock";
+            case VARIABLE_PROP:
+                return "variable";
+            case LASTUSE_PROP:
+                return "lastuse";
+            case ISNUMBER_PROP:
+                return "isnumber";
+            case DIRECTCALL_PROP:
+                return "directcall";
 
-            case SPECIALCALL_PROP:   return "specialcall";
-            case DEBUGSOURCE_PROP:   return "debugsource";
+            case SPECIALCALL_PROP:
+                return "specialcall";
+            case DEBUGSOURCE_PROP:
+                return "debugsource";
 
-            case JSDOC_INFO_PROP:    return "jsdoc_info";
+            case JSDOC_INFO_PROP:
+                return "jsdoc_info";
 
-            case SKIP_INDEXES_PROP:  return "skip_indexes";
-            case INCRDECR_PROP:      return "incrdecr";
-            case MEMBER_TYPE_PROP:   return "member_type";
-            case NAME_PROP:          return "name";
-            case PARENTHESIZED_PROP: return "parenthesized";
-            case QUOTED_PROP:        return "quoted";
+            case SKIP_INDEXES_PROP:
+                return "skip_indexes";
+            case INCRDECR_PROP:
+                return "incrdecr";
+            case MEMBER_TYPE_PROP:
+                return "member_type";
+            case NAME_PROP:
+                return "name";
+            case PARENTHESIZED_PROP:
+                return "parenthesized";
+            case QUOTED_PROP:
+                return "quoted";
 
-            case SYNTHETIC_BLOCK_PROP: return "synthetic";
-            case SOURCEFILE_PROP: return "sourcefile";
-            case EMPTY_BLOCK: return "empty_block";
-            case ORIGINALNAME_PROP: return "originalname";
-            case NO_SIDE_EFFECTS_CALL: return "no_side_effects_call";
+            case SYNTHETIC_BLOCK_PROP:
+                return "synthetic";
+            case SOURCEFILE_PROP:
+                return "sourcefile";
+            case EMPTY_BLOCK:
+                return "empty_block";
+            case ORIGINALNAME_PROP:
+                return "originalname";
+            case NO_SIDE_EFFECTS_CALL:
+                return "no_side_effects_call";
 
-            case IS_CONSTANT_NAME:   return "is_constant_name";
-            case IS_OPTIONAL_PARAM:  return "is_optional_param";
-            case IS_VAR_ARGS_PARAM:  return "is_var_args_param";
-            case IS_NAMESPACE:       return "is_namespace";
-            case IS_DISPATCHER:      return "is_dispatcher";
-            case DIRECTIVES:         return "directives";
-            case DIRECT_EVAL:        return "direct_eval";
+            case IS_CONSTANT_NAME:
+                return "is_constant_name";
+            case IS_OPTIONAL_PARAM:
+                return "is_optional_param";
+            case IS_VAR_ARGS_PARAM:
+                return "is_var_args_param";
+            case IS_NAMESPACE:
+                return "is_namespace";
+            case IS_DISPATCHER:
+                return "is_dispatcher";
+            case DIRECTIVES:
+                return "directives";
+            case DIRECT_EVAL:
+                return "direct_eval";
             default:
-              Kit.codeBug();
+                Kit.codeBug();
 
 
         }
@@ -254,15 +297,18 @@ public class Node implements Cloneable, Serializable
             this.number = number;
         }
 
-        @Override public double getDouble() {
-          return this.number;
+        @Override
+        public double getDouble() {
+            return this.number;
         }
 
-        @Override public void setDouble(double d) {
-          this.number = d;
+        @Override
+        public void setDouble(double d) {
+            this.number = d;
         }
 
-        @Override public boolean isEquivalentTo(Node node) {
+        @Override
+        public boolean isEquivalentTo(Node node) {
             return (node instanceof NumberNode
                     && getDouble() == ((NumberNode) node).getDouble());
         }
@@ -290,24 +336,31 @@ public class Node implements Cloneable, Serializable
             this.str = str;
         }
 
-        /** returns the string content.
-          * @return non null.
-          */
-        @Override public String getString() {
+        /**
+         * returns the string content.
+         *
+         * @return non null.
+         */
+        @Override
+        public String getString() {
             return this.str;
         }
 
-        /** sets the string content.
-          * @param str the new value.  Non null.
-          */
-        @Override public void setString(String str) {
+        /**
+         * sets the string content.
+         *
+         * @param str the new value.  Non null.
+         */
+        @Override
+        public void setString(String str) {
             if (null == str) {
                 throw new IllegalArgumentException("StringNode: str is null");
             }
             this.str = str;
         }
 
-        @Override public boolean isEquivalentTo(Node node) {
+        @Override
+        public boolean isEquivalentTo(Node node) {
             return (node instanceof StringNode &&
                     this.str.equals(((StringNode) node).str));
         }
@@ -316,24 +369,26 @@ public class Node implements Cloneable, Serializable
          * If the property is not defined, this was not a quoted key.  The
          * QUOTED_PROP int property is only assigned to STRING tokens used as
          * object lit keys.
+         *
          * @return true if this was a quoted string key in an object literal.
          */
-        @Override public boolean isQuotedString() {
+        @Override
+        public boolean isQuotedString() {
             return getBooleanProp(QUOTED_PROP);
         }
 
         /**
          * This should only be called for STRING nodes created in object lits.
          */
-        @Override public void setQuotedString() {
+        @Override
+        public void setQuotedString() {
             putBooleanProp(QUOTED_PROP, true);
         }
 
         private String str;
     }
 
-    private static class PropListItem implements Serializable
-    {
+    private static class PropListItem implements Serializable {
         private static final long serialVersionUID = 1L;
 
         PropListItem next;
@@ -351,9 +406,9 @@ public class Node implements Cloneable, Serializable
 
     public Node(int nodeType, Node child) {
         Preconditions.checkArgument(child.parent == null,
-            "new child has existing parent");
+                "new child has existing parent");
         Preconditions.checkArgument(child.next == null,
-            "new child has existing sibling");
+                "new child has existing sibling");
 
         type = nodeType;
         parent = null;
@@ -365,13 +420,13 @@ public class Node implements Cloneable, Serializable
 
     public Node(int nodeType, Node left, Node right) {
         Preconditions.checkArgument(left.parent == null,
-            "first new child has existing parent");
+                "first new child has existing parent");
         Preconditions.checkArgument(left.next == null,
-            "first new child has existing sibling");
+                "first new child has existing sibling");
         Preconditions.checkArgument(right.parent == null,
-            "second new child has existing parent");
+                "second new child has existing parent");
         Preconditions.checkArgument(right.next == null,
-            "second new child has existing sibling");
+                "second new child has existing sibling");
         type = nodeType;
         parent = null;
         first = left;
@@ -404,27 +459,27 @@ public class Node implements Cloneable, Serializable
     }
 
     public Node(int nodeType, Node left, Node mid, Node mid2, Node right) {
-      Preconditions.checkArgument(left.parent == null);
-      Preconditions.checkArgument(left.next == null);
-      Preconditions.checkArgument(mid.parent == null);
-      Preconditions.checkArgument(mid.next == null);
-      Preconditions.checkArgument(mid2.parent == null);
-      Preconditions.checkArgument(mid2.next == null);
-      Preconditions.checkArgument(right.parent == null);
-      Preconditions.checkArgument(right.next == null);
-      type = nodeType;
-      parent = null;
-      first = left;
-      last = right;
-      left.next = mid;
-      left.parent = this;
-      mid.next = mid2;
-      mid.parent = this;
-      mid2.next = right;
-      mid2.parent = this;
-      right.next = null;
-      right.parent = this;
-      sourcePosition = -1;
+        Preconditions.checkArgument(left.parent == null);
+        Preconditions.checkArgument(left.next == null);
+        Preconditions.checkArgument(mid.parent == null);
+        Preconditions.checkArgument(mid.next == null);
+        Preconditions.checkArgument(mid2.parent == null);
+        Preconditions.checkArgument(mid2.next == null);
+        Preconditions.checkArgument(right.parent == null);
+        Preconditions.checkArgument(right.next == null);
+        type = nodeType;
+        parent = null;
+        first = left;
+        last = right;
+        left.next = mid;
+        left.parent = this;
+        mid.next = mid2;
+        mid.parent = this;
+        mid2.next = right;
+        mid2.parent = this;
+        right.next = null;
+        right.parent = this;
+        sourcePosition = -1;
     }
 
     public Node(int nodeType, int lineno, int charno) {
@@ -444,13 +499,13 @@ public class Node implements Cloneable, Serializable
     }
 
     public Node(int nodeType, Node left, Node mid, Node right,
-            int lineno, int charno) {
+                int lineno, int charno) {
         this(nodeType, left, mid, right);
         sourcePosition = mergeLineCharNo(lineno, charno);
     }
 
     public Node(int nodeType, Node left, Node mid, Node mid2, Node right,
-            int lineno, int charno) {
+                int lineno, int charno) {
         this(nodeType, left, mid, mid2, right);
         sourcePosition = mergeLineCharNo(lineno, charno);
     }
@@ -477,7 +532,7 @@ public class Node implements Cloneable, Serializable
                 children[i - 1].parent = this;
             }
             Preconditions.checkArgument(
-                children[children.length - 1].parent == null);
+                    children[children.length - 1].parent == null);
             children[children.length - 1].parent = this;
 
             if (null != this.last.next) {
@@ -548,12 +603,12 @@ public class Node implements Cloneable, Serializable
     }
 
     public Node getChildAtIndex(int i) {
-      Node n = first;
-      while (i > 0) {
-        n = n.next;
-        i--;
-      }
-      return n;
+        Node n = first;
+        while (i > 0) {
+            n = n.next;
+            i--;
+        }
+        return n;
     }
 
     public Node getLastSibling() {
@@ -590,8 +645,8 @@ public class Node implements Cloneable, Serializable
 
     public void addChildrenToFront(Node children) {
         for (Node child = children; child != null; child = child.next) {
-          Preconditions.checkArgument(child.parent == null);
-          child.parent = this;
+            Preconditions.checkArgument(child.parent == null);
+            child.parent = this;
         }
         Node lastSib = children.getLastSibling();
         lastSib.next = first;
@@ -603,9 +658,9 @@ public class Node implements Cloneable, Serializable
 
     public void addChildrenToBack(Node children) {
         for (Node child = children; child != null; child = child.next) {
-          // Hmmm... IRFactory doesn't remove before calling this.
-          Preconditions.checkArgument(child.parent == null);
-          child.parent = this;
+            // Hmmm... IRFactory doesn't remove before calling this.
+            Preconditions.checkArgument(child.parent == null);
+            child.parent = this;
         }
         if (last != null) {
             last.next = children;
@@ -621,11 +676,11 @@ public class Node implements Cloneable, Serializable
      */
     public void addChildBefore(Node newChild, Node node) {
         Preconditions.checkArgument(node != null,
-            "The existing child node of the parent should not be null.");
+                "The existing child node of the parent should not be null.");
         Preconditions.checkArgument(newChild.next == null,
-            "The new child node has siblings.");
+                "The new child node has siblings.");
         Preconditions.checkArgument(newChild.parent == null,
-            "The new child node already has a parent.");
+                "The new child node already has a parent.");
         if (first == node) {
             newChild.parent = this;
             newChild.next = first;
@@ -641,9 +696,9 @@ public class Node implements Cloneable, Serializable
      */
     public void addChildAfter(Node newChild, Node node) {
         Preconditions.checkArgument(newChild.next == null,
-            "The new child node has siblings.");
+                "The new child node has siblings.");
         Preconditions.checkArgument(newChild.parent == null,
-            "The new child node already has a parent.");
+                "The new child node already has a parent.");
         newChild.parent = this;
         newChild.next = node.next;
         node.next = newChild;
@@ -671,9 +726,9 @@ public class Node implements Cloneable, Serializable
      */
     public void replaceChild(Node child, Node newChild) {
         Preconditions.checkArgument(newChild.next == null,
-            "The new child node has siblings.");
+                "The new child node has siblings.");
         Preconditions.checkArgument(newChild.parent == null,
-            "The new child node already has a parent.");
+                "The new child node already has a parent.");
 
         // Copy over important information.
         newChild.copyInformationFrom(child);
@@ -694,12 +749,12 @@ public class Node implements Cloneable, Serializable
 
     public void replaceChildAfter(Node prevChild, Node newChild) {
         Preconditions.checkArgument(prevChild.parent == this,
-          "prev is not a child of this node.");
+                "prev is not a child of this node.");
 
         Preconditions.checkArgument(newChild.next == null,
-            "The new child node has siblings.");
+                "The new child node has siblings.");
         Preconditions.checkArgument(newChild.parent == null,
-            "The new child node already has a parent.");
+                "The new child node already has a parent.");
 
         // Copy over important information.
         newChild.copyInformationFrom(prevChild);
@@ -714,8 +769,7 @@ public class Node implements Cloneable, Serializable
         child.parent = null;
     }
 
-    private PropListItem lookupProperty(int propType)
-    {
+    private PropListItem lookupProperty(int propType) {
         PropListItem x = propListHead;
         while (x != null && propType != x.type) {
             x = x.next;
@@ -723,8 +777,7 @@ public class Node implements Cloneable, Serializable
         return x;
     }
 
-    private PropListItem ensureProperty(int propType)
-    {
+    private PropListItem ensureProperty(int propType) {
         PropListItem item = lookupProperty(propType);
         if (item == null) {
             item = new PropListItem();
@@ -735,15 +788,16 @@ public class Node implements Cloneable, Serializable
         return item;
     }
 
-    public void removeProp(int propType)
-    {
+    public void removeProp(int propType) {
         PropListItem x = propListHead;
         if (x != null) {
             PropListItem prev = null;
             while (x.type != propType) {
                 prev = x;
                 x = x.next;
-                if (x == null) { return; }
+                if (x == null) {
+                    return;
+                }
             }
             if (prev == null) {
                 propListHead = x.next;
@@ -753,10 +807,11 @@ public class Node implements Cloneable, Serializable
         }
     }
 
-    public Object getProp(int propType)
-    {
+    public Object getProp(int propType) {
         PropListItem item = lookupProperty(propType);
-        if (item == null) { return null; }
+        if (item == null) {
+            return null;
+        }
         return item.objectValue;
     }
 
@@ -764,22 +819,23 @@ public class Node implements Cloneable, Serializable
         return getIntProp(propType, 0) != 0;
     }
 
-    public int getIntProp(int propType, int defaultValue)
-    {
+    public int getIntProp(int propType, int defaultValue) {
         PropListItem item = lookupProperty(propType);
-        if (item == null) { return defaultValue; }
+        if (item == null) {
+            return defaultValue;
+        }
         return item.intValue;
     }
 
-    public int getExistingIntProp(int propType)
-    {
+    public int getExistingIntProp(int propType) {
         PropListItem item = lookupProperty(propType);
-        if (item == null) { Kit.codeBug(); }
+        if (item == null) {
+            Kit.codeBug();
+        }
         return item.intValue;
     }
 
-    public void putProp(int propType, Object prop)
-    {
+    public void putProp(int propType, Object prop) {
         if (prop == null) {
             removeProp(propType);
         } else {
@@ -792,8 +848,7 @@ public class Node implements Cloneable, Serializable
         putIntProp(propType, prop ? 1 : 0);
     }
 
-    public void putIntProp(int propType, int prop)
-    {
+    public void putIntProp(int propType, int prop) {
         PropListItem item = ensureProperty(propType);
         item.intValue = prop;
     }
@@ -823,7 +878,9 @@ public class Node implements Cloneable, Serializable
         return extractCharno(sourcePosition);
     }
 
-    /** Can only be called when <tt>getType() == TokenStream.NUMBER</tt> */
+    /**
+     * Can only be called when <tt>getType() == TokenStream.NUMBER</tt>
+     */
     public double getDouble() throws UnsupportedOperationException {
         if (this.getType() == Token.NUMBER) {
             throw new IllegalStateException(
@@ -834,7 +891,9 @@ public class Node implements Cloneable, Serializable
         }
     }
 
-    /** Can only be called when <tt>getType() == TokenStream.NUMBER</tt> */
+    /**
+     * Can only be called when <tt>getType() == TokenStream.NUMBER</tt>
+     */
     public void setDouble(double s) throws UnsupportedOperationException {
         if (this.getType() == Token.NUMBER) {
             throw new IllegalStateException(
@@ -845,7 +904,9 @@ public class Node implements Cloneable, Serializable
         }
     }
 
-    /** Can only be called when node has String context. */
+    /**
+     * Can only be called when node has String context.
+     */
     public String getString() throws UnsupportedOperationException {
         if (this.getType() == Token.STRING) {
             throw new IllegalStateException(
@@ -856,7 +917,9 @@ public class Node implements Cloneable, Serializable
         }
     }
 
-    /** Can only be called when node has String context. */
+    /**
+     * Can only be called when node has String context.
+     */
     public void setString(String s) throws UnsupportedOperationException {
         if (this.getType() == Token.STRING) {
             throw new IllegalStateException(
@@ -867,16 +930,15 @@ public class Node implements Cloneable, Serializable
         }
     }
 
-    @Override public String toString()
-    {
-       return toString(true, true, true);
+    @Override
+    public String toString() {
+        return toString(true, true, true);
     }
 
     public String toString(
-        boolean printSource,
-        boolean printAnnotations,
-        boolean printType)
-    {
+            boolean printSource,
+            boolean printAnnotations,
+            boolean printType) {
         if (Token.printTrees) {
             StringBuilder sb = new StringBuilder();
             toString(sb, printSource, printAnnotations, printType);
@@ -886,11 +948,10 @@ public class Node implements Cloneable, Serializable
     }
 
     private void toString(
-        StringBuilder sb,
-        boolean printSource,
-        boolean printAnnotations,
-        boolean printType)
-    {
+            StringBuilder sb,
+            boolean printSource,
+            boolean printAnnotations,
+            boolean printType) {
         if (Token.printTrees) {
             sb.append(Token.name(type));
             if (this instanceof StringNode) {
@@ -900,102 +961,102 @@ public class Node implements Cloneable, Serializable
                 sb.append(' ');
                 sb.append(first.getString());
             } else if (this instanceof ScriptOrFnNode) {
-                ScriptOrFnNode sof = (ScriptOrFnNode)this;
+                ScriptOrFnNode sof = (ScriptOrFnNode) this;
                 if (this instanceof FunctionNode) {
-                    FunctionNode fn = (FunctionNode)this;
+                    FunctionNode fn = (FunctionNode) this;
                     sb.append(' ');
                     sb.append(fn.getFunctionName());
                 }
                 if (printSource) {
-                  sb.append(" [source name: ");
-                  sb.append(sof.getSourceName());
-                  sb.append("] [encoded source length: ");
-                  sb.append(sof.getEncodedSourceEnd()
+                    sb.append(" [source name: ");
+                    sb.append(sof.getSourceName());
+                    sb.append("] [encoded source length: ");
+                    sb.append(sof.getEncodedSourceEnd()
                             - sof.getEncodedSourceStart());
-                  sb.append("] [base line: ");
-                  sb.append(sof.getBaseLineno());
-                  sb.append("] [end line: ");
-                  sb.append(sof.getEndLineno());
-                  sb.append(']');
+                    sb.append("] [base line: ");
+                    sb.append(sof.getBaseLineno());
+                    sb.append("] [end line: ");
+                    sb.append(sof.getEndLineno());
+                    sb.append(']');
                 }
             } else if (type == Token.NUMBER) {
                 sb.append(' ');
                 sb.append(getDouble());
             }
             if (printSource) {
-              int lineno = getLineno();
-              if (lineno != -1) {
-                  sb.append(' ');
-                  sb.append(lineno);
-              }
+                int lineno = getLineno();
+                if (lineno != -1) {
+                    sb.append(' ');
+                    sb.append(lineno);
+                }
             }
 
             if (printAnnotations) {
-              int[] keys = getSortedPropTypes();
-              for (int i = 0; i < keys.length; i++) {
-                  int type = keys[i];
-                  PropListItem x = lookupProperty(type);
-                  sb.append(" [");
-                  sb.append(propToString(type));
-                  sb.append(": ");
-                  String value;
-                  switch (type) {
-                    case TARGETBLOCK_PROP : // can't add this as it recurses
-                      value = "target block property";
-                      break;
-                    case LOCAL_BLOCK_PROP :     // can't add this as it is dull
-                      value = "last local block";
-                      break;
-                    case ISNUMBER_PROP:
-                      switch (x.intValue) {
-                        case BOTH:
-                          value = "both";
-                          break;
-                        case RIGHT:
-                          value = "right";
-                          break;
-                        case LEFT:
-                          value = "left";
-                          break;
+                int[] keys = getSortedPropTypes();
+                for (int i = 0; i < keys.length; i++) {
+                    int type = keys[i];
+                    PropListItem x = lookupProperty(type);
+                    sb.append(" [");
+                    sb.append(propToString(type));
+                    sb.append(": ");
+                    String value;
+                    switch (type) {
+                        case TARGETBLOCK_PROP: // can't add this as it recurses
+                            value = "target block property";
+                            break;
+                        case LOCAL_BLOCK_PROP:     // can't add this as it is dull
+                            value = "last local block";
+                            break;
+                        case ISNUMBER_PROP:
+                            switch (x.intValue) {
+                                case BOTH:
+                                    value = "both";
+                                    break;
+                                case RIGHT:
+                                    value = "right";
+                                    break;
+                                case LEFT:
+                                    value = "left";
+                                    break;
+                                default:
+                                    throw Kit.codeBug();
+                            }
+                            break;
+                        case SPECIALCALL_PROP:
+                            switch (x.intValue) {
+                                case SPECIALCALL_EVAL:
+                                    value = "eval";
+                                    break;
+                                case SPECIALCALL_WITH:
+                                    value = "with";
+                                    break;
+                                default:
+                                    // NON_SPECIALCALL should not be stored
+                                    throw Kit.codeBug();
+                            }
+                            break;
                         default:
-                          throw Kit.codeBug();
-                      }
-                      break;
-                    case SPECIALCALL_PROP:
-                      switch (x.intValue) {
-                        case SPECIALCALL_EVAL:
-                          value = "eval";
-                          break;
-                        case SPECIALCALL_WITH:
-                          value = "with";
-                          break;
-                        default:
-                          // NON_SPECIALCALL should not be stored
-                          throw Kit.codeBug();
-                      }
-                      break;
-                    default :
-                      Object obj = x.objectValue;
-                      if (obj != null) {
-                          value = obj.toString();
-                      } else {
-                          value = String.valueOf(x.intValue);
-                      }
-                      break;
-                  }
-                  sb.append(value);
-                  sb.append(']');
-              }
+                            Object obj = x.objectValue;
+                            if (obj != null) {
+                                value = obj.toString();
+                            } else {
+                                value = String.valueOf(x.intValue);
+                            }
+                            break;
+                    }
+                    sb.append(value);
+                    sb.append(']');
+                }
             }
 
             if (printType) {
-              if (jsType != null) {
-                  String jsTypeString = jsType.toString();
-                  if (jsTypeString != null) {
-                      sb.append(" : ");
-                      sb.append(jsTypeString);
-                  }
-              }
+                if (jsType != null) {
+                    String jsTypeString = jsType.toString();
+                    if (jsTypeString != null) {
+                        sb.append(" : ");
+                        sb.append(jsTypeString);
+                    }
+                }
             }
         }
     }
@@ -1020,8 +1081,7 @@ public class Node implements Cloneable, Serializable
     }
 
     private static void toStringTreeHelper(Node n, int level, Appendable sb)
-            throws IOException
-    {
+            throws IOException {
         if (Token.printTrees) {
             for (int i = 0; i != level; ++i) {
                 sb.append("    ");
@@ -1029,8 +1089,7 @@ public class Node implements Cloneable, Serializable
             sb.append(n.toString());
             sb.append('\n');
             for (Node cursor = n.getFirstChild(); cursor != null;
-                 cursor = cursor.getNext())
-            {
+                 cursor = cursor.getNext()) {
                 toStringTreeHelper(cursor, level + 1, sb);
             }
         }
@@ -1091,7 +1150,7 @@ public class Node implements Cloneable, Serializable
     public void setLineno(int lineno) {
         int charno = getCharno();
         if (charno == -1) {
-          charno = 0;
+            charno = 0;
         }
         sourcePosition = mergeLineCharNo(lineno, charno);
     }
@@ -1107,13 +1166,13 @@ public class Node implements Cloneable, Serializable
      * adjusted to <code>2<sup>12</sup>-1</code>.
      */
     protected static int mergeLineCharNo(int lineno, int charno) {
-      if (lineno < 0 || charno < 0) {
-        return -1;
-      } else if ((charno & ~COLUMN_MASK) != 0) {
-        return lineno << COLUMN_BITS | COLUMN_MASK;
-      } else {
-        return lineno << COLUMN_BITS | (charno & COLUMN_MASK);
-      }
+        if (lineno < 0 || charno < 0) {
+            return -1;
+        } else if ((charno & ~COLUMN_MASK) != 0) {
+            return lineno << COLUMN_BITS | COLUMN_MASK;
+        } else {
+            return lineno << COLUMN_BITS | (charno & COLUMN_MASK);
+        }
     }
 
     /**
@@ -1121,11 +1180,11 @@ public class Node implements Cloneable, Serializable
      * number (see {@link #mergeLineCharNo(int, int)}).
      */
     protected static int extractLineno(int lineCharNo) {
-      if (lineCharNo == -1) {
-        return -1;
-      } else {
-        return lineCharNo >>> COLUMN_BITS;
-      }
+        if (lineCharNo == -1) {
+            return -1;
+        } else {
+            return lineCharNo >>> COLUMN_BITS;
+        }
     }
 
     /**
@@ -1133,11 +1192,11 @@ public class Node implements Cloneable, Serializable
      * char number (see {@link #mergeLineCharNo(int, int)}).
      */
     protected static int extractCharno(int lineCharNo) {
-      if (lineCharNo == -1) {
-        return -1;
-      } else {
-        return lineCharNo & COLUMN_MASK;
-      }
+        if (lineCharNo == -1) {
+            return -1;
+        } else {
+            return lineCharNo & COLUMN_MASK;
+        }
     }
 
     //==========================================================================
@@ -1153,11 +1212,11 @@ public class Node implements Cloneable, Serializable
      * for (Node child : n.children()) { ...</pre>
      */
     public Iterable<Node> children() {
-      if (first == null) {
-        return Collections.emptySet();
-      } else {
-        return new SiblingNodeIterable(first);
-      }
+        if (first == null) {
+            return Collections.emptySet();
+        } else {
+            return new SiblingNodeIterable(first);
+        }
     }
 
     /**
@@ -1170,38 +1229,37 @@ public class Node implements Cloneable, Serializable
      * for (Node sibling : n.siblings()) { ...</pre>
      */
     public Iterable<Node> siblings() {
-      return new SiblingNodeIterable(this);
+        return new SiblingNodeIterable(this);
     }
 
     /**
      * @see Node#siblings()
      */
     private static final class SiblingNodeIterable
-       implements Iterable<Node>, Iterator<Node>
-    {
+            implements Iterable<Node>, Iterator<Node> {
         private final Node start;
         private Node current;
         private boolean used;
 
         SiblingNodeIterable(Node start) {
-          this.start = start;
-          this.current = start;
-          this.used = false;
+            this.start = start;
+            this.current = start;
+            this.used = false;
         }
 
         public Iterator<Node> iterator() {
-          if (!used) {
-            used = true;
-            return this;
-          } else {
-            // We have already used the current object as an iterator;
-            // we must create a new SiblingNodeIterable based on this
-            // iterable's start node.
-            //
-            // Since the primary use case for Node.children is in for
-            // loops, this branch is extremely unlikely.
-            return (new SiblingNodeIterable(start)).iterator();
-          }
+            if (!used) {
+                used = true;
+                return this;
+            } else {
+                // We have already used the current object as an iterator;
+                // we must create a new SiblingNodeIterable based on this
+                // iterable's start node.
+                //
+                // Since the primary use case for Node.children is in for
+                // loops, this branch is extremely unlikely.
+                return (new SiblingNodeIterable(start)).iterator();
+            }
         }
 
         public boolean hasNext() {
@@ -1210,7 +1268,7 @@ public class Node implements Cloneable, Serializable
 
         public Node next() {
             if (current == null) {
-              throw new NoSuchElementException();
+                throw new NoSuchElementException();
             }
             try {
                 return current;
@@ -1233,73 +1291,76 @@ public class Node implements Cloneable, Serializable
 
     /**
      * Gets the ancestor node relative to this.
+     *
      * @param level 0 = this, 1 = the parent, etc.
      */
     public Node getAncestor(int level) {
-      Preconditions.checkArgument(level >= 0);
-      Node node = this;
-      while(node != null && level-- > 0) {
-        node = node.getParent();
-      }
-      return node;
+        Preconditions.checkArgument(level >= 0);
+        Node node = this;
+        while (node != null && level-- > 0) {
+            node = node.getParent();
+        }
+        return node;
     }
 
     /**
      * Iterates all of the node's ancestors excluding itself.
      */
     public AncestorIterable getAncestors() {
-      return new AncestorIterable(this.getParent());
+        return new AncestorIterable(this.getParent());
     }
 
     /**
      * Iterator to go up the ancestor tree.
      */
     public static class AncestorIterable implements Iterable<Node> {
-      private Node cur;
+        private Node cur;
 
-      /**
-       * @param cur The node to start.
-       */
-      AncestorIterable(Node cur) {
-        this.cur = cur;
-      }
+        /**
+         * @param cur The node to start.
+         */
+        AncestorIterable(Node cur) {
+            this.cur = cur;
+        }
 
-      public Iterator<Node> iterator() {
-        return new Iterator<Node>() {
-            public boolean hasNext() {
-              return cur != null;
-            }
+        public Iterator<Node> iterator() {
+            return new Iterator<Node>() {
+                public boolean hasNext() {
+                    return cur != null;
+                }
 
-            public Node next() {
-              if (!hasNext()) throw new NoSuchElementException();
-              Node n = cur;
-              cur = cur.getParent();
-              return n;
-            }
+                public Node next() {
+                    if (!hasNext()) throw new NoSuchElementException();
+                    Node n = cur;
+                    cur = cur.getParent();
+                    return n;
+                }
 
-            public void remove() {
-              throw new UnsupportedOperationException();
-            }
-          };
-      }
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
     }
 
     /**
      * Check for one child more efficiently than by iterating over all the
      * children as is done with Node.getChildCount().
+     *
      * @return Whether the node has exactly one child.
      */
     public boolean hasOneChild() {
-      return first != null && first == last;
+        return first != null && first == last;
     }
 
     /**
      * Check for more than one child more efficiently than by iterating over all
      * the children as is done with Node.getChildCount().
+     *
      * @return Whether the node more than one child.
      */
     public boolean hasMoreThanOneChild() {
-      return first != null && first != last;
+        return first != null && first != last;
     }
 
     public int getChildCount() {
@@ -1312,12 +1373,12 @@ public class Node implements Cloneable, Serializable
 
     // Intended for testing and verification only.
     public boolean hasChild(Node child) {
-      for (Node n = first; n != null; n = n.getNext()) {
-        if (child == n) {
-          return true;
+        for (Node n = first; n != null; n = n.getNext()) {
+            if (child == n) {
+                return true;
+            }
         }
-      }
-      return false;
+        return false;
     }
 
     /**
@@ -1327,9 +1388,9 @@ public class Node implements Cloneable, Serializable
     public String checkTreeEquals(Node node2) {
         NodeMismatch diff = checkTreeEqualsImpl(node2);
         if (diff != null) {
-          return "Node tree inequality:" +
-              "\nTree1:\n" + toStringTree() +
-              "\n\nTree2:\n" + node2.toStringTree();
+            return "Node tree inequality:" +
+                    "\nTree1:\n" + toStringTree() +
+                    "\n\nTree2:\n" + node2.toStringTree();
         }
         return null;
     }
@@ -1351,8 +1412,8 @@ public class Node implements Cloneable, Serializable
         boolean eq = false;
 
         if (type == node2.getType() &&
-            getChildCount() == node2.getChildCount() &&
-            getClass() == node2.getClass()) {
+                getChildCount() == node2.getChildCount() &&
+                getClass() == node2.getClass()) {
 
             eq = this.isEquivalentTo(node2);
         }
@@ -1368,7 +1429,7 @@ public class Node implements Cloneable, Serializable
              n = n.next, n2 = n2.next) {
             res = n.checkTreeEqualsImpl(n2);
             if (res != null) {
-              return res;
+                return res;
             }
         }
         return res;
@@ -1380,7 +1441,7 @@ public class Node implements Cloneable, Serializable
      * differences.
      */
     public boolean checkTreeTypeAwareEqualsSilent(Node node2) {
-      return checkTreeTypeAwareEqualsImpl(node2) == null;
+        return checkTreeTypeAwareEqualsImpl(node2) == null;
     }
 
     /**
@@ -1392,9 +1453,9 @@ public class Node implements Cloneable, Serializable
         boolean eq = false;
 
         if (type == node2.getType() &&
-            getChildCount() == node2.getChildCount() &&
-            getClass() == node2.getClass() &&
-            Objects.equal(jsType, node2.getJSType())) {
+                getChildCount() == node2.getChildCount() &&
+                getClass() == node2.getClass() &&
+                Objects.equal(jsType, node2.getJSType())) {
 
             eq = this.isEquivalentTo(node2);
         }
@@ -1410,7 +1471,7 @@ public class Node implements Cloneable, Serializable
              n = n.next, n2 = n2.next) {
             res = n.checkTreeTypeAwareEqualsImpl(n2);
             if (res != null) {
-              return res;
+                return res;
             }
         }
         return res;
@@ -1418,133 +1479,252 @@ public class Node implements Cloneable, Serializable
 
     public static String tokenToName(int token) {
         switch (token) {
-            case Token.ERROR:           return "error";
-            case Token.EOF:             return "eof";
-            case Token.EOL:             return "eol";
-            case Token.ENTERWITH:       return "enterwith";
-            case Token.LEAVEWITH:       return "leavewith";
-            case Token.RETURN:          return "return";
-            case Token.GOTO:            return "goto";
-            case Token.IFEQ:            return "ifeq";
-            case Token.IFNE:            return "ifne";
-            case Token.SETNAME:         return "setname";
-            case Token.BITOR:           return "bitor";
-            case Token.BITXOR:          return "bitxor";
-            case Token.BITAND:          return "bitand";
-            case Token.EQ:              return "eq";
-            case Token.NE:              return "ne";
-            case Token.LT:              return "lt";
-            case Token.LE:              return "le";
-            case Token.GT:              return "gt";
-            case Token.GE:              return "ge";
-            case Token.LSH:             return "lsh";
-            case Token.RSH:             return "rsh";
-            case Token.URSH:            return "ursh";
-            case Token.ADD:             return "add";
-            case Token.SUB:             return "sub";
-            case Token.MUL:             return "mul";
-            case Token.DIV:             return "div";
-            case Token.MOD:             return "mod";
-            case Token.BITNOT:          return "bitnot";
-            case Token.NEG:             return "neg";
-            case Token.NEW:             return "new";
-            case Token.DELPROP:         return "delprop";
-            case Token.TYPEOF:          return "typeof";
-            case Token.GETPROP:         return "getprop";
-            case Token.SETPROP:         return "setprop";
-            case Token.GETELEM:         return "getelem";
-            case Token.SETELEM:         return "setelem";
-            case Token.CALL:            return "call";
-            case Token.NAME:            return "name";
-            case Token.NUMBER:          return "number";
-            case Token.STRING:          return "string";
-            case Token.NULL:            return "null";
-            case Token.THIS:            return "this";
-            case Token.FALSE:           return "false";
-            case Token.TRUE:            return "true";
-            case Token.SHEQ:            return "sheq";
-            case Token.SHNE:            return "shne";
-            case Token.REGEXP:          return "regexp";
-            case Token.POS:             return "pos";
-            case Token.BINDNAME:        return "bindname";
-            case Token.THROW:           return "throw";
-            case Token.IN:              return "in";
-            case Token.INSTANCEOF:      return "instanceof";
-            case Token.GETVAR:          return "getvar";
-            case Token.SETVAR:          return "setvar";
-            case Token.TRY:             return "try";
-            case Token.TYPEOFNAME:      return "typeofname";
-            case Token.THISFN:          return "thisfn";
-            case Token.SEMI:            return "semi";
-            case Token.LB:              return "lb";
-            case Token.RB:              return "rb";
-            case Token.LC:              return "lc";
-            case Token.RC:              return "rc";
-            case Token.LP:              return "lp";
-            case Token.RP:              return "rp";
-            case Token.COMMA:           return "comma";
-            case Token.ASSIGN:          return "assign";
-            case Token.ASSIGN_BITOR:    return "assign_bitor";
-            case Token.ASSIGN_BITXOR:   return "assign_bitxor";
-            case Token.ASSIGN_BITAND:   return "assign_bitand";
-            case Token.ASSIGN_LSH:      return "assign_lsh";
-            case Token.ASSIGN_RSH:      return "assign_rsh";
-            case Token.ASSIGN_URSH:     return "assign_ursh";
-            case Token.ASSIGN_ADD:      return "assign_add";
-            case Token.ASSIGN_SUB:      return "assign_sub";
-            case Token.ASSIGN_MUL:      return "assign_mul";
-            case Token.ASSIGN_DIV:      return "assign_div";
-            case Token.ASSIGN_MOD:      return "assign_mod";
-            case Token.HOOK:            return "hook";
-            case Token.COLON:           return "colon";
-            case Token.OR:              return "or";
-            case Token.AND:             return "and";
-            case Token.INC:             return "inc";
-            case Token.DEC:             return "dec";
-            case Token.DOT:             return "dot";
-            case Token.FUNCTION:        return "function";
-            case Token.EXPORT:          return "export";
-            case Token.IMPORT:          return "import";
-            case Token.IF:              return "if";
-            case Token.ELSE:            return "else";
-            case Token.SWITCH:          return "switch";
-            case Token.CASE:            return "case";
-            case Token.DEFAULT:         return "default";
-            case Token.WHILE:           return "while";
-            case Token.DO:              return "do";
-            case Token.FOR:             return "for";
-            case Token.BREAK:           return "break";
-            case Token.CONTINUE:        return "continue";
-            case Token.VAR:             return "var";
-            case Token.WITH:            return "with";
-            case Token.CATCH:           return "catch";
-            case Token.FINALLY:         return "finally";
-            case Token.RESERVED:        return "reserved";
-            case Token.NOT:             return "not";
-            case Token.VOID:            return "void";
-            case Token.BLOCK:           return "block";
-            case Token.ARRAYLIT:        return "arraylit";
-            case Token.OBJECTLIT:       return "objectlit";
-            case Token.LABEL:           return "label";
-            case Token.TARGET:          return "target";
-            case Token.LOOP:            return "loop";
-            case Token.EXPR_VOID:       return "expr_void";
-            case Token.EXPR_RESULT:     return "expr_result";
-            case Token.JSR:             return "jsr";
-            case Token.SCRIPT:          return "script";
-            case Token.EMPTY:           return "empty";
-            case Token.GET_REF:         return "get_ref";
-            case Token.REF_SPECIAL:     return "ref_special";
+            case Token.ERROR:
+                return "error";
+            case Token.EOF:
+                return "eof";
+            case Token.EOL:
+                return "eol";
+            case Token.ENTERWITH:
+                return "enterwith";
+            case Token.LEAVEWITH:
+                return "leavewith";
+            case Token.RETURN:
+                return "return";
+            case Token.GOTO:
+                return "goto";
+            case Token.IFEQ:
+                return "ifeq";
+            case Token.IFNE:
+                return "ifne";
+            case Token.SETNAME:
+                return "setname";
+            case Token.BITOR:
+                return "bitor";
+            case Token.BITXOR:
+                return "bitxor";
+            case Token.BITAND:
+                return "bitand";
+            case Token.EQ:
+                return "eq";
+            case Token.NE:
+                return "ne";
+            case Token.LT:
+                return "lt";
+            case Token.LE:
+                return "le";
+            case Token.GT:
+                return "gt";
+            case Token.GE:
+                return "ge";
+            case Token.LSH:
+                return "lsh";
+            case Token.RSH:
+                return "rsh";
+            case Token.URSH:
+                return "ursh";
+            case Token.ADD:
+                return "add";
+            case Token.SUB:
+                return "sub";
+            case Token.MUL:
+                return "mul";
+            case Token.DIV:
+                return "div";
+            case Token.MOD:
+                return "mod";
+            case Token.BITNOT:
+                return "bitnot";
+            case Token.NEG:
+                return "neg";
+            case Token.NEW:
+                return "new";
+            case Token.DELPROP:
+                return "delprop";
+            case Token.TYPEOF:
+                return "typeof";
+            case Token.GETPROP:
+                return "getprop";
+            case Token.SETPROP:
+                return "setprop";
+            case Token.GETELEM:
+                return "getelem";
+            case Token.SETELEM:
+                return "setelem";
+            case Token.CALL:
+                return "call";
+            case Token.NAME:
+                return "name";
+            case Token.NUMBER:
+                return "number";
+            case Token.STRING:
+                return "string";
+            case Token.NULL:
+                return "null";
+            case Token.THIS:
+                return "this";
+            case Token.FALSE:
+                return "false";
+            case Token.TRUE:
+                return "true";
+            case Token.SHEQ:
+                return "sheq";
+            case Token.SHNE:
+                return "shne";
+            case Token.REGEXP:
+                return "regexp";
+            case Token.POS:
+                return "pos";
+            case Token.BINDNAME:
+                return "bindname";
+            case Token.THROW:
+                return "throw";
+            case Token.IN:
+                return "in";
+            case Token.INSTANCEOF:
+                return "instanceof";
+            case Token.GETVAR:
+                return "getvar";
+            case Token.SETVAR:
+                return "setvar";
+            case Token.TRY:
+                return "try";
+            case Token.TYPEOFNAME:
+                return "typeofname";
+            case Token.THISFN:
+                return "thisfn";
+            case Token.SEMI:
+                return "semi";
+            case Token.LB:
+                return "lb";
+            case Token.RB:
+                return "rb";
+            case Token.LC:
+                return "lc";
+            case Token.RC:
+                return "rc";
+            case Token.LP:
+                return "lp";
+            case Token.RP:
+                return "rp";
+            case Token.COMMA:
+                return "comma";
+            case Token.ASSIGN:
+                return "assign";
+            case Token.ASSIGN_BITOR:
+                return "assign_bitor";
+            case Token.ASSIGN_BITXOR:
+                return "assign_bitxor";
+            case Token.ASSIGN_BITAND:
+                return "assign_bitand";
+            case Token.ASSIGN_LSH:
+                return "assign_lsh";
+            case Token.ASSIGN_RSH:
+                return "assign_rsh";
+            case Token.ASSIGN_URSH:
+                return "assign_ursh";
+            case Token.ASSIGN_ADD:
+                return "assign_add";
+            case Token.ASSIGN_SUB:
+                return "assign_sub";
+            case Token.ASSIGN_MUL:
+                return "assign_mul";
+            case Token.ASSIGN_DIV:
+                return "assign_div";
+            case Token.ASSIGN_MOD:
+                return "assign_mod";
+            case Token.HOOK:
+                return "hook";
+            case Token.COLON:
+                return "colon";
+            case Token.OR:
+                return "or";
+            case Token.AND:
+                return "and";
+            case Token.INC:
+                return "inc";
+            case Token.DEC:
+                return "dec";
+            case Token.DOT:
+                return "dot";
+            case Token.FUNCTION:
+                return "function";
+            case Token.EXPORT:
+                return "export";
+            case Token.IMPORT:
+                return "import";
+            case Token.IF:
+                return "if";
+            case Token.ELSE:
+                return "else";
+            case Token.SWITCH:
+                return "switch";
+            case Token.CASE:
+                return "case";
+            case Token.DEFAULT:
+                return "default";
+            case Token.WHILE:
+                return "while";
+            case Token.DO:
+                return "do";
+            case Token.FOR:
+                return "for";
+            case Token.BREAK:
+                return "break";
+            case Token.CONTINUE:
+                return "continue";
+            case Token.VAR:
+                return "var";
+            case Token.WITH:
+                return "with";
+            case Token.CATCH:
+                return "catch";
+            case Token.FINALLY:
+                return "finally";
+            case Token.RESERVED:
+                return "reserved";
+            case Token.NOT:
+                return "not";
+            case Token.VOID:
+                return "void";
+            case Token.BLOCK:
+                return "block";
+            case Token.ARRAYLIT:
+                return "arraylit";
+            case Token.OBJECTLIT:
+                return "objectlit";
+            case Token.LABEL:
+                return "label";
+            case Token.TARGET:
+                return "target";
+            case Token.LOOP:
+                return "loop";
+            case Token.EXPR_VOID:
+                return "expr_void";
+            case Token.EXPR_RESULT:
+                return "expr_result";
+            case Token.JSR:
+                return "jsr";
+            case Token.SCRIPT:
+                return "script";
+            case Token.EMPTY:
+                return "empty";
+            case Token.GET_REF:
+                return "get_ref";
+            case Token.REF_SPECIAL:
+                return "ref_special";
         }
-        return "<unknown="+token+">";
+        return "<unknown=" + token + ">";
     }
 
-    /** Returns true if this node is equivalent semantically to another */
+    /**
+     * Returns true if this node is equivalent semantically to another
+     */
     public boolean isEquivalentTo(Node node) {
         if (type == Token.ARRAYLIT) {
             try {
-                int[] indices1 = (int[])getProp(Node.SKIP_INDEXES_PROP);
-                int[] indices2 = (int[])node.getProp(Node.SKIP_INDEXES_PROP);
+                int[] indices1 = (int[]) getProp(Node.SKIP_INDEXES_PROP);
+                int[] indices2 = (int[]) node.getProp(Node.SKIP_INDEXES_PROP);
                 if (indices1 == null) {
                     if (indices2 != null)
                         return false;
@@ -1562,7 +1742,7 @@ public class Node implements Cloneable, Serializable
                 return false;
             }
         } else if (type == Token.INC ||
-                   type == Token.DEC) {
+                type == Token.DEC) {
             int post1 = this.getIntProp(INCRDECR_PROP, 0);
             int post2 = node.getIntProp(INCRDECR_PROP, 0);
             if (post1 != post2)
@@ -1576,90 +1756,89 @@ public class Node implements Cloneable, Serializable
         return true;
     }
 
-    public boolean hasSideEffects()
-    {
+    public boolean hasSideEffects() {
         switch (type) {
-          case Token.EXPR_VOID:
-          case Token.COMMA:
-            if (last != null)
-                return last.hasSideEffects();
-            else
+            case Token.EXPR_VOID:
+            case Token.COMMA:
+                if (last != null)
+                    return last.hasSideEffects();
+                else
+                    return true;
+
+            case Token.HOOK:
+                if (first == null ||
+                        first.next == null ||
+                        first.next.next == null)
+                    Kit.codeBug();
+                return first.next.hasSideEffects() &&
+                        first.next.next.hasSideEffects();
+
+            case Token.ERROR:         // Avoid cascaded error messages
+            case Token.EXPR_RESULT:
+            case Token.ASSIGN:
+            case Token.ASSIGN_ADD:
+            case Token.ASSIGN_SUB:
+            case Token.ASSIGN_MUL:
+            case Token.ASSIGN_DIV:
+            case Token.ASSIGN_MOD:
+            case Token.ASSIGN_BITOR:
+            case Token.ASSIGN_BITXOR:
+            case Token.ASSIGN_BITAND:
+            case Token.ASSIGN_LSH:
+            case Token.ASSIGN_RSH:
+            case Token.ASSIGN_URSH:
+            case Token.ENTERWITH:
+            case Token.LEAVEWITH:
+            case Token.RETURN:
+            case Token.GOTO:
+            case Token.IFEQ:
+            case Token.IFNE:
+            case Token.NEW:
+            case Token.DELPROP:
+            case Token.SETNAME:
+            case Token.SETPROP:
+            case Token.SETELEM:
+            case Token.CALL:
+            case Token.THROW:
+            case Token.RETHROW:
+            case Token.SETVAR:
+            case Token.CATCH_SCOPE:
+            case Token.RETURN_RESULT:
+            case Token.SET_REF:
+            case Token.DEL_REF:
+            case Token.REF_CALL:
+            case Token.TRY:
+            case Token.SEMI:
+            case Token.INC:
+            case Token.DEC:
+            case Token.EXPORT:
+            case Token.IMPORT:
+            case Token.IF:
+            case Token.ELSE:
+            case Token.SWITCH:
+            case Token.WHILE:
+            case Token.DO:
+            case Token.FOR:
+            case Token.BREAK:
+            case Token.CONTINUE:
+            case Token.VAR:
+            case Token.CONST:
+            case Token.WITH:
+            case Token.CATCH:
+            case Token.FINALLY:
+            case Token.BLOCK:
+            case Token.LABEL:
+            case Token.TARGET:
+            case Token.LOOP:
+            case Token.JSR:
+            case Token.SETPROP_OP:
+            case Token.SETELEM_OP:
+            case Token.LOCAL_BLOCK:
+            case Token.SET_REF_OP:
                 return true;
 
-          case Token.HOOK:
-            if (first == null ||
-                first.next == null ||
-                first.next.next == null)
-                Kit.codeBug();
-            return first.next.hasSideEffects() &&
-                   first.next.next.hasSideEffects();
-
-          case Token.ERROR:         // Avoid cascaded error messages
-          case Token.EXPR_RESULT:
-          case Token.ASSIGN:
-          case Token.ASSIGN_ADD:
-          case Token.ASSIGN_SUB:
-          case Token.ASSIGN_MUL:
-          case Token.ASSIGN_DIV:
-          case Token.ASSIGN_MOD:
-          case Token.ASSIGN_BITOR:
-          case Token.ASSIGN_BITXOR:
-          case Token.ASSIGN_BITAND:
-          case Token.ASSIGN_LSH:
-          case Token.ASSIGN_RSH:
-          case Token.ASSIGN_URSH:
-          case Token.ENTERWITH:
-          case Token.LEAVEWITH:
-          case Token.RETURN:
-          case Token.GOTO:
-          case Token.IFEQ:
-          case Token.IFNE:
-          case Token.NEW:
-          case Token.DELPROP:
-          case Token.SETNAME:
-          case Token.SETPROP:
-          case Token.SETELEM:
-          case Token.CALL:
-          case Token.THROW:
-          case Token.RETHROW:
-          case Token.SETVAR:
-          case Token.CATCH_SCOPE:
-          case Token.RETURN_RESULT:
-          case Token.SET_REF:
-          case Token.DEL_REF:
-          case Token.REF_CALL:
-          case Token.TRY:
-          case Token.SEMI:
-          case Token.INC:
-          case Token.DEC:
-          case Token.EXPORT:
-          case Token.IMPORT:
-          case Token.IF:
-          case Token.ELSE:
-          case Token.SWITCH:
-          case Token.WHILE:
-          case Token.DO:
-          case Token.FOR:
-          case Token.BREAK:
-          case Token.CONTINUE:
-          case Token.VAR:
-          case Token.CONST:
-          case Token.WITH:
-          case Token.CATCH:
-          case Token.FINALLY:
-          case Token.BLOCK:
-          case Token.LABEL:
-          case Token.TARGET:
-          case Token.LOOP:
-          case Token.JSR:
-          case Token.SETPROP_OP:
-          case Token.SETELEM_OP:
-          case Token.LOCAL_BLOCK:
-          case Token.SET_REF_OP:
-            return true;
-
-          default:
-            return false;
+            default:
+                return false;
         }
     }
 
@@ -1677,11 +1856,11 @@ public class Node implements Cloneable, Serializable
         } else if (type == Token.GETPROP) {
             String left = getFirstChild().getQualifiedName();
             if (left == null) {
-              return null;
+                return null;
             }
             return left + "." + getLastChild().getString();
         } else if (type == Token.THIS) {
-             return "this";
+            return "this";
         } else {
             return null;
 
@@ -1726,38 +1905,39 @@ public class Node implements Cloneable, Serializable
 
     /**
      * Removes this node from its parent.  Equivalent to:
-     *     node.getParent().removeChild();
+     * node.getParent().removeChild();
      */
     public Node detachFromParent() {
-      Preconditions.checkState(parent != null);
-      parent.removeChild(this);
-      return this;
+        Preconditions.checkState(parent != null);
+        parent.removeChild(this);
+        return this;
     }
 
     /**
      * Removes the first child of Node.  Equivalent to:
-     *     node.removeChild(node.getFirstChild());
+     * node.removeChild(node.getFirstChild());
+     *
      * @return The removed Node.
      */
     public Node removeFirstChild() {
-      Node child = first;
-      if (child != null) {
-        removeChild(child);
-      }
-      return child;
+        Node child = first;
+        if (child != null) {
+            removeChild(child);
+        }
+        return child;
     }
 
     /**
      * @return A Node that is the head of the list of children.
      */
     public Node removeChildren() {
-      Node children = first;
-      for (Node child = first; child != null; child = child.getNext()) {
-        child.parent = null;
-      }
-      first = null;
-      last = null;
-      return children;
+        Node children = first;
+        for (Node child = first; child != null; child = child.getNext()) {
+            child.parent = null;
+        }
+        first = null;
+        last = null;
+        return children;
     }
 
     /**
@@ -1765,21 +1945,21 @@ public class Node implements Cloneable, Serializable
      * other.
      */
     public void detachChildren() {
-      for (Node child = first; child != null; ) {
-        Node nextChild = child.getNext();
-        child.parent = null;
-        child.next = null;
-        child = nextChild;
-      }
-      first = null;
-      last = null;
+        for (Node child = first; child != null; ) {
+            Node nextChild = child.getNext();
+            child.parent = null;
+            child.next = null;
+            child = nextChild;
+        }
+        first = null;
+        last = null;
     }
 
     public Node removeChildAfter(Node prev) {
         Preconditions.checkArgument(prev.parent == this,
-            "prev is not a child of this node.");
+                "prev is not a child of this node.");
         Preconditions.checkArgument(prev.next != null,
-            "no next sibling.");
+                "no next sibling.");
 
         Node child = prev.next;
         prev.next = child.next;
@@ -1801,8 +1981,7 @@ public class Node implements Cloneable, Serializable
             result.first = null;
             result.last = null;
             result.parent = null;
-        }
-        catch (CloneNotSupportedException e) {
+        } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e.getMessage());
         }
         return result;
@@ -1848,11 +2027,11 @@ public class Node implements Cloneable, Serializable
      * entire tree rooted at this node.
      */
     public void copyInformationFromForTree(Node other) {
-      copyInformationFrom(other);
-      for (Node child = getFirstChild();
-           child != null; child = child.getNext()) {
-        child.copyInformationFromForTree(other);
-      }
+        copyInformationFrom(other);
+        for (Node child = getFirstChild();
+             child != null; child = child.getNext()) {
+            child.copyInformationFromForTree(other);
+        }
     }
 
     //==========================================================================
@@ -1867,7 +2046,7 @@ public class Node implements Cloneable, Serializable
     }
 
     public FileLevelJsDocBuilder getJsDocBuilderForNode() {
-      return new FileLevelJsDocBuilder();
+        return new FileLevelJsDocBuilder();
     }
 
     /**
@@ -1879,37 +2058,36 @@ public class Node implements Cloneable, Serializable
      * current node.
      */
     public class FileLevelJsDocBuilder {
-      public void append(String fileLevelComment) {
-        JSDocInfo jsDocInfo = getJSDocInfo();
-        if (jsDocInfo == null) {
-          // TODO(user): Is there a way to determine whether to
-          // parse the JsDoc documentation from here?
-          jsDocInfo = new JSDocInfo(false);
+        public void append(String fileLevelComment) {
+            JSDocInfo jsDocInfo = getJSDocInfo();
+            if (jsDocInfo == null) {
+                // TODO(user): Is there a way to determine whether to
+                // parse the JsDoc documentation from here?
+                jsDocInfo = new JSDocInfo(false);
+            }
+            String license = jsDocInfo.getLicense();
+            if (license == null) {
+                license = "";
+            }
+            jsDocInfo.setLicense(license + fileLevelComment);
+            setJSDocInfo(jsDocInfo);
         }
-        String license = jsDocInfo.getLicense();
-        if (license == null) {
-          license = "";
-        }
-        jsDocInfo.setLicense(license + fileLevelComment);
-        setJSDocInfo(jsDocInfo);
-      }
     }
 
     /**
      * Get the {@link JSDocInfo} attached to this node.
+     *
      * @return the information or {@code null} if no JSDoc is attached to this
      * node
      */
-    public JSDocInfo getJSDocInfo()
-    {
+    public JSDocInfo getJSDocInfo() {
         return (JSDocInfo) getProp(JSDOC_INFO_PROP);
     }
 
     /**
      * Sets the {@link JSDocInfo} attached to this node.
      */
-    public void setJSDocInfo(JSDocInfo info)
-    {
+    public void setJSDocInfo(JSDocInfo info) {
         putProp(JSDOC_INFO_PROP, info);
     }
 
@@ -1918,8 +2096,7 @@ public class Node implements Cloneable, Serializable
      * method is meaningful only on {@link Token#NAME} nodes
      * used to define a {@link Token#FUNCTION}'s argument list.
      */
-    public void setVarArgs(boolean varArgs)
-    {
+    public void setVarArgs(boolean varArgs) {
         putBooleanProp(VAR_ARGS_NAME, varArgs);
     }
 
@@ -1928,8 +2105,7 @@ public class Node implements Cloneable, Serializable
      * method's return value is meaningful only on {@link Token#NAME} nodes
      * used to define a {@link Token#FUNCTION}'s argument list.
      */
-    public boolean isVarArgs()
-    {
+    public boolean isVarArgs() {
         return getBooleanProp(VAR_ARGS_NAME);
     }
 
@@ -1938,8 +2114,7 @@ public class Node implements Cloneable, Serializable
      * method is meaningful only on {@link Token#NAME} nodes
      * used to define a {@link Token#FUNCTION}'s argument list.
      */
-    public void setOptionalArg(boolean optionalArg)
-    {
+    public void setOptionalArg(boolean optionalArg) {
         putBooleanProp(OPT_ARG_NAME, optionalArg);
     }
 
@@ -1948,8 +2123,7 @@ public class Node implements Cloneable, Serializable
      * method's return value is meaningful only on {@link Token#NAME} nodes
      * used to define a {@link Token#FUNCTION}'s argument list.
      */
-    public boolean isOptionalArg()
-    {
+    public boolean isOptionalArg() {
         return getBooleanProp(OPT_ARG_NAME);
     }
 
@@ -2007,9 +2181,9 @@ public class Node implements Cloneable, Serializable
      */
     public void setIsNoSideEffectsCall() {
         Preconditions.checkArgument(
-           getType() == Token.CALL || getType() == Token.NEW,
-           "setIsNoSideEffectsCall only supports CALL and NEW nodes, got " +
-           Token.name(getType()));
+                getType() == Token.CALL || getType() == Token.NEW,
+                "setIsNoSideEffectsCall only supports CALL and NEW nodes, got " +
+                        Token.name(getType()));
 
         putBooleanProp(NO_SIDE_EFFECTS_CALL, true);
     }
@@ -2037,24 +2211,26 @@ public class Node implements Cloneable, Serializable
     }
 
     static class NodeMismatch {
-      final Node nodeA;
-      final Node nodeB;
+        final Node nodeA;
+        final Node nodeB;
 
-      NodeMismatch(Node nodeA, Node nodeB) {
-        this.nodeA = nodeA;
-        this.nodeB = nodeB;
-      }
-
-      @Override public boolean equals(Object object) {
-        if (object instanceof NodeMismatch) {
-          NodeMismatch that = (NodeMismatch) object;
-          return that.nodeA.equals(this.nodeA) && that.nodeB.equals(this.nodeB);
+        NodeMismatch(Node nodeA, Node nodeB) {
+            this.nodeA = nodeA;
+            this.nodeB = nodeB;
         }
-        return false;
-      }
 
-      @Override public int hashCode() {
-        return Objects.hashCode(nodeA, nodeB);
-      }
+        @Override
+        public boolean equals(Object object) {
+            if (object instanceof NodeMismatch) {
+                NodeMismatch that = (NodeMismatch) object;
+                return that.nodeA.equals(this.nodeA) && that.nodeB.equals(this.nodeB);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(nodeA, nodeB);
+        }
     }
 }

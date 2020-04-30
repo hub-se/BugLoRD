@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-58">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/LiveVariableAnalysisTest">
-					<exception>java.lang.IllegalStateException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>177</number_tests>
-					<failed>1</failed>
-					<passed>176</passed>
-					<nodes>46960</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/LiveVariablesAnalysis.java">
-					<insert numberlines="1,3">206,208</insert>
-					<bugtypes>
-						<id id="1.1" lines="205,207">
-							<description>Missing case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-58">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/LiveVariableAnalysisTest">
+                    <exception>java.lang.IllegalStateException</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>177</number_tests>
+                    <failed>1</failed>
+                    <passed>176</passed>
+                    <nodes>46960</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/LiveVariablesAnalysis.java">
+                    <insert numberlines="1,3">206,208</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="205,207">
+                            <description>Missing case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

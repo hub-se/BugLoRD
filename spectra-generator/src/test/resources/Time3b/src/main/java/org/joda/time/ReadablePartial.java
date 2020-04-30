@@ -47,7 +47,7 @@ public interface ReadablePartial extends Comparable<ReadablePartial> {
     /**
      * Gets the field type at the specified index.
      *
-     * @param index  the index to retrieve
+     * @param index the index to retrieve
      * @return the field at the specified index
      * @throws IndexOutOfBoundsException if the index is invalid
      */
@@ -56,7 +56,7 @@ public interface ReadablePartial extends Comparable<ReadablePartial> {
     /**
      * Gets the field at the specified index.
      *
-     * @param index  the index to retrieve
+     * @param index the index to retrieve
      * @return the field at the specified index
      * @throws IndexOutOfBoundsException if the index is invalid
      */
@@ -65,7 +65,7 @@ public interface ReadablePartial extends Comparable<ReadablePartial> {
     /**
      * Gets the value at the specified index.
      *
-     * @param index  the index to retrieve
+     * @param index the index to retrieve
      * @return the value of the field at the specified index
      * @throws IndexOutOfBoundsException if the index is invalid
      */
@@ -76,7 +76,7 @@ public interface ReadablePartial extends Comparable<ReadablePartial> {
      * <p>
      * The {@link Chronology} is the calculation engine behind the partial and
      * provides conversion and validation of the fields in a particular calendar system.
-     * 
+     *
      * @return the chronology, never null
      */
     Chronology getChronology();
@@ -86,7 +86,7 @@ public interface ReadablePartial extends Comparable<ReadablePartial> {
      * <p>
      * The field type specified must be one of those that is supported by the partial.
      *
-     * @param field  a DateTimeFieldType instance that is supported by this partial
+     * @param field a DateTimeFieldType instance that is supported by this partial
      * @return the value of that field
      * @throws IllegalArgumentException if the field is null or not supported
      */
@@ -95,7 +95,7 @@ public interface ReadablePartial extends Comparable<ReadablePartial> {
     /**
      * Checks whether the field type specified is supported by this partial.
      *
-     * @param field  the field to check, may be null which returns false
+     * @param field the field to check, may be null which returns false
      * @return true if the field is supported
      */
     boolean isSupported(DateTimeFieldType field);
@@ -111,12 +111,13 @@ public interface ReadablePartial extends Comparable<ReadablePartial> {
      * method will be the datetime from the specified base instant plus the
      * time from this partial.
      *
-     * @param baseInstant  the instant that provides the missing fields, null means now
+     * @param baseInstant the instant that provides the missing fields, null means now
      * @return the combined datetime
      */
     DateTime toDateTime(ReadableInstant baseInstant);
 
     //-----------------------------------------------------------------------
+
     /**
      * Compares this partial with the specified object for equality based
      * on the supported fields, chronology and values.
@@ -124,13 +125,13 @@ public interface ReadablePartial extends Comparable<ReadablePartial> {
      * Two instances of ReadablePartial are equal if they have the same
      * chronology, same field types (in same order) and same values.
      *
-     * @param partial  the object to compare to
+     * @param partial the object to compare to
      * @return true if equal
      */
     boolean equals(Object partial);
 
     /**
-     * Gets a hash code for the partial that is compatible with the 
+     * Gets a hash code for the partial that is compatible with the
      * equals method.
      * <p>
      * The formula used must be:
@@ -173,6 +174,7 @@ public interface ReadablePartial extends Comparable<ReadablePartial> {
 //    int compareTo(ReadablePartial partial);
 
     //-----------------------------------------------------------------------
+
     /**
      * Get the value as a String in a recognisable ISO8601 format, only
      * displaying supported fields.

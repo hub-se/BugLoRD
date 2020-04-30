@@ -1,41 +1,42 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-93">
-			<tests>
-				<testfile path="org/apache/commons/math/util/MathUtilsTest">
-					<exception>junit.framework.AssertionFailedError:17!
-						expected:&lt;3.55687428096E14&gt; but
-						was:&lt;3.55687428096001E14&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>546</number_tests>
-					<failed>1</failed>
-					<passed>545</passed>
-					<nodes>13399</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/util/MathUtils.java">
-					<change>346</change>
-					<delete>345</delete>
-					<insert numberlines="3">346</insert>
-					<insert numberlines="3">377</insert>
-					<insert numberlines="3">397</insert>
-					<bugtypes>
-						<id id="1.2" lines="345,346">
-							<description>Incorrect conditions and case handling.</description>
-						</id>
-						<id id="1.1" lines="376">
-							<description>Missing case for n smaller than 21.</description>
-						</id>
-						<id id="1.1" lines="395">
-							<description>Missing case for n smaller than 21.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-93">
+            <tests>
+                <testfile path="org/apache/commons/math/util/MathUtilsTest">
+                    <exception>junit.framework.AssertionFailedError:17!
+                        expected:&lt;3.55687428096E14&gt; but
+                        was:&lt;3.55687428096001E14&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>546</number_tests>
+                    <failed>1</failed>
+                    <passed>545</passed>
+                    <nodes>13399</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/util/MathUtils.java">
+                    <change>346</change>
+                    <delete>345</delete>
+                    <insert numberlines="3">346</insert>
+                    <insert numberlines="3">377</insert>
+                    <insert numberlines="3">397</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="345,346">
+                            <description>Incorrect conditions and case handling.</description>
+                        </id>
+                        <id id="1.1" lines="376">
+                            <description>Missing case for n smaller than 21.</description>
+                        </id>
+                        <id id="1.1" lines="395">
+                            <description>Missing case for n smaller than 21.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

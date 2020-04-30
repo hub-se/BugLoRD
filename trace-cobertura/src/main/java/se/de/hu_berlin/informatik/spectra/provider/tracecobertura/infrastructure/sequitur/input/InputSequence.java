@@ -1,41 +1,35 @@
-/** License information:
- *    Component: sequitur
- *    Package:   de.unisb.cs.st.sequitur.input
- *    Class:     InputSequence
- *    Filename:  sequitur/src/main/java/de/unisb/cs/st/sequitur/input/InputSequence.java
- *
+/**
+ * License information:
+ * Component: sequitur
+ * Package:   de.unisb.cs.st.sequitur.input
+ * Class:     InputSequence
+ * Filename:  sequitur/src/main/java/de/unisb/cs/st/sequitur/input/InputSequence.java
+ * <p>
  * This file is part of the Sequitur library developed by Clemens Hammacher
  * at Saarland University. It has been developed for use in the JavaSlicer
  * tool. See http://www.st.cs.uni-saarland.de/javaslicer/ for more information.
- *
+ * <p>
  * Sequitur is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Sequitur is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Sequitur. If not, see <http://www.gnu.org/licenses/>.
  */
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input;
 
+import de.hammacher.util.LongHolder;
 import gnu.trove.map.TObjectLongMap;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
-
-import de.hammacher.util.LongHolder;
+import java.util.*;
 
 public class InputSequence {
 
@@ -58,9 +52,9 @@ public class InputSequence {
                         final Symbol sym = rule.symbols[0];
                         if (sym instanceof Terminal)
                             break;
-                        rule = ((NonTerminal)sym).getRule();
+                        rule = ((NonTerminal) sym).getRule();
                     }
-                    final int depth = Math.max(Integer.highestOneBit(this.ruleStack.size()-1)*2, 2);
+                    final int depth = Math.max(Integer.highestOneBit(this.ruleStack.size() - 1) * 2, 2);
                     this.rulePos = new int[depth];
                     this.count = new int[depth];
                 }
@@ -74,10 +68,10 @@ public class InputSequence {
                     final int ruleSymLength = rule.symbols.length;
                     final Symbol sym = rule.symbols[ruleSymLength - 1];
                     if (this.rulePos.length == i) {
-                        int[] newRulePos = new int[2*i];
+                        int[] newRulePos = new int[2 * i];
                         System.arraycopy(this.rulePos, 0, newRulePos, 0, i);
                         this.rulePos = newRulePos;
-                        int[] newCount = new int[2*i];
+                        int[] newCount = new int[2 * i];
                         System.arraycopy(this.count, 0, newCount, 0, i);
                         this.count = newCount;
                     }
@@ -88,7 +82,7 @@ public class InputSequence {
                     }
                     this.rulePos[i] = ruleSymLength - 1;
                     this.count[i++] = sym.count - 1;
-                    rule = ((NonTerminal)sym).getRule();
+                    rule = ((NonTerminal) sym).getRule();
                 }
             } else {
                 Rule rule = firstRule;
@@ -102,10 +96,10 @@ public class InputSequence {
                     final int ruleOffset = position == after ? 0 : rule.findOffset(position - after, afterHolder);
                     after += afterHolder.longValue();
                     if (this.rulePos.length == i) {
-                        int[] newRulePos = new int[2*i];
+                        int[] newRulePos = new int[2 * i];
                         System.arraycopy(this.rulePos, 0, newRulePos, 0, i);
                         this.rulePos = newRulePos;
-                        int[] newCount = new int[2*i];
+                        int[] newCount = new int[2 * i];
                         System.arraycopy(this.count, 0, newCount, 0, i);
                         this.count = newCount;
                     }
@@ -120,7 +114,7 @@ public class InputSequence {
                     }
                     if (sym instanceof Terminal)
                         break;
-                    rule = ((NonTerminal)sym).getRule();
+                    rule = ((NonTerminal) sym).getRule();
                     ++i;
                 }
                 assert after == position;
@@ -138,13 +132,13 @@ public class InputSequence {
         public int next() {
             if (!hasNext())
                 throw new NoSuchElementException();
-            int depth = this.ruleStack.size()-1;
+            int depth = this.ruleStack.size() - 1;
             Symbol[] ruleSymbols = this.ruleStack.get(depth).symbols;
             Symbol sym = ruleSymbols[this.rulePos[depth]];
-            final int value = ((Terminal)sym).getValue();
+            final int value = ((Terminal) sym).getValue();
 
             while (true) {
-                if (this.count[depth]+1 < sym.count) {
+                if (this.count[depth] + 1 < sym.count) {
                     ++this.count[depth];
                     break;
                 }
@@ -165,13 +159,13 @@ public class InputSequence {
                 sym = ruleSymbols[this.rulePos[depth]];
             }
             while (sym instanceof NonTerminal) {
-                final Rule rule = ((NonTerminal)sym).getRule();
+                final Rule rule = ((NonTerminal) sym).getRule();
                 this.ruleStack.add(rule);
                 if (this.rulePos.length == ++depth) {
-                    int[] newRulePos = new int[2*depth];
+                    int[] newRulePos = new int[2 * depth];
                     System.arraycopy(this.rulePos, 0, newRulePos, 0, depth);
                     this.rulePos = newRulePos;
-                    int[] newCount = new int[2*depth];
+                    int[] newCount = new int[2 * depth];
                     System.arraycopy(this.count, 0, newCount, 0, depth);
                     this.count = newCount;
                 }
@@ -193,7 +187,7 @@ public class InputSequence {
             if (!hasPrevious())
                 throw new NoSuchElementException();
 
-            int depth = this.ruleStack.size()-1;
+            int depth = this.ruleStack.size() - 1;
 
             Symbol sym;
             while (true) {
@@ -204,34 +198,34 @@ public class InputSequence {
                 }
                 if (this.rulePos[depth] != 0) {
                     sym = this.ruleStack.get(depth).symbols[--this.rulePos[depth]];
-                    this.count[depth] = sym.count-1;
+                    this.count[depth] = sym.count - 1;
                     break;
                 }
                 this.ruleStack.remove(depth--);
             }
             while (sym instanceof NonTerminal) {
-                final Rule rule = ((NonTerminal)sym).getRule();
+                final Rule rule = ((NonTerminal) sym).getRule();
                 this.ruleStack.add(rule);
                 if (this.rulePos.length == ++depth) {
-                    int[] newRulePos = new int[2*depth];
+                    int[] newRulePos = new int[2 * depth];
                     System.arraycopy(this.rulePos, 0, newRulePos, 0, depth);
                     this.rulePos = newRulePos;
-                    int[] newCount = new int[2*depth];
+                    int[] newCount = new int[2 * depth];
                     System.arraycopy(this.count, 0, newCount, 0, depth);
                     this.count = newCount;
                 }
                 this.rulePos[depth] = rule.symbols.length - 1;
                 sym = rule.symbols[this.rulePos[depth]];
-                this.count[depth] = sym.count-1;
+                this.count[depth] = sym.count - 1;
             }
             --this.pos;
-            return ((Terminal)sym).getValue();
+            return ((Terminal) sym).getValue();
         }
 
         public int previousIndex() {
             if (this.pos > Integer.MAX_VALUE)
                 return Integer.MAX_VALUE;
-            return (int) (this.pos-1);
+            return (int) (this.pos - 1);
         }
 
     }
@@ -246,7 +240,7 @@ public class InputSequence {
         this(getStartRule(startRuleNumber, grammar));
     }
 
-    private static  Rule getStartRule(final long startRuleNumber, final SharedInputGrammar grammar) {
+    private static Rule getStartRule(final long startRuleNumber, final SharedInputGrammar grammar) {
         final Rule rule = grammar.grammar.getRule(startRuleNumber);
         if (rule == null)
             throw new IllegalArgumentException("Unknown start rule number");
@@ -295,15 +289,15 @@ public class InputSequence {
         for (Rule rule : keys) {
             long numUses = rules.get(rule);
             assert numUses >= 1;
-            byte fillBlanks = numUses < 10       ? 7
-                            : numUses < 100      ? 6
-                            : numUses < 1000     ? 5
-                            : numUses < 10000    ? 4
-                            : numUses < 100000   ? 3
-                            : numUses < 1000000  ? 2
-                            : numUses < 10000000 ? 1
-                            : (byte)0;
-            sb.append(newline).append(numUses).append('x').append(blanks,  0, fillBlanks + 2).append(rule);
+            byte fillBlanks = numUses < 10 ? 7
+                    : numUses < 100 ? 6
+                    : numUses < 1000 ? 5
+                    : numUses < 10000 ? 4
+                    : numUses < 100000 ? 3
+                    : numUses < 1000000 ? 2
+                    : numUses < 10000000 ? 1
+                    : (byte) 0;
+            sb.append(newline).append(numUses).append('x').append(blanks, 0, fillBlanks + 2).append(rule);
             /* print the whole expansion of the rule: */
             /*
             sb.append(newline).append("==> ");
@@ -321,12 +315,12 @@ public class InputSequence {
         return readFrom(objIn, SharedInputGrammar.readFrom(objIn));
     }
 
-    public static  InputSequence readFrom(final ObjectInputStream objIn,
-            final ObjectReader objectReader) throws IOException {
+    public static InputSequence readFrom(final ObjectInputStream objIn,
+                                         final ObjectReader objectReader) throws IOException {
         return readFrom(objIn, SharedInputGrammar.readFrom(objIn, objectReader));
     }
 
-    public static  InputSequence readFrom(final ObjectInputStream objIn, final SharedInputGrammar sharedGrammar) throws IOException {
+    public static InputSequence readFrom(final ObjectInputStream objIn, final SharedInputGrammar sharedGrammar) throws IOException {
         if (sharedGrammar == null)
             throw new NullPointerException();
         final long startRuleNr = DataInput.readLong(objIn);
@@ -335,19 +329,19 @@ public class InputSequence {
             throw new IOException("Unknown rule number");
         return new InputSequence(rule);
     }
-    
+
     public Set<Integer> computeTerminals() {
-    	Set<Integer> result = new HashSet<>();
-    	final TObjectLongMap<Rule> rules = this.firstRule.getUsedRules();
-    	Rule[] keys = rules.keys((Rule[]) new Rule[rules.size()]);
-    	for (Rule rule : keys) {
-    		for (Symbol symbol : rule.symbols) {
-    			if (symbol instanceof Terminal) {
-    				result.add(((Terminal) symbol).getValue());
-    			}
-    		}
-    	}
-    	return result;
+        Set<Integer> result = new HashSet<>();
+        final TObjectLongMap<Rule> rules = this.firstRule.getUsedRules();
+        Rule[] keys = rules.keys((Rule[]) new Rule[rules.size()]);
+        for (Rule rule : keys) {
+            for (Symbol symbol : rule.symbols) {
+                if (symbol instanceof Terminal) {
+                    result.add(((Terminal) symbol).getValue());
+                }
+            }
+        }
+        return result;
     }
 
 }

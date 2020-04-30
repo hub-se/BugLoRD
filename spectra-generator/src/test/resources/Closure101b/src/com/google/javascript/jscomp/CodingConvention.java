@@ -26,265 +26,273 @@ import java.util.Map;
 /**
  * CodingConvention defines a set of hooks to customize the behavior of the
  * Compiler for a specific team/company.
- *
+ * <p>
  * // TODO(bolinfest): Tighten up this interface -- it is far too big.
- * 
-*
-*
  */
 public interface CodingConvention {
 
-  /**
-   * This checks whether a given variable name, such as a name in all-caps
-   * should be treated as if it had the @const annotation.
-   *
-   * @param variableName potentially constant variable name
-   * @return {@code true} if the name should be treated as a constant.
-   */
-  public boolean isConstant(String variableName);
+    /**
+     * This checks whether a given variable name, such as a name in all-caps
+     * should be treated as if it had the @const annotation.
+     *
+     * @param variableName potentially constant variable name
+     * @return {@code true} if the name should be treated as a constant.
+     */
+    public boolean isConstant(String variableName);
 
-  /**
-   * This checks that a given {@code key} may be used as a key for an enum.
-   *
-   * @param key the potential key to an enum
-   * @return {@code true} if the {@code key} may be used as an enum key,
-   *     {@code false} otherwise
-   */
-  public boolean isValidEnumKey(String key);
+    /**
+     * This checks that a given {@code key} may be used as a key for an enum.
+     *
+     * @param key the potential key to an enum
+     * @return {@code true} if the {@code key} may be used as an enum key,
+     * {@code false} otherwise
+     */
+    public boolean isValidEnumKey(String key);
 
-  /**
-   * This checks whether a given parameter name should be treated as an
-   * optional parameter as far as type checking or function call arg count
-   * checking is concerned. Note that an optional function parameter may be
-   * declared as a simple type and is automatically converted to a union of the
-   * declared type and Undefined.
-   *
-   * @param parameter The parameter's node.
-   * @return {@code true} if the parameter should be treated as an optional
-   * parameter.
-   */
-  public boolean isOptionalParameter(Node parameter);
+    /**
+     * This checks whether a given parameter name should be treated as an
+     * optional parameter as far as type checking or function call arg count
+     * checking is concerned. Note that an optional function parameter may be
+     * declared as a simple type and is automatically converted to a union of the
+     * declared type and Undefined.
+     *
+     * @param parameter The parameter's node.
+     * @return {@code true} if the parameter should be treated as an optional
+     * parameter.
+     */
+    public boolean isOptionalParameter(Node parameter);
 
-  /**
-   * This checks whether a given parameter should be treated as a marker
-   * for a variable argument list function. A VarArgs parameter must be the
-   * last parameter in a function declaration.
-   *
-   * @param parameter The parameter's node.
-   * @return {@code true} if the parameter should be treated as a variable
-   * length parameter.
-   */
-  public boolean isVarArgsParameter(Node parameter);
+    /**
+     * This checks whether a given parameter should be treated as a marker
+     * for a variable argument list function. A VarArgs parameter must be the
+     * last parameter in a function declaration.
+     *
+     * @param parameter The parameter's node.
+     * @return {@code true} if the parameter should be treated as a variable
+     * length parameter.
+     */
+    public boolean isVarArgsParameter(Node parameter);
 
-  /**
-   * Checks whether a global variable or function name should be treated as
-   * exported, or externally referenceable.
-   *
-   * @param name A global variable or function name.
-   * @param local {@code true} if the name is a local variable.
-   * @return {@code true} if the name should be considered exported.
-   */
-  public boolean isExported(String name, boolean local);
-  
-  /**
-   * Should be isExported(name, true) || isExported(name, false);
-   */
-  public boolean isExported(String name);
+    /**
+     * Checks whether a global variable or function name should be treated as
+     * exported, or externally referenceable.
+     *
+     * @param name  A global variable or function name.
+     * @param local {@code true} if the name is a local variable.
+     * @return {@code true} if the name should be considered exported.
+     */
+    public boolean isExported(String name, boolean local);
 
-  /**
-   * Checks whether a name should be considered private. Private global
-   * variables and functions can only be referenced within the source file in
-   * which they are declared. Private properties and methods should only be
-   * accessed by the class that defines them.
-   *
-   * @param name The name of a global variable or function, or a method or
-   *     property.
-   * @return {@code true} if the name should be considered private.
-   */
-  public boolean isPrivate(String name);
+    /**
+     * Should be isExported(name, true) || isExported(name, false);
+     */
+    public boolean isExported(String name);
 
-  /**
-   * Checks if the given method defines a subclass relationship,
-   * and if it does, returns information on that relationship. By default,
-   * always returns null. Meant to be overridden by subclasses.
-   *
-   * @param callNode A CALL node.
-   */
-  public SubclassRelationship getClassesDefinedByCall(Node callNode);
+    /**
+     * Checks whether a name should be considered private. Private global
+     * variables and functions can only be referenced within the source file in
+     * which they are declared. Private properties and methods should only be
+     * accessed by the class that defines them.
+     *
+     * @param name The name of a global variable or function, or a method or
+     *             property.
+     * @return {@code true} if the name should be considered private.
+     */
+    public boolean isPrivate(String name);
 
-  /**
-   * Returns true if passed a string referring to the superclass.  The string
-   * will usually be from the string node at the right of a GETPROP, e.g.
-   * this.superClass_.
-   */
-  public boolean isSuperClassReference(String propertyName);
+    /**
+     * Checks if the given method defines a subclass relationship,
+     * and if it does, returns information on that relationship. By default,
+     * always returns null. Meant to be overridden by subclasses.
+     *
+     * @param callNode A CALL node.
+     */
+    public SubclassRelationship getClassesDefinedByCall(Node callNode);
 
-  /**
-   * Convenience method for determining provided dependencies amongst different
-   * js scripts.
-   */
-  public String extractClassNameIfProvide(Node node, Node parent);
+    /**
+     * Returns true if passed a string referring to the superclass.  The string
+     * will usually be from the string node at the right of a GETPROP, e.g.
+     * this.superClass_.
+     */
+    public boolean isSuperClassReference(String propertyName);
 
-  /**
-   * Convenience method for determining required dependencies amongst different
-   * js scripts.
-   */
-  public String extractClassNameIfRequire(Node node, Node parent);
+    /**
+     * Convenience method for determining provided dependencies amongst different
+     * js scripts.
+     */
+    public String extractClassNameIfProvide(Node node, Node parent);
 
-  /**
-   * Function name used when exporting properties.
-   * Signature: fn(object, publicName, symbol).
-   * @return function name.
-   */
-  public String getExportPropertyFunction();
+    /**
+     * Convenience method for determining required dependencies amongst different
+     * js scripts.
+     */
+    public String extractClassNameIfRequire(Node node, Node parent);
 
-  /**
-   * Function name used when exporting symbols.
-   * Signature: fn(publicPath, object).
-   * @return function name.
-   */
-  public String getExportSymbolFunction();
+    /**
+     * Function name used when exporting properties.
+     * Signature: fn(object, publicName, symbol).
+     *
+     * @return function name.
+     */
+    public String getExportPropertyFunction();
 
-  /**
-   * Checks if the given CALL node is forward-declaring any types,
-   * and returns the name of the types if it is.
-   */
-  public List<String> identifyTypeDeclarationCall(Node n);
+    /**
+     * Function name used when exporting symbols.
+     * Signature: fn(publicPath, object).
+     *
+     * @return function name.
+     */
+    public String getExportSymbolFunction();
 
-  /**
-   * Checks if the given ASSIGN node is a typedef, and returns the
-   * name of the type if it is.
-   */
-  public String identifyTypeDefAssign(Node n);
+    /**
+     * Checks if the given CALL node is forward-declaring any types,
+     * and returns the name of the types if it is.
+     */
+    public List<String> identifyTypeDeclarationCall(Node n);
 
-  /**
-   * In many JS libraries, the function that produces inheritance also
-   * adds properties to the superclass and/or subclass.
-   */
-  public void applySubclassRelationship(FunctionType parentCtor,
-      FunctionType childCtor, SubclassType type);
+    /**
+     * Checks if the given ASSIGN node is a typedef, and returns the
+     * name of the type if it is.
+     */
+    public String identifyTypeDefAssign(Node n);
 
-  /**
-   * Function name for abstract methods. An abstract method can be assigned to
-   * an interface method instead of an anonymous function in order to avoid
-   * linter warnings produced by assigning a function without a return value
-   * where a return value is expected.
-   * @return function name.
-   */
-  public String getAbstractMethodName();
+    /**
+     * In many JS libraries, the function that produces inheritance also
+     * adds properties to the superclass and/or subclass.
+     */
+    public void applySubclassRelationship(FunctionType parentCtor,
+                                          FunctionType childCtor, SubclassType type);
 
-  /**
-   * Checks if the given method defines a singleton getter, and if it does,
-   * returns the name of the class with the singleton getter. By default, always
-   * returns null. Meant to be overridden by subclasses.
-   *
-   * @param callNode A CALL node.
-   */
-  public String getSingletonGetterClassName(Node callNode);
+    /**
+     * Function name for abstract methods. An abstract method can be assigned to
+     * an interface method instead of an anonymous function in order to avoid
+     * linter warnings produced by assigning a function without a return value
+     * where a return value is expected.
+     *
+     * @return function name.
+     */
+    public String getAbstractMethodName();
 
-  /**
-   * In many JS libraries, the function that adds a singleton getter to a class
-   * adds properties to the class.
-   */
-  public void applySingletonGetter(FunctionType functionType,
-      FunctionType getterType, ObjectType objectType);
+    /**
+     * Checks if the given method defines a singleton getter, and if it does,
+     * returns the name of the class with the singleton getter. By default, always
+     * returns null. Meant to be overridden by subclasses.
+     *
+     * @param callNode A CALL node.
+     */
+    public String getSingletonGetterClassName(Node callNode);
 
-  public DelegateRelationship getDelegateRelationship(Node callNode);
+    /**
+     * In many JS libraries, the function that adds a singleton getter to a class
+     * adds properties to the class.
+     */
+    public void applySingletonGetter(FunctionType functionType,
+                                     FunctionType getterType, ObjectType objectType);
 
-  /**
-   * In many JS libraries, the function that creates a delegate relationship
-   * also adds properties to the delegator and delegate base.
-   */
-  public void applyDelegateRelationship(
-      ObjectType delegateSuperclass, ObjectType delegateBase,
-      ObjectType delegator, FunctionType delegateProxy,
-      FunctionType findDelegate);
+    public DelegateRelationship getDelegateRelationship(Node callNode);
 
-  /**
-   * @return the name of the delegate superclass.
-   */
-  public String getDelegateSuperclassName();
+    /**
+     * In many JS libraries, the function that creates a delegate relationship
+     * also adds properties to the delegator and delegate base.
+     */
+    public void applyDelegateRelationship(
+            ObjectType delegateSuperclass, ObjectType delegateBase,
+            ObjectType delegator, FunctionType delegateProxy,
+            FunctionType findDelegate);
 
-  /**
-   * Defines the delegate proxy properties. Their types depend on properties of
-   * the delegate base methods.
-   */
-  public void defineDelegateProxyProperties(
-      JSTypeRegistry registry, Scope scope,
-      Map<ObjectType, ObjectType> delegateProxyMap);
+    /**
+     * @return the name of the delegate superclass.
+     */
+    public String getDelegateSuperclassName();
 
-  /**
-   * Gets the name of the global object.
-   */
-  public String getGlobalObject();
+    /**
+     * Defines the delegate proxy properties. Their types depend on properties of
+     * the delegate base methods.
+     */
+    public void defineDelegateProxyProperties(
+            JSTypeRegistry registry, Scope scope,
+            Map<ObjectType, ObjectType> delegateProxyMap);
 
-  /**
-   * Whether this CALL function is testing for the existence of a property.
-   */
-  public boolean isPropertyTestFunction(Node call);
+    /**
+     * Gets the name of the global object.
+     */
+    public String getGlobalObject();
 
-  /**
-   * Checks if the given method performs a object literal cast, and if it does,
-   * returns information on the cast. By default, always returns null. Meant
-   * to be overridden by subclasses.
-   *
-   * @param t The node traversal.
-   * @param callNode A CALL node.
-   */
-  public ObjectLiteralCast getObjectLiteralCast(NodeTraversal t,
-      Node callNode);
+    /**
+     * Whether this CALL function is testing for the existence of a property.
+     */
+    public boolean isPropertyTestFunction(Node call);
 
-  static enum SubclassType {
-    INHERITS,
-    MIXIN
-  }
+    /**
+     * Checks if the given method performs a object literal cast, and if it does,
+     * returns information on the cast. By default, always returns null. Meant
+     * to be overridden by subclasses.
+     *
+     * @param t        The node traversal.
+     * @param callNode A CALL node.
+     */
+    public ObjectLiteralCast getObjectLiteralCast(NodeTraversal t,
+                                                  Node callNode);
 
-  static class SubclassRelationship {
-    final SubclassType type;
-    final String subclassName;
-    final String superclassName;
-
-    SubclassRelationship(SubclassType type,
-        Node subclassNode, Node superclassNode) {
-      this.type = type;
-      this.subclassName = subclassNode.getQualifiedName();
-      this.superclassName = superclassNode.getQualifiedName();
+    static enum SubclassType {
+        INHERITS,
+        MIXIN
     }
-  }
 
-  /**
-   * Delegates provides a mechanism and structure for identifying where classes
-   * can call out to optional code to augment their functionality. The optional
-   * code is isolated from the base code through the use of a subclass in the
-   * optional code derived from the delegate class in the base code.
-   */
-  static class DelegateRelationship {
-    /** The subclass in the base code. */
-    final String delegateBase;
+    static class SubclassRelationship {
+        final SubclassType type;
+        final String subclassName;
+        final String superclassName;
 
-    /** The class in the base code. */
-    final String delegator;
-
-    DelegateRelationship(String delegateBase, String delegator) {
-      this.delegateBase = delegateBase;
-      this.delegator = delegator;
+        SubclassRelationship(SubclassType type,
+                             Node subclassNode, Node superclassNode) {
+            this.type = type;
+            this.subclassName = subclassNode.getQualifiedName();
+            this.superclassName = superclassNode.getQualifiedName();
+        }
     }
-  }
 
-  /**
-   * An object literal cast provides a mechanism to cast object literals to
-   * other types without a warning.
-   */
-  static class ObjectLiteralCast {
-    /** Type to cast to. */
-    final String typeName;
+    /**
+     * Delegates provides a mechanism and structure for identifying where classes
+     * can call out to optional code to augment their functionality. The optional
+     * code is isolated from the base code through the use of a subclass in the
+     * optional code derived from the delegate class in the base code.
+     */
+    static class DelegateRelationship {
+        /**
+         * The subclass in the base code.
+         */
+        final String delegateBase;
 
-    /** Object to cast. */
-    final Node objectNode;
+        /**
+         * The class in the base code.
+         */
+        final String delegator;
 
-    ObjectLiteralCast(String typeName, Node objectNode) {
-      this.typeName = typeName;
-      this.objectNode = objectNode;
+        DelegateRelationship(String delegateBase, String delegator) {
+            this.delegateBase = delegateBase;
+            this.delegator = delegator;
+        }
     }
-  }
+
+    /**
+     * An object literal cast provides a mechanism to cast object literals to
+     * other types without a warning.
+     */
+    static class ObjectLiteralCast {
+        /**
+         * Type to cast to.
+         */
+        final String typeName;
+
+        /**
+         * Object to cast.
+         */
+        final Node objectNode;
+
+        ObjectLiteralCast(String typeName, Node objectNode) {
+            this.typeName = typeName;
+            this.objectNode = objectNode;
+        }
+    }
 }

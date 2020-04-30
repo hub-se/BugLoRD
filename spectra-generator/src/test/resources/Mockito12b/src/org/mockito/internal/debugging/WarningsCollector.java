@@ -4,9 +4,6 @@
  */
 package org.mockito.internal.debugging;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.mockito.internal.invocation.AllInvocationsFinder;
 import org.mockito.internal.invocation.Invocation;
 import org.mockito.internal.invocation.InvocationMatcher;
@@ -15,9 +12,12 @@ import org.mockito.internal.listeners.CollectCreatedMocks;
 import org.mockito.internal.progress.MockingProgress;
 import org.mockito.internal.progress.ThreadSafeMockingProgress;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @SuppressWarnings("unchecked")
 public class WarningsCollector {
-   
+
     List createdMocks;
 
     public WarningsCollector() {

@@ -5,13 +5,14 @@
 package org.mockitousage.bugs;
 
 import org.junit.Test;
-import static org.mockito.Mockito.*;
 import org.mockitoutil.TestBase;
+
+import static org.mockito.Mockito.*;
 
 public class VarargsErrorWhenCallingRealMethodTest extends TestBase {
 
     class Foo {
-        int blah(String a, String b, Object ... c) {
+        int blah(String a, String b, Object... c) {
             return 1;
         }
     }

@@ -1,42 +1,43 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-30">
-			<tests>
-				<testfile
-					path="org/mockito/internal/stubbing/defaultanswers/ReturnsSmartNullsTest">
-					<exception>junit.framework.AssertionFailedError:Exception message
-						should include oompa and lumpa, but was:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>982</number_tests>
-					<failed>1</failed>
-					<passed>981</passed>
-					<nodes>3106</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/exceptions/Reporter.java">
-					<change>438</change>
-					<change parent="439-445">441-442</change>
-					<insert numberlines="1">442</insert>
-					<bugtypes>
-						<id id="2.1" lines="438,441">
-							<description>Missing parameters.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file
-					path="org/mockito/internal/stubbing/defaultanswers/ReturnsSmartNulls.java">
-					<change>56</change>
-					<bugtypes>
-						<id id="2.1" lines="56">
-							<description>Missing parameters.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-30">
+            <tests>
+                <testfile
+                        path="org/mockito/internal/stubbing/defaultanswers/ReturnsSmartNullsTest">
+                    <exception>junit.framework.AssertionFailedError:Exception message
+                        should include oompa and lumpa, but was:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>982</number_tests>
+                    <failed>1</failed>
+                    <passed>981</passed>
+                    <nodes>3106</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/exceptions/Reporter.java">
+                    <change>438</change>
+                    <change parent="439-445">441-442</change>
+                    <insert numberlines="1">442</insert>
+                    <bugtypes>
+                        <id id="2.1" lines="438,441">
+                            <description>Missing parameters.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file
+                        path="org/mockito/internal/stubbing/defaultanswers/ReturnsSmartNulls.java">
+                    <change>56</change>
+                    <bugtypes>
+                        <id id="2.1" lines="56">
+                            <description>Missing parameters.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

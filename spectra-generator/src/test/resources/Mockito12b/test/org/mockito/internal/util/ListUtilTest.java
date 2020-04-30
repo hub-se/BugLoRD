@@ -4,15 +4,15 @@
  */
 package org.mockito.internal.util;
 
-import static java.util.Arrays.*;
-import static org.mockitoutil.ExtraMatchers.*;
+import org.junit.Test;
+import org.mockito.internal.util.ListUtil.Filter;
+import org.mockitoutil.TestBase;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Test;
-import org.mockito.internal.util.ListUtil.Filter;
-import org.mockitoutil.TestBase;
+import static java.util.Arrays.asList;
+import static org.mockitoutil.ExtraMatchers.*;
 
 @SuppressWarnings("unchecked")
 public class ListUtilTest extends TestBase {
@@ -25,10 +25,10 @@ public class ListUtilTest extends TestBase {
                 return object == "x";
             }
         });
-        
+
         assertThat(filtered, hasExactlyInOrder("one", "two", "three"));
     }
-    
+
     @Test
     public void shouldReturnEmptyIfEmptyListGiven() throws Exception {
         List list = new LinkedList();

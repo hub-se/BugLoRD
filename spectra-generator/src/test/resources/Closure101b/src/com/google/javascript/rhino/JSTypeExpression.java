@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,7 +36,7 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino;
 
 import com.google.javascript.rhino.jstype.JSType;
@@ -53,70 +53,76 @@ import java.io.Serializable;
  * @author nicksantos@google.com (Nick Santos)
  */
 public final class JSTypeExpression implements Serializable {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  /** The root of the AST. */
-  private final Node root;
+    /**
+     * The root of the AST.
+     */
+    private final Node root;
 
-  /** The source name where the type expression appears. */
-  private final String sourceName;
+    /**
+     * The source name where the type expression appears.
+     */
+    private final String sourceName;
 
-  /** The type registry to use for resolution. */
-  private final JSTypeRegistry registry;
+    /**
+     * The type registry to use for resolution.
+     */
+    private final JSTypeRegistry registry;
 
-  public JSTypeExpression(Node root, String sourceName,
-      JSTypeRegistry registry) {
-    this.root = root;
-    this.sourceName = sourceName;
-    this.registry = registry;
-  }
-
-  /**
-   * Make the given type expression into an optional type expression,
-   * if possible.
-   */
-  public static JSTypeExpression makeOptionalArg(JSTypeExpression expr) {
-    if (expr.isOptionalArg() || expr.isVarArgs()) {
-      return expr;
-    } else {
-      return new JSTypeExpression(
-          new Node(Token.EQUALS, expr.root), expr.sourceName, expr.registry);
+    public JSTypeExpression(Node root, String sourceName,
+                            JSTypeRegistry registry) {
+        this.root = root;
+        this.sourceName = sourceName;
+        this.registry = registry;
     }
-  }
 
-  /**
-   * @return Whether this expression denotes an optional {@code @param}.
-   */
-  public boolean isOptionalArg() {
-    return root.getType() == Token.EQUALS;
-  }
-
-  /**
-   * @return Whether this expression denotes a rest args {@code @param}.
-   */
-  public boolean isVarArgs() {
-    return root.getType() == Token.ELLIPSIS;
-  }
-
-  /**
-   * Evaluates the type expression into a {@code JSType} object.
-   */
-  public JSType evaluate(StaticScope<JSType> scope) {
-    JSType type = registry.createFromTypeNodes(root, sourceName, scope);
-    if (root.getBooleanProp(Node.BRACELESS_TYPE)) {
-      type.forgiveUnknownNames();
+    /**
+     * Make the given type expression into an optional type expression,
+     * if possible.
+     */
+    public static JSTypeExpression makeOptionalArg(JSTypeExpression expr) {
+        if (expr.isOptionalArg() || expr.isVarArgs()) {
+            return expr;
+        } else {
+            return new JSTypeExpression(
+                    new Node(Token.EQUALS, expr.root), expr.sourceName, expr.registry);
+        }
     }
-    return type;
-  }
 
-  @Override
-  public boolean equals(Object other) {
-    return other instanceof JSTypeExpression &&
-        ((JSTypeExpression) other).root.checkTreeEqualsSilent(root);
-  }
+    /**
+     * @return Whether this expression denotes an optional {@code @param}.
+     */
+    public boolean isOptionalArg() {
+        return root.getType() == Token.EQUALS;
+    }
 
-  @Override
-  public int hashCode() {
-    return root.toStringTree().hashCode();
-  }
+    /**
+     * @return Whether this expression denotes a rest args {@code @param}.
+     */
+    public boolean isVarArgs() {
+        return root.getType() == Token.ELLIPSIS;
+    }
+
+    /**
+     * Evaluates the type expression into a {@code JSType} object.
+     */
+    public JSType evaluate(StaticScope<JSType> scope) {
+        JSType type = registry.createFromTypeNodes(root, sourceName, scope);
+        if (root.getBooleanProp(Node.BRACELESS_TYPE)) {
+            type.forgiveUnknownNames();
+        }
+        return type;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof JSTypeExpression &&
+                ((JSTypeExpression) other).root.checkTreeEqualsSilent(root);
+    }
+
+    @Override
+    public int hashCode() {
+        return root.toStringTree().hashCode();
+    }
 }

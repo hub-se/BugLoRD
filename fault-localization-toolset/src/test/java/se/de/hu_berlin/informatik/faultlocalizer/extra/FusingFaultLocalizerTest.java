@@ -10,15 +10,13 @@
 package se.de.hu_berlin.informatik.faultlocalizer.extra;
 
 import org.junit.Test;
-
-import se.de.hu_berlin.informatik.faultlocalizer.extra.FusingFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.extra.FusingFaultLocalizer.DataFusionTechnique;
 import se.de.hu_berlin.informatik.faultlocalizer.extra.FusingFaultLocalizer.SelectionTechnique;
 import se.de.hu_berlin.informatik.faultlocalizer.test.data.SimpleSpectraProvider;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class FusingFaultLocalizerTest {
@@ -31,7 +29,7 @@ public class FusingFaultLocalizerTest {
                 SelectionTechnique.OVERLAP_RATE, DataFusionTechnique.COMB_ANZ);
         final SimpleRanking<INode<String>> r = (SimpleRanking<INode<String>>) f.localize(s);
         for (final INode<String> n : r) {
-        	Log.out(this, String.format("Node %s: %f", n.getIdentifier(), r.getRankingValue(n)));
+            Log.out(this, String.format("Node %s: %f", n.getIdentifier(), r.getRankingValue(n)));
         }
     }
 }

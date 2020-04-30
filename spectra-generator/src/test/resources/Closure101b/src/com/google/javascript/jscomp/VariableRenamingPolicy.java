@@ -20,21 +20,21 @@ package com.google.javascript.jscomp;
  * Policies to determine which variables should be renamed.
  */
 public enum VariableRenamingPolicy {
-  /**
-   * Rename no variables.
-   */
-  OFF,
+    /**
+     * Rename no variables.
+     */
+    OFF,
 
-  /**
-   * Rename local variables only.
-   */
-  LOCAL,
+    /**
+     * Rename local variables only.
+     */
+    LOCAL,
 
-  /**
-   * Rename all variables and functions unless they are exported or externed.
-   */
-  ALL,
+    /**
+     * Rename all variables and functions unless they are exported or externed.
+     */
+    ALL,
 
-  // for transitioning off old flags. not for public consumption.
-  UNSPECIFIED
+    // for transitioning off old flags. not for public consumption.
+    UNSPECIFIED
 }

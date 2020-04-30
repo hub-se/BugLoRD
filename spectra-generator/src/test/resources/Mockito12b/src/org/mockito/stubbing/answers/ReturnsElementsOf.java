@@ -4,12 +4,12 @@
  */
 package org.mockito.stubbing.answers;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import org.mockito.exceptions.base.MockitoException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Returns elements of the collection. Keeps returning the last element forever.
@@ -30,7 +30,7 @@ public class ReturnsElementsOf implements Answer {
     public ReturnsElementsOf(Collection elements) {
         if (elements == null) {
             throw new MockitoException("ReturnsElementsOf does not accept null as constructor argument.\n" +
-            		"Please pass a collection instance");
+                    "Please pass a collection instance");
         }
         this.elements = new LinkedList(elements);
     }
@@ -38,7 +38,7 @@ public class ReturnsElementsOf implements Answer {
     public Object answer(InvocationOnMock invocation) throws Throwable {
         if (elements.size() == 1)
             return elements.get(0);
-        else 
+        else
             return elements.poll();
     }
 }

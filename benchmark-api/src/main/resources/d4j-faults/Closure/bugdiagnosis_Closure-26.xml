@@ -1,46 +1,47 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-26">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/ProcessCommonJSModulesTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.CommandLineRunnerTest::testProcessCJS:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.ProcessCommonJSModulesTest::testExports:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.ProcessCommonJSModulesTest::testModuleName:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.ProcessCommonJSModulesTest::testDash:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.ProcessCommonJSModulesTest::testVarRenaming:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.ProcessCommonJSModulesTest::testWithoutExports:--&gt;
-						junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>6489</number_tests>
-					<failed>7</failed>
-					<passed>6482</passed>
-					<nodes>46013</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/ProcessCommonJSModules.java">
-					<insert numberlines="1"></insert>
-					<insert numberlines="3">207-208</insert>
-					<insert numberlines="1">228</insert>
-					<bugtypes>
-						<id id="1.1" lines="127,206">
-							<description>Missing case.</description>
-						</id>
-						<id id="3.1" lines="127,227">
-							<description>Missing initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-26">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/ProcessCommonJSModulesTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.CommandLineRunnerTest::testProcessCJS:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.ProcessCommonJSModulesTest::testExports:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.ProcessCommonJSModulesTest::testModuleName:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.ProcessCommonJSModulesTest::testDash:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.ProcessCommonJSModulesTest::testVarRenaming:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.ProcessCommonJSModulesTest::testWithoutExports:--&gt;
+                        junit.framework.AssertionFailedError:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>6489</number_tests>
+                    <failed>7</failed>
+                    <passed>6482</passed>
+                    <nodes>46013</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/ProcessCommonJSModules.java">
+                    <insert numberlines="1"></insert>
+                    <insert numberlines="3">207-208</insert>
+                    <insert numberlines="1">228</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="127,206">
+                            <description>Missing case.</description>
+                        </id>
+                        <id id="3.1" lines="127,227">
+                            <description>Missing initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

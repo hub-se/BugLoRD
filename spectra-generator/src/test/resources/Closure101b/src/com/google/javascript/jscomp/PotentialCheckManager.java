@@ -21,27 +21,25 @@ import java.util.List;
 
 /**
  * A manager for {@link PotentialCheck}s, holding them and evaluating on demand.
- *
-*
  */
 class PotentialCheckManager {
-  private final List<PotentialCheck> checks = Lists.newArrayList();
+    private final List<PotentialCheck> checks = Lists.newArrayList();
 
-  /**
-   * Adds a potential check for later evaluation.
-   */
-  void add(PotentialCheck check) {
-    checks.add(check);
-  }
-
-  /**
-   * Evaluates all pending potential checks. Each check is either reported or
-   * permanently discarded.
-   */
-  void flush() {
-    for (PotentialCheck check : checks) {
-      check.evaluate();
+    /**
+     * Adds a potential check for later evaluation.
+     */
+    void add(PotentialCheck check) {
+        checks.add(check);
     }
-    checks.clear();
-  }
+
+    /**
+     * Evaluates all pending potential checks. Each check is either reported or
+     * permanently discarded.
+     */
+    void flush() {
+        for (PotentialCheck check : checks) {
+            check.evaluate();
+        }
+        checks.clear();
+    }
 }

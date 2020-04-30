@@ -15,17 +15,16 @@
  */
 package org.joda.time.field;
 
-import java.util.Arrays;
-import java.util.Locale;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DurationField;
 import org.joda.time.DurationFieldType;
 import org.joda.time.TimeOfDay;
 import org.joda.time.chrono.ISOChronology;
+
+import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * This class is a Junit unit test for PreciseDateTimeField.
@@ -55,68 +54,74 @@ public class TestOffsetDateTimeField extends TestCase {
     //-----------------------------------------------------------------------
     public void test_constructor1() {
         OffsetDateTimeField field = new OffsetDateTimeField(
-            ISOChronology.getInstance().secondOfMinute(), 3
+                ISOChronology.getInstance().secondOfMinute(), 3
         );
         assertEquals(DateTimeFieldType.secondOfMinute(), field.getType());
         assertEquals(3, field.getOffset());
-        
+
         try {
             field = new OffsetDateTimeField(null, 3);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
+        } catch (IllegalArgumentException ex) {
+        }
+
         try {
             field = new OffsetDateTimeField(ISOChronology.getInstance().secondOfMinute(), 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
+        } catch (IllegalArgumentException ex) {
+        }
+
         try {
             field = new OffsetDateTimeField(UnsupportedDateTimeField.getInstance(
-                DateTimeFieldType.secondOfMinute(), UnsupportedDurationField.getInstance(DurationFieldType.seconds())), 0);
+                    DateTimeFieldType.secondOfMinute(), UnsupportedDurationField.getInstance(DurationFieldType.seconds())), 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void test_constructor2() {
         OffsetDateTimeField field = new OffsetDateTimeField(
-            ISOChronology.getInstance().secondOfMinute(), DateTimeFieldType.secondOfDay(), 3
+                ISOChronology.getInstance().secondOfMinute(), DateTimeFieldType.secondOfDay(), 3
         );
         assertEquals(DateTimeFieldType.secondOfDay(), field.getType());
         assertEquals(3, field.getOffset());
-        
+
         try {
             field = new OffsetDateTimeField(null, DateTimeFieldType.secondOfDay(), 3);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
+        } catch (IllegalArgumentException ex) {
+        }
+
         try {
             field = new OffsetDateTimeField(ISOChronology.getInstance().secondOfMinute(), null, 3);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
+        } catch (IllegalArgumentException ex) {
+        }
+
         try {
             field = new OffsetDateTimeField(ISOChronology.getInstance().secondOfMinute(), DateTimeFieldType.secondOfDay(), 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void test_getType() {
         OffsetDateTimeField field = new OffsetDateTimeField(
-            ISOChronology.getInstance().secondOfMinute(), 3
+                ISOChronology.getInstance().secondOfMinute(), 3
         );
         assertEquals(DateTimeFieldType.secondOfMinute(), field.getType());
     }
 
     public void test_getName() {
         OffsetDateTimeField field = new OffsetDateTimeField(
-            ISOChronology.getInstance().secondOfMinute(), 3
+                ISOChronology.getInstance().secondOfMinute(), 3
         );
         assertEquals("secondOfMinute", field.getName());
     }
 
     public void test_toString() {
         OffsetDateTimeField field = new OffsetDateTimeField(
-            ISOChronology.getInstance().secondOfMinute(), 3
+                ISOChronology.getInstance().secondOfMinute(), 3
         );
         assertEquals("DateTimeField[secondOfMinute]", field.toString());
     }
@@ -133,7 +138,7 @@ public class TestOffsetDateTimeField extends TestCase {
 
     public void test_getOffset() {
         OffsetDateTimeField field = new OffsetDateTimeField(
-            ISOChronology.getInstance().secondOfMinute(), 5
+                ISOChronology.getInstance().secondOfMinute(), 5
         );
         assertEquals(5, field.getOffset());
     }
@@ -216,48 +221,50 @@ public class TestOffsetDateTimeField extends TestCase {
     }
 
     public void test_add_RP_int_intarray_int() {
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         OffsetDateTimeField field = new MockStandardDateTimeField();
         int[] result = field.add(new TimeOfDay(), 2, values, 0);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 31, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 31, 40};
         result = field.add(new TimeOfDay(), 2, values, 1);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 62, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 62, 40};
         result = field.add(new TimeOfDay(), 2, values, 32);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 21, 3, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 21, 3, 40};
         result = field.add(new TimeOfDay(), 2, values, 33);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {23, 59, 30, 40};
+
+        values = new int[]{23, 59, 30, 40};
         try {
             field.add(new TimeOfDay(), 2, values, 33);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 29, 40};
+        } catch (IllegalArgumentException ex) {
+        }
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 29, 40};
         result = field.add(new TimeOfDay(), 2, values, -1);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 19, 59, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 19, 59, 40};
         result = field.add(new TimeOfDay(), 2, values, -31);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {0, 0, 30, 40};
+
+        values = new int[]{0, 0, 30, 40};
         try {
             field.add(new TimeOfDay(), 2, values, -31);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -270,18 +277,18 @@ public class TestOffsetDateTimeField extends TestCase {
 
     public void test_addWrapField_RP_int_intarray_int() {
         OffsetDateTimeField field = new MockOffsetDateTimeField();
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         int[] result = field.addWrapField(new TimeOfDay(), 2, values, 0);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 59, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 59, 40};
         result = field.addWrapField(new TimeOfDay(), 2, values, 29);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 3, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 3, 40};
         result = field.addWrapField(new TimeOfDay(), 2, values, 33);
         assertEquals(true, Arrays.equals(result, expected));
     }
@@ -307,30 +314,32 @@ public class TestOffsetDateTimeField extends TestCase {
 
     public void test_set_RP_int_intarray_int() {
         OffsetDateTimeField field = new MockOffsetDateTimeField();
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         int[] result = field.set(new TimeOfDay(), 2, values, 30);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 29, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 29, 40};
         result = field.set(new TimeOfDay(), 2, values, 29);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, 63);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, 2);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
     }
 
@@ -348,30 +357,32 @@ public class TestOffsetDateTimeField extends TestCase {
 
     public void test_set_RP_int_intarray_String_Locale() {
         OffsetDateTimeField field = new MockOffsetDateTimeField();
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         int[] result = field.set(new TimeOfDay(), 2, values, "30", null);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 29, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 29, 40};
         result = field.set(new TimeOfDay(), 2, values, "29", Locale.ENGLISH);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, "63", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, "2", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
     }
 
@@ -382,11 +393,13 @@ public class TestOffsetDateTimeField extends TestCase {
         try {
             field.convertText("2A", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             field.convertText(null, null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //------------------------------------------------------------------------
@@ -540,9 +553,11 @@ public class TestOffsetDateTimeField extends TestCase {
         protected MockStandardDateTimeField() {
             super();
         }
+
         public DurationField getDurationField() {
             return ISOChronology.getInstanceUTC().seconds();
         }
+
         public DurationField getRangeDurationField() {
             return ISOChronology.getInstanceUTC().minutes();
         }

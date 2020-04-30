@@ -1,33 +1,34 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-71">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/CheckAccessControlsTest">
-					<exception>junit.framework.AssertionFailedError:Overriding private
-						property of Foo.prototype.:-
-						com.google.javascript.jscomp.CheckAccessControlsTest::testNoPrivateAccessForProperties8:--&gt;
-						junit.framework.AssertionFailedError:There should be one error.
-						expected:&lt;1&gt; but was:&lt;0&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>5924</number_tests>
-					<failed>2</failed>
-					<passed>5922</passed>
-					<nodes>43463</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/CheckAccessControls.java">
-					<change parent="416-418">416</change>
-					<bugtypes>
-						<id id="3.1" lines="416">
-							<description>Incorrect initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-71">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/CheckAccessControlsTest">
+                    <exception>junit.framework.AssertionFailedError:Overriding private
+                        property of Foo.prototype.:-
+                        com.google.javascript.jscomp.CheckAccessControlsTest::testNoPrivateAccessForProperties8:--&gt;
+                        junit.framework.AssertionFailedError:There should be one error.
+                        expected:&lt;1&gt; but was:&lt;0&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>5924</number_tests>
+                    <failed>2</failed>
+                    <passed>5922</passed>
+                    <nodes>43463</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/CheckAccessControls.java">
+                    <change parent="416-418">416</change>
+                    <bugtypes>
+                        <id id="3.1" lines="416">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

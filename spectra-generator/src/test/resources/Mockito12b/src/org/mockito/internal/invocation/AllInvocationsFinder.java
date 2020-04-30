@@ -4,20 +4,16 @@
  */
 package org.mockito.internal.invocation;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.mockito.internal.MockHandlerInterface;
 import org.mockito.internal.util.MockUtil;
 
+import java.util.*;
+
 public class AllInvocationsFinder {
-    
+
     /**
-     * gets all invocations from mocks. Invocations are ordered earlier first. 
-     * 
+     * gets all invocations from mocks. Invocations are ordered earlier first.
+     *
      * @param mocks mocks
      * @return invocations
      */
@@ -28,7 +24,7 @@ public class AllInvocationsFinder {
             List<Invocation> fromSingleMock = handler.getInvocationContainer().getInvocations();
             invocationsInOrder.addAll(fromSingleMock);
         }
-        
+
         return new LinkedList<Invocation>(invocationsInOrder);
     }
 

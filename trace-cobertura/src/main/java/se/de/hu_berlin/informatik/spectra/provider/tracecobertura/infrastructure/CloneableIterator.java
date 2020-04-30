@@ -4,8 +4,8 @@ import java.util.Iterator;
 
 public interface CloneableIterator<T> extends Iterator<T> {
 
-	public CloneableIterator<T> clone();
-	
-	public T peek();
-	
+    public CloneableIterator<T> clone();
+
+    public T peek();
+
 }

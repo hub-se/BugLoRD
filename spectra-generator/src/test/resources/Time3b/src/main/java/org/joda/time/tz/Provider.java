@@ -15,9 +15,9 @@
  */
 package org.joda.time.tz;
 
-import java.util.Set;
-
 import org.joda.time.DateTimeZone;
+
+import java.util.Set;
 
 /**
  * Service provider factory for time zones.
@@ -38,7 +38,7 @@ public interface Provider {
     /**
      * Returns an unmodifiable set of ids. All providers must at least
      * support id "UTC".
-     */        
+     */
     Set<String> getAvailableIDs();
 
 }

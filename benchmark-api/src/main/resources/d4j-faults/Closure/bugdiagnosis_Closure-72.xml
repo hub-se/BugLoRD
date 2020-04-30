@@ -1,37 +1,37 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-72">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/InlineFunctionsTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>420</number_tests>
-					<failed>1</failed>
-					<passed>419</passed>
-					<nodes>43210</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/FunctionToBlockMutator.java">
-					<insert numberlines="2">151-152</insert>
-					<bugtypes>
-						<id id="3.1" lines="151">
-							<description>Missing initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="com/google/javascript/jscomp/RenameLabels.java">
-					<change>215</change>
-					<bugtypes>
-						<id id="1.2" lines="215">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-72">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/InlineFunctionsTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>420</number_tests>
+                    <failed>1</failed>
+                    <passed>419</passed>
+                    <nodes>43210</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/FunctionToBlockMutator.java">
+                    <insert numberlines="2">151-152</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="151">
+                            <description>Missing initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="com/google/javascript/jscomp/RenameLabels.java">
+                    <change>215</change>
+                    <bugtypes>
+                        <id id="1.2" lines="215">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

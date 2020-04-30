@@ -4,19 +4,15 @@
  */
 package org.mockitousage.verification;
 
-import static org.mockito.Mockito.*;
-
-import java.util.LinkedList;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.exceptions.verification.NeverWantedButInvoked;
-import org.mockito.exceptions.verification.TooLittleActualInvocations;
-import org.mockito.exceptions.verification.TooManyActualInvocations;
-import org.mockito.exceptions.verification.VerificationInOrderFailure;
-import org.mockito.exceptions.verification.WantedButNotInvoked;
+import org.mockito.exceptions.verification.*;
 import org.mockitoutil.TestBase;
+
+import java.util.LinkedList;
+
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 public class ExactNumberOfTimesVerificationTest extends TestBase {
@@ -64,7 +60,8 @@ public class ExactNumberOfTimesVerificationTest extends TestBase {
         try {
             verify(mock, times(15)).clear();
             fail();
-        } catch (WantedButNotInvoked e) {}
+        } catch (WantedButNotInvoked e) {
+        }
     }
 
     @Test
@@ -95,34 +92,36 @@ public class ExactNumberOfTimesVerificationTest extends TestBase {
 
         verify(mock, times(2)).add("test");
     }
-    
+
     @Test
     public void shouldAllowVerifyingInteractionNeverHappened() throws Exception {
         mock.add("one");
 
         verify(mock, never()).add("two");
         verify(mock, never()).clear();
-        
+
         try {
             verify(mock, never()).add("one");
             fail();
-        } catch (NeverWantedButInvoked e) {}
+        } catch (NeverWantedButInvoked e) {
+        }
     }
-    
+
     @Test
     public void shouldAllowVerifyingInteractionNeverHappenedInOrder() throws Exception {
         mock.add("one");
         mock.add("two");
 
         InOrder inOrder = inOrder(mock);
-        
+
         inOrder.verify(mock, never()).add("xxx");
         inOrder.verify(mock).add("one");
         inOrder.verify(mock, never()).add("one");
-        
+
         try {
             inOrder.verify(mock, never()).add("two");
             fail();
-        } catch (VerificationInOrderFailure e) {}
+        } catch (VerificationInOrderFailure e) {
+        }
     }
 }

@@ -41,33 +41,31 @@
 
 package com.google.javascript.rhino;
 
-import java.beans.*;
-import java.io.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
 import java.util.Hashtable;
 import java.util.Locale;
 
 /**
  * This class represents the runtime context of an executing script.
- *
+ * <p>
  * Before executing a script, an instance of Context must be created
  * and associated with the thread that will be executing the script.
  * The Context will be used to store information about the executing
  * of the script such as the call stack. Contexts are associated with
  * the current thread  using the {@link #enter()} method.<p>
- *
+ * <p>
  * Different forms of script execution are supported. Scripts may be
  * evaluated from the source directly, or first compiled and then later
  * executed. Interactive execution is also supported.<p>
- *
+ * <p>
  * Some aspects of script execution, such as type conversions and
  * object creation, may be accessed directly through methods of
  * Context.
- *
-*
-*
  */
-public class Context
-{
+public class Context {
     /**
      * Language versions.
      *
@@ -77,47 +75,47 @@ public class Context
     /**
      * The unknown version.
      */
-    public static final int VERSION_UNKNOWN =   -1;
+    public static final int VERSION_UNKNOWN = -1;
 
     /**
      * The default version.
      */
-    public static final int VERSION_DEFAULT =    0;
+    public static final int VERSION_DEFAULT = 0;
 
     /**
      * JavaScript 1.0
      */
-    public static final int VERSION_1_0 =      100;
+    public static final int VERSION_1_0 = 100;
 
     /**
      * JavaScript 1.1
      */
-    public static final int VERSION_1_1 =      110;
+    public static final int VERSION_1_1 = 110;
 
     /**
      * JavaScript 1.2
      */
-    public static final int VERSION_1_2 =      120;
+    public static final int VERSION_1_2 = 120;
 
     /**
      * JavaScript 1.3
      */
-    public static final int VERSION_1_3 =      130;
+    public static final int VERSION_1_3 = 130;
 
     /**
      * JavaScript 1.4
      */
-    public static final int VERSION_1_4 =      140;
+    public static final int VERSION_1_4 = 140;
 
     /**
      * JavaScript 1.5
      */
-    public static final int VERSION_1_5 =      150;
+    public static final int VERSION_1_5 = 150;
 
     /**
      * JavaScript 1.5
      */
-    public static final int VERSION_1_6 =      160;
+    public static final int VERSION_1_6 = 160;
 
     /**
      * Controls behaviour of <tt>Date.prototype.getYear()</tt>.
@@ -144,7 +142,7 @@ public class Context
      * If <tt>hasFeature(RESERVED_KEYWORD_AS_IDENTIFIER)</tt> returns true,
      * treat future reserved keyword (see  Ecma-262, section 7.5.3) as ordinary
      * identifiers but warn about this usage.
-     *
+     * <p>
      * By default {@link #hasFeature(int)} returns false.
      */
     public static final int FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER = 3;
@@ -175,7 +173,7 @@ public class Context
      * chain of the object <tt>x</tt> to point to <tt>y</tt>,
      * <tt>x["__proto__"] = y</tt> simply assigns a new value to the property
      * <tt>__proto__</tt> in <tt>x</tt> even when the feature is on.
-     *
+     * <p>
      * By default {@link #hasFeature(int)} returns true.
      */
     public static final int FEATURE_PARENT_PROTO_PROPRTIES = 5;
@@ -187,6 +185,7 @@ public class Context
      * By default {@link #hasFeature(int)} returns true if
      * the current JS version is set to {@link #VERSION_DEFAULT}
      * or is greater then {@link #VERSION_1_6}.
+     *
      * @since 1.6 Release 1
      */
     public static final int FEATURE_E4X = 6;
@@ -204,6 +203,7 @@ public class Context
      * be called from scripts and functions using private scopes.
      * <p>
      * By default {@link #hasFeature(int)} returns false.
+     *
      * @since 1.6 Release 1
      */
     public static final int FEATURE_DYNAMIC_SCOPE = 7;
@@ -216,6 +216,7 @@ public class Context
      * required by ECMA 262.
      * <p>
      * By default {@link #hasFeature(int)} returns false.
+     *
      * @since 1.6 Release 1
      */
     public static final int FEATURE_STRICT_VARS = 8;
@@ -228,6 +229,7 @@ public class Context
      * evaluation as required by ECMA 262.
      * <p>
      * By default {@link #hasFeature(int)} returns false.
+     *
      * @since 1.6 Release 1
      */
     public static final int FEATURE_STRICT_EVAL = 9;
@@ -245,6 +247,7 @@ public class Context
      * the standard.
      * <p>
      * By default {@link #hasFeature(int)} returns false.
+     *
      * @since 1.6 Release 6
      */
     public static final int FEATURE_LOCATION_INFORMATION_IN_ERROR = 10;
@@ -256,18 +259,20 @@ public class Context
      * FEATURE_STRICT_MODE implies FEATURE_STRICT_VARS and FEATURE_STRICT_EVAL.
      * <p>
      * By default {@link #hasFeature(int)} returns false.
+     *
      * @since 1.6 Release 6
      */
     public static final int FEATURE_STRICT_MODE = 11;
 
     /**
      * Controls whether a warning should be treated as an error.
+     *
      * @since 1.6 Release 6
      */
     public static final int FEATURE_WARNING_AS_ERROR = 12;
 
     public static final String languageVersionProperty = "language version";
-    public static final String errorReporterProperty   = "error reporter";
+    public static final String errorReporterProperty = "error reporter";
 
     /**
      * Convinient value to use as zero-length array of objects.
@@ -276,21 +281,20 @@ public class Context
 
     /**
      * Create a new Context.
-     *
+     * <p>
      * Note that the Context must be associated with a thread before
      * it can be used to execute a script.
      *
      * @see #enter()
      */
-    public Context()
-    {
+    public Context() {
         setLanguageVersion(VERSION_DEFAULT);
     }
 
     /**
      * Get a context associated with the current thread, creating
      * one if need be.
-     *
+     * <p>
      * The Context stores the execution state of the JavaScript
      * engine, so it is required that the context be entered
      * before execution may begin. Once a thread has entered
@@ -310,6 +314,7 @@ public class Context
      *      }
      *      finally { Context.exit(); }
      * </pre>
+     *
      * @return a Context associated with the current thread
      * @see #getCurrentContext
      * @see #exit
@@ -326,6 +331,7 @@ public class Context
      * is associated with the current thread and returned if
      * the current thread has no associated context and <code>cx</code>
      * is not associated with any other thread.
+     *
      * @param cx a Context to associate with the thread if possible
      * @return a Context associated with the current thread
      */
@@ -346,7 +352,7 @@ public class Context
                 // the current thread if it is already entered
                 if (cx != old) {
                     throw new RuntimeException
-                        ("Cannot enter Context active on another thread");
+                            ("Cannot enter Context active on another thread");
                 }
             } else {
                 if (old != null) {
@@ -358,11 +364,11 @@ public class Context
         }
         ++cx.enterCount;
         return cx;
-     }
+    }
 
     /**
      * Exit a block of code requiring a Context.
-     *
+     * <p>
      * Calling <code>exit()</code> will remove the association between
      * the current thread and a Context if the prior call to
      * <code>enter()</code> on this thread newly associated a Context
@@ -378,7 +384,7 @@ public class Context
         Context cx = getCurrentContext();
         if (cx == null) {
             throw new RuntimeException
-                ("Calling Context.exit without previous Context.enter");
+                    ("Calling Context.exit without previous Context.enter");
         }
         if (cx.enterCount < 1) Kit.codeBug();
         --cx.enterCount;
@@ -390,13 +396,13 @@ public class Context
 
     /**
      * Get the current Context.
-     *
+     * <p>
      * The current Context is per-thread; this method looks up
      * the Context associated with the current thread. <p>
      *
      * @return the Context associated with the current thread, or
-     *         null if no context is associated with the current
-     *         thread.
+     * null if no context is associated with the current
+     * thread.
      */
     public static Context getCurrentContext() {
         return threadContexts.get();
@@ -407,16 +413,16 @@ public class Context
     }
 
     private static ThreadLocal<Context> threadContexts
-        = new ThreadLocal<Context>();
+            = new ThreadLocal<Context>();
 
     /**
      * Checks if this is a sealed Context. A sealed Context instance does not
      * allow to modify any of its properties and will throw an exception
      * on any such attempt.
+     *
      * @see #seal(Object sealKey)
      */
-    public final boolean isSealed()
-    {
+    public final boolean isSealed() {
         return sealed;
     }
 
@@ -432,8 +438,7 @@ public class Context
      * @see #isSealed()
      * @see #unseal(Object)
      */
-    public final void seal(Object sealKey)
-    {
+    public final void seal(Object sealKey) {
         if (sealed) onSealedMutation();
         sealed = true;
         this.sealKey = sealKey;
@@ -448,8 +453,7 @@ public class Context
      * @see #isSealed()
      * @see #seal(Object sealKey)
      */
-    public final void unseal(Object sealKey)
-    {
+    public final void unseal(Object sealKey) {
         if (sealKey == null) throw new IllegalArgumentException();
         if (this.sealKey != sealKey) throw new IllegalArgumentException();
         if (!sealed) throw new IllegalStateException();
@@ -457,8 +461,7 @@ public class Context
         this.sealKey = null;
     }
 
-    static void onSealedMutation()
-    {
+    static void onSealedMutation() {
         throw new IllegalStateException();
     }
 
@@ -470,9 +473,8 @@ public class Context
      *
      * @return an integer that is one of VERSION_1_0, VERSION_1_1, etc.
      */
-    public final int getLanguageVersion()
-    {
-       return version;
+    public final int getLanguageVersion() {
+        return version;
     }
 
     /**
@@ -485,21 +487,19 @@ public class Context
      *
      * @param version the version as specified by VERSION_1_0, VERSION_1_1, etc.
      */
-    public void setLanguageVersion(int version)
-    {
+    public void setLanguageVersion(int version) {
         if (sealed) onSealedMutation();
         checkLanguageVersion(version);
         Object listeners = propertyListeners;
         if (listeners != null && version != this.version) {
             firePropertyChangeImpl(listeners, languageVersionProperty,
-                               new Integer(this.version),
-                               new Integer(version));
+                    new Integer(this.version),
+                    new Integer(version));
         }
         this.version = version;
     }
 
-    public static boolean isValidLanguageVersion(int version)
-    {
+    public static boolean isValidLanguageVersion(int version) {
         switch (version) {
             case VERSION_DEFAULT:
             case VERSION_1_0:
@@ -514,12 +514,11 @@ public class Context
         return false;
     }
 
-    public static void checkLanguageVersion(int version)
-    {
+    public static void checkLanguageVersion(int version) {
         if (isValidLanguageVersion(version)) {
             return;
         }
-        throw new IllegalArgumentException("Bad language version: "+version);
+        throw new IllegalArgumentException("Bad language version: " + version);
     }
 
     /**
@@ -536,16 +535,15 @@ public class Context
      * release in the form "yyyy mm dd".
      *
      * @return a string that encodes the product, language version, release
-     *         number, and date.
+     * number, and date.
      */
-    public final String getImplementationVersion()
-    {
+    public final String getImplementationVersion() {
         // XXX Probably it would be better to embed this directly into source
         // with special build preprocessing but that would require some ant
         // tweaking and then replacing token in resource files was simpler
         if (implementationVersion == null) {
             implementationVersion
-                = ScriptRuntime.getMessage0("implementation.version");
+                    = ScriptRuntime.getMessage0("implementation.version");
         }
         return implementationVersion;
     }
@@ -555,8 +553,7 @@ public class Context
      *
      * @see com.google.javascript.rhino.ErrorReporter
      */
-    public final ErrorReporter getErrorReporter()
-    {
+    public final ErrorReporter getErrorReporter() {
         return errorReporter;
     }
 
@@ -566,8 +563,7 @@ public class Context
      * @return the previous error reporter
      * @see com.google.javascript.rhino.ErrorReporter
      */
-    public final ErrorReporter setErrorReporter(ErrorReporter reporter)
-    {
+    public final ErrorReporter setErrorReporter(ErrorReporter reporter) {
         if (sealed) onSealedMutation();
         if (reporter == null) throw new IllegalArgumentException();
         ErrorReporter old = getErrorReporter();
@@ -577,7 +573,7 @@ public class Context
         Object listeners = propertyListeners;
         if (listeners != null) {
             firePropertyChangeImpl(listeners, errorReporterProperty,
-                                   old, reporter);
+                    old, reporter);
         }
         this.errorReporter = reporter;
         return old;
@@ -590,8 +586,7 @@ public class Context
      * @see java.util.Locale
      */
 
-    public final Locale getLocale()
-    {
+    public final Locale getLocale() {
         if (locale == null)
             locale = Locale.getDefault();
         return locale;
@@ -602,8 +597,7 @@ public class Context
      *
      * @see java.util.Locale
      */
-    public final Locale setLocale(Locale loc)
-    {
+    public final Locale setLocale(Locale loc) {
         if (sealed) onSealedMutation();
         Locale result = locale;
         locale = loc;
@@ -613,12 +607,12 @@ public class Context
     /**
      * Register an object to receive notifications when a bound property
      * has changed
+     *
+     * @param l the listener
      * @see java.beans.PropertyChangeEvent
      * @see #removePropertyChangeListener(java.beans.PropertyChangeListener)
-     * @param l the listener
      */
-    public final void addPropertyChangeListener(PropertyChangeListener l)
-    {
+    public final void addPropertyChangeListener(PropertyChangeListener l) {
         if (sealed) onSealedMutation();
         propertyListeners = Kit.addListener(propertyListeners, l);
     }
@@ -626,29 +620,29 @@ public class Context
     /**
      * Remove an object from the list of objects registered to receive
      * notification of changes to a bounded property
+     *
+     * @param l the listener
      * @see java.beans.PropertyChangeEvent
      * @see #addPropertyChangeListener(java.beans.PropertyChangeListener)
-     * @param l the listener
      */
-    public final void removePropertyChangeListener(PropertyChangeListener l)
-    {
+    public final void removePropertyChangeListener(PropertyChangeListener l) {
         if (sealed) onSealedMutation();
         propertyListeners = Kit.removeListener(propertyListeners, l);
     }
 
     /**
      * Notify any registered listeners that a bounded property has changed
+     *
+     * @param property the bound property
+     * @param oldValue the old value
+     * @param newValue the new value
      * @see #addPropertyChangeListener(java.beans.PropertyChangeListener)
      * @see #removePropertyChangeListener(java.beans.PropertyChangeListener)
      * @see java.beans.PropertyChangeListener
      * @see java.beans.PropertyChangeEvent
-     * @param  property  the bound property
-     * @param  oldValue  the old value
-     * @param  newValue  the new value
      */
     final void firePropertyChange(String property, Object oldValue,
-                                  Object newValue)
-    {
+                                  Object newValue) {
         Object listeners = propertyListeners;
         if (listeners != null) {
             firePropertyChangeImpl(listeners, property, oldValue, newValue);
@@ -656,16 +650,15 @@ public class Context
     }
 
     private void firePropertyChangeImpl(Object listeners, String property,
-                                        Object oldValue, Object newValue)
-    {
+                                        Object oldValue, Object newValue) {
         for (int i = 0; ; ++i) {
             Object l = Kit.getListener(listeners, i);
             if (l == null)
                 break;
             if (l instanceof PropertyChangeListener) {
-                PropertyChangeListener pcl = (PropertyChangeListener)l;
+                PropertyChangeListener pcl = (PropertyChangeListener) l;
                 pcl.propertyChange(new PropertyChangeEvent(
-                    this, property, oldValue, newValue));
+                        this, property, oldValue, newValue));
             }
         }
     }
@@ -673,20 +666,19 @@ public class Context
     /**
      * Report a warning using the error reporter for the current thread.
      *
-     * @param message the warning message to report
+     * @param message    the warning message to report
      * @param sourceName a string describing the source, such as a filename
-     * @param lineno the starting line number
+     * @param lineno     the starting line number
      * @param lineSource the text of the line (may be null)
      * @param lineOffset the offset into lineSource where problem was detected
      * @see com.google.javascript.rhino.ErrorReporter
      */
     public static void reportWarning(String message, String sourceName,
                                      int lineno, String lineSource,
-                                     int lineOffset)
-    {
+                                     int lineOffset) {
         Context cx = Context.getContext();
         cx.getErrorReporter().warning(message, sourceName, lineno,
-                                      lineSource, lineOffset);
+                lineSource, lineOffset);
     }
 
     /**
@@ -695,9 +687,8 @@ public class Context
      * @param message the warning message to report
      * @see com.google.javascript.rhino.ErrorReporter
      */
-    public static void reportWarning(String message)
-    {
-        int[] linep = { 0 };
+    public static void reportWarning(String message) {
+        int[] linep = {0};
         String filename = getSourcePositionFromStack(linep);
         Context.reportWarning(message, filename, linep[0], null, 0);
     }
@@ -705,24 +696,23 @@ public class Context
     /**
      * Report an error using the error reporter for the current thread.
      *
-     * @param message the error message to report
+     * @param message    the error message to report
      * @param sourceName a string describing the source, such as a filename
-     * @param lineno the starting line number
+     * @param lineno     the starting line number
      * @param lineSource the text of the line (may be null)
      * @param lineOffset the offset into lineSource where problem was detected
      * @see com.google.javascript.rhino.ErrorReporter
      */
     public static void reportError(String message, String sourceName,
                                    int lineno, String lineSource,
-                                   int lineOffset)
-    {
+                                   int lineOffset) {
         Context cx = getCurrentContext();
         if (cx != null) {
             cx.getErrorReporter().error(message, sourceName, lineno,
-                                        lineSource, lineOffset);
+                    lineSource, lineOffset);
         } else {
             throw new EvaluatorException(message, sourceName, lineno,
-                                         lineSource, lineOffset);
+                    lineSource, lineOffset);
         }
     }
 
@@ -732,9 +722,8 @@ public class Context
      * @param message the error message to report
      * @see com.google.javascript.rhino.ErrorReporter
      */
-    public static void reportError(String message)
-    {
-        int[] linep = { 0 };
+    public static void reportError(String message) {
+        int[] linep = {0};
         String filename = getSourcePositionFromStack(linep);
         Context.reportError(message, filename, linep[0], null, 0);
     }
@@ -742,66 +731,60 @@ public class Context
     /**
      * Report a runtime error using the error reporter for the current thread.
      *
-     * @param message the error message to report
+     * @param message    the error message to report
      * @param sourceName a string describing the source, such as a filename
-     * @param lineno the starting line number
+     * @param lineno     the starting line number
      * @param lineSource the text of the line (may be null)
      * @param lineOffset the offset into lineSource where problem was detected
      * @return a runtime exception that will be thrown to terminate the
-     *         execution of the script
+     * execution of the script
      * @see com.google.javascript.rhino.ErrorReporter
      */
     public static EvaluatorException reportRuntimeError(String message,
                                                         String sourceName,
                                                         int lineno,
                                                         String lineSource,
-                                                        int lineOffset)
-    {
+                                                        int lineOffset) {
         Context cx = getCurrentContext();
         if (cx != null) {
             return cx.getErrorReporter().
-                            runtimeError(message, sourceName, lineno,
-                                         lineSource, lineOffset);
+                    runtimeError(message, sourceName, lineno,
+                            lineSource, lineOffset);
         } else {
             throw new EvaluatorException(message, sourceName, lineno,
-                                         lineSource, lineOffset);
+                    lineSource, lineOffset);
         }
     }
 
-    static EvaluatorException reportRuntimeError0(String messageId)
-    {
+    static EvaluatorException reportRuntimeError0(String messageId) {
         String msg = ScriptRuntime.getMessage0(messageId);
         return reportRuntimeError(msg);
     }
 
     static EvaluatorException reportRuntimeError1(String messageId,
-                                                  Object arg1)
-    {
+                                                  Object arg1) {
         String msg = ScriptRuntime.getMessage1(messageId, arg1);
         return reportRuntimeError(msg);
     }
 
     static EvaluatorException reportRuntimeError2(String messageId,
-                                                  Object arg1, Object arg2)
-    {
+                                                  Object arg1, Object arg2) {
         String msg = ScriptRuntime.getMessage2(messageId, arg1, arg2);
         return reportRuntimeError(msg);
     }
 
     static EvaluatorException reportRuntimeError3(String messageId,
                                                   Object arg1, Object arg2,
-                                                  Object arg3)
-    {
+                                                  Object arg3) {
         String msg = ScriptRuntime.getMessage3(messageId, arg1, arg2, arg3);
         return reportRuntimeError(msg);
     }
 
     static EvaluatorException reportRuntimeError4(String messageId,
                                                   Object arg1, Object arg2,
-                                                  Object arg3, Object arg4)
-    {
+                                                  Object arg3, Object arg4) {
         String msg
-            = ScriptRuntime.getMessage4(messageId, arg1, arg2, arg3, arg4);
+                = ScriptRuntime.getMessage4(messageId, arg1, arg2, arg3, arg4);
         return reportRuntimeError(msg);
     }
 
@@ -811,28 +794,27 @@ public class Context
      * @param message the error message to report
      * @see com.google.javascript.rhino.ErrorReporter
      */
-    public static EvaluatorException reportRuntimeError(String message)
-    {
-        int[] linep = { 0 };
+    public static EvaluatorException reportRuntimeError(String message) {
+        int[] linep = {0};
         String filename = getSourcePositionFromStack(linep);
         return Context.reportRuntimeError(message, filename, linep[0], null, 0);
     }
 
     /**
      * Tell whether debug information is being generated.
+     *
      * @since 1.3
      */
-    public final boolean isGeneratingDebug()
-    {
+    public final boolean isGeneratingDebug() {
         return generatingDebug;
     }
 
     /**
      * Tell whether source information is being generated.
+     *
      * @since 1.3
      */
-    public final boolean isGeneratingSource()
-    {
+    public final boolean isGeneratingSource() {
         return generatingSource;
     }
 
@@ -844,10 +826,10 @@ public class Context
      * the body of the function.
      * Note that code generated without source is not fully ECMA
      * conformant.
+     *
      * @since 1.3
      */
-    public final void setGeneratingSource(boolean generatingSource)
-    {
+    public final void setGeneratingSource(boolean generatingSource) {
         if (sealed) onSealedMutation();
         this.generatingSource = generatingSource;
     }
@@ -857,26 +839,23 @@ public class Context
      * <p>
      * The optimization level is expressed as an integer between -1 and
      * 9.
-     * @since 1.3
      *
+     * @since 1.3
      */
-    public final int getOptimizationLevel()
-    {
+    public final int getOptimizationLevel() {
         return optimizationLevel;
     }
 
-    public static boolean isValidOptimizationLevel(int optimizationLevel)
-    {
+    public static boolean isValidOptimizationLevel(int optimizationLevel) {
         return -1 <= optimizationLevel && optimizationLevel <= 9;
     }
 
-    public static void checkOptimizationLevel(int optimizationLevel)
-    {
+    public static void checkOptimizationLevel(int optimizationLevel) {
         if (isValidOptimizationLevel(optimizationLevel)) {
             return;
         }
         throw new IllegalArgumentException(
-            "Optimization level outside [-1..9]: "+optimizationLevel);
+                "Optimization level outside [-1..9]: " + optimizationLevel);
     }
 
     /**
@@ -891,11 +870,11 @@ public class Context
      * cannot be retreived. Also, if private data is to be maintained
      * in this manner the key should be a java.lang.Object
      * whose reference is not divulged to untrusted code.
+     *
      * @param key the key used to lookup the value
      * @return a value previously stored using putThreadLocal.
      */
-    public final Object getThreadLocal(Object key)
-    {
+    public final Object getThreadLocal(Object key) {
         if (hashtable == null)
             return null;
         return hashtable.get(key);
@@ -904,11 +883,11 @@ public class Context
     /**
      * Put a value that can later be retrieved using a given key.
      * <p>
-     * @param key the key used to index the value
+     *
+     * @param key   the key used to index the value
      * @param value the value to save
      */
-    public final void putThreadLocal(Object key, Object value)
-    {
+    public final void putThreadLocal(Object key, Object value) {
         if (sealed) onSealedMutation();
         if (hashtable == null)
             hashtable = new Hashtable<Object, Object>();
@@ -917,11 +896,11 @@ public class Context
 
     /**
      * Remove values from thread-local storage.
+     *
      * @param key the key for the entry to remove.
      * @since 1.5 release 2
      */
-    public final void removeThreadLocal(Object key)
-    {
+    public final void removeThreadLocal(Object key) {
         if (sealed) onSealedMutation();
         if (hashtable == null)
             return;
@@ -929,96 +908,94 @@ public class Context
     }
 
     /**
-     * @deprecated
      * @see #FEATURE_DYNAMIC_SCOPE
      * @see #hasFeature(int)
+     * @deprecated
      */
     @Deprecated
-    public final boolean hasCompileFunctionsWithDynamicScope()
-    {
+    public final boolean hasCompileFunctionsWithDynamicScope() {
         return compileFunctionsWithDynamicScopeFlag;
     }
 
     /**
-     * @deprecated
      * @see #FEATURE_DYNAMIC_SCOPE
      * @see #hasFeature(int)
+     * @deprecated
      */
     @Deprecated
-    public final void setCompileFunctionsWithDynamicScope(boolean flag)
-    {
+    public final void setCompileFunctionsWithDynamicScope(boolean flag) {
         if (sealed) onSealedMutation();
         compileFunctionsWithDynamicScopeFlag = flag;
     }
 
     /**
      * Return the debugger context data associated with current context.
+     *
      * @return the debugger data, or null if debugger is not attached
      */
-    public final Object getDebuggerContextData()
-    {
+    public final Object getDebuggerContextData() {
         return debuggerData;
     }
+
     /**
      * Implementation of {@link Context#hasFeature(int featureIndex)}.
      * This can be used to customize {@link Context} without introducing
      * additional subclasses.
      */
-    protected boolean hasFeature(int featureIndex)
-    {
+    protected boolean hasFeature(int featureIndex) {
         int version;
         switch (featureIndex) {
-          case Context.FEATURE_NON_ECMA_GET_YEAR:
-           /*
-            * During the great date rewrite of 1.3, we tried to track the
-            * evolving ECMA standard, which then had a definition of
-            * getYear which always subtracted 1900.  Which we
-            * implemented, not realizing that it was incompatible with
-            * the old behavior...  now, rather than thrash the behavior
-            * yet again, we've decided to leave it with the - 1900
-            * behavior and point people to the getFullYear method.  But
-            * we try to protect existing scripts that have specified a
-            * version...
-            */
-            version = getLanguageVersion();
-            return (version == Context.VERSION_1_0
-                    || version == Context.VERSION_1_1
-                    || version == Context.VERSION_1_2);
+            case Context.FEATURE_NON_ECMA_GET_YEAR:
+                /*
+                 * During the great date rewrite of 1.3, we tried to track the
+                 * evolving ECMA standard, which then had a definition of
+                 * getYear which always subtracted 1900.  Which we
+                 * implemented, not realizing that it was incompatible with
+                 * the old behavior...  now, rather than thrash the behavior
+                 * yet again, we've decided to leave it with the - 1900
+                 * behavior and point people to the getFullYear method.  But
+                 * we try to protect existing scripts that have specified a
+                 * version...
+                 */
+                version = getLanguageVersion();
+                return (version == Context.VERSION_1_0
+                        || version == Context.VERSION_1_1
+                        || version == Context.VERSION_1_2);
 
-          case Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
-            return false;
+            case Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
+                return false;
 
-          case Context.FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER:
-            return false;
+            case Context.FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER:
+                return false;
 
-          case Context.FEATURE_TO_STRING_AS_SOURCE:
-            version = getLanguageVersion();
-            return version == Context.VERSION_1_2;
+            case Context.FEATURE_TO_STRING_AS_SOURCE:
+                version = getLanguageVersion();
+                return version == Context.VERSION_1_2;
 
-          case Context.FEATURE_PARENT_PROTO_PROPRTIES:
-            return true;
+            case Context.FEATURE_PARENT_PROTO_PROPRTIES:
+                return true;
 
-          case Context.FEATURE_E4X:
-            version = getLanguageVersion();
-            return (version == Context.VERSION_DEFAULT
-                    || version >= Context.VERSION_1_6);
+            case Context.FEATURE_E4X:
+                version = getLanguageVersion();
+                return (version == Context.VERSION_DEFAULT
+                        || version >= Context.VERSION_1_6);
 
-          case Context.FEATURE_DYNAMIC_SCOPE:
-            return false;
+            case Context.FEATURE_DYNAMIC_SCOPE:
+                return false;
 
-          case Context.FEATURE_STRICT_VARS:
-            return false;
+            case Context.FEATURE_STRICT_VARS:
+                return false;
 
-          case Context.FEATURE_STRICT_EVAL:
-            return false;
+            case Context.FEATURE_STRICT_EVAL:
+                return false;
 
-          case FEATURE_STRICT_MODE:
-            // Make JSCompiler run in non=strict mode always.
-            return false;
+            case FEATURE_STRICT_MODE:
+                // Make JSCompiler run in non=strict mode always.
+                return false;
 
-          case FEATURE_WARNING_AS_ERROR:
-            // Let warnings stay warnings for now.
-            return false;
+            case FEATURE_WARNING_AS_ERROR:
+                // Let warnings stay warnings for now.
+                return false;
         }
         // It is a bug to call the method with unknown featureIndex
         throw new IllegalArgumentException(String.valueOf(featureIndex));
@@ -1032,13 +1009,11 @@ public class Context
      * of script instructions, <code>observeInstructionCount()</code> will
      * be called.
      */
-    public final int getInstructionObserverThreshold()
-    {
+    public final int getInstructionObserverThreshold() {
         return instructionThreshold;
     }
 
-    public final void setInstructionObserverThreshold(int threshold)
-    {
+    public final void setInstructionObserverThreshold(int threshold) {
         if (sealed) onSealedMutation();
         if (threshold < 0) throw new IllegalArgumentException();
         instructionThreshold = threshold;
@@ -1050,18 +1025,16 @@ public class Context
         Context cx = getCurrentContext();
         if (cx == null) {
             throw new RuntimeException(
-                "No Context associated with current Thread");
+                    "No Context associated with current Thread");
         }
         return cx;
     }
 
-    final boolean isVersionECMA1()
-    {
+    final boolean isVersionECMA1() {
         return version == VERSION_DEFAULT || version >= VERSION_1_3;
     }
 
-    static String getSourcePositionFromStack(int[] linep)
-    {
+    static String getSourcePositionFromStack(int[] linep) {
         Context cx = getCurrentContext();
         if (cx == null)
             return null;
@@ -1076,7 +1049,7 @@ public class Context
         int open = -1;
         int close = -1;
         int colon = -1;
-        for (int i=0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == ':')
                 colon = i;
@@ -1085,8 +1058,7 @@ public class Context
             else if (c == ')')
                 close = i;
             else if (c == '\n' && open != -1 && close != -1 && colon != -1 &&
-                     open < colon && colon < close)
-            {
+                    open < colon && colon < close) {
                 String fileStr = s.substring(open + 1, colon);
                 if (!fileStr.endsWith(".java")) {
                     String lineStr = s.substring(colon + 1, close);
@@ -1096,8 +1068,7 @@ public class Context
                             linep[0] = 0;
                         }
                         return fileStr;
-                    }
-                    catch (NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         // fall through
                     }
                 }
@@ -1108,8 +1079,7 @@ public class Context
         return null;
     }
 
-    public final boolean isGeneratingDebugChanged()
-    {
+    public final boolean isGeneratingDebugChanged() {
         return generatingDebugChanged;
     }
 
@@ -1119,8 +1089,7 @@ public class Context
      *
      * @param name the name of the object to add to the list
      */
-    public void addActivationName(String name)
-    {
+    public void addActivationName(String name) {
         if (sealed) onSealedMutation();
         if (activationNames == null)
             activationNames = new Hashtable<Object, Object>(5);
@@ -1132,11 +1101,9 @@ public class Context
      * forcing the creation of activation objects.
      *
      * @param name the name of the object to test
-     *
      * @return true if an function activation object is needed.
      */
-    public final boolean isActivationNeeded(String name)
-    {
+    public final boolean isActivationNeeded(String name) {
         return activationNames != null && activationNames.containsKey(name);
     }
 
@@ -1146,8 +1113,7 @@ public class Context
      *
      * @param name the name of the object to remove from the list
      */
-    public void removeActivationName(String name)
-    {
+    public void removeActivationName(String name) {
         if (sealed) onSealedMutation();
         if (activationNames != null)
             activationNames.remove(name);
@@ -1171,7 +1137,7 @@ public class Context
     private Locale locale;
     private boolean generatingDebug;
     private boolean generatingDebugChanged;
-    private boolean generatingSource=true;
+    private boolean generatingSource = true;
     boolean compileFunctionsWithDynamicScopeFlag;
     boolean useDynamicScope;
     private Object debuggerData;

@@ -26,7 +26,7 @@ import org.joda.time.format.DateTimeFormatter;
  * @author Stephen Colebourne
  */
 public class MockZeroNullIntegerConverter implements InstantConverter {
-    
+
     public static final InstantConverter INSTANCE = new MockZeroNullIntegerConverter();
 
     public long getInstantMillis(Object object, Chronology chrono) {

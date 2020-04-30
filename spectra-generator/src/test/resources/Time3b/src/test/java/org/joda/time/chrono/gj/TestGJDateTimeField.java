@@ -19,7 +19,6 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.field.ImpreciseDateTimeField;
 
 /**
- * 
  * @author Brian S O'Neill
  */
 abstract class TestGJDateTimeField extends ImpreciseDateTimeField {
@@ -35,7 +34,7 @@ abstract class TestGJDateTimeField extends ImpreciseDateTimeField {
     }
 
     public long add(long instant, int value) {
-        return add(instant, (long)value);
+        return add(instant, (long) value);
     }
 
     public abstract long add(long instant, long value);

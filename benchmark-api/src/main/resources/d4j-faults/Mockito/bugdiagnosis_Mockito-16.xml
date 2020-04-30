@@ -1,48 +1,48 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-16">
-			<tests>
-				<testfile
-					path="org/mockitousage/bugs/StubbingMocksThatAreConfiguredToReturnMocksTest">
-					<exception>org.mockito.exceptions.misusing.MissingMethodInvocationException:
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>653</number_tests>
-					<failed>1</failed>
-					<passed>652</passed>
-					<nodes>2622</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/Mockito.java">
-					<change>827</change>
-					<change parent="897-899">899</change>
-					<bugtypes>
-						<id id="2.2" lines="827">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="899">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="org/mockito/internal/MockitoCore.java">
-					<change>33</change>
-					<delete>32</delete>
-					<insert numberlines="1,11">35,36</insert>
-					<bugtypes>
-						<id id="2.1" lines="32,33">
-							<description>Missing parameters.</description>
-						</id>
-						<id id="1.2" lines="34,35">
-							<description>Missing case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>5</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-16">
+            <tests>
+                <testfile
+                        path="org/mockitousage/bugs/StubbingMocksThatAreConfiguredToReturnMocksTest">
+                    <exception>org.mockito.exceptions.misusing.MissingMethodInvocationException:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>653</number_tests>
+                    <failed>1</failed>
+                    <passed>652</passed>
+                    <nodes>2622</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/Mockito.java">
+                    <change>827</change>
+                    <change parent="897-899">899</change>
+                    <bugtypes>
+                        <id id="2.2" lines="827">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="899">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="org/mockito/internal/MockitoCore.java">
+                    <change>33</change>
+                    <delete>32</delete>
+                    <insert numberlines="1,11">35,36</insert>
+                    <bugtypes>
+                        <id id="2.1" lines="32,33">
+                            <description>Missing parameters.</description>
+                        </id>
+                        <id id="1.2" lines="34,35">
+                            <description>Missing case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>5</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

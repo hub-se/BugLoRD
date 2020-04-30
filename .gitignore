@@ -50,6 +50,7 @@ aspectj-frontend/aspectjProperties.ini
 /.project
 /.settings
 .classpath
+bin
 
 jacoco.exec
 

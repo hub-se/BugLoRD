@@ -22,38 +22,37 @@ package com.google.javascript.jscomp;
  * creation.
  *
  * @see PotentialCheckManager
- *
-*
  */
 abstract class PotentialCheck {
-  private final AbstractCompiler compiler;
-  private final JSError err;
+    private final AbstractCompiler compiler;
+    private final JSError err;
 
-  PotentialCheck(AbstractCompiler compiler, JSError err) {
-    this.compiler = compiler;
-    this.err = err;
-  }
-
-  /**
-   * Reports the warning or error.
-   */
-  private void report() {
-    compiler.report(err);
-  }
-
-  /**
-   * Reports the warning or error only if it's still relevant.
-   */
-  void evaluate() {
-    if (stillRelevant()) {
-      report();
+    PotentialCheck(AbstractCompiler compiler, JSError err) {
+        this.compiler = compiler;
+        this.err = err;
     }
-  }
 
-  /**
-   * Assesses whether the check is still relevant.
-   * @return {@code true} if the check should be reported, {@code false} if it
-   *     should be discarded.
-   */
-  protected abstract boolean stillRelevant();
+    /**
+     * Reports the warning or error.
+     */
+    private void report() {
+        compiler.report(err);
+    }
+
+    /**
+     * Reports the warning or error only if it's still relevant.
+     */
+    void evaluate() {
+        if (stillRelevant()) {
+            report();
+        }
+    }
+
+    /**
+     * Assesses whether the check is still relevant.
+     *
+     * @return {@code true} if the check should be reported, {@code false} if it
+     * should be discarded.
+     */
+    protected abstract boolean stillRelevant();
 }

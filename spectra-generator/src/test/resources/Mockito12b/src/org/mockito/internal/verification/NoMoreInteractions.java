@@ -4,8 +4,6 @@
  */
 package org.mockito.internal.verification;
 
-import java.util.List;
-
 import org.mockito.exceptions.Reporter;
 import org.mockito.internal.invocation.Invocation;
 import org.mockito.internal.invocation.InvocationsFinder;
@@ -14,11 +12,13 @@ import org.mockito.internal.verification.api.VerificationDataInOrder;
 import org.mockito.internal.verification.api.VerificationInOrderMode;
 import org.mockito.verification.VerificationMode;
 
+import java.util.List;
+
 public class NoMoreInteractions implements VerificationMode, VerificationInOrderMode {
 
     public void verify(VerificationData data) {
         Invocation unverified = new InvocationsFinder().findFirstUnverified(data.getAllInvocations());
-        
+
         if (unverified != null) {
             new Reporter().noMoreInteractionsWanted(unverified);
         }
@@ -27,7 +27,7 @@ public class NoMoreInteractions implements VerificationMode, VerificationInOrder
     public void verifyInOrder(VerificationDataInOrder data) {
         List<Invocation> invocations = data.getAllInvocations();
         Invocation unverified = new InvocationsFinder().findFirstUnverifiedInOrder(data.getOrderingContext(), invocations);
-        
+
         if (unverified != null) {
             new Reporter().noMoreInteractionsWantedInOrder(unverified);
         }

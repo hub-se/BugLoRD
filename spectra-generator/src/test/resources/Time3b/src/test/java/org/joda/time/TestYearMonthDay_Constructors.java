@@ -15,15 +15,14 @@
  */
 package org.joda.time;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.chrono.GregorianChronology;
+import org.joda.time.chrono.ISOChronology;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.chrono.GregorianChronology;
-import org.joda.time.chrono.ISOChronology;
 
 /**
  * This class is a Junit unit test for YearMonthDay.
@@ -38,20 +37,20 @@ public class TestYearMonthDay_Constructors extends TestCase {
     private static final Chronology ISO_UTC = ISOChronology.getInstanceUTC();
     private static final Chronology GREGORIAN_UTC = GregorianChronology.getInstanceUTC();
     private static final Chronology GREGORIAN_PARIS = GregorianChronology.getInstance(PARIS);
-    
+
     private long TEST_TIME_NOW =
-            (31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
-            
+            (31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
+
     private long TEST_TIME1 =
-        (31L + 28L + 31L + 6L -1L) * DateTimeConstants.MILLIS_PER_DAY
-        + 12L * DateTimeConstants.MILLIS_PER_HOUR
-        + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (31L + 28L + 31L + 6L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 12L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     private long TEST_TIME2 =
-        (365L + 31L + 28L + 31L + 30L + 7L -1L) * DateTimeConstants.MILLIS_PER_DAY
-        + 14L * DateTimeConstants.MILLIS_PER_HOUR
-        + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (365L + 31L + 28L + 31L + 30L + 7L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 14L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     private DateTimeZone zone = null;
 
     public static void main(String[] args) {
@@ -87,7 +86,8 @@ public class TestYearMonthDay_Constructors extends TestCase {
         try {
             YearMonthDay.fromCalendarFields(null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -99,10 +99,12 @@ public class TestYearMonthDay_Constructors extends TestCase {
         try {
             YearMonthDay.fromDateFields(null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor ()
      */
@@ -121,13 +123,13 @@ public class TestYearMonthDay_Constructors extends TestCase {
         DateTime dt = new DateTime(2005, 6, 8, 23, 59, 0, 0, LONDON);
         DateTimeUtils.setCurrentMillisFixed(dt.getMillis());
         // 23:59 in London is 00:59 the following day in Paris
-        
+
         YearMonthDay test = new YearMonthDay(LONDON);
         assertEquals(ISO_UTC, test.getChronology());
         assertEquals(2005, test.getYear());
         assertEquals(6, test.getMonthOfYear());
         assertEquals(8, test.getDayOfMonth());
-        
+
         test = new YearMonthDay(PARIS);
         assertEquals(ISO_UTC, test.getChronology());
         assertEquals(2005, test.getYear());
@@ -142,7 +144,7 @@ public class TestYearMonthDay_Constructors extends TestCase {
         DateTime dt = new DateTime(2005, 6, 8, 23, 59, 0, 0, LONDON);
         DateTimeUtils.setCurrentMillisFixed(dt.getMillis());
         // 23:59 in London is 00:59 the following day in Paris
-        
+
         YearMonthDay test = new YearMonthDay((DateTimeZone) null);
         assertEquals(ISO_UTC, test.getChronology());
         assertEquals(2005, test.getYear());
@@ -173,6 +175,7 @@ public class TestYearMonthDay_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (long)
      */
@@ -323,6 +326,7 @@ public class TestYearMonthDay_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (Object, Chronology)
      */
@@ -370,6 +374,7 @@ public class TestYearMonthDay_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (int, int, int)
      */
@@ -382,32 +387,39 @@ public class TestYearMonthDay_Constructors extends TestCase {
         try {
             new YearMonthDay(Integer.MIN_VALUE, 6, 9);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new YearMonthDay(Integer.MAX_VALUE, 6, 9);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new YearMonthDay(1970, 0, 9);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new YearMonthDay(1970, 13, 9);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new YearMonthDay(1970, 6, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new YearMonthDay(1970, 6, 31);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         new YearMonthDay(1970, 7, 31);
         try {
             new YearMonthDay(1970, 7, 32);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     /**
@@ -422,32 +434,39 @@ public class TestYearMonthDay_Constructors extends TestCase {
         try {
             new YearMonthDay(Integer.MIN_VALUE, 6, 9, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new YearMonthDay(Integer.MAX_VALUE, 6, 9, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new YearMonthDay(1970, 0, 9, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new YearMonthDay(1970, 13, 9, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new YearMonthDay(1970, 6, 0, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new YearMonthDay(1970, 6, 31, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         new YearMonthDay(1970, 7, 31, GREGORIAN_PARIS);
         try {
             new YearMonthDay(1970, 7, 32, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     /**

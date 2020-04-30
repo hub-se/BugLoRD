@@ -14,17 +14,15 @@ import se.de.hu_berlin.informatik.spectra.core.hit.HierarchicalHitSpectra;
 /**
  * Interface used by classes that load or provide hierarchical spectra objects. Can be used in experiments for
  * automation.
- * 
- * @param <P>
- *            parent node identifier type
- * @param <C>
- *            child node identifier type
+ *
+ * @param <P> parent node identifier type
+ * @param <C> child node identifier type
  */
 public interface IHierarchicalSpectraProvider<P, C> {
 
     /**
      * Provides a spectra object.
-     * 
+     *
      * @return spectra with traces and nodes
      */
     public HierarchicalHitSpectra<P, C> loadHierarchicalSpectra();

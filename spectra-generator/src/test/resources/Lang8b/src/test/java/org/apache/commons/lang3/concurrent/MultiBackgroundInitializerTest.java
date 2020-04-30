@@ -16,19 +16,15 @@
  */
 package org.apache.commons.lang3.concurrent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Test class for {@link MultiBackgroundInitializer}.
@@ -36,10 +32,14 @@ import org.junit.Test;
  * @version $Id$
  */
 public class MultiBackgroundInitializerTest {
-    /** Constant for the names of the child initializers. */
+    /**
+     * Constant for the names of the child initializers.
+     */
     private static final String CHILD_INIT = "childInitializer";
 
-    /** The initializer to be tested. */
+    /**
+     * The initializer to be tested.
+     */
     private MultiBackgroundInitializer initializer;
 
     @Before
@@ -51,13 +51,13 @@ public class MultiBackgroundInitializerTest {
      * Tests whether a child initializer has been executed. Optionally the
      * expected executor service can be checked, too.
      *
-     * @param child the child initializer
+     * @param child   the child initializer
      * @param expExec the expected executor service (null if the executor should
-     * not be checked)
+     *                not be checked)
      * @throws ConcurrentException if an error occurs
      */
     private void checkChild(BackgroundInitializer<?> child,
-            ExecutorService expExec) throws ConcurrentException {
+                            ExecutorService expExec) throws ConcurrentException {
         ChildBackgroundInitializer cinit = (ChildBackgroundInitializer) child;
         Integer result = cinit.get();
         assertEquals("Wrong result", 1, result.intValue());
@@ -354,13 +354,19 @@ public class MultiBackgroundInitializerTest {
      */
     private static class ChildBackgroundInitializer extends
             BackgroundInitializer<Integer> {
-        /** Stores the current executor service. */
+        /**
+         * Stores the current executor service.
+         */
         volatile ExecutorService currentExecutor;
 
-        /** A counter for the invocations of initialize(). */
+        /**
+         * A counter for the invocations of initialize().
+         */
         volatile int initializeCalls;
 
-        /** An exception to be thrown by initialize(). */
+        /**
+         * An exception to be thrown by initialize().
+         */
         Exception ex;
 
         /**

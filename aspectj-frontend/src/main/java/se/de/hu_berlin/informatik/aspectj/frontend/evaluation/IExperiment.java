@@ -16,9 +16,8 @@ public interface IExperiment {
 
     /**
      * Conducts the experiment and saves the result.
-     * 
-     * @throws Exception
-     *             in case the experiment fails
+     *
+     * @throws Exception in case the experiment fails
      */
     public void conduct() throws Exception;
 }

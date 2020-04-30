@@ -27,7 +27,9 @@ import java.util.Locale;
  */
 final class GJMonthOfYearDateTimeField extends BasicMonthOfYearDateTimeField {
 
-    /** Serialization version */
+    /**
+     * Serialization version
+     */
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -4748157875845286249L;
 

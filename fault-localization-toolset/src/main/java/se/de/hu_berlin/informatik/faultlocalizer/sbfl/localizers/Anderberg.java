@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Anderberg fault localizer $\frac{\EF}{\EF+2(\NF+\EP)}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Anderberg<T> extends AbstractFaultLocalizer<T> {
 
@@ -30,11 +29,11 @@ public class Anderberg<T> extends AbstractFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-    	double numerator = node.getEF(strategy);
-    	if (numerator == 0) {
-    		return 0;
-    	}
-        return  numerator / (node.getEF(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
+        double numerator = node.getEF(strategy);
+        if (numerator == 0) {
+            return 0;
+        }
+        return numerator / (node.getEF(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
     }
 
 }

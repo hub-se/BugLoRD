@@ -19,13 +19,12 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.DurationField;
 
 /**
- * 
  * @author Brian S O'Neill
  */
 class TestGJWeekOfWeekyearField extends TestGJDateTimeField {
     public TestGJWeekOfWeekyearField(TestGJChronology chrono) {
         super(DateTimeFieldType.weekOfWeekyear(),
-              (long)(TestGJChronology.MILLIS_PER_DAY * 7), chrono);
+                (long) (TestGJChronology.MILLIS_PER_DAY * 7), chrono);
     }
 
     public int get(long millis) {
@@ -35,7 +34,7 @@ class TestGJWeekOfWeekyearField extends TestGJDateTimeField {
     public long set(long millis, int value) {
         int[] wwd = iChronology.isoFromMillis(millis);
         return iChronology.getTimeOnlyMillis(millis)
-            + iChronology.millisFromISO(wwd[0], value, wwd[2]);
+                + iChronology.millisFromISO(wwd[0], value, wwd[2]);
     }
 
     public long add(long millis, long value) {

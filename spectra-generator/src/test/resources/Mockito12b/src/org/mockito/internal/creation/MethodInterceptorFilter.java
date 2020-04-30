@@ -4,9 +4,6 @@
  */
 package org.mockito.internal.creation;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.mockito.cglib.proxy.MethodInterceptor;
 import org.mockito.cglib.proxy.MethodProxy;
 import org.mockito.internal.MockitoInvocationHandler;
@@ -15,6 +12,9 @@ import org.mockito.internal.invocation.*;
 import org.mockito.internal.invocation.realmethod.FilteredCGLIBProxyRealMethod;
 import org.mockito.internal.progress.SequenceNumber;
 import org.mockito.internal.util.ObjectMethodsGuru;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
 
 public class MethodInterceptorFilter implements MethodInterceptor, Serializable {
 
@@ -36,17 +36,17 @@ public class MethodInterceptorFilter implements MethodInterceptor, Serializable 
         } else if (objectMethodsGuru.isHashCodeMethod(method)) {
             return hashCodeForMock(proxy);
         }
-        
+
         MockitoMethodProxy mockitoMethodProxy = createMockitoMethodProxy(methodProxy);
         cglibHacker.setMockitoNamingPolicy(mockitoMethodProxy);
-        
+
         MockitoMethod mockitoMethod = createMockitoMethod(method);
-        
+
         FilteredCGLIBProxyRealMethod realMethod = new FilteredCGLIBProxyRealMethod(mockitoMethodProxy);
         Invocation invocation = new Invocation(proxy, mockitoMethod, args, SequenceNumber.next(), realMethod);
         return handler.handle(invocation);
     }
-   
+
     public MockitoInvocationHandler getHandler() {
         return handler;
     }
@@ -60,12 +60,12 @@ public class MethodInterceptorFilter implements MethodInterceptor, Serializable 
             return new SerializableMockitoMethodProxy(methodProxy);
         return new DelegatingMockitoMethodProxy(methodProxy);
     }
-    
+
     public MockitoMethod createMockitoMethod(Method method) {
         if (mockSettings.isSerializable()) {
             return new SerializableMethod(method);
         } else {
-            return new DelegatingMethod(method); 
+            return new DelegatingMethod(method);
         }
     }
 }

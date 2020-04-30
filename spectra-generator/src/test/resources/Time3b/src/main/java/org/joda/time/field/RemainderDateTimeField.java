@@ -26,9 +26,8 @@ import org.joda.time.DurationField;
  * <p>
  * RemainderDateTimeField is thread-safe and immutable.
  *
- * @see DividedDateTimeField
- *
  * @author Brian S O'Neill
+ * @see DividedDateTimeField
  * @since 1.0
  */
 public class RemainderDateTimeField extends DecoratedDateTimeField {
@@ -43,10 +42,10 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
 
     /**
      * Constructor.
-     * 
-     * @param field  the field to wrap, like "year()".
-     * @param type  the field type this field actually uses
-     * @param divisor  divisor, such as 100 years in a century
+     *
+     * @param field   the field to wrap, like "year()".
+     * @param type    the field type this field actually uses
+     * @param divisor divisor, such as 100 years in a century
      * @throws IllegalArgumentException if divisor is less than two
      */
     public RemainderDateTimeField(DateTimeField field,
@@ -62,7 +61,7 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
             iRangeField = null;
         } else {
             iRangeField = new ScaledDurationField(
-                rangeField, type.getRangeDurationType(), divisor);
+                    rangeField, type.getRangeDurationType(), divisor);
         }
         iDurationField = field.getDurationField();
         iDivisor = divisor;
@@ -70,11 +69,11 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
 
     /**
      * Constructor.
-     * 
-     * @param field  the field to wrap, like "year()".
-     * @param rangeField  the range field
-     * @param type  the field type this field actually uses
-     * @param divisor  divisor, such as 100 years in a century
+     *
+     * @param field      the field to wrap, like "year()".
+     * @param rangeField the range field
+     * @param type       the field type this field actually uses
+     * @param divisor    divisor, such as 100 years in a century
      * @throws IllegalArgumentException if divisor is less than two
      */
     public RemainderDateTimeField(DateTimeField field, DurationField rangeField,
@@ -92,7 +91,7 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
      * Construct a RemainderDateTimeField that compliments the given
      * DividedDateTimeField.
      *
-     * @param dividedField  complimentary divided field, like "century()".
+     * @param dividedField complimentary divided field, like "century()".
      */
     public RemainderDateTimeField(DividedDateTimeField dividedField) {
         this(dividedField, dividedField.getType());
@@ -102,8 +101,8 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
      * Construct a RemainderDateTimeField that compliments the given
      * DividedDateTimeField.
      *
-     * @param dividedField  complimentary divided field, like "century()".
-     * @param type  the field type this field actually uses
+     * @param dividedField complimentary divided field, like "century()".
+     * @param type         the field type this field actually uses
      */
     public RemainderDateTimeField(DividedDateTimeField dividedField, DateTimeFieldType type) {
         this(dividedField, dividedField.getWrappedField().getDurationField(), type);
@@ -115,8 +114,8 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
      * This constructor allows the duration field to be set.
      *
      * @param dividedField  complimentary divided field, like "century()".
-     * @param durationField  the duration field
-     * @param type  the field type this field actually uses
+     * @param durationField the duration field
+     * @param type          the field type this field actually uses
      */
     public RemainderDateTimeField(DividedDateTimeField dividedField, DurationField durationField, DateTimeFieldType type) {
         super(dividedField.getWrappedField(), type);
@@ -126,10 +125,11 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Get the remainder from the specified time instant.
-     * 
-     * @param instant  the time instant in millis to query.
+     *
+     * @param instant the time instant in millis to query.
      * @return the remainder extracted from the input.
      */
     public int get(long instant) {
@@ -145,8 +145,8 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
      * Add the specified amount to the specified time instant, wrapping around
      * within the remainder range if necessary. The amount added may be
      * negative.
-     * 
-     * @param instant  the time instant in millis to update.
+     *
+     * @param instant the time instant in millis to update.
      * @param amount  the amount to add (can be negative).
      * @return the updated time instant.
      */
@@ -156,9 +156,9 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
 
     /**
      * Set the specified amount of remainder units to the specified time instant.
-     * 
-     * @param instant  the time instant in millis to update.
-     * @param value  value of remainder units to set.
+     *
+     * @param instant the time instant in millis to update.
+     * @param value   value of remainder units to set.
      * @return the updated time instant.
      * @throws IllegalArgumentException if value is too large or too small.
      */
@@ -182,7 +182,7 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
 
     /**
      * Get the minimum value for the field, which is always zero.
-     * 
+     *
      * @return the minimum value of zero.
      */
     public int getMinimumValue() {
@@ -192,7 +192,7 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
     /**
      * Get the maximum value for the field, which is always one less than the
      * divisor.
-     * 
+     *
      * @return the maximum value
      */
     public int getMaximumValue() {
@@ -225,7 +225,7 @@ public class RemainderDateTimeField extends DecoratedDateTimeField {
 
     /**
      * Returns the divisor applied, in the field's units.
-     * 
+     *
      * @return the divisor
      */
     public int getDivisor() {

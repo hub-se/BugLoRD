@@ -18,30 +18,28 @@ package com.google.javascript.jscomp;
 
 /**
  * Represents a position in a source file.
- *
-*
  */
 class Position {
-  private int lineNumber;
-  private int characterIndex;
+    private int lineNumber;
+    private int characterIndex;
 
-  public Position(int lineNumber, int characterIndex) {
-    this.lineNumber = lineNumber;
-    this.characterIndex = characterIndex;
-  }
+    public Position(int lineNumber, int characterIndex) {
+        this.lineNumber = lineNumber;
+        this.characterIndex = characterIndex;
+    }
 
-  /**
-   * Returns the line number of this postion.
-   */
-  public int getLineNumber() {
-    return lineNumber;
-  }
+    /**
+     * Returns the line number of this postion.
+     */
+    public int getLineNumber() {
+        return lineNumber;
+    }
 
-  /**
-   * Returns the character index on the line
-   * of this position.
-   */
-  public int getCharacterIndex() {
-    return characterIndex;
-  }
+    /**
+     * Returns the character index on the line
+     * of this position.
+     */
+    public int getCharacterIndex() {
+        return characterIndex;
+    }
 }

@@ -26,7 +26,7 @@ import org.mockito.internal.progress.IOngoingStubbing;
  *  .toReturn("foo");
  *
  * </pre>
- *
+ * <p>
  * See examples in javadoc for {@link Mockito#stub}
  */
 public interface DeprecatedOngoingStubbing<T> extends IOngoingStubbing {
@@ -36,11 +36,10 @@ public interface DeprecatedOngoingStubbing<T> extends IOngoingStubbing {
      * <pre>
      * stub(mock.someMethod()).toReturn(10);
      * </pre>
-     *
+     * <p>
      * See examples in javadoc for {@link Mockito#stub}
      *
      * @param value return value
-     *
      * @return iOngoingStubbing object that allows stubbing consecutive calls
      */
     DeprecatedOngoingStubbing<T> toReturn(T value);
@@ -50,14 +49,13 @@ public interface DeprecatedOngoingStubbing<T> extends IOngoingStubbing {
      * <pre>
      * stub(mock.someMethod()).toThrow(new RuntimeException());
      * </pre>
-     *
+     * <p>
      * If throwable is a checked exception then it has to
      * match one of the checked exceptions of method signature.
-     *
+     * <p>
      * See examples in javadoc for {@link Mockito#stub}
      *
      * @param throwable to be thrown on method invocation
-     *
      * @return iOngoingStubbing object that allows stubbing consecutive calls
      */
     DeprecatedOngoingStubbing<T> toThrow(Throwable throwable);
@@ -73,7 +71,6 @@ public interface DeprecatedOngoingStubbing<T> extends IOngoingStubbing {
      * </pre>
      *
      * @param answer the custom answer to execute.
-     *
      * @return iOngoingStubbing object that allows stubbing consecutive calls
      */
     DeprecatedOngoingStubbing<T> toAnswer(Answer<?> answer);

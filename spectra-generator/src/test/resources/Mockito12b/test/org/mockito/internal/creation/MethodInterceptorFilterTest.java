@@ -4,14 +4,6 @@
  */
 package org.mockito.internal.creation;
 
-import static org.hamcrest.core.IsInstanceOf.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.lang.reflect.Method;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -25,6 +17,15 @@ import org.mockito.internal.invocation.SerializableMethod;
 import org.mockitousage.MethodsImpl;
 import org.mockitoutil.TestBase;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Method;
+
+import static org.hamcrest.core.IsInstanceOf.any;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 public class MethodInterceptorFilterTest extends TestBase {
 
     MockitoInvocationHandler handler = Mockito.mock(MockitoInvocationHandler.class);
@@ -32,7 +33,7 @@ public class MethodInterceptorFilterTest extends TestBase {
 
     @Before
     public void setUp() {
-        filter.cglibHacker = Mockito.mock(CGLIBHacker.class);        
+        filter.cglibHacker = Mockito.mock(CGLIBHacker.class);
     }
 
     @Test
@@ -54,58 +55,58 @@ public class MethodInterceptorFilterTest extends TestBase {
     public void shouldProvideOwnImplementationOfEquals() throws Throwable {
         //when
         MethodsImpl proxy = new MethodsImpl();
-        Object ret = filter.intercept(proxy, MethodsImpl.class.getMethod("equals", Object.class), new Object[] {proxy}, null);
+        Object ret = filter.intercept(proxy, MethodsImpl.class.getMethod("equals", Object.class), new Object[]{proxy}, null);
 
         //then
         assertTrue((Boolean) ret);
         Mockito.verify(handler, never()).handle(any(Invocation.class));
     }
-    
+
     //TODO: move to separate factory
     @Test
     public void shouldCreateSerializableMethodProxyIfIsSerializableMock() throws Exception {
         MethodInterceptorFilter filter = new MethodInterceptorFilter(handler, (MockSettingsImpl) withSettings().serializable());
         MethodProxy methodProxy = MethodProxy.create(String.class, String.class, "", "toString", "toString");
-        
+
         // when
         MockitoMethodProxy mockitoMethodProxy = filter.createMockitoMethodProxy(methodProxy);
-        
+
         // then
         assertThat(mockitoMethodProxy, instanceOf(SerializableMockitoMethodProxy.class));
     }
-    
+
     @Test
     public void shouldCreateNONSerializableMethodProxyIfIsNotSerializableMock() throws Exception {
         MethodInterceptorFilter filter = new MethodInterceptorFilter(handler, (MockSettingsImpl) withSettings());
         MethodProxy methodProxy = MethodProxy.create(String.class, String.class, "", "toString", "toString");
-        
+
         // when
         MockitoMethodProxy mockitoMethodProxy = filter.createMockitoMethodProxy(methodProxy);
-        
+
         // then
         assertThat(mockitoMethodProxy, instanceOf(DelegatingMockitoMethodProxy.class));
     }
-    
+
     @Test
     public void shouldCreateSerializableMethodIfIsSerializableMock() throws Exception {
         MethodInterceptorFilter filter = new MethodInterceptorFilter(handler, (MockSettingsImpl) withSettings().serializable());
         Method method = new InvocationBuilder().toInvocation().getMethod();
-        
+
         // when
         MockitoMethod mockitoMethod = filter.createMockitoMethod(method);
-        
+
         // then
         assertThat(mockitoMethod, instanceOf(SerializableMethod.class));
     }
-    
+
     @Test
     public void shouldCreateJustDelegatingMethodIfIsNotSerializableMock() throws Exception {
         MethodInterceptorFilter filter = new MethodInterceptorFilter(handler, (MockSettingsImpl) withSettings());
         Method method = new InvocationBuilder().toInvocation().getMethod();
-        
+
         // when
         MockitoMethod mockitoMethod = filter.createMockitoMethod(method);
-        
+
         // then
         assertThat(mockitoMethod, instanceOf(DelegatingMethod.class));
     }

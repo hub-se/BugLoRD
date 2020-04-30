@@ -26,46 +26,45 @@ import java.util.logging.Logger;
 
 /**
  * Removes unused names.
- *
-*
  */
 class RemoveUnusedNames implements CompilerPass {
 
-  private static final Logger logger =
-    Logger.getLogger(RemoveUnusedNames.class.getName());
+    private static final Logger logger =
+            Logger.getLogger(RemoveUnusedNames.class.getName());
 
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  /**
-   * Creates a new pass for removing unused prototype properties, based
-   * on the uniqueness of property names.
-   * @param compiler The compiler.
-   */
-  RemoveUnusedNames(AbstractCompiler compiler,
-      boolean canModifyExterns) {
-    this.compiler = compiler;
-  }
-
-  public void process(Node externRoot, Node root) {
-    AnalyzeNameReferences analyzer =
-        new AnalyzeNameReferences(compiler);
-    analyzer.process(externRoot, root);
-    removeUnusedProperties(analyzer.getGraph());
-  }
-
-  /**
-   * Remove all properties under a given name if the property name is
-   * never referenced.
-   */
-  private void removeUnusedProperties(NameReferenceGraph graph) {
-    for (GraphNode<Name, Reference> node : graph.getNodes()) {
-      Name name = node.getValue();
-      NameInfo nameInfo = node.getAnnotation();
-      if (nameInfo == null || !nameInfo.isReferenced()) {
-        name.remove();
-        compiler.reportCodeChange();
-        logger.fine("Removed unused name" + name);
-      }
+    /**
+     * Creates a new pass for removing unused prototype properties, based
+     * on the uniqueness of property names.
+     *
+     * @param compiler The compiler.
+     */
+    RemoveUnusedNames(AbstractCompiler compiler,
+                      boolean canModifyExterns) {
+        this.compiler = compiler;
     }
-  }
+
+    public void process(Node externRoot, Node root) {
+        AnalyzeNameReferences analyzer =
+                new AnalyzeNameReferences(compiler);
+        analyzer.process(externRoot, root);
+        removeUnusedProperties(analyzer.getGraph());
+    }
+
+    /**
+     * Remove all properties under a given name if the property name is
+     * never referenced.
+     */
+    private void removeUnusedProperties(NameReferenceGraph graph) {
+        for (GraphNode<Name, Reference> node : graph.getNodes()) {
+            Name name = node.getValue();
+            NameInfo nameInfo = node.getAnnotation();
+            if (nameInfo == null || !nameInfo.isReferenced()) {
+                name.remove();
+                compiler.reportCodeChange();
+                logger.fine("Removed unused name" + name);
+            }
+        }
+    }
 }

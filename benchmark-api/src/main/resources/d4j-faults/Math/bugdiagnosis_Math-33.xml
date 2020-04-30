@@ -1,31 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-33">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/optimization/linear/SimplexSolverTest">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>28</number_tests>
-					<failed>1</failed>
-					<passed>27</passed>
-					<nodes>31466</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/optimization/linear/SimplexTableau.java">
-					<change>338</change>
-					<bugtypes>
-						<id id="1.2" lines="338">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-33">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/optimization/linear/SimplexSolverTest">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>28</number_tests>
+                    <failed>1</failed>
+                    <passed>27</passed>
+                    <nodes>31466</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/optimization/linear/SimplexTableau.java">
+                    <change>338</change>
+                    <bugtypes>
+                        <id id="1.2" lines="338">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

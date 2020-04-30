@@ -1,32 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-13">
-			<tests>
-				<testfile path="org/apache/commons/lang3/SerializationUtilsTest">
-					<exception>org.apache.commons.lang3.SerializationException:ClassNotFoundException
-						while reading cloned object data</exception>
-				</testfile>
-				<spectra>
-					<number_tests>208</number_tests>
-					<failed>1</failed>
-					<passed>207</passed>
-					<nodes>11060</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/SerializationUtils.java">
-					<insert numberlines="2"></insert>
-					<insert numberlines="9">250-252</insert>
-					<insert numberlines="1,7">268,269</insert>
-					<bugtypes>
-						<id id="1.3" lines="238,251,267,268">
-							<description>Missing exception handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-13">
+            <tests>
+                <testfile path="org/apache/commons/lang3/SerializationUtilsTest">
+                    <exception>org.apache.commons.lang3.SerializationException:ClassNotFoundException
+                        while reading cloned object data
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>208</number_tests>
+                    <failed>1</failed>
+                    <passed>207</passed>
+                    <nodes>11060</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/SerializationUtils.java">
+                    <insert numberlines="2"></insert>
+                    <insert numberlines="9">250-252</insert>
+                    <insert numberlines="1,7">268,269</insert>
+                    <bugtypes>
+                        <id id="1.3" lines="238,251,267,268">
+                            <description>Missing exception handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

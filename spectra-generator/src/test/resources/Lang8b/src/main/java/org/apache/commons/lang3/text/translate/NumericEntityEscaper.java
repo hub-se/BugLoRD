@@ -22,8 +22,8 @@ import java.io.Writer;
 /**
  * Translates codepoints to their XML numeric entity escaped value.
  *
- * @since 3.0
  * @version $Id$
+ * @since 3.0
  */
 public class NumericEntityEscaper extends CodePointTranslator {
 
@@ -37,8 +37,8 @@ public class NumericEntityEscaper extends CodePointTranslator {
      * and <code>above</code> boundaries are inclusive when <code>between</code> is
      * <code>true</code> and exclusive when it is <code>false</code>. </p>
      *
-     * @param below int value representing the lowest codepoint boundary
-     * @param above int value representing the highest codepoint boundary
+     * @param below   int value representing the lowest codepoint boundary
+     * @param above   int value representing the highest codepoint boundary
      * @param between whether to escape between the boundaries or outside them
      */
     private NumericEntityEscaper(int below, int above, boolean between) {
@@ -77,7 +77,7 @@ public class NumericEntityEscaper extends CodePointTranslator {
     /**
      * <p>Constructs a <code>NumericEntityEscaper</code> between the specified values (inclusive). </p>
      *
-     * @param codepointLow above which to escape
+     * @param codepointLow  above which to escape
      * @param codepointHigh below which to escape
      * @return the newly created {@code NumericEntityEscaper} instance
      */
@@ -88,7 +88,7 @@ public class NumericEntityEscaper extends CodePointTranslator {
     /**
      * <p>Constructs a <code>NumericEntityEscaper</code> outside of the specified values (exclusive). </p>
      *
-     * @param codepointLow below which to escape
+     * @param codepointLow  below which to escape
      * @param codepointHigh above which to escape
      * @return the newly created {@code NumericEntityEscaper} instance
      */
@@ -101,7 +101,7 @@ public class NumericEntityEscaper extends CodePointTranslator {
      */
     @Override
     public boolean translate(int codepoint, Writer out) throws IOException {
-        if(between) {
+        if (between) {
             if (codepoint < below || codepoint > above) {
                 return false;
             }

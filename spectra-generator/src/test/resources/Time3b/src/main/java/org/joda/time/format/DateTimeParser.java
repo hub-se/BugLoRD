@@ -37,7 +37,7 @@ public interface DateTimeParser {
     /**
      * Returns the expected maximum number of characters consumed.
      * The actual amount should rarely exceed this estimate.
-     * 
+     *
      * @return the estimated length
      */
     int estimateParsedLength();
@@ -52,11 +52,11 @@ public interface DateTimeParser {
      * where the parse failed, apply the one's complement operator (~) on the
      * return value.
      *
-     * @param bucket  field are saved into this, not null
-     * @param text  the text to parse, not null
-     * @param position  position to start parsing from
+     * @param bucket   field are saved into this, not null
+     * @param text     the text to parse, not null
+     * @param position position to start parsing from
      * @return new position, negative value means parse failed -
-     *  apply complement operator (~) to get position of failure
+     * apply complement operator (~) to get position of failure
      * @throws IllegalArgumentException if any field is out of range
      */
     int parseInto(DateTimeParserBucket bucket, String text, int position);

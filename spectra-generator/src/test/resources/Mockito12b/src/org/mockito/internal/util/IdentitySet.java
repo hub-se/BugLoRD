@@ -10,9 +10,9 @@ import java.util.LinkedList;
 public class IdentitySet {
 
     LinkedList list = new LinkedList();
-    
+
     public boolean contains(Object o) {
-        for(Object existing:list) {
+        for (Object existing : list) {
             if (existing == o) {
                 return true;
             }
@@ -21,6 +21,6 @@ public class IdentitySet {
     }
 
     public void add(Object o) {
-        list.add(o);        
+        list.add(o);
     }
 }

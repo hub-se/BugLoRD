@@ -4,9 +4,6 @@
  */
 package org.mockitousage.matchers;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Test;
@@ -15,8 +12,11 @@ import org.mockito.exceptions.verification.junit.ArgumentsAreDifferent;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 public class HamcrestMatchersTest extends TestBase {
-    
+
     private final class ContainsX extends BaseMatcher<String> {
         public boolean matches(Object o) {
             return ((String) o).contains("X");
@@ -27,7 +27,8 @@ public class HamcrestMatchersTest extends TestBase {
         }
     }
 
-    @Mock private IMethods mock;
+    @Mock
+    private IMethods mock;
 
     @Test
     public void shouldAcceptHamcrestMatcher() {
@@ -35,11 +36,11 @@ public class HamcrestMatchersTest extends TestBase {
         assertNull(mock.simpleMethod("blah"));
         assertEquals("X", mock.simpleMethod("blah X blah"));
     }
-    
+
     @Test
     public void shouldVerifyUsingHamcrestMatcher() {
         mock.simpleMethod("blah");
-        
+
         try {
             verify(mock).simpleMethod(argThat(new ContainsX()));
             fail();

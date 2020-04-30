@@ -18,7 +18,7 @@ public class ListUtil {
         }
         return filtered;
     }
-    
+
     public static interface Filter<T> {
         boolean isOut(T object);
     }

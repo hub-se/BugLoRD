@@ -1,50 +1,51 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-23">
-			<tests>
-				<testfile path="org/joda/time/TestDateTimeZone">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;[WET]&gt;
-						but was:&lt;[Europe/London]&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>3810</number_tests>
-					<failed>1</failed>
-					<passed>3809</passed>
-					<nodes>13100</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/DateTimeZone.java">
-					<change>572</change>
-					<change>575</change>
-					<change>577</change>
-					<change>578</change>
-					<change>581</change>
-					<change>583</change>
-					<change>586</change>
-					<change>588</change>
-					<insert numberlines="1">563-595</insert>
-					<bugtypes>
-						<id id="3.1" lines="563,578,581,583">
-							<description>Incorrect variable used.</description>
-						</id>
-						<id id="3.1" lines="572">
-							<description>Incorrect variable.</description>
-						</id>
-						<id id="3.1" lines="575">
-							<description>Incorrect variable.</description>
-						</id>
-						<id id="3.1" lines="586">
-							<description>Incorrect variable.</description>
-						</id>
-						<id id="3.1" lines="588">
-							<description>Incorrect variable.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>8</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-23">
+            <tests>
+                <testfile path="org/joda/time/TestDateTimeZone">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;[WET]&gt;
+                        but was:&lt;[Europe/London]&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>3810</number_tests>
+                    <failed>1</failed>
+                    <passed>3809</passed>
+                    <nodes>13100</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/DateTimeZone.java">
+                    <change>572</change>
+                    <change>575</change>
+                    <change>577</change>
+                    <change>578</change>
+                    <change>581</change>
+                    <change>583</change>
+                    <change>586</change>
+                    <change>588</change>
+                    <insert numberlines="1">563-595</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="563,578,581,583">
+                            <description>Incorrect variable used.</description>
+                        </id>
+                        <id id="3.1" lines="572">
+                            <description>Incorrect variable.</description>
+                        </id>
+                        <id id="3.1" lines="575">
+                            <description>Incorrect variable.</description>
+                        </id>
+                        <id id="3.1" lines="586">
+                            <description>Incorrect variable.</description>
+                        </id>
+                        <id id="3.1" lines="588">
+                            <description>Incorrect variable.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>8</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

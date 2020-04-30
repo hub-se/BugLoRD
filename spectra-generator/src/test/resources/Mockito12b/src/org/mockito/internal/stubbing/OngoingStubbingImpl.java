@@ -12,7 +12,7 @@ import org.mockito.stubbing.OngoingStubbing;
 import java.util.List;
 
 public class OngoingStubbingImpl<T> extends BaseStubbing<T> {
-    
+
     private final InvocationContainerImpl invocationContainerImpl;
 
     public OngoingStubbingImpl(InvocationContainerImpl invocationContainerImpl) {

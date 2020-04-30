@@ -4,12 +4,12 @@
  */
 package org.mockito.internal;
 
-import java.util.List;
-
 import org.mockito.internal.creation.MockSettingsImpl;
 import org.mockito.internal.stubbing.InvocationContainer;
 import org.mockito.stubbing.Answer;
 import org.mockito.stubbing.VoidMethodStubbable;
+
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public interface MockHandlerInterface<T> {
@@ -17,7 +17,7 @@ public interface MockHandlerInterface<T> {
     MockSettingsImpl getMockSettings();
 
     VoidMethodStubbable<T> voidMethodStubbable(T mock);
-    
+
     void setAnswersForStubbing(List<Answer> answers);
 
     InvocationContainer getInvocationContainer();

@@ -4,11 +4,6 @@
  */
 package org.mockito.internal.debugging;
 
-import static java.util.Arrays.*;
-import static org.mockito.Mockito.*;
-
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.internal.invocation.Invocation;
@@ -17,10 +12,17 @@ import org.mockito.internal.invocation.InvocationMatcher;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import java.util.Arrays;
+
+import static java.util.Arrays.asList;
+import static org.mockito.Mockito.*;
+
 public class WarningsFinderTest extends TestBase {
 
-    @Mock private IMethods mock;
-    @Mock private FindingsListener listener;
+    @Mock
+    private IMethods mock;
+    @Mock
+    private FindingsListener listener;
 
     @Test
     public void shouldPrintUnusedStub() {
@@ -55,7 +57,7 @@ public class WarningsFinderTest extends TestBase {
         InvocationMatcher wrongArg = new InvocationBuilder().arg("bar").mock(mock).toInvocationMatcher();
 
         // when
-        WarningsFinder finder = new WarningsFinder(Arrays.<Invocation> asList(stub), Arrays.<InvocationMatcher> asList(wrongArg));
+        WarningsFinder finder = new WarningsFinder(Arrays.<Invocation>asList(stub), Arrays.<InvocationMatcher>asList(wrongArg));
         finder.find(listener);
 
         // then

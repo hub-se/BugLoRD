@@ -4,14 +4,14 @@
  */
 package org.mockito;
 
-import static java.lang.annotation.ElementType.*;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.mockito.runners.MockitoJUnitRunner;
+import static java.lang.annotation.ElementType.FIELD;
 
 /**
  * <ul>
@@ -49,7 +49,7 @@ import org.mockito.runners.MockitoJUnitRunner;
  * For JUnit3 <code>initMocks()</code> can go to <code>setup()</code> method of a base class.
  * You can also put initMocks() in your JUnit runner (&#064;RunWith) or use built-in runners: {@link MockitoJUnitRunner}
  */
-@Target( { FIELD })
+@Target({FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Mock {

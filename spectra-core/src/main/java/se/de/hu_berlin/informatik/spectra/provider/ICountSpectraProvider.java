@@ -11,18 +11,16 @@ import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 /**
  * Interface used by classes that load or provide spectra objects. Can be used
  * in experiments for automation.
- * 
- * @param <T>
- * type used to identify nodes in the system.
+ *
+ * @param <T> type used to identify nodes in the system.
  */
 public interface ICountSpectraProvider<T> {
 
-	/**
-	 * Provides a spectra object.
-	 * 
-	 * @return spectra with traces and nodes
-	 * @throws IllegalStateException
-	 * in case providing the spectra fails
-	 */
-	public CountSpectra<T> loadCountSpectra() throws IllegalStateException;
+    /**
+     * Provides a spectra object.
+     *
+     * @return spectra with traces and nodes
+     * @throws IllegalStateException in case providing the spectra fails
+     */
+    public CountSpectra<T> loadCountSpectra() throws IllegalStateException;
 }

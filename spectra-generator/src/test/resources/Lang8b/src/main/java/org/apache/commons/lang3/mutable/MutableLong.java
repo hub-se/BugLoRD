@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,22 +19,24 @@ package org.apache.commons.lang3.mutable;
 /**
  * A mutable <code>long</code> wrapper.
  * <p>
- * Note that as MutableLong does not extend Long, it is not treated by String.format as a Long parameter. 
- * 
+ * Note that as MutableLong does not extend Long, it is not treated by String.format as a Long parameter.
+ *
+ * @version $Id$
  * @see Long
  * @since 2.1
- * @version $Id$
  */
 public class MutableLong extends Number implements Comparable<MutableLong>, Mutable<Number> {
 
     /**
      * Required for serialization support.
-     * 
+     *
      * @see java.io.Serializable
      */
     private static final long serialVersionUID = 62986528375L;
 
-    /** The mutable value. */
+    /**
+     * The mutable value.
+     */
     private long value;
 
     /**
@@ -46,8 +48,8 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
 
     /**
      * Constructs a new MutableLong with the specified value.
-     * 
-     * @param value  the initial value to store
+     *
+     * @param value the initial value to store
      */
     public MutableLong(long value) {
         super();
@@ -56,8 +58,8 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
 
     /**
      * Constructs a new MutableLong with the specified value.
-     * 
-     * @param value  the initial value to store, not null
+     *
+     * @param value the initial value to store, not null
      * @throws NullPointerException if the object is null
      */
     public MutableLong(Number value) {
@@ -67,8 +69,8 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
 
     /**
      * Constructs a new MutableLong parsing the given string.
-     * 
-     * @param value  the string to parse, not null
+     *
+     * @param value the string to parse, not null
      * @throws NumberFormatException if the string cannot be parsed into a long
      * @since 2.5
      */
@@ -78,9 +80,10 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the value as a Long instance.
-     * 
+     *
      * @return the value as a Long, never null
      */
     @Override
@@ -90,8 +93,8 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
 
     /**
      * Sets the value.
-     * 
-     * @param value  the value to set
+     *
+     * @param value the value to set
      */
     public void setValue(long value) {
         this.value = value;
@@ -99,8 +102,8 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
 
     /**
      * Sets the value from any Number instance.
-     * 
-     * @param value  the value to set, not null
+     *
+     * @param value the value to set, not null
      * @throws NullPointerException if the object is null
      */
     @Override
@@ -109,6 +112,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Increments the value.
      *
@@ -128,10 +132,11 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Adds a value to the value of this instance.
-     * 
-     * @param operand  the value to add, not null
+     *
+     * @param operand the value to add, not null
      * @since Commons Lang 2.2
      */
     public void add(long operand) {
@@ -140,8 +145,8 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
 
     /**
      * Adds a value to the value of this instance.
-     * 
-     * @param operand  the value to add, not null
+     *
+     * @param operand the value to add, not null
      * @throws NullPointerException if the object is null
      * @since Commons Lang 2.2
      */
@@ -151,8 +156,8 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
 
     /**
      * Subtracts a value from the value of this instance.
-     * 
-     * @param operand  the value to subtract, not null
+     *
+     * @param operand the value to subtract, not null
      * @since Commons Lang 2.2
      */
     public void subtract(long operand) {
@@ -161,8 +166,8 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
 
     /**
      * Subtracts a value from the value of this instance.
-     * 
-     * @param operand  the value to subtract, not null
+     *
+     * @param operand the value to subtract, not null
      * @throws NullPointerException if the object is null
      * @since Commons Lang 2.2
      */
@@ -172,6 +177,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
 
     //-----------------------------------------------------------------------
     // shortValue and byteValue rely on Number implementation
+
     /**
      * Returns the value of this MutableLong as an int.
      *
@@ -213,6 +219,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets this mutable as an instance of Long.
      *
@@ -223,12 +230,13 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Compares this object to the specified object. The result is <code>true</code> if and only if the argument
      * is not <code>null</code> and is a <code>MutableLong</code> object that contains the same <code>long</code>
      * value as this object.
-     * 
-     * @param obj  the object to compare with, null returns false
+     *
+     * @param obj the object to compare with, null returns false
      * @return <code>true</code> if the objects are the same; <code>false</code> otherwise.
      */
     @Override
@@ -241,7 +249,7 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
 
     /**
      * Returns a suitable hash code for this mutable.
-     * 
+     *
      * @return a suitable hash code
      */
     @Override
@@ -250,10 +258,11 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Compares this mutable to another in ascending order.
-     * 
-     * @param other  the other mutable to compare to, not null
+     *
+     * @param other the other mutable to compare to, not null
      * @return negative if this is less, zero if equal, positive if greater
      */
     @Override
@@ -263,9 +272,10 @@ public class MutableLong extends Number implements Comparable<MutableLong>, Muta
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns the String value of this mutable.
-     * 
+     *
      * @return the mutable value as a string
      */
     @Override

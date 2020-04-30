@@ -1,24 +1,26 @@
 /*
  * Copyright 2002-2005 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.lang.enum;
+package org.apache.commons.lang.
+
+enum;
 
 import java.util.Iterator;
-import java.util.List;
+        import java.util.List;
 
-import org.apache.commons.lang.ClassUtils;
+        import org.apache.commons.lang.ClassUtils;
 
 /**
  * <p>Abstract superclass for type-safe enums with integer values suitable
@@ -46,23 +48,23 @@ import org.apache.commons.lang.ClassUtils;
  *   private JavaVersionEnum(String name, int value) {
  *     super( name, value );
  *   }
- * 
+ *
  *   public static JavaVersionEnum getEnum(String javaVersion) {
  *     return (JavaVersionEnum) getEnum(JavaVersionEnum.class, javaVersion);
  *   }
- * 
+ *
  *   public static JavaVersionEnum getEnum(int javaVersion) {
  *     return (JavaVersionEnum) getEnum(JavaVersionEnum.class, javaVersion);
  *   }
- * 
+ *
  *   public static Map getEnumMap() {
  *     return getEnumMap(JavaVersionEnum.class);
  *   }
- * 
+ *
  *   public static List getEnumList() {
  *     return getEnumList(JavaVersionEnum.class);
  *   }
- * 
+ *
  *   public static Iterator iterator() {
  *     return iterator(JavaVersionEnum.class);
  *   }
@@ -92,20 +94,22 @@ import org.apache.commons.lang.ClassUtils;
  * Unfortunately, Java restrictions require these to be coded as shown in each subclass.
  * An alternative choice is to use the {@link EnumUtils} class.</p>
  *
- * @deprecated Replaced by {@link org.apache.commons.lang.enums.ValuedEnum org.apache.commons.lang.enums.ValuedEnum}
- *          and will be removed in version 3.0. All classes in this package are deprecated and repackaged to 
- *          {@link org.apache.commons.lang.enums} since <code>enum</code> is a Java 1.5 keyword. 
- * @see org.apache.commons.lang.enums.ValuedEnum
  * @author Apache Avalon project
  * @author Stephen Colebourne
- * @since 1.0
  * @version $Id$
+ * @see org.apache.commons.lang.enums.ValuedEnum
+ * @since 1.0
+ * @deprecated Replaced by {@link org.apache.commons.lang.enums.ValuedEnum org.apache.commons.lang.enums.ValuedEnum}
+ * and will be removed in version 3.0. All classes in this package are deprecated and repackaged to
+ * {@link org.apache.commons.lang.enums} since <code>enum</code> is a Java 1.5 keyword.
  */
 public abstract class ValuedEnum extends Enum {
-    
-    /** Lang version 1.0.1 serial compatibility */
+
+    /**
+     * Lang version 1.0.1 serial compatibility
+     */
     private static final long serialVersionUID = -7129650521543789085L;
-    
+
     /**
      * The value contained in enum.
      */
@@ -115,7 +119,7 @@ public abstract class ValuedEnum extends Enum {
      * Constructor for enum item.
      *
      * @param name  the name of enum item
-     * @param value  the value of enum item
+     * @param value the value of enum item
      */
     protected ValuedEnum(String name, int value) {
         super(name);
@@ -128,9 +132,9 @@ public abstract class ValuedEnum extends Enum {
      * <p>This method loops through the list of <code>Enum</code>,
      * thus if there are many <code>Enum</code>s this will be
      * slow.</p>
-     * 
-     * @param enumClass  the class of the <code>Enum</code> to get
-     * @param value  the value of the <code>Enum</code> to get
+     *
+     * @param enumClass the class of the <code>Enum</code> to get
+     * @param value     the value of the <code>Enum</code> to get
      * @return the enum object, or null if the enum does not exist
      * @throws IllegalArgumentException if the enum class is <code>null</code>
      */
@@ -139,10 +143,10 @@ public abstract class ValuedEnum extends Enum {
             throw new IllegalArgumentException("The Enum Class must not be null");
         }
         List list = Enum.getEnumList(enumClass);
-        for (Iterator it = list.iterator(); it.hasNext();) {
-            ValuedEnum enum = (ValuedEnum) it.next();
-            if (enum.getValue() == value) {
-                return enum;
+        for (Iterator it = list.iterator(); it.hasNext(); ) {
+            ValuedEnum enum =(ValuedEnum) it.next();
+            if ( enum.getValue() == value){
+                return enum ;
             }
         }
         return null;
@@ -162,13 +166,13 @@ public abstract class ValuedEnum extends Enum {
      *
      * <p>The default ordering is numeric by value, but this
      * can be overridden by subclasses.</p>
-     * 
-     * @see java.lang.Comparable#compareTo(Object)
-     * @param other  the other object to compare to
+     *
+     * @param other the other object to compare to
      * @return -ve if this is less than the other object, +ve if greater than,
-     *  <code>0</code> of equal
-     * @throws ClassCastException if other is not an <code>Enum</code>
+     * <code>0</code> of equal
+     * @throws ClassCastException   if other is not an <code>Enum</code>
      * @throws NullPointerException if other is <code>null</code>
+     * @see java.lang.Comparable#compareTo(Object)
      */
     public int compareTo(Object other) {
         return iValue - ((ValuedEnum) other).iValue;
@@ -178,8 +182,8 @@ public abstract class ValuedEnum extends Enum {
      * <p>Human readable description of this <code>Enum</code> item.</p>
      *
      * @return String in the form <code>type[name=value]</code>, for example:
-     *  <code>JavaVersion[Java 1.0=100]</code>. Note that the package name is
-     *  stripped from the type name.
+     * <code>JavaVersion[Java 1.0=100]</code>. Note that the package name is
+     * stripped from the type name.
      */
     public String toString() {
         if (iToString == null) {

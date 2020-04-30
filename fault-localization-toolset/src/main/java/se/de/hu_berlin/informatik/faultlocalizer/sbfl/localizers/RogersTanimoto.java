@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Rogers-Tanimoto fault localizer $\frac{\EF+\NP}{\EF+\NP+2(\NF+\EP)}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class RogersTanimoto<T> extends AbstractFaultLocalizer<T> {
 
@@ -30,11 +29,11 @@ public class RogersTanimoto<T> extends AbstractFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-    	double numerator = node.getEF(strategy) + node.getNP(strategy);
-    	if (numerator == 0) {
-    		return 0;
-    	}
-        return  numerator / (node.getEF(strategy) + node.getNP(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
+        double numerator = node.getEF(strategy) + node.getNP(strategy);
+        if (numerator == 0) {
+            return 0;
+        }
+        return numerator / (node.getEF(strategy) + node.getNP(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
     }
 
 }

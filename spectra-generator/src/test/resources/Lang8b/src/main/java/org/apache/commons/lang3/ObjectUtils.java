@@ -16,18 +16,14 @@
  */
 package org.apache.commons.lang3;
 
+import org.apache.commons.lang3.exception.CloneFailedException;
+import org.apache.commons.lang3.mutable.MutableInt;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
-
-import org.apache.commons.lang3.exception.CloneFailedException;
-import org.apache.commons.lang3.mutable.MutableInt;
+import java.util.*;
 
 /**
  * <p>Operations on {@code Object}.</p>
@@ -37,8 +33,9 @@ import org.apache.commons.lang3.mutable.MutableInt;
  * Each method documents its behaviour in more detail.</p>
  *
  * <p>#ThreadSafe#</p>
- * @since 1.0
+ *
  * @version $Id$
+ * @since 1.0
  */
 //@Immutable
 public class ObjectUtils {
@@ -74,6 +71,7 @@ public class ObjectUtils {
 
     // Defaulting
     //-----------------------------------------------------------------------
+
     /**
      * <p>Returns a default value if the object passed is {@code null}.</p>
      *
@@ -85,9 +83,9 @@ public class ObjectUtils {
      * ObjectUtils.defaultIfNull(Boolean.TRUE, *) = Boolean.TRUE
      * </pre>
      *
-     * @param <T> the type of the object
-     * @param object  the {@code Object} to test, may be {@code null}
-     * @param defaultValue  the default value to return, may be {@code null}
+     * @param <T>          the type of the object
+     * @param object       the {@code Object} to test, may be {@code null}
+     * @param defaultValue the default value to return, may be {@code null}
      * @return {@code object} if it is not {@code null}, defaultValue otherwise
      */
     public static <T> T defaultIfNull(T object, T defaultValue) {
@@ -110,10 +108,10 @@ public class ObjectUtils {
      * ObjectUtils.firstNonNull()                = null
      * </pre>
      *
-     * @param <T> the component type of the array
-     * @param values  the values to test, may be {@code null} or empty
+     * @param <T>    the component type of the array
+     * @param values the values to test, may be {@code null} or empty
      * @return the first value from {@code values} which is not {@code null},
-     *  or {@code null} if there are no non-null values
+     * or {@code null} if there are no non-null values
      * @since 3.0
      */
     public static <T> T firstNonNull(T... values) {
@@ -129,6 +127,7 @@ public class ObjectUtils {
 
     // Null-safe equals/hashCode
     //-----------------------------------------------------------------------
+
     /**
      * <p>Compares two objects for equality, where either one or both
      * objects may be {@code null}.</p>
@@ -144,8 +143,8 @@ public class ObjectUtils {
      * ObjectUtils.equals(Boolean.TRUE, Boolean.FALSE) = false
      * </pre>
      *
-     * @param object1  the first object, may be {@code null}
-     * @param object2  the second object, may be {@code null}
+     * @param object1 the first object, may be {@code null}
+     * @param object2 the second object, may be {@code null}
      * @return {@code true} if the values of both objects are the same
      */
     public static boolean equals(Object object1, Object object2) {
@@ -173,8 +172,8 @@ public class ObjectUtils {
      * ObjectUtils.notEqual(Boolean.TRUE, Boolean.FALSE) = true
      * </pre>
      *
-     * @param object1  the first object, may be {@code null}
-     * @param object2  the second object, may be {@code null}
+     * @param object1 the first object, may be {@code null}
+     * @param object2 the second object, may be {@code null}
      * @return {@code false} if the values of both objects are the same
      */
     public static boolean notEqual(Object object1, Object object2) {
@@ -190,7 +189,7 @@ public class ObjectUtils {
      * ObjectUtils.hashCode(obj)    = obj.hashCode()
      * </pre>
      *
-     * @param obj  the object to obtain the hash code of, may be {@code null}
+     * @param obj the object to obtain the hash code of, may be {@code null}
      * @return the hash code of the object, or zero if null
      * @since 2.1
      */
@@ -201,7 +200,7 @@ public class ObjectUtils {
 
     /**
      * <p>Gets the hash code for multiple objects.</p>
-     * 
+     *
      * <p>This allows a hash code to be rapidly calculated for a number of objects.
      * The hash code for a single object is the <em>not</em> same as {@link #hashCode(Object)}.
      * The hash code for multiple objects is the same as that calculated by an
@@ -215,7 +214,7 @@ public class ObjectUtils {
      * ObjectUtils.hashCodeMulti(a,b,c)            = ((31 + a.hashCode()) * 31 + b.hashCode()) * 31 + c.hashCode()
      * </pre>
      *
-     * @param objects  the objects to obtain the hash code of, may be {@code null}
+     * @param objects the objects to obtain the hash code of, may be {@code null}
      * @return the hash code of the objects, or zero if null
      * @since 3.0
      */
@@ -231,6 +230,7 @@ public class ObjectUtils {
 
     // Identity ToString
     //-----------------------------------------------------------------------
+
     /**
      * <p>Gets the toString that would be produced by {@code Object}
      * if a class did not override toString itself. {@code null}
@@ -242,10 +242,10 @@ public class ObjectUtils {
      * ObjectUtils.identityToString(Boolean.TRUE) = "java.lang.Boolean@7fa"
      * </pre>
      *
-     * @param object  the object to create a toString for, may be
-     *  {@code null}
+     * @param object the object to create a toString for, may be
+     *               {@code null}
      * @return the default toString text, or {@code null} if
-     *  {@code null} passed in
+     * {@code null} passed in
      */
     public static String identityToString(Object object) {
         if (object == null) {
@@ -267,8 +267,8 @@ public class ObjectUtils {
      * ObjectUtils.identityToString(buf, Boolean.TRUE)  = buf.append("java.lang.Boolean@7fa")
      * </pre>
      *
-     * @param buffer  the buffer to append to
-     * @param object  the object to create a toString for
+     * @param buffer the buffer to append to
+     * @param object the object to create a toString for
      * @since 2.4
      */
     public static void identityToString(StringBuffer buffer, Object object) {
@@ -276,12 +276,13 @@ public class ObjectUtils {
             throw new NullPointerException("Cannot get the toString of a null identity");
         }
         buffer.append(object.getClass().getName())
-              .append('@')
-              .append(Integer.toHexString(System.identityHashCode(object)));
+                .append('@')
+                .append(Integer.toHexString(System.identityHashCode(object)));
     }
 
     // ToString
     //-----------------------------------------------------------------------
+
     /**
      * <p>Gets the {@code toString} of an {@code Object} returning
      * an empty string ("") if {@code null} input.</p>
@@ -293,10 +294,10 @@ public class ObjectUtils {
      * ObjectUtils.toString(Boolean.TRUE) = "true"
      * </pre>
      *
+     * @param obj the Object to {@code toString}, may be null
+     * @return the passed in Object's toString, or {@code ""} if {@code null} input
      * @see StringUtils#defaultString(String)
      * @see String#valueOf(Object)
-     * @param obj  the Object to {@code toString}, may be null
-     * @return the passed in Object's toString, or {@code ""} if {@code null} input
      * @since 2.0
      */
     public static String toString(Object obj) {
@@ -315,11 +316,11 @@ public class ObjectUtils {
      * ObjectUtils.toString(Boolean.TRUE, "null") = "true"
      * </pre>
      *
-     * @see StringUtils#defaultString(String,String)
-     * @see String#valueOf(Object)
-     * @param obj  the Object to {@code toString}, may be null
-     * @param nullStr  the String to return if {@code null} input, may be null
+     * @param obj     the Object to {@code toString}, may be null
+     * @param nullStr the String to return if {@code null} input, may be null
      * @return the passed in Object's toString, or {@code nullStr} if {@code null} input
+     * @see StringUtils#defaultString(String, String)
+     * @see String#valueOf(Object)
      * @since 2.0
      */
     public static String toString(Object obj, String nullStr) {
@@ -328,18 +329,18 @@ public class ObjectUtils {
 
     // Comparable
     //-----------------------------------------------------------------------
+
     /**
      * <p>Null safe comparison of Comparables.</p>
      *
-     * @param <T> type of the values processed by this method
+     * @param <T>    type of the values processed by this method
      * @param values the set of comparable values, may be null
-     * @return
-     *  <ul>
-     *   <li>If any objects are non-null and unequal, the lesser object.
-     *   <li>If all objects are non-null and equal, the first.
-     *   <li>If any of the comparables are null, the lesser of the non-null objects.
-     *   <li>If all the comparables are null, null is returned.
-     *  </ul>
+     * @return <ul>
+     * <li>If any objects are non-null and unequal, the lesser object.
+     * <li>If all objects are non-null and equal, the first.
+     * <li>If any of the comparables are null, the lesser of the non-null objects.
+     * <li>If all the comparables are null, null is returned.
+     * </ul>
      */
     public static <T extends Comparable<? super T>> T min(T... values) {
         T result = null;
@@ -356,15 +357,14 @@ public class ObjectUtils {
     /**
      * <p>Null safe comparison of Comparables.</p>
      *
-     * @param <T> type of the values processed by this method
+     * @param <T>    type of the values processed by this method
      * @param values the set of comparable values, may be null
-     * @return
-     *  <ul>
-     *   <li>If any objects are non-null and unequal, the greater object.
-     *   <li>If all objects are non-null and equal, the first.
-     *   <li>If any of the comparables are null, the greater of the non-null objects.
-     *   <li>If all the comparables are null, null is returned.
-     *  </ul>
+     * @return <ul>
+     * <li>If any objects are non-null and unequal, the greater object.
+     * <li>If all objects are non-null and equal, the first.
+     * <li>If any of the comparables are null, the greater of the non-null objects.
+     * <li>If all the comparables are null, null is returned.
+     * </ul>
      */
     public static <T extends Comparable<? super T>> T max(T... values) {
         T result = null;
@@ -386,7 +386,7 @@ public class ObjectUtils {
      * @param c1  the first comparable, may be null
      * @param c2  the second comparable, may be null
      * @return a negative value if c1 < c2, zero if c1 = c2
-     *  and a positive value if c1 > c2
+     * and a positive value if c1 > c2
      */
     public static <T extends Comparable<? super T>> int compare(T c1, T c2) {
         return compare(c1, c2, false);
@@ -395,14 +395,14 @@ public class ObjectUtils {
     /**
      * <p>Null safe comparison of Comparables.</p>
      *
-     * @param <T> type of the values processed by this method
-     * @param c1  the first comparable, may be null
-     * @param c2  the second comparable, may be null
+     * @param <T>         type of the values processed by this method
+     * @param c1          the first comparable, may be null
+     * @param c2          the second comparable, may be null
      * @param nullGreater if true {@code null} is considered greater
-     *  than a non-{@code null} value or if false {@code null} is
-     *  considered less than a Non-{@code null} value
+     *                    than a non-{@code null} value or if false {@code null} is
+     *                    considered less than a Non-{@code null} value
      * @return a negative value if c1 < c2, zero if c1 = c2
-     *  and a positive value if c1 > c2
+     * and a positive value if c1 > c2
      * @see java.util.Comparator#compare(Object, Object)
      */
     public static <T extends Comparable<? super T>> int compare(T c1, T c2, boolean nullGreater) {
@@ -419,10 +419,11 @@ public class ObjectUtils {
     /**
      * Find the "best guess" middle value among comparables. If there is an even
      * number of total values, the lower of the two middle values will be returned.
-     * @param <T> type of values processed by this method
+     *
+     * @param <T>   type of values processed by this method
      * @param items to compare
      * @return T at middle position
-     * @throws NullPointerException if items is {@code null}
+     * @throws NullPointerException     if items is {@code null}
      * @throws IllegalArgumentException if items is empty or contains {@code null} values
      * @since 3.0.1
      */
@@ -432,18 +433,19 @@ public class ObjectUtils {
         TreeSet<T> sort = new TreeSet<T>();
         Collections.addAll(sort, items);
         @SuppressWarnings("unchecked") //we know all items added were T instances
-        T result = (T) sort.toArray()[(sort.size() - 1) / 2];
+                T result = (T) sort.toArray()[(sort.size() - 1) / 2];
         return result;
     }
 
     /**
      * Find the "best guess" middle value among comparables. If there is an even
      * number of total values, the lower of the two middle values will be returned.
-     * @param <T> type of values processed by this method
+     *
+     * @param <T>        type of values processed by this method
      * @param comparator to use for comparisons
-     * @param items to compare
+     * @param items      to compare
      * @return T at middle position
-     * @throws NullPointerException if items or comparator is {@code null}
+     * @throws NullPointerException     if items or comparator is {@code null}
      * @throws IllegalArgumentException if items is empty or contains {@code null} values
      * @since 3.0.1
      */
@@ -454,16 +456,17 @@ public class ObjectUtils {
         TreeSet<T> sort = new TreeSet<T>(comparator);
         Collections.addAll(sort, items);
         @SuppressWarnings("unchecked") //we know all items added were T instances
-        T result = (T) sort.toArray()[(sort.size() - 1) / 2];
+                T result = (T) sort.toArray()[(sort.size() - 1) / 2];
         return result;
     }
 
     // Mode
     //-----------------------------------------------------------------------
+
     /**
      * Find the most frequently occurring item.
-     * 
-     * @param <T> type of values processed by this method
+     *
+     * @param <T>   type of values processed by this method
      * @param items to check
      * @return most populous T, {@code null} if non-unique or no items supplied
      * @since 3.0.1
@@ -497,11 +500,12 @@ public class ObjectUtils {
 
     // cloning
     //-----------------------------------------------------------------------
+
     /**
      * <p>Clone an object.</p>
      *
      * @param <T> the type of the object
-     * @param obj  the object to clone, null returns null
+     * @param obj the object to clone, null returns null
      * @return the clone if the object implements {@link Cloneable} otherwise {@code null}
      * @throws CloneFailedException if the object is cloneable and the clone operation fails
      * @since 3.0
@@ -526,18 +530,17 @@ public class ObjectUtils {
                     result = clone.invoke(obj);
                 } catch (final NoSuchMethodException e) {
                     throw new CloneFailedException("Cloneable type "
-                        + obj.getClass().getName()
-                        + " has no clone method", e);
+                            + obj.getClass().getName()
+                            + " has no clone method", e);
                 } catch (final IllegalAccessException e) {
                     throw new CloneFailedException("Cannot clone Cloneable type "
-                        + obj.getClass().getName(), e);
+                            + obj.getClass().getName(), e);
                 } catch (final InvocationTargetException e) {
                     throw new CloneFailedException("Exception cloning Cloneable type "
-                        + obj.getClass().getName(), e.getCause());
+                            + obj.getClass().getName(), e.getCause());
                 }
             }
-            @SuppressWarnings("unchecked")
-            final T checked = (T) result;
+            @SuppressWarnings("unchecked") final T checked = (T) result;
             return checked;
         }
 
@@ -555,7 +558,7 @@ public class ObjectUtils {
      * clone implementation and the caller's code does not have to change.</p>
      *
      * @param <T> the type of the object
-     * @param obj  the object to clone, null returns null
+     * @param obj the object to clone, null returns null
      * @return the clone if the object implements {@link Cloneable} otherwise the object itself
      * @throws CloneFailedException if the object is cloneable and the clone operation fails
      * @since 3.0
@@ -567,6 +570,7 @@ public class ObjectUtils {
 
     // Null
     //-----------------------------------------------------------------------
+
     /**
      * <p>Class used as a null placeholder where {@code null}
      * has another meaning.</p>
@@ -635,7 +639,7 @@ public class ObjectUtils {
      * <pre>
      *     public final static boolean MAGIC_FLAG = ObjectUtils.CONST(true);
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
@@ -643,7 +647,9 @@ public class ObjectUtils {
      * @param v the boolean value to return
      * @return the boolean v, unchanged
      */
-    public static boolean CONST(final boolean v) { return v; }
+    public static boolean CONST(final boolean v) {
+        return v;
+    }
 
     /**
      * This method returns the provided value unchanged.
@@ -653,7 +659,7 @@ public class ObjectUtils {
      * <pre>
      *     public final static byte MAGIC_BYTE = ObjectUtils.CONST((byte) 127);
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
@@ -661,7 +667,9 @@ public class ObjectUtils {
      * @param v the byte value to return
      * @return the byte v, unchanged
      */
-    public static byte CONST(final byte v) { return v; }
+    public static byte CONST(final byte v) {
+        return v;
+    }
 
     /**
      * This method returns the provided value unchanged.
@@ -671,16 +679,16 @@ public class ObjectUtils {
      * <pre>
      *     public final static byte MAGIC_BYTE = ObjectUtils.CONST_BYTE(127);
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
      *
      * @param v the byte literal (as an int) value to return
-     * @throws IllegalArgumentException if the value passed to v
-     *         is larger than a byte, that is, smaller than -128 or
-     *         larger than 127.
      * @return the byte v, unchanged
+     * @throws IllegalArgumentException if the value passed to v
+     *                                  is larger than a byte, that is, smaller than -128 or
+     *                                  larger than 127.
      */
     public static byte CONST_BYTE(final int v) throws IllegalArgumentException {
         if (v < Byte.MIN_VALUE || v > Byte.MAX_VALUE) {
@@ -697,7 +705,7 @@ public class ObjectUtils {
      * <pre>
      *     public final static char MAGIC_CHAR = ObjectUtils.CONST('a');
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
@@ -705,7 +713,9 @@ public class ObjectUtils {
      * @param v the char value to return
      * @return the char v, unchanged
      */
-    public static char CONST(final char v) { return v; }
+    public static char CONST(final char v) {
+        return v;
+    }
 
     /**
      * This method returns the provided value unchanged.
@@ -715,7 +725,7 @@ public class ObjectUtils {
      * <pre>
      *     public final static short MAGIC_SHORT = ObjectUtils.CONST((short) 123);
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
@@ -723,7 +733,9 @@ public class ObjectUtils {
      * @param v the short value to return
      * @return the short v, unchanged
      */
-    public static short CONST(final short v) { return v; }
+    public static short CONST(final short v) {
+        return v;
+    }
 
     /**
      * This method returns the provided value unchanged.
@@ -733,16 +745,16 @@ public class ObjectUtils {
      * <pre>
      *     public final static short MAGIC_SHORT = ObjectUtils.CONST_SHORT(127);
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
      *
      * @param v the short literal (as an int) value to return
-     * @throws IllegalArgumentException if the value passed to v
-     *         is larger than a short, that is, smaller than -32768 or
-     *         larger than 32767.
      * @return the byte v, unchanged
+     * @throws IllegalArgumentException if the value passed to v
+     *                                  is larger than a short, that is, smaller than -32768 or
+     *                                  larger than 32767.
      */
     public static short CONST_SHORT(final int v) throws IllegalArgumentException {
         if (v < Short.MIN_VALUE || v > Short.MAX_VALUE) {
@@ -760,7 +772,7 @@ public class ObjectUtils {
      * <pre>
      *     public final static int MAGIC_INT = ObjectUtils.CONST(123);
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
@@ -768,7 +780,9 @@ public class ObjectUtils {
      * @param v the int value to return
      * @return the int v, unchanged
      */
-    public static int CONST(final int v) { return v; }
+    public static int CONST(final int v) {
+        return v;
+    }
 
     /**
      * This method returns the provided value unchanged.
@@ -778,7 +792,7 @@ public class ObjectUtils {
      * <pre>
      *     public final static long MAGIC_LONG = ObjectUtils.CONST(123L);
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
@@ -786,7 +800,9 @@ public class ObjectUtils {
      * @param v the long value to return
      * @return the long v, unchanged
      */
-    public static long CONST(final long v) { return v; }
+    public static long CONST(final long v) {
+        return v;
+    }
 
     /**
      * This method returns the provided value unchanged.
@@ -796,7 +812,7 @@ public class ObjectUtils {
      * <pre>
      *     public final static float MAGIC_FLOAT = ObjectUtils.CONST(1.0f);
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
@@ -804,7 +820,9 @@ public class ObjectUtils {
      * @param v the float value to return
      * @return the float v, unchanged
      */
-    public static float CONST(final float v) { return v; }
+    public static float CONST(final float v) {
+        return v;
+    }
 
     /**
      * This method returns the provided value unchanged.
@@ -814,7 +832,7 @@ public class ObjectUtils {
      * <pre>
      *     public final static double MAGIC_DOUBLE = ObjectUtils.CONST(1.0);
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
@@ -822,7 +840,9 @@ public class ObjectUtils {
      * @param v the double value to return
      * @return the double v, unchanged
      */
-    public static double CONST(final double v) { return v; }
+    public static double CONST(final double v) {
+        return v;
+    }
 
     /**
      * This method returns the provided value unchanged.
@@ -832,7 +852,7 @@ public class ObjectUtils {
      * <pre>
      *     public final static String MAGIC_STRING = ObjectUtils.CONST("abc");
      * </pre>
-     *
+     * <p>
      * This way any jars that refer to this field do not
      * have to recompile themselves if the field's value
      * changes at some future date.
@@ -840,6 +860,8 @@ public class ObjectUtils {
      * @param v the genericized Object value to return (typically a String).
      * @return the genericized Object v, unchanged (typically a String).
      */
-    public static <T> T CONST(final T v) { return v; }
+    public static <T> T CONST(final T v) {
+        return v;
+    }
 
 }

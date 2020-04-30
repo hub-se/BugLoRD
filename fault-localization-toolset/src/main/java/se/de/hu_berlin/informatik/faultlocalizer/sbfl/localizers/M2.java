@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * M2 fault localizer $\frac{\EF}{\EF+\NP+2(\NF+\EP)}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class M2<T> extends AbstractFaultLocalizer<T> {
 
@@ -30,9 +29,9 @@ public class M2<T> extends AbstractFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-    	if (node.getEF(strategy) == 0) {
-    		return 0;
-    	}
+        if (node.getEF(strategy) == 0) {
+            return 0;
+        }
         return node.getEF(strategy)
                 / (node.getEF(strategy) + node.getNP(strategy) + 2.0d * (node.getNF(strategy) + node.getEP(strategy)));
     }

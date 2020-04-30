@@ -4,24 +4,26 @@
  */
 package org.mockitousage.verification;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Mockito.*;
+
 public class OrdinaryVerificationPrintsAllInteractionsTest extends TestBase {
 
-    @Mock private IMethods mock;
-    @Mock private IMethods mockTwo;
+    @Mock
+    private IMethods mock;
+    @Mock
+    private IMethods mockTwo;
 
     @Test
     public void shouldShowAllInteractionsOnMockWhenOrdinaryVerificationFail() throws Exception {
         firstInteraction();
         secondInteraction();
-        
+
         try {
             verify(mock).simpleMethod();
             fail();
@@ -31,12 +33,12 @@ public class OrdinaryVerificationPrintsAllInteractionsTest extends TestBase {
             assertContains("secondInteraction(", e.getMessage());
         }
     }
-    
+
     @Test
     public void shouldNotShowAllInteractionsOnDifferentMock() throws Exception {
         differentMockInteraction();
         firstInteraction();
-        
+
         try {
             verify(mock).simpleMethod();
             fail();
@@ -45,7 +47,7 @@ public class OrdinaryVerificationPrintsAllInteractionsTest extends TestBase {
             assertNotContains("differentMockInteraction(", e.getMessage());
         }
     }
-    
+
     @Test
     public void shouldNotShowAllInteractionsHeaderWhenNoOtherInteractions() throws Exception {
         try {

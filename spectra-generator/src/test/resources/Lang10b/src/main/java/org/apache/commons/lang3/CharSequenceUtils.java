@@ -20,9 +20,9 @@ package org.apache.commons.lang3;
  * <p>Operations on {@link java.lang.CharSequence} that are
  * {@code null} safe.</p>
  *
+ * @version $Id$
  * @see java.lang.CharSequence
  * @since 3.0
- * @version $Id$
  */
 public class CharSequenceUtils {
 
@@ -38,6 +38,7 @@ public class CharSequenceUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Returns a new {@code CharSequence} that is a subsequence of this
      * sequence starting with the {@code char} value at the specified index.</p>
@@ -46,24 +47,25 @@ public class CharSequenceUtils {
      * The length (in {@code char}) of the returned sequence is {@code length() - start},
      * so if {@code start == end} then an empty sequence is returned.</p>
      *
-     * @param cs  the specified subsequence, null returns null
-     * @param start  the start index, inclusive, valid
+     * @param cs    the specified subsequence, null returns null
+     * @param start the start index, inclusive, valid
      * @return a new subsequence, may be null
-     * @throws IndexOutOfBoundsException if {@code start} is negative or if 
-     *  {@code start} is greater than {@code length()}
+     * @throws IndexOutOfBoundsException if {@code start} is negative or if
+     *                                   {@code start} is greater than {@code length()}
      */
     public static CharSequence subSequence(CharSequence cs, int start) {
         return cs == null ? null : cs.subSequence(start, cs.length());
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Finds the first index in the {@code CharSequence} that matches the
      * specified character.</p>
      *
-     * @param cs  the {@code CharSequence} to be processed, not null
-     * @param searchChar  the char to be searched for
-     * @param start  the start index, negative starts at the string start
+     * @param cs         the {@code CharSequence} to be processed, not null
+     * @param searchChar the char to be searched for
+     * @param start      the start index, negative starts at the string start
      * @return the index where the search char was found, -1 if not found
      */
     static int indexOf(CharSequence cs, int searchChar, int start) {
@@ -86,9 +88,9 @@ public class CharSequenceUtils {
     /**
      * Used by the indexOf(CharSequence methods) as a green implementation of indexOf.
      *
-     * @param cs the {@code CharSequence} to be processed
+     * @param cs         the {@code CharSequence} to be processed
      * @param searchChar the {@code CharSequence} to be searched for
-     * @param start the start index
+     * @param start      the start index
      * @return the index where the search sequence was found
      */
     static int indexOf(CharSequence cs, CharSequence searchChar, int start) {
@@ -108,9 +110,9 @@ public class CharSequenceUtils {
      * <p>Finds the last index in the {@code CharSequence} that matches the
      * specified character.</p>
      *
-     * @param cs  the {@code CharSequence} to be processed
-     * @param searchChar  the char to be searched for
-     * @param start  the start index, negative returns -1, beyond length starts at end
+     * @param cs         the {@code CharSequence} to be processed
+     * @param searchChar the char to be searched for
+     * @param start      the start index, negative returns -1, beyond length starts at end
      * @return the index where the search char was found, -1 if not found
      */
     static int lastIndexOf(CharSequence cs, int searchChar, int start) {
@@ -136,9 +138,9 @@ public class CharSequenceUtils {
     /**
      * Used by the lastIndexOf(CharSequence methods) as a green implementation of lastIndexOf
      *
-     * @param cs the {@code CharSequence} to be processed
+     * @param cs         the {@code CharSequence} to be processed
      * @param searchChar the {@code CharSequence} to be searched for
-     * @param start the start index
+     * @param start      the start index
      * @return the index where the search sequence was found
      */
     static int lastIndexOf(CharSequence cs, CharSequence searchChar, int start) {
@@ -176,16 +178,16 @@ public class CharSequenceUtils {
     /**
      * Green implementation of regionMatches.
      *
-     * @param cs the {@code CharSequence} to be processed
+     * @param cs         the {@code CharSequence} to be processed
      * @param ignoreCase whether or not to be case insensitive
-     * @param thisStart the index to start on the {@code cs} CharSequence
-     * @param substring the {@code CharSequence} to be looked for
-     * @param start the index to start on the {@code substring} CharSequence
-     * @param length character length of the region
+     * @param thisStart  the index to start on the {@code cs} CharSequence
+     * @param substring  the {@code CharSequence} to be looked for
+     * @param start      the index to start on the {@code substring} CharSequence
+     * @param length     character length of the region
      * @return whether the region matched
      */
     static boolean regionMatches(CharSequence cs, boolean ignoreCase, int thisStart,
-            CharSequence substring, int start, int length)    {
+                                 CharSequence substring, int start, int length) {
         if (cs instanceof String && substring instanceof String) {
             return ((String) cs).regionMatches(ignoreCase, thisStart, (String) substring, start, length);
         } else {

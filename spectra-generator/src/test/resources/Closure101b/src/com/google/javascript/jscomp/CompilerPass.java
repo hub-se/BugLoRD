@@ -25,18 +25,17 @@ import com.google.javascript.rhino.Node;
  * the root node of the parsed JS tree, as well as the
  * root node of the external JS tree (used to provide a public API
  * and prevent renaming of system functions).</p>
- * 
- * <p>Use this class to support testing with BaseCompilerTest</p>
  *
-*
+ * <p>Use this class to support testing with BaseCompilerTest</p>
  */
 public interface CompilerPass {
 
-  /**
-   * Process the JS with root node root.
-   * Can modify the contents of each Node tree
-   * @param externs Top of external JS tree
-   * @param root Top of JS tree
-   */
-  void process(Node externs, Node root);
+    /**
+     * Process the JS with root node root.
+     * Can modify the contents of each Node tree
+     *
+     * @param externs Top of external JS tree
+     * @param root    Top of JS tree
+     */
+    void process(Node externs, Node root);
 }

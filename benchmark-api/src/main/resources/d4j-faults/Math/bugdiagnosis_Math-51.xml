@@ -1,36 +1,37 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-51">
-			<tests>
-				<testfile
-					path="org/apache/commons/math/analysis/solvers/RegulaFalsiSolverTest">
-					<exception>org.apache.commons.math.exception.TooManyEvaluationsException:illegal
-						state:maximal count (3,624) exceeded:evaluations</exception>
-				</testfile>
-				<spectra>
-					<number_tests>36</number_tests>
-					<failed>1</failed>
-					<passed>35</passed>
-					<nodes>30208</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math/analysis/solvers/BaseSecantSolver.java">
-					<insert numberlines="8">179:182:185-187</insert>
-					<insert numberlines="1">188-189</insert>
-					<bugtypes>
-						<id id="1.1" lines="184,186">
-							<description>Missing case for formula.</description>
-						</id>
-						<id id="1.2" lines="188">
-							<description>Missing exception handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-51">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math/analysis/solvers/RegulaFalsiSolverTest">
+                    <exception>org.apache.commons.math.exception.TooManyEvaluationsException:illegal
+                        state:maximal count (3,624) exceeded:evaluations
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>36</number_tests>
+                    <failed>1</failed>
+                    <passed>35</passed>
+                    <nodes>30208</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math/analysis/solvers/BaseSecantSolver.java">
+                    <insert numberlines="8">179:182:185-187</insert>
+                    <insert numberlines="1">188-189</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="184,186">
+                            <description>Missing case for formula.</description>
+                        </id>
+                        <id id="1.2" lines="188">
+                            <description>Missing exception handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -28,43 +28,43 @@ import com.google.javascript.rhino.Token;
  */
 class LineNumberCheck implements Callback, CompilerPass {
 
-  static final DiagnosticType MISSING_LINE_INFO = DiagnosticType.error(
-      "JSC_MISSING_LINE_INFO",
-      "No source line associated with {0}");
+    static final DiagnosticType MISSING_LINE_INFO = DiagnosticType.error(
+            "JSC_MISSING_LINE_INFO",
+            "No source line associated with {0}");
 
-  private final AbstractCompiler compiler;
-  private boolean requiresLineNumbers = false;
+    private final AbstractCompiler compiler;
+    private boolean requiresLineNumbers = false;
 
-  LineNumberCheck(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  public void process(Node externs, Node root) {
-    requiresLineNumbers = false;
-
-    NodeTraversal.traverse(compiler, root, this);
-  }
-
-  public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
-    // Each JavaScript file is rooted in a script node, so we'll only
-    // have line number information inside the script node.
-    if (n.getType() == Token.SCRIPT) {
-      requiresLineNumbers = true;
+    LineNumberCheck(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
-    return true;
-  }
 
-  public void visit(NodeTraversal t, Node n, Node parent) {
-    if (n.getType() == Token.SCRIPT) {
-      requiresLineNumbers = false;
-    } else if (requiresLineNumbers) {
-      if (n.getLineno() == -1) {
-        // The tree version of the node is really the best diagnostic
-        // info we have to offer here.
-        compiler.report(
-            JSError.make(t, n, MISSING_LINE_INFO,
-                n.toStringTree()));
-      }
+    public void process(Node externs, Node root) {
+        requiresLineNumbers = false;
+
+        NodeTraversal.traverse(compiler, root, this);
     }
-  }
+
+    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+        // Each JavaScript file is rooted in a script node, so we'll only
+        // have line number information inside the script node.
+        if (n.getType() == Token.SCRIPT) {
+            requiresLineNumbers = true;
+        }
+        return true;
+    }
+
+    public void visit(NodeTraversal t, Node n, Node parent) {
+        if (n.getType() == Token.SCRIPT) {
+            requiresLineNumbers = false;
+        } else if (requiresLineNumbers) {
+            if (n.getLineno() == -1) {
+                // The tree version of the node is really the best diagnostic
+                // info we have to offer here.
+                compiler.report(
+                        JSError.make(t, n, MISSING_LINE_INFO,
+                                n.toStringTree()));
+            }
+        }
+    }
 }

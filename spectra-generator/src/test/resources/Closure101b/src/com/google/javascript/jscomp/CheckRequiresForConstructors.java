@@ -33,151 +33,148 @@ import java.util.Set;
  * This pass walks the AST to create a Collection of 'new' nodes and
  * 'goog.require' nodes. It reconciles these Collections, creating a
  * warning for each discrepancy.
- *
-*
  */
 class CheckRequiresForConstructors implements CompilerPass {
-  private final AbstractCompiler compiler;
-  private final CodingConvention codingConvention;
-  private final CheckLevel level;
+    private final AbstractCompiler compiler;
+    private final CodingConvention codingConvention;
+    private final CheckLevel level;
 
-  // Warnings
-  static final DiagnosticType MISSING_REQUIRE_WARNING = DiagnosticType.disabled(
-      "JSC_MISSING_REQUIRE_WARNING",
-      "''{0}'' used but not goog.require''d");
+    // Warnings
+    static final DiagnosticType MISSING_REQUIRE_WARNING = DiagnosticType.disabled(
+            "JSC_MISSING_REQUIRE_WARNING",
+            "''{0}'' used but not goog.require''d");
 
-  CheckRequiresForConstructors(AbstractCompiler compiler,
-      CheckLevel level) {
-    this.compiler = compiler;
-    this.codingConvention = compiler.getCodingConvention();
-    this.level = level;
-  }
-
-  /**
-   * Uses Collections of new and goog.require nodes to create a compiler warning
-   * for each new class name without a corresponding goog.require().
-   */
-  @Override
-  public void process(Node externs, Node root) {
-    Callback callback = new CheckRequiresForConstructorsCallback();
-    new NodeTraversal(compiler, callback).traverseRoots(externs, root);
-  }
-
-  /**
-   * This class "records" each constructor and goog.require visited and creates
-   * a warning for each new node without an appropriate goog.require node.
-   *
-  *
-   */
-  private class CheckRequiresForConstructorsCallback implements Callback {
-    private final List<String> constructors = Lists.newArrayList();
-    private final List<String> requires = Lists.newArrayList();
-    private final List<Node> newNodes = Lists.newArrayList();
-
-    @Override
-    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
-      return parent == null || parent.getType() != Token.SCRIPT ||
-          !t.getInput().isExtern();
+    CheckRequiresForConstructors(AbstractCompiler compiler,
+                                 CheckLevel level) {
+        this.compiler = compiler;
+        this.codingConvention = compiler.getCodingConvention();
+        this.level = level;
     }
 
+    /**
+     * Uses Collections of new and goog.require nodes to create a compiler warning
+     * for each new class name without a corresponding goog.require().
+     */
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      JSDocInfo info;
-      switch (n.getType()) {
-        case Token.ASSIGN:
-          info = (JSDocInfo) n.getProp(Node.JSDOC_INFO_PROP);
-          if (info != null && info.isConstructor()) {
-            String qualifiedName = n.getFirstChild().getQualifiedName();
-            constructors.add(qualifiedName);
-          }
-          break;
-        case Token.FUNCTION:
-          if (NodeUtil.isFunctionAnonymous(n)) {
-            if (parent.getType() == Token.NAME) {
-              String functionName = parent.getString();
-              info = (JSDocInfo) parent.getProp(Node.JSDOC_INFO_PROP);
-              if (info != null && info.isConstructor()) {
-                constructors.add(functionName);
-              } else {
-                Node gramps = parent.getParent();
-                Preconditions.checkState(
-                    gramps != null && gramps.getType() == Token.VAR);
-                info = (JSDocInfo) gramps.getProp(Node.JSDOC_INFO_PROP);
-                if (info != null && info.isConstructor()) {
-                  constructors.add(functionName);
-                }
-              }
-            }
-          } else {
-            info = (JSDocInfo) n.getProp(Node.JSDOC_INFO_PROP);
-            if (info != null && info.isConstructor()) {
-              String functionName = n.getFirstChild().getString();
-              constructors.add(functionName);
-            }
-          }
-          break;
-        case Token.CALL:
-          visitCallNode(n, parent);
-          break;
-        case Token.SCRIPT:
-          visitScriptNode(t);
-          break;
-        case Token.NEW:
-          visitNewNode(t, n);
-      }
+    public void process(Node externs, Node root) {
+        Callback callback = new CheckRequiresForConstructorsCallback();
+        new NodeTraversal(compiler, callback).traverseRoots(externs, root);
     }
 
-    private void visitScriptNode(NodeTraversal t) {
-      Set<String> classNames = Sets.newHashSet();
-      for (Node node : newNodes) {
-        String className = node.getFirstChild().getQualifiedName();
-        if ((constructors == null || !constructors.contains(className))
-            && (requires == null || !requires.contains(className))
-            && !classNames.contains(className)) {
-          compiler.report(
-              JSError.make(t, node, level, MISSING_REQUIRE_WARNING, className));
-          classNames.add(className);
+    /**
+     * This class "records" each constructor and goog.require visited and creates
+     * a warning for each new node without an appropriate goog.require node.
+     */
+    private class CheckRequiresForConstructorsCallback implements Callback {
+        private final List<String> constructors = Lists.newArrayList();
+        private final List<String> requires = Lists.newArrayList();
+        private final List<Node> newNodes = Lists.newArrayList();
+
+        @Override
+        public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+            return parent == null || parent.getType() != Token.SCRIPT ||
+                    !t.getInput().isExtern();
         }
-      }
-      // for the next script, if there is one, we don't want the new, ctor, and
-      // require nodes to spill over.
-      this.newNodes.clear();
-      this.requires.clear();
-      this.constructors.clear();
+
+        @Override
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            JSDocInfo info;
+            switch (n.getType()) {
+                case Token.ASSIGN:
+                    info = (JSDocInfo) n.getProp(Node.JSDOC_INFO_PROP);
+                    if (info != null && info.isConstructor()) {
+                        String qualifiedName = n.getFirstChild().getQualifiedName();
+                        constructors.add(qualifiedName);
+                    }
+                    break;
+                case Token.FUNCTION:
+                    if (NodeUtil.isFunctionAnonymous(n)) {
+                        if (parent.getType() == Token.NAME) {
+                            String functionName = parent.getString();
+                            info = (JSDocInfo) parent.getProp(Node.JSDOC_INFO_PROP);
+                            if (info != null && info.isConstructor()) {
+                                constructors.add(functionName);
+                            } else {
+                                Node gramps = parent.getParent();
+                                Preconditions.checkState(
+                                        gramps != null && gramps.getType() == Token.VAR);
+                                info = (JSDocInfo) gramps.getProp(Node.JSDOC_INFO_PROP);
+                                if (info != null && info.isConstructor()) {
+                                    constructors.add(functionName);
+                                }
+                            }
+                        }
+                    } else {
+                        info = (JSDocInfo) n.getProp(Node.JSDOC_INFO_PROP);
+                        if (info != null && info.isConstructor()) {
+                            String functionName = n.getFirstChild().getString();
+                            constructors.add(functionName);
+                        }
+                    }
+                    break;
+                case Token.CALL:
+                    visitCallNode(n, parent);
+                    break;
+                case Token.SCRIPT:
+                    visitScriptNode(t);
+                    break;
+                case Token.NEW:
+                    visitNewNode(t, n);
+            }
+        }
+
+        private void visitScriptNode(NodeTraversal t) {
+            Set<String> classNames = Sets.newHashSet();
+            for (Node node : newNodes) {
+                String className = node.getFirstChild().getQualifiedName();
+                if ((constructors == null || !constructors.contains(className))
+                        && (requires == null || !requires.contains(className))
+                        && !classNames.contains(className)) {
+                    compiler.report(
+                            JSError.make(t, node, level, MISSING_REQUIRE_WARNING, className));
+                    classNames.add(className);
+                }
+            }
+            // for the next script, if there is one, we don't want the new, ctor, and
+            // require nodes to spill over.
+            this.newNodes.clear();
+            this.requires.clear();
+            this.constructors.clear();
+        }
+
+        private void visitCallNode(Node n, Node parent) {
+            String required = codingConvention.extractClassNameIfRequire(n, parent);
+            if (required != null) {
+                requires.add(required);
+            }
+        }
+
+        private void visitNewNode(NodeTraversal t, Node n) {
+            Node qNameNode = n.getFirstChild();
+            String qName = qNameNode.getQualifiedName();
+
+            // If the ctor is something other than a qualified name, ignore it.
+            if (qName == null || qName.isEmpty()) {
+                return;
+            }
+
+            // Grab the root ctor namespace.
+            Node nameNode = qNameNode;
+            for (; nameNode.hasChildren(); nameNode = nameNode.getFirstChild()) {
+            }
+
+            // We only consider programmer-defined constructors that are
+            // global variables, or are defined on global variables.
+            if (nameNode.getType() != Token.NAME) {
+                return;
+            }
+
+            String name = nameNode.getString();
+            Scope.Var var = t.getScope().getVar(name);
+            if (var == null || var.isLocal() || var.isExtern()) {
+                return;
+            }
+            newNodes.add(n);
+        }
     }
-
-    private void visitCallNode(Node n, Node parent) {
-      String required = codingConvention.extractClassNameIfRequire(n, parent);
-      if (required != null) {
-        requires.add(required);
-      }
-    }
-
-    private void visitNewNode(NodeTraversal t, Node n) {
-      Node qNameNode = n.getFirstChild();
-      String qName = qNameNode.getQualifiedName();
-
-      // If the ctor is something other than a qualified name, ignore it.
-      if (qName == null || qName.isEmpty()) {
-        return;
-      }
-
-      // Grab the root ctor namespace.
-      Node nameNode = qNameNode;
-      for (; nameNode.hasChildren(); nameNode = nameNode.getFirstChild()) {}
-
-      // We only consider programmer-defined constructors that are
-      // global variables, or are defined on global variables.
-      if (nameNode.getType() != Token.NAME) {
-        return;
-      }
-
-      String name = nameNode.getString();
-      Scope.Var var = t.getScope().getVar(name);
-      if (var == null || var.isLocal() || var.isExtern()) {
-        return;
-      }
-      newNodes.add(n);
-    }
-  }
 }

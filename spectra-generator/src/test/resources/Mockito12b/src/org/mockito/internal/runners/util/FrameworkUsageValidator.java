@@ -11,7 +11,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.mockito.Mockito;
 
 public class FrameworkUsageValidator extends RunListener {
-    
+
     private final RunNotifier notifier;
 
     public FrameworkUsageValidator(RunNotifier notifier) {
@@ -23,7 +23,7 @@ public class FrameworkUsageValidator extends RunListener {
         super.testFinished(description);
         try {
             Mockito.validateMockitoUsage();
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             notifier.fireTestFailure(new Failure(description, t));
         }
     }

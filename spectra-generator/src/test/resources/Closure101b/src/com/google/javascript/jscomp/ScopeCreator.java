@@ -21,16 +21,14 @@ import com.google.javascript.rhino.Node;
 /**
  * This interface defines how objects capable of creating scopes from the parse
  * tree behave.
- *
-*
  */
 interface ScopeCreator {
-  /**
-   * Creates a {@link Scope} object.
-   *
-   * @param n the root node (either a FUNCTION node, a SCRIPT node, or a
-   *    synthetic block node whose children are all SCRIPT nodes)
-   * @param parent the parent Scope object (may be null)
-   */
-  Scope createScope(Node n, Scope parent);
+    /**
+     * Creates a {@link Scope} object.
+     *
+     * @param n      the root node (either a FUNCTION node, a SCRIPT node, or a
+     *               synthetic block node whose children are all SCRIPT nodes)
+     * @param parent the parent Scope object (may be null)
+     */
+    Scope createScope(Node n, Scope parent);
 }

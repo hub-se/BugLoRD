@@ -4,14 +4,14 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.F
 
 public interface ReplaceableCloneableIterator {
 
-	public int processNextAndReplaceWithResult(Function<Integer,Integer> function);
-	
-	public ReplaceableCloneableIterator clone();
-	
-	public int peek();
-	
-	public boolean hasNext();
-	
-	public int next();
-	
+    public int processNextAndReplaceWithResult(Function<Integer, Integer> function);
+
+    public ReplaceableCloneableIterator clone();
+
+    public int peek();
+
+    public boolean hasNext();
+
+    public int next();
+
 }

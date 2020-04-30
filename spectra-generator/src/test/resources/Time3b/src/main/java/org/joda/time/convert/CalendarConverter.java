@@ -15,16 +15,12 @@
  */
 package org.joda.time.convert;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.joda.time.Chronology;
 import org.joda.time.DateTimeZone;
-import org.joda.time.chrono.BuddhistChronology;
-import org.joda.time.chrono.GJChronology;
-import org.joda.time.chrono.GregorianChronology;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.chrono.JulianChronology;
+import org.joda.time.chrono.*;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * CalendarConverter converts a java util Calendar to an instant or partial.
@@ -50,6 +46,7 @@ final class CalendarConverter extends AbstractConverter
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the chronology.
      * <p>
@@ -57,12 +54,12 @@ final class CalendarConverter extends AbstractConverter
      * Otherwise, it is the GJChronology if a GregorianCalendar is used,
      * BuddhistChronology if a BuddhistCalendar is used or ISOChronology otherwise.
      * The time zone is extracted from the calendar if possible, default used if not.
-     * 
-     * @param object  the Calendar to convert, must not be null
-     * @param chrono  the chronology to use, null means use Calendar
+     *
+     * @param object the Calendar to convert, must not be null
+     * @param chrono the chronology to use, null means use Calendar
      * @return the chronology, never null
      * @throws NullPointerException if the object is null
-     * @throws ClassCastException if the object is an invalid type
+     * @throws ClassCastException   if the object is an invalid type
      */
     public Chronology getChronology(Object object, Chronology chrono) {
         if (chrono != null) {
@@ -72,7 +69,7 @@ final class CalendarConverter extends AbstractConverter
         DateTimeZone zone = null;
         try {
             zone = DateTimeZone.forTimeZone(cal.getTimeZone());
-            
+
         } catch (IllegalArgumentException ex) {
             zone = DateTimeZone.getDefault();
         }
@@ -83,12 +80,12 @@ final class CalendarConverter extends AbstractConverter
      * Gets the chronology, which is the GJChronology if a GregorianCalendar is used,
      * BuddhistChronology if a BuddhistCalendar is used or ISOChronology otherwise.
      * The time zone specified is used in preference to that on the calendar.
-     * 
-     * @param object  the Calendar to convert, must not be null
-     * @param zone  the specified zone to use, null means default zone
+     *
+     * @param object the Calendar to convert, must not be null
+     * @param zone   the specified zone to use, null means default zone
      * @return the chronology, never null
      * @throws NullPointerException if the object is null
-     * @throws ClassCastException if the object is an invalid type
+     * @throws ClassCastException   if the object is an invalid type
      */
     public Chronology getChronology(Object object, DateTimeZone zone) {
         if (object.getClass().getName().endsWith(".BuddhistCalendar")) {
@@ -110,12 +107,12 @@ final class CalendarConverter extends AbstractConverter
 
     /**
      * Gets the millis, which is the Calendar millis value.
-     * 
-     * @param object  the Calendar to convert, must not be null
-     * @param chrono  the chronology result from getChronology, non-null
+     *
+     * @param object the Calendar to convert, must not be null
+     * @param chrono the chronology result from getChronology, non-null
      * @return the millisecond value
      * @throws NullPointerException if the object is null
-     * @throws ClassCastException if the object is an invalid type
+     * @throws ClassCastException   if the object is an invalid type
      */
     public long getInstantMillis(Object object, Chronology chrono) {
         Calendar calendar = (Calendar) object;
@@ -123,9 +120,10 @@ final class CalendarConverter extends AbstractConverter
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns Calendar.class.
-     * 
+     *
      * @return Calendar.class
      */
     public Class<?> getSupportedType() {

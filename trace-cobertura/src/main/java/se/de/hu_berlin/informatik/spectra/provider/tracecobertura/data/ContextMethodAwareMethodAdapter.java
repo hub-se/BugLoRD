@@ -16,37 +16,37 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author ptab
  */
 public abstract class ContextMethodAwareMethodAdapter extends MethodVisitor {
-	protected final String className;
-	protected final String methodName;
-	protected final String methodSignature;
+    protected final String className;
+    protected final String methodName;
+    protected final String methodSignature;
 
-	/**
-	 * What was the last lineId assigned. We can read this field to know which line (by identifier) we are currently analyzing
-	 */
-	protected int lastLineId;
+    /**
+     * What was the last lineId assigned. We can read this field to know which line (by identifier) we are currently analyzing
+     */
+    protected int lastLineId;
 
-	/**
-	 * Generator that assigns unique (in scope of single class) identifiers to every LINENUMBER asm derective.
-	 * 
-	 * <p>We will use this 'generator' to provide this identifiers. Remember to acquire identifiers using {@link AtomicInteger#incrementAndGet()} (not {@link AtomicInteger#getAndIncrement()}!!!)</p>
-	 */
-	protected final AtomicInteger lineIdGenerator;
+    /**
+     * Generator that assigns unique (in scope of single class) identifiers to every LINENUMBER asm derective.
+     *
+     * <p>We will use this 'generator' to provide this identifiers. Remember to acquire identifiers using {@link AtomicInteger#incrementAndGet()} (not {@link AtomicInteger#getAndIncrement()}!!!)</p>
+     */
+    protected final AtomicInteger lineIdGenerator;
 
-	public ContextMethodAwareMethodAdapter(MethodVisitor mv, String className,
-			String methodName, String methodSignature,
-			AtomicInteger lineIdGenerator) {
-		super(Opcodes.ASM4, mv);
-		this.className = className;
-		this.methodName = methodName;
-		this.methodSignature = methodSignature;
-		lastLineId = 0;
-		this.lineIdGenerator = lineIdGenerator;
-	}
+    public ContextMethodAwareMethodAdapter(MethodVisitor mv, String className,
+                                           String methodName, String methodSignature,
+                                           AtomicInteger lineIdGenerator) {
+        super(Opcodes.ASM4, mv);
+        this.className = className;
+        this.methodName = methodName;
+        this.methodSignature = methodSignature;
+        lastLineId = 0;
+        this.lineIdGenerator = lineIdGenerator;
+    }
 
-	@Override
-	public void visitLineNumber(int number, Label label) {
-		lastLineId = lineIdGenerator.incrementAndGet();
-		super.visitLineNumber(number, label);
-	}
+    @Override
+    public void visitLineNumber(int number, Label label) {
+        lastLineId = lineIdGenerator.incrementAndGet();
+        super.visitLineNumber(number, label);
+    }
 
 }

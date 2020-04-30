@@ -16,12 +16,7 @@
  */
 package org.apache.commons.lang3.text;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Substitutes variables within a string by values.
@@ -137,13 +132,14 @@ public class StrSubstitutor {
     private boolean enableSubstitutionInVariables;
 
     //-----------------------------------------------------------------------
+
     /**
      * Replaces all the occurrences of variables in the given source object with
      * their matching values from the map.
      *
-     * @param <V> the type of the values in the map
-     * @param source  the source text containing the variables to substitute, null returns null
-     * @param valueMap  the map with the values, may be null
+     * @param <V>      the type of the values in the map
+     * @param source   the source text containing the variables to substitute, null returns null
+     * @param valueMap the map with the values, may be null
      * @return the result of the replace operation
      */
     public static <V> String replace(Object source, Map<String, V> valueMap) {
@@ -155,11 +151,11 @@ public class StrSubstitutor {
      * their matching values from the map. This method allows to specifiy a
      * custom variable prefix and suffix
      *
-     * @param <V> the type of the values in the map
-     * @param source  the source text containing the variables to substitute, null returns null
-     * @param valueMap  the map with the values, may be null
-     * @param prefix  the prefix of variables, not null
-     * @param suffix  the suffix of variables, not null
+     * @param <V>      the type of the values in the map
+     * @param source   the source text containing the variables to substitute, null returns null
+     * @param valueMap the map with the values, may be null
+     * @param prefix   the prefix of variables, not null
+     * @param suffix   the suffix of variables, not null
      * @return the result of the replace operation
      * @throws IllegalArgumentException if the prefix or suffix is null
      */
@@ -171,7 +167,7 @@ public class StrSubstitutor {
      * Replaces all the occurrences of variables in the given source object with their matching
      * values from the properties.
      *
-     * @param source the source text containing the variables to substitute, null returns null
+     * @param source          the source text containing the variables to substitute, null returns null
      * @param valueProperties the properties with values, may be null
      * @return the result of the replace operation
      */
@@ -179,10 +175,10 @@ public class StrSubstitutor {
         if (valueProperties == null) {
             return source.toString();
         }
-        Map<String,String> valueMap = new HashMap<String,String>();
+        Map<String, String> valueMap = new HashMap<String, String>();
         Enumeration<?> propNames = valueProperties.propertyNames();
         while (propNames.hasMoreElements()) {
-            String propName = (String)propNames.nextElement();
+            String propName = (String) propNames.nextElement();
             String propValue = valueProperties.getProperty(propName);
             valueMap.put(propName, propValue);
         }
@@ -193,7 +189,7 @@ public class StrSubstitutor {
      * Replaces all the occurrences of variables in the given source object with
      * their matching values from the system properties.
      *
-     * @param source  the source text containing the variables to substitute, null returns null
+     * @param source the source text containing the variables to substitute, null returns null
      * @return the result of the replace operation
      */
     public static String replaceSystemProperties(Object source) {
@@ -201,6 +197,7 @@ public class StrSubstitutor {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Creates a new instance with defaults for variable prefix and suffix
      * and the escaping character.
@@ -213,8 +210,8 @@ public class StrSubstitutor {
      * Creates a new instance and initializes it. Uses defaults for variable
      * prefix and suffix and the escaping character.
      *
-     * @param <V> the type of the values in the map
-     * @param valueMap  the map with the variables' values, may be null
+     * @param <V>      the type of the values in the map
+     * @param valueMap the map with the variables' values, may be null
      */
     public <V> StrSubstitutor(Map<String, V> valueMap) {
         this(StrLookup.mapLookup(valueMap), DEFAULT_PREFIX, DEFAULT_SUFFIX, DEFAULT_ESCAPE);
@@ -223,10 +220,10 @@ public class StrSubstitutor {
     /**
      * Creates a new instance and initializes it. Uses a default escaping character.
      *
-     * @param <V> the type of the values in the map
-     * @param valueMap  the map with the variables' values, may be null
-     * @param prefix  the prefix for variables, not null
-     * @param suffix  the suffix for variables, not null
+     * @param <V>      the type of the values in the map
+     * @param valueMap the map with the variables' values, may be null
+     * @param prefix   the prefix for variables, not null
+     * @param suffix   the suffix for variables, not null
      * @throws IllegalArgumentException if the prefix or suffix is null
      */
     public <V> StrSubstitutor(Map<String, V> valueMap, String prefix, String suffix) {
@@ -236,11 +233,11 @@ public class StrSubstitutor {
     /**
      * Creates a new instance and initializes it.
      *
-     * @param <V> the type of the values in the map
-     * @param valueMap  the map with the variables' values, may be null
-     * @param prefix  the prefix for variables, not null
-     * @param suffix  the suffix for variables, not null
-     * @param escape  the escape character
+     * @param <V>      the type of the values in the map
+     * @param valueMap the map with the variables' values, may be null
+     * @param prefix   the prefix for variables, not null
+     * @param suffix   the suffix for variables, not null
+     * @param escape   the escape character
      * @throws IllegalArgumentException if the prefix or suffix is null
      */
     public <V> StrSubstitutor(Map<String, V> valueMap, String prefix, String suffix, char escape) {
@@ -250,7 +247,7 @@ public class StrSubstitutor {
     /**
      * Creates a new instance and initializes it.
      *
-     * @param variableResolver  the variable resolver, may be null
+     * @param variableResolver the variable resolver, may be null
      */
     public StrSubstitutor(StrLookup<?> variableResolver) {
         this(variableResolver, DEFAULT_PREFIX, DEFAULT_SUFFIX, DEFAULT_ESCAPE);
@@ -259,10 +256,10 @@ public class StrSubstitutor {
     /**
      * Creates a new instance and initializes it.
      *
-     * @param variableResolver  the variable resolver, may be null
-     * @param prefix  the prefix for variables, not null
-     * @param suffix  the suffix for variables, not null
-     * @param escape  the escape character
+     * @param variableResolver the variable resolver, may be null
+     * @param prefix           the prefix for variables, not null
+     * @param suffix           the suffix for variables, not null
+     * @param escape           the escape character
      * @throws IllegalArgumentException if the prefix or suffix is null
      */
     public StrSubstitutor(StrLookup<?> variableResolver, String prefix, String suffix, char escape) {
@@ -275,10 +272,10 @@ public class StrSubstitutor {
     /**
      * Creates a new instance and initializes it.
      *
-     * @param variableResolver  the variable resolver, may be null
-     * @param prefixMatcher  the prefix for variables, not null
-     * @param suffixMatcher  the suffix for variables, not null
-     * @param escape  the escape character
+     * @param variableResolver the variable resolver, may be null
+     * @param prefixMatcher    the prefix for variables, not null
+     * @param suffixMatcher    the suffix for variables, not null
+     * @param escape           the escape character
      * @throws IllegalArgumentException if the prefix or suffix is null
      */
     public StrSubstitutor(
@@ -290,11 +287,12 @@ public class StrSubstitutor {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Replaces all the occurrences of variables with their matching values
      * from the resolver using the given source string as a template.
      *
-     * @param source  the string to replace in, null returns null
+     * @param source the string to replace in, null returns null
      * @return the result of the replace operation
      */
     public String replace(String source) {
@@ -315,9 +313,9 @@ public class StrSubstitutor {
      * Only the specified portion of the string will be processed.
      * The rest of the string is not processed, and is not returned.
      *
-     * @param source  the string to replace in, null returns null
-     * @param offset  the start offset within the array, must be valid
-     * @param length  the length within the array to be processed, must be valid
+     * @param source the string to replace in, null returns null
+     * @param offset the start offset within the array, must be valid
+     * @param length the length within the array to be processed, must be valid
      * @return the result of the replace operation
      */
     public String replace(String source, int offset, int length) {
@@ -332,12 +330,13 @@ public class StrSubstitutor {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Replaces all the occurrences of variables with their matching values
      * from the resolver using the given source array as a template.
      * The array is not altered by this method.
      *
-     * @param source  the character array to replace in, not altered, null returns null
+     * @param source the character array to replace in, not altered, null returns null
      * @return the result of the replace operation
      */
     public String replace(char[] source) {
@@ -357,9 +356,9 @@ public class StrSubstitutor {
      * Only the specified portion of the array will be processed.
      * The rest of the array is not processed, and is not returned.
      *
-     * @param source  the character array to replace in, not altered, null returns null
-     * @param offset  the start offset within the array, must be valid
-     * @param length  the length within the array to be processed, must be valid
+     * @param source the character array to replace in, not altered, null returns null
+     * @param offset the start offset within the array, must be valid
+     * @param length the length within the array to be processed, must be valid
      * @return the result of the replace operation
      */
     public String replace(char[] source, int offset, int length) {
@@ -372,12 +371,13 @@ public class StrSubstitutor {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Replaces all the occurrences of variables with their matching values
      * from the resolver using the given source buffer as a template.
      * The buffer is not altered by this method.
      *
-     * @param source  the buffer to use as a template, not changed, null returns null
+     * @param source the buffer to use as a template, not changed, null returns null
      * @return the result of the replace operation
      */
     public String replace(StringBuffer source) {
@@ -397,9 +397,9 @@ public class StrSubstitutor {
      * Only the specified portion of the buffer will be processed.
      * The rest of the buffer is not processed, and is not returned.
      *
-     * @param source  the buffer to use as a template, not changed, null returns null
-     * @param offset  the start offset within the array, must be valid
-     * @param length  the length within the array to be processed, must be valid
+     * @param source the buffer to use as a template, not changed, null returns null
+     * @param offset the start offset within the array, must be valid
+     * @param length the length within the array to be processed, must be valid
      * @return the result of the replace operation
      */
     public String replace(StringBuffer source, int offset, int length) {
@@ -412,12 +412,13 @@ public class StrSubstitutor {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Replaces all the occurrences of variables with their matching values
      * from the resolver using the given source builder as a template.
      * The builder is not altered by this method.
      *
-     * @param source  the builder to use as a template, not changed, null returns null
+     * @param source the builder to use as a template, not changed, null returns null
      * @return the result of the replace operation
      */
     public String replace(StrBuilder source) {
@@ -437,9 +438,9 @@ public class StrSubstitutor {
      * Only the specified portion of the builder will be processed.
      * The rest of the builder is not processed, and is not returned.
      *
-     * @param source  the builder to use as a template, not changed, null returns null
-     * @param offset  the start offset within the array, must be valid
-     * @param length  the length within the array to be processed, must be valid
+     * @param source the builder to use as a template, not changed, null returns null
+     * @param offset the start offset within the array, must be valid
+     * @param length the length within the array to be processed, must be valid
      * @return the result of the replace operation
      */
     public String replace(StrBuilder source, int offset, int length) {
@@ -452,12 +453,13 @@ public class StrSubstitutor {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Replaces all the occurrences of variables in the given source object with
      * their matching values from the resolver. The input source object is
      * converted to a string using <code>toString</code> and is not altered.
      *
-     * @param source  the source to replace in, null returns null
+     * @param source the source to replace in, null returns null
      * @return the result of the replace operation
      */
     public String replace(Object source) {
@@ -470,12 +472,13 @@ public class StrSubstitutor {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Replaces all the occurrences of variables within the given source buffer
      * with their matching values from the resolver.
      * The buffer is updated with the result.
      *
-     * @param source  the buffer to replace in, updated, null returns zero
+     * @param source the buffer to replace in, updated, null returns zero
      * @return true if altered
      */
     public boolean replaceIn(StringBuffer source) {
@@ -493,9 +496,9 @@ public class StrSubstitutor {
      * Only the specified portion of the buffer will be processed.
      * The rest of the buffer is not processed, but it is not deleted.
      *
-     * @param source  the buffer to replace in, updated, null returns zero
-     * @param offset  the start offset within the array, must be valid
-     * @param length  the length within the buffer to be processed, must be valid
+     * @param source the buffer to replace in, updated, null returns zero
+     * @param offset the start offset within the array, must be valid
+     * @param length the length within the buffer to be processed, must be valid
      * @return true if altered
      */
     public boolean replaceIn(StringBuffer source, int offset, int length) {
@@ -511,11 +514,12 @@ public class StrSubstitutor {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Replaces all the occurrences of variables within the given source
      * builder with their matching values from the resolver.
      *
-     * @param source  the builder to replace in, updated, null returns zero
+     * @param source the builder to replace in, updated, null returns zero
      * @return true if altered
      */
     public boolean replaceIn(StrBuilder source) {
@@ -532,9 +536,9 @@ public class StrSubstitutor {
      * Only the specified portion of the builder will be processed.
      * The rest of the builder is not processed, but it is not deleted.
      *
-     * @param source  the builder to replace in, null returns zero
-     * @param offset  the start offset within the array, must be valid
-     * @param length  the length within the builder to be processed, must be valid
+     * @param source the builder to replace in, null returns zero
+     * @param offset the start offset within the array, must be valid
+     * @param length the length within the builder to be processed, must be valid
      * @return true if altered
      */
     public boolean replaceIn(StrBuilder source, int offset, int length) {
@@ -545,6 +549,7 @@ public class StrSubstitutor {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Internal method that substitutes the variables.
      * <p>
@@ -554,9 +559,9 @@ public class StrSubstitutor {
      * Writers of subclasses can override this method if they need access to
      * the substitution process at the start or end.
      *
-     * @param buf  the string builder to substitute into, not null
-     * @param offset  the start offset within the builder, must be valid
-     * @param length  the length within the builder to be processed, must be valid
+     * @param buf    the string builder to substitute into, not null
+     * @param offset the start offset within the builder, must be valid
+     * @param length the length within the builder to be processed, must be valid
      * @return true if altered
      */
     protected boolean substitute(StrBuilder buf, int offset, int length) {
@@ -568,12 +573,12 @@ public class StrSubstitutor {
      * interpolation method, which resolves the values of all variable references
      * contained in the passed in text.
      *
-     * @param buf  the string builder to substitute into, not null
-     * @param offset  the start offset within the builder, must be valid
-     * @param length  the length within the builder to be processed, must be valid
-     * @param priorVariables  the stack keeping track of the replaced variables, may be null
+     * @param buf            the string builder to substitute into, not null
+     * @param offset         the start offset within the builder, must be valid
+     * @param length         the length within the builder to be processed, must be valid
+     * @param priorVariables the stack keeping track of the replaced variables, may be null
      * @return the length change that occurs, unless priorVariables is null when the int
-     *  represents a boolean flag as to whether any change occurred.
+     * represents a boolean flag as to whether any change occurred.
      */
     private int substitute(StrBuilder buf, int offset, int length, List<String> priorVariables) {
         StrMatcher prefixMatcher = getVariablePrefixMatcher();
@@ -609,7 +614,7 @@ public class StrSubstitutor {
                     while (pos < bufEnd) {
                         if (isEnableSubstitutionInVariables()
                                 && (endMatchLen = prefixMatcher.isMatch(chars,
-                                        pos, offset, bufEnd)) != 0) {
+                                pos, offset, bufEnd)) != 0) {
                             // found a nested variable start
                             nestedVarCount++;
                             pos += endMatchLen;
@@ -661,7 +666,7 @@ public class StrSubstitutor {
                                     bufEnd += change;
                                     lengthChange += change;
                                     chars = buf.buffer; // in case buffer was
-                                                        // altered
+                                    // altered
                                 }
 
                                 // remove variable from the cyclic stack
@@ -686,8 +691,8 @@ public class StrSubstitutor {
     /**
      * Checks if the specified variable is already in the stack (list) of variables.
      *
-     * @param varName  the variable name to check
-     * @param priorVariables  the list of prior variables
+     * @param varName        the variable name to check
+     * @param priorVariables the list of prior variables
      */
     private void checkCyclicSubstitution(String varName, List<String> priorVariables) {
         if (priorVariables.contains(varName) == false) {
@@ -712,10 +717,10 @@ public class StrSubstitutor {
      * and must return the corresponding value. This implementation uses the
      * {@link #getVariableResolver()} with the variable's name as the key.
      *
-     * @param variableName  the name of the variable, not null
-     * @param buf  the buffer where the substitution is occurring, not null
-     * @param startPos  the start position of the variable including the prefix, valid
-     * @param endPos  the end position of the variable including the suffix, valid
+     * @param variableName the name of the variable, not null
+     * @param buf          the buffer where the substitution is occurring, not null
+     * @param startPos     the start position of the variable including the prefix, valid
+     * @param endPos       the end position of the variable including the suffix, valid
      * @return the variable's value or <b>null</b> if the variable is unknown
      */
     protected String resolveVariable(String variableName, StrBuilder buf, int startPos, int endPos) {
@@ -728,6 +733,7 @@ public class StrSubstitutor {
 
     // Escape
     //-----------------------------------------------------------------------
+
     /**
      * Returns the escape character.
      *
@@ -742,7 +748,7 @@ public class StrSubstitutor {
      * If this character is placed before a variable reference in the source
      * text, this variable will be ignored.
      *
-     * @param escapeCharacter  the escape character (0 for disabling escaping)
+     * @param escapeCharacter the escape character (0 for disabling escaping)
      */
     public void setEscapeChar(char escapeCharacter) {
         this.escapeChar = escapeCharacter;
@@ -750,6 +756,7 @@ public class StrSubstitutor {
 
     // Prefix
     //-----------------------------------------------------------------------
+
     /**
      * Gets the variable prefix matcher currently in use.
      * <p>
@@ -770,7 +777,7 @@ public class StrSubstitutor {
      * start of a variable. This prefix is expressed in terms of a matcher
      * allowing advanced prefix matches.
      *
-     * @param prefixMatcher  the prefix matcher to use, null ignored
+     * @param prefixMatcher the prefix matcher to use, null ignored
      * @return this, to enable chaining
      * @throws IllegalArgumentException if the prefix matcher is null
      */
@@ -789,7 +796,7 @@ public class StrSubstitutor {
      * start of a variable. This method allows a single character prefix to
      * be easily set.
      *
-     * @param prefix  the prefix character to use
+     * @param prefix the prefix character to use
      * @return this, to enable chaining
      */
     public StrSubstitutor setVariablePrefix(char prefix) {
@@ -802,12 +809,12 @@ public class StrSubstitutor {
      * The variable prefix is the characer or characters that identify the
      * start of a variable. This method allows a string prefix to be easily set.
      *
-     * @param prefix  the prefix for variables, not null
+     * @param prefix the prefix for variables, not null
      * @return this, to enable chaining
      * @throws IllegalArgumentException if the prefix is null
      */
     public StrSubstitutor setVariablePrefix(String prefix) {
-       if (prefix == null) {
+        if (prefix == null) {
             throw new IllegalArgumentException("Variable prefix must not be null!");
         }
         return setVariablePrefixMatcher(StrMatcher.stringMatcher(prefix));
@@ -815,6 +822,7 @@ public class StrSubstitutor {
 
     // Suffix
     //-----------------------------------------------------------------------
+
     /**
      * Gets the variable suffix matcher currently in use.
      * <p>
@@ -835,7 +843,7 @@ public class StrSubstitutor {
      * end of a variable. This suffix is expressed in terms of a matcher
      * allowing advanced suffix matches.
      *
-     * @param suffixMatcher  the suffix matcher to use, null ignored
+     * @param suffixMatcher the suffix matcher to use, null ignored
      * @return this, to enable chaining
      * @throws IllegalArgumentException if the suffix matcher is null
      */
@@ -854,7 +862,7 @@ public class StrSubstitutor {
      * end of a variable. This method allows a single character suffix to
      * be easily set.
      *
-     * @param suffix  the suffix character to use
+     * @param suffix the suffix character to use
      * @return this, to enable chaining
      */
     public StrSubstitutor setVariableSuffix(char suffix) {
@@ -867,12 +875,12 @@ public class StrSubstitutor {
      * The variable suffix is the character or characters that identify the
      * end of a variable. This method allows a string suffix to be easily set.
      *
-     * @param suffix  the suffix for variables, not null
+     * @param suffix the suffix for variables, not null
      * @return this, to enable chaining
      * @throws IllegalArgumentException if the suffix is null
      */
     public StrSubstitutor setVariableSuffix(String suffix) {
-       if (suffix == null) {
+        if (suffix == null) {
             throw new IllegalArgumentException("Variable suffix must not be null!");
         }
         return setVariableSuffixMatcher(StrMatcher.stringMatcher(suffix));
@@ -880,6 +888,7 @@ public class StrSubstitutor {
 
     // Resolver
     //-----------------------------------------------------------------------
+
     /**
      * Gets the VariableResolver that is used to lookup variables.
      *
@@ -892,7 +901,7 @@ public class StrSubstitutor {
     /**
      * Sets the VariableResolver that is used to lookup variables.
      *
-     * @param variableResolver  the VariableResolver
+     * @param variableResolver the VariableResolver
      */
     public void setVariableResolver(StrLookup<?> variableResolver) {
         this.variableResolver = variableResolver;
@@ -900,6 +909,7 @@ public class StrSubstitutor {
 
     // Substitution support in variable names
     //-----------------------------------------------------------------------
+
     /**
      * Returns a flag whether substitution is done in variable names.
      *

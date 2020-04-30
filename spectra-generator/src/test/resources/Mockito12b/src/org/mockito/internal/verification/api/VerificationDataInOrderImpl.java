@@ -4,10 +4,10 @@
  */
 package org.mockito.internal.verification.api;
 
-import java.util.List;
-
 import org.mockito.internal.invocation.Invocation;
 import org.mockito.internal.invocation.InvocationMatcher;
+
+import java.util.List;
 
 public class VerificationDataInOrderImpl implements VerificationDataInOrder {
 
@@ -18,7 +18,7 @@ public class VerificationDataInOrderImpl implements VerificationDataInOrder {
     public VerificationDataInOrderImpl(InOrderContext inOrder, List<Invocation> allInvocations, InvocationMatcher wanted) {
         this.inOrder = inOrder;
         this.allInvocations = allInvocations;
-        this.wanted = wanted;        
+        this.wanted = wanted;
     }
 
     public List<Invocation> getAllInvocations() {

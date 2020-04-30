@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-12">
-			<tests>
-				<testfile path="org/jfree/chart/plot/junit/MultiplePiePlotTests">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>201</number_tests>
-					<failed>1</failed>
-					<passed>200</passed>
-					<nodes>45238</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/jfree/chart/plot/MultiplePiePlot.java">
-					<change>145</change>
-					<bugtypes>
-						<id id="3.1" lines="145">
-							<description>Incorrect setting of data.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-12">
+            <tests>
+                <testfile path="org/jfree/chart/plot/junit/MultiplePiePlotTests">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>201</number_tests>
+                    <failed>1</failed>
+                    <passed>200</passed>
+                    <nodes>45238</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/jfree/chart/plot/MultiplePiePlot.java">
+                    <change>145</change>
+                    <bugtypes>
+                        <id id="3.1" lines="145">
+                            <description>Incorrect setting of data.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

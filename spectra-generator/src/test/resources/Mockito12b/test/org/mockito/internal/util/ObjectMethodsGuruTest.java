@@ -11,7 +11,7 @@ import org.mockitoutil.TestBase;
 public class ObjectMethodsGuruTest extends TestBase {
 
     ObjectMethodsGuru guru = new ObjectMethodsGuru();
-    
+
     @Test
     public void shouldKnowToStringMethod() throws Exception {
         assertFalse(guru.isToString(Object.class.getMethod("equals", Object.class)));

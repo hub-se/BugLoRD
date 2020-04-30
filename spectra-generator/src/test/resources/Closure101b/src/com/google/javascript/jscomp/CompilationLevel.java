@@ -24,145 +24,149 @@ package com.google.javascript.jscomp;
  */
 public enum CompilationLevel {
 
-  /**
-   * WHITESPACE_ONLY removes comments and extra whitespace in the input JS.
-   */
-  WHITESPACE_ONLY,
+    /**
+     * WHITESPACE_ONLY removes comments and extra whitespace in the input JS.
+     */
+    WHITESPACE_ONLY,
 
-  /**
-   * SIMPLE_OPTIMIZATIONS performs transformations to the input JS that do not
-   * require any changes to JS that depend on the input JS. For example,
-   * function arguments are renamed (which should not matter to code that
-   * depends on the input JS), but functions themselves are not renamed (which
-   * would otherwise require external code to change to use the renamed function
-   * names).
-   */
-  SIMPLE_OPTIMIZATIONS,
+    /**
+     * SIMPLE_OPTIMIZATIONS performs transformations to the input JS that do not
+     * require any changes to JS that depend on the input JS. For example,
+     * function arguments are renamed (which should not matter to code that
+     * depends on the input JS), but functions themselves are not renamed (which
+     * would otherwise require external code to change to use the renamed function
+     * names).
+     */
+    SIMPLE_OPTIMIZATIONS,
 
-  /**
-   * ADVANCED_OPTIMIZATIONS aggressively reduces code size by renaming function
-   * names and variables, removing code which is never called, etc.
-   */
-  ADVANCED_OPTIMIZATIONS,
-  ;
+    /**
+     * ADVANCED_OPTIMIZATIONS aggressively reduces code size by renaming function
+     * names and variables, removing code which is never called, etc.
+     */
+    ADVANCED_OPTIMIZATIONS,
+    ;
 
-  private CompilationLevel() {}
-
-  public void setOptionsForCompilationLevel(CompilerOptions options) {
-    switch (this) {
-      case WHITESPACE_ONLY:
-        applyBasicCompilationOptions(options);
-        break;
-      case SIMPLE_OPTIMIZATIONS:
-        applySafeCompilationOptions(options);
-        break;
-      case ADVANCED_OPTIMIZATIONS:
-        applyFullCompilationOptions(options);
-        break;
-      default:
-        throw new RuntimeException("Unknown compilation level.");
+    private CompilationLevel() {
     }
-  }
 
-  public void setDebugOptionsForCompilationLevel(CompilerOptions options) {
-    options.anonymousFunctionNaming = AnonymousFunctionNamingPolicy.UNMAPPED;
-    options.generatePseudoNames = true;
-  }
+    public void setOptionsForCompilationLevel(CompilerOptions options) {
+        switch (this) {
+            case WHITESPACE_ONLY:
+                applyBasicCompilationOptions(options);
+                break;
+            case SIMPLE_OPTIMIZATIONS:
+                applySafeCompilationOptions(options);
+                break;
+            case ADVANCED_OPTIMIZATIONS:
+                applyFullCompilationOptions(options);
+                break;
+            default:
+                throw new RuntimeException("Unknown compilation level.");
+        }
+    }
 
-  /**
-   * Gets options that only strip whitespace and comments.
-   * @param options The CompilerOptions object to set the options on.
-   */
-  private static void applyBasicCompilationOptions(CompilerOptions options) {
-    options.skipAllCompilerPasses();
-    options.checkGlobalThisLevel = CheckLevel.OFF;
+    public void setDebugOptionsForCompilationLevel(CompilerOptions options) {
+        options.anonymousFunctionNaming = AnonymousFunctionNamingPolicy.UNMAPPED;
+        options.generatePseudoNames = true;
+    }
 
-    // Allows annotations that are not standard.
-    options.setWarningLevel(DiagnosticGroups.NON_STANDARD_JSDOC,
-        CheckLevel.OFF);
-  }
+    /**
+     * Gets options that only strip whitespace and comments.
+     *
+     * @param options The CompilerOptions object to set the options on.
+     */
+    private static void applyBasicCompilationOptions(CompilerOptions options) {
+        options.skipAllCompilerPasses();
+        options.checkGlobalThisLevel = CheckLevel.OFF;
 
-  /**
-   * Add options that are safe. Safe means options that won't break the
-   * JavaScript code even if no symbols are exported and no coding convention
-   * is used.
-   * @param options The CompilerOptions object to set the options on.
-   */
-  private static void applySafeCompilationOptions(CompilerOptions options) {
-    // Does not call applyBasicCompilationOptions(options) because the call to
-    // skipAllCompilerPasses() cannot be easily undone.
-    options.closurePass = true;
-    options.variableRenaming = VariableRenamingPolicy.LOCAL;
-    options.inlineLocalVariables = true;
-    options.checkGlobalThisLevel = CheckLevel.OFF;
-    options.foldConstants = true;
-    options.removeConstantExpressions = true;
-    options.coalesceVariableNames = true;
-    options.deadAssignmentElimination = true;
-    options.extractPrototypeMemberDeclarations = true;
-    options.collapseVariableDeclarations = true;
-    options.convertToDottedProperties = true;
-    options.labelRenaming = true;
-    options.removeDeadCode = true;
-    options.optimizeArgumentsArray = true;
-    options.removeUnusedVars = true;
-    options.removeUnusedVarsInGlobalScope = false;
+        // Allows annotations that are not standard.
+        options.setWarningLevel(DiagnosticGroups.NON_STANDARD_JSDOC,
+                CheckLevel.OFF);
+    }
 
-    // Allows annotations that are not standard.
-    options.setWarningLevel(DiagnosticGroups.NON_STANDARD_JSDOC,
-        CheckLevel.OFF);
-  }
+    /**
+     * Add options that are safe. Safe means options that won't break the
+     * JavaScript code even if no symbols are exported and no coding convention
+     * is used.
+     *
+     * @param options The CompilerOptions object to set the options on.
+     */
+    private static void applySafeCompilationOptions(CompilerOptions options) {
+        // Does not call applyBasicCompilationOptions(options) because the call to
+        // skipAllCompilerPasses() cannot be easily undone.
+        options.closurePass = true;
+        options.variableRenaming = VariableRenamingPolicy.LOCAL;
+        options.inlineLocalVariables = true;
+        options.checkGlobalThisLevel = CheckLevel.OFF;
+        options.foldConstants = true;
+        options.removeConstantExpressions = true;
+        options.coalesceVariableNames = true;
+        options.deadAssignmentElimination = true;
+        options.extractPrototypeMemberDeclarations = true;
+        options.collapseVariableDeclarations = true;
+        options.convertToDottedProperties = true;
+        options.labelRenaming = true;
+        options.removeDeadCode = true;
+        options.optimizeArgumentsArray = true;
+        options.removeUnusedVars = true;
+        options.removeUnusedVarsInGlobalScope = false;
 
-  /**
-   * Add the options that will work only if the user exported all the symbols
-   * correctly.
-   * @param options The CompilerOptions object to set the options on.
-   */
-  private static void applyFullCompilationOptions(CompilerOptions options) {
-    // Do not call applySafeCompilationOptions(options) because the call can
-    // create possible conflicts between multiple diagnostic groups.
+        // Allows annotations that are not standard.
+        options.setWarningLevel(DiagnosticGroups.NON_STANDARD_JSDOC,
+                CheckLevel.OFF);
+    }
 
-    // All the safe optimizations.
-    options.closurePass = true;
-    options.checkGlobalThisLevel = CheckLevel.OFF;
-    options.foldConstants = true;
-    options.removeConstantExpressions = true;
-    options.coalesceVariableNames = true;
-    options.deadAssignmentElimination = true;
-    options.extractPrototypeMemberDeclarations = true;
-    options.collapseVariableDeclarations = true;
-    options.convertToDottedProperties = true;
-    options.rewriteFunctionExpressions = true;
-    options.labelRenaming = true;
-    options.removeDeadCode = true;
-    options.optimizeArgumentsArray = true;
+    /**
+     * Add the options that will work only if the user exported all the symbols
+     * correctly.
+     *
+     * @param options The CompilerOptions object to set the options on.
+     */
+    private static void applyFullCompilationOptions(CompilerOptions options) {
+        // Do not call applySafeCompilationOptions(options) because the call can
+        // create possible conflicts between multiple diagnostic groups.
 
-    // All the advance optimizations.
-    options.reserveRawExports = true;
-    options.variableRenaming = VariableRenamingPolicy.ALL;
-    options.propertyRenaming = PropertyRenamingPolicy.ALL_UNQUOTED;
-    options.removeUnusedPrototypeProperties = true;
-    options.removeUnusedPrototypePropertiesInExterns = true;
-    options.collapseAnonymousFunctions = true;
-    options.collapseProperties = true;
-    options.rewriteFunctionExpressions = true;
-    options.devirtualizePrototypeMethods = true;
-    options.smartNameRemoval = true;
-    options.inlineConstantVars = true;
-    options.inlineFunctions = true;
-    options.inlineLocalFunctions = true;
-    options.inlineAnonymousFunctionExpressions = true;
-    options.inlineGetters = true;
-    options.inlineVariables = true;
-    options.removeConstantExpressions = true;
-    options.computeFunctionSideEffects = true;
-    
-    // Remove unused vars also removes unused functions.
-    options.removeUnusedVars = true;
-    options.removeUnusedVarsInGlobalScope = true;
+        // All the safe optimizations.
+        options.closurePass = true;
+        options.checkGlobalThisLevel = CheckLevel.OFF;
+        options.foldConstants = true;
+        options.removeConstantExpressions = true;
+        options.coalesceVariableNames = true;
+        options.deadAssignmentElimination = true;
+        options.extractPrototypeMemberDeclarations = true;
+        options.collapseVariableDeclarations = true;
+        options.convertToDottedProperties = true;
+        options.rewriteFunctionExpressions = true;
+        options.labelRenaming = true;
+        options.removeDeadCode = true;
+        options.optimizeArgumentsArray = true;
 
-    // Kindly tell the user that they have JsDocs that we don't understand.
-    options.setWarningLevel(DiagnosticGroups.NON_STANDARD_JSDOC,
-        CheckLevel.WARNING);
-  }
+        // All the advance optimizations.
+        options.reserveRawExports = true;
+        options.variableRenaming = VariableRenamingPolicy.ALL;
+        options.propertyRenaming = PropertyRenamingPolicy.ALL_UNQUOTED;
+        options.removeUnusedPrototypeProperties = true;
+        options.removeUnusedPrototypePropertiesInExterns = true;
+        options.collapseAnonymousFunctions = true;
+        options.collapseProperties = true;
+        options.rewriteFunctionExpressions = true;
+        options.devirtualizePrototypeMethods = true;
+        options.smartNameRemoval = true;
+        options.inlineConstantVars = true;
+        options.inlineFunctions = true;
+        options.inlineLocalFunctions = true;
+        options.inlineAnonymousFunctionExpressions = true;
+        options.inlineGetters = true;
+        options.inlineVariables = true;
+        options.removeConstantExpressions = true;
+        options.computeFunctionSideEffects = true;
+
+        // Remove unused vars also removes unused functions.
+        options.removeUnusedVars = true;
+        options.removeUnusedVarsInGlobalScope = true;
+
+        // Kindly tell the user that they have JsDocs that we don't understand.
+        options.setWarningLevel(DiagnosticGroups.NON_STANDARD_JSDOC,
+                CheckLevel.WARNING);
+    }
 }

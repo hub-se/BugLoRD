@@ -7,29 +7,29 @@ import se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper.Node2AbstractionMa
 
 public class SemanticMapper {
 
-	final IBasicNodeMapper<String> mapper;
-	
-	public SemanticMapper(boolean long_tokens, int childCountStepWidth) {
-		mapper = new Node2AbstractionMapperWithMetaData
-				.Builder(long_tokens ? new KeyWordConstants() : new KeyWordConstantsShort())
-				.setchildCountStepWidth(childCountStepWidth)
-				.setMaxListMembers(3)
-				.usesStringAbstraction()
-				.usesVariableNameAbstraction()
-				.usesPrivateMethodAbstraction()
-				.usesClassNameAbstraction()
-				.usesPackageAndImportAbstraction()
+    final IBasicNodeMapper<String> mapper;
+
+    public SemanticMapper(boolean long_tokens, int childCountStepWidth) {
+        mapper = new Node2AbstractionMapperWithMetaData
+                .Builder(long_tokens ? new KeyWordConstants() : new KeyWordConstantsShort())
+                .setchildCountStepWidth(childCountStepWidth)
+                .setMaxListMembers(3)
+                .usesStringAbstraction()
+                .usesVariableNameAbstraction()
+                .usesPrivateMethodAbstraction()
+                .usesClassNameAbstraction()
+                .usesPackageAndImportAbstraction()
 //				.usesAnnotationAbstraction()
-				// remove/show public method names?
+                // remove/show public method names?
 //				.usesMethodNameAbstraction()
-				.usesGenericTypeNameAbstraction()
-				.usesCommentAbstraction()
-				.ignoresWrappers()
-				.build();
-	}
-	
-	public IBasicNodeMapper<String> getMapper() {
-		return mapper;
-	}
-	
+                .usesGenericTypeNameAbstraction()
+                .usesCommentAbstraction()
+                .ignoresWrappers()
+                .build();
+    }
+
+    public IBasicNodeMapper<String> getMapper() {
+        return mapper;
+    }
+
 }

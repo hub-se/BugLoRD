@@ -1,23 +1,24 @@
-/** License information:
- *    Component: sequitur
- *    Package:   de.unisb.cs.st.sequitur.output
- *    Class:     OutputSequence
- *    Filename:  sequitur/src/main/java/de/unisb/cs/st/sequitur/output/OutputSequence.java
- *
+/**
+ * License information:
+ * Component: sequitur
+ * Package:   de.unisb.cs.st.sequitur.output
+ * Class:     OutputSequence
+ * Filename:  sequitur/src/main/java/de/unisb/cs/st/sequitur/output/OutputSequence.java
+ * <p>
  * This file is part of the Sequitur library developed by Clemens Hammacher
  * at Saarland University. It has been developed for use in the JavaSlicer
  * tool. See http://www.st.cs.uni-saarland.de/javaslicer/ for more information.
- *
+ * <p>
  * Sequitur is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Sequitur is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Sequitur. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -29,12 +30,13 @@ import java.util.Set;
 
 public class OutputSequence {
 
-	private final Grammar grammar;
+    private final Grammar grammar;
     protected final Rule firstRule;
+    protected int firstValue = -1;
     private final ObjectWriter objectWriter;
     private int lastValue = Symbol.NULL_VALUE;
     private int lastValueCount = 0;
-    
+
     private long length = 0;
 
     public OutputSequence() {
@@ -50,15 +52,22 @@ public class OutputSequence {
     }
 
     private OutputSequence(final Rule firstRule, final Grammar grammar,
-            final ObjectWriter objectWriter) {
+                           final ObjectWriter objectWriter) {
         this.grammar = grammar;
         this.firstRule = firstRule;
         this.objectWriter = objectWriter;
         grammar.newSequence(this);
     }
 
+    public int getFirstValue( ) {
+    	return firstValue;
+    }
+    
     public void append(final int obj) {
-    	++length;
+    	if (length == 0) {
+    		firstValue = obj;
+    	}
+        ++length;
         if (this.lastValueCount == 0) {
             this.lastValue = obj;
             this.lastValueCount = 1;
@@ -74,9 +83,9 @@ public class OutputSequence {
             this.lastValueCount = 1;
         }
     }
-    
+
     public long getLength() {
-    	return length;
+        return length;
     }
 
     public long getStartRuleNumber() {
@@ -108,7 +117,7 @@ public class OutputSequence {
         }
 
         Set<Rule> rules = this.firstRule.getUsedRules();
-        for (Rule r: rules)
+        for (Rule r : rules)
             sb.append(System.getProperty("line.separator")).append(r);
         return sb.toString();
     }

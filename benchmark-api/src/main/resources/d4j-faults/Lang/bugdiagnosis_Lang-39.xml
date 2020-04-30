@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-39">
-			<tests>
-				<testfile path="org/apache/commons/lang3/StringUtilsTest">
-					<exception>java.lang.NullPointerException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>523</number_tests>
-					<failed>1</failed>
-					<passed>522</passed>
-					<nodes>9365</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/StringUtils.java">
-					<insert numberlines="3">3676</insert>
-					<bugtypes>
-						<id id="1.1" lines="3675">
-							<description>Missing check for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-39">
+            <tests>
+                <testfile path="org/apache/commons/lang3/StringUtilsTest">
+                    <exception>java.lang.NullPointerException</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>523</number_tests>
+                    <failed>1</failed>
+                    <passed>522</passed>
+                    <nodes>9365</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/StringUtils.java">
+                    <insert numberlines="3">3676</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="3675">
+                            <description>Missing check for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -10,7 +10,7 @@ import org.mockitoutil.TestBase;
 
 
 public class RunnerProviderTest extends TestBase {
-    
+
     @Test
     public void shouldKnowAboutJUnit45() throws Exception {
         //given
@@ -19,7 +19,7 @@ public class RunnerProviderTest extends TestBase {
         assertTrue(provider.isJUnit45OrHigherAvailable());
         //I cannot test the opposite condition :(
     }
-    
+
     @Test
     public void shouldCreateRunnerInstance() throws Throwable {
         //given

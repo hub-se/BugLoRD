@@ -1,23 +1,24 @@
 package se.de.hu_berlin.informatik.benchmark;
 
-import se.de.hu_berlin.informatik.benchmark.FaultInformation;
-
 /**
  * Represents a real fault location
  */
 public class SimpleFaultInformation implements FaultInformation {
 
-    /** suspiciousness of this line / confidence that this line really is a fault */
+    /**
+     * suspiciousness of this line / confidence that this line really is a fault
+     */
     private Suspiciousness suspiciousness;
-    /** comment why this line is suspicious */
+    /**
+     * comment why this line is suspicious
+     */
     private String comment;
 
     /**
      * Create new line
-     * @param suspiciousness
-     *            suspiciousness of this line / confidence that this line really is a fault
-     * @param comment
-     *            comment why this line is suspicious
+     *
+     * @param suspiciousness suspiciousness of this line / confidence that this line really is a fault
+     * @param comment        comment why this line is suspicious
      */
     public SimpleFaultInformation(final Suspiciousness suspiciousness, final String comment) {
         super();
@@ -43,14 +44,14 @@ public class SimpleFaultInformation implements FaultInformation {
         return this.comment;
     }
 
-	@Override
-	public void setSuspiciousness(Suspiciousness suspiciousness) {
-		this.suspiciousness = suspiciousness;
-	}
+    @Override
+    public void setSuspiciousness(Suspiciousness suspiciousness) {
+        this.suspiciousness = suspiciousness;
+    }
 
-	@Override
-	public void setComment(String comment) throws UnsupportedOperationException {
-		this.comment = comment;
-	}
+    @Override
+    public void setComment(String comment) throws UnsupportedOperationException {
+        this.comment = comment;
+    }
 
 }

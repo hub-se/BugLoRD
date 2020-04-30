@@ -15,42 +15,19 @@
  */
 package org.joda.time.convert;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.*;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.security.AllPermission;
-import java.security.CodeSource;
-import java.security.Permission;
-import java.security.PermissionCollection;
-import java.security.Permissions;
-import java.security.Policy;
-import java.security.ProtectionDomain;
+import java.security.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
-import org.joda.time.ReadablePartial;
-import org.joda.time.ReadablePeriod;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
-import org.joda.time.Interval;
-import org.joda.time.JodaTimePermission;
-import org.joda.time.ReadWritablePeriod;
-import org.joda.time.ReadWritableInterval;
-import org.joda.time.ReadableDateTime;
-import org.joda.time.ReadableDuration;
-import org.joda.time.ReadableInstant;
-import org.joda.time.ReadableInterval;
-import org.joda.time.TimeOfDay;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  * This class is a JUnit test for ConverterManager.
@@ -59,13 +36,14 @@ import org.joda.time.format.DateTimeFormatter;
  */
 public class TestConverterManager extends TestCase {
     private static final boolean OLD_JDK;
+
     static {
         String str = System.getProperty("java.version");
         boolean old = true;
         if (str.length() > 3 &&
-            str.charAt(0) == '1' &&
-            str.charAt(1) == '.' &&
-            (str.charAt(2) == '4' || str.charAt(2) == '5' || str.charAt(2) == '6')) {
+                str.charAt(0) == '1' &&
+                str.charAt(1) == '.' &&
+                (str.charAt(2) == '4' || str.charAt(2) == '5' || str.charAt(2) == '6')) {
             old = false;
         }
         OLD_JDK = old;
@@ -73,6 +51,7 @@ public class TestConverterManager extends TestCase {
 
     private static final Policy RESTRICT;
     private static final Policy ALLOW;
+
     static {
         // don't call Policy.getPolicy()
         RESTRICT = new Policy() {
@@ -81,8 +60,10 @@ public class TestConverterManager extends TestCase {
                 p.add(new AllPermission());  // enable everything
                 return p;
             }
+
             public void refresh() {
             }
+
             public boolean implies(ProtectionDomain domain, Permission permission) {
                 if (permission instanceof JodaTimePermission) {
                     return false;
@@ -97,6 +78,7 @@ public class TestConverterManager extends TestCase {
                 p.add(new AllPermission());  // enable everything
                 return p;
             }
+
             public void refresh() {
             }
         };
@@ -118,11 +100,11 @@ public class TestConverterManager extends TestCase {
     public void testSingleton() throws Exception {
         Class cls = ConverterManager.class;
         assertEquals(true, Modifier.isPublic(cls.getModifiers()));
-        
+
         Constructor con = cls.getDeclaredConstructor((Class[]) null);
         assertEquals(1, cls.getDeclaredConstructors().length);
         assertEquals(true, Modifier.isProtected(con.getModifiers()));
-        
+
         Field fld = cls.getDeclaredField("INSTANCE");
         assertEquals(true, Modifier.isPrivate(fld.getModifiers()));
     }
@@ -131,26 +113,27 @@ public class TestConverterManager extends TestCase {
     public void testGetInstantConverter() {
         InstantConverter c = ConverterManager.getInstance().getInstantConverter(new Long(0L));
         assertEquals(Long.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getInstantConverter(new DateTime());
         assertEquals(ReadableInstant.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getInstantConverter("");
         assertEquals(String.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getInstantConverter(new Date());
         assertEquals(Date.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getInstantConverter(new GregorianCalendar());
         assertEquals(Calendar.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getInstantConverter(null);
         assertEquals(null, c.getSupportedType());
-        
+
         try {
             ConverterManager.getInstance().getInstantConverter(Boolean.TRUE);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testGetInstantConverterRemovedNull() {
@@ -159,7 +142,8 @@ public class TestConverterManager extends TestCase {
             try {
                 ConverterManager.getInstance().getInstantConverter(null);
                 fail();
-            } catch (IllegalArgumentException ex) {}
+            } catch (IllegalArgumentException ex) {
+            }
         } finally {
             ConverterManager.getInstance().addInstantConverter(NullConverter.INSTANCE);
         }
@@ -168,10 +152,21 @@ public class TestConverterManager extends TestCase {
 
     public void testGetInstantConverterOKMultipleMatches() {
         InstantConverter c = new InstantConverter() {
-            public long getInstantMillis(Object object, Chronology chrono) {return 0;}
-            public Chronology getChronology(Object object, DateTimeZone zone) {return null;}
-            public Chronology getChronology(Object object, Chronology chrono) {return null;}
-            public Class getSupportedType() {return ReadableDateTime.class;}
+            public long getInstantMillis(Object object, Chronology chrono) {
+                return 0;
+            }
+
+            public Chronology getChronology(Object object, DateTimeZone zone) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, Chronology chrono) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return ReadableDateTime.class;
+            }
         };
         try {
             ConverterManager.getInstance().addInstantConverter(c);
@@ -186,10 +181,21 @@ public class TestConverterManager extends TestCase {
 
     public void testGetInstantConverterBadMultipleMatches() {
         InstantConverter c = new InstantConverter() {
-            public long getInstantMillis(Object object, Chronology chrono) {return 0;}
-            public Chronology getChronology(Object object, DateTimeZone zone) {return null;}
-            public Chronology getChronology(Object object, Chronology chrono) {return null;}
-            public Class getSupportedType() {return Serializable.class;}
+            public long getInstantMillis(Object object, Chronology chrono) {
+                return 0;
+            }
+
+            public Chronology getChronology(Object object, DateTimeZone zone) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, Chronology chrono) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return Serializable.class;
+            }
         };
         try {
             ConverterManager.getInstance().addInstantConverter(c);
@@ -214,10 +220,21 @@ public class TestConverterManager extends TestCase {
     //-----------------------------------------------------------------------
     public void testAddInstantConverter1() {
         InstantConverter c = new InstantConverter() {
-            public long getInstantMillis(Object object, Chronology chrono) {return 0;}
-            public Chronology getChronology(Object object, DateTimeZone zone) {return null;}
-            public Chronology getChronology(Object object, Chronology chrono) {return null;}
-            public Class getSupportedType() {return Boolean.class;}
+            public long getInstantMillis(Object object, Chronology chrono) {
+                return 0;
+            }
+
+            public Chronology getChronology(Object object, DateTimeZone zone) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, Chronology chrono) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return Boolean.class;
+            }
         };
         try {
             InstantConverter removed = ConverterManager.getInstance().addInstantConverter(c);
@@ -232,10 +249,21 @@ public class TestConverterManager extends TestCase {
 
     public void testAddInstantConverter2() {
         InstantConverter c = new InstantConverter() {
-            public long getInstantMillis(Object object, Chronology chrono) {return 0;}
-            public Chronology getChronology(Object object, DateTimeZone zone) {return null;}
-            public Chronology getChronology(Object object, Chronology chrono) {return null;}
-            public Class getSupportedType() {return String.class;}
+            public long getInstantMillis(Object object, Chronology chrono) {
+                return 0;
+            }
+
+            public Chronology getChronology(Object object, DateTimeZone zone) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, Chronology chrono) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return String.class;
+            }
         };
         try {
             InstantConverter removed = ConverterManager.getInstance().addInstantConverter(c);
@@ -292,10 +320,21 @@ public class TestConverterManager extends TestCase {
 
     public void testRemoveInstantConverter2() {
         InstantConverter c = new InstantConverter() {
-            public long getInstantMillis(Object object, Chronology chrono) {return 0;}
-            public Chronology getChronology(Object object, DateTimeZone zone) {return null;}
-            public Chronology getChronology(Object object, Chronology chrono) {return null;}
-            public Class getSupportedType() {return Boolean.class;}
+            public long getInstantMillis(Object object, Chronology chrono) {
+                return 0;
+            }
+
+            public Chronology getChronology(Object object, DateTimeZone zone) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, Chronology chrono) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return Boolean.class;
+            }
         };
         InstantConverter removed = ConverterManager.getInstance().removeInstantConverter(c);
         assertEquals(null, removed);
@@ -329,33 +368,34 @@ public class TestConverterManager extends TestCase {
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     private static final int PARTIAL_SIZE = 7;
-    
+
     public void testGetPartialConverter() {
         PartialConverter c = ConverterManager.getInstance().getPartialConverter(new Long(0L));
         assertEquals(Long.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getPartialConverter(new TimeOfDay());
         assertEquals(ReadablePartial.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getPartialConverter(new DateTime());
         assertEquals(ReadableInstant.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getPartialConverter("");
         assertEquals(String.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getPartialConverter(new Date());
         assertEquals(Date.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getPartialConverter(new GregorianCalendar());
         assertEquals(Calendar.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getPartialConverter(null);
         assertEquals(null, c.getSupportedType());
-        
+
         try {
             ConverterManager.getInstance().getPartialConverter(Boolean.TRUE);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testGetPartialConverterRemovedNull() {
@@ -364,7 +404,8 @@ public class TestConverterManager extends TestCase {
             try {
                 ConverterManager.getInstance().getPartialConverter(null);
                 fail();
-            } catch (IllegalArgumentException ex) {}
+            } catch (IllegalArgumentException ex) {
+            }
         } finally {
             ConverterManager.getInstance().addPartialConverter(NullConverter.INSTANCE);
         }
@@ -373,11 +414,25 @@ public class TestConverterManager extends TestCase {
 
     public void testGetPartialConverterOKMultipleMatches() {
         PartialConverter c = new PartialConverter() {
-            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono) {return null;}
-            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono, DateTimeFormatter parser) {return null;}
-            public Chronology getChronology(Object object, DateTimeZone zone) {return null;}
-            public Chronology getChronology(Object object, Chronology chrono) {return null;}
-            public Class getSupportedType() {return ReadableDateTime.class;}
+            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono) {
+                return null;
+            }
+
+            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono, DateTimeFormatter parser) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, DateTimeZone zone) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, Chronology chrono) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return ReadableDateTime.class;
+            }
         };
         try {
             ConverterManager.getInstance().addPartialConverter(c);
@@ -392,11 +447,25 @@ public class TestConverterManager extends TestCase {
 
     public void testGetPartialConverterBadMultipleMatches() {
         PartialConverter c = new PartialConverter() {
-            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono) {return null;}
-            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono, DateTimeFormatter parser) {return null;}
-            public Chronology getChronology(Object object, DateTimeZone zone) {return null;}
-            public Chronology getChronology(Object object, Chronology chrono) {return null;}
-            public Class getSupportedType() {return Serializable.class;}
+            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono) {
+                return null;
+            }
+
+            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono, DateTimeFormatter parser) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, DateTimeZone zone) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, Chronology chrono) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return Serializable.class;
+            }
         };
         try {
             ConverterManager.getInstance().addPartialConverter(c);
@@ -421,11 +490,25 @@ public class TestConverterManager extends TestCase {
     //-----------------------------------------------------------------------
     public void testAddPartialConverter1() {
         PartialConverter c = new PartialConverter() {
-            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono) {return null;}
-            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono, DateTimeFormatter parser) {return null;}
-            public Chronology getChronology(Object object, DateTimeZone zone) {return null;}
-            public Chronology getChronology(Object object, Chronology chrono) {return null;}
-            public Class getSupportedType() {return Boolean.class;}
+            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono) {
+                return null;
+            }
+
+            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono, DateTimeFormatter parser) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, DateTimeZone zone) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, Chronology chrono) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return Boolean.class;
+            }
         };
         try {
             PartialConverter removed = ConverterManager.getInstance().addPartialConverter(c);
@@ -440,11 +523,25 @@ public class TestConverterManager extends TestCase {
 
     public void testAddPartialConverter2() {
         PartialConverter c = new PartialConverter() {
-            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono) {return null;}
-            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono, DateTimeFormatter parser) {return null;}
-            public Chronology getChronology(Object object, DateTimeZone zone) {return null;}
-            public Chronology getChronology(Object object, Chronology chrono) {return null;}
-            public Class getSupportedType() {return String.class;}
+            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono) {
+                return null;
+            }
+
+            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono, DateTimeFormatter parser) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, DateTimeZone zone) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, Chronology chrono) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return String.class;
+            }
         };
         try {
             PartialConverter removed = ConverterManager.getInstance().addPartialConverter(c);
@@ -501,11 +598,25 @@ public class TestConverterManager extends TestCase {
 
     public void testRemovePartialConverter2() {
         PartialConverter c = new PartialConverter() {
-            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono) {return null;}
-            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono, DateTimeFormatter parser) {return null;}
-            public Chronology getChronology(Object object, DateTimeZone zone) {return null;}
-            public Chronology getChronology(Object object, Chronology chrono) {return null;}
-            public Class getSupportedType() {return Boolean.class;}
+            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono) {
+                return null;
+            }
+
+            public int[] getPartialValues(ReadablePartial partial, Object object, Chronology chrono, DateTimeFormatter parser) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, DateTimeZone zone) {
+                return null;
+            }
+
+            public Chronology getChronology(Object object, Chronology chrono) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return Boolean.class;
+            }
         };
         PartialConverter removed = ConverterManager.getInstance().removePartialConverter(c);
         assertEquals(null, removed);
@@ -539,27 +650,28 @@ public class TestConverterManager extends TestCase {
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     private static int DURATION_SIZE = 5;
-    
+
     public void testGetDurationConverter() {
         DurationConverter c = ConverterManager.getInstance().getDurationConverter(new Long(0L));
         assertEquals(Long.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getDurationConverter(new Duration(123L));
         assertEquals(ReadableDuration.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getDurationConverter(new Interval(0L, 1000L));
         assertEquals(ReadableInterval.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getDurationConverter("");
         assertEquals(String.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getDurationConverter(null);
         assertEquals(null, c.getSupportedType());
-        
+
         try {
             ConverterManager.getInstance().getDurationConverter(Boolean.TRUE);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testGetDurationConverterRemovedNull() {
@@ -568,7 +680,8 @@ public class TestConverterManager extends TestCase {
             try {
                 ConverterManager.getInstance().getDurationConverter(null);
                 fail();
-            } catch (IllegalArgumentException ex) {}
+            } catch (IllegalArgumentException ex) {
+            }
         } finally {
             ConverterManager.getInstance().addDurationConverter(NullConverter.INSTANCE);
         }
@@ -584,8 +697,13 @@ public class TestConverterManager extends TestCase {
     //-----------------------------------------------------------------------
     public void testAddDurationConverter1() {
         DurationConverter c = new DurationConverter() {
-            public long getDurationMillis(Object object) {return 0;}
-            public Class getSupportedType() {return Boolean.class;}
+            public long getDurationMillis(Object object) {
+                return 0;
+            }
+
+            public Class getSupportedType() {
+                return Boolean.class;
+            }
         };
         try {
             DurationConverter removed = ConverterManager.getInstance().addDurationConverter(c);
@@ -600,8 +718,13 @@ public class TestConverterManager extends TestCase {
 
     public void testAddDurationConverter2() {
         DurationConverter c = new DurationConverter() {
-            public long getDurationMillis(Object object) {return 0;}
-            public Class getSupportedType() {return String.class;}
+            public long getDurationMillis(Object object) {
+                return 0;
+            }
+
+            public Class getSupportedType() {
+                return String.class;
+            }
         };
         try {
             DurationConverter removed = ConverterManager.getInstance().addDurationConverter(c);
@@ -652,8 +775,13 @@ public class TestConverterManager extends TestCase {
 
     public void testRemoveDurationConverter2() {
         DurationConverter c = new DurationConverter() {
-            public long getDurationMillis(Object object) {return 0;}
-            public Class getSupportedType() {return Boolean.class;}
+            public long getDurationMillis(Object object) {
+                return 0;
+            }
+
+            public Class getSupportedType() {
+                return Boolean.class;
+            }
         };
         DurationConverter removed = ConverterManager.getInstance().removeDurationConverter(c);
         assertEquals(null, removed);
@@ -687,27 +815,28 @@ public class TestConverterManager extends TestCase {
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     private static int PERIOD_SIZE = 5;
-    
+
     public void testGetPeriodConverter() {
         PeriodConverter c = ConverterManager.getInstance().getPeriodConverter(new Period(1, 2, 3, 4, 5, 6, 7, 8));
         assertEquals(ReadablePeriod.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getPeriodConverter(new Duration(123L));
         assertEquals(ReadableDuration.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getPeriodConverter(new Interval(0L, 1000L));
         assertEquals(ReadableInterval.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getPeriodConverter("");
         assertEquals(String.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getPeriodConverter(null);
         assertEquals(null, c.getSupportedType());
-        
+
         try {
             ConverterManager.getInstance().getPeriodConverter(Boolean.TRUE);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testGetPeriodConverterRemovedNull() {
@@ -716,7 +845,8 @@ public class TestConverterManager extends TestCase {
             try {
                 ConverterManager.getInstance().getPeriodConverter(null);
                 fail();
-            } catch (IllegalArgumentException ex) {}
+            } catch (IllegalArgumentException ex) {
+            }
         } finally {
             ConverterManager.getInstance().addPeriodConverter(NullConverter.INSTANCE);
         }
@@ -732,9 +862,16 @@ public class TestConverterManager extends TestCase {
     //-----------------------------------------------------------------------
     public void testAddPeriodConverter1() {
         PeriodConverter c = new PeriodConverter() {
-            public void setInto(ReadWritablePeriod duration, Object object, Chronology c) {}
-            public PeriodType getPeriodType(Object object) {return null;}
-            public Class getSupportedType() {return Boolean.class;}
+            public void setInto(ReadWritablePeriod duration, Object object, Chronology c) {
+            }
+
+            public PeriodType getPeriodType(Object object) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return Boolean.class;
+            }
         };
         try {
             PeriodConverter removed = ConverterManager.getInstance().addPeriodConverter(c);
@@ -749,9 +886,16 @@ public class TestConverterManager extends TestCase {
 
     public void testAddPeriodConverter2() {
         PeriodConverter c = new PeriodConverter() {
-            public void setInto(ReadWritablePeriod duration, Object object, Chronology c) {}
-            public PeriodType getPeriodType(Object object) {return null;}
-            public Class getSupportedType() {return String.class;}
+            public void setInto(ReadWritablePeriod duration, Object object, Chronology c) {
+            }
+
+            public PeriodType getPeriodType(Object object) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return String.class;
+            }
         };
         try {
             PeriodConverter removed = ConverterManager.getInstance().addPeriodConverter(c);
@@ -802,9 +946,16 @@ public class TestConverterManager extends TestCase {
 
     public void testRemovePeriodConverter2() {
         PeriodConverter c = new PeriodConverter() {
-            public void setInto(ReadWritablePeriod duration, Object object, Chronology c) {}
-            public PeriodType getPeriodType(Object object) {return null;}
-            public Class getSupportedType() {return Boolean.class;}
+            public void setInto(ReadWritablePeriod duration, Object object, Chronology c) {
+            }
+
+            public PeriodType getPeriodType(Object object) {
+                return null;
+            }
+
+            public Class getSupportedType() {
+                return Boolean.class;
+            }
         };
         PeriodConverter removed = ConverterManager.getInstance().removePeriodConverter(c);
         assertEquals(null, removed);
@@ -842,21 +993,23 @@ public class TestConverterManager extends TestCase {
     public void testGetIntervalConverter() {
         IntervalConverter c = ConverterManager.getInstance().getIntervalConverter(new Interval(0L, 1000L));
         assertEquals(ReadableInterval.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getIntervalConverter("");
         assertEquals(String.class, c.getSupportedType());
-        
+
         c = ConverterManager.getInstance().getIntervalConverter(null);
         assertEquals(null, c.getSupportedType());
-        
+
         try {
             ConverterManager.getInstance().getIntervalConverter(Boolean.TRUE);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             ConverterManager.getInstance().getIntervalConverter(new Long(0));
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testGetIntervalConverterRemovedNull() {
@@ -865,7 +1018,8 @@ public class TestConverterManager extends TestCase {
             try {
                 ConverterManager.getInstance().getIntervalConverter(null);
                 fail();
-            } catch (IllegalArgumentException ex) {}
+            } catch (IllegalArgumentException ex) {
+            }
         } finally {
             ConverterManager.getInstance().addIntervalConverter(NullConverter.INSTANCE);
         }
@@ -881,9 +1035,16 @@ public class TestConverterManager extends TestCase {
     //-----------------------------------------------------------------------
     public void testAddIntervalConverter1() {
         IntervalConverter c = new IntervalConverter() {
-            public boolean isReadableInterval(Object object, Chronology chrono) {return false;}
-            public void setInto(ReadWritableInterval interval, Object object, Chronology chrono) {}
-            public Class getSupportedType() {return Boolean.class;}
+            public boolean isReadableInterval(Object object, Chronology chrono) {
+                return false;
+            }
+
+            public void setInto(ReadWritableInterval interval, Object object, Chronology chrono) {
+            }
+
+            public Class getSupportedType() {
+                return Boolean.class;
+            }
         };
         try {
             IntervalConverter removed = ConverterManager.getInstance().addIntervalConverter(c);
@@ -898,9 +1059,16 @@ public class TestConverterManager extends TestCase {
 
     public void testAddIntervalConverter2() {
         IntervalConverter c = new IntervalConverter() {
-            public boolean isReadableInterval(Object object, Chronology chrono) {return false;}
-            public void setInto(ReadWritableInterval interval, Object object, Chronology chrono) {}
-            public Class getSupportedType() {return String.class;}
+            public boolean isReadableInterval(Object object, Chronology chrono) {
+                return false;
+            }
+
+            public void setInto(ReadWritableInterval interval, Object object, Chronology chrono) {
+            }
+
+            public Class getSupportedType() {
+                return String.class;
+            }
         };
         try {
             IntervalConverter removed = ConverterManager.getInstance().addIntervalConverter(c);
@@ -951,9 +1119,16 @@ public class TestConverterManager extends TestCase {
 
     public void testRemoveIntervalConverter2() {
         IntervalConverter c = new IntervalConverter() {
-            public boolean isReadableInterval(Object object, Chronology chrono) {return false;}
-            public void setInto(ReadWritableInterval interval, Object object, Chronology chrono) {}
-            public Class getSupportedType() {return Boolean.class;}
+            public boolean isReadableInterval(Object object, Chronology chrono) {
+                return false;
+            }
+
+            public void setInto(ReadWritableInterval interval, Object object, Chronology chrono) {
+            }
+
+            public Class getSupportedType() {
+                return Boolean.class;
+            }
         };
         IntervalConverter removed = ConverterManager.getInstance().removeIntervalConverter(c);
         assertEquals(null, removed);

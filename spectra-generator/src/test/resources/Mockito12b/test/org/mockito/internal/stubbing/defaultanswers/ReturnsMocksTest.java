@@ -48,20 +48,21 @@ public class ReturnsMocksTest extends TestBase {
         assertEquals(0, answer.answer(invocationOf(HasPrimitiveMethods.class, "floatMethod")));
         assertEquals(0, answer.answer(invocationOf(HasPrimitiveMethods.class, "doubleMethod")));
     }
-    
+
     interface StringMethods {
         String stringMethod();
+
         String[] stringArrayMethod();
     }
-    
+
     @Test
     public void shouldReturnEmptyArray() throws Throwable {
         String[] ret = (String[]) values.answer(invocationOf(StringMethods.class, "stringArrayMethod"));
-        
+
         assertTrue(ret.getClass().isArray());
         assertTrue(ret.length == 0);
     }
-    
+
     @Test
     public void shouldReturnEmptyString() throws Throwable {
         assertEquals("", values.answer(invocationOf(StringMethods.class, "stringMethod")));

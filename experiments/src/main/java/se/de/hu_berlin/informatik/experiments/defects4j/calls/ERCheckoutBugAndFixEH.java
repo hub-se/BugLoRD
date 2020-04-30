@@ -6,30 +6,30 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * Runs a single experiment.
- * 
+ *
  * @author Simon Heiden
  */
-public class ERCheckoutBugAndFixEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
+public class ERCheckoutBugAndFixEH extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
 
-	@Override
-	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
-		Log.out(this, "Processing %s.", buggyEntity);
+    @Override
+    public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
+        Log.out(this, "Processing %s.", buggyEntity);
 
-		/* #====================================================================================
-		 * # checkout buggy version and fixed version
-		 * #==================================================================================== */
-		buggyEntity.requireBug(true);
-		buggyEntity.requireFix(true);
+        /* #====================================================================================
+         * # checkout buggy version and fixed version
+         * #==================================================================================== */
+        buggyEntity.requireBug(true);
+        buggyEntity.requireFix(true);
 
 
-		/* #====================================================================================
-		 * # clean up unnecessary directories (doc files, svn/git files, binary classes)
-		 * #==================================================================================== */
-		buggyEntity.getBuggyVersion().removeUnnecessaryFiles(true);
-		buggyEntity.getFixedVersion().removeUnnecessaryFiles(true);
+        /* #====================================================================================
+         * # clean up unnecessary directories (doc files, svn/git files, binary classes)
+         * #==================================================================================== */
+        buggyEntity.getBuggyVersion().removeUnnecessaryFiles(true);
+        buggyEntity.getFixedVersion().removeUnnecessaryFiles(true);
 
-		return buggyEntity;
-	}
+        return buggyEntity;
+    }
 
 }
 

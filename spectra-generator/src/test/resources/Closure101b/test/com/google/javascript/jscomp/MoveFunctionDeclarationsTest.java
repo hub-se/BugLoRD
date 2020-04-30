@@ -18,31 +18,29 @@ package com.google.javascript.jscomp;
 
 /**
  * Tests for {@link MoveFunctionDeclarations}
- *
-*
  */
 public class MoveFunctionDeclarationsTest extends CompilerTestCase {
 
-  @Override
-  protected CompilerPass getProcessor(Compiler compiler) {
-    return new MoveFunctionDeclarations(compiler);
-  }
+    @Override
+    protected CompilerPass getProcessor(Compiler compiler) {
+        return new MoveFunctionDeclarations(compiler);
+    }
 
-  public void testFunctionDeclarations() {
-    test("a; function f(){} function g(){}", "function f(){} function g(){} a");
-  }
+    public void testFunctionDeclarations() {
+        test("a; function f(){} function g(){}", "function f(){} function g(){} a");
+    }
 
-  public void testFunctionDeclarationsInModule() {
-    test(createModules("a; function f(){} function g(){}"),
-         new String[] { "function f(){} function g(){} a" });
-  }
+    public void testFunctionDeclarationsInModule() {
+        test(createModules("a; function f(){} function g(){}"),
+                new String[]{"function f(){} function g(){} a"});
+    }
 
-  public void testAnonymousFunctions() {
-    testSame("a; f = function(){}");
-  }
+    public void testAnonymousFunctions() {
+        testSame("a; f = function(){}");
+    }
 
-  public void testNoMoveDeepFunctionDeclarations() {
-    testSame("a; if (a) function f(){};");
-    testSame("a; if (a) { function f(){} }");
-  }
+    public void testNoMoveDeepFunctionDeclarations() {
+        testSame("a; if (a) function f(){};");
+        testSame("a; if (a) { function f(){} }");
+    }
 }

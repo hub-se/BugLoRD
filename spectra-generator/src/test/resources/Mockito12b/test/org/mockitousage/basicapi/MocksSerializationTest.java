@@ -4,11 +4,6 @@
  */
 package org.mockitousage.basicapi;
 
-import static org.mockito.Mockito.*;
-
-import java.io.*;
-import java.util.*;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.internal.matchers.Any;
@@ -17,6 +12,14 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
+
+import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings({"unchecked", "serial"})
 public class MocksSerializationTest extends TestBase implements Serializable {
@@ -41,7 +44,7 @@ public class MocksSerializationTest extends TestBase implements Serializable {
         //when-serialize then-deserialize
         serializeAndBack(barMock);
     }
-    
+
     @Test
     public void shouldAllowMockToBeSerializable() throws Exception {
         // given
@@ -166,6 +169,7 @@ public class MocksSerializationTest extends TestBase implements Serializable {
 
     class Foo implements Serializable {
         Bar bar;
+
         Foo() {
             bar = new Bar();
             bar.foo = this;
@@ -237,8 +241,8 @@ public class MocksSerializationTest extends TestBase implements Serializable {
 
         // given
         IMethods mock = mock(IMethods.class, withSettings().serializable());
-        CustomAnswersMustImplementSerializableForSerializationToWork answer = 
-            new CustomAnswersMustImplementSerializableForSerializationToWork();
+        CustomAnswersMustImplementSerializableForSerializationToWork answer =
+                new CustomAnswersMustImplementSerializableForSerializationToWork();
         answer.string = "return value";
         when(mock.objectArgMethod(anyString())).thenAnswer(answer);
 
@@ -250,24 +254,25 @@ public class MocksSerializationTest extends TestBase implements Serializable {
         assertEquals(answer.string, readObject.objectArgMethod(""));
     }
 
-    class CustomAnswersMustImplementSerializableForSerializationToWork 
-        implements Answer<Object>, Serializable {
+    class CustomAnswersMustImplementSerializableForSerializationToWork
+            implements Answer<Object>, Serializable {
         private String string;
+
         public Object answer(InvocationOnMock invocation) throws Throwable {
             invocation.getArguments();
             invocation.getMock();
             return string;
         }
     }
-  
+
     @Test
     public void shouldSerializeWithRealObjectSpy() throws Exception {
         // given
         List<Object> list = new ArrayList<Object>();
         List<Object> spy = mock(ArrayList.class, withSettings()
-                        .spiedInstance(list)
-                        .defaultAnswer(CALLS_REAL_METHODS)
-                        .serializable());
+                .spiedInstance(list)
+                .defaultAnswer(CALLS_REAL_METHODS)
+                .serializable());
         when(spy.size()).thenReturn(100);
 
         // when
@@ -304,7 +309,8 @@ public class MocksSerializationTest extends TestBase implements Serializable {
         readObject.matches("");
     }
 
-    class AlreadySerializable implements Serializable {}
+    class AlreadySerializable implements Serializable {
+    }
 
     @Test
     public void shouldSerializeAlreadySerializableClass() throws Exception {

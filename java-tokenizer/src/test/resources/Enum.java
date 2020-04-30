@@ -5,30 +5,32 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.lang.enum;
+package org.apache.commons.lang.
+
+enum;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.WeakHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+        import java.lang.reflect.InvocationTargetException;
+        import java.lang.reflect.Method;
+        import java.util.ArrayList;
+        import java.util.Collections;
+        import java.util.HashMap;
+        import java.util.WeakHashMap;
+        import java.util.Iterator;
+        import java.util.List;
+        import java.util.Map;
 
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
+        import org.apache.commons.lang.ClassUtils;
+        import org.apache.commons.lang.StringUtils;
 
 /**
  * <p>Abstract superclass for type-safe enums.</p>
@@ -42,10 +44,10 @@ import org.apache.commons.lang.StringUtils;
  * <p><em>NOTE:</em>Due to the way in which Java ClassLoaders work, comparing
  * Enum objects should always be done using <code>equals()</code>, not <code>==</code>.
  * The equals() method will try == first so in most cases the effect is the same.</p>
- * 
+ *
  * <p>Of course, if you actually want (or don't mind) Enums in different class
  * loaders being non-equal, then you can use <code>==</code>.</p>
- * 
+ *
  * <h4>Simple Enums</h4>
  *
  * <p>To use this class, it must be subclassed. For example:</p>
@@ -59,19 +61,19 @@ import org.apache.commons.lang.StringUtils;
  *   private ColorEnum(String color) {
  *     super(color);
  *   }
- * 
+ *
  *   public static ColorEnum getEnum(String color) {
  *     return (ColorEnum) getEnum(ColorEnum.class, color);
  *   }
- * 
+ *
  *   public static Map getEnumMap() {
  *     return getEnumMap(ColorEnum.class);
  *   }
- * 
+ *
  *   public static List getEnumList() {
  *     return getEnumList(ColorEnum.class);
  *   }
- * 
+ *
  *   public static Iterator iterator() {
  *     return iterator(ColorEnum.class);
  *   }
@@ -83,7 +85,7 @@ import org.apache.commons.lang.StringUtils;
  * <p>The <code>getEnum</code> and <code>iterator</code> methods are recommended.
  * Unfortunately, Java restrictions require these to be coded as shown in each subclass.
  * An alternative choice is to use the {@link EnumUtils} class.</p>
- * 
+ *
  * <h4>Subclassed Enums</h4>
  * <p>A hierarchy of Enum classes can be built. In this case, the superclass is
  * unaffected by the addition of subclasses (as per normal Java). The subclasses
@@ -100,19 +102,19 @@ import org.apache.commons.lang.StringUtils;
  *   private ExtraColorEnum(String color) {
  *     super(color);
  *   }
- * 
+ *
  *   public static ColorEnum getEnum(String color) {
  *     return (ColorEnum) getEnum(ExtraColorEnum.class, color);
  *   }
- * 
+ *
  *   public static Map getEnumMap() {
  *     return getEnumMap(ExtraColorEnum.class);
  *   }
- * 
+ *
  *   public static List getEnumList() {
  *     return getEnumList(ExtraColorEnum.class);
  *   }
- * 
+ *
  *   public static Iterator iterator() {
  *     return iterator(ExtraColorEnum.class);
  *   }
@@ -120,15 +122,15 @@ import org.apache.commons.lang.StringUtils;
  * </pre>
  *
  * <p>This example will return RED, GREEN, BLUE, YELLOW from the List and iterator
- * methods in that order. The RED, GREEN and BLUE instances will be the same (==) 
+ * methods in that order. The RED, GREEN and BLUE instances will be the same (==)
  * as those from the superclass ColorEnum. Note that YELLOW is declared as a
  * ColorEnum and not an ExtraColorEnum.</p>
- * 
+ *
  * <h4>Functional Enums</h4>
  *
  * <p>The enums can have functionality by defining subclasses and
  * overriding the <code>getEnumClass()</code> method:</p>
- * 
+ *
  * <pre>
  *   public static final OperationEnum PLUS = new PlusOperation();
  *   private static final class PlusOperation extends OperationEnum {
@@ -152,25 +154,25 @@ import org.apache.commons.lang.StringUtils;
  *   private OperationEnum(String color) {
  *     super(color);
  *   }
- * 
+ *
  *   public final Class getEnumClass() {     // NOTE: new method!
  *     return OperationEnum.class;
  *   }
  *
  *   public abstract double eval(double a, double b);
- * 
+ *
  *   public static OperationEnum getEnum(String name) {
  *     return (OperationEnum) getEnum(OperationEnum.class, name);
  *   }
- * 
+ *
  *   public static Map getEnumMap() {
  *     return getEnumMap(OperationEnum.class);
  *   }
- * 
+ *
  *   public static List getEnumList() {
  *     return getEnumList(OperationEnum.class);
  *   }
- * 
+ *
  *   public static Iterator iterator() {
  *     return iterator(OperationEnum.class);
  *   }
@@ -178,7 +180,7 @@ import org.apache.commons.lang.StringUtils;
  * </pre>
  * <p>The code above will work on JDK 1.2. If JDK1.3 and later is used,
  * the subclasses may be defined as anonymous.</p>
- * 
+ *
  * <h4>Nested class Enums</h4>
  *
  * <p>Care must be taken with class loading when defining a static nested class
@@ -194,17 +196,17 @@ import org.apache.commons.lang.StringUtils;
  *
  *   // static nested enum class
  *   public static final class BWEnum extends Enum {
- * 
+ *
  *     static {
  *       // explicitly reference BWEnum class to force constants to load
  *       Object obj = Outer.BLACK;
  *     }
- * 
+ *
  *     // ... other methods omitted
  *   }
  * }
  * </pre>
- * 
+ *
  * <p>Although the above solves the problem, it is not recommended. The best solution
  * is to define the constants in the enum class, and hold references in the outer class:
  *
@@ -218,58 +220,59 @@ import org.apache.commons.lang.StringUtils;
  *     // only define constants in enum classes - private if desired
  *     private static final BWEnum BLACK = new BWEnum("Black");
  *     private static final BWEnum WHITE = new BWEnum("White");
- * 
+ *
  *     // ... other methods omitted
  *   }
  * }
  * </pre>
- * 
+ *
  * <p>For more details, see the 'Nested' test cases.
- * 
- * @deprecated Replaced by {@link org.apache.commons.lang.enums.Enum org.apache.commons.lang.enums.Enum} 
- *          and will be removed in version 3.0. All classes in this package are deprecated and repackaged to 
- *          {@link org.apache.commons.lang.enums} since <code>enum</code> is a Java 1.5 keyword. 
- * @see org.apache.commons.lang.enums.Enum
+ *
  * @author Apache Avalon project
  * @author Stephen Colebourne
  * @author Chris Webb
  * @author Mike Bowler
- * @since 1.0
  * @version $Id$
+ * @see org.apache.commons.lang.enums.Enum
+ * @since 1.0
+ * @deprecated Replaced by {@link org.apache.commons.lang.enums.Enum org.apache.commons.lang.enums.Enum}
+ * and will be removed in version 3.0. All classes in this package are deprecated and repackaged to
+ * {@link org.apache.commons.lang.enums} since <code>enum</code> is a Java 1.5 keyword.
  */
 public abstract class Enum implements Comparable, Serializable {
 
     /**
      * Required for serialization support. Lang version 1.0.1 serial compatibility.
-     * 
+     *
      * @see java.io.Serializable
      */
     private static final long serialVersionUID = -487045951170455942L;
-    
+
     // After discussion, the default size for HashMaps is used, as the
     // sizing algorithm changes across the JDK versions
     /**
      * An empty <code>Map</code>, as JDK1.2 didn't have an empty map.
      */
     private static final Map EMPTY_MAP = Collections.unmodifiableMap(new HashMap(0));
-    
+
     /**
      * <code>Map</code>, key of class name, value of <code>Entry</code>.
      */
     private static final Map cEnumClasses = new WeakHashMap();
-    
+
     /**
      * The string representation of the Enum.
      */
     private final String iName;
-    
+
     /**
      * The hashcode representation of the Enum.
      */
     private transient final int iHashCode;
-    
+
     /**
      * The toString representation of the Enum.
+     *
      * @since 2.0
      */
     protected transient String iToString = null;
@@ -306,12 +309,12 @@ public abstract class Enum implements Comparable, Serializable {
     /**
      * <p>Constructor to add a new named item to the enumeration.</p>
      *
-     * @param name  the name of the enum object,
-     *  must not be empty or <code>null</code>
+     * @param name the name of the enum object,
+     *             must not be empty or <code>null</code>
      * @throws IllegalArgumentException if the name is <code>null</code>
-     *  or an empty string
+     *                                  or an empty string
      * @throws IllegalArgumentException if the getEnumClass() method returns
-     *  a null or invalid Class
+     *                                  a null or invalid Class
      */
     protected Enum(String name) {
         super();
@@ -323,8 +326,8 @@ public abstract class Enum implements Comparable, Serializable {
 
     /**
      * Initializes the enumeration.
-     * 
-     * @param name  the enum name
+     *
+     * @param name the enum name
      * @throws IllegalArgumentException if the name is null or empty or duplicate
      * @throws IllegalArgumentException if the enumClass is null or invalid
      */
@@ -332,7 +335,7 @@ public abstract class Enum implements Comparable, Serializable {
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("The Enum name must not be empty or null");
         }
-        
+
         Class enumClass = getEnumClass();
         if (enumClass == null) {
             throw new IllegalArgumentException("getEnumClass() must not be null");
@@ -349,7 +352,7 @@ public abstract class Enum implements Comparable, Serializable {
         if (ok == false) {
             throw new IllegalArgumentException("getEnumClass() must return a superclass of this class");
         }
-        
+
         // create entry
         Entry entry = (Entry) cEnumClasses.get(enumClass);
         if (entry == null) {
@@ -376,19 +379,19 @@ public abstract class Enum implements Comparable, Serializable {
         }
         return entry.map.get(getName());
     }
-    
+
     //--------------------------------------------------------------------------------
 
     /**
      * <p>Gets an <code>Enum</code> object by class and name.</p>
-     * 
-     * @param enumClass  the class of the Enum to get, must not
-     *  be <code>null</code>
-     * @param name  the name of the <code>Enum</code> to get,
-     *  may be <code>null</code>
+     *
+     * @param enumClass the class of the Enum to get, must not
+     *                  be <code>null</code>
+     * @param name      the name of the <code>Enum</code> to get,
+     *                  may be <code>null</code>
      * @return the enum object, or <code>null</code> if the enum does not exist
      * @throws IllegalArgumentException if the enum class
-     *  is <code>null</code>
+     *                                  is <code>null</code>
      */
     protected static Enum getEnum(Class enumClass, String name) {
         Entry entry = getEntry(enumClass);
@@ -404,9 +407,9 @@ public abstract class Enum implements Comparable, Serializable {
      *
      * <p>If the requested class has no enum objects an empty
      * <code>Map</code> is returned.</p>
-     * 
-     * @param enumClass  the class of the <code>Enum</code> to get,
-     *  must not be <code>null</code>
+     *
+     * @param enumClass the class of the <code>Enum</code> to get,
+     *                  must not be <code>null</code>
      * @return the enum object Map
      * @throws IllegalArgumentException if the enum class is <code>null</code>
      * @throws IllegalArgumentException if the enum class is not a subclass of Enum
@@ -426,9 +429,9 @@ public abstract class Enum implements Comparable, Serializable {
      * <p>The list is in the order that the objects were created (source code order).
      * If the requested class has no enum objects an empty <code>List</code> is
      * returned.</p>
-     * 
-     * @param enumClass  the class of the <code>Enum</code> to get,
-     *  must not be <code>null</code>
+     *
+     * @param enumClass the class of the <code>Enum</code> to get,
+     *                  must not be <code>null</code>
      * @return the enum object Map
      * @throws IllegalArgumentException if the enum class is <code>null</code>
      * @throws IllegalArgumentException if the enum class is not a subclass of Enum
@@ -448,9 +451,9 @@ public abstract class Enum implements Comparable, Serializable {
      * <p>The <code>Iterator</code> is in the order that the objects were
      * created (source code order). If the requested class has no enum
      * objects an empty <code>Iterator</code> is returned.</p>
-     * 
-     * @param enumClass  the class of the <code>Enum</code> to get,
-     *  must not be <code>null</code>
+     *
+     * @param enumClass the class of the <code>Enum</code> to get,
+     *                  must not be <code>null</code>
      * @return an iterator of the Enum objects
      * @throws IllegalArgumentException if the enum class is <code>null</code>
      * @throws IllegalArgumentException if the enum class is not a subclass of Enum
@@ -460,10 +463,11 @@ public abstract class Enum implements Comparable, Serializable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Gets an <code>Entry</code> from the map of Enums.</p>
-     * 
-     * @param enumClass  the class of the <code>Enum</code> to get
+     *
+     * @param enumClass the class of the <code>Enum</code> to get
      * @return the enum entry
      */
     private static Entry getEntry(Class enumClass) {
@@ -476,13 +480,13 @@ public abstract class Enum implements Comparable, Serializable {
         Entry entry = (Entry) cEnumClasses.get(enumClass);
         return entry;
     }
-    
+
     /**
      * <p>Creates an <code>Entry</code> for storing the Enums.</p>
      *
      * <p>This accounts for subclassed Enums.</p>
-     * 
-     * @param enumClass  the class of the <code>Enum</code> to get
+     *
+     * @param enumClass the class of the <code>Enum</code> to get
      * @return the enum entry
      */
     private static Entry createEntry(Class enumClass) {
@@ -499,11 +503,12 @@ public abstract class Enum implements Comparable, Serializable {
         }
         return entry;
     }
-    
+
     //-----------------------------------------------------------------------
+
     /**
      * <p>Retrieve the name of this Enum item, set in the constructor.</p>
-     * 
+     *
      * @return the <code>String</code> name of this Enum item
      */
     public final String getName() {
@@ -512,11 +517,11 @@ public abstract class Enum implements Comparable, Serializable {
 
     /**
      * <p>Retrieves the Class of this Enum item, set in the constructor.</p>
-     * 
+     *
      * <p>This is normally the same as <code>getClass()</code>, but for
      * advanced Enums may be different. If overridden, it must return a
      * constant value.</p>
-     * 
+     *
      * @return the <code>Class</code> of the enum
      * @since 2.0
      */
@@ -530,11 +535,11 @@ public abstract class Enum implements Comparable, Serializable {
      * <p>Two Enum objects are considered equal
      * if they have the same class names and the same names.
      * Identity is tested for first, so this method usually runs fast.</p>
-     * 
+     *
      * <p>If the parameter is in a different class loader than this instance,
      * reflection is used to compare the names.</p>
      *
-     * @param other  the other object to compare for equality
+     * @param other the other object to compare for equality
      * @return <code>true</code> if the Enums are equal
      */
     public final boolean equals(Object other) {
@@ -552,10 +557,10 @@ public abstract class Enum implements Comparable, Serializable {
             if (other.getClass().getName().equals(this.getClass().getName()) == false) {
                 return false;
             }
-            return iName.equals( getNameInOtherClassLoader(other) );
+            return iName.equals(getNameInOtherClassLoader(other));
         }
     }
-    
+
     /**
      * <p>Returns a suitable hashCode for the enumeration.</p>
      *
@@ -570,16 +575,16 @@ public abstract class Enum implements Comparable, Serializable {
      *
      * <p>The default ordering is alphabetic by name, but this
      * can be overridden by subclasses.</p>
-     * 
+     *
      * <p>If the parameter is in a different class loader than this instance,
      * reflection is used to compare the names.</p>
      *
-     * @see java.lang.Comparable#compareTo(Object)
-     * @param other  the other object to compare to
+     * @param other the other object to compare to
      * @return -ve if this is less than the other object, +ve if greater
-     *  than, <code>0</code> of equal
-     * @throws ClassCastException if other is not an Enum
+     * than, <code>0</code> of equal
+     * @throws ClassCastException   if other is not an Enum
      * @throws NullPointerException if other is <code>null</code>
+     * @see java.lang.Comparable#compareTo(Object)
      */
     public int compareTo(Object other) {
         if (other == this) {
@@ -587,7 +592,7 @@ public abstract class Enum implements Comparable, Serializable {
         }
         if (other.getClass() != this.getClass()) {
             if (other.getClass().getName().equals(this.getClass().getName())) {
-                return iName.compareTo( getNameInOtherClassLoader(other) );
+                return iName.compareTo(getNameInOtherClassLoader(other));
             }
         }
         return iName.compareTo(((Enum) other).iName);
@@ -616,7 +621,7 @@ public abstract class Enum implements Comparable, Serializable {
 
     /**
      * <p>Human readable description of this Enum item.</p>
-     * 
+     *
      * @return String in the form <code>type[name]</code>, for example:
      * <code>Color[Red]</code>. Note that the package name is stripped from
      * the type name.
@@ -628,5 +633,5 @@ public abstract class Enum implements Comparable, Serializable {
         }
         return iToString;
     }
-    
+
 }

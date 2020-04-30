@@ -15,15 +15,14 @@
  */
 package org.joda.time.chrono;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
+
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * This class is a Junit unit test for JulianChronology.
@@ -36,13 +35,13 @@ public class TestJulianChronology extends TestCase {
     private static final DateTimeZone LONDON = DateTimeZone.forID("Europe/London");
     private static final DateTimeZone TOKYO = DateTimeZone.forID("Asia/Tokyo");
 
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
 
     private DateTimeZone originalDateTimeZone = null;
     private TimeZone originalTimeZone = null;
@@ -102,15 +101,17 @@ public class TestJulianChronology extends TestCase {
         JulianChronology chrono = JulianChronology.getInstance(TOKYO, 2);
         assertEquals(TOKYO, chrono.getZone());
         assertEquals(2, chrono.getMinimumDaysInFirstWeek());
-        
+
         try {
             JulianChronology.getInstance(TOKYO, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             JulianChronology.getInstance(TOKYO, 8);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -161,7 +162,7 @@ public class TestJulianChronology extends TestCase {
         assertEquals("minutes", julian.minutes().getName());
         assertEquals("seconds", julian.seconds().getName());
         assertEquals("millis", julian.millis().getName());
-        
+
         assertEquals(false, julian.eras().isSupported());
         assertEquals(true, julian.centuries().isSupported());
         assertEquals(true, julian.years().isSupported());
@@ -174,7 +175,7 @@ public class TestJulianChronology extends TestCase {
         assertEquals(true, julian.minutes().isSupported());
         assertEquals(true, julian.seconds().isSupported());
         assertEquals(true, julian.millis().isSupported());
-        
+
         assertEquals(false, julian.centuries().isPrecise());
         assertEquals(false, julian.years().isPrecise());
         assertEquals(false, julian.weekyears().isPrecise());
@@ -186,7 +187,7 @@ public class TestJulianChronology extends TestCase {
         assertEquals(true, julian.minutes().isPrecise());
         assertEquals(true, julian.seconds().isPrecise());
         assertEquals(true, julian.millis().isPrecise());
-        
+
         final JulianChronology julianUTC = JulianChronology.getInstanceUTC();
         assertEquals(false, julianUTC.centuries().isPrecise());
         assertEquals(false, julianUTC.years().isPrecise());
@@ -199,7 +200,7 @@ public class TestJulianChronology extends TestCase {
         assertEquals(true, julianUTC.minutes().isPrecise());
         assertEquals(true, julianUTC.seconds().isPrecise());
         assertEquals(true, julianUTC.millis().isPrecise());
-        
+
         final DateTimeZone gmt = DateTimeZone.forID("Etc/GMT");
         final JulianChronology julianGMT = JulianChronology.getInstance(gmt);
         assertEquals(false, julianGMT.centuries().isPrecise());
@@ -229,7 +230,7 @@ public class TestJulianChronology extends TestCase {
         assertEquals("dayOfYear", julian.dayOfYear().getName());
         assertEquals("dayOfMonth", julian.dayOfMonth().getName());
         assertEquals("dayOfWeek", julian.dayOfWeek().getName());
-        
+
         assertEquals(true, julian.era().isSupported());
         assertEquals(true, julian.centuryOfEra().isSupported());
         assertEquals(true, julian.yearOfCentury().isSupported());
@@ -242,7 +243,7 @@ public class TestJulianChronology extends TestCase {
         assertEquals(true, julian.dayOfYear().isSupported());
         assertEquals(true, julian.dayOfMonth().isSupported());
         assertEquals(true, julian.dayOfWeek().isSupported());
-        
+
         assertEquals(julian.eras(), julian.era().getDurationField());
         assertEquals(julian.centuries(), julian.centuryOfEra().getDurationField());
         assertEquals(julian.years(), julian.yearOfCentury().getDurationField());
@@ -255,7 +256,7 @@ public class TestJulianChronology extends TestCase {
         assertEquals(julian.days(), julian.dayOfYear().getDurationField());
         assertEquals(julian.days(), julian.dayOfMonth().getDurationField());
         assertEquals(julian.days(), julian.dayOfWeek().getDurationField());
-        
+
         assertEquals(null, julian.era().getRangeDurationField());
         assertEquals(julian.eras(), julian.centuryOfEra().getRangeDurationField());
         assertEquals(julian.centuries(), julian.yearOfCentury().getRangeDurationField());
@@ -283,7 +284,7 @@ public class TestJulianChronology extends TestCase {
         assertEquals("secondOfMinute", julian.secondOfMinute().getName());
         assertEquals("millisOfDay", julian.millisOfDay().getName());
         assertEquals("millisOfSecond", julian.millisOfSecond().getName());
-        
+
         assertEquals(true, julian.halfdayOfDay().isSupported());
         assertEquals(true, julian.clockhourOfHalfday().isSupported());
         assertEquals(true, julian.hourOfHalfday().isSupported());

@@ -30,314 +30,314 @@ import java.util.Set;
 
 /**
  * This describes the Closure-specific JavaScript coding conventions.
- *
-*
-*
  */
 public class ClosureCodingConvention extends DefaultCodingConvention {
 
-  private static final String TYPEDEF_NAME = "goog.typedef";
+    private static final String TYPEDEF_NAME = "goog.typedef";
 
-  static final DiagnosticType OBJECTLIT_EXPECTED = DiagnosticType.warning(
-      "JSC_REFLECT_OBJECTLIT_EXPECTED",
-      "Object literal expected as second argument");
+    static final DiagnosticType OBJECTLIT_EXPECTED = DiagnosticType.warning(
+            "JSC_REFLECT_OBJECTLIT_EXPECTED",
+            "Object literal expected as second argument");
 
-  /**
-   * Closure's goog.inherits adds a {@code superClass_} property to the
-   * subclass, and a {@code constructor} property.
-   */
-  @Override
-  public void applySubclassRelationship(FunctionType parentCtor,
-      FunctionType childCtor, SubclassType type) {
-    if (type == SubclassType.INHERITS) {
-      childCtor.defineDeclaredProperty("superClass_",
-          parentCtor.getPrototype(), false);
-      childCtor.getPrototype().defineDeclaredProperty("constructor",
-          childCtor, false);
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * <p>Understands several different inheritance patterns that occur in
-   * Google code (various uses of {@code inherits} and {@code mixin}).
-   */
-  @Override
-  public SubclassRelationship getClassesDefinedByCall(Node callNode) {
-    Node callName = callNode.getFirstChild();
-    SubclassType type = typeofClassDefiningName(callName);
-    if (type != null) {
-      Node subclass = null;
-      Node superclass = callNode.getLastChild();
-
-      // There are six possible syntaxes for a class-defining method:
-      // SubClass.inherits(SuperClass)
-      // goog.inherits(SubClass, SuperClass)
-      // goog$inherits(SubClass, SuperClass)
-      // SubClass.mixin(SuperClass.prototype)
-      // goog.mixin(SubClass.prototype, SuperClass.prototype)
-      // goog$mixin(SubClass.prototype, SuperClass.prototype)
-      if (callNode.getChildCount() == 2 &&
-          callName.getType() == Token.GETPROP) {
-        // SubClass.inherits(SuperClass)
-        subclass = callName.getFirstChild();
-      } else if (callNode.getChildCount() == 3) {
-        // goog.inherits(SubClass, SuperClass)
-        subclass = callName.getNext();
-      }
-
-      // bail out if either of the side of the "inherits"
-      // isn't a real class name. This prevents us from
-      // doing something weird in cases like:
-      // goog.inherits(MySubClass, cond ? SuperClass1 : BaseClass2)
-      if (subclass != null &&
-          subclass.isUnscopedQualifiedName() &&
-          superclass.isUnscopedQualifiedName()) {
-        // make sure to strip the prototype off of the nodes
-        // to normalize for goog.mixin
-        return new SubclassRelationship(
-            type,
-            stripPrototype(subclass),
-            stripPrototype(superclass));
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   * Determines whether the given node is a class-defining name, like
-   * "inherits" or "mixin."
-   * @return The type of class-defining name, or null.
-   */
-  private SubclassType typeofClassDefiningName(Node callName) {
-    // Check if the method name matches one of the class-defining methods.
-    String methodName = null;
-    if (callName.getType() == Token.GETPROP) {
-      methodName = callName.getLastChild().getString();
-    } else if (callName.getType() == Token.NAME) {
-      String name = callName.getString();
-      int dollarIndex = name.lastIndexOf('$');
-      if (dollarIndex != -1) {
-        methodName = name.substring(dollarIndex + 1);
-      }
-    }
-
-    if (methodName != null) {
-      if (methodName.equals("inherits")) {
-        return SubclassType.INHERITS;
-      } else if (methodName.equals("mixin")) {
-        return SubclassType.MIXIN;
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public boolean isSuperClassReference(String propertyName) {
-    return "superClass_".equals(propertyName);
-  }
-
-  /**
-   * Given a qualified name node, strip "prototype" off the end.
-   *
-   * Examples of this transformation:
-   * a.b.c => a.b.c
-   * a.b.c.prototype => a.b.c
-   */
-  private Node stripPrototype(Node qualifiedName) {
-    if (qualifiedName.getType() == Token.GETPROP &&
-        qualifiedName.getLastChild().getString().equals("prototype")) {
-      return qualifiedName.getFirstChild();
-    }
-
-    return qualifiedName;
-  }
-
-  /**
-   * Exctracts X from goog.provide('X'), if the applied Node is goog.
-   *
-   * @return The extracted class name, or null.
-   */
-  @Override
-  public String extractClassNameIfProvide(Node node, Node parent){
-    return extractClassNameIfGoog(node, parent, "goog.provide");
-  }
-
-  /**
-   * Exctracts X from goog.require('X'), if the applied Node is goog.
-   *
-   * @return The extracted class name, or null.
-   */
-  @Override
-  public String extractClassNameIfRequire(Node node, Node parent){
-    return extractClassNameIfGoog(node, parent, "goog.require");
-  }
-
-  private static String extractClassNameIfGoog(Node node, Node parent,
-      String functionName){
-    String className = null;
-    if (NodeUtil.isExprCall(parent)) {
-      Node callee = node.getFirstChild();
-      if (callee != null && callee.getType() == Token.GETPROP) {
-        String qualifiedName = callee.getQualifiedName();
-        if ((functionName).equals(qualifiedName)) {
-          className = callee.getNext().getString();
+    /**
+     * Closure's goog.inherits adds a {@code superClass_} property to the
+     * subclass, and a {@code constructor} property.
+     */
+    @Override
+    public void applySubclassRelationship(FunctionType parentCtor,
+                                          FunctionType childCtor, SubclassType type) {
+        if (type == SubclassType.INHERITS) {
+            childCtor.defineDeclaredProperty("superClass_",
+                    parentCtor.getPrototype(), false);
+            childCtor.getPrototype().defineDeclaredProperty("constructor",
+                    childCtor, false);
         }
-      }
     }
-    return className;
-  }
 
-  /**
-   * Use closure's implementation.
-   * @return closure's function name for exporting properties.
-   */
-  @Override
-  public String getExportPropertyFunction() {
-    return "goog.exportProperty";
-  }
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Understands several different inheritance patterns that occur in
+     * Google code (various uses of {@code inherits} and {@code mixin}).
+     */
+    @Override
+    public SubclassRelationship getClassesDefinedByCall(Node callNode) {
+        Node callName = callNode.getFirstChild();
+        SubclassType type = typeofClassDefiningName(callName);
+        if (type != null) {
+            Node subclass = null;
+            Node superclass = callNode.getLastChild();
 
-  /**
-   * Use closure's implementation.
-   * @return closure's function name for exporting symbols.
-   */
-  @Override
-  public String getExportSymbolFunction() {
-    return "goog.exportSymbol";
-  }
+            // There are six possible syntaxes for a class-defining method:
+            // SubClass.inherits(SuperClass)
+            // goog.inherits(SubClass, SuperClass)
+            // goog$inherits(SubClass, SuperClass)
+            // SubClass.mixin(SuperClass.prototype)
+            // goog.mixin(SubClass.prototype, SuperClass.prototype)
+            // goog$mixin(SubClass.prototype, SuperClass.prototype)
+            if (callNode.getChildCount() == 2 &&
+                    callName.getType() == Token.GETPROP) {
+                // SubClass.inherits(SuperClass)
+                subclass = callName.getFirstChild();
+            } else if (callNode.getChildCount() == 3) {
+                // goog.inherits(SubClass, SuperClass)
+                subclass = callName.getNext();
+            }
 
-  @Override
-  public List<String> identifyTypeDeclarationCall(Node n) {
-    Node callName = n.getFirstChild();
-    if ("goog.addDependency".equals(callName.getQualifiedName()) &&
-        n.getChildCount() >= 3) {
-      Node typeArray = callName.getNext().getNext();
-      if (typeArray.getType() == Token.ARRAYLIT) {
-        List<String> typeNames = Lists.newArrayList();
-        for (Node name = typeArray.getFirstChild(); name != null;
-             name = name.getNext()) {
-          if (name.getType() == Token.STRING) {
-            typeNames.add(name.getString());
-          }
+            // bail out if either of the side of the "inherits"
+            // isn't a real class name. This prevents us from
+            // doing something weird in cases like:
+            // goog.inherits(MySubClass, cond ? SuperClass1 : BaseClass2)
+            if (subclass != null &&
+                    subclass.isUnscopedQualifiedName() &&
+                    superclass.isUnscopedQualifiedName()) {
+                // make sure to strip the prototype off of the nodes
+                // to normalize for goog.mixin
+                return new SubclassRelationship(
+                        type,
+                        stripPrototype(subclass),
+                        stripPrototype(superclass));
+            }
         }
-        return typeNames;
-      }
-    }
-    return null;
-  }
 
-  @Override
-  public String identifyTypeDefAssign(Node n) {
-    Node firstChild = n.getFirstChild();
-    int type = n.getType();
-    if (type == Token.ASSIGN) {
-      if (TYPEDEF_NAME.equals(n.getLastChild().getQualifiedName())) {
-        return firstChild.getQualifiedName();
-      }
-    } else if (type == Token.VAR && firstChild.hasChildren()) {
-      if (TYPEDEF_NAME.equals(
-              firstChild.getFirstChild().getQualifiedName())) {
-        return firstChild.getString();
-      }
+        return null;
     }
 
-    return null;
-  }
+    /**
+     * Determines whether the given node is a class-defining name, like
+     * "inherits" or "mixin."
+     *
+     * @return The type of class-defining name, or null.
+     */
+    private SubclassType typeofClassDefiningName(Node callName) {
+        // Check if the method name matches one of the class-defining methods.
+        String methodName = null;
+        if (callName.getType() == Token.GETPROP) {
+            methodName = callName.getLastChild().getString();
+        } else if (callName.getType() == Token.NAME) {
+            String name = callName.getString();
+            int dollarIndex = name.lastIndexOf('$');
+            if (dollarIndex != -1) {
+                methodName = name.substring(dollarIndex + 1);
+            }
+        }
 
-  @Override
-  public String getAbstractMethodName() {
-    return "goog.abstractMethod";
-  }
-
-  @Override
-  public String getSingletonGetterClassName(Node callNode) {
-    Node callName = callNode.getFirstChild();
-    if (!"goog.addSingletonGetter".equals(callName.getQualifiedName()) ||
-        callName.getChildCount() != 2) {
-      return null;
+        if (methodName != null) {
+            if (methodName.equals("inherits")) {
+                return SubclassType.INHERITS;
+            } else if (methodName.equals("mixin")) {
+                return SubclassType.MIXIN;
+            }
+        }
+        return null;
     }
 
-    Node classNode = callName.getNext();
-    if (!classNode.isQualifiedName()) {
-      return null;
+    @Override
+    public boolean isSuperClassReference(String propertyName) {
+        return "superClass_".equals(propertyName);
     }
 
-    return callName.getNext().getQualifiedName();
-  }
+    /**
+     * Given a qualified name node, strip "prototype" off the end.
+     * <p>
+     * Examples of this transformation:
+     * a.b.c => a.b.c
+     * a.b.c.prototype => a.b.c
+     */
+    private Node stripPrototype(Node qualifiedName) {
+        if (qualifiedName.getType() == Token.GETPROP &&
+                qualifiedName.getLastChild().getString().equals("prototype")) {
+            return qualifiedName.getFirstChild();
+        }
 
-  @Override
-  public void applySingletonGetter(FunctionType functionType,
-      FunctionType getterType, ObjectType objectType) {
-    functionType.defineDeclaredProperty("getInstance", getterType, false);
-    functionType.defineDeclaredProperty("instance_", objectType, false);
-  }
-
-  @Override
-  public String getGlobalObject() {
-    return "goog.global";
-  }
-
-  private final Set<String> propertyTestFunctions = ImmutableSet.of(
-      "goog.isDef", "goog.isNull", "goog.isDefAndNotNull",
-      "goog.isString", "goog.isNumber", "goog.isBoolean",
-      "goog.isFunction", "goog.isArray", "goog.isObject");
-
-  @Override
-  public boolean isPropertyTestFunction(Node call) {
-    Preconditions.checkArgument(call.getType() == Token.CALL);
-    return propertyTestFunctions.contains(
-        call.getFirstChild().getQualifiedName());
-  }
-
-  @Override
-  public ObjectLiteralCast getObjectLiteralCast(NodeTraversal t,
-      Node callNode) {
-    Preconditions.checkArgument(callNode.getType() == Token.CALL);
-    Node callName = callNode.getFirstChild();
-    if (!"goog.reflect.object".equals(callName.getQualifiedName()) ||
-        callName.getChildCount() != 2) {
-      return null;
+        return qualifiedName;
     }
 
-    Node typeNode = callName.getNext();
-    if (!typeNode.isQualifiedName()) {
-      return null;
+    /**
+     * Exctracts X from goog.provide('X'), if the applied Node is goog.
+     *
+     * @return The extracted class name, or null.
+     */
+    @Override
+    public String extractClassNameIfProvide(Node node, Node parent) {
+        return extractClassNameIfGoog(node, parent, "goog.provide");
     }
 
-    Node objectNode = typeNode.getNext();
-    if (objectNode.getType() != Token.OBJECTLIT) {
-      t.getCompiler().report(JSError.make(t.getSourceName(), callNode,
-                                          OBJECTLIT_EXPECTED));
-      return null;
+    /**
+     * Exctracts X from goog.require('X'), if the applied Node is goog.
+     *
+     * @return The extracted class name, or null.
+     */
+    @Override
+    public String extractClassNameIfRequire(Node node, Node parent) {
+        return extractClassNameIfGoog(node, parent, "goog.require");
     }
 
-    return new ObjectLiteralCast(typeNode.getQualifiedName(),
-                                 typeNode.getNext());
-  }
+    private static String extractClassNameIfGoog(Node node, Node parent,
+                                                 String functionName) {
+        String className = null;
+        if (NodeUtil.isExprCall(parent)) {
+            Node callee = node.getFirstChild();
+            if (callee != null && callee.getType() == Token.GETPROP) {
+                String qualifiedName = callee.getQualifiedName();
+                if ((functionName).equals(qualifiedName)) {
+                    className = callee.getNext().getString();
+                }
+            }
+        }
+        return className;
+    }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean isOptionalParameter(Node parameter) {
-    return false;
-  }
+    /**
+     * Use closure's implementation.
+     *
+     * @return closure's function name for exporting properties.
+     */
+    @Override
+    public String getExportPropertyFunction() {
+        return "goog.exportProperty";
+    }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean isVarArgsParameter(Node parameter) {
-    return false;
-  }
+    /**
+     * Use closure's implementation.
+     *
+     * @return closure's function name for exporting symbols.
+     */
+    @Override
+    public String getExportSymbolFunction() {
+        return "goog.exportSymbol";
+    }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean isPrivate(String name) {
-    return false;
-  }
+    @Override
+    public List<String> identifyTypeDeclarationCall(Node n) {
+        Node callName = n.getFirstChild();
+        if ("goog.addDependency".equals(callName.getQualifiedName()) &&
+                n.getChildCount() >= 3) {
+            Node typeArray = callName.getNext().getNext();
+            if (typeArray.getType() == Token.ARRAYLIT) {
+                List<String> typeNames = Lists.newArrayList();
+                for (Node name = typeArray.getFirstChild(); name != null;
+                     name = name.getNext()) {
+                    if (name.getType() == Token.STRING) {
+                        typeNames.add(name.getString());
+                    }
+                }
+                return typeNames;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String identifyTypeDefAssign(Node n) {
+        Node firstChild = n.getFirstChild();
+        int type = n.getType();
+        if (type == Token.ASSIGN) {
+            if (TYPEDEF_NAME.equals(n.getLastChild().getQualifiedName())) {
+                return firstChild.getQualifiedName();
+            }
+        } else if (type == Token.VAR && firstChild.hasChildren()) {
+            if (TYPEDEF_NAME.equals(
+                    firstChild.getFirstChild().getQualifiedName())) {
+                return firstChild.getString();
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public String getAbstractMethodName() {
+        return "goog.abstractMethod";
+    }
+
+    @Override
+    public String getSingletonGetterClassName(Node callNode) {
+        Node callName = callNode.getFirstChild();
+        if (!"goog.addSingletonGetter".equals(callName.getQualifiedName()) ||
+                callName.getChildCount() != 2) {
+            return null;
+        }
+
+        Node classNode = callName.getNext();
+        if (!classNode.isQualifiedName()) {
+            return null;
+        }
+
+        return callName.getNext().getQualifiedName();
+    }
+
+    @Override
+    public void applySingletonGetter(FunctionType functionType,
+                                     FunctionType getterType, ObjectType objectType) {
+        functionType.defineDeclaredProperty("getInstance", getterType, false);
+        functionType.defineDeclaredProperty("instance_", objectType, false);
+    }
+
+    @Override
+    public String getGlobalObject() {
+        return "goog.global";
+    }
+
+    private final Set<String> propertyTestFunctions = ImmutableSet.of(
+            "goog.isDef", "goog.isNull", "goog.isDefAndNotNull",
+            "goog.isString", "goog.isNumber", "goog.isBoolean",
+            "goog.isFunction", "goog.isArray", "goog.isObject");
+
+    @Override
+    public boolean isPropertyTestFunction(Node call) {
+        Preconditions.checkArgument(call.getType() == Token.CALL);
+        return propertyTestFunctions.contains(
+                call.getFirstChild().getQualifiedName());
+    }
+
+    @Override
+    public ObjectLiteralCast getObjectLiteralCast(NodeTraversal t,
+                                                  Node callNode) {
+        Preconditions.checkArgument(callNode.getType() == Token.CALL);
+        Node callName = callNode.getFirstChild();
+        if (!"goog.reflect.object".equals(callName.getQualifiedName()) ||
+                callName.getChildCount() != 2) {
+            return null;
+        }
+
+        Node typeNode = callName.getNext();
+        if (!typeNode.isQualifiedName()) {
+            return null;
+        }
+
+        Node objectNode = typeNode.getNext();
+        if (objectNode.getType() != Token.OBJECTLIT) {
+            t.getCompiler().report(JSError.make(t.getSourceName(), callNode,
+                    OBJECTLIT_EXPECTED));
+            return null;
+        }
+
+        return new ObjectLiteralCast(typeNode.getQualifiedName(),
+                typeNode.getNext());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isOptionalParameter(Node parameter) {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isVarArgsParameter(Node parameter) {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isPrivate(String name) {
+        return false;
+    }
 }

@@ -15,18 +15,17 @@
  */
 package org.joda.time;
 
-import java.util.Date;
-import java.util.Locale;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.chrono.GregorianChronology;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.convert.ConverterManager;
 import org.joda.time.convert.MockZeroNullIntegerConverter;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * This class is a Junit unit test for MutableDateTime.
@@ -39,32 +38,32 @@ public class TestMutableDateTime_Constructors extends TestCase {
 
     private static final DateTimeZone PARIS = DateTimeZone.forID("Europe/Paris");
     private static final DateTimeZone LONDON = DateTimeZone.forID("Europe/London");
-    
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
-    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365 + 365;
-    
+
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
+    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365;
+
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
-            
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
+
     // 2002-04-05
     private long TEST_TIME1 =
-            (y2002days + 31L + 28L + 31L + 5L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 12L * DateTimeConstants.MILLIS_PER_HOUR
-            + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (y2002days + 31L + 28L + 31L + 5L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 12L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     // 2003-05-06
     private long TEST_TIME2 =
-            (y2003days + 31L + 28L + 31L + 30L + 6L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 14L * DateTimeConstants.MILLIS_PER_HOUR
-            + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (y2003days + 31L + 28L + 31L + 30L + 6L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 14L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     private DateTimeZone zone = null;
     private Locale locale = null;
 
@@ -105,6 +104,7 @@ public class TestMutableDateTime_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test now ()
      */
@@ -130,7 +130,8 @@ public class TestMutableDateTime_Constructors extends TestCase {
         try {
             MutableDateTime.now((DateTimeZone) null);
             fail();
-        } catch (NullPointerException ex) {}
+        } catch (NullPointerException ex) {
+        }
     }
 
     /**
@@ -149,7 +150,8 @@ public class TestMutableDateTime_Constructors extends TestCase {
         try {
             MutableDateTime.now((Chronology) null);
             fail();
-        } catch (NullPointerException ex) {}
+        } catch (NullPointerException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -164,6 +166,7 @@ public class TestMutableDateTime_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor ()
      */
@@ -210,6 +213,7 @@ public class TestMutableDateTime_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (long)
      */
@@ -283,6 +287,7 @@ public class TestMutableDateTime_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (Object)
      */
@@ -300,7 +305,8 @@ public class TestMutableDateTime_Constructors extends TestCase {
         try {
             new MutableDateTime(new Object());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     /**
@@ -343,7 +349,8 @@ public class TestMutableDateTime_Constructors extends TestCase {
         try {
             new MutableDateTime(new Object(), PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     /**
@@ -405,7 +412,8 @@ public class TestMutableDateTime_Constructors extends TestCase {
         try {
             new MutableDateTime(new Object(), GregorianChronology.getInstance());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     /**
@@ -451,6 +459,7 @@ public class TestMutableDateTime_Constructors extends TestCase {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test constructor (int, int, int)
      */
@@ -462,32 +471,39 @@ public class TestMutableDateTime_Constructors extends TestCase {
         try {
             new MutableDateTime(Integer.MIN_VALUE, 6, 9, 0, 0, 0, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(Integer.MAX_VALUE, 6, 9, 0, 0, 0, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 0, 9, 0, 0, 0, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 13, 9, 0, 0, 0, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 6, 0, 0, 0, 0, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 6, 31, 0, 0, 0, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         new MutableDateTime(2002, 7, 31, 0, 0, 0, 0);
         try {
             new MutableDateTime(2002, 7, 32, 0, 0, 0, 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     /**
@@ -500,32 +516,39 @@ public class TestMutableDateTime_Constructors extends TestCase {
         try {
             new MutableDateTime(Integer.MIN_VALUE, 6, 9, 0, 0, 0, 0, PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(Integer.MAX_VALUE, 6, 9, 0, 0, 0, 0, PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 0, 9, 0, 0, 0, 0, PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 13, 9, 0, 0, 0, 0, PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 6, 0, 0, 0, 0, 0, PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 6, 31, 0, 0, 0, 0, PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         new MutableDateTime(2002, 7, 31, 0, 0, 0, 0, PARIS);
         try {
             new MutableDateTime(2002, 7, 32, 0, 0, 0, 0, PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     /**
@@ -547,32 +570,39 @@ public class TestMutableDateTime_Constructors extends TestCase {
         try {
             new MutableDateTime(Integer.MIN_VALUE, 6, 9, 0, 0, 0, 0, GregorianChronology.getInstance());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(Integer.MAX_VALUE, 6, 9, 0, 0, 0, 0, GregorianChronology.getInstance());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 0, 9, 0, 0, 0, 0, GregorianChronology.getInstance());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 13, 9, 0, 0, 0, 0, GregorianChronology.getInstance());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 6, 0, 0, 0, 0, 0, GregorianChronology.getInstance());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new MutableDateTime(2002, 6, 31, 0, 0, 0, 0, GregorianChronology.getInstance());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         new MutableDateTime(2002, 7, 31, 0, 0, 0, 0, GregorianChronology.getInstance());
         try {
             new MutableDateTime(2002, 7, 32, 0, 0, 0, 0, GregorianChronology.getInstance());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     /**

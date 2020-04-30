@@ -9,32 +9,32 @@
 
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.provider.ISpectraProvider;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * Provides spectra using iBugs coverage traces for a specific BugID
  */
 public class IBugsSpectraImportProvider implements ISpectraProvider<SourceCodeBlock, HitTrace<SourceCodeBlock>> {
 
-    /** contains the path to the trace folder of the specific bugId */
+    /**
+     * contains the path to the trace folder of the specific bugId
+     */
     private final Path bugFile;
 
     /**
      * Creates a new spectra provider. Take all traces available for the specified bug id
-     * 
-     * @param root
-     *            path to the trace files
-     * @param bugId
-     *            bug id to run the experiment with
+     *
+     * @param root  path to the trace files
+     * @param bugId bug id to run the experiment with
      */
     public IBugsSpectraImportProvider(final String root, final int bugId) {
         /** contains the path to the iBugs trace folder */
@@ -56,12 +56,12 @@ public class IBugsSpectraImportProvider implements ISpectraProvider<SourceCodeBl
      * {@inheritDoc}
      */
     @Override
-    public ISpectra<SourceCodeBlock,HitTrace<SourceCodeBlock>> loadSpectra() throws IllegalStateException {
-    	try {
-			return SpectraFileUtils.loadSpectraFromBugMinerZipFile2(this.bugFile);
-		} catch (IOException e) {
-			throw new IllegalStateException("Could not load spectra from " + this.bugFile + ".");
-		}
+    public ISpectra<SourceCodeBlock, HitTrace<SourceCodeBlock>> loadSpectra() throws IllegalStateException {
+        try {
+            return SpectraFileUtils.loadSpectraFromBugMinerZipFile2(this.bugFile);
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not load spectra from " + this.bugFile + ".");
+        }
     }
 
 }

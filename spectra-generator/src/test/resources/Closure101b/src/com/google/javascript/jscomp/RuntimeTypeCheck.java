@@ -16,23 +16,22 @@
 
 package com.google.javascript.jscomp;
 
-import com.google.javascript.rhino.Node;
-import com.google.javascript.rhino.Token;
-import com.google.javascript.rhino.jstype.JSType;
-import com.google.javascript.rhino.jstype.FunctionType;
-import com.google.javascript.rhino.jstype.ObjectType;
-import com.google.javascript.rhino.jstype.UnionType;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.common.io.CharStreams;
+import com.google.javascript.rhino.Node;
+import com.google.javascript.rhino.Token;
+import com.google.javascript.rhino.jstype.FunctionType;
+import com.google.javascript.rhino.jstype.JSType;
+import com.google.javascript.rhino.jstype.ObjectType;
+import com.google.javascript.rhino.jstype.UnionType;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Comparator;
-
-import javax.annotation.Nullable;
 
 /**
  * Inserts runtime type assertions.
@@ -45,344 +44,341 @@ import javax.annotation.Nullable;
  *
  * <p>The JavaScript code which implements the type assertions is in
  * js/runtime-type-check.js.
- *
-*
-*
  */
 class RuntimeTypeCheck implements CompilerPass {
 
-  private static final Comparator<JSType> ALPHA = new Comparator<JSType>() {
-    public int compare(JSType t1, JSType t2) {
-      return getName(t1).compareTo(getName(t2));
-    }
+    private static final Comparator<JSType> ALPHA = new Comparator<JSType>() {
+        public int compare(JSType t1, JSType t2) {
+            return getName(t1).compareTo(getName(t2));
+        }
 
-    private String getName(JSType type) {
-      if (type.isInstanceType()) {
-        return ((ObjectType) type).getReferenceName();
-      } else if (type.isNullType()
-          || type.isBooleanValueType()
-          || type.isNumberValueType()
-          || type.isStringValueType()
-          || type.isVoidType()) {
-        return type.toString();
-      } else {
-        // Type unchecked at runtime, so we don't care about the sorting order.
-        return "";
-      }
-    }
-  };
-
-  private final AbstractCompiler compiler;
-  private final String logFunction;
-
-  RuntimeTypeCheck(AbstractCompiler compiler, @Nullable String logFunction) {
-    this.compiler = compiler;
-    this.logFunction = logFunction;
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, root, new AddMarkers(compiler));
-    NodeTraversal.traverse(compiler, root, new AddChecks(compiler));
-    addBoilerplateCode();
-  }
-
-  /**
-   * Inserts marker properties for user-defined interfaces and classes.
-   *
-   * <p>For example, for a class C, we add
-   * {@code C.prototype['instance_of__C']}, and for each interface I it
-   * implements , we add {@code C.prototype['implements__I']}.
-   *
-   * <p>Since interfaces are not a runtime JS concept, we use these markers to
-   * recognize an interface implementation at runtime. We also use markers for
-   * user-defined classes, so that we can easily recognize them independently of
-   * which module they are defined in and whether the module is loaded.
-   */
-  private static class AddMarkers
-      extends NodeTraversal.AbstractPostOrderCallback {
+        private String getName(JSType type) {
+            if (type.isInstanceType()) {
+                return ((ObjectType) type).getReferenceName();
+            } else if (type.isNullType()
+                    || type.isBooleanValueType()
+                    || type.isNumberValueType()
+                    || type.isStringValueType()
+                    || type.isVoidType()) {
+                return type.toString();
+            } else {
+                // Type unchecked at runtime, so we don't care about the sorting order.
+                return "";
+            }
+        }
+    };
 
     private final AbstractCompiler compiler;
+    private final String logFunction;
 
-    private AddMarkers(AbstractCompiler compiler) {
-      this.compiler = compiler;
+    RuntimeTypeCheck(AbstractCompiler compiler, @Nullable String logFunction) {
+        this.compiler = compiler;
+        this.logFunction = logFunction;
     }
 
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (NodeUtil.isFunction(n)) {
-        visitFunction(t, n);
-      }
-    }
-
-    private void visitFunction(NodeTraversal t, Node n) {
-      FunctionType funType = (FunctionType) n.getJSType();
-      if (!funType.isConstructor()) {
-        return;
-      }
-
-      Node nodeToInsertAfter = findNodeToInsertAfter(n);
-
-      nodeToInsertAfter = addMarker(funType, nodeToInsertAfter, null);
-
-      for (ObjectType interfaceType :
-          Sets.newTreeSet(ALPHA, funType.getAllImplementedInterfaces())) {
-        nodeToInsertAfter =
-            addMarker(funType, nodeToInsertAfter, interfaceType);
-      }
-    }
-
-    private Node addMarker(
-            FunctionType funType,
-            Node nodeToInsertAfter,
-            @Nullable ObjectType interfaceType) {
-
-      String className = funType.getInstanceType().getReferenceName();
-
-      // This can happen with anonymous classes declared with the type
-      // {@code Function}.
-      if (className == null) {
-        return nodeToInsertAfter;
-      }
-
-      Node classNode = NodeUtil.newQualifiedNameNode(className, -1, -1);
-
-      Node marker = Node.newString(
-              interfaceType == null ?
-              "instance_of__" + className :
-              "implements__" + interfaceType.getReferenceName());
-
-      Node assign = new Node(Token.EXPR_RESULT, new Node(Token.ASSIGN,
-          new Node(Token.GETELEM,
-              new Node(Token.GETPROP,
-                  classNode,
-                  Node.newString("prototype")), marker),
-          new Node(Token.TRUE)));
-
-      nodeToInsertAfter.getParent().addChildAfter(assign, nodeToInsertAfter);
-      compiler.reportCodeChange();
-      nodeToInsertAfter = assign;
-      return nodeToInsertAfter;
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, root, new AddMarkers(compiler));
+        NodeTraversal.traverse(compiler, root, new AddChecks(compiler));
+        addBoilerplateCode();
     }
 
     /**
-     * Find the node to insert the markers after. Typically, this node
-     * corresponds to the constructor declaration, but we want to skip any of
-     * the white-listed function calls.
+     * Inserts marker properties for user-defined interfaces and classes.
      *
-     * @param n the constructor function node
-     * @return the node to insert after
+     * <p>For example, for a class C, we add
+     * {@code C.prototype['instance_of__C']}, and for each interface I it
+     * implements , we add {@code C.prototype['implements__I']}.
+     *
+     * <p>Since interfaces are not a runtime JS concept, we use these markers to
+     * recognize an interface implementation at runtime. We also use markers for
+     * user-defined classes, so that we can easily recognize them independently of
+     * which module they are defined in and whether the module is loaded.
      */
-    private Node findNodeToInsertAfter(Node n) {
-      Node nodeToInsertAfter = findEnclosingConstructorDeclaration(n);
+    private static class AddMarkers
+            extends NodeTraversal.AbstractPostOrderCallback {
 
-      Node next = nodeToInsertAfter.getNext();
-      while (next != null && isClassDefiningCall(next)) {
-        nodeToInsertAfter = next;
-        next = nodeToInsertAfter.getNext();
-      }
+        private final AbstractCompiler compiler;
 
-      return nodeToInsertAfter;
-    }
+        private AddMarkers(AbstractCompiler compiler) {
+            this.compiler = compiler;
+        }
 
-    private Node findEnclosingConstructorDeclaration(Node n) {
-      while (n.getParent().getType() != Token.SCRIPT &&
-          n.getParent().getType() != Token.BLOCK) {
-        n = n.getParent();
-      }
-      return n;
-    }
+        @Override
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            if (NodeUtil.isFunction(n)) {
+                visitFunction(t, n);
+            }
+        }
 
-    private boolean isClassDefiningCall(Node next) {
-      return NodeUtil.isExprCall(next) &&
-          compiler.getCodingConvention().getClassesDefinedByCall(
-              next.getFirstChild()) != null;
-    }
-  }
+        private void visitFunction(NodeTraversal t, Node n) {
+            FunctionType funType = (FunctionType) n.getJSType();
+            if (!funType.isConstructor()) {
+                return;
+            }
 
-  /**
-   * Insert calls to the runtime type checking function {@code checkType}, which
-   * takes an expression to check and a list of checkers (one of which must
-   * match). It returns the expression back to facilitate checking of return
-   * values. We have checkers for value types, class types (user-defined and
-   * externed), and interface types.
-   */
-  private static class AddChecks
-      extends NodeTraversal.AbstractPostOrderCallback {
+            Node nodeToInsertAfter = findNodeToInsertAfter(n);
 
-    private final AbstractCompiler compiler;
+            nodeToInsertAfter = addMarker(funType, nodeToInsertAfter, null);
 
-    private AddChecks(AbstractCompiler compiler) {
-      this.compiler = compiler;
-    }
+            for (ObjectType interfaceType :
+                    Sets.newTreeSet(ALPHA, funType.getAllImplementedInterfaces())) {
+                nodeToInsertAfter =
+                        addMarker(funType, nodeToInsertAfter, interfaceType);
+            }
+        }
 
-    @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (NodeUtil.isFunction(n)) {
-        visitFunction(t, n);
-      } else if (n.getType() == Token.RETURN) {
-        visitReturn(t, n);
-      }
+        private Node addMarker(
+                FunctionType funType,
+                Node nodeToInsertAfter,
+                @Nullable ObjectType interfaceType) {
+
+            String className = funType.getInstanceType().getReferenceName();
+
+            // This can happen with anonymous classes declared with the type
+            // {@code Function}.
+            if (className == null) {
+                return nodeToInsertAfter;
+            }
+
+            Node classNode = NodeUtil.newQualifiedNameNode(className, -1, -1);
+
+            Node marker = Node.newString(
+                    interfaceType == null ?
+                            "instance_of__" + className :
+                            "implements__" + interfaceType.getReferenceName());
+
+            Node assign = new Node(Token.EXPR_RESULT, new Node(Token.ASSIGN,
+                    new Node(Token.GETELEM,
+                            new Node(Token.GETPROP,
+                                    classNode,
+                                    Node.newString("prototype")), marker),
+                    new Node(Token.TRUE)));
+
+            nodeToInsertAfter.getParent().addChildAfter(assign, nodeToInsertAfter);
+            compiler.reportCodeChange();
+            nodeToInsertAfter = assign;
+            return nodeToInsertAfter;
+        }
+
+        /**
+         * Find the node to insert the markers after. Typically, this node
+         * corresponds to the constructor declaration, but we want to skip any of
+         * the white-listed function calls.
+         *
+         * @param n the constructor function node
+         * @return the node to insert after
+         */
+        private Node findNodeToInsertAfter(Node n) {
+            Node nodeToInsertAfter = findEnclosingConstructorDeclaration(n);
+
+            Node next = nodeToInsertAfter.getNext();
+            while (next != null && isClassDefiningCall(next)) {
+                nodeToInsertAfter = next;
+                next = nodeToInsertAfter.getNext();
+            }
+
+            return nodeToInsertAfter;
+        }
+
+        private Node findEnclosingConstructorDeclaration(Node n) {
+            while (n.getParent().getType() != Token.SCRIPT &&
+                    n.getParent().getType() != Token.BLOCK) {
+                n = n.getParent();
+            }
+            return n;
+        }
+
+        private boolean isClassDefiningCall(Node next) {
+            return NodeUtil.isExprCall(next) &&
+                    compiler.getCodingConvention().getClassesDefinedByCall(
+                            next.getFirstChild()) != null;
+        }
     }
 
     /**
-     * Insert checks for the parameters of the function.
+     * Insert calls to the runtime type checking function {@code checkType}, which
+     * takes an expression to check and a list of checkers (one of which must
+     * match). It returns the expression back to facilitate checking of return
+     * values. We have checkers for value types, class types (user-defined and
+     * externed), and interface types.
      */
-    private void visitFunction(NodeTraversal t, Node n) {
-      FunctionType funType = (FunctionType) n.getJSType();
-      Node block = n.getLastChild();
-      Node paramName = NodeUtil.getFnParameters(n).getFirstChild();
-      Node prev = null;
-      for (Node paramType : funType.getParameters()) {
-        // Can this ever happen?
-        if (paramName == null) {
-          return;
+    private static class AddChecks
+            extends NodeTraversal.AbstractPostOrderCallback {
+
+        private final AbstractCompiler compiler;
+
+        private AddChecks(AbstractCompiler compiler) {
+            this.compiler = compiler;
         }
 
-        Node checkNode = createCheckTypeCallNode(
-            paramType.getJSType(), paramName.getString());
-
-        if (checkNode == null) {
-          // We don't know how to check this parameter type.
-          paramName = paramName.getNext();
-          continue;
+        @Override
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            if (NodeUtil.isFunction(n)) {
+                visitFunction(t, n);
+            } else if (n.getType() == Token.RETURN) {
+                visitReturn(t, n);
+            }
         }
 
-        checkNode = new Node(Token.EXPR_RESULT, checkNode);
-        if (prev == null) {
-          block.addChildToFront(checkNode);
-        } else {
-          block.addChildAfter(checkNode, prev);
+        /**
+         * Insert checks for the parameters of the function.
+         */
+        private void visitFunction(NodeTraversal t, Node n) {
+            FunctionType funType = (FunctionType) n.getJSType();
+            Node block = n.getLastChild();
+            Node paramName = NodeUtil.getFnParameters(n).getFirstChild();
+            Node prev = null;
+            for (Node paramType : funType.getParameters()) {
+                // Can this ever happen?
+                if (paramName == null) {
+                    return;
+                }
+
+                Node checkNode = createCheckTypeCallNode(
+                        paramType.getJSType(), paramName.getString());
+
+                if (checkNode == null) {
+                    // We don't know how to check this parameter type.
+                    paramName = paramName.getNext();
+                    continue;
+                }
+
+                checkNode = new Node(Token.EXPR_RESULT, checkNode);
+                if (prev == null) {
+                    block.addChildToFront(checkNode);
+                } else {
+                    block.addChildAfter(checkNode, prev);
+                }
+
+                compiler.reportCodeChange();
+                paramName = paramName.getNext();
+                prev = checkNode;
+            }
         }
+
+        private void visitReturn(NodeTraversal t, Node n) {
+            Node function = t.getEnclosingFunction();
+            FunctionType funType = (FunctionType) function.getJSType();
+
+            Node retValue = n.getFirstChild();
+            if (retValue == null) {
+                return;
+            }
+
+            Node checkNode = createCheckTypeCallNode(
+                    funType.getReturnType(), retValue.cloneTree());
+
+            if (checkNode == null) {
+                return;
+            }
+
+            n.replaceChild(retValue, checkNode);
+            compiler.reportCodeChange();
+        }
+
+        private Node createCheckTypeCallNode(JSType type, String varName) {
+            return createCheckTypeCallNode(type, Node.newString(Token.NAME, varName));
+        }
+
+        /**
+         * Creates a function call to check that the given expression matches the
+         * given type at runtime.
+         *
+         * <p>For example, if the type is {@code (string|Foo)}, the function call is
+         * {@code checkType(expr, [valueChecker('string'), classChecker('Foo')])}.
+         *
+         * @return the function call node or {@code null} if the type is not checked
+         */
+        private Node createCheckTypeCallNode(JSType type, Node expr) {
+            Node arrayNode = new Node(Token.ARRAYLIT);
+            Iterable<JSType> alternates = type.isUnionType()
+                    ? Sets.newTreeSet(ALPHA, ((UnionType) type).getAlternates())
+                    : ImmutableList.of(type);
+            for (JSType alternate : alternates) {
+                Node checkerNode = createCheckerNode(alternate);
+                if (checkerNode == null) {
+                    return null;
+                }
+                arrayNode.addChildToBack(checkerNode);
+            }
+            return new Node(Token.CALL, jsCode("checkType"), expr, arrayNode);
+        }
+
+        /**
+         * Creates a node which evaluates to a checker for the given type (which
+         * must not be a union). We have checkers for value types, classes and
+         * interfaces.
+         *
+         * @return the checker node or {@code null} if the type is not checked
+         */
+        private Node createCheckerNode(JSType type) {
+            if (type.isNullType()) {
+                return jsCode("nullChecker");
+
+            } else if (type.isBooleanValueType()
+                    || type.isNumberValueType()
+                    || type.isStringValueType()
+                    || type.isVoidType()) {
+                return new Node(Token.CALL,
+                        jsCode("valueChecker"),
+                        Node.newString(type.toString()));
+
+            } else if (type.isInstanceType()) {
+                ObjectType objType = (ObjectType) type;
+
+                String refName = objType.getReferenceName();
+
+                String sourceName =
+                        NodeUtil.getSourceName(objType.getConstructor().getSource());
+                CompilerInput sourceInput = compiler.getInput(sourceName);
+                if (sourceInput == null || sourceInput.isExtern()) {
+                    return new Node(Token.CALL,
+                            jsCode("externClassChecker"),
+                            Node.newString(refName));
+                }
+
+                return new Node(Token.CALL,
+                        jsCode(objType.getConstructor().isInterface() ?
+                                "interfaceChecker" : "classChecker"),
+                        Node.newString(refName));
+
+            } else {
+                // We don't check this type (e.g. unknown & all types).
+                return null;
+            }
+        }
+    }
+
+    private void addBoilerplateCode() {
+        String boilerplateCode = getBoilerplateCode(logFunction);
+
+        Node js = compiler.parseSyntheticCode(boilerplateCode);
+
+        compiler.getNodeForCodeInsertion(null).addChildrenToFront(
+                js.removeChildren());
 
         compiler.reportCodeChange();
-        paramName = paramName.getNext();
-        prev = checkNode;
-      }
     }
 
-    private void visitReturn(NodeTraversal t, Node n) {
-      Node function = t.getEnclosingFunction();
-      FunctionType funType = (FunctionType) function.getJSType();
-
-      Node retValue = n.getFirstChild();
-      if (retValue == null) {
-        return;
-      }
-
-      Node checkNode = createCheckTypeCallNode(
-          funType.getReturnType(), retValue.cloneTree());
-
-      if (checkNode == null) {
-        return;
-      }
-
-      n.replaceChild(retValue, checkNode);
-      compiler.reportCodeChange();
+    private static Node jsCode(String prop) {
+        return NodeUtil.newQualifiedNameNode("jscomp.typecheck." + prop, -1, -1);
     }
 
-    private Node createCheckTypeCallNode(JSType type, String varName) {
-      return createCheckTypeCallNode(type, Node.newString(Token.NAME, varName));
-    }
-
-    /**
-     * Creates a function call to check that the given expression matches the
-     * given type at runtime.
-     *
-     * <p>For example, if the type is {@code (string|Foo)}, the function call is
-     * {@code checkType(expr, [valueChecker('string'), classChecker('Foo')])}.
-     *
-     * @return the function call node or {@code null} if the type is not checked
-     */
-    private Node createCheckTypeCallNode(JSType type, Node expr) {
-      Node arrayNode = new Node(Token.ARRAYLIT);
-      Iterable<JSType> alternates = type.isUnionType()
-               ? Sets.newTreeSet(ALPHA, ((UnionType) type).getAlternates())
-               : ImmutableList.of(type);
-      for (JSType alternate : alternates) {
-        Node checkerNode = createCheckerNode(alternate);
-        if (checkerNode == null) {
-          return null;
-        }
-        arrayNode.addChildToBack(checkerNode);
-      }
-      return new Node(Token.CALL, jsCode("checkType"), expr, arrayNode);
-    }
-
-    /**
-     * Creates a node which evaluates to a checker for the given type (which
-     * must not be a union). We have checkers for value types, classes and
-     * interfaces.
-     *
-     * @return the checker node or {@code null} if the type is not checked
-     */
-    private Node createCheckerNode(JSType type) {
-      if (type.isNullType()) {
-        return jsCode("nullChecker");
-
-      } else if (type.isBooleanValueType()
-          || type.isNumberValueType()
-          || type.isStringValueType()
-          || type.isVoidType()) {
-        return new Node(Token.CALL,
-            jsCode("valueChecker"),
-            Node.newString(type.toString()));
-
-      } else if (type.isInstanceType()) {
-        ObjectType objType = (ObjectType) type;
-
-        String refName = objType.getReferenceName();
-
-        String sourceName =
-            NodeUtil.getSourceName(objType.getConstructor().getSource());
-        CompilerInput sourceInput = compiler.getInput(sourceName);
-        if (sourceInput == null || sourceInput.isExtern()) {
-          return new Node(Token.CALL,
-                  jsCode("externClassChecker"),
-                  Node.newString(refName));
+    @VisibleForTesting
+    static String getBoilerplateCode(@Nullable String logFunction) {
+        String boilerplateCode;
+        try {
+            boilerplateCode = CharStreams.toString(new InputStreamReader(
+                    RuntimeTypeCheck.class.getResourceAsStream(
+                            "js/runtime_type_check.js"), Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        return new Node(Token.CALL,
-                jsCode(objType.getConstructor().isInterface() ?
-                        "interfaceChecker" : "classChecker"),
-                Node.newString(refName));
+        boilerplateCode = boilerplateCode.replace("%%LOG%%",
+                logFunction == null ? "function(warning, expr) {}" : logFunction);
 
-      } else {
-        // We don't check this type (e.g. unknown & all types).
-        return null;
-      }
+        return boilerplateCode;
     }
-  }
-
-  private void addBoilerplateCode() {
-    String boilerplateCode = getBoilerplateCode(logFunction);
-
-    Node js = compiler.parseSyntheticCode(boilerplateCode);
-
-    compiler.getNodeForCodeInsertion(null).addChildrenToFront(
-        js.removeChildren());
-
-    compiler.reportCodeChange();
-  }
-
-  private static Node jsCode(String prop) {
-    return NodeUtil.newQualifiedNameNode("jscomp.typecheck." + prop, -1, -1);
-  }
-
-  @VisibleForTesting
-  static String getBoilerplateCode(@Nullable String logFunction) {
-    String boilerplateCode;
-    try {
-      boilerplateCode = CharStreams.toString(new InputStreamReader(
-          RuntimeTypeCheck.class.getResourceAsStream(
-          "js/runtime_type_check.js"), Charsets.UTF_8));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-
-    boilerplateCode = boilerplateCode.replace("%%LOG%%",
-        logFunction == null ? "function(warning, expr) {}" : logFunction);
-
-    return boilerplateCode;
-  }
 }

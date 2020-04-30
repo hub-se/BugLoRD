@@ -26,62 +26,62 @@ import java.util.logging.Logger;
 /**
  * Removes unused properties from prototypes.
  *
-*
  * @author nicksantos@google.com (Nick Santos)
  */
 class RemoveUnusedPrototypeProperties implements CompilerPass {
 
-  private static final Logger logger =
-    Logger.getLogger(RemoveUnusedPrototypeProperties.class.getName());
+    private static final Logger logger =
+            Logger.getLogger(RemoveUnusedPrototypeProperties.class.getName());
 
-  private final AbstractCompiler compiler;
-  private final boolean canModifyExterns;
-  private final boolean anchorUnusedVars;
+    private final AbstractCompiler compiler;
+    private final boolean canModifyExterns;
+    private final boolean anchorUnusedVars;
 
-  /**
-   * Creates a new pass for removing unused prototype properties, based
-   * on the uniqueness of property names.
-   * @param compiler The compiler.
-   * @param canModifyExterns If true, then we can remove prototype
-   *     properties that are declared in the externs file.
-   * @param anchorUnusedVars If true, then we must keep unused variables
-   *     and the prototype properties they reference, even if they are
-   *     never used.
-   */
-  RemoveUnusedPrototypeProperties(AbstractCompiler compiler,
-      boolean canModifyExterns, boolean anchorUnusedVars) {
-    this.compiler = compiler;
-    this.canModifyExterns = canModifyExterns;
-    this.anchorUnusedVars = anchorUnusedVars;
-  }
+    /**
+     * Creates a new pass for removing unused prototype properties, based
+     * on the uniqueness of property names.
+     *
+     * @param compiler         The compiler.
+     * @param canModifyExterns If true, then we can remove prototype
+     *                         properties that are declared in the externs file.
+     * @param anchorUnusedVars If true, then we must keep unused variables
+     *                         and the prototype properties they reference, even if they are
+     *                         never used.
+     */
+    RemoveUnusedPrototypeProperties(AbstractCompiler compiler,
+                                    boolean canModifyExterns, boolean anchorUnusedVars) {
+        this.compiler = compiler;
+        this.canModifyExterns = canModifyExterns;
+        this.anchorUnusedVars = anchorUnusedVars;
+    }
 
-  public void process(Node externRoot, Node root) {
-    AnalyzePrototypeProperties analyzer =
-        new AnalyzePrototypeProperties(compiler,
-            null /* no module graph */, canModifyExterns, anchorUnusedVars);
-    analyzer.process(externRoot, root);
-    removeUnusedSymbols(analyzer.getAllNameInfo());
-  }
+    public void process(Node externRoot, Node root) {
+        AnalyzePrototypeProperties analyzer =
+                new AnalyzePrototypeProperties(compiler,
+                        null /* no module graph */, canModifyExterns, anchorUnusedVars);
+        analyzer.process(externRoot, root);
+        removeUnusedSymbols(analyzer.getAllNameInfo());
+    }
 
-  /**
-   * Remove all properties under a given name if the property name is
-   * never referenced.
-   */
-  private void removeUnusedSymbols(Collection<NameInfo> allNameInfo) {
-    boolean changed = false;
-    for (NameInfo nameInfo : allNameInfo) {
-      if (!nameInfo.isReferenced()) {
-        for (Symbol declaration : nameInfo.getDeclarations()) {
-          declaration.remove();
-          changed = true;
+    /**
+     * Remove all properties under a given name if the property name is
+     * never referenced.
+     */
+    private void removeUnusedSymbols(Collection<NameInfo> allNameInfo) {
+        boolean changed = false;
+        for (NameInfo nameInfo : allNameInfo) {
+            if (!nameInfo.isReferenced()) {
+                for (Symbol declaration : nameInfo.getDeclarations()) {
+                    declaration.remove();
+                    changed = true;
+                }
+
+                logger.fine("Removed unused prototype property: " + nameInfo.name);
+            }
         }
 
-        logger.fine("Removed unused prototype property: " + nameInfo.name);
-      }
+        if (changed) {
+            compiler.reportCodeChange();
+        }
     }
-
-    if (changed) {
-      compiler.reportCodeChange();
-    }
-  }
 }

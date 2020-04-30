@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,17 +16,13 @@
  */
 package org.apache.commons.lang3;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Random;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.RandomStringUtils}.
@@ -45,8 +41,9 @@ public class RandomStringUtilsTest {
         assertTrue(Modifier.isPublic(RandomStringUtils.class.getModifiers()));
         assertFalse(Modifier.isFinal(RandomStringUtils.class.getModifiers()));
     }
-    
+
     //-----------------------------------------------------------------------
+
     /**
      * Test the implementation
      */
@@ -57,63 +54,63 @@ public class RandomStringUtilsTest {
         String r2 = RandomStringUtils.random(50);
         assertEquals("random(50) length", 50, r2.length());
         assertTrue("!r1.equals(r2)", !r1.equals(r2));
-        
+
         r1 = RandomStringUtils.randomAscii(50);
         assertEquals("randomAscii(50) length", 50, r1.length());
-        for(int i = 0; i < r1.length(); i++) {
+        for (int i = 0; i < r1.length(); i++) {
             assertTrue("char between 32 and 127", r1.charAt(i) >= 32 && r1.charAt(i) <= 127);
-        }        
+        }
         r2 = RandomStringUtils.randomAscii(50);
         assertTrue("!r1.equals(r2)", !r1.equals(r2));
 
         r1 = RandomStringUtils.randomAlphabetic(50);
         assertEquals("randomAlphabetic(50)", 50, r1.length());
-        for(int i = 0; i < r1.length(); i++) {
+        for (int i = 0; i < r1.length(); i++) {
             assertTrue("r1 contains alphabetic", Character.isLetter(r1.charAt(i)) && !Character.isDigit(r1.charAt(i)));
         }
         r2 = RandomStringUtils.randomAlphabetic(50);
         assertTrue("!r1.equals(r2)", !r1.equals(r2));
-        
+
         r1 = RandomStringUtils.randomAlphanumeric(50);
         assertEquals("randomAlphanumeric(50)", 50, r1.length());
-        for(int i = 0; i < r1.length(); i++) {
+        for (int i = 0; i < r1.length(); i++) {
             assertTrue("r1 contains alphanumeric", Character.isLetterOrDigit(r1.charAt(i)));
         }
         r2 = RandomStringUtils.randomAlphabetic(50);
         assertTrue("!r1.equals(r2)", !r1.equals(r2));
-        
+
         r1 = RandomStringUtils.randomNumeric(50);
         assertEquals("randomNumeric(50)", 50, r1.length());
-        for(int i = 0; i < r1.length(); i++) {
+        for (int i = 0; i < r1.length(); i++) {
             assertTrue("r1 contains numeric", Character.isDigit(r1.charAt(i)) && !Character.isLetter(r1.charAt(i)));
         }
         r2 = RandomStringUtils.randomNumeric(50);
         assertTrue("!r1.equals(r2)", !r1.equals(r2));
-        
+
         String set = "abcdefg";
         r1 = RandomStringUtils.random(50, set);
         assertEquals("random(50, \"abcdefg\")", 50, r1.length());
-        for(int i = 0; i < r1.length(); i++) {
+        for (int i = 0; i < r1.length(); i++) {
             assertTrue("random char in set", set.indexOf(r1.charAt(i)) > -1);
         }
         r2 = RandomStringUtils.random(50, set);
         assertTrue("!r1.equals(r2)", !r1.equals(r2));
-        
+
         r1 = RandomStringUtils.random(50, (String) null);
         assertEquals("random(50) length", 50, r1.length());
         r2 = RandomStringUtils.random(50, (String) null);
         assertEquals("random(50) length", 50, r2.length());
         assertTrue("!r1.equals(r2)", !r1.equals(r2));
-        
+
         set = "stuvwxyz";
         r1 = RandomStringUtils.random(50, set.toCharArray());
         assertEquals("random(50, \"stuvwxyz\")", 50, r1.length());
-        for(int i = 0; i < r1.length(); i++) {
+        for (int i = 0; i < r1.length(); i++) {
             assertTrue("random char in set", set.indexOf(r1.charAt(i)) > -1);
         }
         r2 = RandomStringUtils.random(50, set);
         assertTrue("!r1.equals(r2)", !r1.equals(r2));
-        
+
         r1 = RandomStringUtils.random(50, (char[]) null);
         assertEquals("random(50) length", 50, r1.length());
         r2 = RandomStringUtils.random(50, (char[]) null);
@@ -121,8 +118,8 @@ public class RandomStringUtilsTest {
         assertTrue("!r1.equals(r2)", !r1.equals(r2));
 
         long seed = System.currentTimeMillis();
-        r1 = RandomStringUtils.random(50,0,0,true,true,null,new Random(seed));
-        r2 = RandomStringUtils.random(50,0,0,true,true,null,new Random(seed));
+        r1 = RandomStringUtils.random(50, 0, 0, true, true, null, new Random(seed));
+        r2 = RandomStringUtils.random(50, 0, 0, true, true, null, new Random(seed));
         assertEquals("r1.equals(r2)", r1, r2);
 
         r1 = RandomStringUtils.random(0);
@@ -132,13 +129,13 @@ public class RandomStringUtilsTest {
     @Test
     public void testLANG805() {
         long seed = System.currentTimeMillis();
-        assertEquals("aaa", RandomStringUtils.random(3,0,0,false,false,new char[]{'a'},new Random(seed)));
+        assertEquals("aaa", RandomStringUtils.random(3, 0, 0, false, false, new char[]{'a'}, new Random(seed)));
     }
 
     @Test
     public void testLANG807() {
         try {
-            RandomStringUtils.random(3,5,5,false,false);
+            RandomStringUtils.random(3, 5, 5, false, false);
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException ex) { // distinguish from Random#nextInt message
             final String msg = ex.getMessage();
@@ -153,47 +150,57 @@ public class RandomStringUtilsTest {
         try {
             RandomStringUtils.random(-1);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             RandomStringUtils.random(-1, true, true);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             RandomStringUtils.random(-1, DUMMY);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             RandomStringUtils.random(1, new char[0]); // must not provide empty array => IAE
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             RandomStringUtils.random(-1, "");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
-            RandomStringUtils.random(-1, (String)null);
+            RandomStringUtils.random(-1, (String) null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             RandomStringUtils.random(-1, 'a', 'z', false, false);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             RandomStringUtils.random(-1, 'a', 'z', false, false, DUMMY);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             RandomStringUtils.random(-1, 'a', 'z', false, false, DUMMY, new Random());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
-    
+
     /**
      * Make sure boundary alphanumeric characters are generated by randomAlphaNumeric
      * This test will fail randomly with probability = 6 * (61/62)**1000 ~ 5.2E-7
-     */  
+     */
     @Test
-    public void testRandomAlphaNumeric() {}
+    public void testRandomAlphaNumeric() {
+    }
 // Defects4J: flaky method
 //     @Test
 //     public void testRandomAlphaNumeric() {
@@ -214,13 +221,14 @@ public class RandomStringUtilsTest {
 //             }
 //         }
 //     }
-    
+
     /**
      * Make sure '0' and '9' are generated by randomNumeric
      * This test will fail randomly with probability = 2 * (9/10)**1000 ~ 3.5E-46
-     */  
+     */
     @Test
-    public void testRandomNumeric() {}
+    public void testRandomNumeric() {
+    }
 // Defects4J: flaky method
 //     @Test
 //     public void testRandomNumeric() {
@@ -241,13 +249,14 @@ public class RandomStringUtilsTest {
 //             }
 //         }  
 //     }
-    
+
     /**
      * Make sure boundary alpha characters are generated by randomAlphabetic
      * This test will fail randomly with probability = 4 * (51/52)**1000 ~ 1.58E-8
-     */  
+     */
     @Test
-    public void testRandomAlphabetic() {}
+    public void testRandomAlphabetic() {
+    }
 // Defects4J: flaky method
 //     @Test
 //     public void testRandomAlphabetic() {
@@ -268,13 +277,14 @@ public class RandomStringUtilsTest {
 //             }
 //         }
 //     }
-    
+
     /**
      * Make sure 32 and 127 are generated by randomNumeric
      * This test will fail randomly with probability = 2*(95/96)**1000 ~ 5.7E-5
-     */  
+     */
     @Test
-    public void testRandomAscii() {}
+    public void testRandomAscii() {
+    }
 // Defects4J: flaky method
 //     @Test
 //     public void testRandomAscii() {
@@ -296,15 +306,16 @@ public class RandomStringUtilsTest {
 //             }
 //         }  
 //     }
-    
-    /** 
+
+    /**
      * Test homogeneity of random strings generated --
      * i.e., test that characters show up with expected frequencies
      * in generated strings.  Will fail randomly about 1 in 1000 times.
      * Repeated failures indicate a problem.
      */
     @Test
-    public void testRandomStringUtilsHomog() {}
+    public void testRandomStringUtilsHomog() {
+    }
 // Defects4J: flaky method
 //     @Test
 //     public void testRandomStringUtilsHomog() {
@@ -328,9 +339,10 @@ public class RandomStringUtilsTest {
 //         assertTrue("test homogeneity -- will fail about 1 in 1000 times",
 //             chiSquare(expected,counts) < 13.82);  
 //     }
-    
+
     /**
      * Computes Chi-Square statistic given observed and expected counts
+     *
      * @param observed array of observed frequency counts
      * @param expected array of expected frequency counts
      */
@@ -342,15 +354,14 @@ public class RandomStringUtilsTest {
             sumSq += dev * dev / expected[i];
         }
         return sumSq;
-    }           
+    }
 
     /**
      * Checks if the string got by {@link RandomStringUtils#random(int)}
      * can be converted to UTF-8 and back without loss.
      *
-     * @see <a href="http://issues.apache.org/jira/browse/LANG-100">LANG-100</a>
-     *
      * @throws Exception
+     * @see <a href="http://issues.apache.org/jira/browse/LANG-100">LANG-100</a>
      */
     @Test
     public void testLang100() throws Exception {
@@ -361,11 +372,11 @@ public class RandomStringUtilsTest {
         String copy = new String(bytes, encoding);
 
         // for a verbose compare:
-        for (int i=0; i < orig.length() && i < copy.length(); i++) {
+        for (int i = 0; i < orig.length() && i < copy.length(); i++) {
             char o = orig.charAt(i);
             char c = copy.charAt(i);
             assertEquals("differs at " + i + "(" + Integer.toHexString(new Character(o).hashCode()) + "," +
-            Integer.toHexString(new Character(c).hashCode()) + ")", o, c);
+                    Integer.toHexString(new Character(c).hashCode()) + ")", o, c);
         }
         // compare length also
         assertEquals(orig.length(), copy.length());

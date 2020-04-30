@@ -4,10 +4,10 @@
  */
 package org.mockitousage.basicapi;
 
-import java.io.Serializable;
-
 import org.junit.Test;
 import org.mockitoutil.TestBase;
+
+import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class ObjectsSerializationTest extends TestBase implements Serializable {
@@ -24,6 +24,7 @@ public class ObjectsSerializationTest extends TestBase implements Serializable {
 
     class Foo implements Serializable {
         Bar bar;
+
         Foo() {
             bar = new Bar();
             bar.foo = this;

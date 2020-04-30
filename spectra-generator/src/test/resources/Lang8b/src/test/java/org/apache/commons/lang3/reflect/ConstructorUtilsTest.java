@@ -16,20 +16,22 @@
  */
 package org.apache.commons.lang3.reflect;
 
-import org.junit.Test;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Before;
-import static org.junit.Assert.*;
+import org.junit.Test;
+
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.mutable.MutableObject;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests ConstructorUtils
+ *
  * @version $Id$
  */
 public class ConstructorUtilsTest {
@@ -125,8 +127,8 @@ public class ConstructorUtilsTest {
         assertEquals("(Integer)", ConstructorUtils.invokeExactConstructor(
                 TestBean.class, NumberUtils.INTEGER_ONE).toString());
         assertEquals("(double)", ConstructorUtils.invokeExactConstructor(
-                TestBean.class, new Object[] { NumberUtils.DOUBLE_ONE },
-                new Class[] { Double.TYPE }).toString());
+                TestBean.class, new Object[]{NumberUtils.DOUBLE_ONE},
+                new Class[]{Double.TYPE}).toString());
 
         try {
             ConstructorUtils.invokeExactConstructor(TestBean.class,
@@ -213,7 +215,7 @@ public class ConstructorUtilsTest {
     }
 
     private void expectMatchingAccessibleConstructorParameterTypes(Class<?> cls,
-            Class<?>[] requestTypes, Class<?>[] actualTypes) {
+                                                                   Class<?>[] requestTypes, Class<?>[] actualTypes) {
         Constructor<?> c = ConstructorUtils.getMatchingAccessibleConstructor(cls,
                 requestTypes);
         assertTrue(toString(c.getParameterTypes()) + " not equals "
@@ -228,7 +230,7 @@ public class ConstructorUtilsTest {
     private Class<?>[] singletonArray(Class<?> c) {
         Class<?>[] result = classCache.get(c);
         if (result == null) {
-            result = new Class[] { c };
+            result = new Class[]{c};
             classCache.put(c, result);
         }
         return result;

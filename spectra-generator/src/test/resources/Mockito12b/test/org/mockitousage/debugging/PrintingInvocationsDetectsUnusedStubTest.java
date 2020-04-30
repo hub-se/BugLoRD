@@ -4,16 +4,18 @@
  */
 package org.mockitousage.debugging;
 
-import static org.mockito.BDDMockito.*;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.BDDMockito.*;
+
 public class PrintingInvocationsDetectsUnusedStubTest extends TestBase {
 
-    @Mock Foo mock;
-    @Mock Foo mockTwo;
+    @Mock
+    Foo mock;
+    @Mock
+    Foo mockTwo;
 
     @Test
     public void shouldDetectUnusedStubbingWhenPrinting() throws Exception {

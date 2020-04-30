@@ -15,15 +15,11 @@
  */
 package org.joda.time.chrono;
 
+import org.joda.time.*;
+import org.joda.time.field.SkipDateTimeField;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.DateTimeZone;
-import org.joda.time.IllegalFieldValueException;
-import org.joda.time.field.SkipDateTimeField;
 
 /**
  * Implements a pure proleptic Julian calendar system, which defines every
@@ -38,36 +34,45 @@ import org.joda.time.field.SkipDateTimeField;
  * <p>
  * JulianChronology is thread-safe and immutable.
  *
- * @see <a href="http://en.wikipedia.org/wiki/Julian_calendar">Wikipedia</a>
- * @see GregorianChronology
- * @see GJChronology
- *
  * @author Guy Allard
  * @author Brian S O'Neill
  * @author Stephen Colebourne
+ * @see <a href="http://en.wikipedia.org/wiki/Julian_calendar">Wikipedia</a>
+ * @see GregorianChronology
+ * @see GJChronology
  * @since 1.0
  */
 public final class JulianChronology extends BasicGJChronology {
 
-    /** Serialization lock */
+    /**
+     * Serialization lock
+     */
     private static final long serialVersionUID = -8731039522547897247L;
 
     private static final long MILLIS_PER_YEAR =
-        (long) (365.25 * DateTimeConstants.MILLIS_PER_DAY);
+            (long) (365.25 * DateTimeConstants.MILLIS_PER_DAY);
 
     private static final long MILLIS_PER_MONTH =
-        (long) (365.25 * DateTimeConstants.MILLIS_PER_DAY / 12);
+            (long) (365.25 * DateTimeConstants.MILLIS_PER_DAY / 12);
 
-    /** The lowest year that can be fully supported. */
+    /**
+     * The lowest year that can be fully supported.
+     */
     private static final int MIN_YEAR = -292269054;
 
-    /** The highest year that can be fully supported. */
+    /**
+     * The highest year that can be fully supported.
+     */
     private static final int MAX_YEAR = 292272992;
 
-    /** Singleton instance of a UTC JulianChronology */
+    /**
+     * Singleton instance of a UTC JulianChronology
+     */
     private static final JulianChronology INSTANCE_UTC;
 
-    /** Cache of zone to chronology arrays */
+    /**
+     * Cache of zone to chronology arrays
+     */
     private static final Map<DateTimeZone, JulianChronology[]> cCache = new HashMap<DateTimeZone, JulianChronology[]>();
 
     static {
@@ -78,7 +83,7 @@ public final class JulianChronology extends BasicGJChronology {
         if (year <= 0) {
             if (year == 0) {
                 throw new IllegalFieldValueException
-                    (DateTimeFieldType.year(), Integer.valueOf(year), null, null);
+                        (DateTimeFieldType.year(), Integer.valueOf(year), null, null);
             }
             year++;
         }
@@ -88,7 +93,7 @@ public final class JulianChronology extends BasicGJChronology {
     /**
      * Gets an instance of the JulianChronology.
      * The time zone of the returned instance is UTC.
-     * 
+     *
      * @return a singleton UTC instance of the chronology
      */
     public static JulianChronology getInstanceUTC() {
@@ -97,7 +102,7 @@ public final class JulianChronology extends BasicGJChronology {
 
     /**
      * Gets an instance of the JulianChronology in the default time zone.
-     * 
+     *
      * @return a chronology in the default time zone
      */
     public static JulianChronology getInstance() {
@@ -106,8 +111,8 @@ public final class JulianChronology extends BasicGJChronology {
 
     /**
      * Gets an instance of the JulianChronology in the given time zone.
-     * 
-     * @param zone  the time zone to get the chronology in, null is default
+     *
+     * @param zone the time zone to get the chronology in, null is default
      * @return a chronology in the specified time zone
      */
     public static JulianChronology getInstance(DateTimeZone zone) {
@@ -116,9 +121,9 @@ public final class JulianChronology extends BasicGJChronology {
 
     /**
      * Gets an instance of the JulianChronology in the given time zone.
-     * 
-     * @param zone  the time zone to get the chronology in, null is default
-     * @param minDaysInFirstWeek  minimum number of days in first week of the year; default is 4
+     *
+     * @param zone               the time zone to get the chronology in, null is default
+     * @param minDaysInFirstWeek minimum number of days in first week of the year; default is 4
      * @return a chronology in the specified time zone
      */
     public static JulianChronology getInstance(DateTimeZone zone, int minDaysInFirstWeek) {
@@ -136,7 +141,7 @@ public final class JulianChronology extends BasicGJChronology {
                 chrono = chronos[minDaysInFirstWeek - 1];
             } catch (ArrayIndexOutOfBoundsException e) {
                 throw new IllegalArgumentException
-                    ("Invalid min days in first week: " + minDaysInFirstWeek);
+                        ("Invalid min days in first week: " + minDaysInFirstWeek);
             }
             if (chrono == null) {
                 if (zone == DateTimeZone.UTC) {
@@ -144,7 +149,7 @@ public final class JulianChronology extends BasicGJChronology {
                 } else {
                     chrono = getInstance(DateTimeZone.UTC, minDaysInFirstWeek);
                     chrono = new JulianChronology
-                        (ZonedChronology.getInstance(chrono, zone), null, minDaysInFirstWeek);
+                            (ZonedChronology.getInstance(chrono, zone), null, minDaysInFirstWeek);
                 }
                 chronos[minDaysInFirstWeek - 1] = chrono;
             }
@@ -171,14 +176,15 @@ public final class JulianChronology extends BasicGJChronology {
         minDays = (minDays == 0 ? 4 : minDays);  // handle rename of BaseGJChronology
         return base == null ?
                 getInstance(DateTimeZone.UTC, minDays) :
-                    getInstance(base.getZone(), minDays);
+                getInstance(base.getZone(), minDays);
     }
 
     // Conversion
     //-----------------------------------------------------------------------
+
     /**
      * Gets the Chronology in the UTC time zone.
-     * 
+     *
      * @return the chronology in UTC
      */
     public Chronology withUTC() {
@@ -187,8 +193,8 @@ public final class JulianChronology extends BasicGJChronology {
 
     /**
      * Gets the Chronology in a specific time zone.
-     * 
-     * @param zone  the zone to get the chronology in, null is default
+     *
+     * @param zone the zone to get the chronology in, null is default
      * @return the chronology
      */
     public Chronology withZone(DateTimeZone zone) {
@@ -202,8 +208,7 @@ public final class JulianChronology extends BasicGJChronology {
     }
 
     long getDateMidnightMillis(int year, int monthOfYear, int dayOfMonth)
-        throws IllegalArgumentException
-    {
+            throws IllegalArgumentException {
         return super.getDateMidnightMillis(adjustYearForSet(year), monthOfYear, dayOfMonth);
     }
 
@@ -229,8 +234,8 @@ public final class JulianChronology extends BasicGJChronology {
                 leapYears++;
             }
         }
-        
-        long millis = (relativeYear * 365L + leapYears) * (long)DateTimeConstants.MILLIS_PER_DAY;
+
+        long millis = (relativeYear * 365L + leapYears) * (long) DateTimeConstants.MILLIS_PER_DAY;
 
         // Adjust to account for difference between 1968-01-01 and 1969-12-19.
 

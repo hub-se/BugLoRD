@@ -15,20 +15,14 @@
  */
 package org.joda.time.field;
 
-import java.util.Arrays;
-import java.util.Locale;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTimeField;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.DurationField;
-import org.joda.time.DurationFieldType;
-import org.joda.time.TimeOfDay;
+import org.joda.time.*;
 import org.joda.time.base.BasePartial;
 import org.joda.time.chrono.ISOChronology;
+
+import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * This class is a Junit unit test for BaseDateTimeField.
@@ -62,7 +56,8 @@ public class TestBaseDateTimeField extends TestCase {
         try {
             field = new MockBaseDateTimeField(null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void test_getType() {
@@ -168,55 +163,59 @@ public class TestBaseDateTimeField extends TestCase {
     }
 
     public void test_add_RP_int_intarray_int() {
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         BaseDateTimeField field = new MockStandardBaseDateTimeField();
         int[] result = field.add(new TimeOfDay(), 2, values, 0);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 31, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 31, 40};
         result = field.add(new TimeOfDay(), 2, values, 1);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 21, 0, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 21, 0, 40};
         result = field.add(new TimeOfDay(), 2, values, 30);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {23, 59, 30, 40};
+
+        values = new int[]{23, 59, 30, 40};
         try {
             field.add(new TimeOfDay(), 2, values, 30);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 29, 40};
+        } catch (IllegalArgumentException ex) {
+        }
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 29, 40};
         result = field.add(new TimeOfDay(), 2, values, -1);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 19, 59, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 19, 59, 40};
         result = field.add(new TimeOfDay(), 2, values, -31);
         assertEquals(true, Arrays.equals(expected, result));
-        
-        values = new int[] {0, 0, 30, 40};
+
+        values = new int[]{0, 0, 30, 40};
         try {
             field.add(new TimeOfDay(), 2, values, -31);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
-        values = new int[] {0, 0};
+        } catch (IllegalArgumentException ex) {
+        }
+
+        values = new int[]{0, 0};
         try {
             field.add(new MockPartial(), 0, values, 1000);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
-        values = new int[] {1, 0};
+        } catch (IllegalArgumentException ex) {
+        }
+
+        values = new int[]{1, 0};
         try {
             field.add(new MockPartial(), 0, values, -1000);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -229,23 +228,23 @@ public class TestBaseDateTimeField extends TestCase {
 
     public void test_addWrapField_RP_int_intarray_int() {
         BaseDateTimeField field = new MockBaseDateTimeField();
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         int[] result = field.addWrapField(new TimeOfDay(), 2, values, 0);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 59, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 59, 40};
         result = field.addWrapField(new TimeOfDay(), 2, values, 29);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 0, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 0, 40};
         result = field.addWrapField(new TimeOfDay(), 2, values, 30);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 1, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 1, 40};
         result = field.addWrapField(new TimeOfDay(), 2, values, 31);
         assertEquals(true, Arrays.equals(result, expected));
     }
@@ -274,30 +273,32 @@ public class TestBaseDateTimeField extends TestCase {
 
     public void test_set_RP_int_intarray_int() {
         BaseDateTimeField field = new MockBaseDateTimeField();
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         int[] result = field.set(new TimeOfDay(), 2, values, 30);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 29, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 29, 40};
         result = field.set(new TimeOfDay(), 2, values, 29);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, 60);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, -1);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
     }
 
@@ -315,30 +316,32 @@ public class TestBaseDateTimeField extends TestCase {
 
     public void test_set_RP_int_intarray_String_Locale() {
         BaseDateTimeField field = new MockBaseDateTimeField();
-        int[] values = new int[] {10, 20, 30, 40};
-        int[] expected = new int[] {10, 20, 30, 40};
+        int[] values = new int[]{10, 20, 30, 40};
+        int[] expected = new int[]{10, 20, 30, 40};
         int[] result = field.set(new TimeOfDay(), 2, values, "30", null);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 29, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 29, 40};
         result = field.set(new TimeOfDay(), 2, values, "29", Locale.ENGLISH);
         assertEquals(true, Arrays.equals(result, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, "60", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
-        
-        values = new int[] {10, 20, 30, 40};
-        expected = new int[] {10, 20, 30, 40};
+
+        values = new int[]{10, 20, 30, 40};
+        expected = new int[]{10, 20, 30, 40};
         try {
             field.set(new TimeOfDay(), 2, values, "-1", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         assertEquals(true, Arrays.equals(values, expected));
     }
 
@@ -349,11 +352,13 @@ public class TestBaseDateTimeField extends TestCase {
         try {
             field.convertText("2A", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             field.convertText(null, null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //------------------------------------------------------------------------
@@ -428,21 +433,21 @@ public class TestBaseDateTimeField extends TestCase {
             }
         };
         assertEquals(1, field.getMaximumTextLength(Locale.ENGLISH));
-        
+
         field = new MockBaseDateTimeField() {
             public int getMaximumValue() {
                 return 555;
             }
         };
         assertEquals(3, field.getMaximumTextLength(Locale.ENGLISH));
-        
+
         field = new MockBaseDateTimeField() {
             public int getMaximumValue() {
                 return 5555;
             }
         };
         assertEquals(4, field.getMaximumTextLength(Locale.ENGLISH));
-        
+
         field = new MockBaseDateTimeField() {
             public int getMaximumValue() {
                 return -1;
@@ -519,30 +524,39 @@ public class TestBaseDateTimeField extends TestCase {
         protected MockBaseDateTimeField() {
             super(DateTimeFieldType.secondOfMinute());
         }
+
         protected MockBaseDateTimeField(DateTimeFieldType type) {
             super(type);
         }
+
         public int get(long instant) {
             return (int) (instant / 60L);
         }
+
         public long set(long instant, int value) {
             return 1000 + value;
         }
+
         public DurationField getDurationField() {
             return new MockCountingDurationField(DurationFieldType.seconds());
         }
+
         public DurationField getRangeDurationField() {
             return new MockCountingDurationField(DurationFieldType.minutes());
         }
+
         public int getMinimumValue() {
             return 0;
         }
+
         public int getMaximumValue() {
             return 59;
         }
+
         public long roundFloor(long instant) {
             return (instant / 60L) * 60L;
         }
+
         public boolean isLenient() {
             return false;
         }
@@ -552,9 +566,11 @@ public class TestBaseDateTimeField extends TestCase {
         protected MockStandardBaseDateTimeField() {
             super();
         }
+
         public DurationField getDurationField() {
             return ISOChronology.getInstanceUTC().seconds();
         }
+
         public DurationField getRangeDurationField() {
             return ISOChronology.getInstanceUTC().minutes();
         }
@@ -565,33 +581,41 @@ public class TestBaseDateTimeField extends TestCase {
         static int add_int = 0;
         static int add_long = 0;
         static int difference_long = 0;
-        
+
         protected MockCountingDurationField(DurationFieldType type) {
             super(type);
         }
+
         public boolean isPrecise() {
             return false;
         }
+
         public long getUnitMillis() {
             return 0;
         }
+
         public long getValueAsLong(long duration, long instant) {
             return 0;
         }
+
         public long getMillis(int value, long instant) {
             return 0;
         }
+
         public long getMillis(long value, long instant) {
             return 0;
         }
+
         public long add(long instant, int value) {
             add_int++;
             return instant + (value * 60L);
         }
+
         public long add(long instant, long value) {
             add_long++;
             return instant + (value * 60L);
         }
+
         public long getDifferenceAsLong(long minuendInstant, long subtrahendInstant) {
             difference_long++;
             return 30;
@@ -608,9 +632,10 @@ public class TestBaseDateTimeField extends TestCase {
             }
             return null;
         }
+
         public int size() {
             return 2;
         }
-        
+
     }
 }

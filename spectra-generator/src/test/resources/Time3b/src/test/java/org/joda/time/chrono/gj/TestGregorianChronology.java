@@ -40,16 +40,16 @@ public final class TestGregorianChronology extends TestGJChronology {
     }
 
     long millisPerYear() {
-        return (long)(365.2425 * MILLIS_PER_DAY);
+        return (long) (365.2425 * MILLIS_PER_DAY);
     }
 
     long millisPerMonth() {
-        return (long)(365.2425 * MILLIS_PER_DAY / 12);
+        return (long) (365.2425 * MILLIS_PER_DAY / 12);
     }
 
     boolean isLeapYear(int year) {
         if (mod(year, 4) == 0) {
-            int t = (int)mod(year, 400);
+            int t = (int) mod(year, 400);
             if (t != 100 && t != 200 && t != 300) {
                 return true;
             }
@@ -63,7 +63,7 @@ public final class TestGregorianChronology extends TestGJChronology {
     long fixedFromGJ(int year, int monthOfYear, int dayOfMonth) {
         long year_m1 = year - 1;
         long f = 365 * year_m1 + div(year_m1, 4) - div(year_m1, 100)
-            + div(year_m1, 400) + div(367 * monthOfYear - 362, 12) + dayOfMonth;
+                + div(year_m1, 400) + div(367 * monthOfYear - 362, 12) + dayOfMonth;
         if (monthOfYear > 2) {
             f += isLeapYear(year) ? -1 : -2;
         }
@@ -88,7 +88,7 @@ public final class TestGregorianChronology extends TestGJChronology {
             year += 1;
         }
 
-        int year_i = (int)year;
+        int year_i = (int) year;
         if (year_i == year) {
             return year_i;
         } else {
@@ -111,8 +111,8 @@ public final class TestGregorianChronology extends TestGJChronology {
         } else {
             correction = 2;
         }
-        int monthOfYear = (int)div(12 * (priorDays + correction) + 373, 367);
-        int day = (int)(date - fixedFromGJ(year, monthOfYear, 1) + 1);
+        int monthOfYear = (int) div(12 * (priorDays + correction) + 373, 367);
+        int day = (int) (date - fixedFromGJ(year, monthOfYear, 1) + 1);
 
         return new int[]{year, monthOfYear, day};
     }
@@ -130,8 +130,8 @@ public final class TestGregorianChronology extends TestGJChronology {
         if (date >= fixedFromISO(weekyear + 1, 1, 1)) {
             weekyear += 1;
         }
-        int weekOfWeekyear = (int)(div(date - fixedFromISO(weekyear, 1, 1), 7) + 1);
-        int dayOfWeek = (int)amod(date, 7);
+        int weekOfWeekyear = (int) (div(date - fixedFromISO(weekyear, 1, 1), 7) + 1);
+        int dayOfWeek = (int) amod(date, 7);
         return new int[]{weekyear, weekOfWeekyear, dayOfWeek};
     }
 }

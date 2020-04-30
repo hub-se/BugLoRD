@@ -11,11 +11,11 @@ import org.mockitoutil.TestBase;
 
 @SuppressWarnings("unchecked")
 public class ArgumentCaptorTest extends TestBase {
-    
+
     @Test
     public void tellHandyReturnValuesToReturnValueFor() throws Exception {
         //given
-        final Object expected = new Object(); 
+        final Object expected = new Object();
         ArgumentCaptor<Object> argumentCaptor = ArgumentCaptor.forClass(Object.class);
         argumentCaptor.handyReturnValues = new HandyReturnValues() {
             @Override
@@ -23,14 +23,14 @@ public class ArgumentCaptorTest extends TestBase {
                 return (T) expected;
             }
         };
-        
+
         //when
         Object returned = argumentCaptor.capture();
-        
+
         //then
         assertEquals(expected, returned);
     }
-    
+
     @After
     public void yesIKnowSomeMatchersAreMisplaced() {
         resetState();

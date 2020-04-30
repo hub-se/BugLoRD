@@ -1,34 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-7">
-			<tests>
-				<testfile path="org/joda/time/format/TestDateTimeFormatter">
-					<exception>org.joda.time.IllegalFieldValueException:Cannot parse "2
-						29":Value 29 for dayOfMonth must be in the range [1,28]:-
-						org.joda.time.format.TestDateTimeFormatter::testParseInto_monthDay_feb29_tokyo_endOfYear:--&gt;
-						org.joda.time.IllegalFieldValueException:Cannot parse "2 29":Value
-						29 for dayOfMonth must be in the range [1,28]</exception>
-				</testfile>
-				<spectra>
-					<number_tests>2703</number_tests>
-					<failed>2</failed>
-					<passed>2701</passed>
-					<nodes>13409</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/format/DateTimeFormatter.java">
-					<delete>710</delete>
-					<insert numberlines="1">708-709</insert>
-					<bugtypes>
-						<id id="3.1" lines="707,710">
-							<description>Incorrect setting of default year.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-7">
+            <tests>
+                <testfile path="org/joda/time/format/TestDateTimeFormatter">
+                    <exception>org.joda.time.IllegalFieldValueException:Cannot parse "2
+                        29":Value 29 for dayOfMonth must be in the range [1,28]:-
+                        org.joda.time.format.TestDateTimeFormatter::testParseInto_monthDay_feb29_tokyo_endOfYear:--&gt;
+                        org.joda.time.IllegalFieldValueException:Cannot parse "2 29":Value
+                        29 for dayOfMonth must be in the range [1,28]
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>2703</number_tests>
+                    <failed>2</failed>
+                    <passed>2701</passed>
+                    <nodes>13409</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/format/DateTimeFormatter.java">
+                    <delete>710</delete>
+                    <insert numberlines="1">708-709</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="707,710">
+                            <description>Incorrect setting of default year.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

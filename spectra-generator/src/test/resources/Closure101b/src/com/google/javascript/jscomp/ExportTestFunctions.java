@@ -24,75 +24,74 @@ import java.util.regex.Pattern;
 /**
  * Generates goog.exportSymbol for test functions, so they can be recognized
  * by the test runner, even if the code is compiled.
- *
-*
  */
 class ExportTestFunctions implements CompilerPass {
 
-  private static final Pattern TEST_FUNCTIONS_NAME_PATTERN =
-      Pattern.compile("^(?:setUpPage|setUp|tearDown|tearDownPage|test.*)$");
+    private static final Pattern TEST_FUNCTIONS_NAME_PATTERN =
+            Pattern.compile("^(?:setUpPage|setUp|tearDown|tearDownPage|test.*)$");
 
-  private AbstractCompiler compiler;
-  private final String exportSymbolFunction;
+    private AbstractCompiler compiler;
+    private final String exportSymbolFunction;
 
-  /**
-   * Creates a new export test functions compiler pass.
-   * @param compiler
-   * @param exportSymbolFunction The function name used to export symbols in JS.
-   */
-  ExportTestFunctions(AbstractCompiler compiler,
-      String exportSymbolFunction) {
+    /**
+     * Creates a new export test functions compiler pass.
+     *
+     * @param compiler
+     * @param exportSymbolFunction The function name used to export symbols in JS.
+     */
+    ExportTestFunctions(AbstractCompiler compiler,
+                        String exportSymbolFunction) {
 
-    Preconditions.checkNotNull(compiler);
-    this.compiler = compiler;
-    this.exportSymbolFunction = exportSymbolFunction;
-  }
-
-  private class ExportTestFunctionsNodes extends
-      NodeTraversal.AbstractPostOrderCallback {
-
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (parent != null && parent.getType() == Token.SCRIPT &&
-          n.getType() == Token.FUNCTION) {
-        String functionName = NodeUtil.getFunctionName(n, parent);
-        if (isTestFunction(n, functionName) && t.inGlobalScope()) {
-          exportTestFunction(functionName, n, parent);
-        }
-      }
+        Preconditions.checkNotNull(compiler);
+        this.compiler = compiler;
+        this.exportSymbolFunction = exportSymbolFunction;
     }
-  }
 
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, root, new ExportTestFunctionsNodes());
-  }
+    private class ExportTestFunctionsNodes extends
+            NodeTraversal.AbstractPostOrderCallback {
 
-  // Adds exportSymbol(testFunctionName, testFunction);
-  private void exportTestFunction(String testFunctionName, Node node,
-      Node scriptNode) {
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            if (parent != null && parent.getType() == Token.SCRIPT &&
+                    n.getType() == Token.FUNCTION) {
+                String functionName = NodeUtil.getFunctionName(n, parent);
+                if (isTestFunction(n, functionName) && t.inGlobalScope()) {
+                    exportTestFunction(functionName, n, parent);
+                }
+            }
+        }
+    }
 
-    Node call = new Node(Token.CALL, NodeUtil.newQualifiedNameNode(
-        exportSymbolFunction, node, testFunctionName));
-    call.addChildToBack(Node.newString(testFunctionName));
-    call.addChildToBack(NodeUtil.newQualifiedNameNode(
-        testFunctionName, node, testFunctionName));
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, root, new ExportTestFunctionsNodes());
+    }
 
-    Node expression = new Node(Token.EXPR_RESULT, call);
+    // Adds exportSymbol(testFunctionName, testFunction);
+    private void exportTestFunction(String testFunctionName, Node node,
+                                    Node scriptNode) {
 
-    scriptNode.addChildAfter(expression, node);
-    compiler.reportCodeChange();
-  }
+        Node call = new Node(Token.CALL, NodeUtil.newQualifiedNameNode(
+                exportSymbolFunction, node, testFunctionName));
+        call.addChildToBack(Node.newString(testFunctionName));
+        call.addChildToBack(NodeUtil.newQualifiedNameNode(
+                testFunctionName, node, testFunctionName));
 
-  /**
-   * Whether a function is recognized as a test function. We follow the JsUnit
-   * convention for naming (functions should start with "test"), and we also
-   * check if it has no parameters declared.
-   *
-   * @param n The function node
-   * @param functionName The name of the function
-   * @return {@code true} if the function is recognized as a test function.
-   */
-  private boolean isTestFunction(Node n, String functionName) {
-    return !(functionName == null
-        || !TEST_FUNCTIONS_NAME_PATTERN.matcher(functionName).matches());
-  }
+        Node expression = new Node(Token.EXPR_RESULT, call);
+
+        scriptNode.addChildAfter(expression, node);
+        compiler.reportCodeChange();
+    }
+
+    /**
+     * Whether a function is recognized as a test function. We follow the JsUnit
+     * convention for naming (functions should start with "test"), and we also
+     * check if it has no parameters declared.
+     *
+     * @param n            The function node
+     * @param functionName The name of the function
+     * @return {@code true} if the function is recognized as a test function.
+     */
+    private boolean isTestFunction(Node n, String functionName) {
+        return !(functionName == null
+                || !TEST_FUNCTIONS_NAME_PATTERN.matcher(functionName).matches());
+    }
 }

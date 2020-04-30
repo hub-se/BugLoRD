@@ -45,7 +45,7 @@ public class LenientDateTimeField extends DelegatedDateTimeField {
             return null;
         }
         if (field instanceof StrictDateTimeField) {
-            field = ((StrictDateTimeField)field).getWrappedField();
+            field = ((StrictDateTimeField) field).getWrappedField();
         }
         if (field.isLenient()) {
             return field;

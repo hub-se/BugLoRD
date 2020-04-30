@@ -4,19 +4,21 @@
  */
 package org.mockito.internal.debugging;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.internal.util.MockitoLogger;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 public class WarningsPrinterImplTest extends TestBase {
 
-    @Mock private MockitoLogger logger;
-    @Mock private WarningsFinder finder;
+    @Mock
+    private MockitoLogger logger;
+    @Mock
+    private WarningsFinder finder;
 
     @Test
     public void shouldUseFinderCorrectly() {

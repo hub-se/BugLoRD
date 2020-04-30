@@ -6,17 +6,17 @@
 
 package se.de.hu_berlin.informatik.spectra.provider.cobertura.xml;
 
-import java.io.File;
-
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
-import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.provider.AbstractHierarchicalSpectraProvider;
 import se.de.hu_berlin.informatik.spectra.provider.loader.ICoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.loader.cobertura.xml.HierarchicalCoberturaXMLLoader;
+
+import java.io.File;
 
 /**
  * Loads Cobertura reports to {@link HitSpectra} objects where each covered line
@@ -24,42 +24,42 @@ import se.de.hu_berlin.informatik.spectra.provider.loader.cobertura.xml.Hierarch
  * resulting spectra.
  */
 public class HierarchicalCoberturaXMLProvider<K extends ITrace<SourceCodeBlock>>
-		extends AbstractHierarchicalSpectraProvider<SourceCodeBlock, K, CoberturaCoverageWrapper> {
+        extends AbstractHierarchicalSpectraProvider<SourceCodeBlock, K, CoberturaCoverageWrapper> {
 
-	private final ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> loader;
+    private final ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> loader;
 
-	public HierarchicalCoberturaXMLProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
-		super(lineSpectra, fullSpectra);
+    public HierarchicalCoberturaXMLProvider(ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra) {
+        super(lineSpectra, fullSpectra);
 
-		loader = new HierarchicalCoberturaXMLLoader<SourceCodeBlock, K>(packageSpectra, classSpectra, methodSpectra) {
+        loader = new HierarchicalCoberturaXMLLoader<SourceCodeBlock, K>(packageSpectra, classSpectra, methodSpectra) {
 
-			@Override
-			public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,
-					int lineNumber, NodeType nodeType) {
-				return new SourceCodeBlock(packageName, sourceFilePath, methodNameAndSig, lineNumber, nodeType);
-			}
-			
-			@Override
-			public int getNodeIndex(String sourceFilePath, int lineNumber, NodeType nodeType) {
-				SourceCodeBlock identifier = new SourceCodeBlock(null, sourceFilePath, null, lineNumber, nodeType);
-				INode<SourceCodeBlock> node = lineSpectra.getNode(identifier);
-				if (node == null) {
-					return -1;
-				} else {
-					return node.getIndex();
-				}
-			}
+            @Override
+            public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,
+                                                 int lineNumber, NodeType nodeType) {
+                return new SourceCodeBlock(packageName, sourceFilePath, methodNameAndSig, lineNumber, nodeType);
+            }
 
-		};
-	}
+            @Override
+            public int getNodeIndex(String sourceFilePath, int lineNumber, NodeType nodeType) {
+                SourceCodeBlock identifier = new SourceCodeBlock(null, sourceFilePath, null, lineNumber, nodeType);
+                INode<SourceCodeBlock> node = lineSpectra.getNode(identifier);
+                if (node == null) {
+                    return -1;
+                } else {
+                    return node.getIndex();
+                }
+            }
 
-	@Override
-	protected ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> getLoader() {
-		return loader;
-	}
+        };
+    }
 
-	public boolean addData(String xmlFilePath, String identifier, boolean successful) {
-		return super.addData(new CoberturaCoverageWrapper(new File(xmlFilePath), identifier, successful));
-	}
+    @Override
+    protected ICoverageDataLoader<SourceCodeBlock, K, CoberturaCoverageWrapper> getLoader() {
+        return loader;
+    }
+
+    public boolean addData(String xmlFilePath, String identifier, boolean successful) {
+        return super.addData(new CoberturaCoverageWrapper(new File(xmlFilePath), identifier, successful));
+    }
 
 }

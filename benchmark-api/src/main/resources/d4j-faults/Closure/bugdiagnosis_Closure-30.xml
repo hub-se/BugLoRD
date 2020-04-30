@@ -1,54 +1,54 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-30">
-			<tests>
-				<testfile
-					path="com/google/javascript/jscomp/FlowSensitiveInlineVariablesTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest::testCanInlineAcrossNoSideEffect:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest::testIssue698:--&gt;
-						junit.framework.AssertionFailedError:
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>337</number_tests>
-					<failed>3</failed>
-					<passed>334</passed>
-					<nodes>45516</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/MustBeReachingVariableDef.java">
-					<change>396</change>
-					<insert numberlines="1"></insert>
-					<insert numberlines="4">398,399</insert>
-					<insert numberlines="3">430-431</insert>
-					<bugtypes>
-						<id id="1.1" lines="MustBeReachingVariableDef, 70,397,398">
-							<description>Missing check for null value and else case.
-							</description>
-						</id>
-						<id id="1.2" lines="MustBeReachingVariableDef, 396">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.1" lines="MustBeReachingVariableDef, 70,429">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file
-					path="com/google/javascript/jscomp/FlowSensitiveInlineVariables.java">
-					<change>157</change>
-					<bugtypes>
-						<id id="2.1" lines="FlowSensitiveInlineVariables, 157">
-							<description>Incorrect parameters passed.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>5</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-30">
+            <tests>
+                <testfile
+                        path="com/google/javascript/jscomp/FlowSensitiveInlineVariablesTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest::testCanInlineAcrossNoSideEffect:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.FlowSensitiveInlineVariablesTest::testIssue698:--&gt;
+                        junit.framework.AssertionFailedError:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>337</number_tests>
+                    <failed>3</failed>
+                    <passed>334</passed>
+                    <nodes>45516</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/MustBeReachingVariableDef.java">
+                    <change>396</change>
+                    <insert numberlines="1"></insert>
+                    <insert numberlines="4">398,399</insert>
+                    <insert numberlines="3">430-431</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="MustBeReachingVariableDef, 70,397,398">
+                            <description>Missing check for null value and else case.
+                            </description>
+                        </id>
+                        <id id="1.2" lines="MustBeReachingVariableDef, 396">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.1" lines="MustBeReachingVariableDef, 70,429">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file
+                        path="com/google/javascript/jscomp/FlowSensitiveInlineVariables.java">
+                    <change>157</change>
+                    <bugtypes>
+                        <id id="2.1" lines="FlowSensitiveInlineVariables, 157">
+                            <description>Incorrect parameters passed.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>5</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

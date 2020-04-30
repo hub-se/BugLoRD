@@ -1,37 +1,38 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-65">
-			<tests>
-				<testfile
-					path="org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizerTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;0.004&gt;
-						but was:&lt;0.0019737107108948474&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>77</number_tests>
-					<failed>1</failed>
-					<passed>76</passed>
-					<nodes>22105</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java">
-					<change>245</change>
-					<change>258</change>
-					<delete>240-244</delete>
-					<bugtypes>
-						<id id="2.2" lines="240-245">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="1.5" lines="258">
-							<description>Incorrect calculation.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-65">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math/optimization/general/LevenbergMarquardtOptimizerTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;0.004&gt;
+                        but was:&lt;0.0019737107108948474&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>77</number_tests>
+                    <failed>1</failed>
+                    <passed>76</passed>
+                    <nodes>22105</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math/optimization/general/AbstractLeastSquaresOptimizer.java">
+                    <change>245</change>
+                    <change>258</change>
+                    <delete>240-244</delete>
+                    <bugtypes>
+                        <id id="2.2" lines="240-245">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="1.5" lines="258">
+                            <description>Incorrect calculation.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -11,9 +11,9 @@ public class TryCatchTouchPointDescriptor extends TouchPointDescriptor {
 //	private int counterIdForTrue;
 //	private int counterIdForFalse;
 
-	public TryCatchTouchPointDescriptor(int eventId, int currentLine) {
-		super(eventId, currentLine);
-	}
+    public TryCatchTouchPointDescriptor(int eventId, int currentLine) {
+        super(eventId, currentLine);
+    }
 
 //	public int getCounterIdForFalse() {
 //		return counterIdForFalse;
@@ -31,12 +31,12 @@ public class TryCatchTouchPointDescriptor extends TouchPointDescriptor {
 //		this.counterIdForTrue = counterIdForTrue;
 //	}
 
-	@Override
-	public int assignCounters(AtomicInteger idGenerator) {
+    @Override
+    public int assignCounters(AtomicInteger idGenerator) {
 //		counterIdForFalse = idGenerator.incrementAndGet();
 //		counterIdForTrue = idGenerator.incrementAndGet();
 //		return 2;
-		return 0;
-	}
+        return 0;
+    }
 
 }

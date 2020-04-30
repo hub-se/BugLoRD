@@ -22,32 +22,32 @@ import java.io.Serializable;
 
 /**
  * An interface for accessing the AST root of an input.
- *
-*
  */
 public interface SourceAst extends Serializable {
-  /**
-   * Gets the root node of the AST for the source file this represents. The AST
-   * is lazily instantiated and cached.
-   */
-  public Node getAstRoot(AbstractCompiler compiler);
+    /**
+     * Gets the root node of the AST for the source file this represents. The AST
+     * is lazily instantiated and cached.
+     */
+    public Node getAstRoot(AbstractCompiler compiler);
 
-  /**
-   * Removes any references to root node of the AST.  If it is requested again,
-   * another parse will be performed.  This method is needed to allow the ASTs
-   * to be garbage collected if the inputs are still around after compilation.
-   */
-  public void clearAst();
+    /**
+     * Removes any references to root node of the AST.  If it is requested again,
+     * another parse will be performed.  This method is needed to allow the ASTs
+     * to be garbage collected if the inputs are still around after compilation.
+     */
+    public void clearAst();
 
-  /** Returns the source file the generated AST represents. */
-  public SourceFile getSourceFile();
+    /**
+     * Returns the source file the generated AST represents.
+     */
+    public SourceFile getSourceFile();
 
-  /**
-   * Sets the source file the generated AST represents. This can be called after
-   * deserializing if access to the source file is needed. If a different file
-   * is provided than that with which this was created, an IllegalStateException
-   * will be thrown.
-   */
-  public void setSourceFile(SourceFile file);
+    /**
+     * Sets the source file the generated AST represents. This can be called after
+     * deserializing if access to the source file is needed. If a different file
+     * is provided than that with which this was created, an IllegalStateException
+     * will be thrown.
+     */
+    public void setSourceFile(SourceFile file);
 }
 

@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,81 +36,78 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
-import static com.google.javascript.rhino.jstype.TernaryValue.FALSE;
-import static com.google.javascript.rhino.jstype.TernaryValue.TRUE;
-import static com.google.javascript.rhino.jstype.TernaryValue.UNKNOWN;
+import static com.google.javascript.rhino.jstype.TernaryValue.*;
 
 
 /**
  * Null type.
-*
  */
 public final class NullType extends ValueType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  NullType(JSTypeRegistry registry) {
-    super(registry);
-  }
-
-  @Override
-  public boolean isNullType() {
-    return true;
-  }
-
-  @Override
-  public boolean isNullable() {
-    return true;
-  }
-
-  @Override
-  public boolean matchesNumberContext() {
-    return true;
-  }
-
-  @Override
-  public boolean matchesObjectContext() {
-    return false;
-  }
-
-  @Override
-  public boolean matchesStringContext() {
-    return true;
-  }
-
-  @Override
-  public JSType restrictByNotNullOrUndefined() {
-    return registry.getNativeType(JSTypeNative.NO_TYPE);
-  }
-
-  @Override
-  public TernaryValue testForEquality(JSType that) {
-    if (UNKNOWN.equals(super.testForEquality(that))) {
-      return UNKNOWN;
+    NullType(JSTypeRegistry registry) {
+        super(registry);
     }
-    if (that.isNullType() || that.isVoidType()) {
-      return TRUE;
+
+    @Override
+    public boolean isNullType() {
+        return true;
     }
-    if (that.isUnknownType() || that.isNullable()) {
-      return UNKNOWN;
+
+    @Override
+    public boolean isNullable() {
+        return true;
     }
-    return FALSE;
-  }
 
-  @Override
-  public String toString() {
-    return "null";
-  }
+    @Override
+    public boolean matchesNumberContext() {
+        return true;
+    }
 
-  @Override
-  public BooleanLiteralSet getPossibleToBooleanOutcomes() {
-    return BooleanLiteralSet.FALSE;
-  }
+    @Override
+    public boolean matchesObjectContext() {
+        return false;
+    }
 
-  @Override
-  public <T> T visit(Visitor<T> visitor) {
-    return visitor.caseNullType();
-  }
+    @Override
+    public boolean matchesStringContext() {
+        return true;
+    }
+
+    @Override
+    public JSType restrictByNotNullOrUndefined() {
+        return registry.getNativeType(JSTypeNative.NO_TYPE);
+    }
+
+    @Override
+    public TernaryValue testForEquality(JSType that) {
+        if (UNKNOWN.equals(super.testForEquality(that))) {
+            return UNKNOWN;
+        }
+        if (that.isNullType() || that.isVoidType()) {
+            return TRUE;
+        }
+        if (that.isUnknownType() || that.isNullable()) {
+            return UNKNOWN;
+        }
+        return FALSE;
+    }
+
+    @Override
+    public String toString() {
+        return "null";
+    }
+
+    @Override
+    public BooleanLiteralSet getPossibleToBooleanOutcomes() {
+        return BooleanLiteralSet.FALSE;
+    }
+
+    @Override
+    public <T> T visit(Visitor<T> visitor) {
+        return visitor.caseNullType();
+    }
 }

@@ -7,9 +7,9 @@ package org.mockito.exceptions;
 import org.mockito.internal.debugging.Location;
 
 public interface PrintableInvocation {
-    
+
     String toString();
-    
+
     Location getLocation();
-    
+
 }

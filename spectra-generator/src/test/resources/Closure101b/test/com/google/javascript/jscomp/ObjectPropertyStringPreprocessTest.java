@@ -18,51 +18,49 @@ package com.google.javascript.jscomp;
 
 /**
  * Tests for {@link ObjectPropertyStringPreprocess}
- *
-*
  */
 public class ObjectPropertyStringPreprocessTest extends CompilerTestCase {
-  @Override
-  protected CompilerPass getProcessor(final Compiler compiler) {
-    return new ObjectPropertyStringPreprocess(compiler);
-  }
+    @Override
+    protected CompilerPass getProcessor(final Compiler compiler) {
+        return new ObjectPropertyStringPreprocess(compiler);
+    }
 
-  @Override
-  protected int getNumRepetitions() {
-    return 1;
-  }
+    @Override
+    protected int getNumRepetitions() {
+        return 1;
+    }
 
-  public void testDeclaration() {
-    test("goog.testing.ObjectPropertyString = function() {}",
-         "JSCompiler_ObjectPropertyString = function() {}");
-  }
+    public void testDeclaration() {
+        test("goog.testing.ObjectPropertyString = function() {}",
+                "JSCompiler_ObjectPropertyString = function() {}");
+    }
 
-  public void testFooBar() {
-    test("new goog.testing.ObjectPropertyString(foo, 'bar')",
-         "new JSCompiler_ObjectPropertyString(goog.global, foo.bar)");
-  }
+    public void testFooBar() {
+        test("new goog.testing.ObjectPropertyString(foo, 'bar')",
+                "new JSCompiler_ObjectPropertyString(goog.global, foo.bar)");
+    }
 
-  public void testFooPrototypeBar() {
-    test("new goog.testing.ObjectPropertyString(foo.prototype, 'bar')",
-         "new JSCompiler_ObjectPropertyString(goog.global, " +
-         "foo.prototype.bar)");
-  }
+    public void testFooPrototypeBar() {
+        test("new goog.testing.ObjectPropertyString(foo.prototype, 'bar')",
+                "new JSCompiler_ObjectPropertyString(goog.global, " +
+                        "foo.prototype.bar)");
+    }
 
-  public void testInvalidNumArgumentsError() {
-    testSame(new String[] {"new goog.testing.ObjectPropertyString()"},
-        ObjectPropertyStringPreprocess.INVALID_NUM_ARGUMENTS_ERROR);
-  }
+    public void testInvalidNumArgumentsError() {
+        testSame(new String[]{"new goog.testing.ObjectPropertyString()"},
+                ObjectPropertyStringPreprocess.INVALID_NUM_ARGUMENTS_ERROR);
+    }
 
-  public void testQualifedNameExpectedError() {
-    testSame(
-        new String[] {
-          "new goog.testing.ObjectPropertyString(foo[a], 'bar')"
-        },
-        ObjectPropertyStringPreprocess.QUALIFIED_NAME_EXPECTED_ERROR);
-  }
+    public void testQualifedNameExpectedError() {
+        testSame(
+                new String[]{
+                        "new goog.testing.ObjectPropertyString(foo[a], 'bar')"
+                },
+                ObjectPropertyStringPreprocess.QUALIFIED_NAME_EXPECTED_ERROR);
+    }
 
-  public void testStringLiteralExpectedError() {
-    testSame(new String[] {"new goog.testing.ObjectPropertyString(foo, bar)"},
-        ObjectPropertyStringPreprocess.STRING_LITERAL_EXPECTED_ERROR);
-  }
+    public void testStringLiteralExpectedError() {
+        testSame(new String[]{"new goog.testing.ObjectPropertyString(foo, bar)"},
+                ObjectPropertyStringPreprocess.STRING_LITERAL_EXPECTED_ERROR);
+    }
 }

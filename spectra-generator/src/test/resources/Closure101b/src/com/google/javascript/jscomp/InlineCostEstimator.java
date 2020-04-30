@@ -23,92 +23,91 @@ import com.google.javascript.rhino.Node;
  *
  * @see CodeGenerator
  * @see CodePrinter
-*
  */
 class InlineCostEstimator {
-  // For now simply assume identifiers are 2 characters.
-  private static final String ESTIMATED_IDENTIFIER = "ab";
-  static final int ESTIMATED_IDENTIFIER_COST = ESTIMATED_IDENTIFIER.length();
+    // For now simply assume identifiers are 2 characters.
+    private static final String ESTIMATED_IDENTIFIER = "ab";
+    static final int ESTIMATED_IDENTIFIER_COST = ESTIMATED_IDENTIFIER.length();
 
-  private InlineCostEstimator() {
-  }
-
-  /**
-   * Determines the size of the js code.
-   */
-  static int getCost(Node root) {
-    return getCost(root, Integer.MAX_VALUE);
-  }
-
-  /**
-   * Determines the estimated size of the js snippet represented by the node.
-   */
-  static int getCost(Node root, int costThreshhold) {
-    CompiledSizeEstimator estimator = new CompiledSizeEstimator(costThreshhold);
-    estimator.add(root);
-    return estimator.getCost();
-  }
-
-  /**
-   * Code consumer that estimates compiled size by assuming names are
-   * shortened and all whitespace is stripped.
-   */
-  private static class CompiledSizeEstimator extends CodeConsumer {
-    private int maxCost;
-    private int cost = 0;
-    private char last = '\0';
-    private boolean continueProcessing = true;
-
-    CompiledSizeEstimator(int costThreshhold) {
-      this.maxCost = costThreshhold;
+    private InlineCostEstimator() {
     }
 
-    void add(Node root) {
-      CodeGenerator cg = new CodeGenerator(this);
-      cg.add(root);
+    /**
+     * Determines the size of the js code.
+     */
+    static int getCost(Node root) {
+        return getCost(root, Integer.MAX_VALUE);
     }
 
-    int getCost() {
-      return cost;
+    /**
+     * Determines the estimated size of the js snippet represented by the node.
+     */
+    static int getCost(Node root, int costThreshhold) {
+        CompiledSizeEstimator estimator = new CompiledSizeEstimator(costThreshhold);
+        estimator.add(root);
+        return estimator.getCost();
     }
 
-    @Override
-    boolean continueProcessing() {
-      return continueProcessing;
-    }
+    /**
+     * Code consumer that estimates compiled size by assuming names are
+     * shortened and all whitespace is stripped.
+     */
+    private static class CompiledSizeEstimator extends CodeConsumer {
+        private int maxCost;
+        private int cost = 0;
+        private char last = '\0';
+        private boolean continueProcessing = true;
 
-    @Override
-    char getLastChar() {
-      return last;
-    }
+        CompiledSizeEstimator(int costThreshhold) {
+            this.maxCost = costThreshhold;
+        }
 
-    @Override
-    void append(String str){
-      last = str.charAt(str.length() - 1);
-      cost += str.length();
-      if (maxCost <= cost) {
-        continueProcessing = false;
-      }
-    }
+        void add(Node root) {
+            CodeGenerator cg = new CodeGenerator(this);
+            cg.add(root);
+        }
 
-    @Override
-    void addIdentifier(String identifier) {
-      add(ESTIMATED_IDENTIFIER);
-    }
+        int getCost() {
+            return cost;
+        }
 
-    @Override
-    int getCurrentBufferLength() {
-      return -1;
-    }
+        @Override
+        boolean continueProcessing() {
+            return continueProcessing;
+        }
 
-    @Override
-    int getCurrentCharIndex() {
-      return -1;
-    }
+        @Override
+        char getLastChar() {
+            return last;
+        }
 
-    @Override
-    int getCurrentLineIndex() {
-      return -1;
+        @Override
+        void append(String str) {
+            last = str.charAt(str.length() - 1);
+            cost += str.length();
+            if (maxCost <= cost) {
+                continueProcessing = false;
+            }
+        }
+
+        @Override
+        void addIdentifier(String identifier) {
+            add(ESTIMATED_IDENTIFIER);
+        }
+
+        @Override
+        int getCurrentBufferLength() {
+            return -1;
+        }
+
+        @Override
+        int getCurrentCharIndex() {
+            return -1;
+        }
+
+        @Override
+        int getCurrentLineIndex() {
+            return -1;
+        }
     }
-  }
 }

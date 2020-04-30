@@ -34,81 +34,79 @@ import com.google.javascript.rhino.Token;
  *
  * This reduces the generated code size but changes the semantics because f
  * will be defined before its definition is reached.
- *
-*
  */
 class CollapseAnonymousFunctions implements CompilerPass {
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  public CollapseAnonymousFunctions(AbstractCompiler compiler) {
-    Preconditions.checkArgument(compiler.isNormalized());
-    this.compiler = compiler;
-  }
+    public CollapseAnonymousFunctions(AbstractCompiler compiler) {
+        Preconditions.checkArgument(compiler.isNormalized());
+        this.compiler = compiler;
+    }
 
-  @Override
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, root, new Callback());
-  }
-
-  private class Callback extends AbstractPostOrderCallback {
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.getType() != Token.VAR) {
-        return;
-      }
-
-      // It is only safe to collapse anonymous functions that appear
-      // at top-level blocks.  In other cases the difference between
-      // variable and function declarations can lead to problems or
-      // expose subtle bugs in browser implementation as function
-      // definitions are added to scopes before the start of execution.
-
-      Node grandparent = parent.getParent();
-      if (!(parent.getType() == Token.SCRIPT ||
-            grandparent != null &&
-            grandparent.getType() == Token.FUNCTION &&
-            parent.getType() == Token.BLOCK)) {
-        return;
-      }
-
-      // Need to store the next name in case the current name is removed from
-      // the linked list.
-      Preconditions.checkState(n.hasOneChild());
-      Node name = n.getFirstChild();
-      Node value = name.getFirstChild();
-      if (value != null &&
-          value.getType() == Token.FUNCTION &&
-          !isRecursiveFunction(value)) {
-        Node fnName = value.getFirstChild();
-        fnName.setString(name.getString());
-        NodeUtil.copyNameAnnotations(name, fnName);
-        name.removeChild(value);
-        parent.replaceChild(n, value);
-        compiler.reportCodeChange();
-      }
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, root, new Callback());
     }
 
-    private boolean isRecursiveFunction(Node function) {
-      Node name = function.getFirstChild();
-      if (name.getString().isEmpty()) {
-        return false;
-      }
-      Node args = name.getNext();
-      Node body = args.getNext();
-      return containsName(body, name.getString());
-    }
+    private class Callback extends AbstractPostOrderCallback {
+        @Override
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            if (n.getType() != Token.VAR) {
+                return;
+            }
 
-    private boolean containsName(Node n, String name) {
-      if (n.getType() == Token.NAME && n.getString().equals(name)) {
-        return true;
-      }
+            // It is only safe to collapse anonymous functions that appear
+            // at top-level blocks.  In other cases the difference between
+            // variable and function declarations can lead to problems or
+            // expose subtle bugs in browser implementation as function
+            // definitions are added to scopes before the start of execution.
 
-      for (Node child : n.children()) {
-        if (containsName(child, name)) {
-          return true;
+            Node grandparent = parent.getParent();
+            if (!(parent.getType() == Token.SCRIPT ||
+                    grandparent != null &&
+                            grandparent.getType() == Token.FUNCTION &&
+                            parent.getType() == Token.BLOCK)) {
+                return;
+            }
+
+            // Need to store the next name in case the current name is removed from
+            // the linked list.
+            Preconditions.checkState(n.hasOneChild());
+            Node name = n.getFirstChild();
+            Node value = name.getFirstChild();
+            if (value != null &&
+                    value.getType() == Token.FUNCTION &&
+                    !isRecursiveFunction(value)) {
+                Node fnName = value.getFirstChild();
+                fnName.setString(name.getString());
+                NodeUtil.copyNameAnnotations(name, fnName);
+                name.removeChild(value);
+                parent.replaceChild(n, value);
+                compiler.reportCodeChange();
+            }
         }
-      }
-      return false;
+
+        private boolean isRecursiveFunction(Node function) {
+            Node name = function.getFirstChild();
+            if (name.getString().isEmpty()) {
+                return false;
+            }
+            Node args = name.getNext();
+            Node body = args.getNext();
+            return containsName(body, name.getString());
+        }
+
+        private boolean containsName(Node n, String name) {
+            if (n.getType() == Token.NAME && n.getString().equals(name)) {
+                return true;
+            }
+
+            for (Node child : n.children()) {
+                if (containsName(child, name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
-  }
 }

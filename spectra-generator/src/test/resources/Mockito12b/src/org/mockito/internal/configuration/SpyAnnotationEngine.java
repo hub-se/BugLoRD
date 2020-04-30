@@ -4,9 +4,6 @@
  */
 package org.mockito.internal.configuration;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,13 +13,16 @@ import org.mockito.exceptions.Reporter;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockito.internal.util.MockUtil;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+
 @SuppressWarnings({"unchecked"})
 public class SpyAnnotationEngine implements AnnotationEngine {
 
     public Object createMockFor(Annotation annotation, Field field) {
         return null;
     }
-    
+
     @SuppressWarnings("deprecation")
     public void process(Class<?> context, Object testClass) {
         Field[] fields = context.getDeclaredFields();
@@ -35,13 +35,13 @@ public class SpyAnnotationEngine implements AnnotationEngine {
                     Object instance = field.get(testClass);
                     if (instance == null) {
                         throw new MockitoException("Cannot create a @Spy for '" + field.getName() + "' field because the *instance* is missing\n" +
-                        		  "The instance must be created *before* initMocks();\n" +
-                                  "Example of correct usage of @Spy:\n" +
-                            	  "   @Spy List mock = new LinkedList();\n" +
-                            	  "   //also, don't forget about MockitoAnnotations.initMocks();");
+                                "The instance must be created *before* initMocks();\n" +
+                                "Example of correct usage of @Spy:\n" +
+                                "   @Spy List mock = new LinkedList();\n" +
+                                "   //also, don't forget about MockitoAnnotations.initMocks();");
 
                     }
-                    if (new MockUtil().isMock(instance)) { 
+                    if (new MockUtil().isMock(instance)) {
                         // instance has been spied earlier
                         Mockito.reset(instance);
                     } else {
@@ -55,13 +55,13 @@ public class SpyAnnotationEngine implements AnnotationEngine {
             }
         }
     }
-    
+
     //TODO duplicated elsewhere
-    void assertNoAnnotations(Class annotation, Field field, Class ... undesiredAnnotations) {
+    void assertNoAnnotations(Class annotation, Field field, Class... undesiredAnnotations) {
         for (Class u : undesiredAnnotations) {
             if (field.isAnnotationPresent(u)) {
                 new Reporter().unsupportedCombinationOfAnnotations(annotation.getSimpleName(), annotation.getClass().getSimpleName());
             }
-        }        
-    }    
+        }
+    }
 }

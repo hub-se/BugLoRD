@@ -9,6 +9,21 @@
 
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl;
 
+import org.jdom.JDOMException;
+import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
+import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
+import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectraProvider;
+import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.*;
+import se.de.hu_berlin.informatik.spectra.core.INode;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
+import se.de.hu_berlin.informatik.spectra.provider.ISpectraProvider;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
+import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,54 +38,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdom.JDOMException;
-
-import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.Experiment;
-import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
-import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsSpectraProvider;
-import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ample;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Anderberg;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.ArithmeticMean;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Cohen;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Dice;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Euclid;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Fleiss;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.GeometricMean;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Goodman;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Hamann;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Hamming;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.HarmonicMean;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Jaccard;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Kulczynski1;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Kulczynski2;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.M1;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.M2;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Ochiai2;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Overlap;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.RogersTanimoto;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Rogot1;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Rogot2;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.RussellRao;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Scott;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SimpleMatching;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Sokal;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.SorensenDice;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Tarantula;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong1;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong2;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Wong3;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Zoltar;
-import se.de.hu_berlin.informatik.spectra.core.INode;
-import se.de.hu_berlin.informatik.spectra.core.ISpectra;
-import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
-import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
-import se.de.hu_berlin.informatik.spectra.provider.ISpectraProvider;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
-import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
-
 /**
  * Experiment setup to compute and store the ranking of several bugs of the iBugs AspectJ bug repository with multiple
  * fault localization algorithms.
@@ -79,16 +46,26 @@ public class CreateRankings {
 
     private static final int CONCURRENT_EXPERIMENTS = 2;
 
-    /** Bug IDs to create rankings for */
+    /**
+     * Bug IDs to create rankings for
+     */
     private final int[] bugIds;
-    /** fault localizers to use in order to create ranking */
+    /**
+     * fault localizers to use in order to create ranking
+     */
     private final List<IFaultLocalizer<SourceCodeBlock>> faultLocalizers = new ArrayList<>();
-    /** Path to results */
+    /**
+     * Path to results
+     */
     private final String resultPath;
-    /** Contains the real fault locations for all iBugs bugs */
+    /**
+     * Contains the real fault locations for all iBugs bugs
+     */
     private final IBugsFaultLocationCollection realFaults;
 
-    /** Holds the logger for the experiment executor */
+    /**
+     * Holds the logger for the experiment executor
+     */
     private final Logger logger = Logger.getLogger(CreateRankings.class.getName());
 
     private final ISpectraProviderFactory<SourceCodeBlock> spectraProviderFactory;
@@ -96,10 +73,8 @@ public class CreateRankings {
     /**
      * Setup experiment
      *
-     * @throws IOException
-     * in case of an error concerning reading or writing from/to disk
-     * @throws JDOMException
-     * in case of JDOM error
+     * @throws IOException   in case of an error concerning reading or writing from/to disk
+     * @throws JDOMException in case of JDOM error
      */
     public CreateRankings() throws JDOMException, IOException {
         // settings
@@ -107,7 +82,7 @@ public class CreateRankings {
         this.resultPath = "experiments/issta-2015";
 
         // bug ids to run experiments for
-        this.bugIds = new int[] { 28919, 28974, 29186, 29959, 30168, 32463, 33635, 34925, 36430, 36803, 37576, 37739,
+        this.bugIds = new int[]{28919, 28974, 29186, 29959, 30168, 32463, 33635, 34925, 36430, 36803, 37576, 37739,
                 38131, 39626, 39974, 40192, 40257, 40380, 40824, 42539, 42993, 43033, 43194, 43709, 44117, 46298,
                 47318, 49657, 50776, 51320, 51929, 52394, 54421, 54965, 55341, 57436, 57666, 58520, 59596, 59895,
                 61411, 62227, 64069, 64331, 67592, 69011, 70008, 71377, 71878, 72150, 72528, 72531, 72671, 73433,
@@ -117,7 +92,7 @@ public class CreateRankings {
                 128128, 128237, 128655, 128744, 129566, 130837, 130869, 131505, 131932, 131933, 132130, 135001, 136665,
                 138143, 138219, 138223, 138286, 141956, 142165, 145086, 145693, 145950, 146546, 147701, 148409, 150671,
                 151673, 151845, 152257, 152388, 152589, 152631, 153490, 153535, 153845, 154332, 155148, 155972, 156904,
-                156962, 158412, 161217 };
+                156962, 158412, 161217};
 
         // add file logger
         this.logger.addHandler(new FileHandler(this.resultPath + "-log.txt"));
@@ -139,28 +114,19 @@ public class CreateRankings {
     /**
      * Initialize CreateRankings experiment
      *
-     * @param spectraProviderFactory
-     * a factory to provide a spectra object
-     * @param resultsFolder
-     * the path to the results folder
-     * @param bugIds
-     * the bug IDs to consider
-     * @param logFile
-     * the path to the log file
-     * @param faultLocalizers
-     * a list of fault localizers
-     * @param realFaultsFile
-     * the path to the xml file that contains the real fault locations
-     * @throws SecurityException
-     * in case of a security problem
-     * @throws IOException
-     * in case of an error while reading/writing from/to disk
-     * @throws JDOMException
-     * in case of a JDOM error
+     * @param spectraProviderFactory a factory to provide a spectra object
+     * @param resultsFolder          the path to the results folder
+     * @param bugIds                 the bug IDs to consider
+     * @param logFile                the path to the log file
+     * @param faultLocalizers        a list of fault localizers
+     * @param realFaultsFile         the path to the xml file that contains the real fault locations
+     * @throws SecurityException in case of a security problem
+     * @throws IOException       in case of an error while reading/writing from/to disk
+     * @throws JDOMException     in case of a JDOM error
      */
     public CreateRankings(final ISpectraProviderFactory<SourceCodeBlock> spectraProviderFactory, final String resultsFolder,
-            final int[] bugIds, final String logFile, final List<IFaultLocalizer<SourceCodeBlock>> faultLocalizers,
-            final String realFaultsFile) throws SecurityException, IOException, JDOMException {
+                          final int[] bugIds, final String logFile, final List<IFaultLocalizer<SourceCodeBlock>> faultLocalizers,
+                          final String realFaultsFile) throws SecurityException, IOException, JDOMException {
         this.spectraProviderFactory = spectraProviderFactory;
         this.resultPath = resultsFolder;
         this.bugIds = bugIds;
@@ -211,14 +177,10 @@ public class CreateRankings {
     /**
      * Initialize and run experiment
      *
-     * @param args
-     *            CLI arguments
-     * @throws InterruptedException
-     *             in case the experiment was interrupted
-     * @throws IOException
-     *             in case the experiment failed
-     * @throws JDOMException
-     *             in case the experiment failed
+     * @param args CLI arguments
+     * @throws InterruptedException in case the experiment was interrupted
+     * @throws IOException          in case the experiment failed
+     * @throws JDOMException        in case the experiment failed
      */
     public static void main(final String[] args) throws InterruptedException, JDOMException, IOException {
         new CreateRankings().run();
@@ -227,8 +189,7 @@ public class CreateRankings {
     /**
      * Runs all experiments.
      *
-     * @throws InterruptedException
-     *             in case the experiment was interrupted
+     * @throws InterruptedException in case the experiment was interrupted
      */
     public void run() throws InterruptedException {
         final ExecutorService executor = Executors.newFixedThreadPool(CONCURRENT_EXPERIMENTS);
@@ -263,10 +224,8 @@ public class CreateRankings {
     /**
      * Determines whether the result exists for a certain bug and FL combination
      *
-     * @param bugId
-     *            the bug id of the experiment
-     * @param faultLocalizer
-     *            the fault localizer name used by the experiment
+     * @param bugId          the bug id of the experiment
+     * @param faultLocalizer the fault localizer name used by the experiment
      * @return true if the result already exists for the experiment, false otherwise
      */
     public boolean resultExists(final int bugId, final String faultLocalizer) {
@@ -276,12 +235,9 @@ public class CreateRankings {
     /**
      * Returns a result file for an experiment and ensures any necessary folders where this file will reside, exist.
      *
-     * @param bugId
-     *            the bug id of the experiment
-     * @param faultLocalizer
-     *            the fault localizer name used by the experiment
-     * @param filename
-     *            the name of the result file
+     * @param bugId          the bug id of the experiment
+     * @param faultLocalizer the fault localizer name used by the experiment
+     * @param filename       the name of the result file
      * @return resultFile
      */
     public File resultsFile(final int bugId, final String faultLocalizer, final String filename) {
@@ -296,10 +252,8 @@ public class CreateRankings {
     /**
      * Returns a result file for an experiment and ensures any necessary folders where this file will reside, exist.
      *
-     * @param experiment
-     *            the experiment to create the result file for
-     * @param filename
-     *            the name of the result file
+     * @param experiment the experiment to create the result file for
+     * @param filename   the name of the result file
      * @return resultFile
      */
     public File resultsFile(final Experiment experiment, final String filename) {
@@ -309,8 +263,7 @@ public class CreateRankings {
     /**
      * Log a new logical section
      *
-     * @param section
-     *            section header
+     * @param section section header
      */
     public void section(final String section) {
         this.logger.log(Level.INFO, "=== " + section + " ===");
@@ -319,8 +272,7 @@ public class CreateRankings {
     /**
      * Log text
      *
-     * @param text
-     *            to print
+     * @param text to print
      */
     public void text(final String text) {
         this.logger.log(Level.INFO, ">  " + text);
@@ -331,12 +283,18 @@ public class CreateRankings {
      */
     private class ExperimentExecutor implements Runnable {
 
-        /** Holds the experiment to run */
+        /**
+         * Holds the experiment to run
+         */
         private final int bugId;
-        /** Holds the benchmarks */
+        /**
+         * Holds the benchmarks
+         */
         private final Map<String, Long> benchmarks = new HashMap<>();
 
-        /** Initialize executor */
+        /**
+         * Initialize executor
+         */
         public ExperimentExecutor(final int bugId) {
             this.bugId = bugId;
         }
@@ -344,8 +302,7 @@ public class CreateRankings {
         /**
          * Take benchmark
          *
-         * @param id
-         *            to identify benchmark
+         * @param id to identify benchmark
          * @return duration or -1 if just created benchmark
          */
         private String bench(final String id) {
@@ -413,8 +370,8 @@ public class CreateRankings {
                 experiment.conduct();
                 final SimpleRanking<INode<SourceCodeBlock>> ranking = experiment.getRanking();
 
-                final String csvHeader = CSVUtils.toCsvLine(new String[] { "BugID", "Line", "IF", "IS", "NF", "NS",
-                        "BestRanking", "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", });
+                final String csvHeader = CSVUtils.toCsvLine(new String[]{"BugID", "Line", "IF", "IS", "NF", "NS",
+                        "BestRanking", "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness",});
 
                 // store ranking
                 rankingWriter = new FileWriter(CreateRankings.this.resultsFile(experiment, "ranking.csv"));
@@ -458,17 +415,16 @@ public class CreateRankings {
         /**
          * Helper to turn a {@link RankingMetric} into a CSV compatible line.
          *
-         * @param m
-         *            the metric to convert
+         * @param m the metric to convert
          * @return csv line
          */
         private String metricToCsvLine(final RankingMetric<INode<SourceCodeBlock>> m, final Experiment experiment) {
             final INode<SourceCodeBlock> n = m.getElement();
-            final String[] parts = new String[] { Double.toString(experiment.getBugId()), n.getIdentifier().toString(),
-            		Double.toString(n.getEF()), Double.toString(n.getEP()), Double.toString(n.getNF()),
+            final String[] parts = new String[]{Double.toString(experiment.getBugId()), n.getIdentifier().toString(),
+                    Double.toString(n.getEF()), Double.toString(n.getEP()), Double.toString(n.getNF()),
                     Double.toString(n.getNP()), Double.toString(m.getBestRanking()),
                     Double.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
-                    Double.toString(m.getMaxWastedEffort()), Double.toString(m.getRankingValue()), };
+                    Double.toString(m.getMaxWastedEffort()), Double.toString(m.getRankingValue()),};
             return CSVUtils.toCsvLine(parts);
         }
 
@@ -477,16 +433,14 @@ public class CreateRankings {
     /**
      * Factories a spectra provider
      *
-     * @param <T>
-     *            node identifier type
+     * @param <T> node identifier type
      */
     public interface ISpectraProviderFactory<T> {
 
         /**
          * Create spectra provider
          *
-         * @param bugId
-         *            the bug ID to load
+         * @param bugId the bug ID to load
          * @return provider
          */
         public ISpectraProvider<T, HitTrace<T>> factory(int bugId);

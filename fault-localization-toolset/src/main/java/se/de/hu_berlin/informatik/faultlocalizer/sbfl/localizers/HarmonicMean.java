@@ -14,12 +14,11 @@ import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
- * HarmonicMean fault localizer 
+ * HarmonicMean fault localizer
  * $\frac{(\EF\NP-\NF\EP)\left((\EF+\EP)(\NP+\NF) + (\EF+\NF)(\EP+\NP)\right)}%
- * 		{(\EF+\EP)\cdot(\NP+\NF)\cdot(\EF+\NF)\cdot(\EP+\NP)}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ * {(\EF+\EP)\cdot(\NP+\NF)\cdot(\EF+\NF)\cdot(\EP+\NP)}$
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class HarmonicMean<T> extends AbstractFaultLocalizer<T> {
 
@@ -44,8 +43,8 @@ public class HarmonicMean<T> extends AbstractFaultLocalizer<T> {
         final double denom = denom1 * denom2 * denom3 * denom4;
 
         if (enu == 0) {
-    		return 0;
-    	}
+            return 0;
+        }
         return enu / denom;
     }
 

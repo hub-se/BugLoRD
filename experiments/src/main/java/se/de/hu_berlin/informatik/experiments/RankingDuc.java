@@ -3,7 +3,6 @@ package se.de.hu_berlin.informatik.experiments;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.rankingplotter.plotter.RankingUtils;
-import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.RankedElement;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
@@ -28,13 +27,11 @@ public class RankingDuc {
      * Computes the wasted effort metric of an element in the ranking. This is
      * equal to the number of nodes that are ranked higher than the given
      * element.
-     * @param ranking
-     * the ranking
-     * @param element
-     * the node to compute the metric for.
+     *
+     * @param ranking the ranking
+     * @param element the node to compute the metric for.
+     * @param <T>     the type of the elements
      * @return number of nodes ranked higher as the given node.
-     * @param <T>
-     * the type of the elements
      */
     public static <T> int wastedEffort(final Ranking<T> ranking, final T element) {
         return ranking.wastedEffort(element);

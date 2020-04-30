@@ -38,13 +38,7 @@
 
 package com.google.javascript.rhino;
 
-import com.google.javascript.rhino.jstype.BooleanLiteralSetTest;
-import com.google.javascript.rhino.jstype.FunctionParamBuilderTest;
-import com.google.javascript.rhino.jstype.JSTypeRegistryTest;
-import com.google.javascript.rhino.jstype.JSTypeTest;
-import com.google.javascript.rhino.jstype.TernaryValueTest;
-import com.google.javascript.rhino.jstype.UnionTypeBuilderTest;
-
+import com.google.javascript.rhino.jstype.*;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -52,26 +46,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AllTests {
-  public static Test suite() throws Exception {
-    // suspend logging
-    Logger.getLogger("com.google").setLevel(Level.OFF);
+    public static Test suite() throws Exception {
+        // suspend logging
+        Logger.getLogger("com.google").setLevel(Level.OFF);
 
-    // The testing framework is lame and doesn't work in third_party.
-    // Manually load the classes.
-    TestSuite suite = new TestSuite();
+        // The testing framework is lame and doesn't work in third_party.
+        // Manually load the classes.
+        TestSuite suite = new TestSuite();
 
-    suite.addTestSuite(JSDocInfoTest.class);
-    suite.addTestSuite(NodeTest.class);
-    suite.addTestSuite(ParserTest.class);
-    suite.addTestSuite(TokenStreamTest.class);
+        suite.addTestSuite(JSDocInfoTest.class);
+        suite.addTestSuite(NodeTest.class);
+        suite.addTestSuite(ParserTest.class);
+        suite.addTestSuite(TokenStreamTest.class);
 
-    suite.addTestSuite(BooleanLiteralSetTest.class);
-    suite.addTestSuite(FunctionParamBuilderTest.class);
-    suite.addTestSuite(JSTypeRegistryTest.class);
-    suite.addTestSuite(JSTypeTest.class);
-    suite.addTestSuite(TernaryValueTest.class);
-    suite.addTestSuite(UnionTypeBuilderTest.class);
+        suite.addTestSuite(BooleanLiteralSetTest.class);
+        suite.addTestSuite(FunctionParamBuilderTest.class);
+        suite.addTestSuite(JSTypeRegistryTest.class);
+        suite.addTestSuite(JSTypeTest.class);
+        suite.addTestSuite(TernaryValueTest.class);
+        suite.addTestSuite(UnionTypeBuilderTest.class);
 
-    return suite;
-  }
+        return suite;
+    }
 }

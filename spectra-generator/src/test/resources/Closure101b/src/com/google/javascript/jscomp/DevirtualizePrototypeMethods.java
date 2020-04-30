@@ -21,11 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.javascript.jscomp.DefinitionsRemover.Definition;
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
-import com.google.javascript.rhino.jstype.FunctionType;
-import com.google.javascript.rhino.jstype.JSType;
-import com.google.javascript.rhino.jstype.JSTypeNative;
-import com.google.javascript.rhino.jstype.JSTypeRegistry;
-import com.google.javascript.rhino.jstype.ObjectType;
+import com.google.javascript.rhino.jstype.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -61,309 +57,307 @@ import java.util.List;
  *     }
  *     var total = accumulate(a, 2)
  * </pre>
- *
-*
  */
 class DevirtualizePrototypeMethods implements CompilerPass {
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  DevirtualizePrototypeMethods(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    SimpleDefinitionFinder defFinder = new SimpleDefinitionFinder(compiler);
-    defFinder.process(externs, root);
-
-    for (DefinitionSite defSite : defFinder.getDefinitionSites()) {
-      rewriteDefinitionIfEligible(defSite, defFinder);
-    }
-  }
-
-  /**
-   * Determines if the name node acts as the function name in a call expression.
-   */
-  private static boolean isCall(UseSite site) {
-    Node node = site.node;
-    Node parent = node.getParent();
-    return (parent.getFirstChild() == node) && NodeUtil.isCall(parent);
-  }
-
-  /**
-   * Determines if the current node is a function prototype definition.
-   */
-  private static boolean isPrototypeMethodDefinition(Node node) {
-    Node parent = node.getParent();
-    if (parent == null) {
-      return false;
+    DevirtualizePrototypeMethods(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
 
-    Node gramp = parent.getParent();
-    if ((gramp == null) ||
-        (parent.getFirstChild() != node) ||
-        !NodeUtil.isExprAssign(gramp)) {
-      return false;
+    @Override
+    public void process(Node externs, Node root) {
+        SimpleDefinitionFinder defFinder = new SimpleDefinitionFinder(compiler);
+        defFinder.process(externs, root);
+
+        for (DefinitionSite defSite : defFinder.getDefinitionSites()) {
+            rewriteDefinitionIfEligible(defSite, defFinder);
+        }
     }
 
-    Node functionNode = parent.getLastChild();
-    if ((functionNode == null) || !NodeUtil.isFunction(functionNode)) {
-      return false;
+    /**
+     * Determines if the name node acts as the function name in a call expression.
+     */
+    private static boolean isCall(UseSite site) {
+        Node node = site.node;
+        Node parent = node.getParent();
+        return (parent.getFirstChild() == node) && NodeUtil.isCall(parent);
     }
 
-    if (!NodeUtil.isGetProp(node)) {
-      return false;
+    /**
+     * Determines if the current node is a function prototype definition.
+     */
+    private static boolean isPrototypeMethodDefinition(Node node) {
+        Node parent = node.getParent();
+        if (parent == null) {
+            return false;
+        }
+
+        Node gramp = parent.getParent();
+        if ((gramp == null) ||
+                (parent.getFirstChild() != node) ||
+                !NodeUtil.isExprAssign(gramp)) {
+            return false;
+        }
+
+        Node functionNode = parent.getLastChild();
+        if ((functionNode == null) || !NodeUtil.isFunction(functionNode)) {
+            return false;
+        }
+
+        if (!NodeUtil.isGetProp(node)) {
+            return false;
+        }
+
+        Node nameNode = node.getFirstChild();
+        return NodeUtil.isGetProp(nameNode) &&
+                nameNode.getLastChild().getString().equals("prototype");
+
     }
 
-    Node nameNode = node.getFirstChild();
-    return NodeUtil.isGetProp(nameNode) &&
-        nameNode.getLastChild().getString().equals("prototype");
-
-  }
-
-  /**
-   * @returns The new name for a rewritten method.
-   */
-  private String getRewrittenMethodName(String orginalMethodName) {
-    return "JSCompiler_StaticMethods_" + orginalMethodName;
-  }
-
-  /**
-   * Rewrites method definition and call sites if the method is
-   * defined in the global scope exactly once.
-   *
-   * Definition and use site information is provided by the
-   * {@link SimpleDefinitionFinder} passed in as an argument.
-   *
-   * @param defSite definition site to process.
-   * @param defFinder structure that hold Node -> Definition and
-   * Definition -> [UseSite] maps.
-   */
-  private void rewriteDefinitionIfEligible(DefinitionSite defSite,
-                                           SimpleDefinitionFinder defFinder) {
-
-    if (defSite.inExterns ||
-        !defSite.inGlobalScope ||
-        !isEligibleDefinition(defFinder, defSite)) {
-      return;
+    /**
+     * @returns The new name for a rewritten method.
+     */
+    private String getRewrittenMethodName(String orginalMethodName) {
+        return "JSCompiler_StaticMethods_" + orginalMethodName;
     }
 
-    Node node = defSite.node;
+    /**
+     * Rewrites method definition and call sites if the method is
+     * defined in the global scope exactly once.
+     * <p>
+     * Definition and use site information is provided by the
+     * {@link SimpleDefinitionFinder} passed in as an argument.
+     *
+     * @param defSite   definition site to process.
+     * @param defFinder structure that hold Node -> Definition and
+     *                  Definition -> [UseSite] maps.
+     */
+    private void rewriteDefinitionIfEligible(DefinitionSite defSite,
+                                             SimpleDefinitionFinder defFinder) {
 
-    // TODO(user) support rewritting methods defined as part of
-    // object literals.
-    if (!isPrototypeMethodDefinition(node)) {
-      return;
+        if (defSite.inExterns ||
+                !defSite.inGlobalScope ||
+                !isEligibleDefinition(defFinder, defSite)) {
+            return;
+        }
+
+        Node node = defSite.node;
+
+        // TODO(user) support rewritting methods defined as part of
+        // object literals.
+        if (!isPrototypeMethodDefinition(node)) {
+            return;
+        }
+
+        for (Node ancestor = node.getParent();
+             ancestor != null;
+             ancestor = ancestor.getParent()) {
+            if (NodeUtil.isControlStructure(ancestor)) {
+                return;
+            }
+        }
+
+        // TODO(user) The code only works if there is a single definition
+        // associated with a property name.  Once this pass starts using
+        // the NameReferenceGraph to disambiguate call sites, it will be
+        // necessary to consider type information when generating static
+        // method names and/or append unique ids to duplicate static
+        // method names.
+        // Whatever scheme we use should not break stable renaming.
+        String newMethodName = getRewrittenMethodName(
+                node.getLastChild().getString());
+        rewriteDefinition(node, newMethodName);
+        rewriteCallSites(defFinder, defSite.definition, newMethodName);
     }
 
-    for (Node ancestor = node.getParent();
-         ancestor != null;
-         ancestor = ancestor.getParent()) {
-      if (NodeUtil.isControlStructure(ancestor)) {
-        return;
-      }
+    /**
+     * Determines if a method definition is eligible for rewrite as a
+     * global function.  In order to be eligible for rewrite, the
+     * definition must:
+     * <p>
+     * - Refer to a function that takes a fixed number of arguments.
+     * - Function must not be exported.
+     * - Function must be used at least once.
+     * - Property is never accesed outside a function call context.
+     * - The definition under consideration must be the only possible
+     * choice at each call site.
+     * - Definition must happen in a module loaded before the first use.
+     */
+    private boolean isEligibleDefinition(SimpleDefinitionFinder defFinder,
+                                         DefinitionSite definitionSite) {
+
+        Definition definition = definitionSite.definition;
+        JSModule definitionModule = definitionSite.module;
+
+        // Only functions may be rewritten.
+        // Functions that access "arguments" are not eligible since
+        // rewrite changes the structure of this object.
+        Node rValue = definition.getRValue();
+        if (rValue == null ||
+                !NodeUtil.isFunction(rValue) ||
+                NodeUtil.isVarArgsFunction(rValue)) {
+            return false;
+        }
+
+        // Exporting a method prevents rewrite.
+        Node lValue = definition.getLValue();
+        if ((lValue == null) ||
+                !NodeUtil.isGetProp(lValue)) {
+            return false;
+        }
+        CodingConvention codingConvention = compiler.getCodingConvention();
+        if (codingConvention.isExported(lValue.getLastChild().getString())) {
+            return false;
+        }
+
+        Collection<UseSite> useSites = defFinder.getUseSites(definition);
+
+        // Rewriting unused methods is not sound.
+        if (useSites.isEmpty()) {
+            return false;
+        }
+
+        JSModuleGraph moduleGraph = compiler.getModuleGraph();
+
+        for (UseSite site : useSites) {
+
+            // Accessing the property directly prevents rewrite.
+            if (!isCall(site)) {
+                return false;
+            }
+
+            // Multiple definitions prevent rewrite.
+            Node nameNode = site.node;
+            Collection<Definition> singleSiteDefinitions =
+                    defFinder.getDefinitionsReferencedAt(nameNode);
+            if (singleSiteDefinitions.size() > 1) {
+                return false;
+            }
+            Preconditions.checkState(!singleSiteDefinitions.isEmpty());
+            Preconditions.checkState(singleSiteDefinitions.contains(definition));
+
+            // Accessing the property in a module loaded before the
+            // definition module prevents rewrite; accessing a variable
+            // before definition results in a parse error.
+            JSModule callModule = site.module;
+            if ((definitionModule != callModule) &&
+                    ((callModule == null) ||
+                            !moduleGraph.dependsOn(callModule, definitionModule))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    // TODO(user) The code only works if there is a single definition
-    // associated with a property name.  Once this pass starts using
-    // the NameReferenceGraph to disambiguate call sites, it will be
-    // necessary to consider type information when generating static
-    // method names and/or append unique ids to duplicate static
-    // method names.
-    // Whatever scheme we use should not break stable renaming.
-    String newMethodName = getRewrittenMethodName(
-        node.getLastChild().getString());
-    rewriteDefinition(node, newMethodName);
-    rewriteCallSites(defFinder, defSite.definition, newMethodName);
-  }
+    /**
+     * Rewrites object method call sites as calls to global functions
+     * that take "this" as their first argument.
+     * <p>
+     * Before:
+     * o.foo(a, b, c)
+     * <p>
+     * After:
+     * foo(o, a, b, c)
+     */
+    private void rewriteCallSites(SimpleDefinitionFinder defFinder,
+                                  Definition definition,
+                                  String newMethodName) {
+        Collection<UseSite> useSites = defFinder.getUseSites(definition);
+        for (UseSite site : useSites) {
+            Node node = site.node;
+            Node parent = node.getParent();
 
-  /**
-   * Determines if a method definition is eligible for rewrite as a
-   * global function.  In order to be eligible for rewrite, the
-   * definition must:
-   *
-   * - Refer to a function that takes a fixed number of arguments.
-   * - Function must not be exported.
-   * - Function must be used at least once.
-   * - Property is never accesed outside a function call context.
-   * - The definition under consideration must be the only possible
-   *   choice at each call site.
-   * - Definition must happen in a module loaded before the first use.
-   */
-  private boolean isEligibleDefinition(SimpleDefinitionFinder defFinder,
-                                       DefinitionSite definitionSite) {
-
-    Definition definition = definitionSite.definition;
-    JSModule definitionModule = definitionSite.module;
-
-    // Only functions may be rewritten.
-    // Functions that access "arguments" are not eligible since
-    // rewrite changes the structure of this object.
-    Node rValue = definition.getRValue();
-    if (rValue == null ||
-        !NodeUtil.isFunction(rValue) ||
-        NodeUtil.isVarArgsFunction(rValue)) {
-      return false;
+            Node objectNode = node.getFirstChild();
+            node.removeChild(objectNode);
+            parent.replaceChild(node, objectNode);
+            parent.addChildToFront(Node.newString(Token.NAME, newMethodName));
+            compiler.reportCodeChange();
+        }
     }
 
-    // Exporting a method prevents rewrite.
-    Node lValue = definition.getLValue();
-    if ((lValue == null) ||
-        !NodeUtil.isGetProp(lValue)) {
-      return false;
-    }
-    CodingConvention codingConvention = compiler.getCodingConvention();
-    if (codingConvention.isExported(lValue.getLastChild().getString())) {
-      return false;
-    }
+    /**
+     * Rewrites method definitions as global functions that take "this"
+     * as their first argument.
+     * <p>
+     * Before:
+     * a.prototype.b = function(a, b, c) {...}
+     * <p>
+     * After:
+     * var b = function(self, a, b, c) {...}
+     */
+    private void rewriteDefinition(Node node, String newMethodName) {
+        Node parent = node.getParent();
+        Node functionNode = parent.getLastChild();
+        Node expr = parent.getParent();
+        Node block = expr.getParent();
 
-    Collection<UseSite> useSites = defFinder.getUseSites(definition);
+        Node newNameNode = Node.newString(Token.NAME, newMethodName);
+        parent.removeChild(functionNode);
+        newNameNode.addChildToFront(functionNode);
+        block.replaceChild(expr, new Node(Token.VAR, newNameNode));
 
-    // Rewriting unused methods is not sound.
-    if (useSites.isEmpty()) {
-      return false;
-    }
+        // add extra argument
+        String self = newMethodName + "$self";
+        Node argList = functionNode.getFirstChild().getNext();
+        argList.addChildToFront(Node.newString(Token.NAME, self));
 
-    JSModuleGraph moduleGraph = compiler.getModuleGraph();
+        // rewrite body
+        Node body = functionNode.getLastChild();
+        replaceReferencesToThis(body, self);
 
-    for (UseSite site : useSites) {
+        // fix type
+        fixFunctionType(functionNode);
 
-      // Accessing the property directly prevents rewrite.
-      if (!isCall(site)) {
-        return false;
-      }
-
-      // Multiple definitions prevent rewrite.
-      Node nameNode = site.node;
-      Collection<Definition> singleSiteDefinitions =
-          defFinder.getDefinitionsReferencedAt(nameNode);
-      if (singleSiteDefinitions.size() > 1) {
-        return false;
-      }
-      Preconditions.checkState(!singleSiteDefinitions.isEmpty());
-      Preconditions.checkState(singleSiteDefinitions.contains(definition));
-
-      // Accessing the property in a module loaded before the
-      // definition module prevents rewrite; accessing a variable
-      // before definition results in a parse error.
-      JSModule callModule = site.module;
-      if ((definitionModule != callModule) &&
-          ((callModule == null) ||
-          !moduleGraph.dependsOn(callModule, definitionModule))) {
-        return false;
-      }
+        compiler.reportCodeChange();
     }
 
-    return true;
-  }
+    /**
+     * Creates a new JSType based on the original function type by
+     * adding the original this pointer type to the beginning of the
+     * argument type list and replacing the this pointer type with
+     * NO_TYPE.
+     */
+    private void fixFunctionType(Node functionNode) {
+        FunctionType type = (FunctionType) functionNode.getJSType();
+        if (type != null) {
+            JSTypeRegistry typeRegistry = compiler.getTypeRegistry();
 
-  /**
-   * Rewrites object method call sites as calls to global functions
-   * that take "this" as their first argument.
-   *
-   * Before:
-   *   o.foo(a, b, c)
-   *
-   * After:
-   *   foo(o, a, b, c)
-   */
-  private void rewriteCallSites(SimpleDefinitionFinder defFinder,
-                                Definition definition,
-                                String newMethodName) {
-    Collection<UseSite> useSites = defFinder.getUseSites(definition);
-    for (UseSite site : useSites) {
-      Node node = site.node;
-      Node parent = node.getParent();
+            List<JSType> parameterTypes = Lists.newArrayList();
+            parameterTypes.add(type.getTypeOfThis());
 
-      Node objectNode = node.getFirstChild();
-      node.removeChild(objectNode);
-      parent.replaceChild(node, objectNode);
-      parent.addChildToFront(Node.newString(Token.NAME, newMethodName));
-      compiler.reportCodeChange();
-    }
-  }
+            for (Node param : type.getParameters()) {
+                parameterTypes.add(param.getJSType());
+            }
 
-  /**
-   * Rewrites method definitions as global functions that take "this"
-   * as their first argument.
-   *
-   * Before:
-   *   a.prototype.b = function(a, b, c) {...}
-   *
-   * After:
-   *   var b = function(self, a, b, c) {...}
-   */
-  private void rewriteDefinition(Node node, String newMethodName) {
-    Node parent = node.getParent();
-    Node functionNode = parent.getLastChild();
-    Node expr = parent.getParent();
-    Node block = expr.getParent();
+            ObjectType thisType =
+                    typeRegistry.getNativeObjectType(JSTypeNative.UNKNOWN_TYPE);
+            JSType returnType = type.getReturnType();
 
-    Node newNameNode = Node.newString(Token.NAME, newMethodName);
-    parent.removeChild(functionNode);
-    newNameNode.addChildToFront(functionNode);
-    block.replaceChild(expr, new Node(Token.VAR, newNameNode));
-
-    // add extra argument
-    String self = newMethodName + "$self";
-    Node argList = functionNode.getFirstChild().getNext();
-    argList.addChildToFront(Node.newString(Token.NAME, self));
-
-    // rewrite body
-    Node body = functionNode.getLastChild();
-    replaceReferencesToThis(body, self);
-
-    // fix type
-    fixFunctionType(functionNode);
-
-    compiler.reportCodeChange();
-  }
-
-  /**
-   * Creates a new JSType based on the original function type by
-   * adding the original this pointer type to the beginning of the
-   * argument type list and replacing the this pointer type with
-   * NO_TYPE.
-   */
-  private void fixFunctionType(Node functionNode) {
-    FunctionType type = (FunctionType) functionNode.getJSType();
-    if (type != null) {
-      JSTypeRegistry typeRegistry = compiler.getTypeRegistry();
-
-      List<JSType> parameterTypes = Lists.newArrayList();
-      parameterTypes.add(type.getTypeOfThis());
-
-      for (Node param : type.getParameters()) {
-        parameterTypes.add(param.getJSType());
-      }
-
-      ObjectType thisType =
-          typeRegistry.getNativeObjectType(JSTypeNative.UNKNOWN_TYPE);
-      JSType returnType = type.getReturnType();
-
-      JSType newType = typeRegistry.createFunctionType(
-          thisType, returnType, parameterTypes);
-      functionNode.setJSType(newType);
-    }
-  }
-
-  /**
-   * Replaces references to "this" with references to name.  Do not
-   * traverse function boundaries.
-   */
-  private void replaceReferencesToThis(Node node, String name) {
-    if (NodeUtil.isFunction(node)) {
-      return;
+            JSType newType = typeRegistry.createFunctionType(
+                    thisType, returnType, parameterTypes);
+            functionNode.setJSType(newType);
+        }
     }
 
-    for (Node child : node.children()) {
-      if (NodeUtil.isThis(child)) {
-        Node newName = Node.newString(Token.NAME, name);
-        newName.setJSType(child.getJSType());
-        node.replaceChild(child, newName);
-      } else {
-        replaceReferencesToThis(child, name);
-      }
+    /**
+     * Replaces references to "this" with references to name.  Do not
+     * traverse function boundaries.
+     */
+    private void replaceReferencesToThis(Node node, String name) {
+        if (NodeUtil.isFunction(node)) {
+            return;
+        }
+
+        for (Node child : node.children()) {
+            if (NodeUtil.isThis(child)) {
+                Node newName = Node.newString(Token.NAME, name);
+                newName.setJSType(child.getJSType());
+                node.replaceChild(child, newName);
+            } else {
+                replaceReferencesToThis(child, name);
+            }
+        }
     }
-  }
 }

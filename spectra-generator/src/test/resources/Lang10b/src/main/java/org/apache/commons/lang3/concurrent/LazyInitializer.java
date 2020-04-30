@@ -49,7 +49,7 @@ package org.apache.commons.lang3.concurrent;
  *     }
  * }
  * </pre>
- *
+ * <p>
  * Access to the data object is provided through the {@code get()} method. So,
  * code that wants to obtain the {@code ComplexObject} instance would simply
  * look like this:
@@ -72,12 +72,14 @@ package org.apache.commons.lang3.concurrent;
  * (only an access to a <b>volatile</b> member field).
  * </p>
  *
- * @since 3.0
- * @version $Id$
  * @param <T> the type of the object managed by this initializer class
+ * @version $Id$
+ * @since 3.0
  */
 public abstract class LazyInitializer<T> implements ConcurrentInitializer<T> {
-    /** Stores the managed object. */
+    /**
+     * Stores the managed object.
+     */
     private volatile T object;
 
     /**
@@ -86,7 +88,7 @@ public abstract class LazyInitializer<T> implements ConcurrentInitializer<T> {
      *
      * @return the object initialized by this {@code LazyInitializer}
      * @throws ConcurrentException if an error occurred during initialization of
-     * the object
+     *                             the object
      */
     @Override
     public T get() throws ConcurrentException {

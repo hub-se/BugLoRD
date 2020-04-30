@@ -11,7 +11,7 @@ import org.mockito.verification.VerificationMode;
 
 @SuppressWarnings("unchecked")
 public interface MockingProgress {
-    
+
     void reportOngoingStubbing(IOngoingStubbing iOngoingStubbing);
 
     IOngoingStubbing pullOngoingStubbing();
@@ -23,7 +23,7 @@ public interface MockingProgress {
     void stubbingStarted();
 
     void stubbingCompleted(Invocation invocation);
-    
+
     void validateState();
 
     void reset();
@@ -35,7 +35,7 @@ public interface MockingProgress {
     void resetOngoingStubbing();
 
     ArgumentMatcherStorage getArgumentMatcherStorage();
-    
+
     void mockingStarted(Object mock, Class classToMock, MockSettings mockSettings);
 
     void setListener(MockingProgressListener listener);

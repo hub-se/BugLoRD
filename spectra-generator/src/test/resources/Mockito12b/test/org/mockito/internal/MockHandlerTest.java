@@ -10,9 +10,10 @@ import org.mockito.internal.invocation.*;
 import org.mockito.internal.progress.ArgumentMatcherStorage;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockitoutil.TestBase;
-@SuppressWarnings({"unchecked","serial"})
+
+@SuppressWarnings({"unchecked", "serial"})
 public class MockHandlerTest extends TestBase {
-    
+
     @Test
     public void shouldRemoveVerificationModeEvenWhenInvalidMatchers() throws Throwable {
         //given
@@ -24,15 +25,16 @@ public class MockHandlerTest extends TestBase {
                 throw new InvalidUseOfMatchersException();
             }
         };
-        
+
         try {
             //when
             handler.handle(invocation);
-            
+
             //then
             fail();
-        } catch (InvalidUseOfMatchersException e) {}
-        
+        } catch (InvalidUseOfMatchersException e) {
+        }
+
         assertNull(handler.mockingProgress.pullVerificationMode());
     }
 }

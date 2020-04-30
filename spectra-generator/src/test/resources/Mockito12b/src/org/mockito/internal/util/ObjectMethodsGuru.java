@@ -4,11 +4,11 @@
  */
 package org.mockito.internal.util;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.mockito.internal.creation.DelegatingMethod;
 import org.mockito.internal.invocation.MockitoMethod;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
 
 public class ObjectMethodsGuru implements Serializable {
 

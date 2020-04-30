@@ -1,36 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-95">
-			<tests>
-				<testfile path="org/apache/commons/math/distribution/FDistributionTest">
-					<exception>java.lang.IllegalArgumentException:Invalid endpoint
-						parameters:lowerBound=0.0 initial=-1.0
-						upperBound=1.7976931348623157E308
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>23</number_tests>
-					<failed>1</failed>
-					<passed>22</passed>
-					<nodes>10520</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/distribution/FDistributionImpl.java">
-					<change>144</change>
-					<insert numberlines="1,1">146-147,148</insert>
-					<bugtypes>
-						<id id="3.1" lines="144">
-							<description>Incorrect initialization.</description>
-						</id>
-						<id id="1.1" lines="145,147">
-							<description>Missing case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-95">
+            <tests>
+                <testfile path="org/apache/commons/math/distribution/FDistributionTest">
+                    <exception>java.lang.IllegalArgumentException:Invalid endpoint
+                        parameters:lowerBound=0.0 initial=-1.0
+                        upperBound=1.7976931348623157E308
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>23</number_tests>
+                    <failed>1</failed>
+                    <passed>22</passed>
+                    <nodes>10520</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/distribution/FDistributionImpl.java">
+                    <change>144</change>
+                    <insert numberlines="1,1">146-147,148</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="144">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                        <id id="1.1" lines="145,147">
+                            <description>Missing case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

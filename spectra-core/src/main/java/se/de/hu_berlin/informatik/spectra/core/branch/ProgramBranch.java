@@ -13,9 +13,8 @@ import java.util.Map;
 /**
  * A program branch is a list of program elements.
  * In this case modeled as a list of Source Code Blocks.
- *
  */
-public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Indexable<ProgramBranch>, Cloneable{
+public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Indexable<ProgramBranch>, Cloneable {
 
     /*====================================================================================
      * CONSTRUCTORS
@@ -32,12 +31,12 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
 
 
         /*====================================================================================*/
-        assert(Arrays.asList(programBlocks).equals(this.getElements()));
+        assert (Arrays.asList(programBlocks).equals(this.getElements()));
         /*====================================================================================*/
 
     }
 
-    public ProgramBranch(List<SourceCodeBlock> programBlocks){
+    public ProgramBranch(List<SourceCodeBlock> programBlocks) {
 
         /*====================================================================================*/
         //probably check if branch is gapless, but need better data structures probably
@@ -46,19 +45,19 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
         this.branchElements = ImmutableList.copyOf(programBlocks);
 
         //store the hashCode now
-        int immutableHashCode =  31 * (527 + branchElements.size());
+        int immutableHashCode = 31 * (527 + branchElements.size());
         for (SourceCodeBlock block : branchElements) {
             immutableHashCode = immutableHashCode * 31 + block.hashCode();
         }
         this.immutableHashCode = immutableHashCode;
 
         /*====================================================================================*/
-        assert(programBlocks.equals(this.getElements()));
+        assert (programBlocks.equals(this.getElements()));
         /*====================================================================================*/
 
     }
-    
-    public ProgramBranch(SourceCodeBlock programBlock){
+
+    public ProgramBranch(SourceCodeBlock programBlock) {
 
         /*====================================================================================*/
         //probably check if branch is gapless, but need better data structures probably
@@ -67,7 +66,7 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
         this.branchElements = ImmutableList.of(programBlock);
 
         //store the hashCode now
-        int immutableHashCode =  31 * (527 + branchElements.size());
+        int immutableHashCode = 31 * (527 + branchElements.size());
         for (SourceCodeBlock block : branchElements) {
             immutableHashCode = immutableHashCode * 31 + block.hashCode();
         }
@@ -227,8 +226,8 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
         clonedBranch = new ProgramBranch(clonedBranchElements);
 
         /*====================================================================================*/
-        assert(this.equals(clonedBranch));
-        assert(this != clonedBranch);
+        assert (this.equals(clonedBranch));
+        assert (this != clonedBranch);
         /*====================================================================================*/
 
         return clonedBranch;
@@ -238,45 +237,45 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
      * GETTER
      *====================================================================================*/
 
-    public int getLength(){
+    public int getLength() {
         return this.branchElements.size();
     }
 
-    public SourceCodeBlock getElement(int index){
+    public SourceCodeBlock getElement(int index) {
         return this.branchElements.get(index);
     }
 
-    public ImmutableList<SourceCodeBlock> getElements(){
+    public ImmutableList<SourceCodeBlock> getElements() {
         return this.branchElements;
     }
 
     //DANGER : temporary stuff here to make things "work", this should really be made better by e.g. making an abstract class called ProgramElement or something
-    public String getFilePath(){
+    public String getFilePath() {
         return this.getElement(0).getFilePath();
     }
 
-    public List<String> getFilePaths(){
+    public List<String> getFilePaths() {
         List<String> filePaths = new ArrayList<>();
-        for(SourceCodeBlock element : this.getElements()){
+        for (SourceCodeBlock element : this.getElements()) {
             filePaths.add(element.getFilePath());
         }
         return filePaths;
     }
 
-    public List<String> getMethodNames(){
+    public List<String> getMethodNames() {
         List<String> methodNames = new ArrayList<>();
-        for(SourceCodeBlock element : this.getElements()){
+        for (SourceCodeBlock element : this.getElements()) {
             methodNames.add(element.getFilePath() + element.getMethodName());
         }
         return methodNames;
     }
 
-    public int getStartLineNumber(){
+    public int getStartLineNumber() {
         return this.getElement(0).getStartLineNumber();
     }
 
-    public int getEndLineNumber(){
-        return this.getElement(this.getLength()-1).getEndLineNumber();
+    public int getEndLineNumber() {
+        return this.getElement(this.getLength() - 1).getEndLineNumber();
     }
     //DANGER over
 

@@ -17,19 +17,19 @@ public abstract class CompareTo<T extends Comparable<T>> extends ArgumentMatcher
 
     @SuppressWarnings("unchecked")
     public boolean matches(Object actual) {
-        
-        if(!(actual instanceof Comparable)) {
+
+        if (!(actual instanceof Comparable)) {
             return false;
         }
-        
+
         return matchResult(((Comparable) actual).compareTo(wanted));
     }
 
     public void describeTo(Description description) {
         description.appendText(getName() + "(" + wanted + ")");
     }
-    
+
     protected abstract String getName();
-    
+
     protected abstract boolean matchResult(int result);
 }

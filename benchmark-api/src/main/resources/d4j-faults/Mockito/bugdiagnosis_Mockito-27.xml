@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-27">
-			<tests>
-				<testfile path="org/mockitousage/bugs/ListenersLostOnResetMockTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1087</number_tests>
-					<failed>1</failed>
-					<passed>1086</passed>
-					<nodes>3443</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/internal/util/MockUtil.java">
-					<change>64-65</change>
-					<bugtypes>
-						<id id="2.1" lines="64,65">
-							<description>Passed wrong parameters.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-27">
+            <tests>
+                <testfile path="org/mockitousage/bugs/ListenersLostOnResetMockTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1087</number_tests>
+                    <failed>1</failed>
+                    <passed>1086</passed>
+                    <nodes>3443</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/internal/util/MockUtil.java">
+                    <change>64-65</change>
+                    <bugtypes>
+                        <id id="2.1" lines="64,65">
+                            <description>Passed wrong parameters.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -9,63 +9,73 @@
 
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs;
 
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
-import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Class is used to conduct a failure localization experiment using iBugs.
  */
 public class Experiment implements IExperiment {
 
-    /** Holds the logger for this class */
+    /**
+     * Holds the logger for this class
+     */
     private final Logger log = Logger.getLogger(Experiment.class.getName());
-    /** Holds the real fault locations */
+    /**
+     * Holds the real fault locations
+     */
     private final IBugsFaultLocationCollection realFaults;
 
     // // EXPERIMENT SETUP // //
 
-    /** iBugs bug id that was used to create the spectra */
+    /**
+     * iBugs bug id that was used to create the spectra
+     */
     private final int bugId;
-    /** Holds the fault localizer used by this experiment */
+    /**
+     * Holds the fault localizer used by this experiment
+     */
     private final IFaultLocalizer<SourceCodeBlock> localizer;
-    /** Holds the spectra to localize faults on */
-    private final ISpectra<SourceCodeBlock,?> spectra;
-    /** True if experiment ran already, false if not */
+    /**
+     * Holds the spectra to localize faults on
+     */
+    private final ISpectra<SourceCodeBlock, ?> spectra;
+    /**
+     * True if experiment ran already, false if not
+     */
     private boolean hasRun;
 
 
     // // EXPERIMENT RESULTS // //
 
-    /** Holds the produced ranking */
+    /**
+     * Holds the produced ranking
+     */
     private SimpleRanking<INode<SourceCodeBlock>> ranking;
-    /** Holds the real fault locations */
+    /**
+     * Holds the real fault locations
+     */
     private Set<INode<SourceCodeBlock>> realFaultLocations;
-
 
 
     /**
      * Creates a new experiment.
      *
-     * @param bugId
-     *            iBugs bug id that was used to create the spectra
-     * @param spectra
-     *            the spectra to base the experiment on
-     * @param localizer
-     *            the fault localizer to use
-     * @param realFaults
-     *            to determine the real fault locations
+     * @param bugId      iBugs bug id that was used to create the spectra
+     * @param spectra    the spectra to base the experiment on
+     * @param localizer  the fault localizer to use
+     * @param realFaults to determine the real fault locations
      */
-    public Experiment(final int bugId, final ISpectra<SourceCodeBlock,?> spectra, final IFaultLocalizer<SourceCodeBlock> localizer,
-            final IBugsFaultLocationCollection realFaults) {
+    public Experiment(final int bugId, final ISpectra<SourceCodeBlock, ?> spectra, final IFaultLocalizer<SourceCodeBlock> localizer,
+                      final IBugsFaultLocationCollection realFaults) {
         this.bugId = bugId;
         this.spectra = spectra;
         this.localizer = localizer;

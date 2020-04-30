@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,21 +25,22 @@ import java.util.Map;
 /**
  * <p>Utility class for accessing and manipulating {@link Enum}s.</p>
  *
- * @deprecated Replaced by {@link org.apache.commons.lang.enums.EnumUtils org.apache.commons.lang.enums.EnumUtils} 
- *          and will be removed in version 3.0. All classes in this package are deprecated and repackaged to 
- *          {@link org.apache.commons.lang.enums} since <code>enum</code> is a Java 1.5 keyword. 
+ * @author Stephen Colebourne
+ * @author Gary Gregory
+ * @version $Id$
  * @see org.apache.commons.lang.enums.EnumUtils
  * @see Enum
  * @see ValuedEnum
- * @author Stephen Colebourne
- * @author Gary Gregory
  * @since 1.0
- * @version $Id$
+ * @deprecated Replaced by {@link org.apache.commons.lang.enums.EnumUtils org.apache.commons.lang.enums.EnumUtils}
+ * and will be removed in version 3.0. All classes in this package are deprecated and repackaged to
+ * {@link org.apache.commons.lang.enums} since <code>enum</code> is a Java 1.5 keyword.
  */
 public class EnumUtils {
 
     /**
      * Public constructor. This class should not normally be instantiated.
+     *
      * @since 2.0
      */
     public EnumUtils() {
@@ -48,9 +49,9 @@ public class EnumUtils {
 
     /**
      * <p>Gets an <code>Enum</code> object by class and name.</p>
-     * 
-     * @param enumClass  the class of the <code>Enum</code> to get
-     * @param name  the name of the Enum to get, may be <code>null</code>
+     *
+     * @param enumClass the class of the <code>Enum</code> to get
+     * @param name      the name of the Enum to get, may be <code>null</code>
      * @return the enum object
      * @throws IllegalArgumentException if the enum class is <code>null</code>
      */
@@ -60,9 +61,9 @@ public class EnumUtils {
 
     /**
      * <p>Gets a <code>ValuedEnum</code> object by class and value.</p>
-     * 
-     * @param enumClass  the class of the <code>Enum</code> to get
-     * @param value  the value of the <code>Enum</code> to get
+     *
+     * @param enumClass the class of the <code>Enum</code> to get
+     * @param value     the value of the <code>Enum</code> to get
      * @return the enum object, or null if the enum does not exist
      * @throws IllegalArgumentException if the enum class is <code>null</code>
      */
@@ -76,12 +77,12 @@ public class EnumUtils {
      *
      * <p>If the requested class has no enum objects an empty
      * <code>Map</code> is returned. The <code>Map</code> is unmodifiable.</p>
-     * 
-     * @param enumClass  the class of the <code>Enum</code> to get
+     *
+     * @param enumClass the class of the <code>Enum</code> to get
      * @return the enum object Map
      * @throws IllegalArgumentException if the enum class is <code>null</code>
      * @throws IllegalArgumentException if the enum class is not a subclass
-     *  of <code>Enum</code>
+     *                                  of <code>Enum</code>
      */
     public static Map getEnumMap(Class enumClass) {
         return Enum.getEnumMap(enumClass);
@@ -96,12 +97,12 @@ public class EnumUtils {
      *
      * <p>If the requested class has no enum objects an empty
      * <code>List</code> is returned. The <code>List</code> is unmodifiable.</p>
-     * 
-     * @param enumClass  the class of the Enum to get
+     *
+     * @param enumClass the class of the Enum to get
      * @return the enum object Map
      * @throws IllegalArgumentException if the enum class is <code>null</code>
      * @throws IllegalArgumentException if the enum class is not a subclass
-     *  of <code>Enum</code>
+     *                                  of <code>Enum</code>
      */
     public static List getEnumList(Class enumClass) {
         return Enum.getEnumList(enumClass);
@@ -117,8 +118,8 @@ public class EnumUtils {
      * <p>If the requested class has no enum objects an empty
      * <code>Iterator</code> is returned. The <code>Iterator</code>
      * is unmodifiable.</p>
-     * 
-     * @param enumClass  the class of the <code>Enum</code> to get
+     *
+     * @param enumClass the class of the <code>Enum</code> to get
      * @return an <code>Iterator</code> of the <code>Enum</code> objects
      * @throws IllegalArgumentException if the enum class is <code>null</code>
      * @throws IllegalArgumentException if the enum class is not a subclass of <code>Enum</code>
@@ -126,5 +127,5 @@ public class EnumUtils {
     public static Iterator iterator(Class enumClass) {
         return Enum.getEnumList(enumClass).iterator();
     }
-    
+
 }

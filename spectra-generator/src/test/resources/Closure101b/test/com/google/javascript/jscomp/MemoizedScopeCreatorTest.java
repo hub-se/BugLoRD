@@ -18,7 +18,6 @@ package com.google.javascript.jscomp;
 
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
-
 import junit.framework.TestCase;
 
 /**
@@ -29,31 +28,31 @@ import junit.framework.TestCase;
  */
 public class MemoizedScopeCreatorTest extends TestCase {
 
-  public void testMemoization() throws Exception {
-    Node trueNode = new Node(Token.TRUE);
-    Node falseNode = new Node(Token.FALSE);
-    // Wow, is there really a circular dependency between JSCompiler and
-    // SyntacticScopeCreator?
-    ScopeCreator creator = new MemoizedScopeCreator(
-        new SyntacticScopeCreator(new Compiler()));
-    Scope scopeA = creator.createScope(trueNode, null);
-    assertSame(scopeA, creator.createScope(trueNode, null));
-    assertNotSame(scopeA, creator.createScope(falseNode, null));
-  }
-
-  public void testPreconditionCheck() throws Exception {
-    Node trueNode = new Node(Token.TRUE);
-    ScopeCreator creator = new MemoizedScopeCreator(
-        new SyntacticScopeCreator(new Compiler()));
-    Scope scopeA = creator.createScope(trueNode, null);
-
-    boolean handled = false;
-    try {
-      creator.createScope(trueNode, scopeA);
-    } catch (IllegalStateException e) {
-      handled = true;
+    public void testMemoization() throws Exception {
+        Node trueNode = new Node(Token.TRUE);
+        Node falseNode = new Node(Token.FALSE);
+        // Wow, is there really a circular dependency between JSCompiler and
+        // SyntacticScopeCreator?
+        ScopeCreator creator = new MemoizedScopeCreator(
+                new SyntacticScopeCreator(new Compiler()));
+        Scope scopeA = creator.createScope(trueNode, null);
+        assertSame(scopeA, creator.createScope(trueNode, null));
+        assertNotSame(scopeA, creator.createScope(falseNode, null));
     }
-    assertTrue(handled);
-  }
+
+    public void testPreconditionCheck() throws Exception {
+        Node trueNode = new Node(Token.TRUE);
+        ScopeCreator creator = new MemoizedScopeCreator(
+                new SyntacticScopeCreator(new Compiler()));
+        Scope scopeA = creator.createScope(trueNode, null);
+
+        boolean handled = false;
+        try {
+            creator.createScope(trueNode, scopeA);
+        } catch (IllegalStateException e) {
+            handled = true;
+        }
+        assertTrue(handled);
+    }
 
 }

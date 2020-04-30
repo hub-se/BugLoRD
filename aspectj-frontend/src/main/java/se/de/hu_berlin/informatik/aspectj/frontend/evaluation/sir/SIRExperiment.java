@@ -9,6 +9,14 @@
 
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sir;
 
+import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
+import se.de.hu_berlin.informatik.spectra.core.INode;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
+import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -19,15 +27,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sir.SIRExperiment;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
-import se.de.hu_berlin.informatik.spectra.core.INode;
-import se.de.hu_berlin.informatik.spectra.core.ISpectra;
-import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
-import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 public class SIRExperiment {
 
@@ -43,8 +42,8 @@ public class SIRExperiment {
         Log.out(this, "Starting experiment");
         // init real fault locations file
         this.faults = new File(OUTPUT_DIR + "/sir-faults.csv");
-        final String[] line = { "Program", "OriginalFile", "NodeID", "BestRanking", "WorstRanking", "MinWastedEffort",
-                "MaxWastedEffort", "Suspiciousness", };
+        final String[] line = {"Program", "OriginalFile", "NodeID", "BestRanking", "WorstRanking", "MinWastedEffort",
+                "MaxWastedEffort", "Suspiciousness",};
         Files.write(this.faults.toPath(),
                 (CSVUtils.toCsvLine(line) + System.lineSeparator()).getBytes(Charset.forName("UTF-8")));
 
@@ -77,8 +76,7 @@ public class SIRExperiment {
     /**
      * Executes one input file
      *
-     * @param input
-     *            file
+     * @param input file
      * @throws IOException
      */
     private void localize(final File input) throws IOException {
@@ -94,9 +92,9 @@ public class SIRExperiment {
 
         // append to faults file
         final RankingMetric<INode<Integer>> m = ranking.getRankingMetrics(provider.getFault());
-        final String[] line = { program, name, provider.getFault().toString(), Integer.toString(m.getBestRanking()),
+        final String[] line = {program, name, provider.getFault().toString(), Integer.toString(m.getBestRanking()),
                 Integer.toString(m.getWorstRanking()), Double.toString(m.getMinWastedEffort()),
-                Double.toString(m.getMaxWastedEffort()), Double.toString(m.getRankingValue()), };
+                Double.toString(m.getMaxWastedEffort()), Double.toString(m.getRankingValue()),};
         Files.write(this.faults.toPath(),
                 (CSVUtils.toCsvLine(line) + System.lineSeparator()).getBytes(StandardCharsets.UTF_8),
                 StandardOpenOption.APPEND);
@@ -104,11 +102,17 @@ public class SIRExperiment {
 
     class SIRRankingProvider {
 
-        /** Holds the path to the block IF/IP/NF/NP file */
+        /**
+         * Holds the path to the block IF/IP/NF/NP file
+         */
         private final File file;
-        /** Contains the actual ranking */
+        /**
+         * Contains the actual ranking
+         */
         private NodeRanking<Integer> ranking;
-        /** Contains the node of the real fault location */
+        /**
+         * Contains the node of the real fault location
+         */
         private INode<Integer> fault;
 
         public SIRRankingProvider(final File file) throws IOException {
@@ -119,9 +123,9 @@ public class SIRExperiment {
         private void createRanking() throws IOException {
             // create variables
             final Stream<String> lines = Files.lines(this.file.toPath());
-            final ISpectra<Integer,?> spectra = new HitSpectra<>(null);
-            final Integer[] failedNode = { null };
-            final int[] curNode = { 0 };
+            final ISpectra<Integer, ?> spectra = new HitSpectra<>(null);
+            final Integer[] failedNode = {null};
+            final int[] curNode = {0};
             final NodeRanking<Integer> rank = new NodeRanking<>();
 
             // parse lines

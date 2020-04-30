@@ -4,9 +4,6 @@
  */
 package org.mockito.internal;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.mockito.InOrder;
 import org.mockito.exceptions.Reporter;
 import org.mockito.exceptions.base.MockitoException;
@@ -18,16 +15,19 @@ import org.mockito.internal.verification.api.InOrderContext;
 import org.mockito.internal.verification.api.VerificationInOrderMode;
 import org.mockito.verification.VerificationMode;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Allows verifying in order. This class should not be exposed, hence default access.
  */
 public class InOrderImpl implements InOrder, InOrderContext {
-    
+
     private final MockitoCore mockitoCore = new MockitoCore();
     private final Reporter reporter = new Reporter();
     private final List<Object> mocksToBeVerifiedInOrder = new LinkedList<Object>();
     private final InOrderContext inOrderContext = new InOrderContextImpl();
-    
+
     public List<Object> getMocksToBeVerifiedInOrder() {
         return mocksToBeVerifiedInOrder;
     }
@@ -39,7 +39,7 @@ public class InOrderImpl implements InOrder, InOrderContext {
     public <T> T verify(T mock) {
         return this.verify(mock, VerificationModeFactory.times(1));
     }
-    
+
     public <T> T verify(T mock, VerificationMode mode) {
         if (!mocksToBeVerifiedInOrder.contains(mock)) {
             reporter.inOrderRequiresFamiliarMock();
@@ -53,7 +53,7 @@ public class InOrderImpl implements InOrder, InOrderContext {
         return inOrderContext.isVerified(i);
     }
 
-    public void markVerified(Invocation i) {        
+    public void markVerified(Invocation i) {
         inOrderContext.markVerified(i);
     }
 

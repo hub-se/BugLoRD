@@ -1,23 +1,24 @@
-/** License information:
- *    Component: sequitur
- *    Package:   de.unisb.cs.st.sequitur.output
- *    Class:     Symbol
- *    Filename:  sequitur/src/main/java/de/unisb/cs/st/sequitur/output/Symbol.java
- *
+/**
+ * License information:
+ * Component: sequitur
+ * Package:   de.unisb.cs.st.sequitur.output
+ * Class:     Symbol
+ * Filename:  sequitur/src/main/java/de/unisb/cs/st/sequitur/output/Symbol.java
+ * <p>
  * This file is part of the Sequitur library developed by Clemens Hammacher
  * at Saarland University. It has been developed for use in the JavaSlicer
  * tool. See http://www.st.cs.uni-saarland.de/javaslicer/ for more information.
- *
+ * <p>
  * Sequitur is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * Sequitur is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with Sequitur. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -25,18 +26,12 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Queue;
-
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.Rule.Dummy;
 
 // package-private
 abstract class Symbol implements Cloneable {
-	
-	static final Map<Symbol, Symbol> digrams = new HashMap<Symbol, Symbol>();
-	
-	protected static final int NULL_VALUE = -1;
+
+    protected static final int NULL_VALUE = -1;
 
     public Symbol next = null;
     public Symbol prev = null;
@@ -65,7 +60,7 @@ abstract class Symbol implements Cloneable {
         first.next = second;
         second.prev = first;
     }
-    
+
     /**
      * Replace this symbol with a non-terminal representing the given rule.
      */
@@ -107,8 +102,8 @@ abstract class Symbol implements Cloneable {
     public abstract int getHeader();
 
     private int digramHashcode() {
-        return this.next == this ? 32*singleHashcode()
-            : (singleHashcode() + 31*this.next.singleHashcode());
+        return this.next == this ? 32 * singleHashcode()
+                : (singleHashcode() + 31 * this.next.singleHashcode());
     }
 
     @Override
@@ -143,11 +138,11 @@ abstract class Symbol implements Cloneable {
      */
     @Override
     public boolean equals(final Object obj) {
-        return obj instanceof Symbol ? digramEquals((Symbol)obj) : false;
+        return obj instanceof Symbol ? digramEquals((Symbol) obj) : false;
     }
 
     public abstract void writeOut(final ObjectOutputStream objOut, Grammar grammar,
-            ObjectWriter objectWriter, Queue<Rule> queue)
-        throws IOException;
+                                  ObjectWriter objectWriter, Queue<Rule> queue)
+            throws IOException;
 
 }

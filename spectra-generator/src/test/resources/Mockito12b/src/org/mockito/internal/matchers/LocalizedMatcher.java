@@ -4,10 +4,12 @@
  */
 package org.mockito.internal.matchers;
 
-import java.io.Serializable;
-
-import org.hamcrest.*;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.SelfDescribing;
 import org.mockito.internal.debugging.Location;
+
+import java.io.Serializable;
 
 @SuppressWarnings("unchecked")
 public class LocalizedMatcher implements Matcher, ContainsExtraTypeInformation, CapturesArguments, MatcherDecorator, Serializable {
@@ -36,7 +38,7 @@ public class LocalizedMatcher implements Matcher, ContainsExtraTypeInformation, 
     public Location getLocation() {
         return location;
     }
-    
+
     @Override
     public String toString() {
         return "Localized: " + this.actualMatcher;

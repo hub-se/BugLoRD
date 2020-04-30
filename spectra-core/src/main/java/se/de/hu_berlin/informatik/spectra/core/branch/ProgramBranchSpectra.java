@@ -21,7 +21,7 @@ public class ProgramBranchSpectra extends HitSpectra<ProgramBranch> {
      * PUBLIC
      *====================================================================================*/
 
-    public INode<ProgramBranch> getBranchNode(int branchId){
+    public INode<ProgramBranch> getBranchNode(int branchId) {
 
         INode<ProgramBranch> branchNode;
 
@@ -35,10 +35,10 @@ public class ProgramBranchSpectra extends HitSpectra<ProgramBranch> {
      * PRIVATE
      *====================================================================================*/
 
-    public void setBranchIdMap(Map<Integer, INode<ProgramBranch>> branchIdMap){
+    public void setBranchIdMap(Map<Integer, INode<ProgramBranch>> branchIdMap) {
 
         /*====================================================================================*/
-        assert(branchIdMap != null);
+        assert (branchIdMap != null);
         /*====================================================================================*/
 
         this.branchIdMap = ImmutableMap.copyOf(branchIdMap);

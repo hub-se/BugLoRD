@@ -15,19 +15,14 @@
  */
 package org.joda.time.tz;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.StringTokenizer;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.tz.ZoneInfoCompiler.DateTimeOfYear;
+
+import java.io.*;
+import java.util.StringTokenizer;
 
 /**
  * Test cases for ZoneInfoCompiler.
@@ -44,30 +39,30 @@ public class TestCompiler extends TestCase {
     }
 
     static final String AMERICA_LOS_ANGELES_FILE =
-        "# Rules for building just America/Los_Angeles time zone.\n" + 
-        "\n" + 
-        "Rule    US  1918    1919    -   Mar lastSun 2:00    1:00    D\n" + 
-        "Rule    US  1918    1919    -   Oct lastSun 2:00    0   S\n" + 
-        "Rule    US  1942    only    -   Feb 9   2:00    1:00    W # War\n" + 
-        "Rule    US  1945    only    -   Aug 14  23:00u  1:00    P # Peace\n" + 
-        "Rule    US  1945    only    -   Sep 30  2:00    0   S\n" + 
-        "Rule    US  1967    max -   Oct lastSun 2:00    0   S\n" + 
-        "Rule    US  1967    1973    -   Apr lastSun 2:00    1:00    D\n" + 
-        "Rule    US  1974    only    -   Jan 6   2:00    1:00    D\n" + 
-        "Rule    US  1975    only    -   Feb 23  2:00    1:00    D\n" + 
-        "Rule    US  1976    1986    -   Apr lastSun 2:00    1:00    D\n" + 
-        "Rule    US  1987    max -   Apr Sun>=1  2:00    1:00    D\n" + 
-        "\n" + 
-        "Rule    CA  1948    only    -   Mar 14  2:00    1:00    D\n" + 
-        "Rule    CA  1949    only    -   Jan  1  2:00    0   S\n" + 
-        "Rule    CA  1950    1966    -   Apr lastSun 2:00    1:00    D\n" + 
-        "Rule    CA  1950    1961    -   Sep lastSun 2:00    0   S\n" + 
-        "Rule    CA  1962    1966    -   Oct lastSun 2:00    0   S\n" + 
-        "\n" + 
-        "Zone America/Los_Angeles -7:52:58 - LMT 1883 Nov 18 12:00\n" + 
-        "            -8:00   US  P%sT    1946\n" + 
-        "            -8:00   CA  P%sT    1967\n" + 
-        "            -8:00   US  P%sT";
+            "# Rules for building just America/Los_Angeles time zone.\n" +
+                    "\n" +
+                    "Rule    US  1918    1919    -   Mar lastSun 2:00    1:00    D\n" +
+                    "Rule    US  1918    1919    -   Oct lastSun 2:00    0   S\n" +
+                    "Rule    US  1942    only    -   Feb 9   2:00    1:00    W # War\n" +
+                    "Rule    US  1945    only    -   Aug 14  23:00u  1:00    P # Peace\n" +
+                    "Rule    US  1945    only    -   Sep 30  2:00    0   S\n" +
+                    "Rule    US  1967    max -   Oct lastSun 2:00    0   S\n" +
+                    "Rule    US  1967    1973    -   Apr lastSun 2:00    1:00    D\n" +
+                    "Rule    US  1974    only    -   Jan 6   2:00    1:00    D\n" +
+                    "Rule    US  1975    only    -   Feb 23  2:00    1:00    D\n" +
+                    "Rule    US  1976    1986    -   Apr lastSun 2:00    1:00    D\n" +
+                    "Rule    US  1987    max -   Apr Sun>=1  2:00    1:00    D\n" +
+                    "\n" +
+                    "Rule    CA  1948    only    -   Mar 14  2:00    1:00    D\n" +
+                    "Rule    CA  1949    only    -   Jan  1  2:00    0   S\n" +
+                    "Rule    CA  1950    1966    -   Apr lastSun 2:00    1:00    D\n" +
+                    "Rule    CA  1950    1961    -   Sep lastSun 2:00    0   S\n" +
+                    "Rule    CA  1962    1966    -   Oct lastSun 2:00    0   S\n" +
+                    "\n" +
+                    "Zone America/Los_Angeles -7:52:58 - LMT 1883 Nov 18 12:00\n" +
+                    "            -8:00   US  P%sT    1946\n" +
+                    "            -8:00   CA  P%sT    1967\n" +
+                    "            -8:00   US  P%sT";
 
     private DateTimeZone originalDateTimeZone = null;
 
@@ -100,12 +95,12 @@ public class TestCompiler extends TestCase {
     }
 
     private DateTimeZoneBuilder getTestDataTimeZoneBuilder() {
-         return new DateTimeZoneBuilder()
-             .addCutover(1601, 'w', 1, 1, 1, false, 7200000)
-             .setStandardOffset(3600000)
-             .addRecurringSavings("", 3600000, 1601, Integer.MAX_VALUE, 'w', 3, -1, 1, false, 7200000)
-             .addRecurringSavings("", 0, 1601, Integer.MAX_VALUE, 'w', 10, -1, 1, false, 10800000);
-    }    
+        return new DateTimeZoneBuilder()
+                .addCutover(1601, 'w', 1, 1, 1, false, 7200000)
+                .setStandardOffset(3600000)
+                .addRecurringSavings("", 3600000, 1601, Integer.MAX_VALUE, 'w', 3, -1, 1, false, 7200000)
+                .addRecurringSavings("", 0, 1601, Integer.MAX_VALUE, 'w', 10, -1, 1, false, 10800000);
+    }
 
     //-----------------------------------------------------------------------
     public void testCompile() throws Exception {
@@ -122,10 +117,10 @@ public class TestCompiler extends TestCase {
         File tempDir = createDataFile(data);
         File destDir = makeTempDir();
 
-        ZoneInfoCompiler.main(new String[] {
-            "-src", tempDir.getAbsolutePath(),
-            "-dst", destDir.getAbsolutePath(),
-            "tzdata"
+        ZoneInfoCompiler.main(new String[]{
+                "-src", tempDir.getAbsolutePath(),
+                "-dst", destDir.getAbsolutePath(),
+                "tzdata"
         });
 
         // Mark all files to be deleted on exit.
@@ -166,7 +161,7 @@ public class TestCompiler extends TestCase {
         tempFile.deleteOnExit();
         if (tempFile.isDirectory()) {
             File[] files = tempFile.listFiles();
-            for (int i=0; i<files.length; i++) {
+            for (int i = 0; i < files.length; i++) {
                 deleteOnExit(files[i]);
             }
         }
