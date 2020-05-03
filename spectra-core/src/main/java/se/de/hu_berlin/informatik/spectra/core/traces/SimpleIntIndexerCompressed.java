@@ -55,7 +55,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 
     // constructor used before storing in zip file
     public SimpleIntIndexerCompressed(SharedOutputGrammar executionTraceGrammar,
-                                      SubTracePool<?> subTracePool,
+                                      SubTracePool subTracePool,
                                       SubTraceSequencePool subTraceSequencePool) throws IOException {
         //		System.out.println(String.format(
 //				"- #sub traces: %,d", existingSubTraces.size()));

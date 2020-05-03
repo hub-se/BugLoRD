@@ -406,6 +406,10 @@ public class SingleLinkedIntArrayQueue extends AbstractQueue<Integer> implements
             }
             return temp;
         }
+        
+        public int peek() {
+             return currentNode.items[index];
+        }
 
         public int nextNoAutoBoxing() {
             int temp = currentNode.items[index++];

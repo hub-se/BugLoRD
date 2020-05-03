@@ -51,11 +51,11 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 
     // stores instances of all sub traces that have been seen so far;
     // branches are only allowed at the start or the end of a sub trace!
-    private SubTracePool<K> subTracePool;
+    private SubTracePool subTracePool;
 
     public TraceCoberturaReportLoader(Path tempOutputDir) {
         traceCollector = new RawIntTraceCollector(tempOutputDir);
-        subTracePool = new SubTracePool<>(tempOutputDir);
+        subTracePool = new SubTracePool(tempOutputDir);
         subTraceSequencePool = new SubTraceSequencePool(tempOutputDir);
     }
 

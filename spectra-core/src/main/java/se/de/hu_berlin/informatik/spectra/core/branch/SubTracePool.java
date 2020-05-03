@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubTracePool<K extends ITrace<SourceCodeBlock>> {
+public class SubTracePool {
 
     private ProjectData projectData;
 
@@ -26,11 +26,11 @@ public class SubTracePool<K extends ITrace<SourceCodeBlock>> {
     private final Map<Long, Integer> idToSubtraceIdMap = new HashMap<>();
 
     // maps unique sub trace IDs (int) to sequences of spectra node IDs
-    private CachedMap<int[]> existingSubTraces;
+    private final CachedMap<int[]> existingSubTraces;
 
     private int currentId = 0;
 
-    public int addSubTraceSequence(SingleLinkedIntArrayQueue subTraceToCheck, ISpectra<SourceCodeBlock, K> lineSpectra) {
+    public int addSubTraceSequence(SingleLinkedIntArrayQueue subTraceToCheck, ISpectra<SourceCodeBlock, ?> lineSpectra) {
         // get a representation id for the subtrace (unique for sub traces that start and end within the same method!)
         long subTraceId = CoberturaStatementEncoding.generateRepresentationForSubTrace(subTraceToCheck);
         Integer id = idToSubtraceIdMap.get(subTraceId);
@@ -58,7 +58,7 @@ public class SubTracePool<K extends ITrace<SourceCodeBlock>> {
         return id;
     }
 
-    public int getID(SingleLinkedIntArrayQueue subTrace, ISpectra<SourceCodeBlock, K> lineSpectra) {
+    public int getID(SingleLinkedIntArrayQueue subTrace, ISpectra<SourceCodeBlock, ?> lineSpectra) {
         // get a representation id for the subtrace (unique for sub traces that start and end within the same method!)
         long subTraceId = CoberturaStatementEncoding.generateRepresentationForSubTrace(subTrace);
         Integer id = idToSubtraceIdMap.get(subTraceId);
@@ -69,7 +69,7 @@ public class SubTracePool<K extends ITrace<SourceCodeBlock>> {
     }
 
 
-    private int getNodeIndexForCounter(int encodedStatement, ISpectra<SourceCodeBlock, K> lineSpectra) {
+    private int getNodeIndexForCounter(int encodedStatement, ISpectra<SourceCodeBlock, ?> lineSpectra) {
         int classId = CoberturaStatementEncoding.getClassId(encodedStatement);
         int counterId = CoberturaStatementEncoding.getCounterId(encodedStatement);
 
