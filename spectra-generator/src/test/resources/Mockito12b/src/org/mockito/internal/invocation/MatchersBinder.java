@@ -4,12 +4,12 @@
  */
 package org.mockito.internal.invocation;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.hamcrest.Matcher;
 import org.mockito.exceptions.Reporter;
 import org.mockito.internal.progress.ArgumentMatcherStorage;
+
+import java.io.Serializable;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class MatchersBinder implements Serializable {

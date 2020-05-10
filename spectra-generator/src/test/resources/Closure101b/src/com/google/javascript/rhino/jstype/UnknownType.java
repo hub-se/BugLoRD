@@ -39,156 +39,154 @@
 
 package com.google.javascript.rhino.jstype;
 
-import static com.google.javascript.rhino.jstype.TernaryValue.UNKNOWN;
-
 import com.google.javascript.rhino.ErrorReporter;
 
 import java.util.Set;
 
+import static com.google.javascript.rhino.jstype.TernaryValue.UNKNOWN;
+
 /**
  * The {@code Unknown} type.
-*
-*
  */
 public class UnknownType extends ObjectType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  // See the explanation of checked unknown types in JSTypeNative.
-  private final boolean isChecked;
+    // See the explanation of checked unknown types in JSTypeNative.
+    private final boolean isChecked;
 
-  UnknownType(JSTypeRegistry registry, boolean isChecked) {
-    super(registry);
-    this.isChecked = isChecked;
-  }
+    UnknownType(JSTypeRegistry registry, boolean isChecked) {
+        super(registry);
+        this.isChecked = isChecked;
+    }
 
-  @Override
-  public boolean isUnknownType() {
-    return true;
-  }
+    @Override
+    public boolean isUnknownType() {
+        return true;
+    }
 
-  @Override
-  public boolean isCheckedUnknownType() {
-    return isChecked;
-  }
+    @Override
+    public boolean isCheckedUnknownType() {
+        return isChecked;
+    }
 
-  @Override
-  public boolean canAssignTo(JSType that) {
-    return true;
-  }
+    @Override
+    public boolean canAssignTo(JSType that) {
+        return true;
+    }
 
-  @Override
-  public boolean canBeCalled() {
-    return true;
-  }
+    @Override
+    public boolean canBeCalled() {
+        return true;
+    }
 
-  @Override
-  public boolean matchesNumberContext() {
-    return true;
-  }
+    @Override
+    public boolean matchesNumberContext() {
+        return true;
+    }
 
-  @Override
-  public boolean matchesObjectContext() {
-    return true;
-  }
+    @Override
+    public boolean matchesObjectContext() {
+        return true;
+    }
 
-  @Override
-  public boolean matchesStringContext() {
-    return true;
-  }
+    @Override
+    public boolean matchesStringContext() {
+        return true;
+    }
 
-  @Override
-  public TernaryValue testForEquality(JSType that) {
-    return UNKNOWN;
-  }
+    @Override
+    public TernaryValue testForEquality(JSType that) {
+        return UNKNOWN;
+    }
 
-  @Override
-  public boolean isNullable() {
-    return true;
-  }
+    @Override
+    public boolean isNullable() {
+        return true;
+    }
 
-  @Override
-  public boolean isSubtype(JSType that) {
-    return true;
-  }
+    @Override
+    public boolean isSubtype(JSType that) {
+        return true;
+    }
 
-  @Override
-  public JSType getLeastSupertype(JSType that) {
-    return this;
-  }
+    @Override
+    public JSType getLeastSupertype(JSType that) {
+        return this;
+    }
 
-  @Override
-  public JSType getGreatestSubtype(JSType that) {
-    return this;
-  }
+    @Override
+    public JSType getGreatestSubtype(JSType that) {
+        return this;
+    }
 
-  @Override
-  public <T> T visit(Visitor<T> visitor) {
-    return visitor.caseUnknownType();
-  }
+    @Override
+    public <T> T visit(Visitor<T> visitor) {
+        return visitor.caseUnknownType();
+    }
 
-  @Override
-  public String toString() {
-    return getReferenceName();
-  }
+    @Override
+    public String toString() {
+        return getReferenceName();
+    }
 
-  @Override
-  boolean defineProperty(String propertyName, JSType type,
-      boolean inferred, boolean inExterns) {
-    // nothing to define
-    return true;
-  }
+    @Override
+    boolean defineProperty(String propertyName, JSType type,
+                           boolean inferred, boolean inExterns) {
+        // nothing to define
+        return true;
+    }
 
-  @Override
-  public ObjectType getImplicitPrototype() {
-    return null;
-  }
+    @Override
+    public ObjectType getImplicitPrototype() {
+        return null;
+    }
 
-  @Override
-  public int getPropertiesCount() {
-    return Integer.MAX_VALUE;
-  }
+    @Override
+    public int getPropertiesCount() {
+        return Integer.MAX_VALUE;
+    }
 
-  @Override
-  protected void collectPropertyNames(Set<String> props) {
-  }
+    @Override
+    protected void collectPropertyNames(Set<String> props) {
+    }
 
-  @Override
-  public JSType getPropertyType(String propertyName) {
-    return this;
-  }
+    @Override
+    public JSType getPropertyType(String propertyName) {
+        return this;
+    }
 
-  @Override
-  public boolean hasProperty(String propertyName) {
-    return true;
-  }
+    @Override
+    public boolean hasProperty(String propertyName) {
+        return true;
+    }
 
-  @Override
-  public FunctionType getConstructor() {
-    return null;
-  }
+    @Override
+    public FunctionType getConstructor() {
+        return null;
+    }
 
-  @Override
-  public String getReferenceName() {
-    return isChecked ? "??" : "?";
-  }
+    @Override
+    public String getReferenceName() {
+        return isChecked ? "??" : "?";
+    }
 
-  @Override
-  public boolean isPropertyTypeDeclared(String propertyName) {
-    return false;
-  }
+    @Override
+    public boolean isPropertyTypeDeclared(String propertyName) {
+        return false;
+    }
 
-  @Override
-  public boolean isPropertyTypeInferred(String propertyName) {
-    return false;
-  }
+    @Override
+    public boolean isPropertyTypeInferred(String propertyName) {
+        return false;
+    }
 
-  @Override
-  public BooleanLiteralSet getPossibleToBooleanOutcomes() {
-    return BooleanLiteralSet.BOTH;
-  }
+    @Override
+    public BooleanLiteralSet getPossibleToBooleanOutcomes() {
+        return BooleanLiteralSet.BOTH;
+    }
 
-  @Override
-  JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope) {
-    return this;
-  }
+    @Override
+    JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope) {
+        return this;
+    }
 }

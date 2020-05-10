@@ -4,9 +4,6 @@
  */
 package org.mockitousage.stacktrace;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -16,15 +13,19 @@ import org.mockito.exceptions.misusing.UnfinishedVerificationException;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 public class ClickableStackTracesWhenFrameworkMisusedTest extends TestBase {
-    
-    @Mock private IMethods mock;
+
+    @Mock
+    private IMethods mock;
 
     @After
     public void resetState() {
         super.resetState();
     }
-    
+
     private void misplacedArgumentMatcherHere() {
         anyString();
     }
@@ -44,11 +45,11 @@ public class ClickableStackTracesWhenFrameworkMisusedTest extends TestBase {
     private void unfinishedStubbingHere() {
         when(mock.simpleMethod());
     }
-    
+
     @Test
     public void shouldPointOutUnfinishedStubbing() {
         unfinishedStubbingHere();
-        
+
         try {
             verify(mock).simpleMethod();
             fail();
@@ -57,7 +58,7 @@ public class ClickableStackTracesWhenFrameworkMisusedTest extends TestBase {
             assertContains("unfinishedStubbingHere(", e.getMessage());
         }
     }
-    
+
     @Test
     public void shouldShowWhereIsUnfinishedVerification() throws Exception {
         unfinishedVerificationHere();

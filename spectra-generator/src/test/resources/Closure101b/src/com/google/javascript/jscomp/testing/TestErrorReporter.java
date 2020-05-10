@@ -18,7 +18,6 @@ package com.google.javascript.jscomp.testing;
 
 import com.google.javascript.jscomp.mozilla.rhino.ErrorReporter;
 import com.google.javascript.jscomp.mozilla.rhino.EvaluatorException;
-
 import junit.framework.Assert;
 
 /**
@@ -32,58 +31,56 @@ import junit.framework.Assert;
  * ...
  * assertTrue(e.hasEncounteredAllWarnings());
  * </pre>
- *
-*
  */
 public final class TestErrorReporter extends Assert implements ErrorReporter {
-  private final String[] errors;
-  private final String[] warnings;
-  private int errorsIndex = 0;
-  private int warningsIndex = 0;
+    private final String[] errors;
+    private final String[] warnings;
+    private int errorsIndex = 0;
+    private int warningsIndex = 0;
 
-  public TestErrorReporter(String[] errors, String[] warnings) {
-    this.errors = errors;
-    this.warnings = warnings;
-  }
-
-  public void error(String message, String sourceName, int line,
-      String lineSource, int lineOffset) {
-    if (errors != null && errorsIndex < errors.length) {
-      assertEquals(errors[errorsIndex++], message);
-    } else {
-      fail("extra error: " + message);
+    public TestErrorReporter(String[] errors, String[] warnings) {
+        this.errors = errors;
+        this.warnings = warnings;
     }
-  }
 
-  public void warning(String message, String sourceName, int line,
-      String lineSource, int lineOffset) {
-    if (warnings != null && warningsIndex < warnings.length) {
-      assertEquals(warnings[warningsIndex++], message);
-    } else {
-      fail("extra warning: " + message);
+    public void error(String message, String sourceName, int line,
+                      String lineSource, int lineOffset) {
+        if (errors != null && errorsIndex < errors.length) {
+            assertEquals(errors[errorsIndex++], message);
+        } else {
+            fail("extra error: " + message);
+        }
     }
-  }
 
-  public EvaluatorException runtimeError(String message, String sourceName,
-      int line, String lineSource, int lineOffset) {
-    return new EvaluatorException("JSCompiler test code: " + message);
-  }
+    public void warning(String message, String sourceName, int line,
+                        String lineSource, int lineOffset) {
+        if (warnings != null && warningsIndex < warnings.length) {
+            assertEquals(warnings[warningsIndex++], message);
+        } else {
+            fail("extra warning: " + message);
+        }
+    }
 
-  /**
-   * Returns whether all warnings were reported to this reporter.
-   */
-  public boolean hasEncounteredAllWarnings() {
-    return (warnings == null) ?
-        warningsIndex == 0 :
-        warnings.length == warningsIndex;
-  }
+    public EvaluatorException runtimeError(String message, String sourceName,
+                                           int line, String lineSource, int lineOffset) {
+        return new EvaluatorException("JSCompiler test code: " + message);
+    }
 
-  /**
-   * Returns whether all errors were reported to this reporter.
-   */
-  public boolean hasEncounteredAllErrors() {
-    return (errors == null) ?
-        errorsIndex == 0 :
-        errors.length == errorsIndex;
-  }
+    /**
+     * Returns whether all warnings were reported to this reporter.
+     */
+    public boolean hasEncounteredAllWarnings() {
+        return (warnings == null) ?
+                warningsIndex == 0 :
+                warnings.length == warningsIndex;
+    }
+
+    /**
+     * Returns whether all errors were reported to this reporter.
+     */
+    public boolean hasEncounteredAllErrors() {
+        return (errors == null) ?
+                errorsIndex == 0 :
+                errors.length == errorsIndex;
+    }
 }

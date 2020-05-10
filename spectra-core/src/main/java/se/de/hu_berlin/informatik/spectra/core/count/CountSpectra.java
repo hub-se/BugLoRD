@@ -9,13 +9,13 @@
 
 package se.de.hu_berlin.informatik.spectra.core.count;
 
-import java.nio.file.Path;
-
 import se.de.hu_berlin.informatik.spectra.core.AbstractSpectra;
+
+import java.nio.file.Path;
 
 /**
  * The spectra class holds all nodes and traces belonging to the spectra.
- *
+ * <p>
  * You can imagine the information accessible through this class has a matrix layout:
  *
  * <pre>
@@ -29,15 +29,14 @@ import se.de.hu_berlin.informatik.spectra.core.AbstractSpectra;
  *  --------|--------|--------|--------|-----|--------|
  *  Result  |   1    |   1    |   0    | ... |   0    |
  * </pre>
- *
- * The nodes are the components of a system that are analyzed. For each trace the involvement of the node is stored. 
- * The numbers denote node involvement (number of hits), a '0' denotes no involvement of the node in the current 
+ * <p>
+ * The nodes are the components of a system that are analyzed. For each trace the involvement of the node is stored.
+ * The numbers denote node involvement (number of hits), a '0' denotes no involvement of the node in the current
  * execution trace. For each execution trace we also know whether the execution was successful or not.
- *
+ * <p>
  * Given this information, it is possible to use this spectra as input for various fault localization techniques.
  *
- * @param <T>
- *            type used to identify nodes in the system.
+ * @param <T> type used to identify nodes in the system.
  */
 public class CountSpectra<T> extends AbstractSpectra<T, CountTrace<T>> {
 
@@ -47,14 +46,14 @@ public class CountSpectra<T> extends AbstractSpectra<T, CountTrace<T>> {
 //    public CountSpectra() {
 //        super();
 //    }
-    
+
     public CountSpectra(Path spectraZipFile) {
         super(spectraZipFile);
     }
 
-	@Override
-	protected CountTrace<T> createNewTrace(String identifier, int traceIndex, boolean successful) {
-		return new CountTrace<>(this, identifier, traceIndex, successful);
-	}
-	
+    @Override
+    protected CountTrace<T> createNewTrace(String identifier, int traceIndex, boolean successful) {
+        return new CountTrace<>(this, identifier, traceIndex, successful);
+    }
+
 }

@@ -1,35 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-4">
-			<tests>
-				<testfile
-					path="org/apache/commons/lang3/text/translate/LookupTranslatorTest">
-					<exception>junit.framework.AssertionFailedError:Incorrect codepoint
-						consumption expected:&lt;3&gt; but was:&lt;0&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>137</number_tests>
-					<failed>1</failed>
-					<passed>136</passed>
-					<nodes>11781</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/lang3/text/translate/LookupTranslator.java">
-					<change>31</change>
-					<change>46</change>
-					<change>51</change>
-					<change>77</change>
-					<bugtypes>
-						<id id="2.1" lines="31,46,51,77">
-							<description>Incorrect HashMap parameters.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-4">
+            <tests>
+                <testfile
+                        path="org/apache/commons/lang3/text/translate/LookupTranslatorTest">
+                    <exception>junit.framework.AssertionFailedError:Incorrect codepoint
+                        consumption expected:&lt;3&gt; but was:&lt;0&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>137</number_tests>
+                    <failed>1</failed>
+                    <passed>136</passed>
+                    <nodes>11781</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/lang3/text/translate/LookupTranslator.java">
+                    <change>31</change>
+                    <change>46</change>
+                    <change>51</change>
+                    <change>77</change>
+                    <bugtypes>
+                        <id id="2.1" lines="31,46,51,77">
+                            <description>Incorrect HashMap parameters.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

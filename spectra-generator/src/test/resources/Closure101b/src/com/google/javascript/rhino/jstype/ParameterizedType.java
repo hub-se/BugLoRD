@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,31 +36,29 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 /**
  * An object type with a declared default element type, such as
  * <code>Array.<string></code>.
- *
+ * <p>
  * // TODO(user): Define the subtyping relation for parameterized types. Also,
  * take parameterized type into account for equality.
- *
-*
  */
 final class ParameterizedType extends ProxyObjectType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  final JSType parameterType;
+    final JSType parameterType;
 
-  ParameterizedType(
-      JSTypeRegistry registry, ObjectType objectType, JSType parameterType) {
-    super(registry, objectType);
-    this.parameterType = parameterType;
-  }
+    ParameterizedType(
+            JSTypeRegistry registry, ObjectType objectType, JSType parameterType) {
+        super(registry, objectType);
+        this.parameterType = parameterType;
+    }
 
-  @Override
-  public JSType getParameterType() {
-    return parameterType;
-  }
+    @Override
+    public JSType getParameterType() {
+        return parameterType;
+    }
 }

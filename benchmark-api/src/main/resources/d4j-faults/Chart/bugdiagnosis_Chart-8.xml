@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-8">
-			<tests>
-				<testfile path="org/jfree/data/time/junit/WeekTests">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;35&gt;
-						but was:&lt;34&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>23</number_tests>
-					<failed>1</failed>
-					<passed>22</passed>
-					<nodes>45243</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/jfree/data/time/Week.java">
-					<change>175</change>
-					<bugtypes>
-						<id id="3.1" lines="175">
-							<description>Incorrect time zone data used.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-8">
+            <tests>
+                <testfile path="org/jfree/data/time/junit/WeekTests">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;35&gt;
+                        but was:&lt;34&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>23</number_tests>
+                    <failed>1</failed>
+                    <passed>22</passed>
+                    <nodes>45243</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/jfree/data/time/Week.java">
+                    <change>175</change>
+                    <bugtypes>
+                        <id id="3.1" lines="175">
+                            <description>Incorrect time zone data used.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

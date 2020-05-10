@@ -1,11 +1,6 @@
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.sbfl;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
 import se.de.hu_berlin.informatik.benchmark.Bug;
 import se.de.hu_berlin.informatik.benchmark.FaultInformation.Suspiciousness;
@@ -15,41 +10,42 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
  * @author Simon
- *
  */
 public class IBugsFaultLocationsTest extends TestSettings {
 
-	/**
+    /**
+     *
      */
-	@BeforeClass
-	public static void setUpBeforeClass() {
-	}
+    @BeforeClass
+    public static void setUpBeforeClass() {
+    }
 
-	/**
+    /**
+     *
      */
-	@AfterClass
-	public static void tearDownAfterClass() {
+    @AfterClass
+    public static void tearDownAfterClass() {
 //		deleteTestOutputs();
-	}
-	
-	private IBugsFaultLocationCollection p;
+    }
 
-	/**
-	 * @throws java.lang.Exception
-     * in case of an exception...
-	 */
-	@Before
-	public void setUp() throws Exception {
-		this.p = new IBugsFaultLocationCollection(getStdResourcesDir() + "/fk/stardust/evaluation/ibugs/rflSample01.xml");
-	}
-	
-	/**
+    private IBugsFaultLocationCollection p;
+
+    /**
+     * @throws java.lang.Exception in case of an exception...
      */
-	@After
-	public void tearDown() {
-		this.p = null;
+    @Before
+    public void setUp() throws Exception {
+        this.p = new IBugsFaultLocationCollection(getStdResourcesDir() + "/fk/stardust/evaluation/ibugs/rflSample01.xml");
+    }
+
+    /**
+     *
+     */
+    @After
+    public void tearDown() {
+        this.p = null;
 //		deleteTestOutputs();
-	}
+    }
 
 
     @Test

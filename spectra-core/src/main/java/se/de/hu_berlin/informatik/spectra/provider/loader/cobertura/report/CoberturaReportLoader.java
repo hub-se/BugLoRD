@@ -11,39 +11,35 @@ import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.loader.AbstractCoverageDataLoader;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.LineData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ClassData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.PackageData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.SourceFileData;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.*;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageData;
 
 public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
-		extends AbstractCoverageDataLoader<T, K, CoberturaReportWrapper> {
+        extends AbstractCoverageDataLoader<T, K, CoberturaReportWrapper> {
 
-	int traceCount = 0;
+    int traceCount = 0;
 
-	@Override
-	public boolean loadSingleCoverageData(ISpectra<T, K> lineSpectra, final CoberturaReportWrapper reportWrapper,
-			final boolean fullSpectra) {
-		if (reportWrapper == null || reportWrapper.getReport() == null) {
-			return false;
-		}
+    @Override
+    public boolean loadSingleCoverageData(ISpectra<T, K> lineSpectra, final CoberturaReportWrapper reportWrapper,
+                                          final boolean fullSpectra) {
+        if (reportWrapper == null || reportWrapper.getReport() == null) {
+            return false;
+        }
 
-		K trace = null;
+        K trace = null;
 
-		ProjectData projectData = reportWrapper.getReport().getProjectData();
-		if (projectData == null) {
-			return false;
-		}
+        ProjectData projectData = reportWrapper.getReport().getProjectData();
+        if (projectData == null) {
+            return false;
+        }
 
-		if (reportWrapper.getIdentifier() == null) {
-			trace = lineSpectra.addTrace(String.valueOf(++traceCount), traceCount, reportWrapper.isSuccessful());
-		} else {
-			trace = lineSpectra.addTrace(reportWrapper.getIdentifier(), ++traceCount, reportWrapper.isSuccessful());
-		}
+        if (reportWrapper.getIdentifier() == null) {
+            trace = lineSpectra.addTrace(String.valueOf(++traceCount), traceCount, reportWrapper.isSuccessful());
+        } else {
+            trace = lineSpectra.addTrace(reportWrapper.getIdentifier(), ++traceCount, reportWrapper.isSuccessful());
+        }
 
-		// loop over all packages
+        // loop over all packages
         for (CoverageData coverageData2 : projectData.getPackages()) {
             PackageData packageData = (PackageData) coverageData2;
             final String packageName = packageData.getName();
@@ -81,12 +77,12 @@ public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
                             LineData lineData = (LineData) coverageData;
 
                             // set node involvement
-							T lineIdentifier = getIdentifier(
-									packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber(), NodeType.NORMAL);
+                            T lineIdentifier = getIdentifier(
+                                    packageName, sourceFilePath, methodNameAndSig, lineData.getLineNumber(), NodeType.NORMAL);
 
-							onNewLine(
-									packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
-									fullSpectra, lineData.getHits());
+                            onNewLine(
+                                    packageName, sourceFilePath, methodIdentifier, lineIdentifier, lineSpectra, trace,
+                                    fullSpectra, lineData.getHits());
                         }
 
                         onLeavingMethod(packageName, sourceFilePath, methodIdentifier, lineSpectra, trace);
@@ -98,7 +94,7 @@ public abstract class CoberturaReportLoader<T, K extends ITrace<T>>
 
             onLeavingPackage(packageName, lineSpectra, trace);
         }
-		return true;
-	}
+        return true;
+    }
 
 }

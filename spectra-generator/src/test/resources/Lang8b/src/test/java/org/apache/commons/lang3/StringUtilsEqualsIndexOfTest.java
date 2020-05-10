@@ -16,22 +16,19 @@
  */
 package org.apache.commons.lang3;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import org.hamcrest.core.IsNot;
+import org.junit.Test;
 
 import java.util.Locale;
 
-import org.hamcrest.core.IsNot;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.StringUtils} - Substring methods
  *
  * @version $Id$
  */
-public class StringUtilsEqualsIndexOfTest  {
+public class StringUtilsEqualsIndexOfTest {
     private static final String BAR = "bar";
     /**
      * Supplementary character U+20000
@@ -59,7 +56,7 @@ public class StringUtilsEqualsIndexOfTest  {
 
     private static final String FOOBAR = "foobar";
 
-    private static final String[] FOOBAR_SUB_ARRAY = new String[] {"ob", "ba"};
+    private static final String[] FOOBAR_SUB_ARRAY = new String[]{"ob", "ba"};
 
     @Test
     public void testContains_Char() {
@@ -118,17 +115,17 @@ public class StringUtilsEqualsIndexOfTest  {
     public void testContainsAny_StringCharArray() {
         assertFalse(StringUtils.containsAny(null, (char[]) null));
         assertFalse(StringUtils.containsAny(null, new char[0]));
-        assertFalse(StringUtils.containsAny(null, new char[] { 'a', 'b' }));
+        assertFalse(StringUtils.containsAny(null, new char[]{'a', 'b'}));
 
         assertFalse(StringUtils.containsAny("", (char[]) null));
         assertFalse(StringUtils.containsAny("", new char[0]));
-        assertFalse(StringUtils.containsAny("", new char[] { 'a', 'b' }));
+        assertFalse(StringUtils.containsAny("", new char[]{'a', 'b'}));
 
         assertFalse(StringUtils.containsAny("zzabyycdxx", (char[]) null));
         assertFalse(StringUtils.containsAny("zzabyycdxx", new char[0]));
-        assertTrue(StringUtils.containsAny("zzabyycdxx", new char[] { 'z', 'a' }));
-        assertTrue(StringUtils.containsAny("zzabyycdxx", new char[] { 'b', 'y' }));
-        assertFalse(StringUtils.containsAny("ab", new char[] { 'z' }));
+        assertTrue(StringUtils.containsAny("zzabyycdxx", new char[]{'z', 'a'}));
+        assertTrue(StringUtils.containsAny("zzabyycdxx", new char[]{'b', 'y'}));
+        assertFalse(StringUtils.containsAny("ab", new char[]{'z'}));
     }
 
     /**
@@ -218,18 +215,18 @@ public class StringUtilsEqualsIndexOfTest  {
     public void testContainsIgnoreCase_LocaleIndependence() {
         Locale orig = Locale.getDefault();
 
-        Locale[] locales = { Locale.ENGLISH, new Locale("tr"), Locale.getDefault() };
+        Locale[] locales = {Locale.ENGLISH, new Locale("tr"), Locale.getDefault()};
 
         String[][] tdata = {
-            { "i", "I" },
-            { "I", "i" },
-            { "\u03C2", "\u03C3" },
-            { "\u03A3", "\u03C2" },
-            { "\u03A3", "\u03C3" },
+                {"i", "I"},
+                {"I", "i"},
+                {"\u03C2", "\u03C3"},
+                {"\u03A3", "\u03C2"},
+                {"\u03A3", "\u03C3"},
         };
 
         String[][] fdata = {
-            { "\u00DF", "SS" },
+                {"\u00DF", "SS"},
         };
 
         try {
@@ -289,9 +286,9 @@ public class StringUtilsEqualsIndexOfTest  {
         String str1 = "a";
         String str2 = "b";
         String str3 = "ab.";
-        char[] chars1= {'b'};
-        char[] chars2= {'.'};
-        char[] chars3= {'c', 'd'};
+        char[] chars1 = {'b'};
+        char[] chars2 = {'.'};
+        char[] chars3 = {'c', 'd'};
         char[] emptyChars = new char[0];
         assertTrue(StringUtils.containsNone(null, (char[]) null));
         assertTrue(StringUtils.containsNone("", (char[]) null));
@@ -347,9 +344,9 @@ public class StringUtilsEqualsIndexOfTest  {
         String str1 = "a";
         String str2 = "b";
         String str3 = "ab.";
-        String chars1= "b";
-        String chars2= ".";
-        String chars3= "cd";
+        String chars1 = "b";
+        String chars2 = ".";
+        String chars3 = "cd";
         assertTrue(StringUtils.containsNone(null, (String) null));
         assertTrue(StringUtils.containsNone("", (String) null));
         assertTrue(StringUtils.containsNone(null, ""));
@@ -404,9 +401,9 @@ public class StringUtilsEqualsIndexOfTest  {
         String str1 = "a";
         String str2 = "b";
         String str3 = "ab";
-        char[] chars1= {'b'};
-        char[] chars2= {'a'};
-        char[] chars3= {'a', 'b'};
+        char[] chars1 = {'b'};
+        char[] chars2 = {'a'};
+        char[] chars3 = {'a', 'b'};
         char[] emptyChars = new char[0];
         assertFalse(StringUtils.containsOnly(null, (char[]) null));
         assertFalse(StringUtils.containsOnly("", (char[]) null));
@@ -430,9 +427,9 @@ public class StringUtilsEqualsIndexOfTest  {
         String str1 = "a";
         String str2 = "b";
         String str3 = "ab";
-        String chars1= "b";
-        String chars2= "a";
-        String chars3= "ab";
+        String chars1 = "b";
+        String chars2 = "a";
+        String chars3 = "ab";
         assertFalse(StringUtils.containsOnly(null, (String) null));
         assertFalse(StringUtils.containsOnly("", (String) null));
         assertFalse(StringUtils.containsOnly(null, ""));
@@ -452,13 +449,13 @@ public class StringUtilsEqualsIndexOfTest  {
 
     @Test
     public void testContainsWhitespace() {
-        assertFalse( StringUtils.containsWhitespace("") );
-        assertTrue( StringUtils.containsWhitespace(" ") );
-        assertFalse( StringUtils.containsWhitespace("a") );
-        assertTrue( StringUtils.containsWhitespace("a ") );
-        assertTrue( StringUtils.containsWhitespace(" a") );
-        assertTrue( StringUtils.containsWhitespace("a\t") );
-        assertTrue( StringUtils.containsWhitespace("\n") );
+        assertFalse(StringUtils.containsWhitespace(""));
+        assertTrue(StringUtils.containsWhitespace(" "));
+        assertFalse(StringUtils.containsWhitespace("a"));
+        assertTrue(StringUtils.containsWhitespace("a "));
+        assertTrue(StringUtils.containsWhitespace(" a"));
+        assertTrue(StringUtils.containsWhitespace("a\t"));
+        assertTrue(StringUtils.containsWhitespace("\n"));
     }
 
     // The purpose of this class is to test StringUtils#equals(CharSequence, CharSequence)
@@ -520,10 +517,10 @@ public class StringUtilsEqualsIndexOfTest  {
         assertTrue(StringUtils.equals(null, null));
         assertTrue(StringUtils.equals(fooCs, fooCs));
         assertTrue(StringUtils.equals(fooCs, new StringBuilder(FOO)));
-        assertTrue(StringUtils.equals(fooCs, new String(new char[] { 'f', 'o', 'o' })));
+        assertTrue(StringUtils.equals(fooCs, new String(new char[]{'f', 'o', 'o'})));
         assertTrue(StringUtils.equals(fooCs, new CustomCharSequence(FOO)));
         assertTrue(StringUtils.equals(new CustomCharSequence(FOO), fooCs));
-        assertFalse(StringUtils.equals(fooCs, new String(new char[] { 'f', 'O', 'O' })));
+        assertFalse(StringUtils.equals(fooCs, new String(new char[]{'f', 'O', 'O'})));
         assertFalse(StringUtils.equals(fooCs, barCs));
         assertFalse(StringUtils.equals(fooCs, null));
         assertFalse(StringUtils.equals(null, fooCs));
@@ -535,8 +532,8 @@ public class StringUtilsEqualsIndexOfTest  {
     public void testEqualsOnStrings() {
         assertTrue(StringUtils.equals(null, null));
         assertTrue(StringUtils.equals(FOO, FOO));
-        assertTrue(StringUtils.equals(FOO, new String(new char[] { 'f', 'o', 'o' })));
-        assertFalse(StringUtils.equals(FOO, new String(new char[] { 'f', 'O', 'O' })));
+        assertTrue(StringUtils.equals(FOO, new String(new char[]{'f', 'o', 'o'})));
+        assertFalse(StringUtils.equals(FOO, new String(new char[]{'f', 'O', 'O'})));
         assertFalse(StringUtils.equals(FOO, BAR));
         assertFalse(StringUtils.equals(FOO, null));
         assertFalse(StringUtils.equals(null, FOO));
@@ -548,13 +545,13 @@ public class StringUtilsEqualsIndexOfTest  {
     public void testEqualsIgnoreCase() {
         assertTrue(StringUtils.equalsIgnoreCase(null, null));
         assertTrue(StringUtils.equalsIgnoreCase(FOO, FOO));
-        assertTrue(StringUtils.equalsIgnoreCase(FOO, new String(new char[] { 'f', 'o', 'o' })));
-        assertTrue(StringUtils.equalsIgnoreCase(FOO, new String(new char[] { 'f', 'O', 'O' })));
+        assertTrue(StringUtils.equalsIgnoreCase(FOO, new String(new char[]{'f', 'o', 'o'})));
+        assertTrue(StringUtils.equalsIgnoreCase(FOO, new String(new char[]{'f', 'O', 'O'})));
         assertFalse(StringUtils.equalsIgnoreCase(FOO, BAR));
         assertFalse(StringUtils.equalsIgnoreCase(FOO, null));
         assertFalse(StringUtils.equalsIgnoreCase(null, FOO));
-        assertTrue(StringUtils.equalsIgnoreCase("",""));
-        assertFalse(StringUtils.equalsIgnoreCase("abcd","abcd "));
+        assertTrue(StringUtils.equalsIgnoreCase("", ""));
+        assertFalse(StringUtils.equalsIgnoreCase("abcd", "abcd "));
     }
 
     //-----------------------------------------------------------------------
@@ -617,7 +614,7 @@ public class StringUtilsEqualsIndexOfTest  {
         assertEquals(5, StringUtils.indexOf("aabaabaa", "b", 3));
         assertEquals(-1, StringUtils.indexOf("aabaabaa", "b", 9));
         assertEquals(2, StringUtils.indexOf("aabaabaa", "b", -1));
-        assertEquals(2,StringUtils.indexOf("aabaabaa", "", 2));
+        assertEquals(2, StringUtils.indexOf("aabaabaa", "", 2));
 
         assertEquals(5, StringUtils.indexOf(new StringBuilder("aabaabaa"), "b", 3));
     }
@@ -626,17 +623,17 @@ public class StringUtilsEqualsIndexOfTest  {
     public void testIndexOfAny_StringCharArray() {
         assertEquals(-1, StringUtils.indexOfAny(null, (char[]) null));
         assertEquals(-1, StringUtils.indexOfAny(null, new char[0]));
-        assertEquals(-1, StringUtils.indexOfAny(null, new char[] {'a','b'}));
+        assertEquals(-1, StringUtils.indexOfAny(null, new char[]{'a', 'b'}));
 
         assertEquals(-1, StringUtils.indexOfAny("", (char[]) null));
         assertEquals(-1, StringUtils.indexOfAny("", new char[0]));
-        assertEquals(-1, StringUtils.indexOfAny("", new char[] {'a','b'}));
+        assertEquals(-1, StringUtils.indexOfAny("", new char[]{'a', 'b'}));
 
         assertEquals(-1, StringUtils.indexOfAny("zzabyycdxx", (char[]) null));
         assertEquals(-1, StringUtils.indexOfAny("zzabyycdxx", new char[0]));
-        assertEquals(0, StringUtils.indexOfAny("zzabyycdxx", new char[] {'z','a'}));
-        assertEquals(3, StringUtils.indexOfAny("zzabyycdxx", new char[] {'b','y'}));
-        assertEquals(-1, StringUtils.indexOfAny("ab", new char[] {'z'}));
+        assertEquals(0, StringUtils.indexOfAny("zzabyycdxx", new char[]{'z', 'a'}));
+        assertEquals(3, StringUtils.indexOfAny("zzabyycdxx", new char[]{'b', 'y'}));
+        assertEquals(-1, StringUtils.indexOfAny("ab", new char[]{'z'}));
     }
 
     /**
@@ -676,13 +673,13 @@ public class StringUtilsEqualsIndexOfTest  {
         assertEquals(-1, StringUtils.indexOfAny(FOOBAR, new String[0]));
         assertEquals(-1, StringUtils.indexOfAny(null, new String[0]));
         assertEquals(-1, StringUtils.indexOfAny("", new String[0]));
-        assertEquals(-1, StringUtils.indexOfAny(FOOBAR, new String[] {"llll"}));
-        assertEquals(0, StringUtils.indexOfAny(FOOBAR, new String[] {""}));
-        assertEquals(0, StringUtils.indexOfAny("", new String[] {""}));
-        assertEquals(-1, StringUtils.indexOfAny("", new String[] {"a"}));
-        assertEquals(-1, StringUtils.indexOfAny("", new String[] {null}));
-        assertEquals(-1, StringUtils.indexOfAny(FOOBAR, new String[] {null}));
-        assertEquals(-1, StringUtils.indexOfAny(null, new String[] {null}));
+        assertEquals(-1, StringUtils.indexOfAny(FOOBAR, new String[]{"llll"}));
+        assertEquals(0, StringUtils.indexOfAny(FOOBAR, new String[]{""}));
+        assertEquals(0, StringUtils.indexOfAny("", new String[]{""}));
+        assertEquals(-1, StringUtils.indexOfAny("", new String[]{"a"}));
+        assertEquals(-1, StringUtils.indexOfAny("", new String[]{null}));
+        assertEquals(-1, StringUtils.indexOfAny(FOOBAR, new String[]{null}));
+        assertEquals(-1, StringUtils.indexOfAny(null, new String[]{null}));
     }
 
     /**
@@ -700,18 +697,18 @@ public class StringUtilsEqualsIndexOfTest  {
     public void testIndexOfAnyBut_StringCharArray() {
         assertEquals(-1, StringUtils.indexOfAnyBut(null, (char[]) null));
         assertEquals(-1, StringUtils.indexOfAnyBut(null, new char[0]));
-        assertEquals(-1, StringUtils.indexOfAnyBut(null, new char[] {'a','b'}));
+        assertEquals(-1, StringUtils.indexOfAnyBut(null, new char[]{'a', 'b'}));
 
         assertEquals(-1, StringUtils.indexOfAnyBut("", (char[]) null));
         assertEquals(-1, StringUtils.indexOfAnyBut("", new char[0]));
-        assertEquals(-1, StringUtils.indexOfAnyBut("", new char[] {'a','b'}));
+        assertEquals(-1, StringUtils.indexOfAnyBut("", new char[]{'a', 'b'}));
 
         assertEquals(-1, StringUtils.indexOfAnyBut("zzabyycdxx", (char[]) null));
         assertEquals(-1, StringUtils.indexOfAnyBut("zzabyycdxx", new char[0]));
-        assertEquals(3, StringUtils.indexOfAnyBut("zzabyycdxx", new char[] {'z','a'}));
-        assertEquals(0, StringUtils.indexOfAnyBut("zzabyycdxx", new char[] {'b','y'}));
-        assertEquals(-1, StringUtils.indexOfAnyBut("aba", new char[] {'a', 'b'}));
-        assertEquals(0, StringUtils.indexOfAnyBut("aba", new char[] {'z'}));
+        assertEquals(3, StringUtils.indexOfAnyBut("zzabyycdxx", new char[]{'z', 'a'}));
+        assertEquals(0, StringUtils.indexOfAnyBut("zzabyycdxx", new char[]{'b', 'y'}));
+        assertEquals(-1, StringUtils.indexOfAnyBut("aba", new char[]{'a', 'b'}));
+        assertEquals(0, StringUtils.indexOfAnyBut("aba", new char[]{'z'}));
 
     }
 
@@ -860,13 +857,13 @@ public class StringUtilsEqualsIndexOfTest  {
         assertEquals(-1, StringUtils.lastIndexOfAny(FOOBAR, new String[0]));
         assertEquals(-1, StringUtils.lastIndexOfAny(null, new String[0]));
         assertEquals(-1, StringUtils.lastIndexOfAny("", new String[0]));
-        assertEquals(-1, StringUtils.lastIndexOfAny(FOOBAR, new String[] {"llll"}));
-        assertEquals(6, StringUtils.lastIndexOfAny(FOOBAR, new String[] {""}));
-        assertEquals(0, StringUtils.lastIndexOfAny("", new String[] {""}));
-        assertEquals(-1, StringUtils.lastIndexOfAny("", new String[] {"a"}));
-        assertEquals(-1, StringUtils.lastIndexOfAny("", new String[] {null}));
-        assertEquals(-1, StringUtils.lastIndexOfAny(FOOBAR, new String[] {null}));
-        assertEquals(-1, StringUtils.lastIndexOfAny(null, new String[] {null}));
+        assertEquals(-1, StringUtils.lastIndexOfAny(FOOBAR, new String[]{"llll"}));
+        assertEquals(6, StringUtils.lastIndexOfAny(FOOBAR, new String[]{""}));
+        assertEquals(0, StringUtils.lastIndexOfAny("", new String[]{""}));
+        assertEquals(-1, StringUtils.lastIndexOfAny("", new String[]{"a"}));
+        assertEquals(-1, StringUtils.lastIndexOfAny("", new String[]{null}));
+        assertEquals(-1, StringUtils.lastIndexOfAny(FOOBAR, new String[]{null}));
+        assertEquals(-1, StringUtils.lastIndexOfAny(null, new String[]{null}));
     }
 
     @Test
@@ -914,17 +911,17 @@ public class StringUtilsEqualsIndexOfTest  {
 
     @Test
     public void testLastOrdinalIndexOf() {
-        assertEquals(-1, StringUtils.lastOrdinalIndexOf(null, "*", 42) );
-        assertEquals(-1, StringUtils.lastOrdinalIndexOf("*", null, 42) );
-        assertEquals(0, StringUtils.lastOrdinalIndexOf("", "", 42) );
-        assertEquals(7, StringUtils.lastOrdinalIndexOf("aabaabaa", "a", 1) );
-        assertEquals(6, StringUtils.lastOrdinalIndexOf("aabaabaa", "a", 2) );
-        assertEquals(5, StringUtils.lastOrdinalIndexOf("aabaabaa", "b", 1) );
-        assertEquals(2, StringUtils.lastOrdinalIndexOf("aabaabaa", "b", 2) );
-        assertEquals(4, StringUtils.lastOrdinalIndexOf("aabaabaa", "ab", 1) );
-        assertEquals(1, StringUtils.lastOrdinalIndexOf("aabaabaa", "ab", 2) );
-        assertEquals(8, StringUtils.lastOrdinalIndexOf("aabaabaa", "", 1) );
-        assertEquals(8, StringUtils.lastOrdinalIndexOf("aabaabaa", "", 2) );
+        assertEquals(-1, StringUtils.lastOrdinalIndexOf(null, "*", 42));
+        assertEquals(-1, StringUtils.lastOrdinalIndexOf("*", null, 42));
+        assertEquals(0, StringUtils.lastOrdinalIndexOf("", "", 42));
+        assertEquals(7, StringUtils.lastOrdinalIndexOf("aabaabaa", "a", 1));
+        assertEquals(6, StringUtils.lastOrdinalIndexOf("aabaabaa", "a", 2));
+        assertEquals(5, StringUtils.lastOrdinalIndexOf("aabaabaa", "b", 1));
+        assertEquals(2, StringUtils.lastOrdinalIndexOf("aabaabaa", "b", 2));
+        assertEquals(4, StringUtils.lastOrdinalIndexOf("aabaabaa", "ab", 1));
+        assertEquals(1, StringUtils.lastOrdinalIndexOf("aabaabaa", "ab", 2));
+        assertEquals(8, StringUtils.lastOrdinalIndexOf("aabaabaa", "", 1));
+        assertEquals(8, StringUtils.lastOrdinalIndexOf("aabaabaa", "", 2));
     }
 
     @Test

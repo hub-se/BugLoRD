@@ -15,20 +15,14 @@
  */
 package org.joda.time.convert;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.*;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
-import org.joda.time.ReadWritableDateTime;
-import org.joda.time.ReadWritableInstant;
-import org.joda.time.ReadableDateTime;
-import org.joda.time.ReadableInstant;
 
 /**
  * This class is a JUnit test for ConverterSet.
@@ -39,24 +33,36 @@ import org.joda.time.ReadableInstant;
 public class TestConverterSet extends TestCase {
 
     private static final Converter c1 = new Converter() {
-        public Class getSupportedType() {return Boolean.class;}
+        public Class getSupportedType() {
+            return Boolean.class;
+        }
     };
     private static final Converter c2 = new Converter() {
-        public Class getSupportedType() {return Character.class;}
+        public Class getSupportedType() {
+            return Character.class;
+        }
     };
     private static final Converter c3 = new Converter() {
-        public Class getSupportedType() {return Byte.class;}
+        public Class getSupportedType() {
+            return Byte.class;
+        }
     };
     private static final Converter c4 = new Converter() {
-        public Class getSupportedType() {return Short.class;}
+        public Class getSupportedType() {
+            return Short.class;
+        }
     };
     private static final Converter c4a = new Converter() {
-        public Class getSupportedType() {return Short.class;}
+        public Class getSupportedType() {
+            return Short.class;
+        }
     };
     private static final Converter c5 = new Converter() {
-        public Class getSupportedType() {return Integer.class;}
+        public Class getSupportedType() {
+            return Integer.class;
+        }
     };
-    
+
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
@@ -75,7 +81,7 @@ public class TestConverterSet extends TestCase {
         assertEquals(false, Modifier.isPublic(cls.getModifiers()));
         assertEquals(false, Modifier.isProtected(cls.getModifiers()));
         assertEquals(false, Modifier.isPrivate(cls.getModifiers()));
-        
+
         assertEquals(1, cls.getDeclaredConstructors().length);
         Constructor con = cls.getDeclaredConstructors()[0];
         assertEquals(false, Modifier.isPublic(con.getModifiers()));
@@ -85,8 +91,8 @@ public class TestConverterSet extends TestCase {
 
     //-----------------------------------------------------------------------
     public void testBigHashtable() {
-        Converter[] array = new Converter[] {
-            c1, c2, c3, c4,
+        Converter[] array = new Converter[]{
+                c1, c2, c3, c4,
         };
         ConverterSet set = new ConverterSet(array);
         set.select(Boolean.class);
@@ -112,8 +118,8 @@ public class TestConverterSet extends TestCase {
 
     //-----------------------------------------------------------------------
     public void testAddNullRemoved1() {
-        Converter[] array = new Converter[] {
-            c1, c2, c3, c4,
+        Converter[] array = new Converter[]{
+                c1, c2, c3, c4,
         };
         ConverterSet set = new ConverterSet(array);
         ConverterSet result = set.add(c5, null);
@@ -122,8 +128,8 @@ public class TestConverterSet extends TestCase {
     }
 
     public void testAddNullRemoved2() {
-        Converter[] array = new Converter[] {
-            c1, c2, c3, c4,
+        Converter[] array = new Converter[]{
+                c1, c2, c3, c4,
         };
         ConverterSet set = new ConverterSet(array);
         ConverterSet result = set.add(c4, null);
@@ -131,8 +137,8 @@ public class TestConverterSet extends TestCase {
     }
 
     public void testAddNullRemoved3() {
-        Converter[] array = new Converter[] {
-            c1, c2, c3, c4,
+        Converter[] array = new Converter[]{
+                c1, c2, c3, c4,
         };
         ConverterSet set = new ConverterSet(array);
         ConverterSet result = set.add(c4a, null);
@@ -143,8 +149,8 @@ public class TestConverterSet extends TestCase {
 
     //-----------------------------------------------------------------------
     public void testRemoveNullRemoved1() {
-        Converter[] array = new Converter[] {
-            c1, c2, c3, c4,
+        Converter[] array = new Converter[]{
+                c1, c2, c3, c4,
         };
         ConverterSet set = new ConverterSet(array);
         ConverterSet result = set.remove(c3, null);
@@ -153,8 +159,8 @@ public class TestConverterSet extends TestCase {
     }
 
     public void testRemoveNullRemoved2() {
-        Converter[] array = new Converter[] {
-            c1, c2, c3, c4,
+        Converter[] array = new Converter[]{
+                c1, c2, c3, c4,
         };
         ConverterSet set = new ConverterSet(array);
         ConverterSet result = set.remove(c5, null);
@@ -163,26 +169,28 @@ public class TestConverterSet extends TestCase {
 
     //-----------------------------------------------------------------------
     public void testRemoveBadIndex1() {
-        Converter[] array = new Converter[] {
-            c1, c2, c3, c4,
+        Converter[] array = new Converter[]{
+                c1, c2, c3, c4,
         };
         ConverterSet set = new ConverterSet(array);
         try {
             set.remove(200, null);
             fail();
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
         assertEquals(4, set.size());
     }
 
     public void testRemoveBadIndex2() {
-        Converter[] array = new Converter[] {
-            c1, c2, c3, c4,
+        Converter[] array = new Converter[]{
+                c1, c2, c3, c4,
         };
         ConverterSet set = new ConverterSet(array);
         try {
             set.remove(-1, null);
             fail();
-        } catch (IndexOutOfBoundsException ex) {}
+        } catch (IndexOutOfBoundsException ex) {
+        }
         assertEquals(4, set.size());
     }
 

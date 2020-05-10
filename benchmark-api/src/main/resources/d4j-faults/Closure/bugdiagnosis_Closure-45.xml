@@ -1,38 +1,38 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-45">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/RemoveUnusedVarsTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>177</number_tests>
-					<failed>1</failed>
-					<passed>176</passed>
-					<nodes>43948</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/RemoveUnusedVars.java">
-					<change>741</change>
-					<change>904</change>
-					<insert numberlines="1">731-732</insert>
-					<insert numberlines="3">739</insert>
-					<bugtypes>
-						<id id="1.1" lines="731,738">
-							<description>Missing case.</description>
-						</id>
-						<id id="1.2" lines="741">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="3.1" lines="904">
-							<description>Incorrect initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-45">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/RemoveUnusedVarsTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>177</number_tests>
+                    <failed>1</failed>
+                    <passed>176</passed>
+                    <nodes>43948</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/RemoveUnusedVars.java">
+                    <change>741</change>
+                    <change>904</change>
+                    <insert numberlines="1">731-732</insert>
+                    <insert numberlines="3">739</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="731,738">
+                            <description>Missing case.</description>
+                        </id>
+                        <id id="1.2" lines="741">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="3.1" lines="904">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

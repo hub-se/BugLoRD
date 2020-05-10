@@ -42,7 +42,7 @@ public class StrictDateTimeField extends DelegatedDateTimeField {
             return null;
         }
         if (field instanceof LenientDateTimeField) {
-            field = ((LenientDateTimeField)field).getWrappedField();
+            field = ((LenientDateTimeField) field).getWrappedField();
         }
         if (!field.isLenient()) {
             return field;
@@ -65,7 +65,7 @@ public class StrictDateTimeField extends DelegatedDateTimeField {
      */
     public long set(long instant, int value) {
         FieldUtils.verifyValueBounds
-            (this, value, getMinimumValue(instant), getMaximumValue(instant));
+                (this, value, getMinimumValue(instant), getMaximumValue(instant));
         return super.set(instant, value);
     }
 }

@@ -9,20 +9,11 @@
 
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IExperiment;
-import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.HierarchicalExperiment;
 import se.de.hu_berlin.informatik.faultlocalizer.hierarchical.IHierarchicalFaultLocalizer;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -32,28 +23,49 @@ import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.HierarchicalCob
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Class is used to conduct a failure localization experiment using iBugs.
  */
 public class HierarchicalExperiment implements IExperiment {
 
-    /** Holds the fault localizer used by this experiment */
+    /**
+     * Holds the fault localizer used by this experiment
+     */
     private final IHierarchicalFaultLocalizer<String, String> localizer;
-    /** contains the path to the iBugs trace folder */
+    /**
+     * contains the path to the iBugs trace folder
+     */
     private final File root;
-    /** contains the path to the trace folder of the specific bugId */
+    /**
+     * contains the path to the trace folder of the specific bugId
+     */
     private final File bugFolder;
-    /** contains the bug id this experiment shall run with */
+    /**
+     * contains the bug id this experiment shall run with
+     */
     private final int bugId;
-    /** Number of failing traces to load */
+    /**
+     * Number of failing traces to load
+     */
     private final int failingTraces;
-    /** Number of successful traces to load */
+    /**
+     * Number of successful traces to load
+     */
     private final int successfulTraces;
-    /** Holds a compiled pattern to match diff output for all churned line numbers and ranges */
+    /**
+     * Holds a compiled pattern to match diff output for all churned line numbers and ranges
+     */
     private static final Pattern diffLineMatcher = createDiffLineMatcher();
 
     public HierarchicalExperiment(final IHierarchicalFaultLocalizer<String, String> localizer, final String root,
-            final int bugId, final int failingTraces, final int successfulTraces) {
+                                  final int bugId, final int failingTraces, final int successfulTraces) {
         this.localizer = localizer;
         this.root = new File(root);
         this.bugId = bugId;
@@ -102,7 +114,7 @@ public class HierarchicalExperiment implements IExperiment {
                 loadedFailure++;
             }
             if (!c.addData(trace.getKey(), null, trace.getValue())) {
-            	throw new IllegalStateException("Adding coverage trace failed.");
+                throw new IllegalStateException("Adding coverage trace failed.");
             }
         }
 
@@ -149,15 +161,14 @@ public class HierarchicalExperiment implements IExperiment {
 
         Log.out(this, String.format("Wasted Effort: %d", maxWastedEffort));
         Log.out(this, String.format("Percentage examined: %f", (double) (maxWastedEffort * 100)
-        / (double) s.getNodes().size()));
+                / (double) s.getNodes().size()));
         Log.out(this, String.format("Last examined node: %s", Objects.requireNonNull(lastExaminedNode).toString()));
     }
 
     /**
      * Lists all traces of the given version and their corresponding success state.
      *
-     * @param version
-     *            the version to get all available traces of.
+     * @param version the version to get all available traces of.
      * @return Map of absolute trace file names to their corresponding success (true) or failure (false) state.
      */
     private Map<String, Boolean> traces(final int version) {
@@ -181,10 +192,9 @@ public class HierarchicalExperiment implements IExperiment {
     /**
      * Returns the file extension of a file
      *
-     * @see {@linktourl http://stackoverflow.com/a/21974043/1262901}
-     * @param file
-     *            to get extension of
+     * @param file to get extension of
      * @return file extension
+     * @see {@linktourl http://stackoverflow.com/a/21974043/1262901}
      */
     private String getFileExtension(final File file) {
         final String name = file.getName();
@@ -197,7 +207,7 @@ public class HierarchicalExperiment implements IExperiment {
 
     /**
      * Determines the real fault locations of the bugId of this experiment instance.
-     *
+     * <p>
      * In order to do that, the repository.xml file is being parsed, which contains a "fix-diff". The affected line
      * numbers of that diff are extracted and the corresponding nodes returned.
      *
@@ -250,8 +260,7 @@ public class HierarchicalExperiment implements IExperiment {
     /**
      * Extract all affected lines in the left file of a while diff output
      *
-     * @param diff
-     *            the diff string
+     * @param diff the diff string
      * @return set of churned line numbers
      */
     protected static Set<Integer> findChurnedLinesInDiff(final String diff) {
@@ -277,8 +286,8 @@ public class HierarchicalExperiment implements IExperiment {
      */
     private String resolveFileName(final String fileName) {
         // remove prefix
-        final String[] prefixes = new String[] { "org.aspectj/modules/weaver/src/",
-                "org.aspectj/modules/org.aspectj.ajdt.core/src/", "org.aspectj/modules/tests/src/", };
+        final String[] prefixes = new String[]{"org.aspectj/modules/weaver/src/",
+                "org.aspectj/modules/org.aspectj.ajdt.core/src/", "org.aspectj/modules/tests/src/",};
         String file = null;
         for (final String prefix : prefixes) {
             if (fileName.startsWith(prefix)) {

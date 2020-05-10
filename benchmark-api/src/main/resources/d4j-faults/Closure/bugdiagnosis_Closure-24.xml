@@ -1,37 +1,38 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-24">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/ScopedAliasesTest">
-					<exception>junit.framework.AssertionFailedError:There should be one
-						error. expected:&lt;1&gt; but was:&lt;0&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>380</number_tests>
-					<failed>1</failed>
-					<passed>379</passed>
-					<nodes>46034</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/ScopedAliases.java">
-					<!-- the other changes are just refactoring... -->
-					<insert numberlines="2">287-291</insert>
-					<bugtypes>
-						<id id="1.2" lines="278,279,294">
-							<description>Incorrect condition and case handling.</description>
-						</id>
-						<id id="1.1" lines="286">
-							<description>Missing else case.</description>
-						</id>
-						<id id="1.1" lines="288">
-							<description>Missing else case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-24">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/ScopedAliasesTest">
+                    <exception>junit.framework.AssertionFailedError:There should be one
+                        error. expected:&lt;1&gt; but was:&lt;0&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>380</number_tests>
+                    <failed>1</failed>
+                    <passed>379</passed>
+                    <nodes>46034</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/ScopedAliases.java">
+                    <!-- the other changes are just refactoring... -->
+                    <insert numberlines="2">287-291</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="278,279,294">
+                            <description>Incorrect condition and case handling.</description>
+                        </id>
+                        <id id="1.1" lines="286">
+                            <description>Missing else case.</description>
+                        </id>
+                        <id id="1.1" lines="288">
+                            <description>Missing else case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

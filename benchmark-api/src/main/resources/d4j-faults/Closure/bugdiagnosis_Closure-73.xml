@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-73">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/CodePrinterTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;var
-						x="[\u007f]"&gt; but was:&lt;var x="[]"&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>3600</number_tests>
-					<failed>1</failed>
-					<passed>3599</passed>
-					<nodes>42544</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/CodeGenerator.java">
-					<change>1045</change>
-					<bugtypes>
-						<id id="1.2" lines="1045">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-73">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/CodePrinterTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;var
+                        x="[\u007f]"&gt; but was:&lt;var x="[]"&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>3600</number_tests>
+                    <failed>1</failed>
+                    <passed>3599</passed>
+                    <nodes>42544</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/CodeGenerator.java">
+                    <change>1045</change>
+                    <bugtypes>
+                        <id id="1.2" lines="1045">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -1,34 +1,34 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-13">
-			<tests>
-				<testfile
-					path="org/mockitousage/bugs/VerifyingWithAnExtraCallToADifferentMockTest">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>746</number_tests>
-					<failed>1</failed>
-					<passed>745</passed>
-					<nodes>2963</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/internal/MockHandler.java">
-					<change>77</change>
-					<insert numberlines="2">81-83</insert>
-					<bugtypes>
-						<id id="1.2" lines="77">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.1" lines="80,82">
-							<description>Missing else case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-13">
+            <tests>
+                <testfile
+                        path="org/mockitousage/bugs/VerifyingWithAnExtraCallToADifferentMockTest">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>746</number_tests>
+                    <failed>1</failed>
+                    <passed>745</passed>
+                    <nodes>2963</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/internal/MockHandler.java">
+                    <change>77</change>
+                    <insert numberlines="2">81-83</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="77">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.1" lines="80,82">
+                            <description>Missing else case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

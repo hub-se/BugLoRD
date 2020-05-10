@@ -17,15 +17,16 @@
 
 package org.apache.commons.lang3.text;
 
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.After;
-import org.junit.Test;
 import org.junit.Before;
-import static org.junit.Assert.*;
+import org.junit.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.lang3.mutable.MutableObject;
+import static org.junit.Assert.*;
 
 /**
  * Test class for StrSubstitutor.
@@ -49,6 +50,7 @@ public class StrSubstitutorTest {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Tests simple key replace.
      */
@@ -331,6 +333,7 @@ public class StrSubstitutorTest {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Tests protected.
      */
@@ -354,6 +357,7 @@ public class StrSubstitutorTest {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Tests constructor.
      */
@@ -386,6 +390,7 @@ public class StrSubstitutorTest {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Tests get set.
      */
@@ -462,6 +467,7 @@ public class StrSubstitutorTest {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Tests static.
      */
@@ -494,15 +500,15 @@ public class StrSubstitutorTest {
         buf.append(", your home directory is ");
         buf.append(System.getProperty("user.home")).append('.');
         assertEquals(buf.toString(), StrSubstitutor.replaceSystemProperties("Hi ${user.name}, you are "
-            + "working with ${os.name}, your home "
-            + "directory is ${user.home}."));
+                + "working with ${os.name}, your home "
+                + "directory is ${user.home}."));
     }
 
     /**
      * Test the replace of a properties object
      */
     @Test
-    public void testSubstituteDefaultProperties(){
+    public void testSubstituteDefaultProperties() {
         String org = "${doesnotwork}";
         System.setProperty("doesnotwork", "It works!");
 
@@ -511,7 +517,7 @@ public class StrSubstitutorTest {
 
         assertEquals("It works!", StrSubstitutor.replace(org, props));
     }
-    
+
     @Test
     public void testSamePrefixAndSuffix() {
         Map<String, String> map = new HashMap<String, String>();

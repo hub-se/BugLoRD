@@ -1,36 +1,37 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-1">
-			<tests>
-				<testfile
-					path="org/jfree/chart/renderer/category/junit/AbstractCategoryItemRendererTests">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;1&gt;
-						but was:&lt;0&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>436</number_tests>
-					<failed>1</failed>
-					<passed>435</passed>
-					<nodes>52100</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java">
-					<change parent="1796-1797">1797</change>
-					<change>1897</change>
-					<delete>12,34</delete>
-					<insert numberlines="3,1">2446,2455-2457</insert>
-					<insert numberlines="3">1:3:45-34:80</insert>
-					<bugtypes>
-						<id id="1.2" lines="1797">
-							<description>Incorrect condition for null check.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-1">
+            <tests>
+                <testfile
+                        path="org/jfree/chart/renderer/category/junit/AbstractCategoryItemRendererTests">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;1&gt;
+                        but was:&lt;0&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>436</number_tests>
+                    <failed>1</failed>
+                    <passed>435</passed>
+                    <nodes>52100</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java">
+                    <change parent="1796-1797">1797</change>
+                    <change>1897</change>
+                    <delete>12,34</delete>
+                    <insert numberlines="3,1">2446,2455-2457</insert>
+                    <insert numberlines="3">1:3:45-34:80</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="1797">
+                            <description>Incorrect condition for null check.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

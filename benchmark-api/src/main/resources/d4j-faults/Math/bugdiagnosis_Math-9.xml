@@ -1,32 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-9">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/geometry/euclidean/threed/LineTest">
-					<exception>junit.framework.AssertionFailedError:arrays first
-						differed at element [0]; expected:&lt;0.028581782127907646&gt; but
-						was:&lt;0.028581782243293483&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>35</number_tests>
-					<failed>1</failed>
-					<passed>34</passed>
-					<nodes>40051</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math3/geometry/euclidean/threed/Line.java">
-					<change>87</change>
-					<bugtypes>
-						<id id="3.1" lines="87">
-							<description>Incorrect initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-9">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/geometry/euclidean/threed/LineTest">
+                    <exception>junit.framework.AssertionFailedError:arrays first
+                        differed at element [0]; expected:&lt;0.028581782127907646&gt; but
+                        was:&lt;0.028581782243293483&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>35</number_tests>
+                    <failed>1</failed>
+                    <passed>34</passed>
+                    <nodes>40051</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math3/geometry/euclidean/threed/Line.java">
+                    <change>87</change>
+                    <bugtypes>
+                        <id id="3.1" lines="87">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

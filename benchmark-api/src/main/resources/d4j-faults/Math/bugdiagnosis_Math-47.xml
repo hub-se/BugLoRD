@@ -1,41 +1,42 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-47">
-			<tests>
-				<testfile path="org/apache/commons/math/complex/ComplexTest">
-					<exception>junit.framework.AssertionFailedError:-
-						org.apache.commons.math.complex.ComplexTest::testDivideZero:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;(NaN, NaN)&gt;
-						but was:&lt;(Infinity, Infinity)&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>199</number_tests>
-					<failed>2</failed>
-					<passed>197</passed>
-					<nodes>29959</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/complex/Complex.java">
-					<change>256,257</change>
-					<change>293</change>
-					<insert numberlines="1"></insert>
-					<insert numberlines="1">99-105</insert>
-					<bugtypes>
-						<id id="3.1" lines="81,104">
-							<description>Missing initialization.</description>
-						</id>
-						<id id="1.2" lines="81,256,257">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="2.2" lines="81,293">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-47">
+            <tests>
+                <testfile path="org/apache/commons/math/complex/ComplexTest">
+                    <exception>junit.framework.AssertionFailedError:-
+                        org.apache.commons.math.complex.ComplexTest::testDivideZero:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;(NaN, NaN)&gt;
+                        but was:&lt;(Infinity, Infinity)&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>199</number_tests>
+                    <failed>2</failed>
+                    <passed>197</passed>
+                    <nodes>29959</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/complex/Complex.java">
+                    <change>256,257</change>
+                    <change>293</change>
+                    <insert numberlines="1"></insert>
+                    <insert numberlines="1">99-105</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="81,104">
+                            <description>Missing initialization.</description>
+                        </id>
+                        <id id="1.2" lines="81,256,257">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="2.2" lines="81,293">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

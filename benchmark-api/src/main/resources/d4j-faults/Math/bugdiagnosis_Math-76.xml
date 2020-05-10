@@ -1,66 +1,67 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-76">
-			<tests>
-				<testfile path="org/apache/commons/math/linear/SingularValueSolverTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;0.0&gt;
-						but was:&lt;0.09336767546650937&gt;:-
-						org.apache.commons.math.linear.SingularValueSolverTest::testMath320B:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;0.0&gt; but
-						was:&lt;3.2&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>17</number_tests>
-					<failed>2</failed>
-					<passed>15</passed>
-					<nodes>20733</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math/linear/SingularValueDecompositionImpl.java">
-					<change>162</change>
-					<change>166</change>
-					<change>178</change>
-					<change>248</change>
-					<change>252</change>
-					<change>263</change>
-					<delete>176</delete>
-					<delete>261</delete>
-					<insert numberlines="1,1,1">171,177,180-181</insert>
-					<insert numberlines="1">180-181</insert>
-					<insert numberlines="1,1,1">256,262,265</insert>
-					<insert numberlines="1">265</insert>
-					<bugtypes>
-						<id id="1.5" lines="162">
-							<description>Incorrect computation.</description>
-						</id>
-						<id id="1.2" lines="166">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.1" lines="170,177,179">
-							<description>Missing case handling.</description>
-						</id>
-						<id id="1.5" lines="178">
-							<description>Incorrect calculation.</description>
-						</id>
-						<id id="1.5" lines="248">
-							<description>Incorrect computation.</description>
-						</id>
-						<id id="1.2" lines="252">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.1" lines="255,261,264">
-							<description>Missing case handling.</description>
-						</id>
-						<id id="1.5" lines="263">
-							<description>Incorrect calculation.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>12</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-76">
+            <tests>
+                <testfile path="org/apache/commons/math/linear/SingularValueSolverTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;0.0&gt;
+                        but was:&lt;0.09336767546650937&gt;:-
+                        org.apache.commons.math.linear.SingularValueSolverTest::testMath320B:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;0.0&gt; but
+                        was:&lt;3.2&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>17</number_tests>
+                    <failed>2</failed>
+                    <passed>15</passed>
+                    <nodes>20733</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math/linear/SingularValueDecompositionImpl.java">
+                    <change>162</change>
+                    <change>166</change>
+                    <change>178</change>
+                    <change>248</change>
+                    <change>252</change>
+                    <change>263</change>
+                    <delete>176</delete>
+                    <delete>261</delete>
+                    <insert numberlines="1,1,1">171,177,180-181</insert>
+                    <insert numberlines="1">180-181</insert>
+                    <insert numberlines="1,1,1">256,262,265</insert>
+                    <insert numberlines="1">265</insert>
+                    <bugtypes>
+                        <id id="1.5" lines="162">
+                            <description>Incorrect computation.</description>
+                        </id>
+                        <id id="1.2" lines="166">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.1" lines="170,177,179">
+                            <description>Missing case handling.</description>
+                        </id>
+                        <id id="1.5" lines="178">
+                            <description>Incorrect calculation.</description>
+                        </id>
+                        <id id="1.5" lines="248">
+                            <description>Incorrect computation.</description>
+                        </id>
+                        <id id="1.2" lines="252">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.1" lines="255,261,264">
+                            <description>Missing case handling.</description>
+                        </id>
+                        <id id="1.5" lines="263">
+                            <description>Incorrect calculation.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>12</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -12,7 +12,7 @@ public class ObjectBox {
     public void put(Object object) {
         this.object = object;
     }
-    
+
     public Object getObject() {
         return object;
     }

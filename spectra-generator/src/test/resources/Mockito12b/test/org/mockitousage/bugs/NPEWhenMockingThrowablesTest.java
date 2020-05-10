@@ -4,18 +4,20 @@
  */
 package org.mockitousage.bugs;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Mockito.*;
+
 public class NPEWhenMockingThrowablesTest extends TestBase {
 
-    @Mock IMethods mock;
-    @Mock DummyException mock2;
-    
+    @Mock
+    IMethods mock;
+    @Mock
+    DummyException mock2;
+
     class DummyException extends RuntimeException {
         private static final long serialVersionUID = 1L;
     }
@@ -27,6 +29,7 @@ public class NPEWhenMockingThrowablesTest extends TestBase {
         try {
             mock.simpleMethod();
             fail();
-        } catch(DummyException e) {}
+        } catch (DummyException e) {
+        }
     }
 }

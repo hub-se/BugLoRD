@@ -30,17 +30,21 @@ import org.joda.time.field.ImpreciseDateTimeField;
  */
 class BasicYearDateTimeField extends ImpreciseDateTimeField {
 
-    /** Serialization version. */
+    /**
+     * Serialization version.
+     */
     @SuppressWarnings("unused")
     private static final long serialVersionUID = -98628754872287L;
 
-    /** The underlying basic chronology. */
+    /**
+     * The underlying basic chronology.
+     */
     protected final BasicChronology iChronology;
 
     /**
      * Restricted constructor.
-     * 
-     * @param chronology  the chronology this field belogs to
+     *
+     * @param chronology the chronology this field belogs to
      */
     BasicYearDateTimeField(BasicChronology chronology) {
         super(DateTimeFieldType.year(), chronology.getAverageMillisPerYear());
@@ -75,13 +79,13 @@ class BasicYearDateTimeField extends ImpreciseDateTimeField {
         // Return newly calculated millis value
         int thisYear = iChronology.getYear(instant);
         int wrappedYear = FieldUtils.getWrappedValue
-            (thisYear, years, iChronology.getMinYear(), iChronology.getMaxYear());
+                (thisYear, years, iChronology.getMinYear(), iChronology.getMaxYear());
         return set(instant, wrappedYear);
     }
 
     public long set(long instant, int year) {
         FieldUtils.verifyValueBounds
-            (this, year, iChronology.getMinYear(), iChronology.getMaxYear());
+                (this, year, iChronology.getMinYear(), iChronology.getMaxYear());
         return iChronology.setYear(instant, year);
     }
 

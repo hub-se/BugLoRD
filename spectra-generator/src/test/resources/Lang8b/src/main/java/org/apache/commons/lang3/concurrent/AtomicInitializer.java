@@ -60,12 +60,14 @@ import java.util.concurrent.atomic.AtomicReference;
  * {@link LazyInitializer} is more appropriate.
  * </p>
  *
- * @since 3.0
- * @version $Id$
  * @param <T> the type of the object managed by this initializer class
+ * @version $Id$
+ * @since 3.0
  */
 public abstract class AtomicInitializer<T> implements ConcurrentInitializer<T> {
-    /** Holds the reference to the managed object. */
+    /**
+     * Holds the reference to the managed object.
+     */
     private final AtomicReference<T> reference = new AtomicReference<T>();
 
     /**
@@ -75,7 +77,7 @@ public abstract class AtomicInitializer<T> implements ConcurrentInitializer<T> {
      *
      * @return the object created by this {@code AtomicInitializer}
      * @throws ConcurrentException if an error occurred during initialization of
-     * the object
+     *                             the object
      */
     @Override
     public T get() throws ConcurrentException {

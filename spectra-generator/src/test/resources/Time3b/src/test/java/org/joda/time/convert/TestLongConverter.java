@@ -15,19 +15,18 @@
  */
 package org.joda.time.convert;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.Chronology;
 import org.joda.time.DateTimeZone;
 import org.joda.time.TimeOfDay;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.chrono.JulianChronology;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 /**
  * This class is a Junit unit test for LongConverter.
@@ -41,7 +40,7 @@ public class TestLongConverter extends TestCase {
     private static final Chronology ISO_PARIS = ISOChronology.getInstance(PARIS);
     private static Chronology JULIAN;
     private static Chronology ISO;
-    
+
     private DateTimeZone zone = null;
 
     public static void main(String[] args) {
@@ -67,11 +66,11 @@ public class TestLongConverter extends TestCase {
         assertEquals(false, Modifier.isPublic(cls.getModifiers()));
         assertEquals(false, Modifier.isProtected(cls.getModifiers()));
         assertEquals(false, Modifier.isPrivate(cls.getModifiers()));
-        
+
         Constructor con = cls.getDeclaredConstructor((Class[]) null);
         assertEquals(1, cls.getDeclaredConstructors().length);
         assertEquals(true, Modifier.isProtected(con.getModifiers()));
-        
+
         Field fld = cls.getDeclaredField("INSTANCE");
         assertEquals(false, Modifier.isPublic(fld.getModifiers()));
         assertEquals(false, Modifier.isProtected(fld.getModifiers()));

@@ -1,60 +1,61 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-26">
-			<tests>
-				<testfile path="org/joda/time/TestDateTimeZoneCutover">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;...10-31T02:30:00.123+0[2]:00&gt;
-						but was:&lt;...10-31T02:30:00.123+0[1]:00&gt;:-
-						org.joda.time.TestDateTimeZoneCutover::testWithMinuteOfHourInDstChange:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;...10-31T02:00:10.123+0[2]:00&gt;
-						but was:&lt;...10-31T02:00:10.123+0[1]:00&gt;:-
-						org.joda.time.TestDateTimeZoneCutover::testWithMinuteOfHourInDstChange_mockZone:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;...10-31T01:30:00.000+0[1:0]0&gt;
-						but was:&lt;...10-31T01:30:00.000+0[0:3]0&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>3781</number_tests>
-					<failed>8</failed>
-					<passed>3773</passed>
-					<nodes>13057</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/chrono/ZonedChronology.java">
-					<change>436</change>
-					<change>448</change>
-					<change>460</change>
-					<change>467</change>
-					<change>481</change>
-					<change>528</change>
-					<change>540</change>
-					<bugtypes>
-						<id id="2.2" lines="436">
-							<description>Missing return parameter.</description>
-						</id>
-						<id id="2.2" lines="448">
-							<description>Missing return parameter.</description>
-						</id>
-						<id id="2.2" lines="460">
-							<description>Missing return parameter.</description>
-						</id>
-						<id id="2.1" lines="467">
-							<description>Missing parameter.</description>
-						</id>
-						<id id="2.2" lines="481">
-							<description>Missing return parameter.</description>
-						</id>
-						<id id="2.2" lines="528">
-							<description>Missing return parameter.</description>
-						</id>
-						<id id="2.2" lines="540">
-							<description>Missing return parameter.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>7</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-26">
+            <tests>
+                <testfile path="org/joda/time/TestDateTimeZoneCutover">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;...10-31T02:30:00.123+0[2]:00&gt;
+                        but was:&lt;...10-31T02:30:00.123+0[1]:00&gt;:-
+                        org.joda.time.TestDateTimeZoneCutover::testWithMinuteOfHourInDstChange:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;...10-31T02:00:10.123+0[2]:00&gt;
+                        but was:&lt;...10-31T02:00:10.123+0[1]:00&gt;:-
+                        org.joda.time.TestDateTimeZoneCutover::testWithMinuteOfHourInDstChange_mockZone:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;...10-31T01:30:00.000+0[1:0]0&gt;
+                        but was:&lt;...10-31T01:30:00.000+0[0:3]0&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>3781</number_tests>
+                    <failed>8</failed>
+                    <passed>3773</passed>
+                    <nodes>13057</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/chrono/ZonedChronology.java">
+                    <change>436</change>
+                    <change>448</change>
+                    <change>460</change>
+                    <change>467</change>
+                    <change>481</change>
+                    <change>528</change>
+                    <change>540</change>
+                    <bugtypes>
+                        <id id="2.2" lines="436">
+                            <description>Missing return parameter.</description>
+                        </id>
+                        <id id="2.2" lines="448">
+                            <description>Missing return parameter.</description>
+                        </id>
+                        <id id="2.2" lines="460">
+                            <description>Missing return parameter.</description>
+                        </id>
+                        <id id="2.1" lines="467">
+                            <description>Missing parameter.</description>
+                        </id>
+                        <id id="2.2" lines="481">
+                            <description>Missing return parameter.</description>
+                        </id>
+                        <id id="2.2" lines="528">
+                            <description>Missing return parameter.</description>
+                        </id>
+                        <id id="2.2" lines="540">
+                            <description>Missing return parameter.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>7</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

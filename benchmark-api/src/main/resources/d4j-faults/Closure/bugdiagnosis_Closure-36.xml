@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-36">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/IntegrationTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>384</number_tests>
-					<failed>1</failed>
-					<passed>383</passed>
-					<nodes>44992</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/InlineVariables.java">
-					<insert numberlines="3">572-575</insert>
-					<bugtypes>
-						<id id="1.1" lines="574">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-36">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/IntegrationTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>384</number_tests>
+                    <failed>1</failed>
+                    <passed>383</passed>
+                    <nodes>44992</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/InlineVariables.java">
+                    <insert numberlines="3">572-575</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="574">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

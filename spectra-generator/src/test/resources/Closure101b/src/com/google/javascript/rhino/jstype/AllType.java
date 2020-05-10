@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,92 +36,91 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
-package com.google.javascript.rhino.jstype;
 
-import static com.google.javascript.rhino.jstype.TernaryValue.UNKNOWN;
+package com.google.javascript.rhino.jstype;
 
 import com.google.javascript.rhino.ErrorReporter;
 
+import static com.google.javascript.rhino.jstype.TernaryValue.UNKNOWN;
+
 /**
  * All type, representing all values.
-*
-*
  */
 public final class AllType extends JSType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  AllType(JSTypeRegistry registry) {
-    super(registry);
-  }
-
-  /**
-   * The All type is the greatest type (top) and is never a subtype of
-   * another except itself or the Unknown type.
-   * @return {@code this.equals(that)}
-   */
-  @Override
-  public boolean isSubtype(JSType that) {
-    return that.isAllType() || that.isUnknownType();
-  }
-
-  @Override
-  public boolean isAllType() {
-    return true;
-  }
-
-  @Override
-  public boolean matchesStringContext() {
-    // Be lenient.
-    return true;
-  }
-
-  @Override
-  public boolean matchesObjectContext() {
-    // Be lenient.
-    return true;
-  }
-
-  @Override
-  public boolean canBeCalled() {
-    return false;
-  }
-
-  @Override
-  public TernaryValue testForEquality(JSType that) {
-    return UNKNOWN;
-  }
-
-  @Override
-  public JSType getLeastSupertype(JSType that) {
-    if (that.isUnknownType()) {
-      return registry.getNativeType(JSTypeNative.UNKNOWN_TYPE);
+    AllType(JSTypeRegistry registry) {
+        super(registry);
     }
-    return this;
-  }
 
-  @Override
-  public JSType getGreatestSubtype(JSType that) {
-    return that;
-  }
+    /**
+     * The All type is the greatest type (top) and is never a subtype of
+     * another except itself or the Unknown type.
+     *
+     * @return {@code this.equals(that)}
+     */
+    @Override
+    public boolean isSubtype(JSType that) {
+        return that.isAllType() || that.isUnknownType();
+    }
 
-  @Override
-  public String toString() {
-    return "*";
-  }
+    @Override
+    public boolean isAllType() {
+        return true;
+    }
 
-  @Override
-  public <T> T visit(Visitor<T> visitor) {
-    return visitor.caseAllType();
-  }
+    @Override
+    public boolean matchesStringContext() {
+        // Be lenient.
+        return true;
+    }
 
-  @Override
-  public BooleanLiteralSet getPossibleToBooleanOutcomes() {
-    return BooleanLiteralSet.BOTH;
-  }
+    @Override
+    public boolean matchesObjectContext() {
+        // Be lenient.
+        return true;
+    }
 
-  @Override
-  JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope) {
-    return this;
-  }
+    @Override
+    public boolean canBeCalled() {
+        return false;
+    }
+
+    @Override
+    public TernaryValue testForEquality(JSType that) {
+        return UNKNOWN;
+    }
+
+    @Override
+    public JSType getLeastSupertype(JSType that) {
+        if (that.isUnknownType()) {
+            return registry.getNativeType(JSTypeNative.UNKNOWN_TYPE);
+        }
+        return this;
+    }
+
+    @Override
+    public JSType getGreatestSubtype(JSType that) {
+        return that;
+    }
+
+    @Override
+    public String toString() {
+        return "*";
+    }
+
+    @Override
+    public <T> T visit(Visitor<T> visitor) {
+        return visitor.caseAllType();
+    }
+
+    @Override
+    public BooleanLiteralSet getPossibleToBooleanOutcomes() {
+        return BooleanLiteralSet.BOTH;
+    }
+
+    @Override
+    JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope) {
+        return this;
+    }
 }

@@ -44,25 +44,26 @@ import com.google.javascript.rhino.testing.BaseJSTypeTestCase;
 
 /**
  * Tests for FunctionParamBuilder.
+ *
  * @author nicksantos@google.com (Nick Santos)
  */
 public class FunctionParamBuilderTest extends BaseJSTypeTestCase {
 
-  public void testBuild() throws Exception {
-    FunctionParamBuilder builder = new FunctionParamBuilder(registry);
-    assertTrue(builder.addRequiredParams(NUMBER_TYPE));
-    assertTrue(builder.addOptionalParams(BOOLEAN_TYPE));
-    assertTrue(builder.addVarArgs(STRING_TYPE));
+    public void testBuild() throws Exception {
+        FunctionParamBuilder builder = new FunctionParamBuilder(registry);
+        assertTrue(builder.addRequiredParams(NUMBER_TYPE));
+        assertTrue(builder.addOptionalParams(BOOLEAN_TYPE));
+        assertTrue(builder.addVarArgs(STRING_TYPE));
 
-    Node params = builder.build();
-    assertEquals(NUMBER_TYPE, params.getFirstChild().getJSType());
-    assertEquals(registry.createOptionalType(BOOLEAN_TYPE),
-        params.getFirstChild().getNext().getJSType());
-    assertEquals(registry.createOptionalType(STRING_TYPE),
-        params.getLastChild().getJSType());
+        Node params = builder.build();
+        assertEquals(NUMBER_TYPE, params.getFirstChild().getJSType());
+        assertEquals(registry.createOptionalType(BOOLEAN_TYPE),
+                params.getFirstChild().getNext().getJSType());
+        assertEquals(registry.createOptionalType(STRING_TYPE),
+                params.getLastChild().getJSType());
 
-    assertTrue(params.getFirstChild().getNext().isOptionalArg());
-    assertTrue(params.getLastChild().isVarArgs());
-  }
+        assertTrue(params.getFirstChild().getNext().isOptionalArg());
+        assertTrue(params.getLastChild().isVarArgs());
+    }
 
 }

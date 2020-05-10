@@ -1,35 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-8">
-			<tests>
-				<testfile
-					path="com/google/javascript/jscomp/CollapseVariableDeclarationsTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>282</number_tests>
-					<failed>1</failed>
-					<passed>281</passed>
-					<nodes>46618</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="com/google/javascript/jscomp/CollapseVariableDeclarations.java">
-					<change>202-204</change>
-					<insert numberlines="3"></insert>
-					<bugtypes>
-						<id id="2.2" lines="203">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="1.4" lines="207">
-							<description>Missing function.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-8">
+            <tests>
+                <testfile
+                        path="com/google/javascript/jscomp/CollapseVariableDeclarationsTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>282</number_tests>
+                    <failed>1</failed>
+                    <passed>281</passed>
+                    <nodes>46618</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="com/google/javascript/jscomp/CollapseVariableDeclarations.java">
+                    <change>202-204</change>
+                    <insert numberlines="3"></insert>
+                    <bugtypes>
+                        <id id="2.2" lines="203">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="1.4" lines="207">
+                            <description>Missing function.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

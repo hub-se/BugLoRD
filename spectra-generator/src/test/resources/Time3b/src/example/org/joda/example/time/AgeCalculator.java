@@ -15,36 +15,21 @@
  */
 package org.joda.example.time;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.Timer;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
-
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.DurationField;
 import org.joda.time.chrono.ISOChronology;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * AgeCalculator is a small Swing application that computes age from a specific
@@ -55,14 +40,14 @@ import org.joda.time.chrono.ISOChronology;
  */
 public class AgeCalculator extends JFrame {
     static final int
-        YEARS = 1,
-        MONTHS = 2,
-        DAYS = 3,
-        WEEKYEARS = 4,
-        WEEKS = 5,
-        HOURS = 101,
-        MINUTES = 102,
-        SECONDS = 103;
+            YEARS = 1,
+            MONTHS = 2,
+            DAYS = 3,
+            WEEKYEARS = 4,
+            WEEKS = 5,
+            HOURS = 101,
+            MINUTES = 102,
+            SECONDS = 103;
 
     public static void main(String[] args) throws Exception {
         new AgeCalculator().show();
@@ -100,7 +85,7 @@ public class AgeCalculator extends JFrame {
         setSize(size);
         Dimension screenSize = getToolkit().getScreenSize();
         setLocation(screenSize.width / 2 - size.width / 2,
-                    screenSize.height / 2 - size.height / 2);
+                screenSize.height / 2 - size.height / 2);
 
         iTimer = new Timer(500, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -139,12 +124,15 @@ public class AgeCalculator extends JFrame {
             public void insertUpdate(DocumentEvent e) {
                 update(e);
             }
+
             public void removeUpdate(DocumentEvent e) {
                 update(e);
             }
+
             public void changedUpdate(DocumentEvent e) {
                 update(e);
             }
+
             private void update(DocumentEvent e) {
                 iBirthdateStr = birthdateField.getText();
                 updateResults();
@@ -161,7 +149,7 @@ public class AgeCalculator extends JFrame {
 
         zoneSelector.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String id = (String)zoneSelector.getSelectedItem();
+                String id = (String) zoneSelector.getSelectedItem();
                 iChronology = ISOChronology.getInstance(DateTimeZone.forID(id));
                 updateResults();
             }
@@ -180,27 +168,27 @@ public class AgeCalculator extends JFrame {
             }
         };
 
-        iFieldSets = new FieldSet[] {
-            new FieldSet("Month Based", new FieldGroup[] {
-                new FieldGroup(listener, "Years", YEARS),
-                new FieldGroup(listener, "Months", MONTHS),
-                new FieldGroup(listener, "Days", DAYS),
-                new FieldGroup(listener, "Hours", HOURS),
-                new FieldGroup(listener, "Minutes", MINUTES),
-                new FieldGroup(listener, "Seconds", SECONDS)
-            })
-            ,
-            new FieldSet("Week Based", new FieldGroup[] {
-                new FieldGroup(listener, "Weekyears", WEEKYEARS),
-                new FieldGroup(listener, "Weeks", WEEKS),
-                new FieldGroup(listener, "Days", DAYS),
-                new FieldGroup(listener, "Hours", HOURS),
-                new FieldGroup(listener, "Minutes", MINUTES),
-                new FieldGroup(listener, "Seconds", SECONDS)
-            })
+        iFieldSets = new FieldSet[]{
+                new FieldSet("Month Based", new FieldGroup[]{
+                        new FieldGroup(listener, "Years", YEARS),
+                        new FieldGroup(listener, "Months", MONTHS),
+                        new FieldGroup(listener, "Days", DAYS),
+                        new FieldGroup(listener, "Hours", HOURS),
+                        new FieldGroup(listener, "Minutes", MINUTES),
+                        new FieldGroup(listener, "Seconds", SECONDS)
+                })
+                ,
+                new FieldSet("Week Based", new FieldGroup[]{
+                        new FieldGroup(listener, "Weekyears", WEEKYEARS),
+                        new FieldGroup(listener, "Weeks", WEEKS),
+                        new FieldGroup(listener, "Days", DAYS),
+                        new FieldGroup(listener, "Hours", HOURS),
+                        new FieldGroup(listener, "Minutes", MINUTES),
+                        new FieldGroup(listener, "Seconds", SECONDS)
+                })
         };
 
-        for (int i=0; i<iFieldSets.length; i++) {
+        for (int i = 0; i < iFieldSets.length; i++) {
             if (i > 0) {
                 panel.add(Box.createHorizontalStrut(10));
             }
@@ -218,12 +206,11 @@ public class AgeCalculator extends JFrame {
             long minuend = System.currentTimeMillis();
             long subtrahend = dt.getMillis();
 
-            for (int i=0; i<iFieldSets.length; i++) {
+            for (int i = 0; i < iFieldSets.length; i++) {
                 iFieldSets[i].updateResults(minuend, subtrahend);
             }
-        }
-        catch (IllegalArgumentException e) {
-            for (int i=0; i<iFieldSets.length; i++) {
+        } catch (IllegalArgumentException e) {
+            for (int i = 0; i < iFieldSets.length; i++) {
                 iFieldSets[i].setResultsText("");
             }
         }
@@ -248,30 +235,31 @@ public class AgeCalculator extends JFrame {
 
             DurationField field;
             switch (iFieldType) {
-            case YEARS:
-                field = iChronology.years();
-                break;
-            case MONTHS:
-                field = iChronology.months();
-                break;
-            case DAYS:
-                field = iChronology.days();
-                break;
-            case WEEKYEARS:
-                field = iChronology.weekyears();
-                break;
-            case WEEKS:
-                field = iChronology.weeks();
-                break;
-            case HOURS:
-                field = iChronology.hours();
-                break;
-            case MINUTES:
-                field = iChronology.minutes();
-                break;
-            case SECONDS: default:
-                field = iChronology.seconds();
-                break;
+                case YEARS:
+                    field = iChronology.years();
+                    break;
+                case MONTHS:
+                    field = iChronology.months();
+                    break;
+                case DAYS:
+                    field = iChronology.days();
+                    break;
+                case WEEKYEARS:
+                    field = iChronology.weekyears();
+                    break;
+                case WEEKS:
+                    field = iChronology.weeks();
+                    break;
+                case HOURS:
+                    field = iChronology.hours();
+                    break;
+                case MINUTES:
+                    field = iChronology.minutes();
+                    break;
+                case SECONDS:
+                default:
+                    field = iChronology.seconds();
+                    break;
             }
 
             String textToSet = "";
@@ -304,14 +292,14 @@ public class AgeCalculator extends JFrame {
         }
 
         private long updateResults(long minuend, long subtrahend) {
-            for (int i=0; i<iGroups.length; i++) {
+            for (int i = 0; i < iGroups.length; i++) {
                 subtrahend = iGroups[i].updateResult(minuend, subtrahend);
             }
             return subtrahend;
         }
 
         public void setResultsText(String text) {
-            for (int i=0; i<iGroups.length; i++) {
+            for (int i = 0; i < iGroups.length; i++) {
                 iGroups[i].setResultText(text);
             }
         }
@@ -323,7 +311,7 @@ public class AgeCalculator extends JFrame {
 
             panel.setBorder(BorderFactory.createTitledBorder(iTitle));
 
-            for (int i=0; i<iGroups.length; i++) {
+            for (int i = 0; i < iGroups.length; i++) {
                 FieldGroup fg = iGroups[i];
                 panel.add(fg.iCheckbox);
                 setCheckboxConstraints(layout, fg.iCheckbox, 0, i);
@@ -335,8 +323,7 @@ public class AgeCalculator extends JFrame {
         }
 
         private void setCheckboxConstraints(GridBagLayout layout, Component c,
-                                            int x, int y)
-        {
+                                            int x, int y) {
             GridBagConstraints cons = new GridBagConstraints();
             cons.gridx = x;
             cons.gridy = y;
@@ -346,8 +333,7 @@ public class AgeCalculator extends JFrame {
         }
 
         private void setResultConstraints(GridBagLayout layout, Component c,
-                                          int x, int y)
-        {
+                                          int x, int y) {
             GridBagConstraints cons = new GridBagConstraints();
             cons.gridx = x;
             cons.gridy = y;

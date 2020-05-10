@@ -19,7 +19,6 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.DurationField;
 
 /**
- * 
  * @author Brian S O'Neill
  */
 class TestGJYearField extends TestGJDateTimeField {
@@ -34,7 +33,7 @@ class TestGJYearField extends TestGJDateTimeField {
     public long set(long millis, int value) {
         int[] ymd = iChronology.gjFromMillis(millis);
         millis = iChronology.getTimeOnlyMillis(millis)
-            + iChronology.millisFromGJ(value, ymd[1], ymd[2]);
+                + iChronology.millisFromGJ(value, ymd[1], ymd[2]);
         if (ymd[1] == 2 && ymd[2] == 29 && !iChronology.isLeapYear(value)) {
             millis = iChronology.dayOfYear().add(millis, -1);
         }
@@ -42,7 +41,7 @@ class TestGJYearField extends TestGJDateTimeField {
     }
 
     public long add(long millis, long value) {
-        return set(millis, (int)(get(millis) + value));
+        return set(millis, (int) (get(millis) + value));
     }
 
     public boolean isLeap(long millis) {

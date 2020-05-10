@@ -44,99 +44,103 @@ import com.google.javascript.rhino.Token;
 
 /**
  * A builder for the Rhino Node representing Function parameters.
+ *
  * @author nicksantos@google.com (Nick Santos)
  */
 public class FunctionParamBuilder {
 
-  private final JSTypeRegistry registry;
-  private final Node root = new Node(Token.LP);
+    private final JSTypeRegistry registry;
+    private final Node root = new Node(Token.LP);
 
-  public FunctionParamBuilder(JSTypeRegistry registry) {
-    this.registry = registry;
-  }
-
-  /**
-   * Add parameters of the given type to the end of the param list.
-   * @return False if this is called after optional params are added.
-   */
-  public boolean addRequiredParams(JSType ...types) {
-    if (hasOptionalOrVarArgs()) {
-      return false;
+    public FunctionParamBuilder(JSTypeRegistry registry) {
+        this.registry = registry;
     }
 
-    for (JSType type : types) {
-      newParameter(type);
-    }
-    return true;
-  }
+    /**
+     * Add parameters of the given type to the end of the param list.
+     *
+     * @return False if this is called after optional params are added.
+     */
+    public boolean addRequiredParams(JSType... types) {
+        if (hasOptionalOrVarArgs()) {
+            return false;
+        }
 
-  /**
-   * Add optional parameters of the given type to the end of the param list.
-   * @param types Types for each optional parameter. The builder will make them
-   *     undefineable.
-   * @return False if this is called after var args are added.
-   */
-  public boolean addOptionalParams(JSType ...types) {
-    if (hasVarArgs()) {
-      return false;
-    }
-
-    for (JSType type : types) {
-      newParameter(registry.createOptionalType(type)).setOptionalArg(true);
-    }
-    return true;
-  }
-
-  /**
-   * Add variable arguments to the end of the parameter list.
-   * @return False if this is called after var args are added.
-   */
-  public boolean addVarArgs(JSType type) {
-    if (hasVarArgs()) {
-      return false;
+        for (JSType type : types) {
+            newParameter(type);
+        }
+        return true;
     }
 
-    // There are two types of variable argument functions:
-    // 1) Programmer-defined var args
-    // 2) Native bottom types that can accept any argument.
-    // For the first one, "undefined" is a valid value for all arguments.
-    // For the second, we do not want to cast it up to undefined.
-    if (!type.isEmptyType()) {
-      type = registry.createOptionalType(type);
+    /**
+     * Add optional parameters of the given type to the end of the param list.
+     *
+     * @param types Types for each optional parameter. The builder will make them
+     *              undefineable.
+     * @return False if this is called after var args are added.
+     */
+    public boolean addOptionalParams(JSType... types) {
+        if (hasVarArgs()) {
+            return false;
+        }
+
+        for (JSType type : types) {
+            newParameter(registry.createOptionalType(type)).setOptionalArg(true);
+        }
+        return true;
     }
-    newParameter(type).setVarArgs(true);
-    return true;
-  }
 
-  /**
-   * Copies the parameter specification from the given node.
-   */
-  public void newParameterFromNode(Node n) {
-    Node newParam = newParameter(n.getJSType());
-    newParam.setVarArgs(n.isVarArgs());
-    newParam.setOptionalArg(n.isOptionalArg());
-  }
+    /**
+     * Add variable arguments to the end of the parameter list.
+     *
+     * @return False if this is called after var args are added.
+     */
+    public boolean addVarArgs(JSType type) {
+        if (hasVarArgs()) {
+            return false;
+        }
 
-  // Add a parameter to the list with the given type.
-  private Node newParameter(JSType type) {
-    Node paramNode = Node.newString(Token.NAME, "");
-    paramNode.setJSType(type);
-    root.addChildToBack(paramNode);
-    return paramNode;
-  }
+        // There are two types of variable argument functions:
+        // 1) Programmer-defined var args
+        // 2) Native bottom types that can accept any argument.
+        // For the first one, "undefined" is a valid value for all arguments.
+        // For the second, we do not want to cast it up to undefined.
+        if (!type.isEmptyType()) {
+            type = registry.createOptionalType(type);
+        }
+        newParameter(type).setVarArgs(true);
+        return true;
+    }
 
-  public Node build() {
-    return root;
-  }
+    /**
+     * Copies the parameter specification from the given node.
+     */
+    public void newParameterFromNode(Node n) {
+        Node newParam = newParameter(n.getJSType());
+        newParam.setVarArgs(n.isVarArgs());
+        newParam.setOptionalArg(n.isOptionalArg());
+    }
 
-  private boolean hasOptionalOrVarArgs() {
-    Node lastChild = root.getLastChild();
-    return lastChild != null &&
-        (lastChild.isOptionalArg() || lastChild.isVarArgs());
-  }
+    // Add a parameter to the list with the given type.
+    private Node newParameter(JSType type) {
+        Node paramNode = Node.newString(Token.NAME, "");
+        paramNode.setJSType(type);
+        root.addChildToBack(paramNode);
+        return paramNode;
+    }
 
-  public boolean hasVarArgs() {
-    Node lastChild = root.getLastChild();
-    return lastChild != null && lastChild.isVarArgs();
-  }
+    public Node build() {
+        return root;
+    }
+
+    private boolean hasOptionalOrVarArgs() {
+        Node lastChild = root.getLastChild();
+        return lastChild != null &&
+                (lastChild.isOptionalArg() || lastChild.isVarArgs());
+    }
+
+    public boolean hasVarArgs() {
+        Node lastChild = root.getLastChild();
+        return lastChild != null && lastChild.isVarArgs();
+    }
 }

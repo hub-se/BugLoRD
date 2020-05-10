@@ -1,80 +1,80 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-19">
-			<tests>
-				<testfile
-					path="org/mockitousage/annotation/MockInjectionUsingSetterOrPropertyTest">
-					<exception>junit.framework.AssertionFailedError:Expected:&lt;null&gt;
-						but was:candidate2
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1181</number_tests>
-					<failed>1</failed>
-					<passed>1180</passed>
-					<nodes>4488</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/mockito/internal/configuration/injection/PropertyAndSetterInjection.java">
-					<change>114</change>
-					<bugtypes>
-						<id id="2.1" lines="114">
-							<description>Missing parameters.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file
-					path="org/mockito/internal/configuration/injection/filter/FinalMockCandidateFilter.java">
-					<change>23</change>
-					<insert numberlines="1"></insert>
-					<bugtypes>
-						<id id="2.1" lines="12,23">
-							<description>Missing parameters.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file
-					path="org/mockito/internal/configuration/injection/filter/MockCandidateFilter.java">
-					<change>15</change>
-					<insert numberlines="1"></insert>
-					<bugtypes>
-						<id id="2.1" lines="8,15">
-							<description>Missing parameters.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file
-					path="org/mockito/internal/configuration/injection/filter/NameBasedCandidateFilter.java">
-					<change>23</change>
-					<change>31</change>
-					<change>43</change>
-					<insert numberlines="16">33-42</insert>
-					<bugtypes>
-						<id id="2.1" lines="23,31,43">
-							<description>Missing parameters.</description>
-						</id>
-						<id id="1.1" lines="41">
-							<description>Missing case for checking a possible match between
-								mock and field.
-							</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file
-					path="org/mockito/internal/configuration/injection/filter/TypeBasedCandidateFilter.java">
-					<change>20</change>
-					<change>28</change>
-					<bugtypes>
-						<id id="2.1" lines="20,28">
-							<description>Missing parameters.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>11</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-19">
+            <tests>
+                <testfile
+                        path="org/mockitousage/annotation/MockInjectionUsingSetterOrPropertyTest">
+                    <exception>junit.framework.AssertionFailedError:Expected:&lt;null&gt;
+                        but was:candidate2
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1181</number_tests>
+                    <failed>1</failed>
+                    <passed>1180</passed>
+                    <nodes>4488</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/mockito/internal/configuration/injection/PropertyAndSetterInjection.java">
+                    <change>114</change>
+                    <bugtypes>
+                        <id id="2.1" lines="114">
+                            <description>Missing parameters.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file
+                        path="org/mockito/internal/configuration/injection/filter/FinalMockCandidateFilter.java">
+                    <change>23</change>
+                    <insert numberlines="1"></insert>
+                    <bugtypes>
+                        <id id="2.1" lines="12,23">
+                            <description>Missing parameters.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file
+                        path="org/mockito/internal/configuration/injection/filter/MockCandidateFilter.java">
+                    <change>15</change>
+                    <insert numberlines="1"></insert>
+                    <bugtypes>
+                        <id id="2.1" lines="8,15">
+                            <description>Missing parameters.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file
+                        path="org/mockito/internal/configuration/injection/filter/NameBasedCandidateFilter.java">
+                    <change>23</change>
+                    <change>31</change>
+                    <change>43</change>
+                    <insert numberlines="16">33-42</insert>
+                    <bugtypes>
+                        <id id="2.1" lines="23,31,43">
+                            <description>Missing parameters.</description>
+                        </id>
+                        <id id="1.1" lines="41">
+                            <description>Missing case for checking a possible match between
+                                mock and field.
+                            </description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file
+                        path="org/mockito/internal/configuration/injection/filter/TypeBasedCandidateFilter.java">
+                    <change>20</change>
+                    <change>28</change>
+                    <bugtypes>
+                        <id id="2.1" lines="20,28">
+                            <description>Missing parameters.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>11</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

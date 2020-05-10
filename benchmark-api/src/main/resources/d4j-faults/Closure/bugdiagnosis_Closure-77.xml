@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-77">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/CodePrinterTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;var
-						x="\[]0"&gt; but was:&lt;var x="\[u000]0"&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>3476</number_tests>
-					<failed>1</failed>
-					<passed>3475</passed>
-					<nodes>40914</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/CodeGenerator.java">
-					<insert numberlines="1">966-972:981:998</insert>
-					<bugtypes>
-						<id id="1.1" lines="965">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-77">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/CodePrinterTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;var
+                        x="\[]0"&gt; but was:&lt;var x="\[u000]0"&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>3476</number_tests>
+                    <failed>1</failed>
+                    <passed>3475</passed>
+                    <nodes>40914</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/CodeGenerator.java">
+                    <insert numberlines="1">966-972:981:998</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="965">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

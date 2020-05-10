@@ -1,35 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-47">
-			<tests>
-				<testfile path="org/apache/commons/lang/text/StrBuilderTest">
-					<exception>java.lang.NullPointerException:-
-						org.apache.commons.lang.text.StrBuilderTest::testLang412Right:--&gt;
-						java.lang.NullPointerException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>206</number_tests>
-					<failed>2</failed>
-					<passed>204</passed>
-					<nodes>10404</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang/text/StrBuilder.java">
-					<insert numberlines="3">1186</insert>
-					<insert numberlines="3">1230</insert>
-					<bugtypes>
-						<id id="1.1" lines="1185">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="1229">
-							<description>Missing check for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-47">
+            <tests>
+                <testfile path="org/apache/commons/lang/text/StrBuilderTest">
+                    <exception>java.lang.NullPointerException:-
+                        org.apache.commons.lang.text.StrBuilderTest::testLang412Right:--&gt;
+                        java.lang.NullPointerException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>206</number_tests>
+                    <failed>2</failed>
+                    <passed>204</passed>
+                    <nodes>10404</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang/text/StrBuilder.java">
+                    <insert numberlines="3">1186</insert>
+                    <insert numberlines="3">1230</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="1185">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="1229">
+                            <description>Missing check for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

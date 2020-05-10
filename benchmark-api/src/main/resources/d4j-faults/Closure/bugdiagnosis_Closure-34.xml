@@ -1,41 +1,41 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-34">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/CodePrinterTest">
-					<exception>java.lang.StackOverflowError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>4018</number_tests>
-					<failed>1</failed>
-					<passed>4017</passed>
-					<nodes>45440</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/CodeGenerator.java">
-					<change>122-124</change>
-					<change>754</change>
-					<bugtypes>
-						<id id="1.5" lines="122-124">
-							<description>Incorrect computation.</description>
-						</id>
-						<id id="1.5" lines="754">
-							<description>Incorrect computation.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="com/google/javascript/jscomp/CodePrinter.java">
-					<change>334</change>
-					<bugtypes>
-						<id id="1.2" lines="334">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-34">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/CodePrinterTest">
+                    <exception>java.lang.StackOverflowError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>4018</number_tests>
+                    <failed>1</failed>
+                    <passed>4017</passed>
+                    <nodes>45440</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/CodeGenerator.java">
+                    <change>122-124</change>
+                    <change>754</change>
+                    <bugtypes>
+                        <id id="1.5" lines="122-124">
+                            <description>Incorrect computation.</description>
+                        </id>
+                        <id id="1.5" lines="754">
+                            <description>Incorrect computation.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="com/google/javascript/jscomp/CodePrinter.java">
+                    <change>334</change>
+                    <bugtypes>
+                        <id id="1.2" lines="334">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

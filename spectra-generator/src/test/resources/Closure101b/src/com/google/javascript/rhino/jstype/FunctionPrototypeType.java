@@ -39,63 +39,60 @@
 
 package com.google.javascript.rhino.jstype;
 
-import com.google.javascript.rhino.ErrorReporter;
 import com.google.javascript.rhino.jstype.ObjectType;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Represents the prototype of a {@link FunctionType}.
+ *
  * @author nicksantos@google.com (Nick Santos)
  */
 public class FunctionPrototypeType extends PrototypeObjectType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private final FunctionType ownerFunction;
+    private final FunctionType ownerFunction;
 
-  FunctionPrototypeType(JSTypeRegistry registry, FunctionType ownerFunction,
-      ObjectType implicitPrototype, boolean isNative) {
-    super(registry, null /* has no class name */, implicitPrototype,
-        isNative);
-    this.ownerFunction = ownerFunction;
-  }
-
-  FunctionPrototypeType(JSTypeRegistry registry, FunctionType ownerFunction,
-      ObjectType implicitPrototype) {
-    this(registry, ownerFunction, implicitPrototype, false);
-  }
-
-  @Override
-  public String getReferenceName() {
-    if (ownerFunction == null) {
-      return "{...}.prototype";
-    } else {
-      return ownerFunction.getReferenceName() + ".prototype";
+    FunctionPrototypeType(JSTypeRegistry registry, FunctionType ownerFunction,
+                          ObjectType implicitPrototype, boolean isNative) {
+        super(registry, null /* has no class name */, implicitPrototype,
+                isNative);
+        this.ownerFunction = ownerFunction;
     }
-  }
 
-  @Override
-  public boolean hasReferenceName() {
-    return ownerFunction != null && ownerFunction.hasReferenceName();
-  }
+    FunctionPrototypeType(JSTypeRegistry registry, FunctionType ownerFunction,
+                          ObjectType implicitPrototype) {
+        this(registry, ownerFunction, implicitPrototype, false);
+    }
 
-  @Override
-  public boolean isFunctionPrototypeType() {
-    return true;
-  }
+    @Override
+    public String getReferenceName() {
+        if (ownerFunction == null) {
+            return "{...}.prototype";
+        } else {
+            return ownerFunction.getReferenceName() + ".prototype";
+        }
+    }
 
-  public FunctionType getOwnerFunction() {
-    return ownerFunction;
-  }
+    @Override
+    public boolean hasReferenceName() {
+        return ownerFunction != null && ownerFunction.hasReferenceName();
+    }
 
-  @Override
-  public Iterable<ObjectType> getCtorImplementedInterfaces() {
-    return getOwnerFunction().getImplementedInterfaces();
-  }
+    @Override
+    public boolean isFunctionPrototypeType() {
+        return true;
+    }
 
-  // The owner will always be a resolved type, so there's no need to set
-  // the ownerFunction in resolveInternal.
-  // (it would lead to infinite loops if we did).
-  // JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope);
+    public FunctionType getOwnerFunction() {
+        return ownerFunction;
+    }
+
+    @Override
+    public Iterable<ObjectType> getCtorImplementedInterfaces() {
+        return getOwnerFunction().getImplementedInterfaces();
+    }
+
+    // The owner will always be a resolved type, so there's no need to set
+    // the ownerFunction in resolveInternal.
+    // (it would lead to infinite loops if we did).
+    // JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope);
 }

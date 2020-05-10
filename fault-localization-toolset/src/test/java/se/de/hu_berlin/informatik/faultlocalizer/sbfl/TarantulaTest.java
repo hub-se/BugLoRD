@@ -9,16 +9,15 @@
 
 package se.de.hu_berlin.informatik.faultlocalizer.sbfl;
 
-import java.math.BigDecimal;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.Tarantula;
 import se.de.hu_berlin.informatik.faultlocalizer.test.data.SimpleSpectraProvider;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
+
+import java.math.BigDecimal;
 
 public class TarantulaTest {
 
@@ -43,15 +42,11 @@ public class TarantulaTest {
 
     /**
      * Round double to n decimal places
-     * 
+     *
+     * @param d            something
+     * @param decimalPlace something else
+     * @return the result
      * @see {@linktourl http://stackoverflow.com/a/24780468/1262901}
-     * 
-     * @param d
-     * something
-     * @param decimalPlace
-     * something else
-     * @return
-     * the result
      */
     public static double round(final double d, final int decimalPlace) {
         // see the Javadoc about why we use a String in the constructor

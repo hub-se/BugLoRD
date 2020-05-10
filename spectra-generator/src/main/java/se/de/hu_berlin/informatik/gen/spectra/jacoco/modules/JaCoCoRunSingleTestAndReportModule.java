@@ -1,15 +1,7 @@
 /**
- * 
+ *
  */
 package se.de.hu_berlin.informatik.gen.spectra.jacoco.modules;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 
 import org.jacoco.agent.AgentJar;
 import org.jacoco.core.analysis.Analyzer;
@@ -17,7 +9,6 @@ import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.IBundleCoverage;
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.data.ExecutionDataStore;
-
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.JaCoCoSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoRunTestInNewJVMModule;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoRunTestInNewJVMModuleWithJava7Runner;
@@ -37,176 +28,183 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+
 /**
- * 
- * 
+ *
+ *
  * @author Simon Heiden
  */
 public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAndReportModule<SerializableExecFileLoader, JaCoCoReportWrapper> {
 
-	final public static JaCoCoReportWrapper ERROR_WRAPPER = new JaCoCoReportWrapper(null, null, false);
+    final public static JaCoCoReportWrapper ERROR_WRAPPER = new JaCoCoReportWrapper(null, null, false);
 
-	// location of Java class files
-	private final List<File> classfiles = new ArrayList<>();
+    // location of Java class files
+    private final List<File> classfiles = new ArrayList<>();
 
-	private final Path dataFile;
-	private final String testOutput;
-	private final File projectDir;
-	private final int port;
-	private final boolean debugOutput;
-	private final Long timeout;
-	private final int repeatCount;
-	private final String instrumentedClassPath;
-	private final String javaHome;
-	private final ClassLoader cl;
-	private final String java7RunnerJar;
+    private final Path dataFile;
+    private final String testOutput;
+    private final File projectDir;
+    private final int port;
+    private final boolean debugOutput;
+    private final Long timeout;
+    private final int repeatCount;
+    private final String instrumentedClassPath;
+    private final String javaHome;
+    private final ClassLoader cl;
+    private final String java7RunnerJar;
 
-	public JaCoCoRunSingleTestAndReportModule(final Path dataFile, final String testOutput, File projectDir, final String srcDir, String[] originalClasses, int port,
-			final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
-			final String javaHome, final String java7RunnerJar, boolean useSeparateJVMalways, boolean alwaysUseJava7, int maxErrors, String[] failingtests,
-			final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
-		super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7, 
-				maxErrors, failingtests, statisticsContainer, cl);
-		this.dataFile = dataFile;
-		this.testOutput = testOutput;
-		this.projectDir = projectDir;
-		this.port = port;
-		this.debugOutput = debugOutput;
-		this.timeout = timeout;
-		this.repeatCount = repeatCount;
-		this.instrumentedClassPath = instrumentedClassPath;
-		this.javaHome = javaHome;
-		this.java7RunnerJar = java7RunnerJar;
-		this.cl = cl;
-		
+    public JaCoCoRunSingleTestAndReportModule(final Path dataFile, final String testOutput, File projectDir, final String srcDir, String[] originalClasses, int port,
+                                              final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
+                                              final String javaHome, final String java7RunnerJar, boolean useSeparateJVMalways, boolean alwaysUseJava7, int maxErrors, String[] failingtests,
+                                              final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
+        super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7,
+                maxErrors, failingtests, statisticsContainer, cl);
+        this.dataFile = dataFile;
+        this.testOutput = testOutput;
+        this.projectDir = projectDir;
+        this.port = port;
+        this.debugOutput = debugOutput;
+        this.timeout = timeout;
+        this.repeatCount = repeatCount;
+        this.instrumentedClassPath = instrumentedClassPath;
+        this.javaHome = javaHome;
+        this.java7RunnerJar = java7RunnerJar;
+        this.cl = cl;
+
 //		this.sourcefiles.add(new File(srcDir));
-		for (String classDirFile : originalClasses) {
-			this.classfiles.add(new File(classDirFile));
-		}
+        for (String classDirFile : originalClasses) {
+            this.classfiles.add(new File(classDirFile));
+        }
 
-	}
+    }
 
-	@Override
-	public JaCoCoReportWrapper generateReport(TestWrapper testWrapper, TestStatistics testStatistics,
-			SerializableExecFileLoader data) {
-		if (data.getExecFileLoader() != null) {
-			// generate the report
-			IBundleCoverage bundle = null;
-			try {
-				bundle = analyze(data.getExecFileLoader().getExecutionDataStore());
-			} catch (IOException e) {
-				Log.abort(this, e, "Analysis failed.");
-			}
-			// try {
-			// writeReports(bundle, execFileLoader);
-			// } catch (IOException e) {
-			// Log.abort(this, e, "Writing reports failed.");
-			// }
+    @Override
+    public JaCoCoReportWrapper generateReport(TestWrapper testWrapper, TestStatistics testStatistics,
+                                              SerializableExecFileLoader data) {
+        if (data.getExecFileLoader() != null) {
+            // generate the report
+            IBundleCoverage bundle = null;
+            try {
+                bundle = analyze(data.getExecFileLoader().getExecutionDataStore());
+            } catch (IOException e) {
+                Log.abort(this, e, "Analysis failed.");
+            }
+            // try {
+            // writeReports(bundle, execFileLoader);
+            // } catch (IOException e) {
+            // Log.abort(this, e, "Writing reports failed.");
+            // }
 
-			return new JaCoCoReportWrapper(bundle, testWrapper.toString(), testStatistics.wasSuccessful());
-		} else {
-			return null;
-		}
-	}
-	
-	private IBundleCoverage analyze(final ExecutionDataStore data) throws IOException {
-		final CoverageBuilder builder = new CoverageBuilder();
-		final Analyzer analyzer = new Analyzer(data, builder);
-		for (final File f : classfiles) {
-			analyzer.analyzeAll(f);
-		}
-		printNoMatchWarning(builder.getNoMatchClasses());
-		return builder.getBundle("JaCoCo Report");
-	}
+            return new JaCoCoReportWrapper(bundle, testWrapper.toString(), testStatistics.wasSuccessful());
+        } else {
+            return null;
+        }
+    }
 
-	private void printNoMatchWarning(final Collection<IClassCoverage> nomatch) {
-		if (!nomatch.isEmpty()) {
-			Log.err(this, "Some classes do not match with execution data.");
-			Log.err(this, "For report generation, the same class files must be used as at runtime.");
-			for (final IClassCoverage c : nomatch) {
-				Log.err(this, "Execution data for class %s does not match.", c.getName());
-			}
-		}
-	}
+    private IBundleCoverage analyze(final ExecutionDataStore data) throws IOException {
+        final CoverageBuilder builder = new CoverageBuilder();
+        final Analyzer analyzer = new Analyzer(data, builder);
+        for (final File f : classfiles) {
+            analyzer.analyzeAll(f);
+        }
+        printNoMatchWarning(builder.getNoMatchClasses());
+        return builder.getBundle("JaCoCo Report");
+    }
 
-	@Override
-	public JaCoCoReportWrapper getErrorReport() {
-		return ERROR_WRAPPER;
-	}
+    private void printNoMatchWarning(final Collection<IClassCoverage> nomatch) {
+        if (!nomatch.isEmpty()) {
+            Log.err(this, "Some classes do not match with execution data.");
+            Log.err(this, "For report generation, the same class files must be used as at runtime.");
+            for (final IClassCoverage c : nomatch) {
+                Log.err(this, "Execution data for class %s does not match.", c.getName());
+            }
+        }
+    }
 
-	@Override
-	public AbstractRunTestLocallyModule<SerializableExecFileLoader> newTestRunLocallyModule() {
-		return new JaCoCoRunTestLocallyModule(testOutput, 
-				debugOutput, timeout, repeatCount, cl, port);
-	}
-	
-	@Override
-	public AbstractRunTestInNewJVMModule<SerializableExecFileLoader> newTestRunInNewJVMModule() {
-		return new JaCoCoRunTestInNewJVMModule(testOutput, debugOutput, timeout, repeatCount,
-				instrumentedClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(), 
-				javaHome, projectDir, port+1);
-	}
+    @Override
+    public JaCoCoReportWrapper getErrorReport() {
+        return ERROR_WRAPPER;
+    }
 
-	@Override
-	public AbstractRunTestInNewJVMModuleWithJava7Runner<SerializableExecFileLoader> newTestRunInNewJVMModuleWithJava7Runner() {
-		int freePort = SimpleServerFramework.getFreePort(port+2);
+    @Override
+    public AbstractRunTestLocallyModule<SerializableExecFileLoader> newTestRunLocallyModule() {
+        return new JaCoCoRunTestLocallyModule(testOutput,
+                debugOutput, timeout, repeatCount, cl, port);
+    }
 
-		String testClassPath = instrumentedClassPath + File.pathSeparator;
-		
-		String[] properties;
-		if (JaCoCoSpectraGenerationFactory.OFFLINE_INSTRUMENTATION) {
-			properties = Misc.createArrayFromItems(
-					"-Xmx1024m", "-Xms1024m",
-					"-Djacoco-agent.dumponexit=true", 
-					"-Djacoco-agent.output=file",
-					"-Djacoco-agent.destfile=" + dataFile.toAbsolutePath().toString(),
-					"-Djacoco-agent.excludes=*",
-					"-Djacoco-agent.port=" + freePort);
-		} else {
-			File jacocoAgentJar = null; 
-			try {
-				jacocoAgentJar = AgentJar.extractToTempLocation();
-			} catch (IOException e) {
-				Log.abort(JaCoCoSpectraGenerator.class, e, "Could not create JaCoCo agent jar file.");
-			}
-			
-			testClassPath += Objects.requireNonNull(jacocoAgentJar).getAbsolutePath() + File.pathSeparator;
+    @Override
+    public AbstractRunTestInNewJVMModule<SerializableExecFileLoader> newTestRunInNewJVMModule() {
+        return new JaCoCoRunTestInNewJVMModule(testOutput, debugOutput, timeout, repeatCount,
+                instrumentedClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(),
+                javaHome, projectDir, port + 1);
+    }
 
-			properties = Misc.createArrayFromItems(
-					"-Xmx1024m", "-Xms1024m",
-					"-javaagent:" + jacocoAgentJar.getAbsolutePath() 
-					+ "=dumponexit=true,"
-					+ "output=file,"
-					+ "destfile=" + dataFile.toAbsolutePath().toString() + ","
-					+ "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
-					+ "port=" + freePort);
-		}
-		
-		//remove as much irrelevant classes as possible from class path TODO
+    @Override
+    public AbstractRunTestInNewJVMModuleWithJava7Runner<SerializableExecFileLoader> newTestRunInNewJVMModuleWithJava7Runner() {
+        int freePort = SimpleServerFramework.getFreePort(port + 2);
+
+        String testClassPath = instrumentedClassPath + File.pathSeparator;
+
+        String[] properties;
+        if (JaCoCoSpectraGenerationFactory.OFFLINE_INSTRUMENTATION) {
+            properties = Misc.createArrayFromItems(
+                    "-Xmx1024m", "-Xms1024m",
+                    "-Djacoco-agent.dumponexit=true",
+                    "-Djacoco-agent.output=file",
+                    "-Djacoco-agent.destfile=" + dataFile.toAbsolutePath().toString(),
+                    "-Djacoco-agent.excludes=*",
+                    "-Djacoco-agent.port=" + freePort);
+        } else {
+            File jacocoAgentJar = null;
+            try {
+                jacocoAgentJar = AgentJar.extractToTempLocation();
+            } catch (IOException e) {
+                Log.abort(JaCoCoSpectraGenerator.class, e, "Could not create JaCoCo agent jar file.");
+            }
+
+            testClassPath += Objects.requireNonNull(jacocoAgentJar).getAbsolutePath() + File.pathSeparator;
+
+            properties = Misc.createArrayFromItems(
+                    "-Xmx1024m", "-Xms1024m",
+                    "-javaagent:" + jacocoAgentJar.getAbsolutePath()
+                            + "=dumponexit=true,"
+                            + "output=file,"
+                            + "destfile=" + dataFile.toAbsolutePath().toString() + ","
+                            + "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
+                            + "port=" + freePort);
+        }
+
+        //remove as much irrelevant classes as possible from class path TODO
 //		ClassPathParser systemClasspath = new ClassPathParser().parseSystemClasspath();
 //		systemClasspath.removeElementsOtherThan("java7-test-runner", "ant-", "junit-4.12");
-		if (java7RunnerJar == null) {
-			testClassPath += new ClassPathParser().parseSystemClasspath().getClasspath();
-		} else {
-			testClassPath += java7RunnerJar;
-		}
-		return new JaCoCoRunTestInNewJVMModuleWithJava7Runner(testOutput, 
-				debugOutput, timeout, repeatCount, testClassPath,
-				// + File.pathSeparator + systemClasspath.getClasspath(), 
-				dataFile, javaHome, projectDir, (String[])properties);
-	}
+        if (java7RunnerJar == null) {
+            testClassPath += new ClassPathParser().parseSystemClasspath().getClasspath();
+        } else {
+            testClassPath += java7RunnerJar;
+        }
+        return new JaCoCoRunTestInNewJVMModuleWithJava7Runner(testOutput,
+                debugOutput, timeout, repeatCount, testClassPath,
+                // + File.pathSeparator + systemClasspath.getClasspath(), 
+                dataFile, javaHome, projectDir, (String[]) properties);
+    }
 
-	@Override
-	public SerializableExecFileLoader transformTestResultFromSeparateJVM(SerializableExecFileLoader projectData) {
-		return projectData;
-	}
+    @Override
+    public SerializableExecFileLoader transformTestResultFromSeparateJVM(SerializableExecFileLoader projectData) {
+        return projectData;
+    }
 
-	@Override
-	public SerializableExecFileLoader transformTestResultFromSeparateJVMWithJava7(
-			SerializableExecFileLoader projectData) {
-		return projectData;
-	}
-
+    @Override
+    public SerializableExecFileLoader transformTestResultFromSeparateJVMWithJava7(
+            SerializableExecFileLoader projectData) {
+        return projectData;
+    }
 
 
 }

@@ -34,9 +34,9 @@ package org.apache.commons.lang3.concurrent;
  * affecting clients.
  * </p>
  *
- * @since 3.0
- * @version $Id$
  * @param <T> the type of the object managed by this initializer class
+ * @version $Id$
+ * @since 3.0
  */
 public interface ConcurrentInitializer<T> {
     /**
@@ -48,7 +48,7 @@ public interface ConcurrentInitializer<T> {
      *
      * @return the object created by this {@code ConcurrentException}
      * @throws ConcurrentException if an error occurred during initialization of
-     * the object
+     *                             the object
      */
     T get() throws ConcurrentException;
 }

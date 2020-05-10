@@ -2,30 +2,30 @@ package se.de.hu_berlin.informatik.spectra.core.traces;
 
 import java.util.Iterator;
 
-public interface ArraySequenceIndexer<T,K> {
+public interface ArraySequenceIndexer<T, K> {
 
-	public GSArrayTreeNode<T,K>[][] getSequences();
-	
+    public GSArrayTreeNode<T, K>[][] getSequences();
+
 //	public Map<GSTreeNode,Integer> getEndNodeToSequenceIdMap();
-	
-	public int getSequenceIdForEndNode(GSArrayTreeNode<T,K> endNode);
-	
+
+    public int getSequenceIdForEndNode(GSArrayTreeNode<T, K> endNode);
+
 //	public int[] getSequenceForEndNode(GSTreeNode endNode);
 
-	T[] getSequence(int index);
+    T[] getSequence(int index);
 
-	Iterator<T> getSequenceIterator(int index);
+    Iterator<T> getSequenceIterator(int index);
 
-	T[][] getMappedSequences();
+    T[][] getMappedSequences();
 
-	public void removeFromSequences(T element);
-	
-	public void reset();
-	
-	public boolean isIndexed();
+    public void removeFromSequences(T element);
 
-	public void generateSequenceIndex();
+    public void reset();
 
-	public int getSequenceLength(int index);
-	
+    public boolean isIndexed();
+
+    public void generateSequenceIndex();
+
+    public int getSequenceLength(int index);
+
 }

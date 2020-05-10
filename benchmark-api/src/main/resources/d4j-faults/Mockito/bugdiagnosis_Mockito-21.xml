@@ -1,44 +1,45 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-21">
-			<tests>
-				<testfile
-					path="org/mockito/internal/creation/instance/ConstructorInstantiatorTest">
-					<exception>org.mockito.internal.creation.instance.InstantationException:Unable
-						to create mock instance of 'SomeInnerClass'.</exception>
-				</testfile>
-				<spectra>
-					<number_tests>17</number_tests>
-					<failed>1</failed>
-					<passed>16</passed>
-					<nodes>4349</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/mockito/internal/creation/instance/ConstructorInstantiator.java">
-					<change>17</change>
-					<change>20</change>
-					<change>25</change>
-					<delete>24</delete>
-					<insert numberlines="5">25,26</insert>
-					<insert numberlines="1">29</insert>
-					<insert numberlines="11"></insert>
-					<bugtypes>
-						<id id="2.1" lines="17,20,24,25">
-							<description>Missing parameters.</description>
-						</id>
-						<id id="1.3" lines="28">
-							<description>Missing exception handling.</description>
-						</id>
-						<id id="1.4" lines="35">
-							<description>Missing function for checking if parameters match.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>5</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-21">
+            <tests>
+                <testfile
+                        path="org/mockito/internal/creation/instance/ConstructorInstantiatorTest">
+                    <exception>org.mockito.internal.creation.instance.InstantationException:Unable
+                        to create mock instance of 'SomeInnerClass'.
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>17</number_tests>
+                    <failed>1</failed>
+                    <passed>16</passed>
+                    <nodes>4349</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/mockito/internal/creation/instance/ConstructorInstantiator.java">
+                    <change>17</change>
+                    <change>20</change>
+                    <change>25</change>
+                    <delete>24</delete>
+                    <insert numberlines="5">25,26</insert>
+                    <insert numberlines="1">29</insert>
+                    <insert numberlines="11"></insert>
+                    <bugtypes>
+                        <id id="2.1" lines="17,20,24,25">
+                            <description>Missing parameters.</description>
+                        </id>
+                        <id id="1.3" lines="28">
+                            <description>Missing exception handling.</description>
+                        </id>
+                        <id id="1.4" lines="35">
+                            <description>Missing function for checking if parameters match.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>5</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

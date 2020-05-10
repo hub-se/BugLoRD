@@ -25,8 +25,8 @@ import org.joda.time.format.FormatUtils;
 /**
  * AbstractDuration provides the common behaviour for duration classes.
  * <p>
- * This class should generally not be used directly by API users. The 
- * {@link ReadableDuration} interface should be used when different 
+ * This class should generally not be used directly by API users. The
+ * {@link ReadableDuration} interface should be used when different
  * kinds of durations are to be referenced.
  * <p>
  * AbstractDuration subclasses may be mutable and not thread-safe.
@@ -45,9 +45,10 @@ public abstract class AbstractDuration implements ReadableDuration {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Get this duration as an immutable <code>Duration</code> object.
-     * 
+     *
      * @return a Duration created using the millisecond duration from this instance
      */
     public Duration toDuration() {
@@ -55,6 +56,7 @@ public abstract class AbstractDuration implements ReadableDuration {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Converts this duration to a Period instance using the standard period type
      * and the ISO chronology.
@@ -72,8 +74,8 @@ public abstract class AbstractDuration implements ReadableDuration {
      * converted to ((365 + 60 + 5) * 24) hours by this constructor.
      * <p>
      * For more control over the conversion process, you must pair the duration with
-     * an instant, see {@link Period#Period(ReadableInstant,ReadableDuration)}.
-     * 
+     * an instant, see {@link Period#Period(ReadableInstant, ReadableDuration)}.
+     *
      * @return a Period created using the millisecond duration from this instance
      */
     public Period toPeriod() {
@@ -81,18 +83,19 @@ public abstract class AbstractDuration implements ReadableDuration {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Compares this duration with the specified duration based on length.
      *
-     * @param other  a duration to check against
+     * @param other a duration to check against
      * @return negative value if this is less, 0 if equal, or positive value if greater
      * @throws NullPointerException if the object is null
-     * @throws ClassCastException if the given object is not supported
+     * @throws ClassCastException   if the given object is not supported
      */
     public int compareTo(ReadableDuration other) {
         long thisMillis = this.getMillis();
         long otherMillis = other.getMillis();
-        
+
         // cannot do (thisMillis - otherMillis) as it can overflow
         if (thisMillis < otherMillis) {
             return -1;
@@ -106,7 +109,7 @@ public abstract class AbstractDuration implements ReadableDuration {
     /**
      * Is the length of this duration equal to the duration passed in.
      *
-     * @param duration  another duration to compare to, null means zero milliseconds
+     * @param duration another duration to compare to, null means zero milliseconds
      * @return true if this duration is equal to than the duration passed in
      */
     public boolean isEqual(ReadableDuration duration) {
@@ -119,7 +122,7 @@ public abstract class AbstractDuration implements ReadableDuration {
     /**
      * Is the length of this duration longer than the duration passed in.
      *
-     * @param duration  another duration to compare to, null means zero milliseconds
+     * @param duration another duration to compare to, null means zero milliseconds
      * @return true if this duration is equal to than the duration passed in
      */
     public boolean isLongerThan(ReadableDuration duration) {
@@ -132,7 +135,7 @@ public abstract class AbstractDuration implements ReadableDuration {
     /**
      * Is the length of this duration shorter than the duration passed in.
      *
-     * @param duration  another duration to compare to, null means zero milliseconds
+     * @param duration another duration to compare to, null means zero milliseconds
      * @return true if this duration is equal to than the duration passed in
      */
     public boolean isShorterThan(ReadableDuration duration) {
@@ -143,11 +146,12 @@ public abstract class AbstractDuration implements ReadableDuration {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Compares this object with the specified object for equality based
      * on the millisecond length. All ReadableDuration instances are accepted.
      *
-     * @param duration  a readable duration to check against
+     * @param duration a readable duration to check against
      * @return true if the length of the duration is equal
      */
     public boolean equals(Object duration) {
@@ -162,7 +166,7 @@ public abstract class AbstractDuration implements ReadableDuration {
     }
 
     /**
-     * Gets a hash code for the duration that is compatible with the 
+     * Gets a hash code for the duration that is compatible with the
      * equals method.
      *
      * @return a hash code
@@ -173,6 +177,7 @@ public abstract class AbstractDuration implements ReadableDuration {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the value as a String in the ISO8601 duration format including
      * only seconds and milliseconds.

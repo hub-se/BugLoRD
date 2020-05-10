@@ -21,10 +21,9 @@ import junit.framework.TestSuite;
 
 /**
  * Entry point for all tests in this package.
- * 
- * @version $Revision$ $Date$
- * 
+ *
  * @author Stephen Colebourne
+ * @version $Revision$ $Date$
  */
 public class TestAll extends TestCase {
 
@@ -34,7 +33,7 @@ public class TestAll extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        
+
         suite.addTest(TestDateTimeFormatter.suite());
         suite.addTest(TestDateTimeFormat.suite());
         suite.addTest(TestDateTimeFormatStyle.suite());
@@ -42,7 +41,7 @@ public class TestAll extends TestCase {
         suite.addTest(TestISODateTimeFormat_Fields.suite());
         suite.addTest(TestISODateTimeFormatParsing.suite());
         suite.addTest(TestDateTimeFormatterBuilder.suite());
-        
+
         suite.addTest(TestPeriodFormatter.suite());
         suite.addTest(TestPeriodFormat.suite());
         suite.addTest(TestISOPeriodFormat.suite());
@@ -57,7 +56,7 @@ public class TestAll extends TestCase {
 
     public static void main(String args[]) {
         String[] testCaseName = {
-            TestAll.class.getName()
+                TestAll.class.getName()
         };
         junit.textui.TestRunner.main(testCaseName);
     }

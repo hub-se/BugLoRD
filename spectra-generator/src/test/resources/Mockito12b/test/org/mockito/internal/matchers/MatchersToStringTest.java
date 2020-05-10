@@ -4,12 +4,12 @@
  */
 package org.mockito.internal.matchers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.mockitoutil.TestBase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class MatchersToStringTest extends TestBase {

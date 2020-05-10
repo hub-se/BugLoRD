@@ -1,42 +1,43 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-25">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/TypeInferenceTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;{[foo:(number|undefined)]}&gt;
-						but was:&lt;{[]}&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>2896</number_tests>
-					<failed>1</failed>
-					<passed>2895</passed>
-					<nodes>46017</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/TypeInference.java">
-					<delete>1038</delete>
-					<delete>1059-1061</delete>
-					<insert numberlines="1">1036-1037</insert>
-					<insert numberlines="1">1055</insert>
-					<bugtypes>
-						<id id="3.1" lines="1035">
-							<description>Missing initialization.</description>
-						</id>
-						<id id="3.1" lines="1038">
-							<description>Unnecessary initialization.</description>
-						</id>
-						<id id="3.1" lines="1054">
-							<description>Missing initialization.</description>
-						</id>
-						<id id="3.1" lines="1059-1061">
-							<description>Incorrect data usage.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-25">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/TypeInferenceTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;{[foo:(number|undefined)]}&gt;
+                        but was:&lt;{[]}&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>2896</number_tests>
+                    <failed>1</failed>
+                    <passed>2895</passed>
+                    <nodes>46017</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/TypeInference.java">
+                    <delete>1038</delete>
+                    <delete>1059-1061</delete>
+                    <insert numberlines="1">1036-1037</insert>
+                    <insert numberlines="1">1055</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="1035">
+                            <description>Missing initialization.</description>
+                        </id>
+                        <id id="3.1" lines="1038">
+                            <description>Unnecessary initialization.</description>
+                        </id>
+                        <id id="3.1" lines="1054">
+                            <description>Missing initialization.</description>
+                        </id>
+                        <id id="3.1" lines="1059-1061">
+                            <description>Incorrect data usage.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

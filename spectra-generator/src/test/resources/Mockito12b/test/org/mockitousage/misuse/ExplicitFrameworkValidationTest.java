@@ -4,9 +4,6 @@
  */
 package org.mockitousage.misuse;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,34 +13,41 @@ import org.mockito.exceptions.misusing.UnfinishedVerificationException;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 public class ExplicitFrameworkValidationTest extends TestBase {
 
-    @Mock IMethods mock;
-    
+    @Mock
+    IMethods mock;
+
     @Test
     public void shouldValidateExplicitly() {
         verify(mock);
         try {
             Mockito.validateMockitoUsage();
             fail();
-        } catch (UnfinishedVerificationException e) {}
+        } catch (UnfinishedVerificationException e) {
+        }
     }
-    
+
     @Test
     public void shouldDetectUnfinishedStubbing() {
         when(mock.simpleMethod());
         try {
             Mockito.validateMockitoUsage();
             fail();
-        } catch (UnfinishedStubbingException e) {}
+        } catch (UnfinishedStubbingException e) {
+        }
     }
-    
+
     @Test
     public void shouldDetectMisplacedArgumentMatcher() {
         anyObject();
         try {
             Mockito.validateMockitoUsage();
             fail();
-        } catch (InvalidUseOfMatchersException e) {}
+        } catch (InvalidUseOfMatchersException e) {
+        }
     }
 }

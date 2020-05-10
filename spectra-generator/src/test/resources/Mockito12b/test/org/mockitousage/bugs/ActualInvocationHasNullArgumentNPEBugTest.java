@@ -4,14 +4,14 @@
  */
 package org.mockitousage.bugs;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 public class ActualInvocationHasNullArgumentNPEBugTest extends TestBase {
-    
+
     public interface Fun {
         String doFun(String something);
     }
@@ -29,7 +29,7 @@ public class ActualInvocationHasNullArgumentNPEBugTest extends TestBase {
         try {
             verify(mockFun).doFun("hello");
             fail();
-        } catch(AssertionError r) {
+        } catch (AssertionError r) {
             //it's ok, we just want to reproduce the bug
         }
     }

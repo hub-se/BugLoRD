@@ -15,14 +15,13 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * DStar, D* (Wong) fault localizer $\frac{\EF^x}{\EP+\NF}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class DStar<T> extends AbstractFaultLocalizer<T> {
 
-	private final double star;
-	
+    private final double star;
+
     /**
      * Create fault localizer
      */
@@ -31,10 +30,10 @@ public class DStar<T> extends AbstractFaultLocalizer<T> {
     }
 
     public DStar(double star) {
-		this.star = star;
-	}
+        this.star = star;
+    }
 
-	@Override
+    @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
         return Math.pow(node.getEF(strategy), star) / (node.getEP(strategy) + node.getNF(strategy));
     }

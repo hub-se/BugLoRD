@@ -4,16 +4,16 @@
  */
 package org.mockito.internal.verification;
 
-import java.util.List;
-
 import org.mockito.exceptions.Reporter;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockito.internal.invocation.Invocation;
-import org.mockito.internal.invocation.InvocationMatcher;
 import org.mockito.internal.invocation.InvocationMarker;
+import org.mockito.internal.invocation.InvocationMatcher;
 import org.mockito.internal.invocation.InvocationsFinder;
 import org.mockito.internal.verification.api.VerificationData;
 import org.mockito.verification.VerificationMode;
+
+import java.util.List;
 
 public class AtMost implements VerificationMode {
 
@@ -30,14 +30,14 @@ public class AtMost implements VerificationMode {
     public void verify(VerificationData data) {
         List<Invocation> invocations = data.getAllInvocations();
         InvocationMatcher wanted = data.getWanted();
-        
+
         InvocationsFinder finder = new InvocationsFinder();
         List<Invocation> found = finder.findInvocations(invocations, wanted);
         int foundSize = found.size();
         if (foundSize > maxNumberOfInvocations) {
             new Reporter().wantedAtMostX(maxNumberOfInvocations, foundSize);
         }
-        
+
         invocationMarker.markVerified(found, wanted);
     }
 }

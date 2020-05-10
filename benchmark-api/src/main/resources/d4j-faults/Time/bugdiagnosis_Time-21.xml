@@ -1,51 +1,52 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-21">
-			<tests>
-				<testfile path="org/joda/time/TestDateTimeZone">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;[Mitteleuropäische
-						Zeit]&gt; but was:&lt;[+01:00]&gt;:-
-						org.joda.time.TestDateTimeZone::testGetShortName_berlin:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;[MEZ]&gt; but
-						was:&lt;[+01:00]&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>3848</number_tests>
-					<failed>2</failed>
-					<passed>3846</passed>
-					<nodes>13235</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/tz/DefaultNameProvider.java">
-					<change>72</change>
-					<change>76,77</change>
-					<change>79</change>
-					<delete>81-83</delete>
-					<insert numberlines="8">65-66</insert>
-					<insert numberlines="3">71-72</insert>
-					<insert numberlines="1,1">71-72,84</insert>
-					<bugtypes>
-						<id id="1.1" lines="65">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.2" lines="70">
-							<description>Missing break.</description>
-						</id>
-						<id id="1.1" lines="72">
-							<description>Missing check for null value..</description>
-						</id>
-						<id id="1.2" lines="76,77">
-							<description>Incorrect equality check.</description>
-						</id>
-						<id id="1.2" lines="79-81">
-							<description>Incorrect case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>5</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-21">
+            <tests>
+                <testfile path="org/joda/time/TestDateTimeZone">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;[Mitteleuropäische
+                        Zeit]&gt; but was:&lt;[+01:00]&gt;:-
+                        org.joda.time.TestDateTimeZone::testGetShortName_berlin:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;[MEZ]&gt; but
+                        was:&lt;[+01:00]&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>3848</number_tests>
+                    <failed>2</failed>
+                    <passed>3846</passed>
+                    <nodes>13235</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/tz/DefaultNameProvider.java">
+                    <change>72</change>
+                    <change>76,77</change>
+                    <change>79</change>
+                    <delete>81-83</delete>
+                    <insert numberlines="8">65-66</insert>
+                    <insert numberlines="3">71-72</insert>
+                    <insert numberlines="1,1">71-72,84</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="65">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.2" lines="70">
+                            <description>Missing break.</description>
+                        </id>
+                        <id id="1.1" lines="72">
+                            <description>Missing check for null value..</description>
+                        </id>
+                        <id id="1.2" lines="76,77">
+                            <description>Incorrect equality check.</description>
+                        </id>
+                        <id id="1.2" lines="79-81">
+                            <description>Incorrect case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>5</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

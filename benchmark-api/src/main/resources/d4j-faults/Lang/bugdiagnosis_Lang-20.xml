@@ -1,35 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-20">
-			<tests>
-				<testfile path="org/apache/commons/lang3/StringUtilsTest">
-					<exception>java.lang.NullPointerException:-
-						org.apache.commons.lang3.StringUtilsTest::testJoin_Objectarray:--&gt;
-						java.lang.NullPointerException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>585</number_tests>
-					<failed>2</failed>
-					<passed>583</passed>
-					<nodes>10396</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/StringUtils.java">
-					<change>3298</change>
-					<change>3383</change>
-					<bugtypes>
-						<id id="3.1" lines="3298">
-							<description>Incorrect initialization.</description>
-						</id>
-						<id id="3.1" lines="3383">
-							<description>Incorrect initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-20">
+            <tests>
+                <testfile path="org/apache/commons/lang3/StringUtilsTest">
+                    <exception>java.lang.NullPointerException:-
+                        org.apache.commons.lang3.StringUtilsTest::testJoin_Objectarray:--&gt;
+                        java.lang.NullPointerException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>585</number_tests>
+                    <failed>2</failed>
+                    <passed>583</passed>
+                    <nodes>10396</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/StringUtils.java">
+                    <change>3298</change>
+                    <change>3383</change>
+                    <bugtypes>
+                        <id id="3.1" lines="3298">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                        <id id="3.1" lines="3383">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

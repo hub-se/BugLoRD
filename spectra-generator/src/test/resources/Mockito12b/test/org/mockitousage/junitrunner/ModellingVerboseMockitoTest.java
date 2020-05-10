@@ -4,8 +4,6 @@
  */
 package org.mockitousage.junitrunner;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -15,18 +13,21 @@ import org.mockito.runners.VerboseMockitoJUnitRunner;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Mockito.*;
+
 //@RunWith(ConsoleSpammingMockitoJUnitRunner.class)
 @RunWith(VerboseMockitoJUnitRunner.class)
 @Ignore
 public class ModellingVerboseMockitoTest extends TestBase {
-    
-    @Mock private IMethods mock;     
-    
+
+    @Mock
+    private IMethods mock;
+
     @Before
     public void cleanStackTraces() {
         super.makeStackTracesClean();
     }
-    
+
     @Test
     public void shouldLogUnusedStubbingWarningWhenTestFails() throws Exception {
         when(mock.simpleMethod(1)).thenReturn("foo");
@@ -39,7 +40,7 @@ public class ModellingVerboseMockitoTest extends TestBase {
         assertEquals("foo", ret);
         //TODO: should show message from actual failure not at the bottom but at least below 'the actual failure is ...'
     }
-       
+
 
     @Test
     public void shouldNotLogAnythingWhenNoWarnings() throws Exception {

@@ -1,50 +1,50 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-92">
-			<tests>
-				<testfile path="org/apache/commons/math/util/MathUtilsTest">
-					<exception>junit.framework.AssertionFailedError:48,22
-						expected:&lt;27385657281648&gt; but was:&lt;27385657281647&gt;
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>547</number_tests>
-					<failed>1</failed>
-					<passed>546</passed>
-					<nodes>13454</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/util/MathUtils.java">
-					<change>236</change>
-					<delete>184-188</delete>
-					<insert numberlines="18">184-208</insert>
-					<insert numberlines="24">234-236</insert>
-					<insert numberlines="6">272-289</insert>
-					<bugtypes>
-						<id id="1.2" lines="184-188">
-							<description>Unnecessary case handling.</description>
-						</id>
-						<id id="1.1" lines="189,195,196,204,207">
-							<description>Missing cases for binomial coefficient.</description>
-						</id>
-						<id id="1.1" lines="233">
-							<description>Missing cases for binomial coefficient.</description>
-						</id>
-						<id id="2.2" lines="234,236">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="1.1" lines="276">
-							<description>Missing case for n greater smaller 67.</description>
-						</id>
-						<id id="1.1" lines="281">
-							<description>Missing case for n smaller than 1030.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>12</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-92">
+            <tests>
+                <testfile path="org/apache/commons/math/util/MathUtilsTest">
+                    <exception>junit.framework.AssertionFailedError:48,22
+                        expected:&lt;27385657281648&gt; but was:&lt;27385657281647&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>547</number_tests>
+                    <failed>1</failed>
+                    <passed>546</passed>
+                    <nodes>13454</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/util/MathUtils.java">
+                    <change>236</change>
+                    <delete>184-188</delete>
+                    <insert numberlines="18">184-208</insert>
+                    <insert numberlines="24">234-236</insert>
+                    <insert numberlines="6">272-289</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="184-188">
+                            <description>Unnecessary case handling.</description>
+                        </id>
+                        <id id="1.1" lines="189,195,196,204,207">
+                            <description>Missing cases for binomial coefficient.</description>
+                        </id>
+                        <id id="1.1" lines="233">
+                            <description>Missing cases for binomial coefficient.</description>
+                        </id>
+                        <id id="2.2" lines="234,236">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="1.1" lines="276">
+                            <description>Missing case for n greater smaller 67.</description>
+                        </id>
+                        <id id="1.1" lines="281">
+                            <description>Missing case for n smaller than 1030.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>12</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

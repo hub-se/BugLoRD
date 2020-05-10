@@ -1,36 +1,37 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-46">
-			<tests>
-				<testfile path="org/apache/commons/math/complex/ComplexTest">
-					<exception>junit.framework.AssertionFailedError:-
-						org.apache.commons.math.complex.ComplexTest::testDivideZero:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;(Infinity,
-						Infinity)&gt; but was:&lt;(NaN, NaN)&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>199</number_tests>
-					<failed>2</failed>
-					<passed>197</passed>
-					<nodes>29960</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/complex/Complex.java">
-					<change>260</change>
-					<change>297</change>
-					<bugtypes>
-						<id id="2.2" lines="260">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="297">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-46">
+            <tests>
+                <testfile path="org/apache/commons/math/complex/ComplexTest">
+                    <exception>junit.framework.AssertionFailedError:-
+                        org.apache.commons.math.complex.ComplexTest::testDivideZero:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;(Infinity,
+                        Infinity)&gt; but was:&lt;(NaN, NaN)&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>199</number_tests>
+                    <failed>2</failed>
+                    <passed>197</passed>
+                    <nodes>29960</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/complex/Complex.java">
+                    <change>260</change>
+                    <change>297</change>
+                    <bugtypes>
+                        <id id="2.2" lines="260">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="297">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

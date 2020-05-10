@@ -9,53 +9,48 @@
 
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-
-import se.de.hu_berlin.informatik.aspectj.frontend.IBugsFileWithFaultLocations;
 import se.de.hu_berlin.informatik.aspectj.frontend.IBugsBug;
-import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs.IBugsFaultLocationCollection;
+import se.de.hu_berlin.informatik.aspectj.frontend.IBugsFileWithFaultLocations;
 import se.de.hu_berlin.informatik.benchmark.Bug;
+import se.de.hu_berlin.informatik.benchmark.FaultInformation.Suspiciousness;
 import se.de.hu_berlin.informatik.benchmark.FileWithFaultLocations;
 import se.de.hu_berlin.informatik.benchmark.SimpleLineWithFaultInformation;
-import se.de.hu_berlin.informatik.benchmark.FaultInformation.Suspiciousness;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Used to store the real fault locations of iBugs.
  */
 public class IBugsFaultLocationCollection {
 
-    /** Holds the logger for this class */
+    /**
+     * Holds the logger for this class
+     */
     private final Logger logger = Logger.getLogger(IBugsFaultLocationCollection.class.getName());
 
-    /** Holds all bugs with their locations */
+    /**
+     * Holds all bugs with their locations
+     */
     private final Map<Integer, Bug> bugs = new TreeMap<>();
 
     /**
      * Create new real fault locations object
      *
-     * @param file
-     *            xml file storing the real faults
-     * @throws JDOMException
-     *             in case we cannot parse the fault file
-     * @throws IOException
-     *             in case we cannot parse the fault file
+     * @param file xml file storing the real faults
+     * @throws JDOMException in case we cannot parse the fault file
+     * @throws IOException   in case we cannot parse the fault file
      */
     public IBugsFaultLocationCollection(final String file) throws JDOMException, IOException {
         this(new java.io.File(file));
@@ -64,12 +59,9 @@ public class IBugsFaultLocationCollection {
     /**
      * Create new real fault locations object
      *
-     * @param file
-     *            xml file storing the real faults
-     * @throws JDOMException
-     *             in case we cannot parse the fault file
-     * @throws IOException
-     *             in case we cannot parse the fault file
+     * @param file xml file storing the real faults
+     * @throws JDOMException in case we cannot parse the fault file
+     * @throws IOException   in case we cannot parse the fault file
      */
     public IBugsFaultLocationCollection(final java.io.File file) throws JDOMException, IOException {
         this.parse(file);
@@ -78,8 +70,7 @@ public class IBugsFaultLocationCollection {
     /**
      * Parses a real fault locations file.
      *
-     * @param faultLocationFile
-     *            the file to parse
+     * @param faultLocationFile the file to parse
      * @throws IOException
      * @throws JDOMException
      */
@@ -108,8 +99,8 @@ public class IBugsFaultLocationCollection {
                 final String filename = file.getAttributeValue("name");
 
                 // ensure we have java extension and no test sources
-                if (filename == null 
-                		|| !FileUtils.getFileExtension(filename).equals("java")
+                if (filename == null
+                        || !FileUtils.getFileExtension(filename).equals("java")
                         || filename.toLowerCase(Locale.getDefault()).contains("test")) {
                     continue;
                 }
@@ -136,13 +127,13 @@ public class IBugsFaultLocationCollection {
                     Suspiciousness suspiciousness = null;
                     try {
                         suspiciousness = Suspiciousness.valueOf(
-                        		line.getAttributeValue("suspiciousness").trim().toUpperCase());
+                                line.getAttributeValue("suspiciousness").trim().toUpperCase());
                     } catch (final Exception e) { // NOCS
                         this.logger.log(
                                 Level.INFO,
                                 String.format("Could not parse suspiciousness '%s' while parsing %s",
                                         line.getAttributeValue("suspiciousness"), faultLocationFile.getAbsolutePath()),
-                                        e);
+                                e);
                     } finally {
                         if (suspiciousness == null) {
                             suspiciousness = Suspiciousness.UNKNOWN;
@@ -160,8 +151,7 @@ public class IBugsFaultLocationCollection {
     /**
      * Check whether a bug id is contained in this set.
      *
-     * @param bugId
-     *            the bug id to check
+     * @param bugId the bug id to check
      * @return true if fault info is contained, false otherwise
      */
     public boolean hasBug(final int bugId) {
@@ -171,8 +161,7 @@ public class IBugsFaultLocationCollection {
     /**
      * Returns a certain bug
      *
-     * @param bugId
-     *            the bug to get
+     * @param bugId the bug to get
      * @return bug fault info object
      */
     public Bug getBug(final int bugId) {
@@ -182,13 +171,11 @@ public class IBugsFaultLocationCollection {
     /**
      * Returns all faulty nodes of a spectra for a given bug id.
      *
-     * @param bugId
-     *            the bug id to get the faulty lines of
-     * @param spectra
-     *            to fetch the nodes from
+     * @param bugId   the bug id to get the faulty lines of
+     * @param spectra to fetch the nodes from
      * @return list of faulty nodes
      */
-    public Set<INode<SourceCodeBlock>> getFaultyNodesFor(final int bugId, final ISpectra<SourceCodeBlock,?> spectra) {
+    public Set<INode<SourceCodeBlock>> getFaultyNodesFor(final int bugId, final ISpectra<SourceCodeBlock, ?> spectra) {
         final Set<INode<SourceCodeBlock>> locations = new HashSet<>();
         if (!this.hasBug(bugId)) {
             return locations;
@@ -197,7 +184,7 @@ public class IBugsFaultLocationCollection {
         // get node for each churned line
         for (final FileWithFaultLocations file : bug.getFaultyFiles()) {
             for (final int lineNo : file.getFaultyLineNumbers()) {
-            	//TODO: no package name and method name given here...
+                //TODO: no package name and method name given here...
                 final SourceCodeBlock nodeId = new SourceCodeBlock("_", file.getFileName(), "_", lineNo, NodeType.NORMAL);
                 if (spectra.hasNode(nodeId)) {
                     locations.add(spectra.getOrCreateNode(nodeId));

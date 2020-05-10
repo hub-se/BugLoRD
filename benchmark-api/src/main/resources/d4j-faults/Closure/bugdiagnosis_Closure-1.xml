@@ -1,43 +1,44 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-1">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/RemoveUnusedVarsTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.CommandLineRunnerTest::testForwardDeclareDroppedTypes:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.CommandLineRunnerTest::testDebugFlag1:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.IntegrationTest::testIssue787:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.RemoveUnusedVarsTest::testRemoveGlobal1:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.RemoveUnusedVarsTest::testRemoveGlobal2:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.RemoveUnusedVarsTest::testRemoveGlobal3:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.RemoveUnusedVarsTest::testIssue168b:--&gt;
-						junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>374</number_tests>
-					<failed>8</failed>
-					<passed>366</passed>
-					<nodes>47293</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/RemoveUnusedVars.java">
-					<insert numberlines="3">370-380</insert>
-					<bugtypes>
-						<id id="1.1" lines="378">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-1">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/RemoveUnusedVarsTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.CommandLineRunnerTest::testForwardDeclareDroppedTypes:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.CommandLineRunnerTest::testDebugFlag1:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.IntegrationTest::testIssue787:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.RemoveUnusedVarsTest::testRemoveGlobal1:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.RemoveUnusedVarsTest::testRemoveGlobal2:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.RemoveUnusedVarsTest::testRemoveGlobal3:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.RemoveUnusedVarsTest::testIssue168b:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>374</number_tests>
+                    <failed>8</failed>
+                    <passed>366</passed>
+                    <nodes>47293</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/RemoveUnusedVars.java">
+                    <insert numberlines="3">370-380</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="378">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

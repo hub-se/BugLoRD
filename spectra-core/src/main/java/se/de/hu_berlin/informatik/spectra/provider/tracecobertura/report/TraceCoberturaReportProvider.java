@@ -6,7 +6,6 @@
 
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.report;
 
-import java.nio.file.Path;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
@@ -17,52 +16,54 @@ import se.de.hu_berlin.informatik.spectra.provider.AbstractSpectraProvider;
 import se.de.hu_berlin.informatik.spectra.provider.loader.ICoverageDataLoader;
 import se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report.TraceCoberturaReportLoader;
 
+import java.nio.file.Path;
+
 /**
  * Loads Cobertura reports to {@link HitSpectra} objects where each covered line
  * is represented by one node and each file represents one trace in the
  * resulting spectra.
  */
 public class TraceCoberturaReportProvider<K extends ITrace<SourceCodeBlock>>
-		extends AbstractSpectraProvider<SourceCodeBlock, K, TraceCoberturaReportWrapper> {
+        extends AbstractSpectraProvider<SourceCodeBlock, K, TraceCoberturaReportWrapper> {
 
-	private final TraceCoberturaReportLoader<SourceCodeBlock, K> loader;
+    private final TraceCoberturaReportLoader<K> loader;
 
-	public TraceCoberturaReportProvider(final ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
-		super(lineSpectra, fullSpectra);
+    public TraceCoberturaReportProvider(final ISpectra<SourceCodeBlock, K> lineSpectra, boolean fullSpectra, Path tempOutputDir) {
+        super(lineSpectra, fullSpectra);
 
-		loader = new TraceCoberturaReportLoader<SourceCodeBlock, K>(tempOutputDir) {
+        loader = new TraceCoberturaReportLoader<K>(tempOutputDir) {
 
-			@Override
-			public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,
-					int lineNumber, NodeType nodeType) {
-				return new SourceCodeBlock(packageName, sourceFilePath, methodNameAndSig, lineNumber, nodeType);
-			}
+            @Override
+            public SourceCodeBlock getIdentifier(String packageName, String sourceFilePath, String methodNameAndSig,
+                                                 int lineNumber, NodeType nodeType) {
+                return new SourceCodeBlock(packageName, sourceFilePath, methodNameAndSig, lineNumber, nodeType);
+            }
 
-			@Override
-			public int getNodeIndex(String sourceFilePath, int lineNumber, NodeType nodeType) {
-				SourceCodeBlock identifier = new SourceCodeBlock(null, sourceFilePath, null, lineNumber, nodeType);
-				INode<SourceCodeBlock> node = lineSpectra.getNode(identifier);
-				if (node == null) {
-					return -1;
-				} else {
-					return node.getIndex();
-				}
-			}
+            @Override
+            public int getNodeIndex(String sourceFilePath, int lineNumber, NodeType nodeType) {
+                SourceCodeBlock identifier = new SourceCodeBlock(null, sourceFilePath, null, lineNumber, nodeType);
+                INode<SourceCodeBlock> node = lineSpectra.getNode(identifier);
+                if (node == null) {
+                    return -1;
+                } else {
+                    return node.getIndex();
+                }
+            }
 
-		};
-	}
+        };
+    }
 
-	@Override
-	protected ICoverageDataLoader<SourceCodeBlock, K, TraceCoberturaReportWrapper> getLoader() {
-		return loader;
-	}
-	
-	@Override
-	public ISpectra<SourceCodeBlock, ? super K> loadSpectra() throws IllegalStateException {
-		ISpectra<SourceCodeBlock, ? super K> spectra = super.loadSpectra();
-		loader.addExecutionTracesToSpectra(spectra);
-		
-		return spectra;
-	}
+    @Override
+    protected ICoverageDataLoader<SourceCodeBlock, K, TraceCoberturaReportWrapper> getLoader() {
+        return loader;
+    }
+
+    @Override
+    public ISpectra<SourceCodeBlock, ? super K> loadSpectra() throws IllegalStateException {
+        ISpectra<SourceCodeBlock, ? super K> spectra = super.loadSpectra();
+        loader.addExecutionTracesToSpectra(spectra);
+
+        return spectra;
+    }
 
 }

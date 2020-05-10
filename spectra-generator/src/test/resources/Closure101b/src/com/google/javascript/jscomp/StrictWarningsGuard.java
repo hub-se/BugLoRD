@@ -18,18 +18,16 @@ package com.google.javascript.jscomp;
 
 /**
  * All warnings should be reported as errors.
- *
-*
  */
 public class StrictWarningsGuard extends WarningsGuard {
 
-  @Override
-  public CheckLevel level(JSError error) {
-    return error.level.isOn() ? CheckLevel.ERROR : null;
-  }
+    @Override
+    public CheckLevel level(JSError error) {
+        return error.level.isOn() ? CheckLevel.ERROR : null;
+    }
 
-  @Override
-  protected int getPriority() {
-    return 100; // applied last
-  }
+    @Override
+    protected int getPriority() {
+        return 100; // applied last
+    }
 }

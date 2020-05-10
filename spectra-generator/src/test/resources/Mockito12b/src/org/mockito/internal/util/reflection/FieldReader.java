@@ -4,9 +4,9 @@
  */
 package org.mockito.internal.util.reflection;
 
-import java.lang.reflect.Field;
-
 import org.mockito.exceptions.base.MockitoException;
+
+import java.lang.reflect.Field;
 
 public class FieldReader {
 

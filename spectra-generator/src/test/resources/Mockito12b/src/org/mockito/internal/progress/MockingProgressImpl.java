@@ -16,10 +16,10 @@ import org.mockito.verification.VerificationMode;
 
 @SuppressWarnings("unchecked")
 public class MockingProgressImpl implements MockingProgress {
-    
+
     private final Reporter reporter = new Reporter();
     private final ArgumentMatcherStorage argumentMatcherStorage = new ArgumentMatcherStorageImpl();
-    
+
     IOngoingStubbing iOngoingStubbing;
     private Localized<VerificationMode> verificationMode;
     private Location stubbingInProgress = null;
@@ -34,7 +34,7 @@ public class MockingProgressImpl implements MockingProgress {
         iOngoingStubbing = null;
         return temp;
     }
-    
+
     public void verificationStarted(VerificationMode verify) {
         validateState();
         resetOngoingStubbing();
@@ -52,7 +52,7 @@ public class MockingProgressImpl implements MockingProgress {
         if (verificationMode == null) {
             return null;
         }
-        
+
         VerificationMode temp = verificationMode.getObject();
         verificationMode = null;
         return temp;
@@ -67,30 +67,30 @@ public class MockingProgressImpl implements MockingProgress {
         //State is cool when GlobalConfiguration is already loaded
         //this cannot really be tested functionally because I cannot dynamically mess up org.mockito.configuration.MockitoConfiguration class 
         GlobalConfiguration.validate();
-        
+
         if (verificationMode != null) {
             Location location = verificationMode.getLocation();
             verificationMode = null;
             reporter.unfinishedVerificationException(location);
         }
-        
+
         if (stubbingInProgress != null) {
             Location temp = stubbingInProgress;
             stubbingInProgress = null;
             reporter.unfinishedStubbing(temp);
         }
-      
+
         getArgumentMatcherStorage().validateState();
     }
 
     public void stubbingCompleted(Invocation invocation) {
         stubbingInProgress = null;
     }
-    
+
     public String toString() {
-        return  "iOngoingStubbing: " + iOngoingStubbing + 
-        ", verificationMode: " + verificationMode +
-        ", stubbingInProgress: " + stubbingInProgress;
+        return "iOngoingStubbing: " + iOngoingStubbing +
+                ", verificationMode: " + verificationMode +
+                ", stubbingInProgress: " + stubbingInProgress;
     }
 
     public void reset() {

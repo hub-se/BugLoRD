@@ -1,41 +1,41 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-1">
-			<tests>
-				<testfile path="org/joda/time/TestPartial_Constructors">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>4011</number_tests>
-					<failed>1</failed>
-					<passed>4010</passed>
-					<nodes>13626</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/Partial.java">
-					<change>221</change>
-					<insert numberlines="9">217</insert>
-					<bugtypes>
-						<id id="1.1" lines="216">
-							<description>Missing check for support.</description>
-						</id>
-						<id id="1.2" lines="221">
-							<description>Incorrect condition for equality.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="org/joda/time/field/UnsupportedDurationField.java">
-					<delete>227-229</delete>
-					<bugtypes>
-						<id id="1.2" lines="227-229">
-							<description>Unnecessary case for support.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-1">
+            <tests>
+                <testfile path="org/joda/time/TestPartial_Constructors">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>4011</number_tests>
+                    <failed>1</failed>
+                    <passed>4010</passed>
+                    <nodes>13626</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/Partial.java">
+                    <change>221</change>
+                    <insert numberlines="9">217</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="216">
+                            <description>Missing check for support.</description>
+                        </id>
+                        <id id="1.2" lines="221">
+                            <description>Incorrect condition for equality.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="org/joda/time/field/UnsupportedDurationField.java">
+                    <delete>227-229</delete>
+                    <bugtypes>
+                        <id id="1.2" lines="227-229">
+                            <description>Unnecessary case for support.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

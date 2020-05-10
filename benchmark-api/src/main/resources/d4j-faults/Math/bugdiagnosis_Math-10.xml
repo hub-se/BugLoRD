@@ -1,32 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-10">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/analysis/differentiation/DerivativeStructureTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;0.0&gt;
-						but was:&lt;NaN&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>368</number_tests>
-					<failed>1</failed>
-					<passed>367</passed>
-					<nodes>39229</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/analysis/differentiation/DSCompiler.java">
-					<insert numberlines="1">1417-1420</insert>
-					<bugtypes>
-						<id id="1.5" lines="1418">
-							<description>Incorrect computation.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-10">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/analysis/differentiation/DerivativeStructureTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;0.0&gt;
+                        but was:&lt;NaN&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>368</number_tests>
+                    <failed>1</failed>
+                    <passed>367</passed>
+                    <nodes>39229</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/analysis/differentiation/DSCompiler.java">
+                    <insert numberlines="1">1417-1420</insert>
+                    <bugtypes>
+                        <id id="1.5" lines="1418">
+                            <description>Incorrect computation.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

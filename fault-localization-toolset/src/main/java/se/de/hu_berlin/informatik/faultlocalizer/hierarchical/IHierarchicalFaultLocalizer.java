@@ -15,19 +15,16 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 /**
  * Interface used to implement fault localization algorithms.
- * 
- * @param <P>
- *            parent node identifier type
- * @param <C>
- *            child node identifier type
+ *
+ * @param <P> parent node identifier type
+ * @param <C> child node identifier type
  */
 public interface IHierarchicalFaultLocalizer<P, C> {
 
     /**
      * Creates a fault location ranking for all nodes in the given spectra.
-     * 
-     * @param spectra
-     *            the spectra to perform the fault localization on
+     *
+     * @param spectra the spectra to perform the fault localization on
      * @return nodes ranked by suspiciousness of actually causing the failure
      */
     Ranking<? super INode<?>> localize(HierarchicalHitSpectra<P, C> spectra);

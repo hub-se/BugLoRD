@@ -18,7 +18,7 @@ public class SerializableMockitoMethodProxyTest extends TestBase {
         SerializableMockitoMethodProxy serializableMockitoMethodProxy = new SerializableMockitoMethodProxy(proxy);
 
         // when
-        Object methodProxy = Whitebox.invokeMethod(serializableMockitoMethodProxy, "getMethodProxy",  new Object[0]);
+        Object methodProxy = Whitebox.invokeMethod(serializableMockitoMethodProxy, "getMethodProxy", new Object[0]);
 
         // then
         Object info = Whitebox.getInternalState(methodProxy, "createInfo");
@@ -33,7 +33,7 @@ public class SerializableMockitoMethodProxyTest extends TestBase {
         SerializableMockitoMethodProxy serializableMockitoMethodProxy = new SerializableMockitoMethodProxy(proxy);
 
         // when
-        MethodProxy methodProxy = (MethodProxy) Whitebox.invokeMethod(serializableMockitoMethodProxy, "getMethodProxy",  new Object[0]);
+        MethodProxy methodProxy = (MethodProxy) Whitebox.invokeMethod(serializableMockitoMethodProxy, "getMethodProxy", new Object[0]);
 
         // then
         assertEquals("a", methodProxy.getSignature().getDescriptor());

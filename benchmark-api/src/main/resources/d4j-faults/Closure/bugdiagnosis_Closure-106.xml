@@ -1,46 +1,47 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-106">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/CollapsePropertiesTest">
-					<exception>junit.framework.AssertionFailedError:Unexpected
-						error(s):JSC_USELESS_CODE. Suspicious code. This code lacks
-						side-effects. Is there a bug? at testcode line 1
-						expected:&lt;0&gt; but was:&lt;1&gt;:-
-						com.google.javascript.jscomp.CollapsePropertiesTest::testTwinReferenceCancelsChildCollapsing:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.CollapsePropertiesTest::testCrashInNestedAssign:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.CollapsePropertiesTest::testCrashInCommaOperator:--&gt;
-						java.lang.IllegalArgumentException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1209</number_tests>
-					<failed>4</failed>
-					<passed>1205</passed>
-					<nodes>31467</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/rhino/JSDocInfoBuilder.java">
-					<delete>189,191</delete>
-					<bugtypes>
-						<id id="1.2" lines="189,191">
-							<description>Unnecessary case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="com/google/javascript/jscomp/GlobalNamespace.java">
-					<insert numberlines="4">903-908</insert>
-					<bugtypes>
-						<id id="1.1" lines="906">
-							<description>Missing check for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-106">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/CollapsePropertiesTest">
+                    <exception>junit.framework.AssertionFailedError:Unexpected
+                        error(s):JSC_USELESS_CODE. Suspicious code. This code lacks
+                        side-effects. Is there a bug? at testcode line 1
+                        expected:&lt;0&gt; but was:&lt;1&gt;:-
+                        com.google.javascript.jscomp.CollapsePropertiesTest::testTwinReferenceCancelsChildCollapsing:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.CollapsePropertiesTest::testCrashInNestedAssign:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.CollapsePropertiesTest::testCrashInCommaOperator:--&gt;
+                        java.lang.IllegalArgumentException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1209</number_tests>
+                    <failed>4</failed>
+                    <passed>1205</passed>
+                    <nodes>31467</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/rhino/JSDocInfoBuilder.java">
+                    <delete>189,191</delete>
+                    <bugtypes>
+                        <id id="1.2" lines="189,191">
+                            <description>Unnecessary case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="com/google/javascript/jscomp/GlobalNamespace.java">
+                    <insert numberlines="4">903-908</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="906">
+                            <description>Missing check for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

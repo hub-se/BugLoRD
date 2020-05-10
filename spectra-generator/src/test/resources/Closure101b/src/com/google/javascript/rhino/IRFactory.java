@@ -46,43 +46,37 @@ package com.google.javascript.rhino;
  * This class allows the creation of nodes, and follows the Factory pattern.
  *
  * @see Node
-*
-*
  */
-final class IRFactory
-{
-    IRFactory(Parser parser)
-    {
+final class IRFactory {
+    IRFactory(Parser parser) {
         this.parser = parser;
     }
 
-    ScriptOrFnNode createScript()
-    {
+    ScriptOrFnNode createScript() {
         return new ScriptOrFnNode(Token.SCRIPT);
     }
 
     /**
      * Script (for associating file/url names with toplevel scripts.)
      */
-    void initScript(ScriptOrFnNode scriptNode, Node body)
-    {
+    void initScript(ScriptOrFnNode scriptNode, Node body) {
         Node children = body.removeChildren();
-        if (children != null) { scriptNode.addChildrenToBack(children); }
+        if (children != null) {
+            scriptNode.addChildrenToBack(children);
+        }
     }
 
     /**
      * Leaf
      */
-    Node createLeaf(int nodeType)
-    {
+    Node createLeaf(int nodeType) {
         return new Node(nodeType);
     }
 
     /**
      * Leaf
      */
-    Node createLeaf(int nodeType, int lineno, int charno)
-    {
+    Node createLeaf(int nodeType, int lineno, int charno) {
         return new Node(nodeType, lineno, charno);
     }
 
@@ -90,8 +84,7 @@ final class IRFactory
      * Statement leaf nodes.
      */
 
-    Node createSwitch(int lineno, int charno)
-    {
+    Node createSwitch(int lineno, int charno) {
         return new Node(Token.SWITCH, lineno, charno);
     }
 
@@ -99,14 +92,13 @@ final class IRFactory
      * If caseExpression argument is null it indicate default label.
      */
     void addSwitchCase(Node switchNode, Node caseExpression, Node statements,
-                       int lineno, int charno)
-    {
+                       int lineno, int charno) {
         if (switchNode.getType() != Token.SWITCH) throw Kit.codeBug();
 
         Node caseNode;
         if (caseExpression != null) {
             caseNode = new Node(
-                Token.CASE, caseExpression, lineno, charno);
+                    Token.CASE, caseExpression, lineno, charno);
         } else {
             caseNode = new Node(Token.DEFAULT, lineno, charno);
         }
@@ -114,17 +106,14 @@ final class IRFactory
         switchNode.addChildToBack(caseNode);
     }
 
-    void closeSwitch(Node switchBlock)
-    {
+    void closeSwitch(Node switchBlock) {
     }
 
-    Node createVariables(int token, int lineno, int charno)
-    {
+    Node createVariables(int token, int lineno, int charno) {
         return new Node(token, lineno, charno);
     }
 
-    Node createExprStatement(Node expr, int lineno, int charno)
-    {
+    Node createExprStatement(Node expr, int lineno, int charno) {
         int type;
         if (parser.insideFunction()) {
             type = Token.EXPR_VOID;
@@ -134,13 +123,11 @@ final class IRFactory
         return new Node(type, expr, lineno, charno);
     }
 
-    Node createExprStatementNoReturn(Node expr, int lineno, int charno)
-    {
+    Node createExprStatementNoReturn(Node expr, int lineno, int charno) {
         return new Node(Token.EXPR_VOID, expr, lineno, charno);
     }
 
-    Node createDefaultNamespace(Node expr, int lineno, int charno)
-    {
+    Node createDefaultNamespace(Node expr, int lineno, int charno) {
         // default xml namespace requires activation
         setRequiresActivation();
         Node n = createUnary(Token.DEFAULTNAMESPACE, expr, lineno, charno);
@@ -155,14 +142,13 @@ final class IRFactory
     /**
      * Name
      */
-    Node createName(String name, int lineno, int charno)
-    {
+    Node createName(String name, int lineno, int charno) {
         checkActivationName(name, Token.NAME);
         return Node.newString(Token.NAME, name, lineno, charno);
     }
 
     public Node createTaggedName(String name, JSDocInfo info,
-            int lineno, int charno) {
+                                 int lineno, int charno) {
         Node n = createName(name, lineno, charno);
         if (info != null) {
             n.setJSDocInfo(info);
@@ -173,43 +159,39 @@ final class IRFactory
     /**
      * String (for literals)
      */
-    Node createString(String string)
-    {
+    Node createString(String string) {
         return Node.newString(string);
     }
 
-    Node createString(String string, int lineno, int charno)
-    {
+    Node createString(String string, int lineno, int charno) {
         return Node.newString(string, lineno, charno);
     }
 
     /**
      * Number (for literals)
      */
-    Node createNumber(double number)
-    {
+    Node createNumber(double number) {
         return Node.newNumber(number);
     }
 
-    Node createNumber(double number, int lineno, int charno)
-    {
+    Node createNumber(double number, int lineno, int charno) {
         return Node.newNumber(number, lineno, charno);
     }
 
     /**
      * Catch clause of try/catch/finally
-     * @param varName the name of the variable to bind to the exception
-     * @param nameLineno the starting line number of the exception clause
-     * @param nameCharno the starting char number of the exception clause
-     * @param catchCond the condition under which to catch the exception.
-     *                  May be null if no condition is given.
-     * @param stmts the statements in the catch clause
+     *
+     * @param varName     the name of the variable to bind to the exception
+     * @param nameLineno  the starting line number of the exception clause
+     * @param nameCharno  the starting char number of the exception clause
+     * @param catchCond   the condition under which to catch the exception.
+     *                    May be null if no condition is given.
+     * @param stmts       the statements in the catch clause
      * @param catchLineno the starting line number of the catch clause
      * @param catchCharno the starting char number of the catch clause
      */
     Node createCatch(String varName, int nameLineno, int nameCharno,
-            Node catchCond, Node stmts, int catchLineno, int catchCharno)
-    {
+                     Node catchCond, Node stmts, int catchLineno, int catchCharno) {
         if (catchCond == null) {
             catchCond = new Node(Token.EMPTY, nameLineno, nameCharno);
         }
@@ -221,26 +203,23 @@ final class IRFactory
     /**
      * Throw
      */
-    Node createThrow(Node expr, int lineno, int charno)
-    {
+    Node createThrow(Node expr, int lineno, int charno) {
         return new Node(Token.THROW, expr, lineno, charno);
     }
 
     /**
      * Return
      */
-    Node createReturn(Node expr, int lineno, int charno)
-    {
+    Node createReturn(Node expr, int lineno, int charno) {
         return expr == null
-            ? new Node(Token.RETURN, lineno, charno)
-            : new Node(Token.RETURN, expr, lineno, charno);
+                ? new Node(Token.RETURN, lineno, charno)
+                : new Node(Token.RETURN, expr, lineno, charno);
     }
 
     /**
      * Label
      */
-    Node createLabel(String name, int lineno, int charno)
-    {
+    Node createLabel(String name, int lineno, int charno) {
         return new Node(Token.LABEL,
                 Node.newString(Token.NAME, name, lineno, charno),
                 lineno, charno);
@@ -249,8 +228,7 @@ final class IRFactory
     /**
      * Break (possibly labeled)
      */
-    Node createBreak(String label, int lineno, int charno)
-    {
+    Node createBreak(String label, int lineno, int charno) {
         Node result = new Node(Token.BREAK, lineno, charno);
         if (label == null) {
             return result;
@@ -264,8 +242,7 @@ final class IRFactory
     /**
      * Continue (possibly labeled)
      */
-    Node createContinue(String label, int lineno, int charno)
-    {
+    Node createContinue(String label, int lineno, int charno) {
         Node result = new Node(Token.CONTINUE, lineno, charno);
         if (label == null) {
             return result;
@@ -288,13 +265,11 @@ final class IRFactory
      * Creates the empty statement block
      * Must make subsequent calls to add statements to the node
      */
-    Node createBlock(int lineno, int charno)
-    {
+    Node createBlock(int lineno, int charno) {
         return new Node(Token.BLOCK, lineno, charno);
     }
 
-    FunctionNode createFunction(String name, int lineno, int charno)
-    {
+    FunctionNode createFunction(String name, int lineno, int charno) {
         FunctionNode fnNode = new FunctionNode(name, lineno, charno);
         // A hack to preserve the existing JSCompiler code that depends on
         // having the first child node being a NAME node.
@@ -305,8 +280,7 @@ final class IRFactory
 
     Node initFunction(FunctionNode fnNode, int functionIndex,
                       Node args, JSDocInfo info,
-                      Node statements, int functionType)
-    {
+                      Node statements, int functionType) {
         fnNode.itsFunctionType = functionType;
         fnNode.addChildToBack(args);
         fnNode.addChildToBack(statements);
@@ -325,8 +299,7 @@ final class IRFactory
                 FunctionNode fn = fnNode.getFunctionNode(i);
                 // nested function expression statements overrides var
                 if (fn.getFunctionType()
-                        == FunctionNode.FUNCTION_EXPRESSION_STATEMENT)
-                {
+                        == FunctionNode.FUNCTION_EXPRESSION_STATEMENT) {
                     String name = fn.getFunctionName();
                     if (name != null && name.length() != 0) {
                         fnNode.removeParamOrVar(name);
@@ -344,24 +317,21 @@ final class IRFactory
      * breaks the Factory abstraction, but it removes a requirement
      * from implementors of Node.
      */
-    void addChildToBack(Node parent, Node child)
-    {
+    void addChildToBack(Node parent, Node child) {
         parent.addChildToBack(child);
     }
 
     /**
      * While
      */
-    Node createWhile(Node cond, Node body, int lineno, int charno)
-    {
+    Node createWhile(Node cond, Node body, int lineno, int charno) {
         return new Node(Token.WHILE, cond, body, lineno, charno);
     }
 
     /**
      * DoWhile
      */
-    Node createDoWhile(Node body, Node cond, int lineno, int charno)
-    {
+    Node createDoWhile(Node body, Node cond, int lineno, int charno) {
         return new Node(Token.DO, body, cond, lineno, charno);
     }
 
@@ -369,18 +339,15 @@ final class IRFactory
      * For
      */
     Node createFor(Node init, Node test, Node incr, Node body,
-            int lineno, int charno)
-    {
+                   int lineno, int charno) {
         return new Node(Token.FOR, init, test, incr, body, lineno, charno);
     }
 
     /**
      * For .. In
-     *
      */
     Node createForIn(Node lhs, Node obj, Node body,
-                     int lineno, int charno)
-    {
+                     int lineno, int charno) {
         return new Node(Token.FOR, lhs, obj, body, lineno, charno);
     }
 
@@ -388,11 +355,10 @@ final class IRFactory
      * Try/Catch/Finally
      */
     Node createTryCatchFinally(Node tryBlock, Node catchBlocks,
-                               Node finallyBlock, int lineno, int charno)
-    {
+                               Node finallyBlock, int lineno, int charno) {
         if (finallyBlock == null) {
             return new Node(
-                Token.TRY, tryBlock, catchBlocks, lineno, charno);
+                    Token.TRY, tryBlock, catchBlocks, lineno, charno);
         }
         return new Node(Token.TRY, tryBlock, catchBlocks, finallyBlock,
                 lineno, charno);
@@ -405,24 +371,21 @@ final class IRFactory
     /**
      * With
      */
-    Node createWith(Node obj, Node body, int lineno, int charno)
-    {
+    Node createWith(Node obj, Node body, int lineno, int charno) {
         return new Node(Token.WITH, obj, body, lineno, charno);
     }
 
     /**
      * DOTQUERY
      */
-    public Node createDotQuery (Node obj, Node body, int lineno, int charno)
-    {
+    public Node createDotQuery(Node obj, Node body, int lineno, int charno) {
         setRequiresActivation();
         Node result = new Node(Token.DOTQUERY, obj, body, lineno, charno);
         return result;
     }
 
     Node createArrayLiteral(ObjArray elems, int skipCount,
-            int lineno, int charno)
-    {
+                            int lineno, int charno) {
         int length = elems.size();
         int[] skipIndexes = null;
         if (skipCount != 0) {
@@ -430,7 +393,7 @@ final class IRFactory
         }
         Node array = new Node(Token.ARRAYLIT, lineno, charno);
         for (int i = 0, j = 0; i != length; ++i) {
-            Node elem = (Node)elems.get(i);
+            Node elem = (Node) elems.get(i);
             if (elem != null) {
                 array.addChildToBack(elem);
             } else {
@@ -447,13 +410,12 @@ final class IRFactory
     /**
      * Object Literals
      */
-    Node createObjectLiteral(ObjArray obj, int lineno, int charno)
-    {
+    Node createObjectLiteral(ObjArray obj, int lineno, int charno) {
         Node object = new Node(Token.OBJECTLIT, lineno, charno);
         for (int i = 0; i < obj.size(); i += 2) {
-            Node n = (Node)obj.get(i);
+            Node n = (Node) obj.get(i);
             object.addChildToBack(n);
-            n = (Node)obj.get(i + 1);
+            n = (Node) obj.get(i + 1);
             object.addChildToBack(n);
         }
 
@@ -464,43 +426,39 @@ final class IRFactory
      * Regular expressions
      */
     Node createRegExp(String string, String flags,
-            int lineno, int charno) {
+                      int lineno, int charno) {
         return flags.length() == 0
-               ? new Node(Token.REGEXP,
-                          Node.newString(string, lineno, charno),
-                          lineno, charno)
-               : new Node(Token.REGEXP,
-                          Node.newString(string, lineno, charno),
-                          Node.newString(flags, lineno, charno),
-                          lineno, charno);
+                ? new Node(Token.REGEXP,
+                Node.newString(string, lineno, charno),
+                lineno, charno)
+                : new Node(Token.REGEXP,
+                Node.newString(string, lineno, charno),
+                Node.newString(flags, lineno, charno),
+                lineno, charno);
     }
 
     /**
      * If statement
      */
-    Node createIf(Node cond, Node ifTrue, Node ifFalse, int lineno, int charno)
-    {
+    Node createIf(Node cond, Node ifTrue, Node ifFalse, int lineno, int charno) {
         if (ifFalse == null)
             return new Node(Token.IF, cond, ifTrue, lineno, charno);
         return new Node(Token.IF, cond, ifTrue, ifFalse, lineno, charno);
     }
 
     Node createCondExpr(Node cond, Node ifTrue, Node ifFalse,
-            int lineno, int charno)
-    {
+                        int lineno, int charno) {
         return new Node(Token.HOOK, cond, ifTrue, ifFalse, lineno, charno);
     }
 
     /**
      * Unary
      */
-    Node createUnary(int nodeType, Node child, int lineno, int charno)
-    {
+    Node createUnary(int nodeType, Node child, int lineno, int charno) {
         return new Node(nodeType, child, lineno, charno);
     }
 
-    Node createCallOrNew(int nodeType, Node child, int lineno, int charno)
-    {
+    Node createCallOrNew(int nodeType, Node child, int lineno, int charno) {
         int type = Node.NON_SPECIALCALL;
         if (child.getType() == Token.NAME) {
             String name = child.getString();
@@ -525,8 +483,7 @@ final class IRFactory
     }
 
     Node createIncDec(int nodeType, boolean post, Node child,
-            int lineno, int charno)
-    {
+                      int lineno, int charno) {
         child = makeReference(child);
         if (child == null) {
             String msg;
@@ -542,23 +499,22 @@ final class IRFactory
         int childType = child.getType();
 
         switch (childType) {
-          case Token.NAME:
-          case Token.GETPROP:
-          case Token.GETELEM:
-          case Token.GET_REF:
-          case Token.CALL: {
-            Node n = new Node(nodeType, child, lineno, charno);
-            n.putIntProp(Node.INCRDECR_PROP, post ? 1 : 0);
-            return n;
-          }
+            case Token.NAME:
+            case Token.GETPROP:
+            case Token.GETELEM:
+            case Token.GET_REF:
+            case Token.CALL: {
+                Node n = new Node(nodeType, child, lineno, charno);
+                n.putIntProp(Node.INCRDECR_PROP, post ? 1 : 0);
+                return n;
+            }
         }
         throw Kit.codeBug();
     }
 
     Node createPropertyGet(Node target, String namespace, String name,
                            int memberTypeFlags, int dotLineno, int dotCharno,
-                           int nameLineno, int nameCharno)
-    {
+                           int nameLineno, int nameCharno) {
         if (namespace == null && memberTypeFlags == 0) {
             if (target == null) {
                 return createName(name, nameLineno, nameCharno);
@@ -570,19 +526,18 @@ final class IRFactory
                 return new Node(Token.GET_REF, ref, dotLineno, dotCharno);
             }
             return new Node(
-                Token.GETPROP, target,
-                createString(name, nameLineno, nameCharno),
-                dotLineno, dotCharno);
+                    Token.GETPROP, target,
+                    createString(name, nameLineno, nameCharno),
+                    dotLineno, dotCharno);
         }
         Node elem = createString(name);
         memberTypeFlags |= Node.PROPERTY_FLAG;
         return createMemberRefGet(target, namespace, elem, memberTypeFlags,
-                                  dotLineno, dotCharno);
+                dotLineno, dotCharno);
     }
 
     Node createElementGet(Node target, String namespace, Node elem,
-                          int memberTypeFlags, int lineno, int charno)
-    {
+                          int memberTypeFlags, int lineno, int charno) {
         // OPT: could optimize to createPropertyGet
         // iff elem is string that can not be number
         if (namespace == null && memberTypeFlags == 0) {
@@ -592,12 +547,11 @@ final class IRFactory
             return new Node(Token.GETELEM, target, elem, lineno, charno);
         }
         return createMemberRefGet(target, namespace, elem, memberTypeFlags,
-                                  lineno, charno);
+                lineno, charno);
     }
 
     private Node createMemberRefGet(Node target, String namespace, Node elem,
-                                    int memberTypeFlags, int lineno, int charno)
-    {
+                                    int memberTypeFlags, int lineno, int charno) {
         Node nsNode = null;
         if (namespace != null) {
             // See 11.1.2 in ECMA 357
@@ -632,28 +586,26 @@ final class IRFactory
      * Binary
      */
     Node createBinary(int nodeType, Node left, Node right,
-            int lineno, int charno)
-    {
+                      int lineno, int charno) {
         Node temp;
         switch (nodeType) {
 
-          case Token.DOT:
-            nodeType = Token.GETPROP;
-            Node idNode = right;
-            idNode.setType(Token.STRING);
-            break;
+            case Token.DOT:
+                nodeType = Token.GETPROP;
+                Node idNode = right;
+                idNode.setType(Token.STRING);
+                break;
 
-          case Token.LB:
-            // OPT: could optimize to GETPROP iff string can't be a number
-            nodeType = Token.GETELEM;
-            break;
+            case Token.LB:
+                // OPT: could optimize to GETPROP iff string can't be a number
+                nodeType = Token.GETELEM;
+                break;
         }
         return new Node(nodeType, left, right, lineno, charno);
     }
 
     Node createAssignment(int nodeOp, Node left, Node right,
-            int lineno, int charno) throws JavaScriptException
-    {
+                          int lineno, int charno) throws JavaScriptException {
         int nodeType = left.getType();
         switch (nodeType) {
             case Token.NAME:
@@ -669,16 +621,15 @@ final class IRFactory
         return new Node(Token.ASSIGN, left, right, lineno, charno);
     }
 
-    private Node makeReference(Node node)
-    {
+    private Node makeReference(Node node) {
         int type = node.getType();
         switch (type) {
-          case Token.NAME:
-          case Token.GETPROP:
-          case Token.GETELEM:
-          case Token.GET_REF:
-          case Token.CALL:
-            return node;
+            case Token.NAME:
+            case Token.GETPROP:
+            case Token.GETELEM:
+            case Token.GET_REF:
+            case Token.CALL:
+                return node;
         }
         // Signal caller to report error
         return null;
@@ -708,20 +659,17 @@ final class IRFactory
 //         return false;
 //     }
 
-    private void checkActivationName(String name, int token)
-    {
+    private void checkActivationName(String name, int token) {
         if (parser.insideFunction()) {
             boolean activation = false;
             if ("arguments".equals(name)
-                || (parser.compilerEnv.activationNames != null
-                    && parser.compilerEnv.activationNames.containsKey(name)))
-            {
+                    || (parser.compilerEnv.activationNames != null
+                    && parser.compilerEnv.activationNames.containsKey(name))) {
                 activation = true;
             } else if ("length".equals(name)) {
                 if (token == Token.GETPROP
-                    && parser.compilerEnv.getLanguageVersion()
-                       == Context.VERSION_1_2)
-                {
+                        && parser.compilerEnv.getLanguageVersion()
+                        == Context.VERSION_1_2) {
                     // Use of "length" in 1.2 requires an activation object.
                     activation = true;
                 }
@@ -732,10 +680,9 @@ final class IRFactory
         }
     }
 
-    private void setRequiresActivation()
-    {
+    private void setRequiresActivation() {
         if (parser.insideFunction()) {
-            ((FunctionNode)parser.currentScriptOrFn).itsNeedsActivation = true;
+            ((FunctionNode) parser.currentScriptOrFn).itsNeedsActivation = true;
         }
     }
 

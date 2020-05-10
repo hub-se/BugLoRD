@@ -28,44 +28,44 @@ import com.google.javascript.jscomp.graph.GraphNode;
  * from the specified entry node.
  *
  * @see GraphNode#getAnnotation()
-*
  */
 public class GraphReachability<N, E> implements EdgeCallback<N, E> {
 
-  // TODO(user): This should work for undirected graphs when
-  // FixedPointGraphTraversal accepts them.
-  private final DiGraph<N, E> graph;
+    // TODO(user): This should work for undirected graphs when
+    // FixedPointGraphTraversal accepts them.
+    private final DiGraph<N, E> graph;
 
-  public GraphReachability(DiGraph<N, E> graph) {
-    this.graph = graph;
-  }
-
-  public void compute(N entry) {
-    graph.clearNodeAnnotations();
-    graph.getNode(entry).setAnnotation(REACHABLE);
-    FixedPointGraphTraversal.newTraversal(this)
-        .computeFixedPoint(graph, entry);
-  }
-
-  public void recompute(N reachableNode) {
-    GraphNode<N, E> newReachable = graph.getNode(reachableNode);
-    Preconditions.checkState(newReachable.getAnnotation() != REACHABLE);
-    newReachable.setAnnotation(REACHABLE);
-    FixedPointGraphTraversal.newTraversal(this)
-        .computeFixedPoint(graph, reachableNode);
-  }
-
-  @Override
-  public boolean traverseEdge(N source, E e, N destination) {
-    if (graph.getNode(source).getAnnotation() == REACHABLE) {
-      GraphNode<N, E> destNode = graph.getNode(destination);
-      if (destNode.getAnnotation() != REACHABLE) {
-        destNode.setAnnotation(REACHABLE);
-        return true;
-      }
+    public GraphReachability(DiGraph<N, E> graph) {
+        this.graph = graph;
     }
-    return false;
-  }
 
-  public static final Annotation REACHABLE = new Annotation() {};
+    public void compute(N entry) {
+        graph.clearNodeAnnotations();
+        graph.getNode(entry).setAnnotation(REACHABLE);
+        FixedPointGraphTraversal.newTraversal(this)
+                .computeFixedPoint(graph, entry);
+    }
+
+    public void recompute(N reachableNode) {
+        GraphNode<N, E> newReachable = graph.getNode(reachableNode);
+        Preconditions.checkState(newReachable.getAnnotation() != REACHABLE);
+        newReachable.setAnnotation(REACHABLE);
+        FixedPointGraphTraversal.newTraversal(this)
+                .computeFixedPoint(graph, reachableNode);
+    }
+
+    @Override
+    public boolean traverseEdge(N source, E e, N destination) {
+        if (graph.getNode(source).getAnnotation() == REACHABLE) {
+            GraphNode<N, E> destNode = graph.getNode(destination);
+            if (destNode.getAnnotation() != REACHABLE) {
+                destNode.setAnnotation(REACHABLE);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static final Annotation REACHABLE = new Annotation() {
+    };
 }

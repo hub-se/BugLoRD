@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,74 +36,71 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
-import static com.google.javascript.rhino.jstype.TernaryValue.FALSE;
-import static com.google.javascript.rhino.jstype.TernaryValue.TRUE;
-import static com.google.javascript.rhino.jstype.TernaryValue.UNKNOWN;
+import static com.google.javascript.rhino.jstype.TernaryValue.*;
 
 
 /**
  * Void type whose only element is the {@code undefined} value.
-*
  */
 public class VoidType extends ValueType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  VoidType(JSTypeRegistry registry) {
-    super(registry);
-  }
-
-  @Override
-  public JSType restrictByNotNullOrUndefined() {
-    return registry.getNativeType(JSTypeNative.NO_TYPE);
-  }
-
-  @Override
-  public TernaryValue testForEquality(JSType that) {
-    if (UNKNOWN.equals(super.testForEquality(that))) {
-      return UNKNOWN;
+    VoidType(JSTypeRegistry registry) {
+        super(registry);
     }
-    if (that.isSubtype(this) ||
-        that.isSubtype(getNativeType(JSTypeNative.NULL_TYPE))) {
-      return TRUE;
+
+    @Override
+    public JSType restrictByNotNullOrUndefined() {
+        return registry.getNativeType(JSTypeNative.NO_TYPE);
     }
-    return FALSE;
-  }
 
-  @Override
-  public boolean matchesNumberContext() {
-    return false;
-  }
+    @Override
+    public TernaryValue testForEquality(JSType that) {
+        if (UNKNOWN.equals(super.testForEquality(that))) {
+            return UNKNOWN;
+        }
+        if (that.isSubtype(this) ||
+                that.isSubtype(getNativeType(JSTypeNative.NULL_TYPE))) {
+            return TRUE;
+        }
+        return FALSE;
+    }
 
-  @Override
-  public boolean matchesObjectContext() {
-    return false;
-  }
+    @Override
+    public boolean matchesNumberContext() {
+        return false;
+    }
 
-  @Override
-  public boolean matchesStringContext() {
-    return true;
-  }
+    @Override
+    public boolean matchesObjectContext() {
+        return false;
+    }
 
-  @Override
-  public boolean isVoidType() {
-    return true;
-  }
+    @Override
+    public boolean matchesStringContext() {
+        return true;
+    }
 
-  @Override
-  public String toString() {
-    return "undefined";
-  }
+    @Override
+    public boolean isVoidType() {
+        return true;
+    }
 
-  @Override
-  public BooleanLiteralSet getPossibleToBooleanOutcomes() {
-    return BooleanLiteralSet.FALSE;
-  }
+    @Override
+    public String toString() {
+        return "undefined";
+    }
 
-  @Override
-  public <T> T visit(Visitor<T> visitor) {
-    return visitor.caseVoidType();
-  }
+    @Override
+    public BooleanLiteralSet getPossibleToBooleanOutcomes() {
+        return BooleanLiteralSet.FALSE;
+    }
+
+    @Override
+    public <T> T visit(Visitor<T> visitor) {
+        return visitor.caseVoidType();
+    }
 }

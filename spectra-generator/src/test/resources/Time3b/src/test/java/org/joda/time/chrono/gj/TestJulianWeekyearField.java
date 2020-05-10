@@ -18,7 +18,6 @@ package org.joda.time.chrono.gj;
 import org.joda.time.field.FieldUtils;
 
 /**
- * 
  * @author Brian S O'Neill
  */
 class TestJulianWeekyearField extends TestGJWeekyearField {
@@ -29,7 +28,7 @@ class TestJulianWeekyearField extends TestGJWeekyearField {
     public long addWrapField(long millis, int value) {
         int weekyear = get(millis);
         int wrapped = FieldUtils.getWrappedValue
-            (weekyear, value, getMinimumValue(), getMaximumValue());
+                (weekyear, value, getMinimumValue(), getMaximumValue());
         return add(millis, (long) wrapped - weekyear);
     }
 

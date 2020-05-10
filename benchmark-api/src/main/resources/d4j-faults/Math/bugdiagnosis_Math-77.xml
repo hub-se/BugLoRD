@@ -1,41 +1,42 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-77">
-			<tests>
-				<testfile path="org/apache/commons/math/linear/SparseRealVectorTest">
-					<exception>junit.framework.AssertionFailedError:compare values
-						expected:&lt;6.0&gt; but was:&lt;128.0&gt;:-
-						org.apache.commons.math.linear.SparseRealVectorTest::testBasicFunctions:--&gt;
-						junit.framework.AssertionFailedError:compare values
-						expected:&lt;6.0&gt; but was:&lt;-3.0&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>346</number_tests>
-					<failed>2</failed>
-					<passed>344</passed>
-					<nodes>20715</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/linear/ArrayRealVector.java">
-					<change>721</change>
-					<bugtypes>
-						<id id="1.5" lines="721">
-							<description>Incorrect calculation.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="org/apache/commons/math/linear/OpenMapRealVector.java">
-					<delete>498-506</delete>
-					<bugtypes>
-						<id id="2.3" lines="498-506">
-							<description>Unnecessary function.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-77">
+            <tests>
+                <testfile path="org/apache/commons/math/linear/SparseRealVectorTest">
+                    <exception>junit.framework.AssertionFailedError:compare values
+                        expected:&lt;6.0&gt; but was:&lt;128.0&gt;:-
+                        org.apache.commons.math.linear.SparseRealVectorTest::testBasicFunctions:--&gt;
+                        junit.framework.AssertionFailedError:compare values
+                        expected:&lt;6.0&gt; but was:&lt;-3.0&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>346</number_tests>
+                    <failed>2</failed>
+                    <passed>344</passed>
+                    <nodes>20715</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/linear/ArrayRealVector.java">
+                    <change>721</change>
+                    <bugtypes>
+                        <id id="1.5" lines="721">
+                            <description>Incorrect calculation.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="org/apache/commons/math/linear/OpenMapRealVector.java">
+                    <delete>498-506</delete>
+                    <bugtypes>
+                        <id id="2.3" lines="498-506">
+                            <description>Unnecessary function.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

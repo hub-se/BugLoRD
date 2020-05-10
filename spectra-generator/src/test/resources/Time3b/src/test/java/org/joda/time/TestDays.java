@@ -15,13 +15,13 @@
  */
 package org.joda.time;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
  * This class is a Junit unit test for Days.
@@ -86,7 +86,7 @@ public class TestDays extends TestCase {
         DateTime start = new DateTime(2006, 6, 9, 12, 0, 0, 0, PARIS);
         DateTime end1 = new DateTime(2006, 6, 12, 12, 0, 0, 0, PARIS);
         DateTime end2 = new DateTime(2006, 6, 15, 18, 0, 0, 0, PARIS);
-        
+
         assertEquals(3, Days.daysBetween(start, end1).getDays());
         assertEquals(0, Days.daysBetween(start, start).getDays());
         assertEquals(0, Days.daysBetween(end1, end1).getDays());
@@ -100,7 +100,7 @@ public class TestDays extends TestCase {
         LocalDate start = new LocalDate(2006, 6, 9);
         LocalDate end1 = new LocalDate(2006, 6, 12);
         YearMonthDay end2 = new YearMonthDay(2006, 6, 15);
-        
+
         assertEquals(3, Days.daysBetween(start, end1).getDays());
         assertEquals(0, Days.daysBetween(start, start).getDays());
         assertEquals(0, Days.daysBetween(end1, end1).getDays());
@@ -113,10 +113,10 @@ public class TestDays extends TestCase {
         YearMonth start2 = new YearMonth(2012, 1);
         YearMonth end1 = new YearMonth(2011, 3);
         YearMonth end2 = new YearMonth(2012, 3);
-        
+
         assertEquals(59, Days.daysBetween(start1, end1).getDays());
         assertEquals(60, Days.daysBetween(start2, end2).getDays());
-        
+
         assertEquals(-59, Days.daysBetween(end1, start1).getDays());
         assertEquals(-60, Days.daysBetween(end2, start2).getDays());
     }
@@ -126,12 +126,12 @@ public class TestDays extends TestCase {
         MonthDay start2 = new MonthDay(2, 28);
         MonthDay end1 = new MonthDay(2, 28);
         MonthDay end2 = new MonthDay(2, 29);
-        
+
         assertEquals(27, Days.daysBetween(start1, end1).getDays());
         assertEquals(28, Days.daysBetween(start1, end2).getDays());
         assertEquals(0, Days.daysBetween(start2, end1).getDays());
         assertEquals(1, Days.daysBetween(start2, end2).getDays());
-        
+
         assertEquals(-27, Days.daysBetween(end1, start1).getDays());
         assertEquals(-28, Days.daysBetween(end2, start1).getDays());
         assertEquals(0, Days.daysBetween(end1, start2).getDays());
@@ -143,7 +143,7 @@ public class TestDays extends TestCase {
         DateTime start = new DateTime(2006, 6, 9, 12, 0, 0, 0, PARIS);
         DateTime end1 = new DateTime(2006, 6, 12, 12, 0, 0, 0, PARIS);
         DateTime end2 = new DateTime(2006, 6, 15, 18, 0, 0, 0, PARIS);
-        
+
         assertEquals(0, Days.daysIn((ReadableInterval) null).getDays());
         assertEquals(3, Days.daysIn(new Interval(start, end1)).getDays());
         assertEquals(0, Days.daysIn(new Interval(start, start)).getDays());
@@ -228,7 +228,7 @@ public class TestDays extends TestCase {
     public void testToString() {
         Days test = Days.days(20);
         assertEquals("P20D", test.toString());
-        
+
         test = Days.days(-20);
         assertEquals("P-20D", test.toString());
     }
@@ -236,18 +236,18 @@ public class TestDays extends TestCase {
     //-----------------------------------------------------------------------
     public void testSerialization() throws Exception {
         Days test = Days.SEVEN;
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(test);
         byte[] bytes = baos.toByteArray();
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);
         Days result = (Days) ois.readObject();
         ois.close();
-        
+
         assertSame(test, result);
     }
 
@@ -262,7 +262,7 @@ public class TestDays extends TestCase {
         Days test = Days.days(2);
         Hours expected = Hours.hours(2 * 24);
         assertEquals(expected, test.toStandardHours());
-        
+
         try {
             Days.MAX_VALUE.toStandardHours();
             fail();
@@ -275,7 +275,7 @@ public class TestDays extends TestCase {
         Days test = Days.days(2);
         Minutes expected = Minutes.minutes(2 * 24 * 60);
         assertEquals(expected, test.toStandardMinutes());
-        
+
         try {
             Days.MAX_VALUE.toStandardMinutes();
             fail();
@@ -288,7 +288,7 @@ public class TestDays extends TestCase {
         Days test = Days.days(2);
         Seconds expected = Seconds.seconds(2 * 24 * 60 * 60);
         assertEquals(expected, test.toStandardSeconds());
-        
+
         try {
             Days.MAX_VALUE.toStandardSeconds();
             fail();
@@ -301,7 +301,7 @@ public class TestDays extends TestCase {
         Days test = Days.days(20);
         Duration expected = new Duration(20L * DateTimeConstants.MILLIS_PER_DAY);
         assertEquals(expected, test.toStandardDuration());
-        
+
         expected = new Duration(((long) Integer.MAX_VALUE) * DateTimeConstants.MILLIS_PER_DAY);
         assertEquals(expected, Days.MAX_VALUE.toStandardDuration());
     }
@@ -312,9 +312,9 @@ public class TestDays extends TestCase {
         Days result = test2.plus(3);
         assertEquals(2, test2.getDays());
         assertEquals(5, result.getDays());
-        
+
         assertEquals(1, Days.ONE.plus(0).getDays());
-        
+
         try {
             Days.MAX_VALUE.plus(1);
             fail();
@@ -330,10 +330,10 @@ public class TestDays extends TestCase {
         assertEquals(2, test2.getDays());
         assertEquals(3, test3.getDays());
         assertEquals(5, result.getDays());
-        
+
         assertEquals(1, Days.ONE.plus(Days.ZERO).getDays());
         assertEquals(1, Days.ONE.plus((Days) null).getDays());
-        
+
         try {
             Days.MAX_VALUE.plus(Days.ONE);
             fail();
@@ -347,9 +347,9 @@ public class TestDays extends TestCase {
         Days result = test2.minus(3);
         assertEquals(2, test2.getDays());
         assertEquals(-1, result.getDays());
-        
+
         assertEquals(1, Days.ONE.minus(0).getDays());
-        
+
         try {
             Days.MIN_VALUE.minus(1);
             fail();
@@ -365,10 +365,10 @@ public class TestDays extends TestCase {
         assertEquals(2, test2.getDays());
         assertEquals(3, test3.getDays());
         assertEquals(-1, result.getDays());
-        
+
         assertEquals(1, Days.ONE.minus(Days.ZERO).getDays());
         assertEquals(1, Days.ONE.minus((Days) null).getDays());
-        
+
         try {
             Days.MIN_VALUE.minus(Days.ONE);
             fail();
@@ -383,7 +383,7 @@ public class TestDays extends TestCase {
         assertEquals(2, test.getDays());
         assertEquals(-6, test.multipliedBy(-3).getDays());
         assertSame(test, test.multipliedBy(1));
-        
+
         Days halfMax = Days.days(Integer.MAX_VALUE / 2 + 1);
         try {
             halfMax.multipliedBy(2);
@@ -402,7 +402,7 @@ public class TestDays extends TestCase {
         assertEquals(2, test.dividedBy(5).getDays());
         assertEquals(2, test.dividedBy(6).getDays());
         assertSame(test, test.dividedBy(1));
-        
+
         try {
             Days.ONE.dividedBy(0);
             fail();
@@ -415,7 +415,7 @@ public class TestDays extends TestCase {
         Days test = Days.days(12);
         assertEquals(-12, test.negated().getDays());
         assertEquals(12, test.getDays());
-        
+
         try {
             Days.MIN_VALUE.negated();
             fail();

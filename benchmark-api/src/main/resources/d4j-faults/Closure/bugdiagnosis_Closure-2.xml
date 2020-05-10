@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-2">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
-					<exception>java.lang.NullPointerException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>6758</number_tests>
-					<failed>1</failed>
-					<passed>6757</passed>
-					<nodes>47213</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/TypeCheck.java">
-					<insert numberlines="3,1">1572-1574,1575</insert>
-					<bugtypes>
-						<id id="1.1" lines="1571,1573,1574">
-							<description>Missing check for null value and else case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-2">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/TypeCheckTest">
+                    <exception>java.lang.NullPointerException</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>6758</number_tests>
+                    <failed>1</failed>
+                    <passed>6757</passed>
+                    <nodes>47213</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/TypeCheck.java">
+                    <insert numberlines="3,1">1572-1574,1575</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="1571,1573,1574">
+                            <description>Missing check for null value and else case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

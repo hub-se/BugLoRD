@@ -21,50 +21,48 @@ import com.google.common.collect.ImmutableSet;
 
 /**
  * Tests for {@link ReplaceIdGenerators}.
- *
-*
  */
 public class ReplaceIdGeneratorsTest extends CompilerTestCase {
-  @Override
-  protected CompilerPass getProcessor(final Compiler compiler) {
-    return new ReplaceIdGenerators(
-        compiler,
-        new ImmutableSet.Builder<String>()
-        .add("goog.events.getUniqueId")
-        .add("goog.place.getUniqueId").build());
-  }
+    @Override
+    protected CompilerPass getProcessor(final Compiler compiler) {
+        return new ReplaceIdGenerators(
+                compiler,
+                new ImmutableSet.Builder<String>()
+                        .add("goog.events.getUniqueId")
+                        .add("goog.place.getUniqueId").build());
+    }
 
-  @Override
-  protected int getNumRepetitions() {
-    return 1;
-  }
+    @Override
+    protected int getNumRepetitions() {
+        return 1;
+    }
 
-  public void testAssign() {
-    test("foo.bar = goog.events.getUniqueId('foo_bar')",
-         "foo.bar = 'a'");
-  }
+    public void testAssign() {
+        test("foo.bar = goog.events.getUniqueId('foo_bar')",
+                "foo.bar = 'a'");
+    }
 
-  public void testObjectLiteral() {
-    test("foo = { bar : goog.events.getUniqueId('foo_bar')}",
-         "foo = { bar : 'a' }");
-  }
+    public void testObjectLiteral() {
+        test("foo = { bar : goog.events.getUniqueId('foo_bar')}",
+                "foo = { bar : 'a' }");
+    }
 
-  public void testTwoNamespaces() {
-    test("foo.bar = goog.events.getUniqueId('foo_bar');\n"
-         + "baz.blah = goog.place.getUniqueId('baz_blah');\n",
-         "foo.bar = 'a';\n"
-         + "baz.blah = 'a'\n");
-  }
+    public void testTwoNamespaces() {
+        test("foo.bar = goog.events.getUniqueId('foo_bar');\n"
+                        + "baz.blah = goog.place.getUniqueId('baz_blah');\n",
+                "foo.bar = 'a';\n"
+                        + "baz.blah = 'a'\n");
+    }
 
-  public void testLocalCall() {
-    testSame(new String[] {
-          "function Foo() { goog.events.getUniqueId('foo'); }"
-        },
-        ReplaceIdGenerators.NON_GLOBAL_ID_GENERATOR_CALL);
-  }
+    public void testLocalCall() {
+        testSame(new String[]{
+                        "function Foo() { goog.events.getUniqueId('foo'); }"
+                },
+                ReplaceIdGenerators.NON_GLOBAL_ID_GENERATOR_CALL);
+    }
 
-  public void testConditionalCall() {
-    testSame(new String[] {"if (x) foo = goog.events.getUniqueId('foo')"},
-             ReplaceIdGenerators.CONDITIONAL_ID_GENERATOR_CALL);
-  }
+    public void testConditionalCall() {
+        testSame(new String[]{"if (x) foo = goog.events.getUniqueId('foo')"},
+                ReplaceIdGenerators.CONDITIONAL_ID_GENERATOR_CALL);
+    }
 }

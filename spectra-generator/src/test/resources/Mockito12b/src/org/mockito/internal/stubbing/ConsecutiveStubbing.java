@@ -19,7 +19,7 @@ public class ConsecutiveStubbing<T> extends BaseStubbing<T> {
         invocationContainerImpl.addConsecutiveAnswer(answer);
         return this;
     }
-    
+
     public DeprecatedOngoingStubbing<T> toAnswer(Answer<?> answer) {
         invocationContainerImpl.addConsecutiveAnswer(answer);
         return this;

@@ -15,9 +15,6 @@
  */
 package org.joda.time.base;
 
-import java.io.Serializable;
-import java.util.Locale;
-
 import org.joda.time.Chronology;
 import org.joda.time.DateTimeField;
 import org.joda.time.DateTimeUtils;
@@ -27,12 +24,15 @@ import org.joda.time.convert.PartialConverter;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.Serializable;
+import java.util.Locale;
+
 /**
  * BasePartial is an abstract implementation of ReadablePartial that stores
  * data in array and <code>Chronology</code> fields.
  * <p>
  * This class should generally not be used directly by API users.
- * The {@link org.joda.time.ReadablePartial} interface should be used when different 
+ * The {@link org.joda.time.ReadablePartial} interface should be used when different
  * kinds of partial objects are to be referenced.
  * <p>
  * BasePartial subclasses may be mutable and not thread-safe.
@@ -44,15 +44,22 @@ public abstract class BasePartial
         extends AbstractPartial
         implements ReadablePartial, Serializable {
 
-    /** Serialization version */
+    /**
+     * Serialization version
+     */
     private static final long serialVersionUID = 2353678632973660L;
 
-    /** The chronology in use */
+    /**
+     * The chronology in use
+     */
     private final Chronology iChronology;
-    /** The values of each field in this partial */
+    /**
+     * The values of each field in this partial
+     */
     private final int[] iValues;
 
     //-----------------------------------------------------------------------
+
     /**
      * Constructs a partial with the current time, using ISOChronology in
      * the default zone to extract the fields.
@@ -73,7 +80,7 @@ public abstract class BasePartial
      * Once the constructor is complete, all further calculations are performed
      * without reference to a timezone (by switching to UTC).
      *
-     * @param chronology  the chronology, null means ISOChronology in the default zone
+     * @param chronology the chronology, null means ISOChronology in the default zone
      */
     protected BasePartial(Chronology chronology) {
         this(DateTimeUtils.currentTimeMillis(), chronology);
@@ -87,7 +94,7 @@ public abstract class BasePartial
      * being initialised. Once the constructor is complete, all further calculations
      * are performed without reference to a timezone (by switching to UTC).
      *
-     * @param instant  the milliseconds from 1970-01-01T00:00:00Z
+     * @param instant the milliseconds from 1970-01-01T00:00:00Z
      */
     protected BasePartial(long instant) {
         this(instant, null);
@@ -101,8 +108,8 @@ public abstract class BasePartial
      * Once the constructor is complete, all further calculations are performed
      * without reference to a timezone (by switching to UTC).
      *
-     * @param instant  the milliseconds from 1970-01-01T00:00:00Z
-     * @param chronology  the chronology, null means ISOChronology in the default zone
+     * @param instant    the milliseconds from 1970-01-01T00:00:00Z
+     * @param chronology the chronology, null means ISOChronology in the default zone
      */
     protected BasePartial(long instant, Chronology chronology) {
         super();
@@ -123,8 +130,8 @@ public abstract class BasePartial
      * Once the constructor is complete, all further calculations are performed
      * without reference to a timezone (by switching to UTC).
      *
-     * @param instant  the datetime object
-     * @param chronology  the chronology, null means use converter
+     * @param instant    the datetime object
+     * @param chronology the chronology, null means use converter
      * @throws IllegalArgumentException if the date is invalid
      */
     protected BasePartial(Object instant, Chronology chronology) {
@@ -148,9 +155,9 @@ public abstract class BasePartial
      * Once the constructor is complete, all further calculations are performed
      * without reference to a timezone (by switching to UTC).
      *
-     * @param instant  the datetime object
-     * @param chronology  the chronology, null means use converter
-     * @param parser  if converting from a String, the given parser is preferred
+     * @param instant    the datetime object
+     * @param chronology the chronology, null means use converter
+     * @param parser     if converting from a String, the given parser is preferred
      * @throws IllegalArgumentException if the date is invalid
      * @since 1.3
      */
@@ -172,8 +179,8 @@ public abstract class BasePartial
      * <p>
      * The array of values is assigned (not cloned) to the new instance.
      *
-     * @param values  the new set of values
-     * @param chronology  the chronology, null means ISOChronology in the default zone
+     * @param values     the new set of values
+     * @param chronology the chronology, null means ISOChronology in the default zone
      * @throws IllegalArgumentException if the values are invalid
      */
     protected BasePartial(int[] values, Chronology chronology) {
@@ -189,8 +196,8 @@ public abstract class BasePartial
      * <p>
      * Data is assigned (not cloned) to the new instance.
      *
-     * @param base  the base partial
-     * @param values  the new set of values, not cloned, null means use base
+     * @param base   the base partial
+     * @param values the new set of values, not cloned, null means use base
      */
     protected BasePartial(BasePartial base, int[] values) {
         super();
@@ -204,8 +211,8 @@ public abstract class BasePartial
      * Data is assigned (not cloned) to the new instance.
      * This should not be used by mutable subclasses.
      *
-     * @param base  the base partial
-     * @param chrono  the chronology to use, null means use base
+     * @param base   the base partial
+     * @param chrono the chronology to use, null means use base
      */
     protected BasePartial(BasePartial base, Chronology chrono) {
         super();
@@ -214,10 +221,11 @@ public abstract class BasePartial
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the value of the field at the specifed index.
-     * 
-     * @param index  the index
+     *
+     * @param index the index
      * @return the value
      * @throws IndexOutOfBoundsException if the index is invalid
      */
@@ -242,7 +250,7 @@ public abstract class BasePartial
      * <p>
      * The {@link Chronology} is the calculation engine behind the partial and
      * provides conversion and validation of the fields in a particular calendar system.
-     * 
+     *
      * @return the chronology, never null
      */
     public Chronology getChronology() {
@@ -250,15 +258,16 @@ public abstract class BasePartial
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Sets the value of the field at the specified index.
      * <p>
      * In version 2.0 and later, this method copies the array into the original.
      * This is because the instance variable has been changed to be final to satisfy the Java Memory Model.
      * This only impacts subclasses that are mutable.
-     * 
-     * @param index  the index
-     * @param value  the value to set
+     *
+     * @param index the index
+     * @param value the value to set
      * @throws IndexOutOfBoundsException if the index is invalid
      */
     protected void setValue(int index, int value) {
@@ -273,8 +282,8 @@ public abstract class BasePartial
      * In version 2.0 and later, this method copies the array into the original.
      * This is because the instance variable has been changed to be final to satisfy the Java Memory Model.
      * This only impacts subclasses that are mutable.
-     * 
-     * @param values  the array of values
+     *
+     * @param values the array of values
      */
     protected void setValues(int[] values) {
         getChronology().validate(this, values);
@@ -282,10 +291,11 @@ public abstract class BasePartial
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Output the date using the specified format pattern.
      *
-     * @param pattern  the pattern specification, null means use <code>toString</code>
+     * @param pattern the pattern specification, null means use <code>toString</code>
      * @see org.joda.time.format.DateTimeFormat
      */
     public String toString(String pattern) {
@@ -298,7 +308,7 @@ public abstract class BasePartial
     /**
      * Output the date using the specified format pattern.
      *
-     * @param pattern  the pattern specification, null means use <code>toString</code>
+     * @param pattern the pattern specification, null means use <code>toString</code>
      * @param locale  Locale to use, null means default
      * @see org.joda.time.format.DateTimeFormat
      */

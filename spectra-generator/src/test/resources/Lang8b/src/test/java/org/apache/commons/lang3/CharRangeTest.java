@@ -18,24 +18,20 @@
  */
 package org.apache.commons.lang3;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
 
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.CharRange}.
  *
  * @version $Id$
  */
-public class CharRangeTest  {
+public class CharRangeTest {
 
     //-----------------------------------------------------------------------
     @Test
@@ -315,7 +311,7 @@ public class CharRangeTest  {
         try {
             @SuppressWarnings("unused")
             boolean contains = range.contains(null);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             assertEquals("The Range must not be null", e.getMessage());
         }
     }
@@ -391,11 +387,11 @@ public class CharRangeTest  {
     @Test
     public void testSerialization() {
         CharRange range = CharRange.is('a');
-        assertEquals(range, SerializationUtils.clone(range)); 
+        assertEquals(range, SerializationUtils.clone(range));
         range = CharRange.isIn('a', 'e');
-        assertEquals(range, SerializationUtils.clone(range)); 
+        assertEquals(range, SerializationUtils.clone(range));
         range = CharRange.isNotIn('a', 'e');
-        assertEquals(range, SerializationUtils.clone(range)); 
+        assertEquals(range, SerializationUtils.clone(range));
     }
 
 }

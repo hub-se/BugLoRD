@@ -15,22 +15,17 @@
  */
 package org.joda.time.field;
 
-import java.util.Locale;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.joda.time.*;
 
-import org.joda.time.DateTimeField;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.DurationFieldType;
-import org.joda.time.LocalTime;
-import org.joda.time.ReadablePartial;
+import java.util.Locale;
 
 /**
  * This class is a JUnit test to test only the UnsupportedDateTimeField class.
  * This set of test cases exercises everything described in the Javadoc for this
  * class.
- * 
+ *
  * @author Jeremy R. Rickard
  */
 public class TestUnsupportedDateTimeField extends TestCase {
@@ -66,11 +61,10 @@ public class TestUnsupportedDateTimeField extends TestCase {
     }
 
     /**
-     * 
      * This test exercises the logic in UnsupportedDateTimeField.getInstance. If
      * getInstance() is invoked twice with: - the same DateTimeFieldType -
      * different duration fields
-     * 
+     * <p>
      * Then the field returned in the first invocation should not be equal to
      * the field returned by the second invocation. In otherwords, the generated
      * instance should be the same for a unique pairing of
@@ -103,7 +97,6 @@ public class TestUnsupportedDateTimeField extends TestCase {
     /**
      * The getName() method should return the same value as the getName() method
      * of the DateTimeFieldType that was used to create the instance.
-     * 
      */
     public void testPublicGetNameMethod() {
         DateTimeField fieldOne = UnsupportedDateTimeField.getInstance(
@@ -129,7 +122,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
     /**
      * According to the JavaDocs, there are two methods that should always
      * return null. * getRangeDurationField() * getLeapDurationField()
-     * 
+     * <p>
      * Ensure that these are in fact null.
      */
 
@@ -181,7 +174,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
         // add(ReadablePartial instant, int fieldIndex, int[] values, int
         // valueToAdd)
         try {
-            fieldOne.add(localTime, 0, new int[] { 0, 100 }, 100);
+            fieldOne.add(localTime, 0, new int[]{0, 100}, 100);
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
             assertTrue(true);
@@ -196,7 +189,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
         // addWrapField(ReadablePartial instant, int fieldIndex, int[] values,
         // int valueToAdd)
         try {
-            fieldOne.addWrapField(localTime, 0, new int[] { 0, 100 }, 100);
+            fieldOne.addWrapField(localTime, 0, new int[]{0, 100}, 100);
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
             assertTrue(true);
@@ -204,7 +197,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
         // addWrapPartial(ReadablePartial instant, int fieldIndex, int[] values,
         // int valueToAdd)
         try {
-            fieldOne.addWrapPartial(localTime, 0, new int[] { 0, 100 }, 100);
+            fieldOne.addWrapPartial(localTime, 0, new int[]{0, 100}, 100);
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
             assertTrue(true);
@@ -368,7 +361,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
         // is unsupported and should always thrown an
         // UnsupportedOperationException
         try {
-            fieldOne.getMaximumValue(localTime, new int[] { 0 });
+            fieldOne.getMaximumValue(localTime, new int[]{0});
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
             assertTrue(true);
@@ -406,7 +399,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
         // int[] values) is unsupported
         // and should always thrown an UnsupportedOperationException
         try {
-            fieldOne.getMinimumValue(localTime, new int[] { 0 });
+            fieldOne.getMinimumValue(localTime, new int[]{0});
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
             assertTrue(true);
@@ -517,7 +510,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
         // int newValue) is unsupported and
         // should always thrown an UnsupportedOperationException
         try {
-            fieldOne.set(localTime, 0, new int[] { 0 }, 10000);
+            fieldOne.set(localTime, 0, new int[]{0}, 10000);
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
             assertTrue(true);
@@ -530,7 +523,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
         // Locale locale) is unsupported and
         // should always thrown an UnsupportedOperationException
         try {
-            fieldOne.set(localTime, 0, new int[] { 0 },
+            fieldOne.set(localTime, 0, new int[]{0},
                     "Unsupported Operation", Locale.getDefault());
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
@@ -570,7 +563,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
             long firstComputation = hoursDuration.add(currentTime, 100);
             long secondComputation = fieldTwo.add(currentTime,
                     100);
-            assertEquals(firstComputation,secondComputation);
+            assertEquals(firstComputation, secondComputation);
         } catch (UnsupportedOperationException e) {
             assertTrue(false);
         }
@@ -593,7 +586,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
             long secondComputation = fieldTwo.add(currentTime,
                     1000L);
             assertTrue(firstComputation == secondComputation);
-            assertEquals(firstComputation,secondComputation);
+            assertEquals(firstComputation, secondComputation);
         } catch (UnsupportedOperationException e) {
             assertTrue(false);
         }
@@ -613,7 +606,7 @@ public class TestUnsupportedDateTimeField extends TestCase {
         try {
             int firstDifference = hoursDuration.getDifference(100000L, 1000L);
             int secondDifference = fieldTwo.getDifference(100000L, 1000L);
-            assertEquals(firstDifference,secondDifference);
+            assertEquals(firstDifference, secondDifference);
         } catch (UnsupportedOperationException e) {
             assertTrue(false);
         }
@@ -633,18 +626,17 @@ public class TestUnsupportedDateTimeField extends TestCase {
         try {
             long firstDifference = hoursDuration.getDifference(100000L, 1000L);
             long secondDifference = fieldTwo.getDifference(100000L, 1000L);
-            assertEquals(firstDifference,secondDifference);
+            assertEquals(firstDifference, secondDifference);
         } catch (UnsupportedOperationException e) {
             assertTrue(false);
         }
     }
 
     /**
-    * The toString method should return a suitable debug message (not null).
-    * Ensure that the toString method returns a string with length greater than
-    * 0 (and not null)
-    * 
-    */
+     * The toString method should return a suitable debug message (not null).
+     * Ensure that the toString method returns a string with length greater than
+     * 0 (and not null)
+     */
     public void testToString() {
         DateTimeField fieldOne = UnsupportedDateTimeField.getInstance(
                 dateTimeFieldTypeOne, UnsupportedDurationField

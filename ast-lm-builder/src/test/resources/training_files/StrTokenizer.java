@@ -17,11 +17,7 @@
 
 package org.apache.commons.lang.text;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * Tokenizes a string based based on delimiters (separators)
@@ -56,7 +52,7 @@ import java.util.NoSuchElementException;
  * "a, ", b ,", c" - Three tokens "a, " , " b ", ", c" (quoted text untouched)
  * </pre>
  * <p>
- *
+ * <p>
  * This tokenizer has the following properties and options:
  *
  * <table>
@@ -83,13 +79,14 @@ import java.util.NoSuchElementException;
  * @author Matthew Inger
  * @author Stephen Colebourne
  * @author Gary D. Gregory
- * @since 2.2
  * @version $Id$
+ * @since 2.2
  */
 public class StrTokenizer implements ListIterator, Cloneable {
 
     private static final StrTokenizer CSV_TOKENIZER_PROTOTYPE;
     private static final StrTokenizer TSV_TOKENIZER_PROTOTYPE;
+
     static {
         CSV_TOKENIZER_PROTOTYPE = new StrTokenizer();
         CSV_TOKENIZER_PROTOTYPE.setDelimiterMatcher(StrMatcher.commaMatcher());
@@ -108,32 +105,50 @@ public class StrTokenizer implements ListIterator, Cloneable {
         TSV_TOKENIZER_PROTOTYPE.setIgnoreEmptyTokens(false);
     }
 
-    /** The text to work on. */
+    /**
+     * The text to work on.
+     */
     private char chars[];
-    /** The parsed tokens */
+    /**
+     * The parsed tokens
+     */
     private String tokens[];
-    /** The current iteration position */
+    /**
+     * The current iteration position
+     */
     private int tokenPos;
 
-    /** The delimiter matcher */
+    /**
+     * The delimiter matcher
+     */
     private StrMatcher delimMatcher = StrMatcher.splitMatcher();
-    /** The quote matcher */
+    /**
+     * The quote matcher
+     */
     private StrMatcher quoteMatcher = StrMatcher.noneMatcher();
-    /** The ignored matcher */
+    /**
+     * The ignored matcher
+     */
     private StrMatcher ignoredMatcher = StrMatcher.noneMatcher();
-    /** The trimmer matcher */
+    /**
+     * The trimmer matcher
+     */
     private StrMatcher trimmerMatcher = StrMatcher.noneMatcher();
 
-    /** Whether to return empty tokens as null */
+    /**
+     * Whether to return empty tokens as null
+     */
     private boolean emptyAsNull = false;
-    /** Whether to ignore empty tokens */
+    /**
+     * Whether to ignore empty tokens
+     */
     private boolean ignoreEmptyTokens = true;
 
     //-----------------------------------------------------------------------
 
     /**
      * Returns a clone of <code>CSV_TOKENIZER_PROTOTYPE</code>.
-     * 
+     *
      * @return a clone of <code>CSV_TOKENIZER_PROTOTYPE</code>.
      */
     private static StrTokenizer getCSVClone() {
@@ -147,6 +162,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * the setTrimmer method).
      * <p>
      * You must call a "reset" method to set the string which you want to parse.
+     *
      * @return a new tokenizer instance which parses Comma Seperated Value strings
      */
     public static StrTokenizer getCSVInstance() {
@@ -159,7 +175,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * will be trim whitespace from both ends (which can be overriden with
      * the setTrimmer method).
      *
-     * @param input  the text to parse
+     * @param input the text to parse
      * @return a new tokenizer instance which parses Comma Seperated Value strings
      */
     public static StrTokenizer getCSVInstance(String input) {
@@ -174,7 +190,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * will be trim whitespace from both ends (which can be overriden with
      * the setTrimmer method).
      *
-     * @param input  the text to parse
+     * @param input the text to parse
      * @return a new tokenizer instance which parses Comma Seperated Value strings
      */
     public static StrTokenizer getCSVInstance(char[] input) {
@@ -185,7 +201,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
 
     /**
      * Returns a clone of <code>TSV_TOKENIZER_PROTOTYPE</code>.
-     * 
+     *
      * @return a clone of <code>TSV_TOKENIZER_PROTOTYPE</code>.
      */
     private static StrTokenizer getTSVClone() {
@@ -199,6 +215,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * (which can be overriden with the setTrimmer method).
      * <p>
      * You must call a "reset" method to set the string which you want to parse.
+     *
      * @return a new tokenizer instance which parses Tab Seperated Value strings.
      */
     public static StrTokenizer getTSVInstance() {
@@ -209,7 +226,8 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * Gets a new tokenizer instance which parses Tab Seperated Value strings.
      * The default for CSV processing will be trim whitespace from both ends
      * (which can be overriden with the setTrimmer method).
-     * @param input  the string to parse
+     *
+     * @param input the string to parse
      * @return a new tokenizer instance which parses Tab Seperated Value strings.
      */
     public static StrTokenizer getTSVInstance(String input) {
@@ -222,7 +240,8 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * Gets a new tokenizer instance which parses Tab Seperated Value strings.
      * The default for CSV processing will be trim whitespace from both ends
      * (which can be overriden with the setTrimmer method).
-     * @param input  the string to parse
+     *
+     * @param input the string to parse
      * @return a new tokenizer instance which parses Tab Seperated Value strings.
      */
     public static StrTokenizer getTSVInstance(char[] input) {
@@ -232,6 +251,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Constructs a tokenizer splitting on space, tab, newline and formfeed
      * as per StringTokenizer, but with no text to tokenize.
@@ -247,7 +267,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * Constructs a tokenizer splitting on space, tab, newline and formfeed
      * as per StringTokenizer.
      *
-     * @param input  the string which is to be parsed
+     * @param input the string which is to be parsed
      */
     public StrTokenizer(String input) {
         super();
@@ -261,8 +281,8 @@ public class StrTokenizer implements ListIterator, Cloneable {
     /**
      * Constructs a tokenizer splitting on the specified delimiter character.
      *
-     * @param input  the string which is to be parsed
-     * @param delim  the field delimiter character
+     * @param input the string which is to be parsed
+     * @param delim the field delimiter character
      */
     public StrTokenizer(String input, char delim) {
         this(input);
@@ -272,8 +292,8 @@ public class StrTokenizer implements ListIterator, Cloneable {
     /**
      * Constructs a tokenizer splitting on the specified delimiter string.
      *
-     * @param input  the string which is to be parsed
-     * @param delim  the field delimiter string
+     * @param input the string which is to be parsed
+     * @param delim the field delimiter string
      */
     public StrTokenizer(String input, String delim) {
         this(input);
@@ -283,8 +303,8 @@ public class StrTokenizer implements ListIterator, Cloneable {
     /**
      * Constructs a tokenizer splitting using the specified delimiter matcher.
      *
-     * @param input  the string which is to be parsed
-     * @param delim  the field delimiter matcher
+     * @param input the string which is to be parsed
+     * @param delim the field delimiter matcher
      */
     public StrTokenizer(String input, StrMatcher delim) {
         this(input);
@@ -295,9 +315,9 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * Constructs a tokenizer splitting on the specified delimiter character
      * and handling quotes using the specified quote character.
      *
-     * @param input  the string which is to be parsed
-     * @param delim  the field delimiter character
-     * @param quote  the field quoted string character
+     * @param input the string which is to be parsed
+     * @param delim the field delimiter character
+     * @param quote the field quoted string character
      */
     public StrTokenizer(String input, char delim, char quote) {
         this(input, delim);
@@ -308,9 +328,9 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * Constructs a tokenizer splitting using the specified delimiter matcher
      * and handling quotes using the specified quote matcher.
      *
-     * @param input  the string which is to be parsed
-     * @param delim  the field delimiter matcher
-     * @param quote  the field quoted string matcher
+     * @param input the string which is to be parsed
+     * @param delim the field delimiter matcher
+     * @param quote the field quoted string matcher
      */
     public StrTokenizer(String input, StrMatcher delim, StrMatcher quote) {
         this(input, delim);
@@ -324,7 +344,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * The input character array is not cloned, and must not be altered after
      * passing in to this method.
      *
-     * @param input  the string which is to be parsed, not cloned
+     * @param input the string which is to be parsed, not cloned
      */
     public StrTokenizer(char[] input) {
         super();
@@ -337,7 +357,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * The input character array is not cloned, and must not be altered after
      * passing in to this method.
      *
-     * @param input  the string which is to be parsed, not cloned
+     * @param input the string which is to be parsed, not cloned
      * @param delim the field delimiter character
      */
     public StrTokenizer(char[] input, char delim) {
@@ -351,7 +371,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * The input character array is not cloned, and must not be altered after
      * passing in to this method.
      *
-     * @param input  the string which is to be parsed, not cloned
+     * @param input the string which is to be parsed, not cloned
      * @param delim the field delimiter string
      */
     public StrTokenizer(char[] input, String delim) {
@@ -365,8 +385,8 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * The input character array is not cloned, and must not be altered after
      * passing in to this method.
      *
-     * @param input  the string which is to be parsed, not cloned
-     * @param delim  the field delimiter matcher
+     * @param input the string which is to be parsed, not cloned
+     * @param delim the field delimiter matcher
      */
     public StrTokenizer(char[] input, StrMatcher delim) {
         this(input);
@@ -380,9 +400,9 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * The input character array is not cloned, and must not be altered after
      * passing in to this method.
      *
-     * @param input  the string which is to be parsed, not cloned
-     * @param delim  the field delimiter character
-     * @param quote  the field quoted string character
+     * @param input the string which is to be parsed, not cloned
+     * @param delim the field delimiter character
+     * @param quote the field quoted string character
      */
     public StrTokenizer(char[] input, char delim, char quote) {
         this(input, delim);
@@ -396,9 +416,9 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * The input character array is not cloned, and must not be altered after
      * passing in to this method.
      *
-     * @param input  the string which is to be parsed, not cloned
-     * @param delim  the field delimiter character
-     * @param quote  the field quoted string character
+     * @param input the string which is to be parsed, not cloned
+     * @param delim the field delimiter character
+     * @param quote the field quoted string character
      */
     public StrTokenizer(char[] input, StrMatcher delim, StrMatcher quote) {
         this(input, delim);
@@ -407,6 +427,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
 
     // API
     //-----------------------------------------------------------------------
+
     /**
      * Gets the number of tokens found in the String.
      *
@@ -483,7 +504,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * In this manner you can re-use a tokenizer with the same settings
      * on multiple input lines.
      *
-     * @param input  the new string to tokenize, null sets no text to parse
+     * @param input the new string to tokenize, null sets no text to parse
      * @return this, to enable chaining
      */
     public StrTokenizer reset(String input) {
@@ -504,7 +525,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * The input character array is not cloned, and must not be altered after
      * passing in to this method.
      *
-     * @param input  the new character array to tokenize, not cloned, null sets no text to parse
+     * @param input the new character array to tokenize, not cloned, null sets no text to parse
      * @return this, to enable chaining
      */
     public StrTokenizer reset(char[] input) {
@@ -515,6 +536,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
 
     // ListIterator
     //-----------------------------------------------------------------------
+
     /**
      * Checks whether there are any more tokens.
      *
@@ -588,6 +610,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
 
     /**
      * Unsupported ListIterator operation.
+     *
      * @param obj this parameter ignored.
      * @throws UnsupportedOperationException always
      */
@@ -597,6 +620,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
 
     /**
      * Unsupported ListIterator operation.
+     *
      * @param obj this parameter ignored.
      * @throws UnsupportedOperationException always
      */
@@ -606,6 +630,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
 
     // Implementation
     //-----------------------------------------------------------------------
+
     /**
      * Checks if tokenization has been done, and if not then do it.
      */
@@ -636,9 +661,9 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * <code>StrTokenizer</code> will always pass a zero offset and a count
      * equal to the length of the array to this method, however a subclass
      * may pass other values, or even an entirely different array.
-     * 
+     *
      * @param chars  the character array being tokenized, may be null
-     * @param offset  the start position within the character array, must be valid
+     * @param offset the start position within the character array, must be valid
      * @param count  the number of characters to tokenize, must be valid
      * @return the modifiable list of String tokens, unmodifiable if null array or zero count
      */
@@ -649,12 +674,12 @@ public class StrTokenizer implements ListIterator, Cloneable {
         StrBuilder buf = new StrBuilder();
         List tokens = new ArrayList();
         int pos = offset;
-        
+
         // loop around the entire buffer
         while (pos >= 0 && pos < count) {
             // find next token
             pos = readNextToken(chars, pos, count, buf, tokens);
-            
+
             // handle case where end of string is a delimiter
             if (pos >= count) {
                 addToken(tokens, "");
@@ -666,7 +691,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
     /**
      * Adds a token to a list, paying attention to the parameters we've set.
      *
-     * @param list  the list to add to
+     * @param list the list to add to
      * @param tok  the token to add
      */
     private void addToken(List list, String tok) {
@@ -684,13 +709,13 @@ public class StrTokenizer implements ListIterator, Cloneable {
     /**
      * Reads character by character through the String to get the next token.
      *
-     * @param chars  the character array being tokenized
-     * @param start  the first character of field
-     * @param len  the length of the character array being tokenized
-     * @param workArea  a temporary work area
-     * @param tokens  the list of parsed tokens
+     * @param chars    the character array being tokenized
+     * @param start    the first character of field
+     * @param len      the length of the character array being tokenized
+     * @param workArea a temporary work area
+     * @param tokens   the list of parsed tokens
      * @return the starting position of the next field (the character
-     *  immediately after the delimiter), or -1 if end of string found
+     * immediately after the delimiter), or -1 if end of string found
      */
     private int readNextToken(char[] chars, int start, int len, StrBuilder workArea, List tokens) {
         // skip all leading whitespace, unless it is the
@@ -700,26 +725,26 @@ public class StrTokenizer implements ListIterator, Cloneable {
                     getIgnoredMatcher().isMatch(chars, start, start, len),
                     getTrimmerMatcher().isMatch(chars, start, start, len));
             if (removeLen == 0 ||
-                getDelimiterMatcher().isMatch(chars, start, start, len) > 0 ||
-                getQuoteMatcher().isMatch(chars, start, start, len) > 0) {
+                    getDelimiterMatcher().isMatch(chars, start, start, len) > 0 ||
+                    getQuoteMatcher().isMatch(chars, start, start, len) > 0) {
                 break;
             }
             start += removeLen;
         }
-        
+
         // handle reaching end
         if (start >= len) {
             addToken(tokens, "");
             return -1;
         }
-        
+
         // handle empty token
         int delimLen = getDelimiterMatcher().isMatch(chars, start, start, len);
         if (delimLen > 0) {
             addToken(tokens, "");
             return start + delimLen;
         }
-        
+
         // handle found token
         int quoteLen = getQuoteMatcher().isMatch(chars, start, start, len);
         if (quoteLen > 0) {
@@ -731,34 +756,33 @@ public class StrTokenizer implements ListIterator, Cloneable {
     /**
      * Reads a possibly quoted string token.
      *
-     * @param chars  the character array being tokenized
-     * @param start  the first character of field
-     * @param len  the length of the character array being tokenized
-     * @param workArea  a temporary work area
-     * @param tokens  the list of parsed tokens
-     * @param quoteStart  the start position of the matched quote, 0 if no quoting
-     * @param quoteLen  the length of the matched quote, 0 if no quoting
+     * @param chars      the character array being tokenized
+     * @param start      the first character of field
+     * @param len        the length of the character array being tokenized
+     * @param workArea   a temporary work area
+     * @param tokens     the list of parsed tokens
+     * @param quoteStart the start position of the matched quote, 0 if no quoting
+     * @param quoteLen   the length of the matched quote, 0 if no quoting
      * @return the starting position of the next field (the character
-     *  immediately after the delimiter, or if end of string found,
-     *  then the length of string
+     * immediately after the delimiter, or if end of string found,
+     * then the length of string
      */
-    private int readWithQuotes(char[] chars, int start, int len, StrBuilder workArea, 
-                               List tokens, int quoteStart, int quoteLen) 
-    {
+    private int readWithQuotes(char[] chars, int start, int len, StrBuilder workArea,
+                               List tokens, int quoteStart, int quoteLen) {
         // Loop until we've found the end of the quoted
         // string or the end of the input
         workArea.clear();
         int pos = start;
         boolean quoting = (quoteLen > 0);
         int trimStart = 0;
-        
+
         while (pos < len) {
             // quoting mode can occur several times throughout a string
             // we must switch between quoting and non-quoting until we
             // encounter a non-quoted delimiter, or end of string
             if (quoting) {
                 // In quoting mode
-                
+
                 // If we've found a quote character, see if it's
                 // followed by a second quote.  If so, then we need
                 // to actually put the quote character into the token
@@ -771,20 +795,20 @@ public class StrTokenizer implements ListIterator, Cloneable {
                         trimStart = workArea.size();
                         continue;
                     }
-                    
+
                     // end of quoting
                     quoting = false;
                     pos += quoteLen;
                     continue;
                 }
-                
+
                 // copy regular character from inside quotes
                 workArea.append(chars[pos++]);
                 trimStart = workArea.size();
-                
+
             } else {
                 // Not in quoting mode
-                
+
                 // check for delimiter, and thus end of token
                 int delimLen = getDelimiterMatcher().isMatch(chars, pos, start, len);
                 if (delimLen > 0) {
@@ -792,7 +816,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
                     addToken(tokens, workArea.substring(0, trimStart));
                     return pos + delimLen;
                 }
-                
+
                 // check for quote, and thus back into quoting mode
                 if (quoteLen > 0) {
                     if (isQuote(chars, pos, len, quoteStart, quoteLen)) {
@@ -801,14 +825,14 @@ public class StrTokenizer implements ListIterator, Cloneable {
                         continue;
                     }
                 }
-                
+
                 // check for ignored (outside quotes), and ignore
                 int ignoredLen = getIgnoredMatcher().isMatch(chars, pos, start, len);
                 if (ignoredLen > 0) {
                     pos += ignoredLen;
                     continue;
                 }
-                
+
                 // check for trimmed character
                 // don't yet know if its at the end, so copy to workArea
                 // use trimStart to keep track of trim at the end
@@ -818,13 +842,13 @@ public class StrTokenizer implements ListIterator, Cloneable {
                     pos += trimmedLen;
                     continue;
                 }
-                
+
                 // copy regular character from outside quotes
                 workArea.append(chars[pos++]);
                 trimStart = workArea.size();
             }
         }
-        
+
         // return condition when end of string found
         addToken(tokens, workArea.substring(0, trimStart));
         return -1;
@@ -834,11 +858,11 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * Checks if the characters at the index specified match the quote
      * already matched in readNextToken().
      *
-     * @param chars  the character array being tokenized
-     * @param pos  the position to check for a quote
-     * @param len  the length of the character array being tokenized
-     * @param quoteStart  the start position of the matched quote, 0 if no quoting
-     * @param quoteLen  the length of the matched quote, 0 if no quoting
+     * @param chars      the character array being tokenized
+     * @param pos        the position to check for a quote
+     * @param len        the length of the character array being tokenized
+     * @param quoteStart the start position of the matched quote, 0 if no quoting
+     * @param quoteLen   the length of the matched quote, 0 if no quoting
      * @return true if a quote is matched
      */
     private boolean isQuote(char[] chars, int pos, int len, int quoteStart, int quoteLen) {
@@ -852,6 +876,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
 
     // Delimiter
     //-----------------------------------------------------------------------
+
     /**
      * Gets the field delimiter matcher.
      *
@@ -866,7 +891,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * <p>
      * The delimitier is used to separate one token from another.
      *
-     * @param delim  the delimiter matcher to use
+     * @param delim the delimiter matcher to use
      * @return this, to enable chaining
      */
     public StrTokenizer setDelimiterMatcher(StrMatcher delim) {
@@ -881,7 +906,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
     /**
      * Sets the field delimiter character.
      *
-     * @param delim  the delimiter character to use
+     * @param delim the delimiter character to use
      * @return this, to enable chaining
      */
     public StrTokenizer setDelimiterChar(char delim) {
@@ -891,7 +916,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
     /**
      * Sets the field delimiter string.
      *
-     * @param delim  the delimiter string to use
+     * @param delim the delimiter string to use
      * @return this, to enable chaining
      */
     public StrTokenizer setDelimiterString(String delim) {
@@ -900,6 +925,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
 
     // Quote
     //-----------------------------------------------------------------------
+
     /**
      * Gets the quote matcher currently in use.
      * <p>
@@ -919,7 +945,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * The quote character is used to wrap data between the tokens.
      * This enables delimiters to be entered as data.
      *
-     * @param quote  the quote matcher to use, null ignored
+     * @param quote the quote matcher to use, null ignored
      * @return this, to enable chaining
      */
     public StrTokenizer setQuoteMatcher(StrMatcher quote) {
@@ -935,7 +961,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * The quote character is used to wrap data between the tokens.
      * This enables delimiters to be entered as data.
      *
-     * @param quote  the quote character to use
+     * @param quote the quote character to use
      * @return this, to enable chaining
      */
     public StrTokenizer setQuoteChar(char quote) {
@@ -944,6 +970,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
 
     // Ignored
     //-----------------------------------------------------------------------
+
     /**
      * Gets the ignored character matcher.
      * <p>
@@ -963,7 +990,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * These characters are ignored when parsing the String, unless they are
      * within a quoted region.
      *
-     * @param ignored  the ignored matcher to use, null ignored
+     * @param ignored the ignored matcher to use, null ignored
      * @return this, to enable chaining
      */
     public StrTokenizer setIgnoredMatcher(StrMatcher ignored) {
@@ -979,7 +1006,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * This character is ignored when parsing the String, unless it is
      * within a quoted region.
      *
-     * @param ignored  the ignored character to use
+     * @param ignored the ignored character to use
      * @return this, to enable chaining
      */
     public StrTokenizer setIgnoredChar(char ignored) {
@@ -988,6 +1015,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
 
     // Trimmer
     //-----------------------------------------------------------------------
+
     /**
      * Gets the trimmer character matcher.
      * <p>
@@ -1007,7 +1035,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * These characters are trimmed off on each side of the delimiter
      * until the token or quote is found.
      *
-     * @param trimmer  the trimmer matcher to use, null ignored
+     * @param trimmer the trimmer matcher to use, null ignored
      * @return this, to enable chaining
      */
     public StrTokenizer setTrimmerMatcher(StrMatcher trimmer) {
@@ -1018,6 +1046,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets whether the tokenizer currently returns empty tokens as null.
      * The default for this property is false.
@@ -1032,7 +1061,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * Sets whether the tokenizer should return empty tokens as null.
      * The default for this property is false.
      *
-     * @param emptyAsNull  whether empty tokens are returned as null
+     * @param emptyAsNull whether empty tokens are returned as null
      * @return this, to enable chaining
      */
     public StrTokenizer setEmptyTokenAsNull(boolean emptyAsNull) {
@@ -1041,6 +1070,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets whether the tokenizer currently ignores empty tokens.
      * The default for this property is false.
@@ -1055,7 +1085,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
      * Sets whether the tokenizer should ignore and not return empty tokens.
      * The default for this property is false.
      *
-     * @param ignoreEmptyTokens  whether empty tokens are not returned
+     * @param ignoreEmptyTokens whether empty tokens are not returned
      * @return this, to enable chaining
      */
     public StrTokenizer setIgnoreEmptyTokens(boolean ignoreEmptyTokens) {
@@ -1064,6 +1094,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the String content that the tokenizer is parsing.
      *
@@ -1077,11 +1108,12 @@ public class StrTokenizer implements ListIterator, Cloneable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Creates a new instance of this Tokenizer. The new instance is reset so
      * that it will be at the start of the token list.
      * If a {@link CloneNotSupportedException} is caught, return <code>null</code>.
-     * 
+     *
      * @return a new instance of this Tokenizer which has been reset.
      */
     public Object clone() {
@@ -1095,7 +1127,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
     /**
      * Creates a new instance of this Tokenizer. The new instance is reset so that
      * it will be at the start of the token list.
-     * 
+     *
      * @return a new instance of this Tokenizer which has been reset.
      * @throws CloneNotSupportedException if there is a problem cloning
      */
@@ -1109,6 +1141,7 @@ public class StrTokenizer implements ListIterator, Cloneable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the String content that the tokenizer is parsing.
      *

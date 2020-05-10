@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -50,29 +50,24 @@ import java.io.Reader;
 
 /**
  * This class implements the JavaScript scanner.
- *
+ * <p>
  * It is based on the C source files jsscan.c and jsscan.h
  * in the jsref package.
  *
  * @see Parser
- *
-*
-*
  */
 
-public class TokenStream
-{
+public class TokenStream {
     /*
      * For chars - because we need something out-of-range
      * to check.  (And checking EOF by exception is annoying.)
      * Note distinction from EOF token type!
      */
     private final static int
-        EOF_CHAR = -1;
+            EOF_CHAR = -1;
 
     public TokenStream(Parser parser, Reader sourceReader, String sourceString,
-                int lineno)
-    {
+                       int lineno) {
         this.parser = parser;
         this.lineno = lineno;
         if (sourceReader != null) {
@@ -92,8 +87,7 @@ public class TokenStream
      * TokenStream; if getToken has been called since the passed token
      * was scanned, the op or string printed may be incorrect.
      */
-    String tokenToString(int token)
-    {
+    String tokenToString(int token) {
         if (Token.printTrees) {
             String name = Token.name(token);
 
@@ -112,184 +106,398 @@ public class TokenStream
         return "";
     }
 
-    public static boolean isKeyword(String s)
-    {
+    public static boolean isKeyword(String s) {
         return Token.EOF != stringToKeyword(s);
     }
 
-    private static int stringToKeyword(String name)
-    {
+    private static int stringToKeyword(String name) {
 // #string_id_map#
 // The following assumes that Token.EOF == 0
         final int
-            Id_break         = Token.BREAK,
-            Id_case          = Token.CASE,
-            Id_continue      = Token.CONTINUE,
-            Id_default       = Token.DEFAULT,
-            Id_delete        = Token.DELPROP,
-            Id_do            = Token.DO,
-            Id_else          = Token.ELSE,
-            Id_export        = Token.EXPORT,
-            Id_false         = Token.FALSE,
-            Id_for           = Token.FOR,
-            Id_function      = Token.FUNCTION,
-            Id_if            = Token.IF,
-            Id_in            = Token.IN,
-            Id_new           = Token.NEW,
-            Id_null          = Token.NULL,
-            Id_return        = Token.RETURN,
-            Id_switch        = Token.SWITCH,
-            Id_this          = Token.THIS,
-            Id_true          = Token.TRUE,
-            Id_typeof        = Token.TYPEOF,
-            Id_var           = Token.VAR,
-            Id_void          = Token.VOID,
-            Id_while         = Token.WHILE,
-            Id_with          = Token.WITH,
+                Id_break = Token.BREAK,
+                Id_case = Token.CASE,
+                Id_continue = Token.CONTINUE,
+                Id_default = Token.DEFAULT,
+                Id_delete = Token.DELPROP,
+                Id_do = Token.DO,
+                Id_else = Token.ELSE,
+                Id_export = Token.EXPORT,
+                Id_false = Token.FALSE,
+                Id_for = Token.FOR,
+                Id_function = Token.FUNCTION,
+                Id_if = Token.IF,
+                Id_in = Token.IN,
+                Id_new = Token.NEW,
+                Id_null = Token.NULL,
+                Id_return = Token.RETURN,
+                Id_switch = Token.SWITCH,
+                Id_this = Token.THIS,
+                Id_true = Token.TRUE,
+                Id_typeof = Token.TYPEOF,
+                Id_var = Token.VAR,
+                Id_void = Token.VOID,
+                Id_while = Token.WHILE,
+                Id_with = Token.WITH,
 
-            // the following are #ifdef RESERVE_JAVA_KEYWORDS in jsscan.c
-            Id_abstract      = Token.RESERVED,
-            Id_boolean       = Token.RESERVED,
-            Id_byte          = Token.RESERVED,
-            Id_catch         = Token.CATCH,
-            Id_char          = Token.RESERVED,
-            Id_class         = Token.RESERVED,
-            Id_const         = Token.CONST,
-            Id_debugger      = Token.DEBUGGER,
-            Id_double        = Token.RESERVED,
-            Id_enum          = Token.RESERVED,
-            Id_extends       = Token.RESERVED,
-            Id_final         = Token.RESERVED,
-            Id_finally       = Token.FINALLY,
-            Id_float         = Token.RESERVED,
-            Id_goto          = Token.RESERVED,
-            Id_implements    = Token.RESERVED,
-            Id_import        = Token.IMPORT,
-            Id_instanceof    = Token.INSTANCEOF,
-            Id_int           = Token.RESERVED,
-            Id_interface     = Token.RESERVED,
-            Id_long          = Token.RESERVED,
-            Id_native        = Token.RESERVED,
-            Id_package       = Token.RESERVED,
-            Id_private       = Token.RESERVED,
-            Id_protected     = Token.RESERVED,
-            Id_public        = Token.RESERVED,
-            Id_short         = Token.RESERVED,
-            Id_static        = Token.RESERVED,
-            Id_super         = Token.RESERVED,
-            Id_synchronized  = Token.RESERVED,
-            Id_throw         = Token.THROW,
-            Id_throws        = Token.RESERVED,
-            Id_transient     = Token.RESERVED,
-            Id_try           = Token.TRY,
-            Id_volatile      = Token.RESERVED;
+                // the following are #ifdef RESERVE_JAVA_KEYWORDS in jsscan.c
+                Id_abstract = Token.RESERVED,
+                Id_boolean = Token.RESERVED,
+                Id_byte = Token.RESERVED,
+                Id_catch = Token.CATCH,
+                Id_char = Token.RESERVED,
+                Id_class = Token.RESERVED,
+                Id_const = Token.CONST,
+                Id_debugger = Token.DEBUGGER,
+                Id_double = Token.RESERVED,
+                Id_enum = Token.RESERVED,
+                Id_extends = Token.RESERVED,
+                Id_final = Token.RESERVED,
+                Id_finally = Token.FINALLY,
+                Id_float = Token.RESERVED,
+                Id_goto = Token.RESERVED,
+                Id_implements = Token.RESERVED,
+                Id_import = Token.IMPORT,
+                Id_instanceof = Token.INSTANCEOF,
+                Id_int = Token.RESERVED,
+                Id_interface = Token.RESERVED,
+                Id_long = Token.RESERVED,
+                Id_native = Token.RESERVED,
+                Id_package = Token.RESERVED,
+                Id_private = Token.RESERVED,
+                Id_protected = Token.RESERVED,
+                Id_public = Token.RESERVED,
+                Id_short = Token.RESERVED,
+                Id_static = Token.RESERVED,
+                Id_super = Token.RESERVED,
+                Id_synchronized = Token.RESERVED,
+                Id_throw = Token.THROW,
+                Id_throws = Token.RESERVED,
+                Id_transient = Token.RESERVED,
+                Id_try = Token.TRY,
+                Id_volatile = Token.RESERVED;
 
         int id;
         String s = name;
 // #generated# Last update: 2001-06-01 17:45:01 CEST
-        L0: { id = 0; String X = null; int c;
-            L: switch (s.length()) {
-            case 2: c=s.charAt(1);
-                if (c=='f') { if (s.charAt(0)=='i') {id=Id_if; break L0;} }
-                else if (c=='n') { if (s.charAt(0)=='i') {id=Id_in; break L0;} }
-                else if (c=='o') { if (s.charAt(0)=='d') {id=Id_do; break L0;} }
-                break L;
-            case 3: switch (s.charAt(0)) {
-                case 'f': if (s.charAt(2)=='r' && s.charAt(1)=='o') {id=Id_for; break L0;} break L;
-                case 'i': if (s.charAt(2)=='t' && s.charAt(1)=='n') {id=Id_int; break L0;} break L;
-                case 'n': if (s.charAt(2)=='w' && s.charAt(1)=='e') {id=Id_new; break L0;} break L;
-                case 't': if (s.charAt(2)=='y' && s.charAt(1)=='r') {id=Id_try; break L0;} break L;
-                case 'v': if (s.charAt(2)=='r' && s.charAt(1)=='a') {id=Id_var; break L0;} break L;
-                } break L;
-            case 4: switch (s.charAt(0)) {
-                case 'b': X="byte";id=Id_byte; break L;
-                case 'c': c=s.charAt(3);
-                    if (c=='e') { if (s.charAt(2)=='s' && s.charAt(1)=='a') {
-                            id=Id_case; break L0;} }
-                    else if (c=='r') { if (s.charAt(2)=='a' && s.charAt(1)=='h') {
-                            id=Id_char; break L0;} }
+        L0:
+        {
+            id = 0;
+            String X = null;
+            int c;
+            L:
+            switch (s.length()) {
+                case 2:
+                    c = s.charAt(1);
+                    if (c == 'f') {
+                        if (s.charAt(0) == 'i') {
+                            id = Id_if;
+                            break L0;
+                        }
+                    } else if (c == 'n') {
+                        if (s.charAt(0) == 'i') {
+                            id = Id_in;
+                            break L0;
+                        }
+                    } else if (c == 'o') {
+                        if (s.charAt(0) == 'd') {
+                            id = Id_do;
+                            break L0;
+                        }
+                    }
                     break L;
-                case 'e': c=s.charAt(3);
-                    if (c=='e') { if (s.charAt(2)=='s' && s.charAt(1)=='l') {
-                            id=Id_else; break L0;} }
-                    else if (c=='m') { if (s.charAt(2)=='u' && s.charAt(1)=='n') {
-                            id=Id_enum; break L0;} }
+                case 3:
+                    switch (s.charAt(0)) {
+                        case 'f':
+                            if (s.charAt(2) == 'r' && s.charAt(1) == 'o') {
+                                id = Id_for;
+                                break L0;
+                            }
+                            break L;
+                        case 'i':
+                            if (s.charAt(2) == 't' && s.charAt(1) == 'n') {
+                                id = Id_int;
+                                break L0;
+                            }
+                            break L;
+                        case 'n':
+                            if (s.charAt(2) == 'w' && s.charAt(1) == 'e') {
+                                id = Id_new;
+                                break L0;
+                            }
+                            break L;
+                        case 't':
+                            if (s.charAt(2) == 'y' && s.charAt(1) == 'r') {
+                                id = Id_try;
+                                break L0;
+                            }
+                            break L;
+                        case 'v':
+                            if (s.charAt(2) == 'r' && s.charAt(1) == 'a') {
+                                id = Id_var;
+                                break L0;
+                            }
+                            break L;
+                    }
                     break L;
-                case 'g': X="goto";id=Id_goto; break L;
-                case 'l': X="long";id=Id_long; break L;
-                case 'n': X="null";id=Id_null; break L;
-                case 't': c=s.charAt(3);
-                    if (c=='e') { if (s.charAt(2)=='u' && s.charAt(1)=='r') {
-                            id=Id_true; break L0;} }
-                    else if (c=='s') { if (s.charAt(2)=='i' && s.charAt(1)=='h') {
-                            id=Id_this; break L0;} }
+                case 4:
+                    switch (s.charAt(0)) {
+                        case 'b':
+                            X = "byte";
+                            id = Id_byte;
+                            break L;
+                        case 'c':
+                            c = s.charAt(3);
+                            if (c == 'e') {
+                                if (s.charAt(2) == 's' && s.charAt(1) == 'a') {
+                                    id = Id_case;
+                                    break L0;
+                                }
+                            } else if (c == 'r') {
+                                if (s.charAt(2) == 'a' && s.charAt(1) == 'h') {
+                                    id = Id_char;
+                                    break L0;
+                                }
+                            }
+                            break L;
+                        case 'e':
+                            c = s.charAt(3);
+                            if (c == 'e') {
+                                if (s.charAt(2) == 's' && s.charAt(1) == 'l') {
+                                    id = Id_else;
+                                    break L0;
+                                }
+                            } else if (c == 'm') {
+                                if (s.charAt(2) == 'u' && s.charAt(1) == 'n') {
+                                    id = Id_enum;
+                                    break L0;
+                                }
+                            }
+                            break L;
+                        case 'g':
+                            X = "goto";
+                            id = Id_goto;
+                            break L;
+                        case 'l':
+                            X = "long";
+                            id = Id_long;
+                            break L;
+                        case 'n':
+                            X = "null";
+                            id = Id_null;
+                            break L;
+                        case 't':
+                            c = s.charAt(3);
+                            if (c == 'e') {
+                                if (s.charAt(2) == 'u' && s.charAt(1) == 'r') {
+                                    id = Id_true;
+                                    break L0;
+                                }
+                            } else if (c == 's') {
+                                if (s.charAt(2) == 'i' && s.charAt(1) == 'h') {
+                                    id = Id_this;
+                                    break L0;
+                                }
+                            }
+                            break L;
+                        case 'v':
+                            X = "void";
+                            id = Id_void;
+                            break L;
+                        case 'w':
+                            X = "with";
+                            id = Id_with;
+                            break L;
+                    }
                     break L;
-                case 'v': X="void";id=Id_void; break L;
-                case 'w': X="with";id=Id_with; break L;
-                } break L;
-            case 5: switch (s.charAt(2)) {
-                case 'a': X="class";id=Id_class; break L;
-                case 'e': X="break";id=Id_break; break L;
-                case 'i': X="while";id=Id_while; break L;
-                case 'l': X="false";id=Id_false; break L;
-                case 'n': c=s.charAt(0);
-                    if (c=='c') { X="const";id=Id_const; }
-                    else if (c=='f') { X="final";id=Id_final; }
+                case 5:
+                    switch (s.charAt(2)) {
+                        case 'a':
+                            X = "class";
+                            id = Id_class;
+                            break L;
+                        case 'e':
+                            X = "break";
+                            id = Id_break;
+                            break L;
+                        case 'i':
+                            X = "while";
+                            id = Id_while;
+                            break L;
+                        case 'l':
+                            X = "false";
+                            id = Id_false;
+                            break L;
+                        case 'n':
+                            c = s.charAt(0);
+                            if (c == 'c') {
+                                X = "const";
+                                id = Id_const;
+                            } else if (c == 'f') {
+                                X = "final";
+                                id = Id_final;
+                            }
+                            break L;
+                        case 'o':
+                            c = s.charAt(0);
+                            if (c == 'f') {
+                                X = "float";
+                                id = Id_float;
+                            } else if (c == 's') {
+                                X = "short";
+                                id = Id_short;
+                            }
+                            break L;
+                        case 'p':
+                            X = "super";
+                            id = Id_super;
+                            break L;
+                        case 'r':
+                            X = "throw";
+                            id = Id_throw;
+                            break L;
+                        case 't':
+                            X = "catch";
+                            id = Id_catch;
+                            break L;
+                    }
                     break L;
-                case 'o': c=s.charAt(0);
-                    if (c=='f') { X="float";id=Id_float; }
-                    else if (c=='s') { X="short";id=Id_short; }
+                case 6:
+                    switch (s.charAt(1)) {
+                        case 'a':
+                            X = "native";
+                            id = Id_native;
+                            break L;
+                        case 'e':
+                            c = s.charAt(0);
+                            if (c == 'd') {
+                                X = "delete";
+                                id = Id_delete;
+                            } else if (c == 'r') {
+                                X = "return";
+                                id = Id_return;
+                            }
+                            break L;
+                        case 'h':
+                            X = "throws";
+                            id = Id_throws;
+                            break L;
+                        case 'm':
+                            X = "import";
+                            id = Id_import;
+                            break L;
+                        case 'o':
+                            X = "double";
+                            id = Id_double;
+                            break L;
+                        case 't':
+                            X = "static";
+                            id = Id_static;
+                            break L;
+                        case 'u':
+                            X = "public";
+                            id = Id_public;
+                            break L;
+                        case 'w':
+                            X = "switch";
+                            id = Id_switch;
+                            break L;
+                        case 'x':
+                            X = "export";
+                            id = Id_export;
+                            break L;
+                        case 'y':
+                            X = "typeof";
+                            id = Id_typeof;
+                            break L;
+                    }
                     break L;
-                case 'p': X="super";id=Id_super; break L;
-                case 'r': X="throw";id=Id_throw; break L;
-                case 't': X="catch";id=Id_catch; break L;
-                } break L;
-            case 6: switch (s.charAt(1)) {
-                case 'a': X="native";id=Id_native; break L;
-                case 'e': c=s.charAt(0);
-                    if (c=='d') { X="delete";id=Id_delete; }
-                    else if (c=='r') { X="return";id=Id_return; }
+                case 7:
+                    switch (s.charAt(1)) {
+                        case 'a':
+                            X = "package";
+                            id = Id_package;
+                            break L;
+                        case 'e':
+                            X = "default";
+                            id = Id_default;
+                            break L;
+                        case 'i':
+                            X = "finally";
+                            id = Id_finally;
+                            break L;
+                        case 'o':
+                            X = "boolean";
+                            id = Id_boolean;
+                            break L;
+                        case 'r':
+                            X = "private";
+                            id = Id_private;
+                            break L;
+                        case 'x':
+                            X = "extends";
+                            id = Id_extends;
+                            break L;
+                    }
                     break L;
-                case 'h': X="throws";id=Id_throws; break L;
-                case 'm': X="import";id=Id_import; break L;
-                case 'o': X="double";id=Id_double; break L;
-                case 't': X="static";id=Id_static; break L;
-                case 'u': X="public";id=Id_public; break L;
-                case 'w': X="switch";id=Id_switch; break L;
-                case 'x': X="export";id=Id_export; break L;
-                case 'y': X="typeof";id=Id_typeof; break L;
-                } break L;
-            case 7: switch (s.charAt(1)) {
-                case 'a': X="package";id=Id_package; break L;
-                case 'e': X="default";id=Id_default; break L;
-                case 'i': X="finally";id=Id_finally; break L;
-                case 'o': X="boolean";id=Id_boolean; break L;
-                case 'r': X="private";id=Id_private; break L;
-                case 'x': X="extends";id=Id_extends; break L;
-                } break L;
-            case 8: switch (s.charAt(0)) {
-                case 'a': X="abstract";id=Id_abstract; break L;
-                case 'c': X="continue";id=Id_continue; break L;
-                case 'd': X="debugger";id=Id_debugger; break L;
-                case 'f': X="function";id=Id_function; break L;
-                case 'v': X="volatile";id=Id_volatile; break L;
-                } break L;
-            case 9: c=s.charAt(0);
-                if (c=='i') { X="interface";id=Id_interface; }
-                else if (c=='p') { X="protected";id=Id_protected; }
-                else if (c=='t') { X="transient";id=Id_transient; }
-                break L;
-            case 10: c=s.charAt(1);
-                if (c=='m') { X="implements";id=Id_implements; }
-                else if (c=='n') { X="instanceof";id=Id_instanceof; }
-                break L;
-            case 12: X="synchronized";id=Id_synchronized; break L;
+                case 8:
+                    switch (s.charAt(0)) {
+                        case 'a':
+                            X = "abstract";
+                            id = Id_abstract;
+                            break L;
+                        case 'c':
+                            X = "continue";
+                            id = Id_continue;
+                            break L;
+                        case 'd':
+                            X = "debugger";
+                            id = Id_debugger;
+                            break L;
+                        case 'f':
+                            X = "function";
+                            id = Id_function;
+                            break L;
+                        case 'v':
+                            X = "volatile";
+                            id = Id_volatile;
+                            break L;
+                    }
+                    break L;
+                case 9:
+                    c = s.charAt(0);
+                    if (c == 'i') {
+                        X = "interface";
+                        id = Id_interface;
+                    } else if (c == 'p') {
+                        X = "protected";
+                        id = Id_protected;
+                    } else if (c == 't') {
+                        X = "transient";
+                        id = Id_transient;
+                    }
+                    break L;
+                case 10:
+                    c = s.charAt(1);
+                    if (c == 'm') {
+                        X = "implements";
+                        id = Id_implements;
+                    } else if (c == 'n') {
+                        X = "instanceof";
+                        id = Id_instanceof;
+                    }
+                    break L;
+                case 12:
+                    X = "synchronized";
+                    id = Id_synchronized;
+                    break L;
             }
-            if (X!=null && X!=s && !X.equals(s)) id = 0;
+            if (X != null && X != s && !X.equals(s)) id = 0;
         }
 // #/generated#
 // #/string_id_map#
-        if (id == 0) { return Token.EOF; }
+        if (id == 0) {
+            return Token.EOF;
+        }
         return id & 0xff;
     }
 
@@ -299,18 +507,18 @@ public class TokenStream
         if (length == 0 || !Character.isJavaIdentifierStart(s.charAt(0)))
             return false;
 
-        for (int i=1; i<length; i++) {
+        for (int i = 1; i < length; i++) {
             char c = s.charAt(i);
             if (!Character.isJavaIdentifierPart(c)) {
                 if (c == '\\') {
-                    if (! ((i + 5) < length)
-                        && (s.charAt(i + 1) == 'u')
-                        && 0 <= Kit.xDigitToInt(s.charAt(i + 2), 0)
-                        && 0 <= Kit.xDigitToInt(s.charAt(i + 3), 0)
-                        && 0 <= Kit.xDigitToInt(s.charAt(i + 4), 0)
-                        && 0 <= Kit.xDigitToInt(s.charAt(i + 5), 0)) {
+                    if (!((i + 5) < length)
+                            && (s.charAt(i + 1) == 'u')
+                            && 0 <= Kit.xDigitToInt(s.charAt(i + 2), 0)
+                            && 0 <= Kit.xDigitToInt(s.charAt(i + 3), 0)
+                            && 0 <= Kit.xDigitToInt(s.charAt(i + 4), 0)
+                            && 0 <= Kit.xDigitToInt(s.charAt(i + 5), 0)) {
                         return true;
-                     }
+                    }
                 }
 
                 return false;
@@ -320,18 +528,27 @@ public class TokenStream
         return true;
     }
 
-    protected final int getLineno() { return lineno; }
+    protected final int getLineno() {
+        return lineno;
+    }
 
-    protected final int getCharno() { return charno; }
+    protected final int getCharno() {
+        return charno;
+    }
 
-    final String getString() { return string; }
+    final String getString() {
+        return string;
+    }
 
-    final double getNumber() { return number; }
+    final double getNumber() {
+        return number;
+    }
 
-    final boolean eof() { return hitEOF; }
+    final boolean eof() {
+        return hitEOF;
+    }
 
-    public final int getToken() throws IOException
-    {
+    public final int getToken() throws IOException {
         tokenno++;
 
         // Check for pushed-back token
@@ -342,10 +559,10 @@ public class TokenStream
         }
         int c;
 
-    retry:
-        for (;;) {
+        retry:
+        for (; ; ) {
             // Eat whitespace, possibly sensitive to newlines.
-            for (;;) {
+            for (; ; ) {
                 charno = -1;
                 c = getChar();
                 if (c == EOF_CHAR) {
@@ -379,7 +596,7 @@ public class TokenStream
                     c = '\\';
                 }
             } else {
-                identifierStart = Character.isJavaIdentifierStart((char)c);
+                identifierStart = Character.isJavaIdentifierStart((char) c);
                 if (identifierStart) {
                     stringBufferTop = 0;
                     addToString(c);
@@ -388,7 +605,7 @@ public class TokenStream
 
             if (identifierStart) {
                 boolean containsEscape = isUnicodeEscapeStart;
-                for (;;) {
+                for (; ; ) {
                     if (isUnicodeEscapeStart) {
                         // strictly speaking we should probably push-back
                         // all the bad characters if the <backslash>uXXXX
@@ -401,7 +618,9 @@ public class TokenStream
                             c = getChar();
                             escapeVal = Kit.xDigitToInt(c, escapeVal);
                             // Next check takes care about c < 0 and bad escape
-                            if (escapeVal < 0) { break; }
+                            if (escapeVal < 0) {
+                                break;
+                            }
                         }
                         if (escapeVal < 0) {
                             parser.addError("msg.invalid.escape");
@@ -422,8 +641,7 @@ public class TokenStream
                             }
                         } else {
                             if (c == EOF_CHAR
-                                || !Character.isJavaIdentifierPart((char)c))
-                            {
+                                    || !Character.isJavaIdentifierPart((char) c)) {
                                 break;
                             }
                             addToString(c);
@@ -432,7 +650,7 @@ public class TokenStream
                 }
                 ungetChar(c);
 
-                   String str = getStringFromBuffer();
+                String str = getStringFromBuffer();
                 if (!containsEscape) {
                     // OPT we shouldn't have to make a string (object!) to
                     // check if it's a keyword.
@@ -443,8 +661,7 @@ public class TokenStream
                         if (result != Token.RESERVED) {
                             return result;
                         } else if (!parser.compilerEnv.
-                                        isReservedKeywordAsIdentifier())
-                        {
+                                isReservedKeywordAsIdentifier()) {
                             return result;
                         } else {
                             // If implementation permits to use future reserved
@@ -454,7 +671,7 @@ public class TokenStream
                         }
                     }
                 }
-                this.string = (String)allStrings.intern(str);
+                this.string = (String) allStrings.intern(str);
                 return Token.NAME;
             }
 
@@ -491,7 +708,7 @@ public class TokenStream
                          */
                         if (base == 8 && c >= '8') {
                             parser.addWarning("msg.bad.octal.literal",
-                                              c == '8' ? "8" : "9");
+                                    c == '8' ? "8" : "9");
                             base = 10;
                         }
                         addToString(c);
@@ -534,8 +751,7 @@ public class TokenStream
                     try {
                         // Use Java conversion to number from string...
                         dval = Double.valueOf(numString).doubleValue();
-                    }
-                    catch (NumberFormatException ex) {
+                    } catch (NumberFormatException ex) {
                         parser.addError("msg.caught.nfe");
                         return Token.ERROR;
                     }
@@ -558,7 +774,8 @@ public class TokenStream
                 stringBufferTop = 0;
 
                 c = getChar();
-            strLoop: while (c != quoteChar) {
+                strLoop:
+                while (c != quoteChar) {
                     if (c == '\n' || c == EOF_CHAR) {
                         ungetChar(c);
                         parser.addError("msg.unterminated.string.lit");
@@ -571,82 +788,94 @@ public class TokenStream
 
                         c = getChar();
                         switch (c) {
-                        case 'b': c = '\b'; break;
-                        case 'f': c = '\f'; break;
-                        case 'n': c = '\n'; break;
-                        case 'r': c = '\r'; break;
-                        case 't': c = '\t'; break;
+                            case 'b':
+                                c = '\b';
+                                break;
+                            case 'f':
+                                c = '\f';
+                                break;
+                            case 'n':
+                                c = '\n';
+                                break;
+                            case 'r':
+                                c = '\r';
+                                break;
+                            case 't':
+                                c = '\t';
+                                break;
 
-                        // \v a late addition to the ECMA spec,
-                        // it is not in Java, so use 0xb
-                        case 'v': c = 0xb; break;
+                            // \v a late addition to the ECMA spec,
+                            // it is not in Java, so use 0xb
+                            case 'v':
+                                c = 0xb;
+                                break;
 
-                        case 'u':
-                            // Get 4 hex digits; if the u escape is not
-                            // followed by 4 hex digits, use 'u' + the
-                            // literal character sequence that follows.
-                            int escapeStart = stringBufferTop;
-                            addToString('u');
-                            escapeVal = 0;
-                            for (int i = 0; i != 4; ++i) {
-                                c = getChar();
-                                escapeVal = Kit.xDigitToInt(c, escapeVal);
-                                if (escapeVal < 0) {
-                                    continue strLoop;
+                            case 'u':
+                                // Get 4 hex digits; if the u escape is not
+                                // followed by 4 hex digits, use 'u' + the
+                                // literal character sequence that follows.
+                                int escapeStart = stringBufferTop;
+                                addToString('u');
+                                escapeVal = 0;
+                                for (int i = 0; i != 4; ++i) {
+                                    c = getChar();
+                                    escapeVal = Kit.xDigitToInt(c, escapeVal);
+                                    if (escapeVal < 0) {
+                                        continue strLoop;
+                                    }
+                                    addToString(c);
                                 }
-                                addToString(c);
-                            }
-                            // prepare for replace of stored 'u' sequence
-                            // by escape value
-                            stringBufferTop = escapeStart;
-                            c = escapeVal;
-                            break;
-                        case 'x':
-                            // Get 2 hex digits, defaulting to 'x'+literal
-                            // sequence, as above.
-                            c = getChar();
-                            escapeVal = Kit.xDigitToInt(c, 0);
-                            if (escapeVal < 0) {
-                                addToString('x');
-                                continue strLoop;
-                            } else {
-                                int c1 = c;
+                                // prepare for replace of stored 'u' sequence
+                                // by escape value
+                                stringBufferTop = escapeStart;
+                                c = escapeVal;
+                                break;
+                            case 'x':
+                                // Get 2 hex digits, defaulting to 'x'+literal
+                                // sequence, as above.
                                 c = getChar();
-                                escapeVal = Kit.xDigitToInt(c, escapeVal);
+                                escapeVal = Kit.xDigitToInt(c, 0);
                                 if (escapeVal < 0) {
                                     addToString('x');
-                                    addToString(c1);
                                     continue strLoop;
                                 } else {
-                                    // got 2 hex digits
-                                    c = escapeVal;
-                                }
-                            }
-                            break;
-
-                        case '\n':
-                            // Remove line terminator after escape to follow
-                            // SpiderMonkey and C/C++
-                            c = getChar();
-                            continue strLoop;
-
-                        default:
-                            if ('0' <= c && c < '8') {
-                                int val = c - '0';
-                                c = getChar();
-                                if ('0' <= c && c < '8') {
-                                    val = 8 * val + c - '0';
+                                    int c1 = c;
                                     c = getChar();
-                                    if ('0' <= c && c < '8' && val <= 037) {
-                                        // c is 3rd char of octal sequence only
-                                        // if the resulting val <= 0377
-                                        val = 8 * val + c - '0';
-                                        c = getChar();
+                                    escapeVal = Kit.xDigitToInt(c, escapeVal);
+                                    if (escapeVal < 0) {
+                                        addToString('x');
+                                        addToString(c1);
+                                        continue strLoop;
+                                    } else {
+                                        // got 2 hex digits
+                                        c = escapeVal;
                                     }
                                 }
-                                ungetChar(c);
-                                c = val;
-                            }
+                                break;
+
+                            case '\n':
+                                // Remove line terminator after escape to follow
+                                // SpiderMonkey and C/C++
+                                c = getChar();
+                                continue strLoop;
+
+                            default:
+                                if ('0' <= c && c < '8') {
+                                    int val = c - '0';
+                                    c = getChar();
+                                    if ('0' <= c && c < '8') {
+                                        val = 8 * val + c - '0';
+                                        c = getChar();
+                                        if ('0' <= c && c < '8' && val <= 037) {
+                                            // c is 3rd char of octal sequence only
+                                            // if the resulting val <= 0377
+                                            val = 8 * val + c - '0';
+                                            c = getChar();
+                                        }
+                                    }
+                                    ungetChar(c);
+                                    c = val;
+                                }
                         }
                     }
                     addToString(c);
@@ -654,201 +883,210 @@ public class TokenStream
                 }
 
                 String str = getStringFromBuffer();
-                this.string = (String)allStrings.intern(str);
+                this.string = (String) allStrings.intern(str);
                 return Token.STRING;
             }
 
             switch (c) {
-            case ';': return Token.SEMI;
-            case '[': return Token.LB;
-            case ']': return Token.RB;
-            case '{': return Token.LC;
-            case '}': return Token.RC;
-            case '(': return Token.LP;
-            case ')': return Token.RP;
-            case ',': return Token.COMMA;
-            case '?': return Token.HOOK;
-            case ':':
-                if (matchChar(':')) {
-                    return Token.COLONCOLON;
-                } else {
-                    return Token.COLON;
-                }
-            case '.':
-                if (matchChar('.')) {
-                    return Token.DOTDOT;
-                } else if (matchChar('(')) {
-                    return Token.DOTQUERY;
-                } else {
-                    return Token.DOT;
-                }
+                case ';':
+                    return Token.SEMI;
+                case '[':
+                    return Token.LB;
+                case ']':
+                    return Token.RB;
+                case '{':
+                    return Token.LC;
+                case '}':
+                    return Token.RC;
+                case '(':
+                    return Token.LP;
+                case ')':
+                    return Token.RP;
+                case ',':
+                    return Token.COMMA;
+                case '?':
+                    return Token.HOOK;
+                case ':':
+                    if (matchChar(':')) {
+                        return Token.COLONCOLON;
+                    } else {
+                        return Token.COLON;
+                    }
+                case '.':
+                    if (matchChar('.')) {
+                        return Token.DOTDOT;
+                    } else if (matchChar('(')) {
+                        return Token.DOTQUERY;
+                    } else {
+                        return Token.DOT;
+                    }
 
-            case '|':
-                if (matchChar('|')) {
-                    return Token.OR;
-                } else if (matchChar('=')) {
-                    return Token.ASSIGN_BITOR;
-                } else {
-                    return Token.BITOR;
-                }
+                case '|':
+                    if (matchChar('|')) {
+                        return Token.OR;
+                    } else if (matchChar('=')) {
+                        return Token.ASSIGN_BITOR;
+                    } else {
+                        return Token.BITOR;
+                    }
 
-            case '^':
-                if (matchChar('=')) {
-                    return Token.ASSIGN_BITXOR;
-                } else {
-                    return Token.BITXOR;
-                }
+                case '^':
+                    if (matchChar('=')) {
+                        return Token.ASSIGN_BITXOR;
+                    } else {
+                        return Token.BITXOR;
+                    }
 
-            case '&':
-                if (matchChar('&')) {
-                    return Token.AND;
-                } else if (matchChar('=')) {
-                    return Token.ASSIGN_BITAND;
-                } else {
-                    return Token.BITAND;
-                }
+                case '&':
+                    if (matchChar('&')) {
+                        return Token.AND;
+                    } else if (matchChar('=')) {
+                        return Token.ASSIGN_BITAND;
+                    } else {
+                        return Token.BITAND;
+                    }
 
-            case '=':
-                if (matchChar('=')) {
-                    if (matchChar('='))
-                        return Token.SHEQ;
-                    else
-                        return Token.EQ;
-                } else {
-                    return Token.ASSIGN;
-                }
+                case '=':
+                    if (matchChar('=')) {
+                        if (matchChar('='))
+                            return Token.SHEQ;
+                        else
+                            return Token.EQ;
+                    } else {
+                        return Token.ASSIGN;
+                    }
 
-            case '!':
-                if (matchChar('=')) {
-                    if (matchChar('='))
-                        return Token.SHNE;
-                    else
-                        return Token.NE;
-                } else {
-                    return Token.NOT;
-                }
+                case '!':
+                    if (matchChar('=')) {
+                        if (matchChar('='))
+                            return Token.SHNE;
+                        else
+                            return Token.NE;
+                    } else {
+                        return Token.NOT;
+                    }
 
-            case '<':
-                /* NB:treat HTML begin-comment as comment-till-eol */
-                if (matchChar('!')) {
-                    if (matchChar('-')) {
+                case '<':
+                    /* NB:treat HTML begin-comment as comment-till-eol */
+                    if (matchChar('!')) {
                         if (matchChar('-')) {
-                            skipLine();
-                            continue retry;
+                            if (matchChar('-')) {
+                                skipLine();
+                                continue retry;
+                            }
+                            ungetChar('-');
                         }
-                        ungetChar('-');
+                        ungetChar('!');
                     }
-                    ungetChar('!');
-                }
-                if (matchChar('<')) {
-                    if (matchChar('=')) {
-                        return Token.ASSIGN_LSH;
+                    if (matchChar('<')) {
+                        if (matchChar('=')) {
+                            return Token.ASSIGN_LSH;
+                        } else {
+                            return Token.LSH;
+                        }
                     } else {
-                        return Token.LSH;
+                        if (matchChar('=')) {
+                            return Token.LE;
+                        } else {
+                            return Token.LT;
+                        }
                     }
-                } else {
-                    if (matchChar('=')) {
-                        return Token.LE;
-                    } else {
-                        return Token.LT;
-                    }
-                }
 
-            case '>':
-                if (matchChar('>')) {
+                case '>':
                     if (matchChar('>')) {
-                        if (matchChar('=')) {
-                            return Token.ASSIGN_URSH;
-                        } else {
-                            return Token.URSH;
-                        }
-                    } else {
-                        if (matchChar('=')) {
-                            return Token.ASSIGN_RSH;
-                        } else {
-                            return Token.RSH;
-                        }
-                    }
-                } else {
-                    if (matchChar('=')) {
-                        return Token.GE;
-                    } else {
-                        return Token.GT;
-                    }
-                }
-
-            case '*':
-                if (matchChar('=')) {
-                    return Token.ASSIGN_MUL;
-                } else {
-                    return Token.MUL;
-                }
-
-            case '/':
-                // is it a // comment?
-                if (matchChar('/')) {
-                    skipLine();
-                    continue retry;
-                }
-                if (matchChar('*')) {
-                    while ((c = getChar()) != EOF_CHAR &&
-                           !(c == '*' && matchChar('/'))) {
-                      // empty loop body
-                    }
-                    if (c == EOF_CHAR) {
-                        parser.addError("msg.unterminated.comment");
-                        return Token.ERROR;
-                    }
-                    continue retry;
-                }
-
-                if (matchChar('=')) {
-                    return Token.ASSIGN_DIV;
-                } else {
-                    return Token.DIV;
-                }
-
-            case '%':
-                if (matchChar('=')) {
-                    return Token.ASSIGN_MOD;
-                } else {
-                    return Token.MOD;
-                }
-
-            case '~':
-                return Token.BITNOT;
-
-            case '+':
-                if (matchChar('=')) {
-                    return Token.ASSIGN_ADD;
-                } else if (matchChar('+')) {
-                    return Token.INC;
-                } else {
-                    return Token.ADD;
-                }
-
-            case '-':
-                if (matchChar('=')) {
-                    c = Token.ASSIGN_SUB;
-                } else if (matchChar('-')) {
-                    if (!dirtyLine) {
-                        // treat HTML end-comment after possible whitespace
-                        // after line start as comment-utill-eol
                         if (matchChar('>')) {
-                            skipLine();
-                            continue retry;
+                            if (matchChar('=')) {
+                                return Token.ASSIGN_URSH;
+                            } else {
+                                return Token.URSH;
+                            }
+                        } else {
+                            if (matchChar('=')) {
+                                return Token.ASSIGN_RSH;
+                            } else {
+                                return Token.RSH;
+                            }
+                        }
+                    } else {
+                        if (matchChar('=')) {
+                            return Token.GE;
+                        } else {
+                            return Token.GT;
                         }
                     }
-                    c = Token.DEC;
-                } else {
-                    c = Token.SUB;
-                }
-                dirtyLine = true;
-                return c;
 
-            default:
-                parser.addError("msg.illegal.character");
-                return Token.ERROR;
+                case '*':
+                    if (matchChar('=')) {
+                        return Token.ASSIGN_MUL;
+                    } else {
+                        return Token.MUL;
+                    }
+
+                case '/':
+                    // is it a // comment?
+                    if (matchChar('/')) {
+                        skipLine();
+                        continue retry;
+                    }
+                    if (matchChar('*')) {
+                        while ((c = getChar()) != EOF_CHAR &&
+                                !(c == '*' && matchChar('/'))) {
+                            // empty loop body
+                        }
+                        if (c == EOF_CHAR) {
+                            parser.addError("msg.unterminated.comment");
+                            return Token.ERROR;
+                        }
+                        continue retry;
+                    }
+
+                    if (matchChar('=')) {
+                        return Token.ASSIGN_DIV;
+                    } else {
+                        return Token.DIV;
+                    }
+
+                case '%':
+                    if (matchChar('=')) {
+                        return Token.ASSIGN_MOD;
+                    } else {
+                        return Token.MOD;
+                    }
+
+                case '~':
+                    return Token.BITNOT;
+
+                case '+':
+                    if (matchChar('=')) {
+                        return Token.ASSIGN_ADD;
+                    } else if (matchChar('+')) {
+                        return Token.INC;
+                    } else {
+                        return Token.ADD;
+                    }
+
+                case '-':
+                    if (matchChar('=')) {
+                        c = Token.ASSIGN_SUB;
+                    } else if (matchChar('-')) {
+                        if (!dirtyLine) {
+                            // treat HTML end-comment after possible whitespace
+                            // after line start as comment-utill-eol
+                            if (matchChar('>')) {
+                                skipLine();
+                                continue retry;
+                            }
+                        }
+                        c = Token.DEC;
+                    } else {
+                        c = Token.SUB;
+                    }
+                    dirtyLine = true;
+                    return c;
+
+                default:
+                    parser.addError("msg.illegal.character");
+                    return Token.ERROR;
             }
         }
     }
@@ -858,140 +1096,140 @@ public class TokenStream
      */
     @SuppressWarnings("fallthrough")
     final int getJSDocToken() throws IOException {
-      int c;
-      stringBufferTop = 0;
-      for (;;) {
-        // eat white spaces
-        for (;;) {
-          charno = -1;
-          c = getChar();
-          if (c == EOF_CHAR) {
-            return Token.EOF;
-          } else if (c == '\n') {
-            return Token.EOL;
-          } else if (!isJSSpace(c)) {
-            break;
-          }
-        }
-
-        switch (c) {
-          // annotation, e.g. @type or @constructor
-          case '@':
-            do {
-              c = getChar();
-              if (isAlpha(c)) {
-                addToString(c);
-              } else {
-                ungetChar(c);
-                this.string = getStringFromBuffer();
-                stringBufferTop = 0;
-                return Token.ANNOTATION;
-              }
-            } while (true);
-
-          case '*':
-            if (matchChar('/')) {
-              return Token.EOC;
-            } else {
-              return Token.STAR;
-            }
-
-          case ',':
-            return Token.COMMA;
-
-          case '>':
-            return Token.GT;
-
-          case '(':
-            return Token.LP;
-
-          case ')':
-            return Token.RP;
-
-          case '{':
-            return Token.LC;
-
-          case '}':
-            return Token.RC;
-
-          case '[':
-            return Token.LB;
-
-          case ']':
-            return Token.RB;
-
-          case '?':
-            return Token.QMARK;
-
-          case '!':
-            return Token.BANG;
-
-          case ':':
-            return Token.COLON;
-
-          case '=':
-            return Token.EQUALS;
-
-          case '|':
-            matchChar('|');
-            return Token.PIPE;
-
-          case '.':
-            c = getChar();
-            if (c == '<') {
-              return Token.LT;
-            } else {
-              if (c == '.') {
+        int c;
+        stringBufferTop = 0;
+        for (; ; ) {
+            // eat white spaces
+            for (; ; ) {
+                charno = -1;
                 c = getChar();
-                if (c == '.') {
-                  return Token.ELLIPSIS;
-                } else {
-                  addToString('.');
+                if (c == EOF_CHAR) {
+                    return Token.EOF;
+                } else if (c == '\n') {
+                    return Token.EOL;
+                } else if (!isJSSpace(c)) {
+                    break;
                 }
-              }
-              // we may backtrack across line boundary
-              ungetBuffer[ungetCursor++] = c;
-              c = '.';
             }
-            // fall through
 
-          default: {
-            // recognize a jsdoc string but discard last . if it is followed by
-            // a non-jsdoc comment char, e.g. Array.<
-            int c1 = c;
-            addToString(c);
-            int c2 = getChar();
-            if (!isJSDocString(c2)) {
-              ungetChar(c2);
-              this.string = getStringFromBuffer();
-              stringBufferTop = 0;
-              return Token.STRING;
-            } else {
-              do {
-                c1 = c2;
-                c2 = getChar();
-                if (c1 == '.' && c2 == '<') {
-                  ungetChar(c2);
-                  ungetChar(c1);
-                  this.string = getStringFromBuffer();
-                  stringBufferTop = 0;
-                  return Token.STRING;
-                } else {
-                  if (isJSDocString(c2)) {
-                    addToString(c1);
-                  } else {
-                    ungetChar(c2);
-                    addToString(c1);
-                    this.string = getStringFromBuffer();
-                    stringBufferTop = 0;
-                    return Token.STRING;
-                  }
+            switch (c) {
+                // annotation, e.g. @type or @constructor
+                case '@':
+                    do {
+                        c = getChar();
+                        if (isAlpha(c)) {
+                            addToString(c);
+                        } else {
+                            ungetChar(c);
+                            this.string = getStringFromBuffer();
+                            stringBufferTop = 0;
+                            return Token.ANNOTATION;
+                        }
+                    } while (true);
+
+                case '*':
+                    if (matchChar('/')) {
+                        return Token.EOC;
+                    } else {
+                        return Token.STAR;
+                    }
+
+                case ',':
+                    return Token.COMMA;
+
+                case '>':
+                    return Token.GT;
+
+                case '(':
+                    return Token.LP;
+
+                case ')':
+                    return Token.RP;
+
+                case '{':
+                    return Token.LC;
+
+                case '}':
+                    return Token.RC;
+
+                case '[':
+                    return Token.LB;
+
+                case ']':
+                    return Token.RB;
+
+                case '?':
+                    return Token.QMARK;
+
+                case '!':
+                    return Token.BANG;
+
+                case ':':
+                    return Token.COLON;
+
+                case '=':
+                    return Token.EQUALS;
+
+                case '|':
+                    matchChar('|');
+                    return Token.PIPE;
+
+                case '.':
+                    c = getChar();
+                    if (c == '<') {
+                        return Token.LT;
+                    } else {
+                        if (c == '.') {
+                            c = getChar();
+                            if (c == '.') {
+                                return Token.ELLIPSIS;
+                            } else {
+                                addToString('.');
+                            }
+                        }
+                        // we may backtrack across line boundary
+                        ungetBuffer[ungetCursor++] = c;
+                        c = '.';
+                    }
+                    // fall through
+
+                default: {
+                    // recognize a jsdoc string but discard last . if it is followed by
+                    // a non-jsdoc comment char, e.g. Array.<
+                    int c1 = c;
+                    addToString(c);
+                    int c2 = getChar();
+                    if (!isJSDocString(c2)) {
+                        ungetChar(c2);
+                        this.string = getStringFromBuffer();
+                        stringBufferTop = 0;
+                        return Token.STRING;
+                    } else {
+                        do {
+                            c1 = c2;
+                            c2 = getChar();
+                            if (c1 == '.' && c2 == '<') {
+                                ungetChar(c2);
+                                ungetChar(c1);
+                                this.string = getStringFromBuffer();
+                                stringBufferTop = 0;
+                                return Token.STRING;
+                            } else {
+                                if (isJSDocString(c2)) {
+                                    addToString(c1);
+                                } else {
+                                    ungetChar(c2);
+                                    addToString(c1);
+                                    this.string = getStringFromBuffer();
+                                    stringBufferTop = 0;
+                                    return Token.STRING;
+                                }
+                            }
+                        } while (true);
+                    }
                 }
-              } while (true);
             }
-          }
         }
-      }
     }
 
     /**
@@ -1000,58 +1238,57 @@ public class TokenStream
      */
     @SuppressWarnings("fallthrough")
     String getRemainingJSDocLine() throws IOException {
-      int c;
-      for (;;) {
-        c = getChar();
-        switch (c) {
-          case '*':
-            if (peekChar() != '/') {
-              addToString(c);
-              break;
-            }
-            // fall through
-          case EOF_CHAR:
-          case '\n':
-            ungetChar(c);
-            this.string = getStringFromBuffer();
-            stringBufferTop = 0;
-            return this.string;
+        int c;
+        for (; ; ) {
+            c = getChar();
+            switch (c) {
+                case '*':
+                    if (peekChar() != '/') {
+                        addToString(c);
+                        break;
+                    }
+                    // fall through
+                case EOF_CHAR:
+                case '\n':
+                    ungetChar(c);
+                    this.string = getStringFromBuffer();
+                    stringBufferTop = 0;
+                    return this.string;
 
-          default:
-            addToString(c);
-            break;
+                default:
+                    addToString(c);
+                    break;
+            }
         }
-      }
     }
 
     private boolean isJSDocString(int c) {
-      switch (c) {
-        case '@':
-        case '*':
-        case ',':
-        case '>':
-        case ':':
-        case '(':
-        case ')':
-        case '{':
-        case '}':
-        case '[':
-        case ']':
-        case '?':
-        case '!':
-        case '|':
-        case '=':
-        case EOF_CHAR:
-        case '\n':
-          return false;
+        switch (c) {
+            case '@':
+            case '*':
+            case ',':
+            case '>':
+            case ':':
+            case '(':
+            case ')':
+            case '{':
+            case '}':
+            case '[':
+            case ']':
+            case '?':
+            case '!':
+            case '|':
+            case '=':
+            case EOF_CHAR:
+            case '\n':
+                return false;
 
-        default:
-          return !isJSSpace(c);
-      }
+            default:
+                return !isJSSpace(c);
+        }
     }
 
-    private static boolean isAlpha(int c)
-    {
+    private static boolean isAlpha(int c) {
         // Use 'Z' < 'a'
         if (c <= 'Z') {
             return 'A' <= c;
@@ -1060,32 +1297,29 @@ public class TokenStream
         }
     }
 
-    static boolean isDigit(int c)
-    {
+    static boolean isDigit(int c) {
         return '0' <= c && c <= '9';
     }
 
     /**
      * Tests whether the character is a valid JavaScript white space character
      * as defined in ECMAScript 3rd edition.
-     *
+     * <p>
      * Note:  jsscan.c uses C isspace() (which allows
      * \v, I think.)  note that code in getChar() implicitly accepts
      * '\r' == \u000D as well.
      */
-    static boolean isJSSpace(int c)
-    {
+    static boolean isJSSpace(int c) {
         if (c <= 127) {
             return c == 0x20 || c == 0x9 || c == 0xC || c == 0xB;
         } else {
             return c == 0xA0
-                || Character.getType((char)c) == Character.SPACE_SEPARATOR;
+                    || Character.getType((char) c) == Character.SPACE_SEPARATOR;
         }
     }
 
-    private static boolean isJSFormatChar(int c)
-    {
-        return c > 127 && Character.getType((char)c) == Character.FORMAT;
+    private static boolean isJSFormatChar(int c) {
+        return c > 127 && Character.getType((char) c) == Character.FORMAT;
     }
 
     /**
@@ -1093,7 +1327,7 @@ public class TokenStream
      * Obsolete
      */
     JSDocInfo getAndResetJSDocInfo() {
-      return null;
+        return null;
     }
 
     /**
@@ -1101,7 +1335,7 @@ public class TokenStream
      * Obsolete
      */
     JSDocInfo getFileOverviewJSDocInfo() {
-      return null;
+        return null;
     }
 
     /**
@@ -1109,15 +1343,14 @@ public class TokenStream
      * Obsolete
      */
     boolean isPopulated() {
-      return false;
+        return false;
     }
 
     /**
      * Parser calls the method when it gets / or /= in literal context.
      */
     void readRegExp(int startToken)
-        throws IOException
-    {
+            throws IOException {
         stringBufferTop = 0;
         if (startToken == Token.ASSIGN_DIV) {
             // Miss-scanned /=
@@ -1163,16 +1396,14 @@ public class TokenStream
 
         this.string = new String(stringBuffer, 0, reEnd);
         this.regExpFlags = new String(stringBuffer, reEnd,
-                                      stringBufferTop - reEnd);
+                stringBufferTop - reEnd);
     }
 
-    boolean isXMLAttribute()
-    {
+    boolean isXMLAttribute() {
         return xmlIsAttribute;
     }
 
-    int getFirstXMLToken() throws IOException
-    {
+    int getFirstXMLToken() throws IOException {
         xmlOpenTagsCount = 0;
         xmlIsAttribute = false;
         xmlIsTagContent = false;
@@ -1180,50 +1411,49 @@ public class TokenStream
         return getNextXMLToken();
     }
 
-    int getNextXMLToken() throws IOException
-    {
+    int getNextXMLToken() throws IOException {
         stringBufferTop = 0; // remember the XML
 
         for (int c = getChar(); c != EOF_CHAR; c = getChar()) {
             if (xmlIsTagContent) {
                 switch (c) {
-                case '>':
-                    addToString(c);
-                    xmlIsTagContent = false;
-                    xmlIsAttribute = false;
-                    break;
-                case '/':
-                    addToString(c);
-                    if (peekChar() == '>') {
-                        c = getChar();
+                    case '>':
                         addToString(c);
                         xmlIsTagContent = false;
-                        xmlOpenTagsCount--;
-                    }
-                    break;
-                case '{':
-                    ungetChar(c);
-                    this.string = getStringFromBuffer();
-                    return Token.XML;
-                case '\'':
-                case '"':
-                    addToString(c);
-                    if (!readQuotedString(c)) return Token.ERROR;
-                    break;
-                case '=':
-                    addToString(c);
-                    xmlIsAttribute = true;
-                    break;
-                case ' ':
-                case '\t':
-                case '\r':
-                case '\n':
-                    addToString(c);
-                    break;
-                default:
-                    addToString(c);
-                    xmlIsAttribute = false;
-                    break;
+                        xmlIsAttribute = false;
+                        break;
+                    case '/':
+                        addToString(c);
+                        if (peekChar() == '>') {
+                            c = getChar();
+                            addToString(c);
+                            xmlIsTagContent = false;
+                            xmlOpenTagsCount--;
+                        }
+                        break;
+                    case '{':
+                        ungetChar(c);
+                        this.string = getStringFromBuffer();
+                        return Token.XML;
+                    case '\'':
+                    case '"':
+                        addToString(c);
+                        if (!readQuotedString(c)) return Token.ERROR;
+                        break;
+                    case '=':
+                        addToString(c);
+                        xmlIsAttribute = true;
+                        break;
+                    case ' ':
+                    case '\t':
+                    case '\r':
+                    case '\n':
+                        addToString(c);
+                        break;
+                    default:
+                        addToString(c);
+                        xmlIsAttribute = false;
+                        break;
                 }
 
                 if (!xmlIsTagContent && xmlOpenTagsCount == 0) {
@@ -1232,94 +1462,93 @@ public class TokenStream
                 }
             } else {
                 switch (c) {
-                case '<':
-                    addToString(c);
-                    c = peekChar();
-                    switch (c) {
-                    case '!':
-                        c = getChar(); // Skip !
+                    case '<':
                         addToString(c);
                         c = peekChar();
                         switch (c) {
-                        case '-':
-                            c = getChar(); // Skip -
-                            addToString(c);
-                            c = getChar();
-                            if (c == '-') {
+                            case '!':
+                                c = getChar(); // Skip !
                                 addToString(c);
-                                if(!readXmlComment()) return Token.ERROR;
-                            } else {
-                                // throw away the string in progress
-                                stringBufferTop = 0;
-                                this.string = null;
-                                parser.addError("msg.XML.bad.form");
-                                return Token.ERROR;
-                            }
-                            break;
-                        case '[':
-                            c = getChar(); // Skip [
-                            addToString(c);
-                            if (getChar() == 'C' &&
-                                getChar() == 'D' &&
-                                getChar() == 'A' &&
-                                getChar() == 'T' &&
-                                getChar() == 'A' &&
-                                getChar() == '[')
-                            {
-                                addToString('C');
-                                addToString('D');
-                                addToString('A');
-                                addToString('T');
-                                addToString('A');
-                                addToString('[');
-                                if (!readCDATA()) return Token.ERROR;
+                                c = peekChar();
+                                switch (c) {
+                                    case '-':
+                                        c = getChar(); // Skip -
+                                        addToString(c);
+                                        c = getChar();
+                                        if (c == '-') {
+                                            addToString(c);
+                                            if (!readXmlComment()) return Token.ERROR;
+                                        } else {
+                                            // throw away the string in progress
+                                            stringBufferTop = 0;
+                                            this.string = null;
+                                            parser.addError("msg.XML.bad.form");
+                                            return Token.ERROR;
+                                        }
+                                        break;
+                                    case '[':
+                                        c = getChar(); // Skip [
+                                        addToString(c);
+                                        if (getChar() == 'C' &&
+                                                getChar() == 'D' &&
+                                                getChar() == 'A' &&
+                                                getChar() == 'T' &&
+                                                getChar() == 'A' &&
+                                                getChar() == '[') {
+                                            addToString('C');
+                                            addToString('D');
+                                            addToString('A');
+                                            addToString('T');
+                                            addToString('A');
+                                            addToString('[');
+                                            if (!readCDATA()) return Token.ERROR;
 
-                            } else {
-                                // throw away the string in progress
-                                stringBufferTop = 0;
-                                this.string = null;
-                                parser.addError("msg.XML.bad.form");
-                                return Token.ERROR;
-                            }
-                            break;
-                        default:
-                            if(!readEntity()) return Token.ERROR;
-                            break;
+                                        } else {
+                                            // throw away the string in progress
+                                            stringBufferTop = 0;
+                                            this.string = null;
+                                            parser.addError("msg.XML.bad.form");
+                                            return Token.ERROR;
+                                        }
+                                        break;
+                                    default:
+                                        if (!readEntity()) return Token.ERROR;
+                                        break;
+                                }
+                                break;
+                            case '?':
+                                c = getChar(); // Skip ?
+                                addToString(c);
+                                if (!readPI()) return Token.ERROR;
+                                break;
+                            case '/':
+                                // End tag
+                                c = getChar(); // Skip /
+                                addToString(c);
+                                if (xmlOpenTagsCount == 0) {
+                                    // throw away the string in progress
+                                    stringBufferTop = 0;
+                                    this.string = null;
+                                    parser.addError("msg.XML.bad.form");
+                                    return Token.ERROR;
+                                }
+                                xmlIsTagContent = true;
+                                xmlOpenTagsCount--;
+                                break;
+                            default:
+                                // Start tag
+                                xmlIsTagContent = true;
+                                xmlOpenTagsCount++;
+                                break;
                         }
                         break;
-                    case '?':
-                        c = getChar(); // Skip ?
-                        addToString(c);
-                        if (!readPI()) return Token.ERROR;
-                        break;
-                    case '/':
-                        // End tag
-                        c = getChar(); // Skip /
-                        addToString(c);
-                        if (xmlOpenTagsCount == 0) {
-                            // throw away the string in progress
-                            stringBufferTop = 0;
-                            this.string = null;
-                            parser.addError("msg.XML.bad.form");
-                            return Token.ERROR;
-                        }
-                        xmlIsTagContent = true;
-                        xmlOpenTagsCount--;
-                        break;
+                    case '{':
+                        ungetChar(c);
+                        this.string = getStringFromBuffer();
+                        return Token.XML;
                     default:
-                        // Start tag
-                        xmlIsTagContent = true;
-                        xmlOpenTagsCount++;
+                        addToString(c);
                         break;
-                    }
-                    break;
-                case '{':
-                    ungetChar(c);
-                    this.string = getStringFromBuffer();
-                    return Token.XML;
-                default:
-                    addToString(c);
-                    break;
                 }
             }
         }
@@ -1333,8 +1562,7 @@ public class TokenStream
     /**
      *
      */
-    private boolean readQuotedString(int quote) throws IOException
-    {
+    private boolean readQuotedString(int quote) throws IOException {
         for (int c = getChar(); c != EOF_CHAR; c = getChar()) {
             addToString(c);
             if (c == quote) return true;
@@ -1349,9 +1577,8 @@ public class TokenStream
     /**
      *
      */
-    private boolean readXmlComment() throws IOException
-    {
-        for (int c = getChar(); c != EOF_CHAR;) {
+    private boolean readXmlComment() throws IOException {
+        for (int c = getChar(); c != EOF_CHAR; ) {
             addToString(c);
             if (c == '-' && peekChar() == '-') {
                 c = getChar();
@@ -1376,9 +1603,8 @@ public class TokenStream
     /**
      *
      */
-    private boolean readCDATA() throws IOException
-    {
-        for (int c = getChar(); c != EOF_CHAR;) {
+    private boolean readCDATA() throws IOException {
+        for (int c = getChar(); c != EOF_CHAR; ) {
             addToString(c);
             if (c == ']' && peekChar() == ']') {
                 c = getChar();
@@ -1403,19 +1629,18 @@ public class TokenStream
     /**
      *
      */
-    private boolean readEntity() throws IOException
-    {
+    private boolean readEntity() throws IOException {
         int declTags = 1;
         for (int c = getChar(); c != EOF_CHAR; c = getChar()) {
             addToString(c);
             switch (c) {
-            case '<':
-                declTags++;
-                break;
-            case '>':
-                declTags--;
-                if (declTags == 0) return true;
-                break;
+                case '<':
+                    declTags++;
+                    break;
+                case '>':
+                    declTags--;
+                    if (declTags == 0) return true;
+                    break;
             }
         }
 
@@ -1428,8 +1653,7 @@ public class TokenStream
     /**
      *
      */
-    private boolean readPI() throws IOException
-    {
+    private boolean readPI() throws IOException {
         for (int c = getChar(); c != EOF_CHAR; c = getChar()) {
             addToString(c);
             if (c == '?' && peekChar() == '>') {
@@ -1445,35 +1669,33 @@ public class TokenStream
         return false;
     }
 
-    private String getStringFromBuffer()
-    {
+    private String getStringFromBuffer() {
         return new String(stringBuffer, 0, stringBufferTop);
     }
 
-    private void addToString(int c)
-    {
+    private void addToString(int c) {
         int N = stringBufferTop;
         if (N == stringBuffer.length) {
             char[] tmp = new char[stringBuffer.length * 2];
             System.arraycopy(stringBuffer, 0, tmp, 0, N);
             stringBuffer = tmp;
         }
-        stringBuffer[N] = (char)c;
+        stringBuffer[N] = (char) c;
         stringBufferTop = N + 1;
     }
 
-    public int getTokenno() { return tokenno; }
+    public int getTokenno() {
+        return tokenno;
+    }
 
-    protected void ungetChar(int c)
-    {
+    protected void ungetChar(int c) {
         // cannot unread past across line boundary
         if (ungetCursor != 0 && ungetBuffer[ungetCursor - 1] == '\n')
             Kit.codeBug();
         ungetBuffer[ungetCursor++] = c;
     }
 
-    private boolean matchChar(int test) throws IOException
-    {
+    private boolean matchChar(int test) throws IOException {
         int c = getChar();
         if (c == test) {
             return true;
@@ -1483,30 +1705,28 @@ public class TokenStream
         }
     }
 
-    private int peekChar() throws IOException
-    {
+    private int peekChar() throws IOException {
         int c = getChar();
         ungetChar(c);
         return c;
     }
 
-    protected int getChar() throws IOException
-    {
+    protected int getChar() throws IOException {
         if (ungetCursor != 0) {
             --ungetCursor;
             if (charno == -1) {
-              charno = getOffset();
+                charno = getOffset();
             }
             return ungetBuffer[ungetCursor];
         }
 
-        for(;;) {
+        for (; ; ) {
             int c;
             if (sourceString != null) {
                 if (sourceCursor == sourceEnd) {
                     hitEOF = true;
                     if (charno == -1) {
-                      charno = getOffset();
+                        charno = getOffset();
                     }
                     return EOF_CHAR;
                 }
@@ -1516,7 +1736,7 @@ public class TokenStream
                     if (!fillSourceBuffer()) {
                         hitEOF = true;
                         if (charno == -1) {
-                          charno = getOffset();
+                            charno = getOffset();
                         }
                         return EOF_CHAR;
                     }
@@ -1550,28 +1770,26 @@ public class TokenStream
             }
 
             if (charno == -1) {
-              charno = getOffset();
+                charno = getOffset();
             }
 
             return c;
         }
     }
 
-    private void skipLine() throws IOException
-    {
+    private void skipLine() throws IOException {
         // skip to end of line
         int c;
-        while ((c = getChar()) != EOF_CHAR && c != '\n') { }
+        while ((c = getChar()) != EOF_CHAR && c != '\n') {
+        }
         ungetChar(c);
     }
 
-    final int getOffset()
-    {
+    final int getOffset() {
         return sourceCursor - lineStart - ungetCursor - 1;
     }
 
-    final String getLine()
-    {
+    final String getLine() {
         if (sourceString != null) {
             // String case
             int lineEnd = sourceCursor;
@@ -1593,11 +1811,13 @@ public class TokenStream
                 --lineLength;
             } else {
                 // Read until the end of line
-                for (;; ++lineLength) {
+                for (; ; ++lineLength) {
                     int i = lineStart + lineLength;
                     if (i == sourceEnd) {
                         try {
-                            if (!fillSourceBuffer()) { break; }
+                            if (!fillSourceBuffer()) {
+                                break;
+                            }
                         } catch (IOException ioe) {
                             // ignore it, we're already displaying an error...
                             break;
@@ -1616,13 +1836,12 @@ public class TokenStream
         }
     }
 
-    private boolean fillSourceBuffer() throws IOException
-    {
+    private boolean fillSourceBuffer() throws IOException {
         if (sourceString != null) Kit.codeBug();
         if (sourceEnd == sourceBuffer.length) {
             if (lineStart != 0) {
                 System.arraycopy(sourceBuffer, lineStart, sourceBuffer, 0,
-                                 sourceEnd - lineStart);
+                        sourceEnd - lineStart);
                 sourceEnd -= lineStart;
                 sourceCursor -= lineStart;
                 lineStart = 0;
@@ -1633,7 +1852,7 @@ public class TokenStream
             }
         }
         int n = sourceReader.read(sourceBuffer, sourceEnd,
-                                  sourceBuffer.length - sourceEnd);
+                sourceBuffer.length - sourceEnd);
         if (n < 0) {
             return false;
         }
@@ -1645,10 +1864,11 @@ public class TokenStream
      * Set the FileLevelJsDocBuilder on the TokenStream. The TokenStream passes
      * the builder on to the JSDocInfoParser if it exists. Otherwise this method
      * is a no-op.
+     *
      * @param fileLevelJsDocBuilder
      */
     public void setFileLevelJsDocBuilder(
-      Node.FileLevelJsDocBuilder fileLevelJsDocBuilder) {
+            Node.FileLevelJsDocBuilder fileLevelJsDocBuilder) {
     }
 
     // stuff other than whitespace since start of line

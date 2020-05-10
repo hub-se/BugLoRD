@@ -20,7 +20,7 @@ package org.joda.time.base;
  * use a local milliseconds internal representation.
  * <p>
  * This class should generally not be used directly by API users.
- * The {@link org.joda.time.ReadablePartial} interface should be used when different 
+ * The {@link org.joda.time.ReadablePartial} interface should be used when different
  * kinds of partial objects are to be referenced.
  * <p>
  * BasePartial subclasses may be mutable and not thread-safe.
@@ -31,11 +31,14 @@ package org.joda.time.base;
 public abstract class BaseLocal
         extends AbstractPartial {
 
-    /** Serialization version */
+    /**
+     * Serialization version
+     */
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 276453175381783L;
 
     //-----------------------------------------------------------------------
+
     /**
      * Constructs a partial with the current time, using ISOChronology in
      * the default zone to extract the fields.
@@ -49,13 +52,14 @@ public abstract class BaseLocal
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the local milliseconds from the Java epoch
      * of 1970-01-01T00:00:00 (not fixed to any specific time zone).
      * <p>
      * This method is useful in certain circustances for high performance
      * access to the datetime fields.
-     * 
+     *
      * @return the number of milliseconds since 1970-01-01T00:00:00
      */
     protected abstract long getLocalMillis();

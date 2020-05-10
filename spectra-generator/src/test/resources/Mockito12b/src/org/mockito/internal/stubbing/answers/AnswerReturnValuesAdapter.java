@@ -4,11 +4,11 @@
  */
 package org.mockito.internal.stubbing.answers;
 
-import java.io.Serializable;
-
 import org.mockito.ReturnValues;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import java.io.Serializable;
 
 //It's ok to suppress deprecation because this class goes away as soon as ReturnValues disappears in future release
 @SuppressWarnings("deprecation")

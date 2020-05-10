@@ -1,35 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-19">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/optimization/direct/CMAESOptimizerTest">
-					<exception>java.lang.Exception:Unexpected exception,
-						expected&lt;org.apache.commons.math3.exception.NumberIsTooLargeException&gt;
-						but
-						was&lt;org.apache.commons.math3.exception.MathIllegalStateException&gt;
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>25</number_tests>
-					<failed>1</failed>
-					<passed>24</passed>
-					<nodes>34094</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/optimization/direct/CMAESOptimizer.java">
-					<insert numberlines="13">538-540</insert>
-					<bugtypes>
-						<id id="3.2" lines="539">
-							<description>Number overflow.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-19">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/optimization/direct/CMAESOptimizerTest">
+                    <exception>java.lang.Exception:Unexpected exception,
+                        expected&lt;org.apache.commons.math3.exception.NumberIsTooLargeException&gt;
+                        but
+                        was&lt;org.apache.commons.math3.exception.MathIllegalStateException&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>25</number_tests>
+                    <failed>1</failed>
+                    <passed>24</passed>
+                    <nodes>34094</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/optimization/direct/CMAESOptimizer.java">
+                    <insert numberlines="13">538-540</insert>
+                    <bugtypes>
+                        <id id="3.2" lines="539">
+                            <description>Number overflow.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

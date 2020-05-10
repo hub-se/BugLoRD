@@ -4,12 +4,12 @@
  */
 package org.mockito.internal.invocation;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.mockito.internal.util.ObjectBox;
 import org.mockito.internal.verification.InOrderContextImpl;
 import org.mockitoutil.TestBase;
+
+import java.util.Arrays;
 
 public class InvocationMarkerTest extends TestBase {
 
@@ -20,14 +20,14 @@ public class InvocationMarkerTest extends TestBase {
         Invocation i = new InvocationBuilder().toInvocation();
         InvocationMatcher im = new InvocationBuilder().toInvocationMatcher();
         assertFalse(i.isVerified());
-        
+
         //when
         marker.markVerified(Arrays.asList(i), im);
-        
+
         //then
         assertTrue(i.isVerified());
     }
-    
+
     @Test
     public void shouldCaptureArguments() {
         //given
@@ -37,15 +37,16 @@ public class InvocationMarkerTest extends TestBase {
         CapturesArgumensFromInvocation c = new CapturesArgumensFromInvocation() {
             public void captureArgumentsFrom(Invocation i) {
                 box.put(i);
-            }};
-        
+            }
+        };
+
         //when
         marker.markVerified(Arrays.asList(i), c);
-        
+
         //then
         assertEquals(i, box.getObject());
     }
-    
+
     @Test
     public void shouldMarkInvocationsAsVerifiedInOrder() {
         //given
@@ -55,10 +56,10 @@ public class InvocationMarkerTest extends TestBase {
         InvocationMatcher im = new InvocationBuilder().toInvocationMatcher();
         assertFalse(context.isVerified(i));
         assertFalse(i.isVerified());
-        
+
         //when
         marker.markVerifiedInOrder(Arrays.asList(i), im, context);
-        
+
         //then
         assertTrue(context.isVerified(i));
         assertTrue(i.isVerified());

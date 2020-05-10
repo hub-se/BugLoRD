@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Fleiss fault localizer $\frac{4\EF\NP-4\NF\EP-(\NF-\EP)^2}{2\EF\NF\EP+2\NP\NF\EP}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Fleiss<T> extends AbstractFaultLocalizer<T> {
 
@@ -40,8 +39,8 @@ public class Fleiss<T> extends AbstractFaultLocalizer<T> {
         final double denom = denom1 + denom2;
 
         if (enu == 0) {
-    		return 0;
-    	}
+            return 0;
+        }
         return enu / denom;
     }
 

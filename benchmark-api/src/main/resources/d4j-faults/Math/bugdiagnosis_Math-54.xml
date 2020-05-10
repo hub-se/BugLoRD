@@ -1,31 +1,32 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-54">
-			<tests>
-				<testfile path="org/apache/commons/math/dfp/DfpTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;0.0&gt;
-						but was:&lt;-Infinity&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>63</number_tests>
-					<failed>1</failed>
-					<passed>62</passed>
-					<nodes>25120</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/dfp/Dfp.java">
-					<change>2319</change>
-					<insert numberlines="3">272-273</insert>
-					<bugtypes>
-						<id id="1.1" lines="272">
-							<description>Missing check for inequality to zero.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-54">
+            <tests>
+                <testfile path="org/apache/commons/math/dfp/DfpTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;0.0&gt;
+                        but was:&lt;-Infinity&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>63</number_tests>
+                    <failed>1</failed>
+                    <passed>62</passed>
+                    <nodes>25120</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/dfp/Dfp.java">
+                    <change>2319</change>
+                    <insert numberlines="3">272-273</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="272">
+                            <description>Missing check for inequality to zero.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,14 +18,15 @@
 package org.apache.commons.lang3.mutable;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
  * JUnit tests.
- * 
- * @since 2.2
- * @see MutableBoolean
+ *
  * @version $Id$
+ * @see MutableBoolean
+ * @since 2.2
  */
 public class MutableBooleanTest {
 
@@ -39,8 +40,8 @@ public class MutableBooleanTest {
         assertEquals(+1, mutBool.compareTo(new MutableBoolean(false)));
         assertEquals(0, mutBool.compareTo(new MutableBoolean(true)));
     }
-    
-    @Test(expected=NullPointerException.class)
+
+    @Test(expected = NullPointerException.class)
     public void testCompareToNull() {
         final MutableBoolean mutBool = new MutableBoolean(false);
         mutBool.compareTo(null);
@@ -59,7 +60,7 @@ public class MutableBooleanTest {
 
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testConstructorNull() {
         new MutableBoolean(null);
     }
@@ -86,7 +87,7 @@ public class MutableBooleanTest {
     public void testGetSet() {
         assertFalse(new MutableBoolean().booleanValue());
         assertEquals(Boolean.FALSE, new MutableBoolean().getValue());
-        
+
         final MutableBoolean mutBool = new MutableBoolean(false);
         assertEquals(Boolean.FALSE, mutBool.toBoolean());
         assertFalse(mutBool.booleanValue());
@@ -107,7 +108,7 @@ public class MutableBooleanTest {
 
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testSetNull() {
         final MutableBoolean mutBool = new MutableBoolean(false);
         mutBool.setValue(null);

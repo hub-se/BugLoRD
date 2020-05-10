@@ -12,7 +12,7 @@ public class MockitoException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private StackTraceElement[] unfilteredStackTrace;
-    
+
     public MockitoException(String message, Throwable t) {
         super(message, t);
         filterStackTrace();
@@ -25,7 +25,7 @@ public class MockitoException extends RuntimeException {
 
     private void filterStackTrace() {
         unfilteredStackTrace = getStackTrace();
-        
+
         ConditionalStackTraceFilter filter = new ConditionalStackTraceFilter();
         filter.filter(this);
     }

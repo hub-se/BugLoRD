@@ -4,10 +4,10 @@
  */
 package org.mockito.internal.matchers;
 
-import java.io.Serializable;
-
 import org.hamcrest.Description;
 import org.mockito.ArgumentMatcher;
+
+import java.io.Serializable;
 
 
 public class EqualsWithDelta extends ArgumentMatcher<Number> implements Serializable {
@@ -26,7 +26,7 @@ public class EqualsWithDelta extends ArgumentMatcher<Number> implements Serializ
         Number actualNumber = (Number) actual;
         return wanted.doubleValue() - delta.doubleValue() <= actualNumber.doubleValue()
                 && actualNumber.doubleValue() <= wanted.doubleValue()
-                        + delta.doubleValue();
+                + delta.doubleValue();
     }
 
     public void describeTo(Description description) {

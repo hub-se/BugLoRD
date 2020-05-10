@@ -18,33 +18,36 @@ package com.google.javascript.jscomp;
 
 /**
  * A simple listener for code change events.
+ *
  * @author nicksantos@google.com (Nick Santos)
  */
 interface CodeChangeHandler {
 
-  // TODO(nicksantos): Add more to this interface, for more fine-grained
-  // change reporting.
+    // TODO(nicksantos): Add more to this interface, for more fine-grained
+    // change reporting.
 
-  /** Report a change to the AST. */
-  void reportChange();
+    /**
+     * Report a change to the AST.
+     */
+    void reportChange();
 
-  /**
-   * A trivial change handler that just records whether the code
-   * has changed since the last reset.
-   */
-  static final class RecentChange implements CodeChangeHandler {
-    private boolean hasChanged = false;
+    /**
+     * A trivial change handler that just records whether the code
+     * has changed since the last reset.
+     */
+    static final class RecentChange implements CodeChangeHandler {
+        private boolean hasChanged = false;
 
-    public void reportChange() {
-      hasChanged = true;
+        public void reportChange() {
+            hasChanged = true;
+        }
+
+        boolean hasCodeChanged() {
+            return hasChanged;
+        }
+
+        void reset() {
+            hasChanged = false;
+        }
     }
-
-    boolean hasCodeChanged() {
-      return hasChanged;
-    }
-
-    void reset() {
-      hasChanged = false;
-    }
-  }
 }

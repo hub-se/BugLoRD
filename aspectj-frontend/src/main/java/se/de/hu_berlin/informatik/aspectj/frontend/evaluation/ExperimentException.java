@@ -14,14 +14,15 @@ package se.de.hu_berlin.informatik.aspectj.frontend.evaluation;
  */
 public class ExperimentException extends Exception {
 
-    /** serial version UID */
+    /**
+     * serial version UID
+     */
     private static final long serialVersionUID = 1L;
 
     /**
      * Create exception
-     * 
-     * @param msg
-     *            exception msg
+     *
+     * @param msg exception msg
      */
     public ExperimentException(final String msg) {
         super(msg);
@@ -29,11 +30,9 @@ public class ExperimentException extends Exception {
 
     /**
      * Create exception
-     * 
-     * @param msg
-     *            exception msg
-     * @param e
-     *            pass existing exceptions
+     *
+     * @param msg exception msg
+     * @param e   pass existing exceptions
      */
     public ExperimentException(final String msg, final Throwable e) {
         super(msg, e);
@@ -41,9 +40,8 @@ public class ExperimentException extends Exception {
 
     /**
      * Create exception
-     * 
-     * @param e
-     *            pass existing exceptions
+     *
+     * @param e pass existing exceptions
      */
     public ExperimentException(final Throwable e) {
         super(e);

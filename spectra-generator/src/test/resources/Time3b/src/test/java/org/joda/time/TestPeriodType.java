@@ -15,15 +15,15 @@
  */
 package org.joda.time;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
  * This class is a JUnit test for PeriodType.
@@ -36,32 +36,32 @@ public class TestPeriodType extends TestCase {
 
     private static final DateTimeZone PARIS = DateTimeZone.forID("Europe/Paris");
     private static final DateTimeZone LONDON = DateTimeZone.forID("Europe/London");
-    
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
-    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365 + 365;
-    
+
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
+    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365;
+
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
-            
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
+
     // 2002-04-05
     private long TEST_TIME1 =
-            (y2002days + 31L + 28L + 31L + 5L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 12L * DateTimeConstants.MILLIS_PER_HOUR
-            + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (y2002days + 31L + 28L + 31L + 5L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 12L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     // 2003-05-06
     private long TEST_TIME2 =
-            (y2003days + 31L + 28L + 31L + 30L + 6L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 14L * DateTimeConstants.MILLIS_PER_HOUR
-            + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
-    
+            (y2003days + 31L + 28L + 31L + 30L + 6L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 14L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     private DateTimeZone originalDateTimeZone = null;
     private TimeZone originalTimeZone = null;
     private Locale originalLocale = null;
@@ -112,12 +112,12 @@ public class TestPeriodType extends TestCase {
         oos.writeObject(type);
         byte[] bytes = baos.toByteArray();
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);
         PeriodType result = (PeriodType) ois.readObject();
         ois.close();
-        
+
         assertEquals(type, result);
     }
 
@@ -127,12 +127,12 @@ public class TestPeriodType extends TestCase {
         oos.writeObject(type);
         byte[] bytes = baos.toByteArray();
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);
         PeriodType result = (PeriodType) ois.readObject();
         ois.close();
-        
+
         assertEquals(type, result);
     }
 
@@ -446,44 +446,44 @@ public class TestPeriodType extends TestCase {
 
     //-----------------------------------------------------------------------
     public void testForFields1() throws Exception {
-        PeriodType type = PeriodType.forFields(new DurationFieldType[] {
-            DurationFieldType.years(),
+        PeriodType type = PeriodType.forFields(new DurationFieldType[]{
+                DurationFieldType.years(),
         });
         assertSame(PeriodType.years(), type);
-        type = PeriodType.forFields(new DurationFieldType[] {
-            DurationFieldType.months(),
+        type = PeriodType.forFields(new DurationFieldType[]{
+                DurationFieldType.months(),
         });
         assertSame(PeriodType.months(), type);
-        type = PeriodType.forFields(new DurationFieldType[] {
+        type = PeriodType.forFields(new DurationFieldType[]{
                 DurationFieldType.weeks(),
         });
         assertSame(PeriodType.weeks(), type);
-        type = PeriodType.forFields(new DurationFieldType[] {
+        type = PeriodType.forFields(new DurationFieldType[]{
                 DurationFieldType.days(),
         });
         assertSame(PeriodType.days(), type);
-        type = PeriodType.forFields(new DurationFieldType[] {
+        type = PeriodType.forFields(new DurationFieldType[]{
                 DurationFieldType.hours(),
         });
         assertSame(PeriodType.hours(), type);
-        type = PeriodType.forFields(new DurationFieldType[] {
+        type = PeriodType.forFields(new DurationFieldType[]{
                 DurationFieldType.minutes(),
         });
         assertSame(PeriodType.minutes(), type);
-        type = PeriodType.forFields(new DurationFieldType[] {
+        type = PeriodType.forFields(new DurationFieldType[]{
                 DurationFieldType.seconds(),
         });
         assertSame(PeriodType.seconds(), type);
-        type = PeriodType.forFields(new DurationFieldType[] {
+        type = PeriodType.forFields(new DurationFieldType[]{
                 DurationFieldType.millis(),
         });
         assertSame(PeriodType.millis(), type);
     }
 
     public void testForFields2() throws Exception {
-        DurationFieldType[] types = new DurationFieldType[] {
-            DurationFieldType.years(),
-            DurationFieldType.hours(),
+        DurationFieldType[] types = new DurationFieldType[]{
+                DurationFieldType.years(),
+                DurationFieldType.hours(),
         };
         PeriodType type = PeriodType.forFields(types);
         assertEquals(2, type.size());
@@ -501,9 +501,9 @@ public class TestPeriodType extends TestCase {
     }
 
     public void testForFields3() throws Exception {
-        DurationFieldType[] types = new DurationFieldType[] {
-            DurationFieldType.months(),
-            DurationFieldType.weeks(),
+        DurationFieldType[] types = new DurationFieldType[]{
+                DurationFieldType.months(),
+                DurationFieldType.weeks(),
         };
         PeriodType type = PeriodType.forFields(types);
         assertEquals(2, type.size());
@@ -521,15 +521,15 @@ public class TestPeriodType extends TestCase {
     }
 
     public void testForFields4() throws Exception {
-        DurationFieldType[] types = new DurationFieldType[] {
-            DurationFieldType.weeks(),
-            DurationFieldType.days(),  // adding this makes this test unique, so cache is not pre-populated
-            DurationFieldType.months(),
+        DurationFieldType[] types = new DurationFieldType[]{
+                DurationFieldType.weeks(),
+                DurationFieldType.days(),  // adding this makes this test unique, so cache is not pre-populated
+                DurationFieldType.months(),
         };
-        DurationFieldType[] types2 = new DurationFieldType[] {
-            DurationFieldType.months(),
-            DurationFieldType.days(),
-            DurationFieldType.weeks(),
+        DurationFieldType[] types2 = new DurationFieldType[]{
+                DurationFieldType.months(),
+                DurationFieldType.days(),
+                DurationFieldType.weeks(),
         };
         PeriodType type = PeriodType.forFields(types);
         PeriodType type2 = PeriodType.forFields(types2);
@@ -537,9 +537,9 @@ public class TestPeriodType extends TestCase {
     }
 
     public void testForFields5() throws Exception {
-        DurationFieldType[] types = new DurationFieldType[] {
-            DurationFieldType.centuries(),
-            DurationFieldType.months(),
+        DurationFieldType[] types = new DurationFieldType[]{
+                DurationFieldType.centuries(),
+                DurationFieldType.months(),
         };
         try {
             PeriodType.forFields(types);
@@ -563,7 +563,7 @@ public class TestPeriodType extends TestCase {
         } catch (IllegalArgumentException ex) {
             // expected
         }
-        
+
         types = new DurationFieldType[0];
         try {
             PeriodType.forFields(types);
@@ -571,10 +571,10 @@ public class TestPeriodType extends TestCase {
         } catch (IllegalArgumentException ex) {
             // expected
         }
-        
-        types = new DurationFieldType[] {
-            null,
-            DurationFieldType.months(),
+
+        types = new DurationFieldType[]{
+                null,
+                DurationFieldType.months(),
         };
         try {
             PeriodType.forFields(types);
@@ -582,10 +582,10 @@ public class TestPeriodType extends TestCase {
         } catch (IllegalArgumentException ex) {
             // expected
         }
-        
-        types = new DurationFieldType[] {
-            DurationFieldType.months(),
-            null,
+
+        types = new DurationFieldType[]{
+                DurationFieldType.months(),
+                null,
         };
         try {
             PeriodType.forFields(types);
@@ -597,12 +597,12 @@ public class TestPeriodType extends TestCase {
 
     // ensure hash key distribution
     public void testForFields7() throws Exception {
-        DurationFieldType[] types = new DurationFieldType[] {
-            DurationFieldType.weeks(),
-            DurationFieldType.months(),
+        DurationFieldType[] types = new DurationFieldType[]{
+                DurationFieldType.weeks(),
+                DurationFieldType.months(),
         };
-        DurationFieldType[] types2 = new DurationFieldType[] {
-            DurationFieldType.seconds(),
+        DurationFieldType[] types2 = new DurationFieldType[]{
+                DurationFieldType.seconds(),
         };
         PeriodType type = PeriodType.forFields(types);
         PeriodType type2 = PeriodType.forFields(types2);
@@ -812,31 +812,31 @@ public class TestPeriodType extends TestCase {
         PeriodType type = PeriodType.standard().withYearsRemoved();
         PeriodType type2 = type.withYearsRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.standard().withMonthsRemoved();
         type2 = type.withMonthsRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.standard().withWeeksRemoved();
         type2 = type.withWeeksRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.standard().withDaysRemoved();
         type2 = type.withDaysRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.standard().withHoursRemoved();
         type2 = type.withHoursRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.standard().withMinutesRemoved();
         type2 = type.withMinutesRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.standard().withSecondsRemoved();
         type2 = type.withSecondsRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.standard().withMillisRemoved();
         type2 = type.withMillisRemoved();
         assertEquals(true, type == type2);
@@ -847,27 +847,27 @@ public class TestPeriodType extends TestCase {
         PeriodType type = PeriodType.dayTime();
         PeriodType type2 = type.withYearsRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.dayTime();
         type2 = type.withMonthsRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.dayTime();
         type2 = type.withWeeksRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.millis();
         type2 = type.withDaysRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.millis();
         type2 = type.withHoursRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.millis();
         type2 = type.withMinutesRemoved();
         assertEquals(true, type == type2);
-        
+
         type = PeriodType.millis();
         type2 = type.withSecondsRemoved();
         assertEquals(true, type == type2);

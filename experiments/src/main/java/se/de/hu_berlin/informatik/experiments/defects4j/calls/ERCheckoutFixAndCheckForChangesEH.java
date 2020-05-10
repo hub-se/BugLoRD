@@ -15,17 +15,18 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 //import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
 //import se.de.hu_berlin.informatik.utils.files.FileUtils;
 //import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
+
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
  * Runs a single experiment.
- * 
+ *
  * @author Simon Heiden
  */
-public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFixedEntity<?>,BuggyFixedEntity<?>> {
-	
+public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
+
 //	private boolean tryToGetChangesFromArchive(BuggyFixedEntity<?> input) {
 //		Entity bug = input.getBuggyVersion();
 //		File changesFile = Paths.get(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR), 
@@ -47,7 +48,7 @@ public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFi
 //			
 //		return true;
 //	}
-	
+
 //	private boolean tryToGetChangesHumanFromArchive(BuggyFixedEntity<?> input) {
 //		Entity bug = input.getBuggyVersion();
 //		File changesFile = Paths.get(Defects4J.getValueOf(Defects4JProperties.CHANGES_ARCHIVE_DIR), 
@@ -66,17 +67,17 @@ public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFi
 //		return true;
 //	}
 
-	@Override
-	public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
-		Log.out(this, "Processing %s.", buggyEntity);
-		
+    @Override
+    public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
+        Log.out(this, "Processing %s.", buggyEntity);
+
 //		/* #====================================================================================
 //		 * # try to get changes from archive, if existing
 //		 * #==================================================================================== */
 //		boolean foundChanges = tryToGetChangesFromArchive(buggyEntity);
 //		//human readable changes are not as important...
 //		tryToGetChangesHumanFromArchive(buggyEntity);
-		
+
 //		/* #====================================================================================
 //		 * # if not found a changes file, then generate a new one
 //		 * #==================================================================================== */
@@ -84,8 +85,8 @@ public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFi
 //			boolean bugExisted = buggyEntity.requireBug(true);
 //			boolean fixExisted = buggyEntity.requireFix(true);
 
-		// for defects4j, this should fetch the changes from the XML files and store them as a file...
-		buggyEntity.getAndSaveAllChangesToFile(true, false, false, true, false, false);
+        // for defects4j, this should fetch the changes from the XML files and store them as a file...
+        buggyEntity.getAndSaveAllChangesToFile(true, false, false, true, false, false);
 
 //			if (!bugExisted) {
 //				buggyEntity.getBuggyVersion().deleteAllButData();
@@ -95,9 +96,9 @@ public class ERCheckoutFixAndCheckForChangesEH extends AbstractProcessor<BuggyFi
 //				buggyEntity.getFixedVersion().deleteAllButData();
 //			}
 //		}
-		
-		return buggyEntity;
-	}
+
+        return buggyEntity;
+    }
 
 }
 

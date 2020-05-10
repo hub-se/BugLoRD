@@ -1,42 +1,42 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-7">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/ode/nonstiff/DormandPrince853IntegratorTest">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>169</number_tests>
-					<failed>1</failed>
-					<passed>168</passed>
-					<nodes>40594</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math3/ode/AbstractIntegrator.java">
-					<change>346,347</change>
-					<change>363</change>
-					<delete>357-359</delete>
-					<delete>370-372</delete>
-					<bugtypes>
-						<id id="3.1" lines="347">
-							<description>Incorrect data usage.</description>
-						</id>
-						<id id="3.1" lines="357-359">
-							<description>Unnecessary data handling.</description>
-						</id>
-						<id id="3.1" lines="363">
-							<description>Incorrect data usage.</description>
-						</id>
-						<id id="3.1" lines="370-372">
-							<description>Unnecessary data handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-7">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/ode/nonstiff/DormandPrince853IntegratorTest">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>169</number_tests>
+                    <failed>1</failed>
+                    <passed>168</passed>
+                    <nodes>40594</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math3/ode/AbstractIntegrator.java">
+                    <change>346,347</change>
+                    <change>363</change>
+                    <delete>357-359</delete>
+                    <delete>370-372</delete>
+                    <bugtypes>
+                        <id id="3.1" lines="347">
+                            <description>Incorrect data usage.</description>
+                        </id>
+                        <id id="3.1" lines="357-359">
+                            <description>Unnecessary data handling.</description>
+                        </id>
+                        <id id="3.1" lines="363">
+                            <description>Incorrect data usage.</description>
+                        </id>
+                        <id id="3.1" lines="370-372">
+                            <description>Unnecessary data handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

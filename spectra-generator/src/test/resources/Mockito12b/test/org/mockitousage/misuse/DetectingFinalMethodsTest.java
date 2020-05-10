@@ -3,7 +3,6 @@
  * This program is made available under the terms of the MIT License.
  */
 package org.mockitousage.misuse;
-import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.mockito.Mock;
@@ -11,15 +10,18 @@ import org.mockito.exceptions.misusing.MissingMethodInvocationException;
 import org.mockito.exceptions.misusing.UnfinishedVerificationException;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Mockito.*;
+
 public class DetectingFinalMethodsTest extends TestBase {
-    
+
     class WithFinal {
         final int foo() {
             return 0;
         }
     }
-    
-    @Mock private WithFinal withFinal;
+
+    @Mock
+    private WithFinal withFinal;
 
     @Test
     public void shouldFailWithUnfinishedVerification() {
@@ -28,7 +30,8 @@ public class DetectingFinalMethodsTest extends TestBase {
         try {
             verify(withFinal).foo();
             fail();
-        } catch (UnfinishedVerificationException e) {}
+        } catch (UnfinishedVerificationException e) {
+        }
     }
 
     @Test
@@ -37,6 +40,7 @@ public class DetectingFinalMethodsTest extends TestBase {
         try {
             when(withFinal.foo()).thenReturn(null);
             fail();
-        } catch (MissingMethodInvocationException e) {}
+        } catch (MissingMethodInvocationException e) {
+        }
     }
 }

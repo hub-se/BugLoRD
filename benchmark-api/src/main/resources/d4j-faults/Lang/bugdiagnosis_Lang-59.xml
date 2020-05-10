@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-59">
-			<tests>
-				<testfile path="org/apache/commons/lang/text/StrBuilderAppendInsertTest">
-					<exception>java.lang.ArrayIndexOutOfBoundsException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>186</number_tests>
-					<failed>1</failed>
-					<passed>185</passed>
-					<nodes>9573</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang/text/StrBuilder.java">
-					<change>884</change>
-					<bugtypes>
-						<id id="3.1" lines="884">
-							<description>Incorrect initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-59">
+            <tests>
+                <testfile path="org/apache/commons/lang/text/StrBuilderAppendInsertTest">
+                    <exception>java.lang.ArrayIndexOutOfBoundsException</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>186</number_tests>
+                    <failed>1</failed>
+                    <passed>185</passed>
+                    <nodes>9573</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang/text/StrBuilder.java">
+                    <change>884</change>
+                    <bugtypes>
+                        <id id="3.1" lines="884">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

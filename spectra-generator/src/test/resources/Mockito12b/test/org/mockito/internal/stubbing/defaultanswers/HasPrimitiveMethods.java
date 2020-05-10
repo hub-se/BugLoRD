@@ -6,9 +6,14 @@ package org.mockito.internal.stubbing.defaultanswers;
 
 interface HasPrimitiveMethods {
     boolean booleanMethod();
+
     char charMethod();
+
     int intMethod();
+
     long longMethod();
+
     float floatMethod();
+
     double doubleMethod();
 }

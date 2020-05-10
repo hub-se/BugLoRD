@@ -19,7 +19,6 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.DurationField;
 
 /**
- * 
  * @author Brian S O'Neill
  */
 class TestGJDayOfMonthField extends TestGJDateTimeField {
@@ -34,7 +33,7 @@ class TestGJDayOfMonthField extends TestGJDateTimeField {
     public long set(long millis, int value) {
         int[] ymd = iChronology.gjFromMillis(millis);
         return iChronology.getTimeOnlyMillis(millis)
-            + iChronology.millisFromGJ(ymd[0], ymd[1], value);
+                + iChronology.millisFromGJ(ymd[0], ymd[1], value);
     }
 
     public long add(long millis, long value) {

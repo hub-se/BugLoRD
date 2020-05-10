@@ -17,18 +17,13 @@
 
 package org.apache.commons.lang3.builder;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import org.junit.Test;
+import java.util.concurrent.*;
 
 /**
  * Tests concurrent access for the default {@link ToStringStyle}.
@@ -39,11 +34,11 @@ import org.junit.Test;
  * <p>
  * This test passes but only tests one aspect of the issue.
  * </p>
- * 
- * @see <a href="https://issues.apache.org/jira/browse/LANG-762">[LANG-762] Handle or document ReflectionToStringBuilder
- *      and ToStringBuilder for collections that are not thread safe</a>
- * @since 3.1
+ *
  * @version $Id$
+ * @see <a href="https://issues.apache.org/jira/browse/LANG-762">[LANG-762] Handle or document ReflectionToStringBuilder
+ * and ToStringBuilder for collections that are not thread safe</a>
+ * @since 3.1
  */
 public class ToStringStyleConcurrencyTest {
 

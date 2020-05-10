@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,11 +17,12 @@
 package org.apache.commons.lang3.mutable;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
  * JUnit tests.
- * 
+ *
  * @version $Id$
  * @see MutableInt
  */
@@ -31,9 +32,9 @@ public class MutableIntTest {
     @Test
     public void testConstructors() {
         assertEquals(0, new MutableInt().intValue());
-        
+
         assertEquals(1, new MutableInt(1).intValue());
-        
+
         assertEquals(2, new MutableInt(Integer.valueOf(2)).intValue());
         assertEquals(3, new MutableInt(new MutableLong(3)).intValue());
 
@@ -41,9 +42,9 @@ public class MutableIntTest {
 
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testConstructorNull() {
-        new MutableInt((Number)null);
+        new MutableInt((Number) null);
     }
 
     @Test
@@ -51,21 +52,21 @@ public class MutableIntTest {
         final MutableInt mutNum = new MutableInt(0);
         assertEquals(0, new MutableInt().intValue());
         assertEquals(Integer.valueOf(0), new MutableInt().getValue());
-        
+
         mutNum.setValue(1);
         assertEquals(1, mutNum.intValue());
         assertEquals(Integer.valueOf(1), mutNum.getValue());
-        
+
         mutNum.setValue(Integer.valueOf(2));
         assertEquals(2, mutNum.intValue());
         assertEquals(Integer.valueOf(2), mutNum.getValue());
-        
+
         mutNum.setValue(new MutableLong(3));
         assertEquals(3, mutNum.intValue());
         assertEquals(Integer.valueOf(3), mutNum.getValue());
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testSetNull() {
         final MutableInt mutNum = new MutableInt(0);
         mutNum.setValue(null);
@@ -117,7 +118,7 @@ public class MutableIntTest {
         assertEquals(-1, mutNum.compareTo(new MutableInt(1)));
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testCompareToNull() {
         final MutableInt mutNum = new MutableInt(0);
         mutNum.compareTo(null);
@@ -126,12 +127,12 @@ public class MutableIntTest {
     @Test
     public void testPrimitiveValues() {
         MutableInt mutNum = new MutableInt(1);
-        
-        assertEquals( (byte) 1, mutNum.byteValue() );
-        assertEquals( (short) 1, mutNum.shortValue() );
-        assertEquals( 1.0F, mutNum.floatValue(), 0 );
-        assertEquals( 1.0, mutNum.doubleValue(), 0 );
-        assertEquals( 1L, mutNum.longValue() );
+
+        assertEquals((byte) 1, mutNum.byteValue());
+        assertEquals((short) 1, mutNum.shortValue());
+        assertEquals(1.0F, mutNum.floatValue(), 0);
+        assertEquals(1.0, mutNum.doubleValue(), 0);
+        assertEquals(1L, mutNum.longValue());
     }
 
     @Test
@@ -144,7 +145,7 @@ public class MutableIntTest {
     public void testIncrement() {
         MutableInt mutNum = new MutableInt(1);
         mutNum.increment();
-        
+
         assertEquals(2, mutNum.intValue());
         assertEquals(2L, mutNum.longValue());
     }
@@ -153,7 +154,7 @@ public class MutableIntTest {
     public void testDecrement() {
         MutableInt mutNum = new MutableInt(1);
         mutNum.decrement();
-        
+
         assertEquals(0, mutNum.intValue());
         assertEquals(0L, mutNum.longValue());
     }
@@ -162,7 +163,7 @@ public class MutableIntTest {
     public void testAddValuePrimitive() {
         MutableInt mutNum = new MutableInt(1);
         mutNum.add(1);
-        
+
         assertEquals(2, mutNum.intValue());
         assertEquals(2L, mutNum.longValue());
     }
@@ -171,7 +172,7 @@ public class MutableIntTest {
     public void testAddValueObject() {
         MutableInt mutNum = new MutableInt(1);
         mutNum.add(Integer.valueOf(1));
-        
+
         assertEquals(2, mutNum.intValue());
         assertEquals(2L, mutNum.longValue());
     }
@@ -180,7 +181,7 @@ public class MutableIntTest {
     public void testSubtractValuePrimitive() {
         MutableInt mutNum = new MutableInt(1);
         mutNum.subtract(1);
-        
+
         assertEquals(0, mutNum.intValue());
         assertEquals(0L, mutNum.longValue());
     }
@@ -189,7 +190,7 @@ public class MutableIntTest {
     public void testSubtractValueObject() {
         MutableInt mutNum = new MutableInt(1);
         mutNum.subtract(Integer.valueOf(1));
-        
+
         assertEquals(0, mutNum.intValue());
         assertEquals(0L, mutNum.longValue());
     }

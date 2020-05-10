@@ -1,33 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-6">
-			<tests>
-				<testfile path="org/jfree/chart/util/junit/ShapeListTests">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;org.jfree.chart.util.ShapeList@d0e55451&gt;
-						but was:&lt;org.jfree.chart.util.ShapeList@d951b68f&gt;:-
-						org.jfree.chart.util.junit.ShapeListTests::testEquals:--&gt;
-						junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>486</number_tests>
-					<failed>2</failed>
-					<passed>484</passed>
-					<nodes>45350</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/jfree/chart/util/ShapeList.java">
-					<change>111</change>
-					<bugtypes>
-						<id id="3.1" lines="111">
-							<description>Incorrect function used, did not check for equality
-								of the objects.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-6">
+            <tests>
+                <testfile path="org/jfree/chart/util/junit/ShapeListTests">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;org.jfree.chart.util.ShapeList@d0e55451&gt;
+                        but was:&lt;org.jfree.chart.util.ShapeList@d951b68f&gt;:-
+                        org.jfree.chart.util.junit.ShapeListTests::testEquals:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>486</number_tests>
+                    <failed>2</failed>
+                    <passed>484</passed>
+                    <nodes>45350</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/jfree/chart/util/ShapeList.java">
+                    <change>111</change>
+                    <bugtypes>
+                        <id id="3.1" lines="111">
+                            <description>Incorrect function used, did not check for equality
+                                of the objects.
+                            </description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

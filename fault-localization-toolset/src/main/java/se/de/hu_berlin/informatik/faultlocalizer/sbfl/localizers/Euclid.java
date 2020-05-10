@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Euclid fault localizer $\sqrt{\EF+\NP}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Euclid<T> extends AbstractFaultLocalizer<T> {
 

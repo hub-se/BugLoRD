@@ -1,37 +1,38 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-50">
-			<tests>
-				<testfile
-					path="com/google/javascript/jscomp/PeepholeReplaceKnownMethodsTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.PeepholeReplaceKnownMethodsTest::testNoStringJoin:--&gt;
-						junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>101</number_tests>
-					<failed>2</failed>
-					<passed>99</passed>
-					<nodes>48175</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java">
-					<change>376</change>
-					<insert numberlines="5">388-391</insert>
-					<bugtypes>
-						<id id="1.2" lines="376">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.1" lines="388,389">
-							<description>Missing check for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-50">
+            <tests>
+                <testfile
+                        path="com/google/javascript/jscomp/PeepholeReplaceKnownMethodsTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.PeepholeReplaceKnownMethodsTest::testNoStringJoin:--&gt;
+                        junit.framework.AssertionFailedError:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>101</number_tests>
+                    <failed>2</failed>
+                    <passed>99</passed>
+                    <nodes>48175</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="com/google/javascript/jscomp/PeepholeReplaceKnownMethods.java">
+                    <change>376</change>
+                    <insert numberlines="5">388-391</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="376">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.1" lines="388,389">
+                            <description>Missing check for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

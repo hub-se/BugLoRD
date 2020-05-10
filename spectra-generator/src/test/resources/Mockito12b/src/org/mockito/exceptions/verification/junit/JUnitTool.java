@@ -18,12 +18,12 @@ public class JUnitTool {
             hasJUnit = false;
         }
     }
-    
+
     public static boolean hasJUnit() {
         return hasJUnit;
     }
 
-    public static AssertionError createArgumentsAreDifferentException(String message, String wanted, String actual)  {
+    public static AssertionError createArgumentsAreDifferentException(String message, String wanted, String actual) {
         try {
             Class<?> clazz = Class.forName("org.mockito.exceptions.verification.junit.ArgumentsAreDifferent");
             AssertionError throwable = (AssertionError) clazz.getConstructors()[0].newInstance(message, wanted, actual);

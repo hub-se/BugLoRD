@@ -22,13 +22,12 @@ package com.google.javascript.jscomp.graph;
  *
  * @param <N> Value type that the graph node stores.
  * @param <E> Value type that the graph edge stores.
-*
  */
 public interface GraphNode<N, E> extends Annotatable {
-  /**
-   * Retrieves the node's value.
-   *
-   * @return The value.
-   */
-  N getValue();
+    /**
+     * Retrieves the node's value.
+     *
+     * @return The value.
+     */
+    N getValue();
 }

@@ -31,8 +31,8 @@ import java.util.Map;
  * For example, it would be possible to implement a lookup that used the
  * key as a primary key, and looked up the value on demand from the database
  *
- * @since 2.2
  * @version $Id$
+ * @since 2.2
  */
 public abstract class StrLookup<V> {
 
@@ -44,6 +44,7 @@ public abstract class StrLookup<V> {
      * Lookup that uses System properties.
      */
     private static final StrLookup<String> SYSTEM_PROPERTIES_LOOKUP;
+
     static {
         NONE_LOOKUP = new MapStrLookup<String>(null);
         StrLookup<String> lookup = null;
@@ -59,6 +60,7 @@ public abstract class StrLookup<V> {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns a lookup which always returns null.
      *
@@ -90,7 +92,7 @@ public abstract class StrLookup<V> {
      * The map result object is converted to a string using toString().
      *
      * @param <V> the type of the values supported by the lookup
-     * @param map  the map of keys to values, may be null
+     * @param map the map of keys to values, may be null
      * @return a lookup using the map, not null
      */
     public static <V> StrLookup<V> mapLookup(Map<String, V> map) {
@@ -98,6 +100,7 @@ public abstract class StrLookup<V> {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Constructor.
      */
@@ -125,24 +128,28 @@ public abstract class StrLookup<V> {
      * map.put("number", Integer.valueOf(2));
      * assertEquals("2", StrLookup.mapLookup(map).lookup("number"));
      * </pre>
-     * @param key  the key to be looked up, may be null
+     *
+     * @param key the key to be looked up, may be null
      * @return the matching value, null if no match
      */
     public abstract String lookup(String key);
 
     //-----------------------------------------------------------------------
+
     /**
      * Lookup implementation that uses a Map.
      */
     static class MapStrLookup<V> extends StrLookup<V> {
 
-        /** Map keys are variable names and value. */
+        /**
+         * Map keys are variable names and value.
+         */
         private final Map<String, V> map;
 
         /**
          * Creates a new instance backed by a Map.
          *
-         * @param map  the map of keys to values, may be null
+         * @param map the map of keys to values, may be null
          */
         MapStrLookup(Map<String, V> map) {
             this.map = map;
@@ -154,7 +161,7 @@ public abstract class StrLookup<V> {
          * If the map is null, then null is returned.
          * The map result object is converted to a string using toString().
          *
-         * @param key  the key to be looked up, may be null
+         * @param key the key to be looked up, may be null
          * @return the matching value, null if no match
          */
         @Override

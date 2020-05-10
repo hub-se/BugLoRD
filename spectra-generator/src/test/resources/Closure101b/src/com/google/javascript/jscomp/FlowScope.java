@@ -24,7 +24,7 @@ import com.google.javascript.rhino.jstype.StaticSlot;
 
 /**
  * A symbol table for inferring types during data flow analysis.
- *
+ * <p>
  * Each flow scope represents the types of all variables in the scope at
  * a particular point in the flow analysis.
  *
@@ -32,51 +32,53 @@ import com.google.javascript.rhino.jstype.StaticSlot;
  */
 interface FlowScope extends StaticScope<JSType>, LatticeElement {
 
-  /**
-   * Creates a child of this flow scope, to represent an instruction
-   * directly following this one.
-   */
-  FlowScope createChildFlowScope();
+    /**
+     * Creates a child of this flow scope, to represent an instruction
+     * directly following this one.
+     */
+    FlowScope createChildFlowScope();
 
-  /**
-   * Defines the type of a symbol at this point in the flow.
-   * @throws IllegalArgumentException If no slot for this symbol exists.
-   */
-  void inferSlotType(String symbol, JSType type);
+    /**
+     * Defines the type of a symbol at this point in the flow.
+     *
+     * @throws IllegalArgumentException If no slot for this symbol exists.
+     */
+    void inferSlotType(String symbol, JSType type);
 
-  /**
-   * Infer the type of a qualified name.
-   *
-   * When traversing the control flow of a function, simple names are
-   * declared at the bottom of the flow lattice. But there are far too many
-   * qualified names to be able to do this and be performant. So the bottoms
-   * of qualified names are declared lazily.
-   *
-   * Therefore, when inferring a qualified slot, we need both the "bottom"
-   * type of the slot when we enter the scope, and the current type being
-   * inferred.
-   */
-  void inferQualifiedSlot(String symbol, JSType bottomType,
-      JSType inferredType);
+    /**
+     * Infer the type of a qualified name.
+     * <p>
+     * When traversing the control flow of a function, simple names are
+     * declared at the bottom of the flow lattice. But there are far too many
+     * qualified names to be able to do this and be performant. So the bottoms
+     * of qualified names are declared lazily.
+     * <p>
+     * Therefore, when inferring a qualified slot, we need both the "bottom"
+     * type of the slot when we enter the scope, and the current type being
+     * inferred.
+     */
+    void inferQualifiedSlot(String symbol, JSType bottomType,
+                            JSType inferredType);
 
-  /**
-   * Optimize this scope and return a new FlowScope with faster lookup.
-   */
-  FlowScope optimize();
+    /**
+     * Optimize this scope and return a new FlowScope with faster lookup.
+     */
+    FlowScope optimize();
 
-  /**
-   * Tries to find a unique refined variable in the refined scope, up to the
-   * the blind scope.
-   * @param blindScope The scope before the refinement, i.e. some parent of the
-   *     this scope or itself.
-   * @return The unique refined variable if found or null.
-   */
-  StaticSlot<JSType> findUniqueRefinedSlot(FlowScope blindScope);
+    /**
+     * Tries to find a unique refined variable in the refined scope, up to the
+     * the blind scope.
+     *
+     * @param blindScope The scope before the refinement, i.e. some parent of the
+     *                   this scope or itself.
+     * @return The unique refined variable if found or null.
+     */
+    StaticSlot<JSType> findUniqueRefinedSlot(FlowScope blindScope);
 
-  /**
-   * Look through the given scope, and try to find slots where it doesn't
-   * have enough type information. Then fill in that type information
-   * with stuff that we've inferred in the local flow.
-   */
-  void completeScope(Scope scope);
+    /**
+     * Look through the given scope, and try to find slots where it doesn't
+     * have enough type information. Then fill in that type information
+     * with stuff that we've inferred in the local flow.
+     */
+    void completeScope(Scope scope);
 }

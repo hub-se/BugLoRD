@@ -27,70 +27,68 @@ import java.util.Set;
 
 /**
  * Replaces calls to id generators with ids.
- *
+ * <p>
  * Use this to get unique and short ids.
- *
-*
  */
 class ReplaceIdGenerators implements CompilerPass {
-  static final DiagnosticType NON_GLOBAL_ID_GENERATOR_CALL =
-      DiagnosticType.error(
-          "JSC_NON_GLOBAL_ID_GENERATOR_CALL",
-          "Id generator call must be in the global scope");
+    static final DiagnosticType NON_GLOBAL_ID_GENERATOR_CALL =
+            DiagnosticType.error(
+                    "JSC_NON_GLOBAL_ID_GENERATOR_CALL",
+                    "Id generator call must be in the global scope");
 
-  static final DiagnosticType CONDITIONAL_ID_GENERATOR_CALL =
-      DiagnosticType.error(
-          "JSC_CONDITIONAL_ID_GENERATOR_CALL",
-          "Id generator call must be unconditional");
+    static final DiagnosticType CONDITIONAL_ID_GENERATOR_CALL =
+            DiagnosticType.error(
+                    "JSC_CONDITIONAL_ID_GENERATOR_CALL",
+                    "Id generator call must be unconditional");
 
-  private final AbstractCompiler compiler;
-  private final Map<String, NameGenerator> nameGenerators;
+    private final AbstractCompiler compiler;
+    private final Map<String, NameGenerator> nameGenerators;
 
-  public ReplaceIdGenerators(AbstractCompiler compiler,
-                             Set<String> idGenerators) {
-    this.compiler = compiler;
-    nameGenerators = Maps.newHashMap();
-    for (String idGenerator : idGenerators) {
-      nameGenerators.put(
-          idGenerator,
-          new NameGenerator(Collections.<String>emptySet(), "", null));
-    }
-  }
-
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, root, new Callback());
-  }
-
-  private class Callback extends AbstractPostOrderCallback {
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.getType() != Token.CALL) {
-        return;
-      }
-
-      String callName = n.getFirstChild().getQualifiedName();
-      NameGenerator nameGenerator = nameGenerators.get(callName);
-      if (nameGenerator == null) {
-        return;
-      }
-
-      if (!t.inGlobalScope()) {
-        // Warn about calls not in the global scope.
-        compiler.report(JSError.make(t, n, NON_GLOBAL_ID_GENERATOR_CALL));
-        return;
-      }
-
-      for (Node ancestor : n.getAncestors()) {
-        if (NodeUtil.isControlStructure(ancestor)) {
-          // Warn about conditional calls.
-          compiler.report(JSError.make(t, n, CONDITIONAL_ID_GENERATOR_CALL));
-          return;
+    public ReplaceIdGenerators(AbstractCompiler compiler,
+                               Set<String> idGenerators) {
+        this.compiler = compiler;
+        nameGenerators = Maps.newHashMap();
+        for (String idGenerator : idGenerators) {
+            nameGenerators.put(
+                    idGenerator,
+                    new NameGenerator(Collections.<String>emptySet(), "", null));
         }
-      }
-
-      String nextName = nameGenerator.generateNextName();
-      parent.replaceChild(n, Node.newString(nextName));
-
-      compiler.reportCodeChange();
     }
-  }
+
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, root, new Callback());
+    }
+
+    private class Callback extends AbstractPostOrderCallback {
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            if (n.getType() != Token.CALL) {
+                return;
+            }
+
+            String callName = n.getFirstChild().getQualifiedName();
+            NameGenerator nameGenerator = nameGenerators.get(callName);
+            if (nameGenerator == null) {
+                return;
+            }
+
+            if (!t.inGlobalScope()) {
+                // Warn about calls not in the global scope.
+                compiler.report(JSError.make(t, n, NON_GLOBAL_ID_GENERATOR_CALL));
+                return;
+            }
+
+            for (Node ancestor : n.getAncestors()) {
+                if (NodeUtil.isControlStructure(ancestor)) {
+                    // Warn about conditional calls.
+                    compiler.report(JSError.make(t, n, CONDITIONAL_ID_GENERATOR_CALL));
+                    return;
+                }
+            }
+
+            String nextName = nameGenerator.generateNextName();
+            parent.replaceChild(n, Node.newString(nextName));
+
+            compiler.reportCodeChange();
+        }
+    }
 }

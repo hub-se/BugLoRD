@@ -1,47 +1,48 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-116">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/InlineFunctionsTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;NO&gt;
-						but was:&lt;YES&gt;:-
-						com.google.javascript.jscomp.FunctionInjectorTest::testIssue1101b:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;NO&gt; but
-						was:&lt;YES&gt;:-
-						com.google.javascript.jscomp.InlineFunctionsTest::testBug4944818:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.InlineFunctionsTest::testDoubleInlining2:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.InlineFunctionsTest::testIssue1101:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.InlineFunctionsTest::testInlineIfParametersModified8:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.InlineFunctionsTest::testInlineIfParametersModified9:--&gt;
-						junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>696</number_tests>
-					<failed>8</failed>
-					<passed>688</passed>
-					<nodes>49505</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/FunctionInjector.java">
-					<insert numberlines="9">696-699</insert>
-					<insert numberlines="3">723-727</insert>
-					<bugtypes>
-						<id id="1.1" lines="696">
-							<description>Missing case.</description>
-						</id>
-						<id id="1.1" lines="722">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-116">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/InlineFunctionsTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;NO&gt;
+                        but was:&lt;YES&gt;:-
+                        com.google.javascript.jscomp.FunctionInjectorTest::testIssue1101b:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;NO&gt; but
+                        was:&lt;YES&gt;:-
+                        com.google.javascript.jscomp.InlineFunctionsTest::testBug4944818:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.InlineFunctionsTest::testDoubleInlining2:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.InlineFunctionsTest::testIssue1101:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.InlineFunctionsTest::testInlineIfParametersModified8:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.InlineFunctionsTest::testInlineIfParametersModified9:--&gt;
+                        junit.framework.AssertionFailedError:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>696</number_tests>
+                    <failed>8</failed>
+                    <passed>688</passed>
+                    <nodes>49505</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/FunctionInjector.java">
+                    <insert numberlines="9">696-699</insert>
+                    <insert numberlines="3">723-727</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="696">
+                            <description>Missing case.</description>
+                        </id>
+                        <id id="1.1" lines="722">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

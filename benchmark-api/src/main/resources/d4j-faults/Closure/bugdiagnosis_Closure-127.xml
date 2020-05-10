@@ -1,44 +1,45 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-127">
-			<tests>
-				<testfile
-					path="com/google/javascript/jscomp/UnreachableCodeEliminationTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.UnreachableCodeEliminationTest::testDontRemoveBreakInTryFinally:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.UnreachableCodeEliminationTest::testIssue4177428_continue:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.UnreachableCodeEliminationTest::testDontRemoveBreakInTryFinallySwitch:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.UnreachableCodeEliminationTest::testIssue4177428a:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.UnreachableCodeEliminationTest::testIssue4177428c:--&gt;
-						junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>336</number_tests>
-					<failed>6</failed>
-					<passed>330</passed>
-					<nodes>47718</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/UnreachableCodeElimination.java">
-					<change>170</change>
-					<insert numberlines="9"></insert>
-					<bugtypes>
-						<id id="1.2" lines="170">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.4" lines="176">
-							<description>Missing function.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-127">
+            <tests>
+                <testfile
+                        path="com/google/javascript/jscomp/UnreachableCodeEliminationTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.UnreachableCodeEliminationTest::testDontRemoveBreakInTryFinally:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.UnreachableCodeEliminationTest::testIssue4177428_continue:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.UnreachableCodeEliminationTest::testDontRemoveBreakInTryFinallySwitch:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.UnreachableCodeEliminationTest::testIssue4177428a:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.UnreachableCodeEliminationTest::testIssue4177428c:--&gt;
+                        junit.framework.AssertionFailedError:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>336</number_tests>
+                    <failed>6</failed>
+                    <passed>330</passed>
+                    <nodes>47718</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/UnreachableCodeElimination.java">
+                    <change>170</change>
+                    <insert numberlines="9"></insert>
+                    <bugtypes>
+                        <id id="1.2" lines="170">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.4" lines="176">
+                            <description>Missing function.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

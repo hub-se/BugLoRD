@@ -32,58 +32,61 @@ import java.util.Set;
  * algorithmist</a> for more detail.
  *
  * @param <E> element type
-*
  */
 public interface UnionFind<E> {
 
-  /** 
-   * Adds the given element to a new set if it is not already in a set. 
-   * 
-   * @throws UnsupportedOperationException if the add operation is not 
-   *     supported by this union-find. 
-   */
-  public void add(E e);
+    /**
+     * Adds the given element to a new set if it is not already in a set.
+     *
+     * @throws UnsupportedOperationException if the add operation is not
+     *                                       supported by this union-find.
+     */
+    public void add(E e);
 
-  /**
-   * Unions the equivalence classes of {@code a} and {@code b} and returns the
-   * representative of the resulting equivalence class.  The elements will be
-   * added if they are not already present.
-   * 
-   * @throws UnsupportedOperationException if the add operation is not 
-   *     supported by this union-find. 
-   */
-  public E union(E a, E b);
+    /**
+     * Unions the equivalence classes of {@code a} and {@code b} and returns the
+     * representative of the resulting equivalence class.  The elements will be
+     * added if they are not already present.
+     *
+     * @throws UnsupportedOperationException if the add operation is not
+     *                                       supported by this union-find.
+     */
+    public E union(E a, E b);
 
-  /** Returns the representative of the equivalence class of {@code e}. */
-  public E find(E e);
+    /**
+     * Returns the representative of the equivalence class of {@code e}.
+     */
+    public E find(E e);
 
-  /**
-   * Returns true if {@code a} and {@code b} belong to the same equivalence
-   * class.
-   *
-   * @throws IllegalArgumentException if any argument is not an element of this 
-   *     structure.
-   */
-  public boolean areEquivalent(E a, E b);
+    /**
+     * Returns true if {@code a} and {@code b} belong to the same equivalence
+     * class.
+     *
+     * @throws IllegalArgumentException if any argument is not an element of this
+     *                                  structure.
+     */
+    public boolean areEquivalent(E a, E b);
 
-  /** Returns an unmodifiable set of all elements added to the UnionFind. */
-  public Set<E> elements();
+    /**
+     * Returns an unmodifiable set of all elements added to the UnionFind.
+     */
+    public Set<E> elements();
 
-  /**
-   * Returns an immutable collection containing all equivalence classes.  The
-   * returned collection represents a snapshot of the current state and will not
-   * reflect changes made to the data structure.
-   */
-  public Collection<Set<E>> allEquivalenceClasses();
+    /**
+     * Returns an immutable collection containing all equivalence classes.  The
+     * returned collection represents a snapshot of the current state and will not
+     * reflect changes made to the data structure.
+     */
+    public Collection<Set<E>> allEquivalenceClasses();
 
-  /**
-   * Returns the elements in the same equivalence class as {@code value}.
-   *
-   * @return an unmodifiable view. As equivalence classes are merged, this set
-   *     will reflect those changes.
-   * @throws IllegalArgumentException if a requested element does not belong
-   *     to the structure.
-   */
-  public Set<E> findAll(final E value);
+    /**
+     * Returns the elements in the same equivalence class as {@code value}.
+     *
+     * @return an unmodifiable view. As equivalence classes are merged, this set
+     * will reflect those changes.
+     * @throws IllegalArgumentException if a requested element does not belong
+     *                                  to the structure.
+     */
+    public Set<E> findAll(final E value);
 
 }

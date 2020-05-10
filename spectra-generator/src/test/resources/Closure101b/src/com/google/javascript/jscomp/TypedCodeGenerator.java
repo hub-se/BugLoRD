@@ -28,111 +28,110 @@ import java.nio.charset.Charset;
 /**
  * A code generator that outputs type annotations for functions and
  * constructors.
-*
  */
 class TypedCodeGenerator extends CodeGenerator {
-  TypedCodeGenerator(CodeConsumer consumer, Charset outputCharset) {
-    super(consumer, outputCharset, true);
-  }
-
-  @Override
-  void add(Node n, Context context) {
-    Node parent = n.getParent();
-    if (parent.getType() == Token.BLOCK || parent.getType() == Token.SCRIPT) {
-      if (n.getType() == Token.FUNCTION) {
-        add(getFunctionAnnotation(n));
-      } else if (n.getType() == Token.EXPR_RESULT
-          && n.getFirstChild().getType() == Token.ASSIGN) {
-        Node rhs = n.getFirstChild().getFirstChild();
-        add(getTypeAnnotation(rhs));
-      } else if (n.getType() == Token.VAR
-          && n.getFirstChild().getFirstChild() != null
-          && n.getFirstChild().getFirstChild().getType() == Token.FUNCTION) {
-        add(getFunctionAnnotation(n.getFirstChild().getFirstChild()));
-      }
+    TypedCodeGenerator(CodeConsumer consumer, Charset outputCharset) {
+        super(consumer, outputCharset, true);
     }
 
-    super.add(n, context);
-  }
-
-
-  private String getTypeAnnotation(Node node) {
-    JSType type = node.getJSType();
-    if (type instanceof FunctionType) {
-      return getFunctionAnnotation(node);
-    } else if (type != null && !type.isUnknownType()
-        && !type.isEmptyType() && !type.isVoidType()) {
-      return "/** @type {" + node.getJSType() + "} */\n";
-    } else {
-      return "";
-    }
-  }
-
-  /**
-   * @param node A node for a function for which to generate a type annotation
-   */
-  private String getFunctionAnnotation(Node node) {
-    StringBuilder sb = new StringBuilder("/**\n");
-
-    if (node.getJSType().isUnknownType()) {
-      return "";
-    }
-    FunctionType funType = (FunctionType) node.getJSType();
-
-    // We need to use the child nodes of the function as the nodes for the
-    // parameters of the function type do not have the real parameter names.
-    // FUNCTION
-    //   NAME
-    //   LP
-    //     NAME param1
-    //     NAME param2
-    Node fnNode = funType.getSource();
-    if (fnNode != null) {
-      Node paramNode = NodeUtil.getFnParameters(fnNode).getFirstChild();
-
-      // Param types
-      for (Node n : funType.getParameters()) {
-        // Bail out if the paramNode is not there.
-        if (paramNode == null) {
-          break;
+    @Override
+    void add(Node n, Context context) {
+        Node parent = n.getParent();
+        if (parent.getType() == Token.BLOCK || parent.getType() == Token.SCRIPT) {
+            if (n.getType() == Token.FUNCTION) {
+                add(getFunctionAnnotation(n));
+            } else if (n.getType() == Token.EXPR_RESULT
+                    && n.getFirstChild().getType() == Token.ASSIGN) {
+                Node rhs = n.getFirstChild().getFirstChild();
+                add(getTypeAnnotation(rhs));
+            } else if (n.getType() == Token.VAR
+                    && n.getFirstChild().getFirstChild() != null
+                    && n.getFirstChild().getFirstChild().getType() == Token.FUNCTION) {
+                add(getFunctionAnnotation(n.getFirstChild().getFirstChild()));
+            }
         }
-        sb.append(" * @param {" + n.getJSType() + "} ");
-        sb.append(paramNode.getString());
-        sb.append("\n");
-        paramNode = paramNode.getNext();
-      }
+
+        super.add(n, context);
     }
 
-    // Return type
-    JSType retType = funType.getReturnType();
-    if (retType != null && !retType.isUnknownType() && !retType.isEmptyType()) {
-      sb.append(" * @return {" + retType + "}\n");
+
+    private String getTypeAnnotation(Node node) {
+        JSType type = node.getJSType();
+        if (type instanceof FunctionType) {
+            return getFunctionAnnotation(node);
+        } else if (type != null && !type.isUnknownType()
+                && !type.isEmptyType() && !type.isVoidType()) {
+            return "/** @type {" + node.getJSType() + "} */\n";
+        } else {
+            return "";
+        }
     }
 
-    // Constructor/interface
-    if (funType.isConstructor() || funType.isInterface()) {
-      ObjectType superInstance =
-          funType.getSuperClassConstructor().getInstanceType();
-      if (!superInstance.toString().equals("Object")) {
-        sb.append(" * @extends {"  + superInstance + "}\n");
-      }
+    /**
+     * @param node A node for a function for which to generate a type annotation
+     */
+    private String getFunctionAnnotation(Node node) {
+        StringBuilder sb = new StringBuilder("/**\n");
 
-      for (ObjectType interfaze : funType.getImplementedInterfaces()) {
-        sb.append(" * @implements {"  + interfaze + "}\n");
-      }
+        if (node.getJSType().isUnknownType()) {
+            return "";
+        }
+        FunctionType funType = (FunctionType) node.getJSType();
 
-      if (funType.isConstructor()) {
-        sb.append(" * @constructor\n");
-      } else if (funType.isInterface()) {
-        sb.append(" * @interface\n");
-      }
+        // We need to use the child nodes of the function as the nodes for the
+        // parameters of the function type do not have the real parameter names.
+        // FUNCTION
+        //   NAME
+        //   LP
+        //     NAME param1
+        //     NAME param2
+        Node fnNode = funType.getSource();
+        if (fnNode != null) {
+            Node paramNode = NodeUtil.getFnParameters(fnNode).getFirstChild();
+
+            // Param types
+            for (Node n : funType.getParameters()) {
+                // Bail out if the paramNode is not there.
+                if (paramNode == null) {
+                    break;
+                }
+                sb.append(" * @param {" + n.getJSType() + "} ");
+                sb.append(paramNode.getString());
+                sb.append("\n");
+                paramNode = paramNode.getNext();
+            }
+        }
+
+        // Return type
+        JSType retType = funType.getReturnType();
+        if (retType != null && !retType.isUnknownType() && !retType.isEmptyType()) {
+            sb.append(" * @return {" + retType + "}\n");
+        }
+
+        // Constructor/interface
+        if (funType.isConstructor() || funType.isInterface()) {
+            ObjectType superInstance =
+                    funType.getSuperClassConstructor().getInstanceType();
+            if (!superInstance.toString().equals("Object")) {
+                sb.append(" * @extends {" + superInstance + "}\n");
+            }
+
+            for (ObjectType interfaze : funType.getImplementedInterfaces()) {
+                sb.append(" * @implements {" + interfaze + "}\n");
+            }
+
+            if (funType.isConstructor()) {
+                sb.append(" * @constructor\n");
+            } else if (funType.isInterface()) {
+                sb.append(" * @interface\n");
+            }
+        }
+
+        if (fnNode != null && fnNode.getBooleanProp(Node.IS_DISPATCHER)) {
+            sb.append(" * @javadispatch\n");
+        }
+
+        sb.append(" */\n");
+        return sb.toString();
     }
-
-    if (fnNode != null && fnNode.getBooleanProp(Node.IS_DISPATCHER)) {
-      sb.append(" * @javadispatch\n");
-    }
-
-    sb.append(" */\n");
-    return sb.toString();
-  }
 }

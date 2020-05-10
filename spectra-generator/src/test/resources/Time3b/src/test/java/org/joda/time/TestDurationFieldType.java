@@ -15,16 +15,15 @@
  */
 package org.joda.time;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.chrono.CopticChronology;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.chrono.CopticChronology;
 
 /**
  * This class is a Junit unit test for DurationFieldType.
@@ -153,14 +152,15 @@ public class TestDurationFieldType extends TestCase {
         Class cls = DurationFieldType.class.getDeclaredClasses()[0];
         assertEquals(1, cls.getDeclaredConstructors().length);
         Constructor con = cls.getDeclaredConstructors()[0];
-        Object[] params = new Object[] {"other", new Byte((byte) 128)};
+        Object[] params = new Object[]{"other", new Byte((byte) 128)};
         DurationFieldType type = (DurationFieldType) con.newInstance(params);
-        
+
         assertEquals("other", type.getName());
         try {
             type.getField(CopticChronology.getInstanceUTC());
             fail();
-        } catch (InternalError ex) {}
+        } catch (InternalError ex) {
+        }
         DurationFieldType result = doSerialization(type);
         assertEquals(type.getName(), result.getName());
         assertNotSame(type, result);
@@ -178,7 +178,7 @@ public class TestDurationFieldType extends TestCase {
         oos.writeObject(type);
         byte[] bytes = baos.toByteArray();
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);
         DurationFieldType result = (DurationFieldType) ois.readObject();

@@ -21,10 +21,9 @@ import junit.framework.TestSuite;
 
 /**
  * Entry point for all tests in this package.
- * 
- * @version $Revision$ $Date$
- * 
+ *
  * @author Stephen Colebourne
+ * @version $Revision$ $Date$
  */
 public class TestAll extends TestCase {
 
@@ -41,7 +40,7 @@ public class TestAll extends TestCase {
 
     public static void main(String args[]) {
         String[] testCaseName = {
-            TestAll.class.getName()
+                TestAll.class.getName()
         };
         junit.textui.TestRunner.main(testCaseName);
     }

@@ -1,37 +1,38 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-88">
-			<tests>
-				<testfile
-					path="org/apache/commons/math/optimization/linear/SimplexSolverTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;1.0&gt;
-						but was:&lt;0.0&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>15</number_tests>
-					<failed>1</failed>
-					<passed>14</passed>
-					<nodes>18876</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math/optimization/linear/SimplexTableau.java">
-					<delete>336-342</delete>
-					<insert numberlines="1">325-329</insert>
-					<insert numberlines="4,1">331-333,343</insert>
-					<bugtypes>
-						<id id="1.1" lines="328,330,332">
-							<description>Missing checks for containment of rows.</description>
-						</id>
-						<id id="1.2" lines="336-341">
-							<description>Unnecessary null value check.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-88">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math/optimization/linear/SimplexSolverTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;1.0&gt;
+                        but was:&lt;0.0&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>15</number_tests>
+                    <failed>1</failed>
+                    <passed>14</passed>
+                    <nodes>18876</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math/optimization/linear/SimplexTableau.java">
+                    <delete>336-342</delete>
+                    <insert numberlines="1">325-329</insert>
+                    <insert numberlines="4,1">331-333,343</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="328,330,332">
+                            <description>Missing checks for containment of rows.</description>
+                        </id>
+                        <id id="1.2" lines="336-341">
+                            <description>Unnecessary null value check.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

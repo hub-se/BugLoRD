@@ -1,31 +1,32 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-80">
-			<tests>
-				<testfile
-					path="org/apache/commons/math/linear/EigenDecompositionImplTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;16828.208208485466&gt;
-						but was:&lt;20654.74511575945&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>36</number_tests>
-					<failed>1</failed>
-					<passed>35</passed>
-					<nodes>20504</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/linear/EigenDecompositionImpl.java">
-					<change>1135</change>
-					<bugtypes>
-						<id id="1.5" lines="1135">
-							<description>Incorrect calculation.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-80">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math/linear/EigenDecompositionImplTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;16828.208208485466&gt;
+                        but was:&lt;20654.74511575945&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>36</number_tests>
+                    <failed>1</failed>
+                    <passed>35</passed>
+                    <nodes>20504</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/linear/EigenDecompositionImpl.java">
+                    <change>1135</change>
+                    <bugtypes>
+                        <id id="1.5" lines="1135">
+                            <description>Incorrect calculation.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

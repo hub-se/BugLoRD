@@ -1,39 +1,40 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-74">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/PeepholeFoldConstantsTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.PeepholeFoldConstantsTest::testInvertibleOperators:--&gt;
-						junit.framework.ComparisonFailure:Expressions did not fold the
-						same:-
-						com.google.javascript.jscomp.PeepholeFoldConstantsTest::testCommutativeOperators:--&gt;
-						junit.framework.ComparisonFailure:Expressions did not fold the
-						same</exception>
-				</testfile>
-				<spectra>
-					<number_tests>170</number_tests>
-					<failed>3</failed>
-					<passed>167</passed>
-					<nodes>42161</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/PeepholeFoldConstants.java">
-					<change>907,908</change>
-					<insert numberlines="13"></insert>
-					<bugtypes>
-						<id id="3.1" lines="907,908">
-							<description>Incorrect initialization.</description>
-						</id>
-						<id id="1.4" lines="1073">
-							<description>Missing function.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-74">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/PeepholeFoldConstantsTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.PeepholeFoldConstantsTest::testInvertibleOperators:--&gt;
+                        junit.framework.ComparisonFailure:Expressions did not fold the
+                        same:-
+                        com.google.javascript.jscomp.PeepholeFoldConstantsTest::testCommutativeOperators:--&gt;
+                        junit.framework.ComparisonFailure:Expressions did not fold the
+                        same
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>170</number_tests>
+                    <failed>3</failed>
+                    <passed>167</passed>
+                    <nodes>42161</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/PeepholeFoldConstants.java">
+                    <change>907,908</change>
+                    <insert numberlines="13"></insert>
+                    <bugtypes>
+                        <id id="3.1" lines="907,908">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                        <id id="1.4" lines="1073">
+                            <description>Missing function.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

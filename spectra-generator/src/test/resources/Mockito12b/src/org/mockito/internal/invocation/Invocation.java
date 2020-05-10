@@ -4,11 +4,6 @@
  */
 package org.mockito.internal.invocation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.hamcrest.Matcher;
 import org.mockito.exceptions.PrintableInvocation;
 import org.mockito.exceptions.Reporter;
@@ -23,6 +18,11 @@ import org.mockito.internal.util.MockUtil;
 import org.mockito.internal.util.ObjectMethodsGuru;
 import org.mockito.internal.util.Primitives;
 import org.mockito.invocation.InvocationOnMock;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Method call on a mock object.
@@ -70,7 +70,7 @@ public class Invocation implements PrintableInvocation, InvocationOnMock, Printi
         Object[] varArgs;
         if (args[nonVarArgsCount] == null) {
             // in case someone deliberately passed null varArg array
-            varArgs = new Object[] { null };
+            varArgs = new Object[]{null};
         } else {
             varArgs = ArrayEquals.createObjectArray(args[nonVarArgsCount]);
         }
@@ -209,10 +209,10 @@ public class Invocation implements PrintableInvocation, InvocationOnMock, Printi
         }
         return realMethod.invoke(mock, rawArguments);
     }
-    
+
     public boolean isDeclaredOnInterface() {
         return this.getMethod().getDeclaringClass().isInterface();
-    }      
+    }
 
     public String toString(PrintSettings printSettings) {
         return toString(argumentsToMatchers(), printSettings);

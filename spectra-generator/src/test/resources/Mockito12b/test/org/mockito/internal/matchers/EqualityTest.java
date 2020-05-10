@@ -4,25 +4,26 @@
  */
 package org.mockito.internal.matchers;
 
-import org.mockitoutil.TestBase;
 import org.junit.Test;
+import org.mockitoutil.TestBase;
+
 import static org.mockito.internal.matchers.Equality.areEqual;
 
 public class EqualityTest extends TestBase {
-    
+
     @Test
     public void shouldKnowIfObjectsAreEqual() throws Exception {
-        int[] arr = new int[] {1, 2};
+        int[] arr = new int[]{1, 2};
         assertTrue(areEqual(arr, arr));
-        assertTrue(areEqual(new int[] {1, 2}, new int[] {1, 2}));
-        assertTrue(areEqual(new Double[] {1.0}, new Double[] {1.0}));
+        assertTrue(areEqual(new int[]{1, 2}, new int[]{1, 2}));
+        assertTrue(areEqual(new Double[]{1.0}, new Double[]{1.0}));
         assertTrue(areEqual(new String[0], new String[0]));
         assertTrue(areEqual(new Object[10], new Object[10]));
-        assertTrue(areEqual(new int[] {1}, new Integer[] {1}));
-        assertTrue(areEqual(new Object[] {"1"}, new String[] {"1"}));
+        assertTrue(areEqual(new int[]{1}, new Integer[]{1}));
+        assertTrue(areEqual(new Object[]{"1"}, new String[]{"1"}));
 
         assertFalse(areEqual(new Object[9], new Object[10]));
-        assertFalse(areEqual(new int[] {1, 2}, new int[] {1}));
-        assertFalse(areEqual(new int[] {1}, new double[] {1.0}));
+        assertFalse(areEqual(new int[]{1, 2}, new int[]{1}));
+        assertFalse(areEqual(new int[]{1}, new double[]{1.0}));
     }
 }

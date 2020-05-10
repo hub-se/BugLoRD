@@ -4,16 +4,16 @@
  */
 package org.mockitousage;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Mockito.*;
+
 public class PlaygroundTest extends TestBase {
     static class Foo {
-        
+
         int doSomeThing() {
             return 0;
         }
@@ -22,16 +22,17 @@ public class PlaygroundTest extends TestBase {
             return "foo";
         }
     }
-    
+
     class Boo {
         public void withLong(long y) {
-            
+
         }
     }
 
     Foo mock;
-    @Mock IMethods mockTwo;
-    
+    @Mock
+    IMethods mockTwo;
+
     @Ignore
     @Test
     public void spyInAction() {
@@ -39,12 +40,12 @@ public class PlaygroundTest extends TestBase {
 // mock = spy(Foo.class, new Konstructor() {} );
 // mock = spy(Foo.class, Konstructor.guess());
 // mock = spy(Foo.class, Konstructor.withArguments("1", "2"));
-        
+
         when(mock.getStuff()).thenReturn("aha!");
-        
+
         mock.doSomeThing();
     }
-    
+
     @Test
     public void partialMockInAction() {
 //        mock = mock(Foo.class, withSettings() 
@@ -84,13 +85,13 @@ public class PlaygroundTest extends TestBase {
 //        
 //        mock = mock(Foo.class)
 //            hasName("foo");
-        
+
 //        when(mock.getStuff()).thenReturn("aha!");
 //        when(mock.doSomeThing()).thenCallRealMethod();
 //        
 //        mock.doSomeThing();
     }
-    
+
 //    interface Colored {
 //        
 //    }

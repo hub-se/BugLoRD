@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Ochiai2 fault localizer $\frac{\EF\NP}{\sqrt{(\EF+\EP)\cdot(\NP+\NF)\cdot(\EF+\NF)\cdot(\EP+\NP)}}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Ochiai2<T> extends AbstractFaultLocalizer<T> {
 
@@ -34,11 +33,11 @@ public class Ochiai2<T> extends AbstractFaultLocalizer<T> {
         final double denom2 = node.getNP(strategy) + node.getNF(strategy);
         final double denom3 = node.getEF(strategy) + node.getNF(strategy);
         final double denom4 = node.getEP(strategy) + node.getNP(strategy);
-        
+
         double numerator = node.getEF(strategy) * node.getNP(strategy);
         if (numerator == 0) {
-    		return 0;
-    	}
+            return 0;
+        }
         return numerator / Math.sqrt(denom1 * denom2 * denom3 * denom4);
     }
 

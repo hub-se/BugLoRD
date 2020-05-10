@@ -4,16 +4,16 @@
  */
 package org.mockito.internal.invocation;
 
+import org.mockito.exceptions.base.MockitoException;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import org.mockito.exceptions.base.MockitoException;
-
 public class SerializableMethod implements Serializable, MockitoMethod {
 
     private static final long serialVersionUID = 6005610965006048445L;
-    
+
     private Class<?> declaringClass;
     private String methodName;
     private Class<?>[] parameterTypes;
@@ -48,7 +48,7 @@ public class SerializableMethod implements Serializable, MockitoMethod {
 
     public boolean isVarArgs() {
         return isVarArgs;
-    }  
+    }
 
     public Method getJavaMethod() {
         try {
@@ -64,7 +64,7 @@ public class SerializableMethod implements Serializable, MockitoMethod {
                             "Please report this as a defect with an example of how to reproduce it.", declaringClass, methodName);
             throw new MockitoException(message, e);
         }
-    }    
+    }
 
     @Override
     public int hashCode() {

@@ -18,33 +18,31 @@ package com.google.javascript.jscomp.parsing;
 
 /**
  * JSDoc-specific tokens.
- *
+ * <p>
  * This class is based on Rhino's Token.
- *
-*
  */
 enum JsDocToken {
-  // Tokens recycled from Rhino
-  EOF,  // end of file token - (not EOF_CHAR)
-  EOL,  // end of line
-  LT,
-  GT,
-  STRING,
-  LB,  // left and right brackets
-  RB,
-  LC,  // left and right curlies (braces)
-  RC,
-  LP,  // left and right parentheses
-  RP,
-  COMMA,  // comma operator
-  COLON,
-  // JsDoc-only tokens
-  ANNOTATION,
-  PIPE,
-  STAR,
-  EOC,
-  QMARK,
-  ELLIPSIS,
-  BANG,
-  EQUALS;
+    // Tokens recycled from Rhino
+    EOF,  // end of file token - (not EOF_CHAR)
+    EOL,  // end of line
+    LT,
+    GT,
+    STRING,
+    LB,  // left and right brackets
+    RB,
+    LC,  // left and right curlies (braces)
+    RC,
+    LP,  // left and right parentheses
+    RP,
+    COMMA,  // comma operator
+    COLON,
+    // JsDoc-only tokens
+    ANNOTATION,
+    PIPE,
+    STAR,
+    EOC,
+    QMARK,
+    ELLIPSIS,
+    BANG,
+    EQUALS;
 }

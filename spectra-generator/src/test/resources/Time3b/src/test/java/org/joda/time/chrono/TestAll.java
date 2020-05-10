@@ -22,10 +22,9 @@ import junit.textui.TestRunner;
 
 /**
  * Entry point for all tests in this package.
- * 
- * @version $Revision$ $Date$
- * 
+ *
  * @author Stephen Colebourne
+ * @version $Revision$ $Date$
  */
 public class TestAll extends TestCase {
 
@@ -37,7 +36,7 @@ public class TestAll extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        
+
         suite.addTest(TestBuddhistChronology.suite());
         suite.addTest(TestCopticChronology.suite());
         suite.addTest(TestEthiopicChronology.suite());
@@ -48,7 +47,7 @@ public class TestAll extends TestCase {
         suite.addTest(TestISOChronology.suite());
         suite.addTest(TestLenientChronology.suite());
         suite.addTest(TestGJDate.suite());
-        
+
         return suite;
     }
 

@@ -29,70 +29,68 @@ import java.util.Map.Entry;
 
 /**
  * Moves top level function declarations to the top.
- *
+ * <p>
  * Enable this pass if a try catch block wraps the output after compilation,
  * and the output runs on Firefox because function declarations are only
  * defined when reached inside a try catch block on Firefox.
- *
+ * <p>
  * On Firefox, this code works:
- *
+ * <p>
  * var g = f;
  * function f() {}
- *
+ * <p>
  * but this code does not work:
- *
+ * <p>
  * try {
- *   var g = f;
- *   function f() {}
+ * var g = f;
+ * function f() {}
  * } catch(e) {}
- *
-*
  */
 class MoveFunctionDeclarations implements Callback, CompilerPass {
-  private final AbstractCompiler compiler;
-  private final Map<JSModule, List<Node>> functions;
+    private final AbstractCompiler compiler;
+    private final Map<JSModule, List<Node>> functions;
 
-  MoveFunctionDeclarations(AbstractCompiler compiler) {
-    this.compiler = compiler;
-    functions = Maps.newHashMap();
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, root, this);
-    for (Entry<JSModule, List<Node>> entry : functions.entrySet()) {
-      JSModule module = entry.getKey();
-      Node addingRoot = compiler.getNodeForCodeInsertion(module);
-      for (Node n : Iterables.reverse(entry.getValue())) {
-        addingRoot.addChildToFront(n);
-      }
-    }
-  }
-
-  @Override
-  public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
-    Node gramps = n.getAncestor(2);
-    return gramps == null || gramps.getType() != Token.SCRIPT;
-  }
-
-  @Override
-  public void visit(NodeTraversal t, Node n, Node parent) {
-    if (parent == null ||
-        parent.getType() != Token.SCRIPT) {
-      return;
+    MoveFunctionDeclarations(AbstractCompiler compiler) {
+        this.compiler = compiler;
+        functions = Maps.newHashMap();
     }
 
-    if (NodeUtil.isFunctionDeclaration(n)) {
-      parent.removeChild(n);
-      compiler.reportCodeChange();
-
-      JSModule module = t.getModule();
-      List<Node> moduleFunctions = functions.get(module);
-      if (moduleFunctions == null) {
-        moduleFunctions = Lists.newArrayList();
-        functions.put(module, moduleFunctions);
-      }
-      moduleFunctions.add(n);
+    @Override
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, root, this);
+        for (Entry<JSModule, List<Node>> entry : functions.entrySet()) {
+            JSModule module = entry.getKey();
+            Node addingRoot = compiler.getNodeForCodeInsertion(module);
+            for (Node n : Iterables.reverse(entry.getValue())) {
+                addingRoot.addChildToFront(n);
+            }
+        }
     }
-  }
+
+    @Override
+    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+        Node gramps = n.getAncestor(2);
+        return gramps == null || gramps.getType() != Token.SCRIPT;
+    }
+
+    @Override
+    public void visit(NodeTraversal t, Node n, Node parent) {
+        if (parent == null ||
+                parent.getType() != Token.SCRIPT) {
+            return;
+        }
+
+        if (NodeUtil.isFunctionDeclaration(n)) {
+            parent.removeChild(n);
+            compiler.reportCodeChange();
+
+            JSModule module = t.getModule();
+            List<Node> moduleFunctions = functions.get(module);
+            if (moduleFunctions == null) {
+                moduleFunctions = Lists.newArrayList();
+                functions.put(module, moduleFunctions);
+            }
+            moduleFunctions.add(n);
+        }
+    }
 }

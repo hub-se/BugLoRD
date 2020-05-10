@@ -35,166 +35,164 @@ import java.util.Set;
  * Current implementation relies on @nosideeffects annotations at
  * function definition sites; eventually we should traverse function
  * bodies to determine if they have side effects.
- *
-*
  */
 class MarkNoSideEffectCalls implements CompilerPass {
-  static final DiagnosticType INVALID_NO_SIDE_EFFECT_ANNOTATION =
-      DiagnosticType.error(
-          "JSC_INVALID_NO_SIDE_EFFECT_ANNOTATION",
-          "@nosideeffects may only appear in externs files.");
+    static final DiagnosticType INVALID_NO_SIDE_EFFECT_ANNOTATION =
+            DiagnosticType.error(
+                    "JSC_INVALID_NO_SIDE_EFFECT_ANNOTATION",
+                    "@nosideeffects may only appear in externs files.");
 
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  // Left hand side expression associated with a function node that
-  // has a @nosideeffects annotation.
-  private final Set<Node> noSideEffectFunctionNames;
+    // Left hand side expression associated with a function node that
+    // has a @nosideeffects annotation.
+    private final Set<Node> noSideEffectFunctionNames;
 
-  MarkNoSideEffectCalls(AbstractCompiler compiler) {
-    this.compiler = compiler;
-    this.noSideEffectFunctionNames = Sets.newHashSet();
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    SimpleDefinitionFinder defFinder = new SimpleDefinitionFinder(compiler);
-    defFinder.process(externs, root);
-
-    // Gather the list of function nodes that have @nosideeffect annotations.
-    // For use by SetNoSideEffectCallProperty.
-    NodeTraversal.traverse(
-        compiler, externs, new GatherNoSideEffectFunctions(true));
-    NodeTraversal.traverse(
-        compiler, root, new GatherNoSideEffectFunctions(false));
-
-    NodeTraversal.traverse(compiler, root,
-                           new SetNoSideEffectCallProperty(defFinder));
-  }
-
-  /**
-   * Determines if the type of the value of the rhs expression can
-   * be a function node.
-   */
-  private static boolean definitionTypeContainsFunctionType(Definition def) {
-    Node rhs = def.getRValue();
-    if (rhs == null) {
-      return true;
-    }
-
-    switch (rhs.getType()) {
-      case Token.ASSIGN:
-      case Token.AND:
-      case Token.CALL:
-      case Token.GETPROP:
-      case Token.GETELEM:
-      case Token.FUNCTION:
-      case Token.HOOK:
-      case Token.NAME:
-      case Token.NEW:
-      case Token.OR:
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  /**
-   * Get the value of the @nosideeffects annotation stored in the
-   * doc info.
-   */
-  private static boolean hasNoSideEffectsAnnotation(Node node) {
-    JSDocInfo docInfo = node.getJSDocInfo();
-    return docInfo != null && docInfo.isNoSideEffects();
-  }
-
-  /**
-   * Gather function nodes that have @nosideeffects annotations.
-   */
-  private class GatherNoSideEffectFunctions extends AbstractPostOrderCallback {
-    private final boolean inExterns;
-
-    GatherNoSideEffectFunctions(boolean inExterns) {
-      this.inExterns = inExterns;
+    MarkNoSideEffectCalls(AbstractCompiler compiler) {
+        this.compiler = compiler;
+        this.noSideEffectFunctionNames = Sets.newHashSet();
     }
 
     @Override
-    public void visit(NodeTraversal traversal, Node node, Node parent) {
-      if (!inExterns && hasNoSideEffectsAnnotation(node)) {
-        traversal.report(node, INVALID_NO_SIDE_EFFECT_ANNOTATION);
-      }
+    public void process(Node externs, Node root) {
+        SimpleDefinitionFinder defFinder = new SimpleDefinitionFinder(compiler);
+        defFinder.process(externs, root);
 
-      if (NodeUtil.isGetProp(node)) {
-        if (NodeUtil.isExpressionNode(parent) &&
-            hasNoSideEffectsAnnotation(node)) {
-          noSideEffectFunctionNames.add(node);
-        }
-      } else if (NodeUtil.isFunction(node)) {
+        // Gather the list of function nodes that have @nosideeffect annotations.
+        // For use by SetNoSideEffectCallProperty.
+        NodeTraversal.traverse(
+                compiler, externs, new GatherNoSideEffectFunctions(true));
+        NodeTraversal.traverse(
+                compiler, root, new GatherNoSideEffectFunctions(false));
 
-        // The annotation may attached to the function node, the
-        // variable declaration or assignment expression.
-        boolean hasAnnotation = hasNoSideEffectsAnnotation(node);
-        List<Node> nameNodes = Lists.newArrayList();
-        nameNodes.add(node.getFirstChild());
-
-        Node nameNode = null;
-
-        if (NodeUtil.isName(parent)) {
-          Node gramp = parent.getParent();
-          if (NodeUtil.isVar(gramp) &&
-              gramp.hasOneChild() &&
-              hasNoSideEffectsAnnotation(gramp)) {
-            hasAnnotation = true;
-          }
-
-          nameNodes.add(parent);
-        } else if (NodeUtil.isAssign(parent)) {
-          if (hasNoSideEffectsAnnotation(parent)) {
-            hasAnnotation = true;
-          }
-
-          nameNodes.add(parent.getFirstChild());
-        }
-
-        if (hasAnnotation) {
-          noSideEffectFunctionNames.addAll(nameNodes);
-        }
-      }
-    }
-  }
-
-  /**
-   * Set the no side effects property for CALL and NEW nodes that
-   * refer to function names that are known to have no side effects.
-   */
-  private class SetNoSideEffectCallProperty extends AbstractPostOrderCallback {
-    private final SimpleDefinitionFinder defFinder;
-
-    SetNoSideEffectCallProperty(SimpleDefinitionFinder defFinder) {
-      this.defFinder = defFinder;
+        NodeTraversal.traverse(compiler, root,
+                new SetNoSideEffectCallProperty(defFinder));
     }
 
-    @Override
-    public void visit(NodeTraversal traversal, Node node, Node parent) {
-      if (!NodeUtil.isCall(node) && !NodeUtil.isNew(node)) {
-        return;
-      }
-
-      Collection<Definition> definitions =
-          defFinder.getDefinitionsReferencedAt(node.getFirstChild());
-      if (definitions == null) {
-        return;
-      }
-
-      for (Definition def : definitions) {
-        Node lValue = def.getLValue();
-        Preconditions.checkNotNull(lValue);
-        if (!noSideEffectFunctionNames.contains(lValue) &&
-            definitionTypeContainsFunctionType(def)) {
-          return;
+    /**
+     * Determines if the type of the value of the rhs expression can
+     * be a function node.
+     */
+    private static boolean definitionTypeContainsFunctionType(Definition def) {
+        Node rhs = def.getRValue();
+        if (rhs == null) {
+            return true;
         }
-      }
 
-      node.setIsNoSideEffectsCall();
+        switch (rhs.getType()) {
+            case Token.ASSIGN:
+            case Token.AND:
+            case Token.CALL:
+            case Token.GETPROP:
+            case Token.GETELEM:
+            case Token.FUNCTION:
+            case Token.HOOK:
+            case Token.NAME:
+            case Token.NEW:
+            case Token.OR:
+                return true;
+            default:
+                return false;
+        }
     }
-  }
+
+    /**
+     * Get the value of the @nosideeffects annotation stored in the
+     * doc info.
+     */
+    private static boolean hasNoSideEffectsAnnotation(Node node) {
+        JSDocInfo docInfo = node.getJSDocInfo();
+        return docInfo != null && docInfo.isNoSideEffects();
+    }
+
+    /**
+     * Gather function nodes that have @nosideeffects annotations.
+     */
+    private class GatherNoSideEffectFunctions extends AbstractPostOrderCallback {
+        private final boolean inExterns;
+
+        GatherNoSideEffectFunctions(boolean inExterns) {
+            this.inExterns = inExterns;
+        }
+
+        @Override
+        public void visit(NodeTraversal traversal, Node node, Node parent) {
+            if (!inExterns && hasNoSideEffectsAnnotation(node)) {
+                traversal.report(node, INVALID_NO_SIDE_EFFECT_ANNOTATION);
+            }
+
+            if (NodeUtil.isGetProp(node)) {
+                if (NodeUtil.isExpressionNode(parent) &&
+                        hasNoSideEffectsAnnotation(node)) {
+                    noSideEffectFunctionNames.add(node);
+                }
+            } else if (NodeUtil.isFunction(node)) {
+
+                // The annotation may attached to the function node, the
+                // variable declaration or assignment expression.
+                boolean hasAnnotation = hasNoSideEffectsAnnotation(node);
+                List<Node> nameNodes = Lists.newArrayList();
+                nameNodes.add(node.getFirstChild());
+
+                Node nameNode = null;
+
+                if (NodeUtil.isName(parent)) {
+                    Node gramp = parent.getParent();
+                    if (NodeUtil.isVar(gramp) &&
+                            gramp.hasOneChild() &&
+                            hasNoSideEffectsAnnotation(gramp)) {
+                        hasAnnotation = true;
+                    }
+
+                    nameNodes.add(parent);
+                } else if (NodeUtil.isAssign(parent)) {
+                    if (hasNoSideEffectsAnnotation(parent)) {
+                        hasAnnotation = true;
+                    }
+
+                    nameNodes.add(parent.getFirstChild());
+                }
+
+                if (hasAnnotation) {
+                    noSideEffectFunctionNames.addAll(nameNodes);
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the no side effects property for CALL and NEW nodes that
+     * refer to function names that are known to have no side effects.
+     */
+    private class SetNoSideEffectCallProperty extends AbstractPostOrderCallback {
+        private final SimpleDefinitionFinder defFinder;
+
+        SetNoSideEffectCallProperty(SimpleDefinitionFinder defFinder) {
+            this.defFinder = defFinder;
+        }
+
+        @Override
+        public void visit(NodeTraversal traversal, Node node, Node parent) {
+            if (!NodeUtil.isCall(node) && !NodeUtil.isNew(node)) {
+                return;
+            }
+
+            Collection<Definition> definitions =
+                    defFinder.getDefinitionsReferencedAt(node.getFirstChild());
+            if (definitions == null) {
+                return;
+            }
+
+            for (Definition def : definitions) {
+                Node lValue = def.getLValue();
+                Preconditions.checkNotNull(lValue);
+                if (!noSideEffectFunctionNames.contains(lValue) &&
+                        definitionTypeContainsFunctionType(def)) {
+                    return;
+                }
+            }
+
+            node.setIsNoSideEffectsCall();
+        }
+    }
 }

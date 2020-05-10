@@ -1,51 +1,52 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-37">
-			<tests>
-				<testfile path="org/apache/commons/math/complex/ComplexTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;1.0&gt;
-						but was:&lt;NaN&gt;:-
-						org.apache.commons.math.complex.ComplexTest::testTan:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;1.0&gt; but
-						was:&lt;NaN&gt;:-
-						org.apache.commons.math.complex.ComplexTest::testTanh:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;1.0&gt; but
-						was:&lt;NaN&gt;:-
-						org.apache.commons.math.complex.ComplexTest::testTanInf:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;1.0&gt; but
-						was:&lt;NaN&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>232</number_tests>
-					<failed>4</failed>
-					<passed>228</passed>
-					<nodes>31722</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/complex/Complex.java">
-					<change>1018</change>
-					<change>1063</change>
-					<insert numberlines="6">1021-1022</insert>
-					<insert numberlines="6">1066</insert>
-					<bugtypes>
-						<id id="1.2" lines="1018">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.1" lines="1020">
-							<description>Missing case for validation of imaginary.</description>
-						</id>
-						<id id="1.2" lines="1063">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.1" lines="1064">
-							<description>Missing case for validation of real.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-37">
+            <tests>
+                <testfile path="org/apache/commons/math/complex/ComplexTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;1.0&gt;
+                        but was:&lt;NaN&gt;:-
+                        org.apache.commons.math.complex.ComplexTest::testTan:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;1.0&gt; but
+                        was:&lt;NaN&gt;:-
+                        org.apache.commons.math.complex.ComplexTest::testTanh:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;1.0&gt; but
+                        was:&lt;NaN&gt;:-
+                        org.apache.commons.math.complex.ComplexTest::testTanInf:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;1.0&gt; but
+                        was:&lt;NaN&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>232</number_tests>
+                    <failed>4</failed>
+                    <passed>228</passed>
+                    <nodes>31722</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/complex/Complex.java">
+                    <change>1018</change>
+                    <change>1063</change>
+                    <insert numberlines="6">1021-1022</insert>
+                    <insert numberlines="6">1066</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="1018">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.1" lines="1020">
+                            <description>Missing case for validation of imaginary.</description>
+                        </id>
+                        <id id="1.2" lines="1063">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.1" lines="1064">
+                            <description>Missing case for validation of real.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

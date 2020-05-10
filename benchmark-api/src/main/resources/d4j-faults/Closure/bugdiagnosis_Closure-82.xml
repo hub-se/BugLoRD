@@ -1,32 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-82">
-			<tests>
-				<testfile path="com/google/javascript/rhino/jstype/FunctionTypeTest">
-					<exception>junit.framework.AssertionFailedError:expected a
-						warning:-
-						com.google.javascript.rhino.jstype.FunctionTypeTest::testEmptyFunctionTypes:--&gt;
-						junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>6358</number_tests>
-					<failed>2</failed>
-					<passed>6356</passed>
-					<nodes>40093</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/rhino/jstype/JSType.java">
-					<change>163</change>
-					<bugtypes>
-						<id id="2.2" lines="163">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-82">
+            <tests>
+                <testfile path="com/google/javascript/rhino/jstype/FunctionTypeTest">
+                    <exception>junit.framework.AssertionFailedError:expected a
+                        warning:-
+                        com.google.javascript.rhino.jstype.FunctionTypeTest::testEmptyFunctionTypes:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>6358</number_tests>
+                    <failed>2</failed>
+                    <passed>6356</passed>
+                    <nodes>40093</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/rhino/jstype/JSType.java">
+                    <change>163</change>
+                    <bugtypes>
+                        <id id="2.2" lines="163">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

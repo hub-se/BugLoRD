@@ -4,12 +4,12 @@
  */
 package org.mockitousage.spies;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockitoutil.ExtraMatchers;
 import org.mockitoutil.TestBase;
+
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 public class PartialMockingWithSpiesTest extends TestBase {
@@ -18,14 +18,15 @@ public class PartialMockingWithSpiesTest extends TestBase {
     public void pleaseMakeStackTracesClean() {
         makeStackTracesClean();
     }
-    
+
     class InheritMe {
         private String inherited = "100$";
+
         protected String getInherited() {
             return inherited;
         }
     }
-    
+
     class Person extends InheritMe {
         private final Name defaultName = new Name("Default name");
 
@@ -36,11 +37,11 @@ public class PartialMockingWithSpiesTest extends TestBase {
         Name guessName() {
             return defaultName;
         }
-        
+
         public String howMuchDidYouInherit() {
             return getInherited();
         }
-        
+
         public String getNameButDelegateToMethodThatThrows() {
             throwSomeException();
             return guessName().name;
@@ -50,7 +51,7 @@ public class PartialMockingWithSpiesTest extends TestBase {
             throw new RuntimeException("boo");
         }
     }
-    
+
     class Name {
         private final String name;
 
@@ -69,12 +70,12 @@ public class PartialMockingWithSpiesTest extends TestBase {
         // then
         assertEquals("Default name", name);
     }
-    
+
     @Test
     public void shouldAllowStubbingOfMethodsThatDelegateToOtherMethods() {
         // when
         when(spy.getName()).thenReturn("foo");
-        
+
         // then
         assertEquals("foo", spy.getName());
     }
@@ -83,17 +84,17 @@ public class PartialMockingWithSpiesTest extends TestBase {
     public void shouldAllowStubbingWithThrowablesMethodsThatDelegateToOtherMethods() {
         // when
         doThrow(new RuntimeException("appetite for destruction"))
-            .when(spy).getNameButDelegateToMethodThatThrows();
-        
+                .when(spy).getNameButDelegateToMethodThatThrows();
+
         // then
         try {
             spy.getNameButDelegateToMethodThatThrows();
             fail();
-        } catch(Exception e) {
+        } catch (Exception e) {
             assertEquals("appetite for destruction", e.getMessage());
         }
     }
-    
+
     @Test
     public void shouldStackTraceGetFilteredOnUserExceptions() {
         try {
@@ -106,11 +107,11 @@ public class PartialMockingWithSpiesTest extends TestBase {
                     "throwSomeException",
                     "getNameButDelegateToMethodThatThrows",
                     "shouldStackTraceGetFilteredOnUserExceptions"
-                    ));
+            ));
         }
     }
 
-//    @Test //manual verification
+    //    @Test //manual verification
     public void verifyTheStackTrace() {
         spy.getNameButDelegateToMethodThatThrows();
     }
@@ -133,7 +134,7 @@ public class PartialMockingWithSpiesTest extends TestBase {
         // then
         assertEquals("John", name);
     }
-    
+
     @Test
     public void shouldDealWithPrivateFieldsOfSubclasses() {
         assertEquals("100$", spy.howMuchDidYouInherit());

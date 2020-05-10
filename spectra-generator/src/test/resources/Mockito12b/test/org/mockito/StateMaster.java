@@ -7,13 +7,13 @@ package org.mockito;
 import org.mockito.internal.progress.ThreadSafeMockingProgress;
 
 public class StateMaster {
-    
+
     private final ThreadSafeMockingProgress mockingProgress = new ThreadSafeMockingProgress();
 
     public void reset() {
         mockingProgress.reset();
     }
-    
+
     public void validate() {
         mockingProgress.validateState();
     }

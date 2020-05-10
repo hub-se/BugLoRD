@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-133">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/parsing/JsDocInfoParserTest">
-					<exception>java.lang.IllegalStateException:Recorded bad position
-						information</exception>
-				</testfile>
-				<spectra>
-					<number_tests>5509</number_tests>
-					<failed>1</failed>
-					<passed>5508</passed>
-					<nodes>47504</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/parsing/JsDocInfoParser.java">
-					<insert numberlines="1">2400-2401</insert>
-					<bugtypes>
-						<id id="3.1" lines="2400">
-							<description>Missing initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-133">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/parsing/JsDocInfoParserTest">
+                    <exception>java.lang.IllegalStateException:Recorded bad position
+                        information
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>5509</number_tests>
+                    <failed>1</failed>
+                    <passed>5508</passed>
+                    <nodes>47504</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/parsing/JsDocInfoParser.java">
+                    <insert numberlines="1">2400-2401</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="2400">
+                            <description>Missing initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

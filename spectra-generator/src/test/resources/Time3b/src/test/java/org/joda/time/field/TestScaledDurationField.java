@@ -15,17 +15,16 @@
  */
 package org.joda.time.field;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.DurationField;
+import org.joda.time.DurationFieldType;
+import org.joda.time.chrono.ISOChronology;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.DurationField;
-import org.joda.time.DurationFieldType;
-import org.joda.time.chrono.ISOChronology;
 
 /**
  * This class is a Junit unit test for PreciseDurationField.
@@ -33,11 +32,11 @@ import org.joda.time.chrono.ISOChronology;
  * @author Stephen Colebourne
  */
 public class TestScaledDurationField extends TestCase {
-    
+
     private static final long LONG_INTEGER_MAX = Integer.MAX_VALUE;
     private static final int INTEGER_MAX = Integer.MAX_VALUE;
     private static final long LONG_MAX = Long.MAX_VALUE;
-    
+
     private ScaledDurationField iField;
 
     public static void main(String[] args) {
@@ -66,19 +65,23 @@ public class TestScaledDurationField extends TestCase {
         try {
             new ScaledDurationField(null, DurationFieldType.minutes(), 10);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new ScaledDurationField(MillisDurationField.INSTANCE, null, 10);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new ScaledDurationField(MillisDurationField.INSTANCE, DurationFieldType.minutes(), 0);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new ScaledDurationField(MillisDurationField.INSTANCE, DurationFieldType.minutes(), 1);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void test_getScalar() {
@@ -93,7 +96,7 @@ public class TestScaledDurationField extends TestCase {
     public void test_getName() {
         assertEquals("minutes", iField.getName());
     }
-    
+
     public void test_isSupported() {
         assertEquals(true, iField.isSupported());
     }
@@ -119,7 +122,8 @@ public class TestScaledDurationField extends TestCase {
         try {
             iField.getValue(LONG_INTEGER_MAX + 1L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     public void test_getValueAsLong_long() {
@@ -137,7 +141,8 @@ public class TestScaledDurationField extends TestCase {
         try {
             iField.getValue(LONG_INTEGER_MAX + 1L, 567L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     public void test_getValueAsLong_long_long() {
@@ -162,7 +167,8 @@ public class TestScaledDurationField extends TestCase {
         try {
             iField.getMillis(LONG_MAX);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     public void test_getMillis_int_long() {
@@ -179,7 +185,8 @@ public class TestScaledDurationField extends TestCase {
         try {
             iField.getMillis(LONG_MAX, 567L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -190,7 +197,8 @@ public class TestScaledDurationField extends TestCase {
         try {
             iField.add(LONG_MAX, 1);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     public void test_add_long_long() {
@@ -200,11 +208,13 @@ public class TestScaledDurationField extends TestCase {
         try {
             iField.add(LONG_MAX, 1L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
         try {
             iField.add(1L, LONG_MAX);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -216,7 +226,8 @@ public class TestScaledDurationField extends TestCase {
         try {
             iField.getDifference(LONG_MAX, -1L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     public void test_getDifferenceAsLong_long_long() {
@@ -227,7 +238,8 @@ public class TestScaledDurationField extends TestCase {
         try {
             iField.getDifferenceAsLong(LONG_MAX, -1L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -268,24 +280,25 @@ public class TestScaledDurationField extends TestCase {
         try {
             iField.compareTo(null);
             fail();
-        } catch (NullPointerException ex) {}
+        } catch (NullPointerException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
     public void testSerialization() throws Exception {
         DurationField test = iField;
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(test);
         byte[] bytes = baos.toByteArray();
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);
         DurationField result = (DurationField) ois.readObject();
         ois.close();
-        
+
         assertEquals(test, result);
     }
 

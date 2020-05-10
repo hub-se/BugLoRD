@@ -26,30 +26,30 @@ import java.util.List;
  */
 public abstract class UndiGraph<N, E> extends Graph<N, E> {
 
-  abstract List<UndiGraphNode<N, E>> getUndirectedGraphNodes();
+    abstract List<UndiGraphNode<N, E>> getUndirectedGraphNodes();
 
-  abstract UndiGraphNode<N, E> createUndirectedGraphNode(N nodeValue);
+    abstract UndiGraphNode<N, E> createUndirectedGraphNode(N nodeValue);
 
-  abstract UndiGraphNode<N, E> getUndirectedGraphNode(N nodeValue);
+    abstract UndiGraphNode<N, E> getUndirectedGraphNode(N nodeValue);
 
-  abstract List<UndiGraphEdge<N, E>> getUndirectedGraphEdges(N n1, N n2);
+    abstract List<UndiGraphEdge<N, E>> getUndirectedGraphEdges(N n1, N n2);
 
-  /**
-   * A generic undirected graph node.
-   *
-   * @param <N> Value type that the graph node stores.
-   * @param <E> Value type that the graph edge stores.
-   */
-  public static interface UndiGraphNode<N, E> extends GraphNode<N, E> {
-    List<UndiGraphEdge<N, E>> getNeighborEdges();
-  }
+    /**
+     * A generic undirected graph node.
+     *
+     * @param <N> Value type that the graph node stores.
+     * @param <E> Value type that the graph edge stores.
+     */
+    public static interface UndiGraphNode<N, E> extends GraphNode<N, E> {
+        List<UndiGraphEdge<N, E>> getNeighborEdges();
+    }
 
-  /**
-   * A generic undirected graph edge.
-   *
-   * @param <N> Value type that the graph node stores.
-   * @param <E> Value type that the graph edge stores.
-   */
-  public static interface UndiGraphEdge<N, E> extends GraphEdge<N, E> {
-  }
+    /**
+     * A generic undirected graph edge.
+     *
+     * @param <N> Value type that the graph node stores.
+     * @param <E> Value type that the graph edge stores.
+     */
+    public static interface UndiGraphEdge<N, E> extends GraphEdge<N, E> {
+    }
 }

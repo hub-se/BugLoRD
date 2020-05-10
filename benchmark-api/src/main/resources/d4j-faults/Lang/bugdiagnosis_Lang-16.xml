@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-16">
-			<tests>
-				<testfile path="org/apache/commons/lang3/math/NumberUtilsTest">
-					<exception>java.lang.NumberFormatException:0Xfade is not a valid
-						number.</exception>
-				</testfile>
-				<spectra>
-					<number_tests>164</number_tests>
-					<failed>1</failed>
-					<passed>163</passed>
-					<nodes>10939</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/math/NumberUtils.java">
-					<change>458</change>
-					<bugtypes>
-						<id id="1.2" lines="458">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-16">
+            <tests>
+                <testfile path="org/apache/commons/lang3/math/NumberUtilsTest">
+                    <exception>java.lang.NumberFormatException:0Xfade is not a valid
+                        number.
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>164</number_tests>
+                    <failed>1</failed>
+                    <passed>163</passed>
+                    <nodes>10939</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/math/NumberUtils.java">
+                    <change>458</change>
+                    <bugtypes>
+                        <id id="1.2" lines="458">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

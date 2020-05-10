@@ -18,32 +18,32 @@ package com.google.javascript.jscomp;
 
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
-
 import junit.framework.TestCase;
 
 import java.util.Map;
 
 /**
  * Tests for {@link CompilerOptions}.
+ *
  * @author nicksantos@google.com (Nick Santos)
  */
 public class CompilerOptionsTest extends TestCase {
 
-  public void testDefines() throws Exception {
-    CompilerOptions options = new CompilerOptions();
-    options.setDefineToBooleanLiteral("trueVar", true);
-    options.setDefineToBooleanLiteral("falseVar", false);
-    options.setDefineToNumberLiteral("threeVar", 3);
-    options.setDefineToStringLiteral("strVar", "str");
+    public void testDefines() throws Exception {
+        CompilerOptions options = new CompilerOptions();
+        options.setDefineToBooleanLiteral("trueVar", true);
+        options.setDefineToBooleanLiteral("falseVar", false);
+        options.setDefineToNumberLiteral("threeVar", 3);
+        options.setDefineToStringLiteral("strVar", "str");
 
-    Map<String, Node> actual = options.getDefineReplacements();
-    assertEquivalent(new Node(Token.TRUE), actual.get("trueVar"));
-    assertEquivalent(new Node(Token.FALSE), actual.get("falseVar"));
-    assertEquivalent(Node.newNumber(3), actual.get("threeVar"));
-    assertEquivalent(Node.newString("str"), actual.get("strVar"));
-  }
+        Map<String, Node> actual = options.getDefineReplacements();
+        assertEquivalent(new Node(Token.TRUE), actual.get("trueVar"));
+        assertEquivalent(new Node(Token.FALSE), actual.get("falseVar"));
+        assertEquivalent(Node.newNumber(3), actual.get("threeVar"));
+        assertEquivalent(Node.newString("str"), actual.get("strVar"));
+    }
 
-  public void assertEquivalent(Node a, Node b) {
-    assertTrue(a.isEquivalentTo(b));
-  }
+    public void assertEquivalent(Node a, Node b) {
+        assertTrue(a.isEquivalentTo(b));
+    }
 }

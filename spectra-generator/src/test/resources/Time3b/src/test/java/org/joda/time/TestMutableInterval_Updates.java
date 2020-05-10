@@ -15,14 +15,13 @@
  */
 package org.joda.time;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.base.AbstractInterval;
 import org.joda.time.chrono.ISOChronology;
+
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * This class is a Junit unit test for Instant.
@@ -35,32 +34,32 @@ public class TestMutableInterval_Updates extends TestCase {
 
     private static final DateTimeZone PARIS = DateTimeZone.forID("Europe/Paris");
     private static final DateTimeZone LONDON = DateTimeZone.forID("Europe/London");
-    
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
-    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365 + 365;
-    
+
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
+    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365;
+
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
-            
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
+
     // 2002-04-05
     private long TEST_TIME1 =
-            (y2002days + 31L + 28L + 31L + 5L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 12L * DateTimeConstants.MILLIS_PER_HOUR
-            + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (y2002days + 31L + 28L + 31L + 5L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 12L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     // 2003-05-06
     private long TEST_TIME2 =
-            (y2003days + 31L + 28L + 31L + 30L + 6L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 14L * DateTimeConstants.MILLIS_PER_HOUR
-            + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (y2003days + 31L + 28L + 31L + 30L + 6L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 14L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     private DateTimeZone originalDateTimeZone = null;
     private TimeZone originalTimeZone = null;
     private Locale originalLocale = null;
@@ -117,7 +116,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setInterval(TEST_TIME1 - 1, TEST_TIME1 - 2);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -133,7 +133,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setInterval(new Instant(TEST_TIME1 - 1), new Instant(TEST_TIME1 - 2));
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetInterval_RI_RI3() {
@@ -170,16 +171,19 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setInterval(new MockBadInterval());
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
-    
+
     class MockBadInterval extends AbstractInterval {
         public Chronology getChronology() {
             return ISOChronology.getInstance();
         }
+
         public long getStartMillis() {
             return TEST_TIME1 - 1;
         }
+
         public long getEndMillis() {
             return TEST_TIME1 - 2;
         }
@@ -190,9 +194,10 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setInterval(null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
-    
+
     //-----------------------------------------------------------------------
     public void testSetStartMillis_long1() {
         MutableInterval test = new MutableInterval(TEST_TIME1, TEST_TIME2);
@@ -206,7 +211,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setStartMillis(TEST_TIME2 + 1);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -222,7 +228,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setStart(new Instant(TEST_TIME2 + 1));
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetStart_RI3() {
@@ -245,7 +252,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setEndMillis(TEST_TIME1 - 1);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -261,7 +269,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setEnd(new Instant(TEST_TIME1 - 1));
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetEnd_RI3() {
@@ -284,7 +293,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setDurationAfterStart(-1);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -300,7 +310,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setDurationAfterStart(new Duration(-1));
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetDurationAfterStart_RI3() {
@@ -323,7 +334,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setDurationBeforeEnd(-1);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -339,7 +351,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setDurationBeforeEnd(new Duration(-1));
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetDurationBeforeEnd_RI3() {
@@ -362,7 +375,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setPeriodAfterStart(new Period(-1L));
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetPeriodAfterStart_RI3() {
@@ -385,7 +399,8 @@ public class TestMutableInterval_Updates extends TestCase {
         try {
             test.setPeriodBeforeEnd(new Period(-1L));
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetPeriodBeforeEnd_RI3() {

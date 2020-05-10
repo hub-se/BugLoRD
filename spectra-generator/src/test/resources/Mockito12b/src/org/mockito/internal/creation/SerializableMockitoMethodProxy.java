@@ -4,10 +4,10 @@
  */
 package org.mockito.internal.creation;
 
-import java.io.Serializable;
-
 import org.mockito.cglib.proxy.MethodProxy;
 import org.mockito.internal.util.reflection.Whitebox;
+
+import java.io.Serializable;
 
 public class SerializableMockitoMethodProxy extends AbstractMockitoMethodProxy implements Serializable {
 

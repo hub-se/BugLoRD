@@ -1,30 +1,30 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-83">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/CommandLineRunnerTest">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>53</number_tests>
-					<failed>1</failed>
-					<passed>52</passed>
-					<nodes>39813</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/CommandLineRunner.java">
-					<change>334</change>
-					<insert numberlines="2,1">334,335-336</insert>
-					<bugtypes>
-						<id id="1.3" lines="334">
-							<description>Missing exception handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-83">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/CommandLineRunnerTest">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>53</number_tests>
+                    <failed>1</failed>
+                    <passed>52</passed>
+                    <nodes>39813</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/CommandLineRunner.java">
+                    <change>334</change>
+                    <insert numberlines="2,1">334,335-336</insert>
+                    <bugtypes>
+                        <id id="1.3" lines="334">
+                            <description>Missing exception handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -9,12 +9,6 @@
 
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ibugs;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.ExperimentRuntimeException;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
@@ -24,30 +18,43 @@ import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraPro
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * Provides spectra using iBugs coverage traces for a specific BugID
  */
 public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock, HitTrace<SourceCodeBlock>> {
 
-    /** contains the path to the trace folder of the specific bugId */
+    /**
+     * contains the path to the trace folder of the specific bugId
+     */
     private final File bugFolder;
-    /** contains the bug id this experiment shall run with */
+    /**
+     * contains the bug id this experiment shall run with
+     */
     private final int bugId;
-    /** Number of failing traces to load */
+    /**
+     * Number of failing traces to load
+     */
     private final Integer failingTraces;
-    /** Number of successful traces to load */
+    /**
+     * Number of successful traces to load
+     */
     private final Integer successfulTraces;
 
-    /** Once loaded, we cache the spectra */
+    /**
+     * Once loaded, we cache the spectra
+     */
     private ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> __cacheSpectra; // NOCS
 
     /**
      * Creates a new spectra provider. Take all traces available for the specified bug id
-     * 
-     * @param root
-     *            path to the trace files
-     * @param bugId
-     *            bug id to run the experiment with
+     *
+     * @param root  path to the trace files
+     * @param bugId bug id to run the experiment with
      */
     public IBugsSpectraProvider(final String root, final int bugId) {
         this(root, bugId, null, null);
@@ -55,18 +62,14 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock, H
 
     /**
      * Creates a new spectra provider. Takes the specified number of traces for the given bug id to create the trace
-     * 
-     * @param root
-     *            path to the trace files
-     * @param bugId
-     *            bug id to run the experiment with
-     * @param failingTraces
-     *            the number of required failing traces
-     * @param successfulTraces
-     *            the number of required successful traces
+     *
+     * @param root             path to the trace files
+     * @param bugId            bug id to run the experiment with
+     * @param failingTraces    the number of required failing traces
+     * @param successfulTraces the number of required successful traces
      */
     public IBugsSpectraProvider(final String root, final int bugId, final Integer failingTraces,
-            final Integer successfulTraces) {
+                                final Integer successfulTraces) {
         /** contains the path to the iBugs trace folder */
         File root1 = new File(root);
         this.bugId = bugId;
@@ -103,7 +106,7 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock, H
                     loadedFailure++;
                 }
                 if (!c.addData(trace.getKey(), null, trace.getValue())) {
-                	throw new IllegalStateException("Adding coverage trace failed.");
+                    throw new IllegalStateException("Adding coverage trace failed.");
                 }
             }
 
@@ -128,9 +131,9 @@ public class IBugsSpectraProvider implements ISpectraProvider<SourceCodeBlock, H
     /**
      * Lists all traces of the given version and their corresponding success
      * state.
-     * 
+     *
      * @return Map of absolute trace file names to their corresponding success
-     *         (true) or failure (false) state.
+     * (true) or failure (false) state.
      */
     private Map<String, Boolean> traces() {
         final Map<String, Boolean> traces = new HashMap<>();

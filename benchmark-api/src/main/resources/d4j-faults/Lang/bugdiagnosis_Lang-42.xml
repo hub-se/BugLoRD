@@ -1,35 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-42">
-			<tests>
-				<testfile path="org/apache/commons/lang/StringEscapeUtilsTest">
-					<exception>junit.framework.ComparisonFailure:High unicode was not
-						escaped correctly expected:&lt;&amp;#[119650];&gt; but
-						was:&lt;&amp;#[55348;&amp;#57186];&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>54</number_tests>
-					<failed>1</failed>
-					<passed>53</passed>
-					<nodes>10585</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang/Entities.java">
-					<change>828</change>
-					<insert numberlines="6">831</insert>
-					<bugtypes>
-						<id id="3.1" lines="828">
-							<description>Incorrect initialization.</description>
-						</id>
-						<id id="1.2" lines="831">
-							<description>Incorrect condition and case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-42">
+            <tests>
+                <testfile path="org/apache/commons/lang/StringEscapeUtilsTest">
+                    <exception>junit.framework.ComparisonFailure:High unicode was not
+                        escaped correctly expected:&lt;&amp;#[119650];&gt; but
+                        was:&lt;&amp;#[55348;&amp;#57186];&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>54</number_tests>
+                    <failed>1</failed>
+                    <passed>53</passed>
+                    <nodes>10585</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang/Entities.java">
+                    <change>828</change>
+                    <insert numberlines="6">831</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="828">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                        <id id="1.2" lines="831">
+                            <description>Incorrect condition and case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -15,14 +15,13 @@
  */
 package org.joda.time.format;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * This class is a Junit unit test for ISODateTimeFormat parsing.
@@ -74,19 +73,19 @@ public class TestISODateTimeFormatParsing extends TestCase {
         assertParse(parser, true, "2006-06-09T+02:00");
         assertParse(parser, true, "2006-W27-3T+02:00");
         assertParse(parser, true, "2006-123T+02:00");
-        
+
         assertParse(parser, false, "2006-06-09T10:20:30.040");
         assertParse(parser, false, "2006-W27-3T10:20:30.040");
         assertParse(parser, false, "2006-123T10:20:30.040");
         assertParse(parser, false, "2006-06-09T10:20:30.040+02:00");
         assertParse(parser, false, "2006-W27-3T10:20:30.040+02:00");
         assertParse(parser, false, "2006-123T10:20:30.040+02:00");
-        
+
         assertParse(parser, false, "T10:20:30.040");
         assertParse(parser, false, "T10.5");
         assertParse(parser, false, "T10:20:30.040+02:00");
         assertParse(parser, false, "T10.5+02:00");
-        
+
         assertParse(parser, false, "10:20:30.040");
         assertParse(parser, false, "10.5");
         assertParse(parser, false, "10:20:30.040+02:00");
@@ -103,19 +102,19 @@ public class TestISODateTimeFormatParsing extends TestCase {
         assertParse(parser, false, "2006-06-09T+02:00");
         assertParse(parser, false, "2006-W27-3T+02:00");
         assertParse(parser, false, "2006-123T+02:00");
-        
+
         assertParse(parser, false, "2006-06-09T10:20:30.040");
         assertParse(parser, false, "2006-W27-3T10:20:30.040");
         assertParse(parser, false, "2006-123T10:20:30.040");
         assertParse(parser, false, "2006-06-09T10:20:30.040+02:00");
         assertParse(parser, false, "2006-W27-3T10:20:30.040+02:00");
         assertParse(parser, false, "2006-123T10:20:30.040+02:00");
-        
+
         assertParse(parser, false, "T10:20:30.040");
         assertParse(parser, false, "T10.5");
         assertParse(parser, false, "T10:20:30.040+02:00");
         assertParse(parser, false, "T10.5+02:00");
-        
+
         assertParse(parser, false, "10:20:30.040");
         assertParse(parser, false, "10.5");
         assertParse(parser, false, "10:20:30.040+02:00");
@@ -134,19 +133,19 @@ public class TestISODateTimeFormatParsing extends TestCase {
         assertParse(parser, false, "2006-06-09T+02:00");
         assertParse(parser, false, "2006-W27-3T+02:00");
         assertParse(parser, false, "2006-123T+02:00");
-        
+
         assertParse(parser, false, "2006-06-09T10:20:30.040");
         assertParse(parser, false, "2006-W27-3T10:20:30.040");
         assertParse(parser, false, "2006-123T10:20:30.040");
         assertParse(parser, false, "2006-06-09T10:20:30.040+02:00");
         assertParse(parser, false, "2006-W27-3T10:20:30.040+02:00");
         assertParse(parser, false, "2006-123T10:20:30.040+02:00");
-        
+
         assertParse(parser, false, "T10:20:30.040");
         assertParse(parser, false, "T10.5");
         assertParse(parser, false, "T10:20:30.040+02:00");
         assertParse(parser, false, "T10.5+02:00");
-        
+
         assertParse(parser, false, "10:20:30.040");
         assertParse(parser, false, "10.5");
         assertParse(parser, false, "10:20:30.040+02:00");
@@ -163,14 +162,14 @@ public class TestISODateTimeFormatParsing extends TestCase {
         assertParse(parser, false, "2006-06-09T+02:00");
         assertParse(parser, false, "2006-W27-3T+02:00");
         assertParse(parser, false, "2006-123T+02:00");
-        
+
         assertParse(parser, false, "2006-06-09T10:20:30.040");
         assertParse(parser, false, "2006-W27-3T10:20:30.040");
         assertParse(parser, false, "2006-123T10:20:30.040");
         assertParse(parser, false, "2006-06-09T10:20:30.040+02:00");
         assertParse(parser, false, "2006-W27-3T10:20:30.040+02:00");
         assertParse(parser, false, "2006-123T10:20:30.040+02:00");
-        
+
         assertParse(parser, "T10:20:30.040000000", new DateTime(1970, 1, 1, 10, 20, 30, 40));
         assertParse(parser, "T10:20:30.004", new DateTime(1970, 1, 1, 10, 20, 30, 4));
         assertParse(parser, "T10:20:30.040", new DateTime(1970, 1, 1, 10, 20, 30, 40));
@@ -178,7 +177,7 @@ public class TestISODateTimeFormatParsing extends TestCase {
         assertParse(parser, "T10.5", new DateTime(1970, 1, 1, 10, 30, 0, 0));
         assertParse(parser, "T10:20:30.040+02:00", new DateTime(1970, 1, 1, 8, 20, 30, 40));
         assertParse(parser, "T10.5+02:00", new DateTime(1970, 1, 1, 8, 30, 0, 0));
-        
+
         assertParse(parser, true, "10:20:30.040");
         assertParse(parser, true, "10.5");
         assertParse(parser, true, "10:20:30.040+02:00");
@@ -195,24 +194,24 @@ public class TestISODateTimeFormatParsing extends TestCase {
         assertParse(parser, false, "2006-06-09T+02:00");
         assertParse(parser, false, "2006-W27-3T+02:00");
         assertParse(parser, false, "2006-123T+02:00");
-        
+
         assertParse(parser, false, "2006-06-09T10:20:30.040");
         assertParse(parser, false, "2006-W27-3T10:20:30.040");
         assertParse(parser, false, "2006-123T10:20:30.040");
         assertParse(parser, false, "2006-06-09T10:20:30.040+02:00");
         assertParse(parser, false, "2006-W27-3T10:20:30.040+02:00");
         assertParse(parser, false, "2006-123T10:20:30.040+02:00");
-        
+
         assertParse(parser, true, "T10:20:30.040");
         assertParse(parser, true, "T10.5");
         assertParse(parser, false, "T10:20:30.040+02:00");
         assertParse(parser, false, "T10.5+02:00");
-        
+
         assertParse(parser, true, "10:20:30.040");
         assertParse(parser, true, "10.5");
         assertParse(parser, false, "10:20:30.040+02:00");
         assertParse(parser, false, "10.5+02:00");
-        
+
         assertParse(parser, true, "00:00:10.512345678");
         assertEquals(10512, parser.parseMillis("00:00:10.512345678"));
     }
@@ -226,24 +225,24 @@ public class TestISODateTimeFormatParsing extends TestCase {
         assertParse(parser, false, "2006-06-09T+02:00");
         assertParse(parser, false, "2006-W27-3T+02:00");
         assertParse(parser, false, "2006-123T+02:00");
-        
+
         assertParse(parser, false, "2006-06-09T10:20:30.040");
         assertParse(parser, false, "2006-W27-3T10:20:30.040");
         assertParse(parser, false, "2006-123T10:20:30.040");
         assertParse(parser, false, "2006-06-09T10:20:30.040+02:00");
         assertParse(parser, false, "2006-W27-3T10:20:30.040+02:00");
         assertParse(parser, false, "2006-123T10:20:30.040+02:00");
-        
+
         assertParse(parser, false, "T10:20:30.040");
         assertParse(parser, false, "T10.5");
         assertParse(parser, false, "T10:20:30.040+02:00");
         assertParse(parser, false, "T10.5+02:00");
-        
+
         assertParse(parser, true, "10:20:30.040");
         assertParse(parser, true, "10.5");
         assertParse(parser, false, "10:20:30.040+02:00");
         assertParse(parser, false, "10.5+02:00");
-        
+
         assertParse(parser, true, "00:00:10.512345678");
         // result is offset by London DST in 1970-01-01
         assertEquals(10512, parser.parseMillis("00:00:10.512345678") + DateTimeZone.getDefault().getOffset(0L));
@@ -258,19 +257,19 @@ public class TestISODateTimeFormatParsing extends TestCase {
         assertParse(parser, true, "2006-06-09T+02:00");
         assertParse(parser, true, "2006-W27-3T+02:00");
         assertParse(parser, true, "2006-123T+02:00");
-        
+
         assertParse(parser, true, "2006-06-09T10:20:30.040");
         assertParse(parser, true, "2006-W27-3T10:20:30.040");
         assertParse(parser, true, "2006-123T10:20:30.040");
         assertParse(parser, true, "2006-06-09T10:20:30.040+02:00");
         assertParse(parser, true, "2006-W27-3T10:20:30.040+02:00");
         assertParse(parser, true, "2006-123T10:20:30.040+02:00");
-        
+
         assertParse(parser, true, "T10:20:30.040");
         assertParse(parser, true, "T10.5");
         assertParse(parser, true, "T10:20:30.040+02:00");
         assertParse(parser, true, "T10.5+02:00");
-        
+
         assertParse(parser, false, "10:20:30.040");
         assertParse(parser, false, "10.5");
         assertParse(parser, false, "10:20:30.040+02:00");
@@ -286,19 +285,19 @@ public class TestISODateTimeFormatParsing extends TestCase {
         assertParse(parser, true, "2006-06-09T+02:00");
         assertParse(parser, true, "2006-W27-3T+02:00");
         assertParse(parser, true, "2006-123T+02:00");
-        
+
         assertParse(parser, true, "2006-06-09T10:20:30.040");
         assertParse(parser, true, "2006-W27-3T10:20:30.040");
         assertParse(parser, true, "2006-123T10:20:30.040");
         assertParse(parser, true, "2006-06-09T10:20:30.040+02:00");
         assertParse(parser, true, "2006-W27-3T10:20:30.040+02:00");
         assertParse(parser, true, "2006-123T10:20:30.040+02:00");
-        
+
         assertParse(parser, false, "T10:20:30.040");
         assertParse(parser, false, "T10.5");
         assertParse(parser, false, "T10:20:30.040+02:00");
         assertParse(parser, false, "T10.5+02:00");
-        
+
         assertParse(parser, false, "10:20:30.040");
         assertParse(parser, false, "10.5");
         assertParse(parser, false, "10:20:30.040+02:00");
@@ -315,19 +314,19 @@ public class TestISODateTimeFormatParsing extends TestCase {
         assertParse(parser, false, "2006-06-09T+02:00");
         assertParse(parser, false, "2006-W27-3T+02:00");
         assertParse(parser, false, "2006-123T+02:00");
-        
+
         assertParse(parser, true, "2006-06-09T10:20:30.040");
         assertParse(parser, true, "2006-W27-3T10:20:30.040");
         assertParse(parser, true, "2006-123T10:20:30.040");
         assertParse(parser, false, "2006-06-09T10:20:30.040+02:00");
         assertParse(parser, false, "2006-W27-3T10:20:30.040+02:00");
         assertParse(parser, false, "2006-123T10:20:30.040+02:00");
-        
+
         assertParse(parser, false, "T10:20:30.040");
         assertParse(parser, false, "T10.5");
         assertParse(parser, false, "T10:20:30.040+02:00");
         assertParse(parser, false, "T10.5+02:00");
-        
+
         assertParse(parser, false, "10:20:30.040");
         assertParse(parser, false, "10.5");
         assertParse(parser, false, "10:20:30.040+02:00");

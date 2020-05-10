@@ -1,34 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-106">
-			<tests>
-				<testfile path="org/apache/commons/math/fraction/FractionFormatTest">
-					<exception>junit.framework.AssertionFailedError:invalid minus in
-						improper fraction.</exception>
-				</testfile>
-				<spectra>
-					<number_tests>16</number_tests>
-					<failed>1</failed>
-					<passed>15</passed>
-					<nodes>4772</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/fraction/ProperFractionFormat.java">
-					<insert numberlines="4">164-168</insert>
-					<insert numberlines="4">199-202</insert>
-					<bugtypes>
-						<id id="1.1" lines="164,165">
-							<description>Missing check for value smaller than zero.</description>
-						</id>
-						<id id="1.1" lines="199,200">
-							<description>Missing check for value smaller than zero.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-106">
+            <tests>
+                <testfile path="org/apache/commons/math/fraction/FractionFormatTest">
+                    <exception>junit.framework.AssertionFailedError:invalid minus in
+                        improper fraction.
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>16</number_tests>
+                    <failed>1</failed>
+                    <passed>15</passed>
+                    <nodes>4772</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/fraction/ProperFractionFormat.java">
+                    <insert numberlines="4">164-168</insert>
+                    <insert numberlines="4">199-202</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="164,165">
+                            <description>Missing check for value smaller than zero.</description>
+                        </id>
+                        <id id="1.1" lines="199,200">
+                            <description>Missing check for value smaller than zero.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

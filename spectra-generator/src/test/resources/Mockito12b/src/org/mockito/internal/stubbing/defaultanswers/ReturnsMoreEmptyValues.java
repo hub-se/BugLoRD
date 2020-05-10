@@ -4,19 +4,19 @@
  */
 package org.mockito.internal.stubbing.defaultanswers;
 
-import java.io.Serializable;
-import java.lang.reflect.Array;
-
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import java.io.Serializable;
+import java.lang.reflect.Array;
 
 /**
  * It's likely this implementation will be used by default by every Mockito 2.0 mock.
  * <p>
  * Currently <b>used only</b> by {@link Mockito#RETURNS_SMART_NULLS}
  * <p>
- * Current version of Mockito mocks by deafult use {@link ReturnsEmptyValues}  
+ * Current version of Mockito mocks by deafult use {@link ReturnsEmptyValues}
  * <ul>
  * <li>
  *  Returns appropriate primitive for primitive-returning methods
@@ -42,10 +42,10 @@ import org.mockito.stubbing.Answer;
  * </ul>
  */
 public class ReturnsMoreEmptyValues implements Answer<Object>, Serializable {
-    
+
     private static final long serialVersionUID = -2816745041482698471L;
     private Answer<Object> delegate = new ReturnsEmptyValues();
-    
+
     /* (non-Javadoc)
      * @see org.mockito.stubbing.Answer#answer(org.mockito.invocation.InvocationOnMock)
      */
@@ -58,11 +58,11 @@ public class ReturnsMoreEmptyValues implements Answer<Object>, Serializable {
         Class<?> returnType = invocation.getMethod().getReturnType();
         return returnValueFor(returnType);
     }
-    
+
     Object returnValueFor(Class<?> type) {
         if (type == String.class) {
             return "";
-        }  else if (type.isArray()) {
+        } else if (type.isArray()) {
             Class<?> componenetType = type.getComponentType();
             return Array.newInstance(componenetType, 0);
         }

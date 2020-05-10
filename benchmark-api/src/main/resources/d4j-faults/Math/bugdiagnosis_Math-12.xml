@@ -1,42 +1,43 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-12">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/distribution/NormalDistributionTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;10.688186123440644&gt;
-						but was:&lt;13.675503685260901&gt;:-
-						org.apache.commons.math3.distribution.LogNormalDistributionTest::testDistributionClone:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;23.951334711900845&gt;
-						but was:&lt;1.9236285029185378&gt;:-
-						org.apache.commons.math3.distribution.NormalDistributionTest::testDistributionClone:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;3.176024051402272&gt;
-						but was:&lt;0.6542132477988758&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>705</number_tests>
-					<failed>3</failed>
-					<passed>702</passed>
-					<nodes>39026</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math3/random/BitsStreamGenerator.java">
-					<change>29</change>
-					<insert numberlines="1"></insert>
-					<insert numberlines="1"></insert>
-					<bugtypes>
-						<id id="2.1" lines="18,29">
-							<description>Incorrect function interface.</description>
-						</id>
-						<id id="3.1" lines="18,30">
-							<description>Missing initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-12">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/distribution/NormalDistributionTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;10.688186123440644&gt;
+                        but was:&lt;13.675503685260901&gt;:-
+                        org.apache.commons.math3.distribution.LogNormalDistributionTest::testDistributionClone:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;23.951334711900845&gt;
+                        but was:&lt;1.9236285029185378&gt;:-
+                        org.apache.commons.math3.distribution.NormalDistributionTest::testDistributionClone:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;3.176024051402272&gt;
+                        but was:&lt;0.6542132477988758&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>705</number_tests>
+                    <failed>3</failed>
+                    <passed>702</passed>
+                    <nodes>39026</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math3/random/BitsStreamGenerator.java">
+                    <change>29</change>
+                    <insert numberlines="1"></insert>
+                    <insert numberlines="1"></insert>
+                    <bugtypes>
+                        <id id="2.1" lines="18,29">
+                            <description>Incorrect function interface.</description>
+                        </id>
+                        <id id="3.1" lines="18,30">
+                            <description>Missing initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

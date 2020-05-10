@@ -15,9 +15,9 @@
  */
 package org.joda.time.format;
 
-import java.util.Locale;
-
 import org.joda.time.ReadWritablePeriod;
+
+import java.util.Locale;
 
 /**
  * Internal interface for parsing textual representations of time periods.
@@ -32,10 +32,10 @@ import org.joda.time.ReadWritablePeriod;
  *
  * @author Brian S O'Neill
  * @author Stephen Colebourne
- * @since 1.0
  * @see PeriodFormatter
  * @see PeriodFormatterBuilder
  * @see PeriodFormat
+ * @since 1.0
  */
 public interface PeriodParser {
 
@@ -49,10 +49,10 @@ public interface PeriodParser {
      * modified. To determine the position where the parse failed, apply the
      * one's complement operator (~) on the return value.
      *
-     * @param period  a period that will be modified
-     * @param periodStr  text to parse
-     * @param position position to start parsing from
-     * @param locale  the locale to use for parsing
+     * @param period    a period that will be modified
+     * @param periodStr text to parse
+     * @param position  position to start parsing from
+     * @param locale    the locale to use for parsing
      * @return new position, if negative, parse failed. Apply complement
      * operator (~) to get position of failure
      * @throws IllegalArgumentException if any field is out of range

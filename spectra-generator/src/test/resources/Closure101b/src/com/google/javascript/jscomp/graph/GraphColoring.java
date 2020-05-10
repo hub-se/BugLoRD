@@ -42,129 +42,128 @@ import java.util.List;
  *
  * @param <N> Value type that the graph node stores.
  * @param <E> Value type that the graph edge stores.
- *
-*
  */
 public abstract class GraphColoring<N, E> {
-  // Maps a color (represented by an integer) to a variable. If, for example,
-  // the color 5 is mapped to "foo". Then any other variables colored with the
-  // color 5 will now use the name "foo".
-  protected N[] colorToNodeMap;
-  protected final AdjacencyGraph<N, E> graph;
+    // Maps a color (represented by an integer) to a variable. If, for example,
+    // the color 5 is mapped to "foo". Then any other variables colored with the
+    // color 5 will now use the name "foo".
+    protected N[] colorToNodeMap;
+    protected final AdjacencyGraph<N, E> graph;
 
-  public GraphColoring(AdjacencyGraph<N, E> graph) {
-    this.graph = graph;
-  }
-
-  /**
-   * Annotates the graph with {@link Color} objects using
-   * {@link GraphNode#setAnnotation(Annotation)}.
-   *
-   * @return The number of unique colors need.
-   */
-  public abstract int color();
-
-  /**
-   * Using the coloring as partitions, finds the node that represents that
-   * partition as the super node. The first to retrieve its partition will
-   * become the super node.
-   */
-  public N getPartitionSuperNode(N node) {
-    Preconditions.checkNotNull(colorToNodeMap,
-        "No coloring founded. color() should be called first.");
-    Color color = graph.getNode(node).getAnnotation();
-    N headNode = colorToNodeMap[color.value];
-    if (headNode == null) {
-      colorToNodeMap[color.value] = node;
-      return node;
-    } else {
-      return headNode;
-    }
-  }
-
-  public AdjacencyGraph<N, E> getGraph() {
-    return graph;
-  }
-
-  public static class Color implements Annotation {
-    int value = 0;
-
-    Color(int value) {
-      this.value = value;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-      if (!(other instanceof Color)) {
-        return false;
-      } else {
-        return value == ((Color) other).value;
-      }
-    }
-
-    @Override
-    public int hashCode() {
-      return value;
-    }
-  }
-
-  /**
-   * Greedily assign nodes with high degree unique colors.
-   */
-  public static class GreedyGraphColoring<N, E> extends GraphColoring<N, E> {
-
-    private final Comparator<N> tieBreaker;
-    public GreedyGraphColoring(AdjacencyGraph<N, E> graph) {
-      this(graph, null);
+    public GraphColoring(AdjacencyGraph<N, E> graph) {
+        this.graph = graph;
     }
 
     /**
-     * @param tieBreaker In case of a tie between two nodes of the same degree,
-     *     this comparator will determine which node should be colored first.
+     * Annotates the graph with {@link Color} objects using
+     * {@link GraphNode#setAnnotation(Annotation)}.
+     *
+     * @return The number of unique colors need.
      */
-    public GreedyGraphColoring(
-        AdjacencyGraph<N, E> graph, Comparator<N> tieBreaker) {
-      super(graph);
-      this.tieBreaker = tieBreaker;
+    public abstract int color();
+
+    /**
+     * Using the coloring as partitions, finds the node that represents that
+     * partition as the super node. The first to retrieve its partition will
+     * become the super node.
+     */
+    public N getPartitionSuperNode(N node) {
+        Preconditions.checkNotNull(colorToNodeMap,
+                "No coloring founded. color() should be called first.");
+        Color color = graph.getNode(node).getAnnotation();
+        N headNode = colorToNodeMap[color.value];
+        if (headNode == null) {
+            colorToNodeMap[color.value] = node;
+            return node;
+        } else {
+            return headNode;
+        }
     }
 
-    @Override
-    public int color() {
-      graph.clearNodeAnnotations();
-      List<GraphNode<N, E>> worklist = graph.getNodes();
+    public AdjacencyGraph<N, E> getGraph() {
+        return graph;
+    }
 
-      // Sort nodes by degree.
-      Collections.sort(worklist, new Comparator<GraphNode<N, E>>() {
+    public static class Color implements Annotation {
+        int value = 0;
+
+        Color(int value) {
+            this.value = value;
+        }
+
         @Override
-        public int compare(GraphNode<N, E> o1, GraphNode<N, E> o2) {
-          int result = graph.getWeight(o2.getValue())
-              - graph.getWeight(o1.getValue());
-          return result == 0 && tieBreaker != null ?
-              tieBreaker.compare(o1.getValue(), o2.getValue()) : result;
+        public boolean equals(Object other) {
+            if (!(other instanceof Color)) {
+                return false;
+            } else {
+                return value == ((Color) other).value;
+            }
         }
-      });
-      worklist = Lists.newLinkedList(worklist);
 
-      // Idea: From the highest to lowest degree, assign any uncolored node with
-      // a unique color if none of its neighbor has been assigned that color.
-      int count = 0;
-      do {
-        Color color = new Color(count);
-        SubGraph<N, E> subgraph = graph.newSubGraph();
-        for (Iterator<GraphNode<N, E>> i = worklist.iterator(); i.hasNext();) {
-          GraphNode<N, E> node = i.next();
-          if (subgraph.isIndependentOf(node.getValue())) {
-            subgraph.addNode(node.getValue());
-            node.setAnnotation(color);
-            i.remove();
-          }
+        @Override
+        public int hashCode() {
+            return value;
         }
-        count++;
-      } while (!worklist.isEmpty());
-      @SuppressWarnings("unchecked")
-      N[] map = (N[]) new Object[count];
-      colorToNodeMap = map;
-      return count;
     }
-  }
+
+    /**
+     * Greedily assign nodes with high degree unique colors.
+     */
+    public static class GreedyGraphColoring<N, E> extends GraphColoring<N, E> {
+
+        private final Comparator<N> tieBreaker;
+
+        public GreedyGraphColoring(AdjacencyGraph<N, E> graph) {
+            this(graph, null);
+        }
+
+        /**
+         * @param tieBreaker In case of a tie between two nodes of the same degree,
+         *                   this comparator will determine which node should be colored first.
+         */
+        public GreedyGraphColoring(
+                AdjacencyGraph<N, E> graph, Comparator<N> tieBreaker) {
+            super(graph);
+            this.tieBreaker = tieBreaker;
+        }
+
+        @Override
+        public int color() {
+            graph.clearNodeAnnotations();
+            List<GraphNode<N, E>> worklist = graph.getNodes();
+
+            // Sort nodes by degree.
+            Collections.sort(worklist, new Comparator<GraphNode<N, E>>() {
+                @Override
+                public int compare(GraphNode<N, E> o1, GraphNode<N, E> o2) {
+                    int result = graph.getWeight(o2.getValue())
+                            - graph.getWeight(o1.getValue());
+                    return result == 0 && tieBreaker != null ?
+                            tieBreaker.compare(o1.getValue(), o2.getValue()) : result;
+                }
+            });
+            worklist = Lists.newLinkedList(worklist);
+
+            // Idea: From the highest to lowest degree, assign any uncolored node with
+            // a unique color if none of its neighbor has been assigned that color.
+            int count = 0;
+            do {
+                Color color = new Color(count);
+                SubGraph<N, E> subgraph = graph.newSubGraph();
+                for (Iterator<GraphNode<N, E>> i = worklist.iterator(); i.hasNext(); ) {
+                    GraphNode<N, E> node = i.next();
+                    if (subgraph.isIndependentOf(node.getValue())) {
+                        subgraph.addNode(node.getValue());
+                        node.setAnnotation(color);
+                        i.remove();
+                    }
+                }
+                count++;
+            } while (!worklist.isEmpty());
+            @SuppressWarnings("unchecked")
+            N[] map = (N[]) new Object[count];
+            colorToNodeMap = map;
+            return count;
+        }
+    }
 }

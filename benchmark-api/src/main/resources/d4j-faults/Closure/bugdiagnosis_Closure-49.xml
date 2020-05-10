@@ -1,59 +1,59 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-49">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/FunctionInjectorTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.FunctionInjectorTest::testInlineIntoLoop:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.FunctionInjectorTest::testInline13:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.FunctionInjectorTest::testInline14:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.FunctionInjectorTest::testInline15:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.FunctionInjectorTest::testInline16:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.FunctionInjectorTest::testInline17:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.FunctionInjectorTest::testInline18:--&gt;
-						junit.framework.AssertionFailedError
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1841</number_tests>
-					<failed>66</failed>
-					<passed>1775</passed>
-					<nodes>48341</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/MakeDeclaredNamesUnique.java">
-					<delete>91-98</delete>
-					<insert numberlines="11">117:139-140:150</insert>
-					<insert numberlines="1">172-175</insert>
-					<insert numberlines="2">158:170-171:176-181:185</insert>
-					<bugtypes>
-						<id id="1.2" lines="91-98">
-							<description>Unnecessary case.</description>
-						</id>
-						<id id="1.2" lines="129">
-							<description>Missing break.</description>
-						</id>
-						<id id="1.1" lines="130,132,134">
-							<description>Missing case.</description>
-						</id>
-						<id id="1.2" lines="172">
-							<description>Incorrect case.</description>
-						</id>
-						<id id="1.1" lines="176,179">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>8</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-49">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/FunctionInjectorTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.FunctionInjectorTest::testInlineIntoLoop:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.FunctionInjectorTest::testInline13:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.FunctionInjectorTest::testInline14:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.FunctionInjectorTest::testInline15:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.FunctionInjectorTest::testInline16:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.FunctionInjectorTest::testInline17:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.FunctionInjectorTest::testInline18:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1841</number_tests>
+                    <failed>66</failed>
+                    <passed>1775</passed>
+                    <nodes>48341</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/MakeDeclaredNamesUnique.java">
+                    <delete>91-98</delete>
+                    <insert numberlines="11">117:139-140:150</insert>
+                    <insert numberlines="1">172-175</insert>
+                    <insert numberlines="2">158:170-171:176-181:185</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="91-98">
+                            <description>Unnecessary case.</description>
+                        </id>
+                        <id id="1.2" lines="129">
+                            <description>Missing break.</description>
+                        </id>
+                        <id id="1.1" lines="130,132,134">
+                            <description>Missing case.</description>
+                        </id>
+                        <id id="1.2" lines="172">
+                            <description>Incorrect case.</description>
+                        </id>
+                        <id id="1.1" lines="176,179">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>8</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -1,32 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-20">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/optimization/direct/CMAESOptimizerTest">
-					<exception>junit.framework.AssertionFailedError:Out of bounds
-						(0.7651312169618905 &gt; 0.5)</exception>
-				</testfile>
-				<spectra>
-					<number_tests>24</number_tests>
-					<failed>1</failed>
-					<passed>23</passed>
-					<nodes>34094</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/optimization/direct/CMAESOptimizer.java">
-					<change parent="921-922">921</change>
-					<bugtypes>
-						<id id="2.2" lines="921">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-20">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/optimization/direct/CMAESOptimizerTest">
+                    <exception>junit.framework.AssertionFailedError:Out of bounds
+                        (0.7651312169618905 &gt; 0.5)
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>24</number_tests>
+                    <failed>1</failed>
+                    <passed>23</passed>
+                    <nodes>34094</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/optimization/direct/CMAESOptimizer.java">
+                    <change parent="921-922">921</change>
+                    <bugtypes>
+                        <id id="2.2" lines="921">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

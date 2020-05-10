@@ -24,12 +24,12 @@ import java.lang.reflect.InvocationTargetException;
  * <ul>
  *   <li>
  *      Initializes mocks annotated with {@link Mock},
- *      so that explicit usage of {@link MockitoAnnotations#initMocks(Object)} is not necessary. 
+ *      so that explicit usage of {@link MockitoAnnotations#initMocks(Object)} is not necessary.
  *      Mocks are initialized before each test method.
  *   <li>
  *      validates framework usage after each test method. See javadoc for {@link Mockito#validateMockitoUsage()}.
  * </ul>
- * 
+ * <p>
  * Runner is completely optional - there are other ways you can get &#064;Mock working, for example by writing a base class.
  * Explicitly validating framework usage is also optional because it is triggered automatically by Mockito every time you use the framework.
  * See javadoc for {@link Mockito#validateMockitoUsage()}.
@@ -38,10 +38,10 @@ import java.lang.reflect.InvocationTargetException;
  * <pre>
  * <b>&#064;RunWith(MockitoJUnit44Runner.class)</b>
  * public class ExampleTest {
- * 
+ *
  *     &#064;Mock
  *     private List list;
- * 
+ *
  *     &#064;Test
  *     public void shouldDoSomething() {
  *         list.add(100);
@@ -58,7 +58,7 @@ public class MockitoJUnitRunner extends Runner implements Filterable {
     }
 
     @Override
-    public void run(final RunNotifier notifier) {           
+    public void run(final RunNotifier notifier) {
         runner.run(notifier);
     }
 
@@ -67,8 +67,8 @@ public class MockitoJUnitRunner extends Runner implements Filterable {
         return runner.getDescription();
     }
 
-	public void filter(Filter filter) throws NoTestsRemainException {
+    public void filter(Filter filter) throws NoTestsRemainException {
         //filter is required because without it UnrootedTests show up in Eclipse
-		runner.filter(filter);
-	}
+        runner.filter(filter);
+    }
 }

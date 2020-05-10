@@ -15,13 +15,13 @@
  */
 package org.joda.time;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
  * This class is a Junit unit test for Months.
@@ -96,7 +96,7 @@ public class TestMonths extends TestCase {
         DateTime start = new DateTime(2006, 6, 9, 12, 0, 0, 0, PARIS);
         DateTime end1 = new DateTime(2006, 9, 9, 12, 0, 0, 0, PARIS);
         DateTime end2 = new DateTime(2006, 12, 9, 12, 0, 0, 0, PARIS);
-        
+
         assertEquals(3, Months.monthsBetween(start, end1).getMonths());
         assertEquals(0, Months.monthsBetween(start, start).getMonths());
         assertEquals(0, Months.monthsBetween(end1, end1).getMonths());
@@ -110,7 +110,7 @@ public class TestMonths extends TestCase {
         LocalDate start = new LocalDate(2006, 6, 9);
         LocalDate end1 = new LocalDate(2006, 9, 9);
         YearMonthDay end2 = new YearMonthDay(2006, 12, 9);
-        
+
         assertEquals(3, Months.monthsBetween(start, end1).getMonths());
         assertEquals(0, Months.monthsBetween(start, start).getMonths());
         assertEquals(0, Months.monthsBetween(end1, end1).getMonths());
@@ -133,11 +133,11 @@ public class TestMonths extends TestCase {
         MonthDay end1 = new MonthDay(2, 28);
         MonthDay end2 = new MonthDay(2, 29);
         MonthDay end3 = new MonthDay(3, 1);
-        
+
         assertEquals(0, Months.monthsBetween(start, end1).getMonths());
         assertEquals(0, Months.monthsBetween(start, end2).getMonths());
         assertEquals(1, Months.monthsBetween(start, end3).getMonths());
-        
+
         assertEquals(0, Months.monthsBetween(end1, start).getMonths());
         assertEquals(0, Months.monthsBetween(end2, start).getMonths());
         assertEquals(-1, Months.monthsBetween(end3, start).getMonths());
@@ -148,7 +148,7 @@ public class TestMonths extends TestCase {
         DateTime start = new DateTime(2006, 6, 9, 12, 0, 0, 0, PARIS);
         DateTime end1 = new DateTime(2006, 9, 9, 12, 0, 0, 0, PARIS);
         DateTime end2 = new DateTime(2006, 12, 9, 12, 0, 0, 0, PARIS);
-        
+
         assertEquals(0, Months.monthsIn((ReadableInterval) null).getMonths());
         assertEquals(3, Months.monthsIn(new Interval(start, end1)).getMonths());
         assertEquals(0, Months.monthsIn(new Interval(start, start)).getMonths());
@@ -214,7 +214,7 @@ public class TestMonths extends TestCase {
     public void testToString() {
         Months test = Months.months(20);
         assertEquals("P20M", test.toString());
-        
+
         test = Months.months(-20);
         assertEquals("P-20M", test.toString());
     }
@@ -222,18 +222,18 @@ public class TestMonths extends TestCase {
     //-----------------------------------------------------------------------
     public void testSerialization() throws Exception {
         Months test = Months.THREE;
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(test);
         byte[] bytes = baos.toByteArray();
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);
         Months result = (Months) ois.readObject();
         ois.close();
-        
+
         assertSame(test, result);
     }
 
@@ -243,9 +243,9 @@ public class TestMonths extends TestCase {
         Months result = test2.plus(3);
         assertEquals(2, test2.getMonths());
         assertEquals(5, result.getMonths());
-        
+
         assertEquals(1, Months.ONE.plus(0).getMonths());
-        
+
         try {
             Months.MAX_VALUE.plus(1);
             fail();
@@ -261,10 +261,10 @@ public class TestMonths extends TestCase {
         assertEquals(2, test2.getMonths());
         assertEquals(3, test3.getMonths());
         assertEquals(5, result.getMonths());
-        
+
         assertEquals(1, Months.ONE.plus(Months.ZERO).getMonths());
         assertEquals(1, Months.ONE.plus((Months) null).getMonths());
-        
+
         try {
             Months.MAX_VALUE.plus(Months.ONE);
             fail();
@@ -278,9 +278,9 @@ public class TestMonths extends TestCase {
         Months result = test2.minus(3);
         assertEquals(2, test2.getMonths());
         assertEquals(-1, result.getMonths());
-        
+
         assertEquals(1, Months.ONE.minus(0).getMonths());
-        
+
         try {
             Months.MIN_VALUE.minus(1);
             fail();
@@ -296,10 +296,10 @@ public class TestMonths extends TestCase {
         assertEquals(2, test2.getMonths());
         assertEquals(3, test3.getMonths());
         assertEquals(-1, result.getMonths());
-        
+
         assertEquals(1, Months.ONE.minus(Months.ZERO).getMonths());
         assertEquals(1, Months.ONE.minus((Months) null).getMonths());
-        
+
         try {
             Months.MIN_VALUE.minus(Months.ONE);
             fail();
@@ -314,7 +314,7 @@ public class TestMonths extends TestCase {
         assertEquals(2, test.getMonths());
         assertEquals(-6, test.multipliedBy(-3).getMonths());
         assertSame(test, test.multipliedBy(1));
-        
+
         Months halfMax = Months.months(Integer.MAX_VALUE / 2 + 1);
         try {
             halfMax.multipliedBy(2);
@@ -333,7 +333,7 @@ public class TestMonths extends TestCase {
         assertEquals(2, test.dividedBy(5).getMonths());
         assertEquals(2, test.dividedBy(6).getMonths());
         assertSame(test, test.dividedBy(1));
-        
+
         try {
             Months.ONE.dividedBy(0);
             fail();
@@ -346,7 +346,7 @@ public class TestMonths extends TestCase {
         Months test = Months.months(12);
         assertEquals(-12, test.negated().getMonths());
         assertEquals(12, test.getMonths());
-        
+
         try {
             Months.MIN_VALUE.negated();
             fail();

@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-15">
-			<tests>
-				<testfile path="org/joda/time/field/TestFieldUtils">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>3640</number_tests>
-					<failed>1</failed>
-					<passed>3639</passed>
-					<nodes>13281</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/field/FieldUtils.java">
-					<insert numberlines="3">138</insert>
-					<bugtypes>
-						<id id="1.1" lines="137">
-							<description>Missing check for equality of values.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-15">
+            <tests>
+                <testfile path="org/joda/time/field/TestFieldUtils">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>3640</number_tests>
+                    <failed>1</failed>
+                    <passed>3639</passed>
+                    <nodes>13281</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/field/FieldUtils.java">
+                    <insert numberlines="3">138</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="137">
+                            <description>Missing check for equality of values.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

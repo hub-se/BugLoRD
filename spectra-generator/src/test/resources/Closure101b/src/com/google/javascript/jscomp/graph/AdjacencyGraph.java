@@ -24,35 +24,39 @@ import java.util.List;
  *
  * <p>For a more extensive interface, see {@link Graph}.
  *
-*
- *
  * @param <N> Value type that the graph node stores.
  * @param <E> Value type that the graph edge stores.
  * @see Graph
  */
 public interface AdjacencyGraph<N, E> {
-  /** Gets a mutable list of all nodes. */
-  List<GraphNode<N, E>> getNodes();
+    /**
+     * Gets a mutable list of all nodes.
+     */
+    List<GraphNode<N, E>> getNodes();
 
-  /**
-   * Gets a node from the graph given a value. Values equality are compared
-   * using <code>Object.equals</code>.
-   *
-   * @param value The node's value.
-   * @return The corresponding node in the graph, null if there value has no
-   *         corresponding node.
-   */
-  GraphNode<N, E> getNode(N value);
+    /**
+     * Gets a node from the graph given a value. Values equality are compared
+     * using <code>Object.equals</code>.
+     *
+     * @param value The node's value.
+     * @return The corresponding node in the graph, null if there value has no
+     * corresponding node.
+     */
+    GraphNode<N, E> getNode(N value);
 
-  /** Returns an empty SubGraph for this Graph. */
-  SubGraph<N, E> newSubGraph();
+    /**
+     * Returns an empty SubGraph for this Graph.
+     */
+    SubGraph<N, E> newSubGraph();
 
-  /** Makes each node's annotation null. */
-  void clearNodeAnnotations();
+    /**
+     * Makes each node's annotation null.
+     */
+    void clearNodeAnnotations();
 
-  /**
-   * Returns a weight for the given value to be used in ordering nodes, e.g.
-   * in {@link GraphColoring}.
-   */
-  int getWeight(N value);
+    /**
+     * Returns a weight for the given value to be used in ordering nodes, e.g.
+     * in {@link GraphColoring}.
+     */
+    int getWeight(N value);
 }

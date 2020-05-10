@@ -22,45 +22,45 @@ import java.util.Map;
  * Compilation results
  */
 public class Result {
-  public final boolean success;
-  public final JSError[] errors;
-  public final JSError[] warnings;
-  public final String debugLog;
-  public final VariableMap variableMap;
-  public final VariableMap propertyMap;
-  public final VariableMap namedAnonFunctionMap;
-  public final FunctionInformationMap functionInformationMap;
-  public final SourceMap sourceMap;
-  public final Map<String, Integer> cssNames;
-  public final String externExport;
+    public final boolean success;
+    public final JSError[] errors;
+    public final JSError[] warnings;
+    public final String debugLog;
+    public final VariableMap variableMap;
+    public final VariableMap propertyMap;
+    public final VariableMap namedAnonFunctionMap;
+    public final FunctionInformationMap functionInformationMap;
+    public final SourceMap sourceMap;
+    public final Map<String, Integer> cssNames;
+    public final String externExport;
 
-  Result(JSError[] errors, JSError[] warnings, String debugLog,
-         VariableMap variableMap, VariableMap propertyMap,
-         VariableMap namedAnonFunctionMap,
-         FunctionInformationMap functionInformationMap,
-         SourceMap sourceMap,  String externExport,
-         Map<String, Integer> cssNames) {
-    this.success = errors.length == 0;
-    this.errors = errors;
-    this.warnings = warnings;
-    this.debugLog = debugLog;
-    this.variableMap = variableMap;
-    this.propertyMap = propertyMap;
-    this.namedAnonFunctionMap = namedAnonFunctionMap;
-    this.functionInformationMap = functionInformationMap;
-    this.sourceMap = sourceMap;
-    this.externExport = externExport;
-    this.cssNames = cssNames;
-  }
+    Result(JSError[] errors, JSError[] warnings, String debugLog,
+           VariableMap variableMap, VariableMap propertyMap,
+           VariableMap namedAnonFunctionMap,
+           FunctionInformationMap functionInformationMap,
+           SourceMap sourceMap, String externExport,
+           Map<String, Integer> cssNames) {
+        this.success = errors.length == 0;
+        this.errors = errors;
+        this.warnings = warnings;
+        this.debugLog = debugLog;
+        this.variableMap = variableMap;
+        this.propertyMap = propertyMap;
+        this.namedAnonFunctionMap = namedAnonFunctionMap;
+        this.functionInformationMap = functionInformationMap;
+        this.sourceMap = sourceMap;
+        this.externExport = externExport;
+        this.cssNames = cssNames;
+    }
 
-  // Visible for testing only.
-  public Result(JSError[] errors, JSError[] warnings, String debugLog,
-                VariableMap variableMap, VariableMap propertyMap,
-                VariableMap namedAnonFunctionMap,
-                FunctionInformationMap functionInformationMap,
-                SourceMap sourceMap, String externExport) {
-    this(errors, warnings, debugLog, variableMap, propertyMap,
-         namedAnonFunctionMap, functionInformationMap, sourceMap,
-         externExport, null);
-  }
+    // Visible for testing only.
+    public Result(JSError[] errors, JSError[] warnings, String debugLog,
+                  VariableMap variableMap, VariableMap propertyMap,
+                  VariableMap namedAnonFunctionMap,
+                  FunctionInformationMap functionInformationMap,
+                  SourceMap sourceMap, String externExport) {
+        this(errors, warnings, debugLog, variableMap, propertyMap,
+                namedAnonFunctionMap, functionInformationMap, sourceMap,
+                externExport, null);
+    }
 }

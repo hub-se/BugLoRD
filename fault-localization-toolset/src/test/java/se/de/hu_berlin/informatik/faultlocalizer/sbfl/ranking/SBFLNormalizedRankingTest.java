@@ -9,16 +9,13 @@
 
 package se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking;
 
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.SBFLNormalizedRanking;
-import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
-import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
-import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
+import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
+import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 
 
 public class SBFLNormalizedRankingTest {

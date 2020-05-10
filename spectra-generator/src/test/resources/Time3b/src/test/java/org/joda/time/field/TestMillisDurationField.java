@@ -15,17 +15,16 @@
  */
 package org.joda.time.field;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.DurationField;
+import org.joda.time.DurationFieldType;
+import org.joda.time.chrono.ISOChronology;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.DurationField;
-import org.joda.time.DurationFieldType;
-import org.joda.time.chrono.ISOChronology;
 
 /**
  * This class is a Junit unit test for PeriodFormatterBuilder.
@@ -60,7 +59,7 @@ public class TestMillisDurationField extends TestCase {
     public void test_getName() {
         assertEquals("millis", MillisDurationField.INSTANCE.getName());
     }
-    
+
     public void test_isSupported() {
         assertEquals(true, MillisDurationField.INSTANCE.isSupported());
     }
@@ -76,7 +75,7 @@ public class TestMillisDurationField extends TestCase {
     public void test_toString() {
         assertEquals("DurationField[millis]", MillisDurationField.INSTANCE.toString());
     }
-    
+
     //-----------------------------------------------------------------------
     public void test_getValue_long() {
         assertEquals(0, MillisDurationField.INSTANCE.getValue(0L));
@@ -85,7 +84,8 @@ public class TestMillisDurationField extends TestCase {
         try {
             MillisDurationField.INSTANCE.getValue(((long) (Integer.MAX_VALUE)) + 1L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     public void test_getValueAsLong_long() {
@@ -102,7 +102,8 @@ public class TestMillisDurationField extends TestCase {
         try {
             MillisDurationField.INSTANCE.getValue(((long) (Integer.MAX_VALUE)) + 1L, 567L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     public void test_getValueAsLong_long_long() {
@@ -145,7 +146,8 @@ public class TestMillisDurationField extends TestCase {
         try {
             MillisDurationField.INSTANCE.add(Long.MAX_VALUE, 1);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     public void test_add_long_long() {
@@ -155,7 +157,8 @@ public class TestMillisDurationField extends TestCase {
         try {
             MillisDurationField.INSTANCE.add(Long.MAX_VALUE, 1L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -166,7 +169,8 @@ public class TestMillisDurationField extends TestCase {
         try {
             MillisDurationField.INSTANCE.getDifference(Long.MAX_VALUE, 1L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     public void test_getDifferenceAsLong_long_long() {
@@ -176,7 +180,8 @@ public class TestMillisDurationField extends TestCase {
         try {
             MillisDurationField.INSTANCE.getDifferenceAsLong(Long.MAX_VALUE, -1L);
             fail();
-        } catch (ArithmeticException ex) {}
+        } catch (ArithmeticException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -192,24 +197,25 @@ public class TestMillisDurationField extends TestCase {
         try {
             MillisDurationField.INSTANCE.compareTo(null);
             fail();
-        } catch (NullPointerException ex) {}
+        } catch (NullPointerException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
     public void testSerialization() throws Exception {
         DurationField test = MillisDurationField.INSTANCE;
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(test);
         byte[] bytes = baos.toByteArray();
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);
         DurationField result = (DurationField) ois.readObject();
         ois.close();
-        
+
         assertSame(test, result);
     }
 

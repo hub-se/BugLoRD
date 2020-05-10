@@ -25,7 +25,7 @@ import org.joda.time.chrono.BaseChronology;
  * @author Stephen Colebourne
  */
 class MockBadChronology extends BaseChronology {
-    
+
     MockBadChronology() {
         super();
     }
@@ -33,15 +33,17 @@ class MockBadChronology extends BaseChronology {
     public Chronology withZone(DateTimeZone zone) {
         return null;
     }
-    
+
     public DateTimeZone getZone() {
         return null;
     }
+
     public Chronology withUTC() {
         return null;
     }
+
     public String toString() {
         return null;
     }
-    
+
 }

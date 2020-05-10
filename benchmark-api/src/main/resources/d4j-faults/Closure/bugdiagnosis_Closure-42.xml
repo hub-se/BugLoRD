@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-42">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/parsing/ParserTest">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>6285</number_tests>
-					<failed>1</failed>
-					<passed>6284</passed>
-					<nodes>44667</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/parsing/IRFactory.java">
-					<insert numberlines="7">568-570</insert>
-					<bugtypes>
-						<id id="1.1" lines="567,569">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-42">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/parsing/ParserTest">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>6285</number_tests>
+                    <failed>1</failed>
+                    <passed>6284</passed>
+                    <nodes>44667</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/parsing/IRFactory.java">
+                    <insert numberlines="7">568-570</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="567,569">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

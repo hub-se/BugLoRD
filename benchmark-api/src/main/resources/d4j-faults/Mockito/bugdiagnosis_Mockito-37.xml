@@ -1,35 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-37">
-			<tests>
-				<testfile path="org/mockitousage/spies/SpyingOnInterfacesTest">
-					<exception>junit.framework.AssertionFailedError:-
-						org.mockitousage.spies.SpyingOnInterfacesTest::shouldFailFastWhenCallingRealMethodOnInterface:--&gt;
-						junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>303</number_tests>
-					<failed>2</failed>
-					<passed>301</passed>
-					<nodes>2494</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/internal/stubbing/answers/AnswersValidator.java">
-					<insert numberlines="3">27-28</insert>
-					<insert numberlines="5"></insert>
-					<bugtypes>
-						<id id="1.1" lines="27">
-							<description>Missing case for validating methods.</description>
-						</id>
-						<id id="1.4" lines="29">
-							<description>Missing function for validation.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-37">
+            <tests>
+                <testfile path="org/mockitousage/spies/SpyingOnInterfacesTest">
+                    <exception>junit.framework.AssertionFailedError:-
+                        org.mockitousage.spies.SpyingOnInterfacesTest::shouldFailFastWhenCallingRealMethodOnInterface:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>303</number_tests>
+                    <failed>2</failed>
+                    <passed>301</passed>
+                    <nodes>2494</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/internal/stubbing/answers/AnswersValidator.java">
+                    <insert numberlines="3">27-28</insert>
+                    <insert numberlines="5"></insert>
+                    <bugtypes>
+                        <id id="1.1" lines="27">
+                            <description>Missing case for validating methods.</description>
+                        </id>
+                        <id id="1.4" lines="29">
+                            <description>Missing function for validation.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

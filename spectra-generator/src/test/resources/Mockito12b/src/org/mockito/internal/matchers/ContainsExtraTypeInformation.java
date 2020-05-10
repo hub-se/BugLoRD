@@ -4,9 +4,9 @@
  */
 package org.mockito.internal.matchers;
 
-import java.io.Serializable;
-
 import org.hamcrest.SelfDescribing;
+
+import java.io.Serializable;
 
 public interface ContainsExtraTypeInformation extends Serializable {
     SelfDescribing withExtraTypeInfo();

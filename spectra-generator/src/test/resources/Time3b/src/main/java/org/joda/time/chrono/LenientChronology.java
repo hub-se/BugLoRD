@@ -26,13 +26,15 @@ import org.joda.time.field.LenientDateTimeField;
  * LenientChronology is thread-safe and immutable.
  *
  * @author Brian S O'Neill
- * @since 1.0
  * @see LenientDateTimeField
  * @see StrictChronology
+ * @since 1.0
  */
 public final class LenientChronology extends AssembledChronology {
 
-    /** Serialization lock */
+    /**
+     * Serialization lock
+     */
     private static final long serialVersionUID = -3148237568046877177L;
 
     /**
@@ -115,11 +117,12 @@ public final class LenientChronology extends AssembledChronology {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * A lenient chronology is only equal to a lenient chronology with the
      * same base chronology.
-     * 
-     * @param obj  the object to compare to
+     *
+     * @param obj the object to compare to
      * @return true if equal
      * @since 1.4
      */
@@ -136,7 +139,7 @@ public final class LenientChronology extends AssembledChronology {
 
     /**
      * A suitable hashcode for the chronology.
-     * 
+     *
      * @return the hashcode
      * @since 1.4
      */
@@ -146,7 +149,7 @@ public final class LenientChronology extends AssembledChronology {
 
     /**
      * A debugging string for the chronology.
-     * 
+     *
      * @return the debugging string
      */
     public String toString() {

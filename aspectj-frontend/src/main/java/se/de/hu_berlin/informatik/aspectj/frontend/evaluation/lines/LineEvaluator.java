@@ -9,20 +9,10 @@
 
 package se.de.hu_berlin.informatik.aspectj.frontend.evaluation.lines;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
-
 import se.de.hu_berlin.informatik.aspectj.frontend.evaluation.IBugsHierarchical;
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.machinelearn.WekaFaultLocalizer;
-import se.de.hu_berlin.informatik.spectra.core.AbstractSpectra;
-import se.de.hu_berlin.informatik.spectra.core.INode;
-import se.de.hu_berlin.informatik.spectra.core.ISpectra;
-import se.de.hu_berlin.informatik.spectra.core.ITrace;
-import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.*;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
@@ -32,14 +22,24 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.RankingMetric;
 import se.de.hu_berlin.informatik.utils.files.csv.CSVUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
+
 /**
  * Evaluates the ranking of given traces by modifying single line involvements.
  */
 public final class LineEvaluator {
 
-    /** Result writer */
+    /**
+     * Result writer
+     */
     private static FileWriter writer;
-    /** Performance benchmarking */
+    /**
+     * Performance benchmarking
+     */
     private static final Map<String, Long> benchmarks = new HashMap<>();
 
     /**
@@ -50,12 +50,11 @@ public final class LineEvaluator {
 
     /**
      * Performance benchmark method.
-     *
+     * <p>
      * Call once with an ID to track begin and call it again with the same ID to stop the benchmark. Method will print
      * both invocations to the console.
      *
-     * @param id
-     *            benchmark identifier
+     * @param id benchmark identifier
      */
     public static void perf(final String id) {
         if (!benchmarks.containsKey(id)) {
@@ -72,10 +71,8 @@ public final class LineEvaluator {
     /**
      * Runs experiment
      *
-     * @param args
-     *            CLI args - dont use
-     * @throws Exception
-     *             in case the experiment fails
+     * @param args CLI args - dont use
+     * @throws Exception in case the experiment fails
      */
     public static void main(final String[] args) throws Exception {
 
@@ -83,16 +80,16 @@ public final class LineEvaluator {
         final int bugId = 36430;
         final String pathToTraceFolder = "traces";
         final String pathToResultFolder = "experiments";
-        final int[] lineIFs = { 1, 3, 5, 10, 25 };
-        final int[] lineISs = { 1, 3, 5, 10, 25 };
+        final int[] lineIFs = {1, 3, 5, 10, 25};
+        final int[] lineISs = {1, 3, 5, 10, 25};
         final int maxSuccessfulTraces = 25;
         final int maxFailingTraces = 25;
         final IFaultLocalizer<SourceCodeBlock> localizer = new WekaFaultLocalizer<>(IBugsHierarchical.NaiveBayes);
 
         // initialization
         writer = new FileWriter(pathToResultFolder + "/result-" + bugId + ".csv");
-        writer.write(CSVUtils.toCsvLine(new String[] { "BugID", "line", "IF", "IS", "NF", "NS", "BestRanking",
-                "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness", })
+        writer.write(CSVUtils.toCsvLine(new String[]{"BugID", "line", "IF", "IS", "NF", "NS", "BestRanking",
+                "WorstRanking", "MinWastedEffort", "MaxWastedEffort", "Suspiciousness",})
                 + "\n");
 
         final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> provider = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);
@@ -104,28 +101,27 @@ public final class LineEvaluator {
                 success = true;
             }
             if (!provider.addData(path, null, success)) {
-            	throw new IllegalStateException("Adding coverage trace failed.");
+                throw new IllegalStateException("Adding coverage trace failed.");
             }
             added++;
         }
 
         final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> original = provider.loadSpectra();
         if (!(original instanceof HitSpectra)) {
-        	Log.abort(LineEvaluator.class, "Loaded spectra is not of correct type...");
+            Log.abort(LineEvaluator.class, "Loaded spectra is not of correct type...");
         }
         Log.out(LineEvaluator.class, "Spectra loaded");
         int line = 0;
         for (final INode<SourceCodeBlock> node : original.getNodes()) {
             if (line % 100 == 0) {
-            	Log.out(LineEvaluator.class, String.format("Progress: line %d of %d", line, original.getNodes().size()));
+                Log.out(LineEvaluator.class, String.format("Progress: line %d of %d", line, original.getNodes().size()));
             }
             line++;
 
             final SourceCodeBlock identifier = node.getIdentifier();
             // create a clone
             perf("clone");
-            @SuppressWarnings({"unchecked", "ConstantConditions"})
-			final AbstractSpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> spectra = ((HitSpectra<SourceCodeBlock>) original).clone();
+            @SuppressWarnings({"unchecked", "ConstantConditions"}) final AbstractSpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> spectra = ((HitSpectra<SourceCodeBlock>) original).clone();
             perf("clone");
 
             // set node involvement to none
@@ -176,13 +172,13 @@ public final class LineEvaluator {
 
 
     private static void writeLine(final int bugId, final int line, final int lineIF, final int lineIS,
-            final int lineNF, final int lineNS, final int bestRanking, final int worstRanking,
-            final double minWastedEffort, final double maxWastedEffort, final double suspiciousness) throws IOException {
+                                  final int lineNF, final int lineNS, final int bestRanking, final int worstRanking,
+                                  final double minWastedEffort, final double maxWastedEffort, final double suspiciousness) throws IOException {
         assert writer != null;
-        final String csv = CSVUtils.toCsvLine(new String[] { Integer.toString(bugId), Integer.toString(line),
+        final String csv = CSVUtils.toCsvLine(new String[]{Integer.toString(bugId), Integer.toString(line),
                 Integer.toString(lineIF), Integer.toString(lineIS), Integer.toString(lineNF), Integer.toString(lineNS),
                 Integer.toString(bestRanking), Integer.toString(worstRanking), Double.toString(minWastedEffort),
-                Double.toString(maxWastedEffort), Double.toString(suspiciousness), });
+                Double.toString(maxWastedEffort), Double.toString(suspiciousness),});
         writer.write(csv + "\n");
         writer.flush();
     }

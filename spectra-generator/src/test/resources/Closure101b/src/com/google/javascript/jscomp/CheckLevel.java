@@ -20,14 +20,13 @@ package com.google.javascript.jscomp;
  * forward, this should be used instead of booleans, so teams and
  * individuals can control which checks are off, which produce only warnings,
  * and which produce errors, without everyone having to agree.
-*
  */
 public enum CheckLevel {
-  ERROR,
-  WARNING,
-  OFF;
+    ERROR,
+    WARNING,
+    OFF;
 
-  boolean isOn() {
-    return this != OFF;
-  }
+    boolean isOn() {
+        return this != OFF;
+    }
 }

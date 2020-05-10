@@ -18,6 +18,7 @@ public class VerificationDataImplTest extends TestBase {
         try {
             new VerificationDataImpl(null, toString);
             fail();
-        } catch (MockitoException e) {}
+        } catch (MockitoException e) {
+        }
     }
 }

@@ -24,107 +24,104 @@ import java.util.Comparator;
 
 /**
  * Records information about functions and modules.
- *
-*
-*
  */
 class RecordFunctionInformation extends AbstractPostOrderCallback
-    implements CompilerPass {
-  private final Compiler compiler;
-  private final FunctionNames functionNames;
+        implements CompilerPass {
+    private final Compiler compiler;
+    private final FunctionNames functionNames;
 
-  /**
-   * Protocol buffer builder.
-   */
-  private final FunctionInformationMap.Builder mapBuilder;
+    /**
+     * Protocol buffer builder.
+     */
+    private final FunctionInformationMap.Builder mapBuilder;
 
-  /**
-   * Creates a record function information compiler pass.
-   *
-   * @param compiler       The JSCompiler
-   * @param functionNames  Assigned function identifiers.
-   */
-  RecordFunctionInformation(Compiler compiler,
-      FunctionNames functionNames) {
-    this.compiler = compiler;
-    this.functionNames = functionNames;
-    this.mapBuilder = FunctionInformationMap.newBuilder();
-  }
+    /**
+     * Creates a record function information compiler pass.
+     *
+     * @param compiler      The JSCompiler
+     * @param functionNames Assigned function identifiers.
+     */
+    RecordFunctionInformation(Compiler compiler,
+                              FunctionNames functionNames) {
+        this.compiler = compiler;
+        this.functionNames = functionNames;
+        this.mapBuilder = FunctionInformationMap.newBuilder();
+    }
 
-  /**
-   * Returns the built-out map.
-   */
-  FunctionInformationMap getMap() {
-    return mapBuilder.build();
-  }
+    /**
+     * Returns the built-out map.
+     */
+    FunctionInformationMap getMap() {
+        return mapBuilder.build();
+    }
 
-  @Override
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, root, this);
+    @Override
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, root, this);
 
-    JSModuleGraph graph = compiler.getModuleGraph();
-    if (graph == null) {
-      addModuleInformation(null);
-    } else {
-      // The test expects a consistent module order.
-      for (JSModule m : Sets.newTreeSet(new Comparator<JSModule>() {
-            public int compare(JSModule o1, JSModule o2) {
-              return o1.getName().compareTo(o2.getName());
+        JSModuleGraph graph = compiler.getModuleGraph();
+        if (graph == null) {
+            addModuleInformation(null);
+        } else {
+            // The test expects a consistent module order.
+            for (JSModule m : Sets.newTreeSet(new Comparator<JSModule>() {
+                public int compare(JSModule o1, JSModule o2) {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            }, graph.getAllModules())) {
+                addModuleInformation(m);
             }
-          }, graph.getAllModules())) {
-        addModuleInformation(m);
-      }
-    }
-  }
-
-  @Override
-  public void visit(NodeTraversal t, Node n, Node parent) {
-    if (n.getType() != Token.FUNCTION) {
-      return;
+        }
     }
 
-    int id = functionNames.getFunctionId(n);
-    if (id < 0) {
-      // Function node was added during compilation; don't instrument.
-      return;
+    @Override
+    public void visit(NodeTraversal t, Node n, Node parent) {
+        if (n.getType() != Token.FUNCTION) {
+            return;
+        }
+
+        int id = functionNames.getFunctionId(n);
+        if (id < 0) {
+            // Function node was added during compilation; don't instrument.
+            return;
+        }
+
+        String compiledSource = compiler.toSource(n);
+        JSModule module = t.getModule();
+        mapBuilder.addEntry(FunctionInformationMap.Entry.newBuilder()
+                .setId(id)
+                .setSourceName(t.getSourceName())
+                .setLineNumber(n.getLineno())
+                .setModuleName(module == null ? "" : module.getName())
+                .setSize(compiledSource.length())
+                .setName(functionNames.getFunctionName(n))
+                .setCompiledSource(compiledSource).build());
     }
 
-    String compiledSource = compiler.toSource(n);
-    JSModule module = t.getModule();
-    mapBuilder.addEntry(FunctionInformationMap.Entry.newBuilder()
-      .setId(id)
-      .setSourceName(t.getSourceName())
-      .setLineNumber(n.getLineno())
-      .setModuleName(module == null ? "" : module.getName())
-      .setSize(compiledSource.length())
-      .setName(functionNames.getFunctionName(n))
-      .setCompiledSource(compiledSource).build());
-  }
+    /**
+     * Record a module's compiled source.  The view of the source we get
+     * from function sources alone is not complete; it doesn't contain
+     * assignments and function calls in the global scope which are
+     * crucial to understanding how the application works.
+     * <p>
+     * This version of the source is also written out to js_output_file,
+     * module_output_path_prefix or other places.  Duplicating it here
+     * simplifies the process of writing tools that combine and present
+     * module and function for debugging purposes.
+     */
+    private void addModuleInformation(JSModule module) {
+        String name;
+        String source;
+        if (module != null) {
+            name = module.getName();
+            source = compiler.toSource(module);
+        } else {
+            name = "";
+            source = compiler.toSource();
+        }
 
-  /**
-   * Record a module's compiled source.  The view of the source we get
-   * from function sources alone is not complete; it doesn't contain
-   * assignments and function calls in the global scope which are
-   * crucial to understanding how the application works.
-   *
-   * This version of the source is also written out to js_output_file,
-   * module_output_path_prefix or other places.  Duplicating it here
-   * simplifies the process of writing tools that combine and present
-   * module and function for debugging purposes.
-   */
-  private void addModuleInformation(JSModule module) {
-    String name;
-    String source;
-    if (module != null) {
-      name = module.getName();
-      source = compiler.toSource(module);
-    } else {
-      name = "";
-      source = compiler.toSource();
+        mapBuilder.addModule(FunctionInformationMap.Module.newBuilder()
+                .setName(name)
+                .setCompiledSource(source).build());
     }
-
-    mapBuilder.addModule(FunctionInformationMap.Module.newBuilder()
-        .setName(name)
-        .setCompiledSource(source).build());
-  }
 }

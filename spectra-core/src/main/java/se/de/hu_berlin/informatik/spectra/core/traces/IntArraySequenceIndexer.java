@@ -4,28 +4,28 @@ import java.util.Iterator;
 
 public interface IntArraySequenceIndexer {
 
-	public IntGSArrayTreeNode[][] getSequences();
-	
+    public IntGSArrayTreeNode[][] getSequences();
+
 //	public Map<GSTreeNode,Integer> getEndNodeToSequenceIdMap();
-	
-	public int getSequenceIdForEndNode(IntGSArrayTreeNode endNode);
-	
+
+    public int getSequenceIdForEndNode(IntGSArrayTreeNode endNode);
+
 //	public int[] getSequenceForEndNode(GSTreeNode endNode);
 
-	int[] getSequence(int index);
+    int[] getSequence(int index);
 
-	Iterator<Integer> getSequenceIterator(int index);
+    Iterator<Integer> getSequenceIterator(int index);
 
-	int[][] getMappedSequences();
+    int[][] getMappedSequences();
 
-	public void removeFromSequences(int element);
-	
-	public void reset();
-	
-	public boolean isIndexed();
+    public void removeFromSequences(int element);
 
-	public void generateSequenceIndex();
+    public void reset();
 
-	public int getSequenceLength(int index);
-	
+    public boolean isIndexed();
+
+    public void generateSequenceIndex();
+
+    public int getSequenceLength(int index);
+
 }

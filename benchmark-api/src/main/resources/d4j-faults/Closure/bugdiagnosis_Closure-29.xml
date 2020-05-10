@@ -1,43 +1,43 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-29">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/IntegrationTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.InlineObjectLiteralsTest::testObject12:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.InlineObjectLiteralsTest::testObject22:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.InlineObjectLiteralsTest::testIssue724:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.IntegrationTest::testIssue724:--&gt;
-						junit.framework.AssertionFailedError:
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>291</number_tests>
-					<failed>5</failed>
-					<passed>286</passed>
-					<nodes>45971</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/InlineObjectLiterals.java">
-					<insert numberlines="1">156-157</insert>
-					<insert numberlines="8">172-181</insert>
-					<insert numberlines="1">215-217</insert>
-					<bugtypes>
-						<id id="1.1" lines="156,180">
-							<description>Missing case.</description>
-						</id>
-						<id id="3.1" lines="156,215">
-							<description>Missing initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-29">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/IntegrationTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.InlineObjectLiteralsTest::testObject12:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.InlineObjectLiteralsTest::testObject22:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.InlineObjectLiteralsTest::testIssue724:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.IntegrationTest::testIssue724:--&gt;
+                        junit.framework.AssertionFailedError:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>291</number_tests>
+                    <failed>5</failed>
+                    <passed>286</passed>
+                    <nodes>45971</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/InlineObjectLiterals.java">
+                    <insert numberlines="1">156-157</insert>
+                    <insert numberlines="8">172-181</insert>
+                    <insert numberlines="1">215-217</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="156,180">
+                            <description>Missing case.</description>
+                        </id>
+                        <id id="3.1" lines="156,215">
+                            <description>Missing initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

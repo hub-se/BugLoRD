@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-5">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/InlineObjectLiteralsTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>314</number_tests>
-					<failed>1</failed>
-					<passed>313</passed>
-					<nodes>47081</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/InlineObjectLiterals.java">
-					<insert numberlines="3">173-185</insert>
-					<bugtypes>
-						<id id="1.1" lines="175">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-5">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/InlineObjectLiteralsTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>314</number_tests>
+                    <failed>1</failed>
+                    <passed>313</passed>
+                    <nodes>47081</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/InlineObjectLiterals.java">
+                    <insert numberlines="3">173-185</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="175">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

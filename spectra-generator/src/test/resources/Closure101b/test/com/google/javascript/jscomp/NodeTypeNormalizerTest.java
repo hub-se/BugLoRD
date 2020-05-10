@@ -22,35 +22,36 @@ import com.google.javascript.rhino.Token;
 
 /**
  * Tests for NodeTypeNormalizer.
+ *
  * @author nicksantos@google.com (Nick Santos)
  */
 public class NodeTypeNormalizerTest extends CompilerTestCase {
 
-  public NodeTypeNormalizerTest() {
-    super.enableLineNumberCheck(true);
-  }
+    public NodeTypeNormalizerTest() {
+        super.enableLineNumberCheck(true);
+    }
 
-  @Override
-  public CompilerPass getProcessor(Compiler compiler) {
-    return null; // unused
-  }
+    @Override
+    public CompilerPass getProcessor(Compiler compiler) {
+        return null; // unused
+    }
 
-  public void testJsDocNormalization() throws Exception {
-    Node root = parseExpectedJs(
-        "var x = {/** @return {number} */ a: function() {}," +
-        "         c: /** @type {string} */ ('d')};");
-    Node objlit = root.getFirstChild().getFirstChild().getFirstChild()
-        .getFirstChild();
-    assertEquals(Token.OBJECTLIT, objlit.getType());
+    public void testJsDocNormalization() throws Exception {
+        Node root = parseExpectedJs(
+                "var x = {/** @return {number} */ a: function() {}," +
+                        "         c: /** @type {string} */ ('d')};");
+        Node objlit = root.getFirstChild().getFirstChild().getFirstChild()
+                .getFirstChild();
+        assertEquals(Token.OBJECTLIT, objlit.getType());
 
-    Node firstKey = objlit.getFirstChild();
-    Node firstVal = firstKey.getNext();
+        Node firstKey = objlit.getFirstChild();
+        Node firstVal = firstKey.getNext();
 
-    Node secondKey = firstVal.getNext();
-    Node secondVal = secondKey.getNext();
-    assertNotNull(firstKey.getJSDocInfo());
-    assertNotNull(firstVal.getJSDocInfo());
-    assertNull(secondKey.getJSDocInfo());
-    assertNotNull(secondVal.getJSDocInfo());
-  }
+        Node secondKey = firstVal.getNext();
+        Node secondVal = secondKey.getNext();
+        assertNotNull(firstKey.getJSDocInfo());
+        assertNotNull(firstVal.getJSDocInfo());
+        assertNull(secondKey.getJSDocInfo());
+        assertNotNull(secondVal.getJSDocInfo());
+    }
 }

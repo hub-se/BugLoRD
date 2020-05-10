@@ -39,15 +39,15 @@ public class TestBase extends Assert {
     public void init() {
         MockitoAnnotations.initMocks(this);
     }
-    
+
     public static void makeStackTracesClean() {
         ConfigurationAccess.getConfig().overrideCleansStackTrace(true);
     }
-    
+
     public void resetState() {
         new StateMaster().reset();
     }
-    
+
     protected Invocation getLastInvocation() {
         return new MockitoCore().getLastInvocation();
     }
@@ -56,48 +56,48 @@ public class TestBase extends Assert {
     protected static <T> void assertThat(T o, Assertor<T> a) {
         a.assertValue(o);
     }
-    
+
     protected static <T> void assertThat(T actual, Matcher<T> m) {
         org.junit.Assert.assertThat(actual, m);
     }
-    
+
     protected static <T> void assertThat(String message, T actual, Matcher<T> m) {
         org.junit.Assert.assertThat(message, actual, m);
     }
-    
+
     public static <T> Assertor<String> endsWith(final String substring) {
         return new Assertor<String>() {
             public void assertValue(String value) {
-                assertTrue("This substring: \n" + substring + 
-                        "\nshould be at the end of:\n" + value
+                assertTrue("This substring: \n" + substring +
+                                "\nshould be at the end of:\n" + value
                         , value.endsWith(substring));
             }
         };
     }
-    
+
     public static void assertNotEquals(Object expected, Object got) {
         assertFalse(expected.equals(got));
     }
 
     public static void assertContains(String sub, String string) {
         assertTrue("\n" +
-                "This substing:[" +
-                sub +
-                "]\n" +
-                "should be inside of:[" +
-                string +
-                "]\n"
+                        "This substing:[" +
+                        sub +
+                        "]\n" +
+                        "should be inside of:[" +
+                        string +
+                        "]\n"
                 , string.contains(sub));
     }
 
     public static void assertContainsIgnoringCase(String sub, String string) {
         assertTrue("\n" +
-                "This substing:" +
-                sub +
-                "\n" +
-                "should be inside of:" +
-                string +
-                "\n"
+                        "This substing:" +
+                        sub +
+                        "\n" +
+                        "should be inside of:" +
+                        string +
+                        "\n"
                 , containsIgnoringCase(string, sub));
     }
 
@@ -107,8 +107,8 @@ public class TestBase extends Assert {
             return false;
         }
         int i = 0;
-        while(i+subLength <= string.length()) {
-            boolean temp = string.substring(i, i+subLength).equalsIgnoreCase(sub);
+        while (i + subLength <= string.length()) {
+            boolean temp = string.substring(i, i + subLength).equalsIgnoreCase(sub);
             if (temp) {
                 return true;
             }
@@ -119,16 +119,16 @@ public class TestBase extends Assert {
 
     public static void assertNotContains(String sub, String string) {
         assertFalse("\n" +
-                "This substing:" +
-                sub +
-                "\n" +
-                "should NOT be inside of:" +
-                string +
-                "\n"
+                        "This substing:" +
+                        sub +
+                        "\n" +
+                        "should NOT be inside of:" +
+                        string +
+                        "\n"
                 , string.contains(sub));
     }
-    
-    protected static Invocation invocationOf(Class<?> type, String methodName, Object ... args) throws NoSuchMethodException {
+
+    protected static Invocation invocationOf(Class<?> type, String methodName, Object... args) throws NoSuchMethodException {
         Class[] types = new Class[args.length];
         for (int i = 0; i < args.length; i++) {
             types[i] = args[i].getClass();

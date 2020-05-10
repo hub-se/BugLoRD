@@ -25,111 +25,110 @@ import com.google.javascript.rhino.Token;
  * to a number of invariants. Because this can add a lot of overhead,
  * we only run this in development mode.
  *
-*
  * @author nicksantos@google.com (Nick Santos)
  */
 class SanityCheck implements CompilerPass {
 
-  static final DiagnosticType CANNOT_PARSE_GENERATED_CODE =
-      DiagnosticType.error("JSC_CANNOT_PARSE_GENERATED_CODE",
-          "Internal compiler error. Cannot parse generated code: {0}");
+    static final DiagnosticType CANNOT_PARSE_GENERATED_CODE =
+            DiagnosticType.error("JSC_CANNOT_PARSE_GENERATED_CODE",
+                    "Internal compiler error. Cannot parse generated code: {0}");
 
-  static final DiagnosticType GENERATED_BAD_CODE = DiagnosticType.error(
-      "JSC_GENERATED_BAD_CODE",
-      "Internal compiler error. Generated bad code." +
-      "----------------------------------------\n" +
-      "Expected:\n{0}\n" +
-      "----------------------------------------\n" +
-      "Actual\n{1}");
+    static final DiagnosticType GENERATED_BAD_CODE = DiagnosticType.error(
+            "JSC_GENERATED_BAD_CODE",
+            "Internal compiler error. Generated bad code." +
+                    "----------------------------------------\n" +
+                    "Expected:\n{0}\n" +
+                    "----------------------------------------\n" +
+                    "Actual\n{1}");
 
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  SanityCheck(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  public void process(Node externs, Node root) {
-    sanityCheckNormalization(externs, root);
-    Node reparsedRoot = sanityCheckCodeGeneration(root);
-    if (reparsedRoot != null) {
-      Node clonedExterns = externs.cloneTree();
-      sanityCheckSymbolTable(
-          new Node(Token.BLOCK,
-              clonedExterns,
-              new Node(Token.BLOCK, reparsedRoot)),
-          root.getParent());
-    }
-  }
-
-  /**
-   * Sanity checks that symbol table is up-to-date.
-   */
-  private void sanityCheckSymbolTable(Node reparsedRoot, Node originalRoot) {
-    SymbolTable table = compiler.acquireSymbolTable();
-    table.verify(reparsedRoot, originalRoot);
-    table.release();
-  }
-
-  /**
-   * Sanity checks code generation by performing it once, parsing the result,
-   * then generating code from the second parse tree to verify that it matches
-   * the code generated from the first parse tree.
-   *
-   * @return The regenerated parse tree. Null on error.
-   */
-  private Node sanityCheckCodeGeneration(Node root) {
-    if (compiler.hasHaltingErrors()) {
-      // Don't even bother checking code generation if we already know the
-      // the code is bad.
-      return null;
+    SanityCheck(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
 
-    String source = compiler.toSource(root);
-    Node root2 = compiler.parseSyntheticCode(source);
-    if (compiler.hasHaltingErrors()) {
-      compiler.report(JSError.make(CANNOT_PARSE_GENERATED_CODE,
-              Strings.truncateAtMaxLength(source, 100, true)));
-      return null;
+    public void process(Node externs, Node root) {
+        sanityCheckNormalization(externs, root);
+        Node reparsedRoot = sanityCheckCodeGeneration(root);
+        if (reparsedRoot != null) {
+            Node clonedExterns = externs.cloneTree();
+            sanityCheckSymbolTable(
+                    new Node(Token.BLOCK,
+                            clonedExterns,
+                            new Node(Token.BLOCK, reparsedRoot)),
+                    root.getParent());
+        }
     }
 
-    String source2 = compiler.toSource(root2);
-    if (!source.equals(source2)) {
-      compiler.report(JSError.make(GENERATED_BAD_CODE,
-              Strings.truncateAtMaxLength(source, 100, true),
-              Strings.truncateAtMaxLength(source2, 100, true)));
+    /**
+     * Sanity checks that symbol table is up-to-date.
+     */
+    private void sanityCheckSymbolTable(Node reparsedRoot, Node originalRoot) {
+        SymbolTable table = compiler.acquireSymbolTable();
+        table.verify(reparsedRoot, originalRoot);
+        table.release();
     }
 
-    return root2;
-  }
+    /**
+     * Sanity checks code generation by performing it once, parsing the result,
+     * then generating code from the second parse tree to verify that it matches
+     * the code generated from the first parse tree.
+     *
+     * @return The regenerated parse tree. Null on error.
+     */
+    private Node sanityCheckCodeGeneration(Node root) {
+        if (compiler.hasHaltingErrors()) {
+            // Don't even bother checking code generation if we already know the
+            // the code is bad.
+            return null;
+        }
 
-  /**
-   * Sanity checks the AST. This is by verifing the normalization passes do
-   * nothing.
-   */
-  private void sanityCheckNormalization(Node externs, Node root) {
-    // Verify nothing has inappropriately denormalize the AST.
-    CodeChangeHandler.RecentChange handler =
-        new CodeChangeHandler.RecentChange();
-    compiler.addChangeHandler(handler);
+        String source = compiler.toSource(root);
+        Node root2 = compiler.parseSyntheticCode(source);
+        if (compiler.hasHaltingErrors()) {
+            compiler.report(JSError.make(CANNOT_PARSE_GENERATED_CODE,
+                    Strings.truncateAtMaxLength(source, 100, true)));
+            return null;
+        }
 
-    // TODO(johnlenz): Change these normalization checks Preconditions and
-    // Exceptions into Errors so that it is easier to find the root cause
-    // when there are cascading issues.
-    new PrepareAst(compiler, true).process(null, root);
-    Preconditions.checkState(!handler.hasCodeChanged(),
-        "This should never fire, NodeTypeNormalizer should assert first.");
+        String source2 = compiler.toSource(root2);
+        if (!source.equals(source2)) {
+            compiler.report(JSError.make(GENERATED_BAD_CODE,
+                    Strings.truncateAtMaxLength(source, 100, true),
+                    Strings.truncateAtMaxLength(source2, 100, true)));
+        }
 
-    if (compiler.isNormalized()) {
-      (new Normalize(compiler, true)).process(externs, root);
-      Preconditions.checkState(!handler.hasCodeChanged(),
-          "This should never fire, Normalize should assert first.");
-
-      boolean checkUserDeclarations = true;
-      CompilerPass pass = new Normalize.VerifyConstants(
-          compiler, checkUserDeclarations);
-      pass.process(externs, root);
+        return root2;
     }
 
-    compiler.removeChangeHandler(handler);
-  }
+    /**
+     * Sanity checks the AST. This is by verifing the normalization passes do
+     * nothing.
+     */
+    private void sanityCheckNormalization(Node externs, Node root) {
+        // Verify nothing has inappropriately denormalize the AST.
+        CodeChangeHandler.RecentChange handler =
+                new CodeChangeHandler.RecentChange();
+        compiler.addChangeHandler(handler);
+
+        // TODO(johnlenz): Change these normalization checks Preconditions and
+        // Exceptions into Errors so that it is easier to find the root cause
+        // when there are cascading issues.
+        new PrepareAst(compiler, true).process(null, root);
+        Preconditions.checkState(!handler.hasCodeChanged(),
+                "This should never fire, NodeTypeNormalizer should assert first.");
+
+        if (compiler.isNormalized()) {
+            (new Normalize(compiler, true)).process(externs, root);
+            Preconditions.checkState(!handler.hasCodeChanged(),
+                    "This should never fire, Normalize should assert first.");
+
+            boolean checkUserDeclarations = true;
+            CompilerPass pass = new Normalize.VerifyConstants(
+                    compiler, checkUserDeclarations);
+            pass.process(externs, root);
+        }
+
+        compiler.removeChangeHandler(handler);
+    }
 }

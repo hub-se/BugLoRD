@@ -7,7 +7,6 @@ package org.mockito.exceptions.base;
 import org.mockito.internal.exceptions.base.ConditionalStackTraceFilter;
 
 
-
 public class MockitoAssertionError extends AssertionError {
 
     private static final long serialVersionUID = 1L;
@@ -17,7 +16,7 @@ public class MockitoAssertionError extends AssertionError {
         super(message);
 
         unfilteredStackTrace = getStackTrace();
-        
+
         ConditionalStackTraceFilter filter = new ConditionalStackTraceFilter();
         filter.filter(this);
     }

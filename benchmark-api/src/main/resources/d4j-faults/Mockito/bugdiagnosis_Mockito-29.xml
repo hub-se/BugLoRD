@@ -1,31 +1,32 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-29">
-			<tests>
-				<testfile path="org/mockitousage/bugs/NPEWithCertainMatchersTest">
-					<exception>java.lang.Exception:Unexpected exception,
-						expected&lt;java.lang.AssertionError&gt; but
-						was&lt;java.lang.NullPointerException&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>58</number_tests>
-					<failed>1</failed>
-					<passed>57</passed>
-					<nodes>3104</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/internal/matchers/Same.java">
-					<change>29</change>
-					<bugtypes>
-						<id id="1.1" lines="29">
-							<description>Missing null value check.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-29">
+            <tests>
+                <testfile path="org/mockitousage/bugs/NPEWithCertainMatchersTest">
+                    <exception>java.lang.Exception:Unexpected exception,
+                        expected&lt;java.lang.AssertionError&gt; but
+                        was&lt;java.lang.NullPointerException&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>58</number_tests>
+                    <failed>1</failed>
+                    <passed>57</passed>
+                    <nodes>3104</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/internal/matchers/Same.java">
+                    <change>29</change>
+                    <bugtypes>
+                        <id id="1.1" lines="29">
+                            <description>Missing null value check.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

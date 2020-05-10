@@ -20,79 +20,77 @@ import java.util.List;
 
 /**
  * A generic directed graph.
- * 
-*
  *
  * @param <N> Value type that the graph node stores.
  * @param <E> Value type that the graph edge stores.
  */
 public abstract class DiGraph<N, E> extends Graph<N, E> {
 
-  public abstract List<DiGraphNode<N, E>> getDirectedGraphNodes();
+    public abstract List<DiGraphNode<N, E>> getDirectedGraphNodes();
 
-  public abstract List<DiGraphEdge<N, E>> getOutEdges(N nodeValue);
+    public abstract List<DiGraphEdge<N, E>> getOutEdges(N nodeValue);
 
-  public abstract List<DiGraphEdge<N, E>> getInEdges(N nodeValue);
+    public abstract List<DiGraphEdge<N, E>> getInEdges(N nodeValue);
 
-  public abstract List<DiGraphNode<N, E>> getDirectedPredNodes(
-      DiGraphNode<N, E> n);
+    public abstract List<DiGraphNode<N, E>> getDirectedPredNodes(
+            DiGraphNode<N, E> n);
 
-  public abstract List<DiGraphNode<N, E>> getDirectedSuccNodes(
-      DiGraphNode<N, E> n);
+    public abstract List<DiGraphNode<N, E>> getDirectedSuccNodes(
+            DiGraphNode<N, E> n);
 
-  public abstract List<DiGraphNode<N, E>>
-      getDirectedPredNodes(N nodeValue);
+    public abstract List<DiGraphNode<N, E>>
+    getDirectedPredNodes(N nodeValue);
 
-  public abstract List<DiGraphNode<N, E>>
-      getDirectedSuccNodes(N nodeValue);
+    public abstract List<DiGraphNode<N, E>>
+    getDirectedSuccNodes(N nodeValue);
 
-  public abstract DiGraphNode<N, E> createDirectedGraphNode(N nodeValue);
+    public abstract DiGraphNode<N, E> createDirectedGraphNode(N nodeValue);
 
-  public abstract DiGraphNode<N, E> getDirectedGraphNode(N nodeValue);
+    public abstract DiGraphNode<N, E> getDirectedGraphNode(N nodeValue);
 
-  public abstract List<DiGraphEdge<N, E>>
-      getDirectedGraphEdges(N n1, N n2);
+    public abstract List<DiGraphEdge<N, E>>
+    getDirectedGraphEdges(N n1, N n2);
 
-  /**
-   * Disconnects all edges from n1 to n2.
-   *
-   * @param n1 Source node.
-   * @param n2 Destination node.
-   */
-  public abstract void disconnectInDirection(N n1, N n2);
-  
-  public abstract boolean isConnectedInDirection(N n1, N n2);
-  
+    /**
+     * Disconnects all edges from n1 to n2.
+     *
+     * @param n1 Source node.
+     * @param n2 Destination node.
+     */
+    public abstract void disconnectInDirection(N n1, N n2);
 
-  /**
-   * A generic directed graph node.
-   *
-   * @param <N> Value type that the graph node stores.
-   * @param <E> Value type that the graph edge stores.
-   */
-  public static interface DiGraphNode<N, E> extends GraphNode<N, E> {
+    public abstract boolean isConnectedInDirection(N n1, N n2);
 
-    public List<DiGraphEdge<N, E>> getOutEdges();
 
-    public List<DiGraphEdge<N, E>> getInEdges();
-  }
+    /**
+     * A generic directed graph node.
+     *
+     * @param <N> Value type that the graph node stores.
+     * @param <E> Value type that the graph edge stores.
+     */
+    public static interface DiGraphNode<N, E> extends GraphNode<N, E> {
 
-  /**
-   * A generic directed graph edge.
-   *
-   * @param <N> Value type that the graph node stores.
-   * @param <E> Value type that the graph edge stores.
-   */
-  public static interface DiGraphEdge<N, E> extends GraphEdge<N, E> {
+        public List<DiGraphEdge<N, E>> getOutEdges();
 
-    public DiGraphNode<N, E> getSource();
+        public List<DiGraphEdge<N, E>> getInEdges();
+    }
 
-    public DiGraphNode<N, E> getDestination();
+    /**
+     * A generic directed graph edge.
+     *
+     * @param <N> Value type that the graph node stores.
+     * @param <E> Value type that the graph edge stores.
+     */
+    public static interface DiGraphEdge<N, E> extends GraphEdge<N, E> {
 
-    public void setSource(DiGraphNode<N, E> node);
+        public DiGraphNode<N, E> getSource();
 
-    public void setDestination(DiGraphNode<N, E> node);
-  }
+        public DiGraphNode<N, E> getDestination();
+
+        public void setSource(DiGraphNode<N, E> node);
+
+        public void setDestination(DiGraphNode<N, E> node);
+    }
 }
 
 

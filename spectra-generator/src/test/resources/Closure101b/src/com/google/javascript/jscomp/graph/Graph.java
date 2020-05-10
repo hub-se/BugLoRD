@@ -19,11 +19,7 @@ package com.google.javascript.jscomp.graph;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * The base generic class for graph-like data structure and algorithms in
@@ -50,284 +46,288 @@ import java.util.List;
  * <p>
  * TODO(user): All functionality for removing nodes and edges.
  *
-*
- *
  * @param <N> Value type that the graph node stores.
  * @param <E> Value type that the graph edge stores.
  */
 public abstract class Graph<N, E> implements AdjacencyGraph<N, E> {
-  /**
-   * Pseudo typedef for a pair of annotations. Record of an object's
-   * annotation at some state.
-   */
-  private static final class AnnotationState {
-    private final Annotatable first;
-    private final Annotation second;
-
-    public AnnotationState(Annotatable annotatable, Annotation annotation) {
-      this.first = annotatable;
-      this.second = annotation;
-    }
-  }
-
-  /**
-   * Pseudo typedef for ArrayList<AnnotationState>. Record of a collection of
-   * objects' annotations at some state.
-   */
-  private static class GraphAnnotationState extends ArrayList<AnnotationState> {
-    private static final long serialVersionUID = 1L;
-
-    public GraphAnnotationState(int size) {
-      super(size);
-    }
-  }
-
-  /**
-   * Used by {@link #pushNodeAnnotations()} and {@link #popNodeAnnotations()}.
-   */
-  private Deque<GraphAnnotationState> nodeAnnotationStack;
-
-  /**
-   * Used by {@link #pushEdgeAnnotations()} and {@link #popEdgeAnnotations()}.
-   */
-  private Deque<GraphAnnotationState> edgeAnnotationStack;
-
-  /**
-   * Connects two nodes in the graph with an edge.
-   *
-   * @param n1 First node.
-   * @param edge The edge.
-   * @param n2 Second node.
-   * @return The newly created graph edge.
-   */
-  public abstract GraphEdge<N, E> connect(N n1, E edge, N n2);
-
-  /**
-   * Disconnects two nodes in the graph by removing all edges between them.
-   *
-   * @param n1 First node.
-   * @param n2 Second node.
-   */
-  public abstract void disconnect(N n1, N n2);
-
-  /**
-   * Connects two nodes in the graph with an edge if such edge does not already
-   * exists between the nodes.
-   *
-   * @param n1 First node.
-   * @param edge The edge.
-   * @param n2 Second node.
-   */
-  public final void connectIfNotFound(N n1, E edge, N n2) {
-    GraphNode<N, E> node1 = getNode(n1);
-    GraphNode<N, E> node2 = getNode(n2);
-    if (node1 == null) {
-      throw new IllegalArgumentException(n1 + " does not exist in graph");
-    }
-    if (node2 == null) {
-      throw new IllegalArgumentException(n2 + " does not exist in graph");
-    }
-    List<GraphEdge<N, E>> edgeList = getEdges(n1, n2);
-    for (GraphEdge<N, E> e : edgeList) {
-      // Check == first to short circuit nulls.
-      if (e.getValue() == edge || e.getValue().equals(edge)) {
-        return;
-      }
-    }
-    connect(n1, edge, n2);
-  }
-
-  /**
-   * Gets a node from the graph given a value. New nodes are created if that
-   * value has not been assigned a graph node. Values equality are compared
-   * using <code>Object.equals</code>.
-   *
-   * @param value The node's value.
-   * @return The corresponding node in the graph.
-   */
-  public abstract GraphNode<N, E> createNode(N value);
-
-  /** Gets a mutable list of all nodes. */
-  public abstract List<GraphNode<N, E>> getNodes();
-
-  /** Gets a mutable list of all edges. */
-  public abstract List<GraphEdge<N, E>> getEdges();
-
-  /**
-   * Gets the degree of a node.
-   *
-   * @param value The node's value.
-   * @return The degree of the node.
-   */
-  public abstract int getNodeDegree(N value);
-
-  public int getWeight(N value) {
-    return getNodeDegree(value);
-  }
-
-  /**
-   * Gets the neighboring nodes.
-   *
-   * @param value The node's value.
-   * @return A list of neighboring nodes.
-   */
-  public abstract List<GraphNode<N, E>> getNeighborNodes(N value);
-
-  public abstract Iterator<GraphNode<N, E>> getNeighborNodesIterator(N value);
-
-  /**
-   * Retrieves an edge from the graph.
-   *
-   * @param n1 Node one.
-   * @param n2 Node two.
-   * @return The list of edges between those two values in the graph.
-   */
-  public abstract List<GraphEdge<N, E>> getEdges(N n1, N n2);
-
-  /**
-   * Checks whether the node exists in the graph ({@link #createNode(Object)}
-   * has been called with that value).
-   *
-   * @param n Node.
-   * @return <code>true</code> if it exist.
-   */
-  public final boolean hasNode(N n) {
-    return getNode(n) != null;
-  }
-
-  /**
-   * Checks whether two nodes in the graph are connected.
-   *
-   * @param n1 Node 1.
-   * @param n2 Node 2.
-   * @return <code>true</code> if the two nodes are connected.
-   */
-  public abstract boolean isConnected(N n1, N n2);
-
-  public final void clearNodeAnnotations() {
-    for (GraphNode<N, E> n : getNodes()) {
-      n.setAnnotation(null);
-    }
-  }
-
-  /** Makes each edge's annotation null. */
-  public final void clearEdgeAnnotations() {
-    for (GraphEdge<N, E> e : getEdges()) {
-      e.setAnnotation(null);
-    }
-  }
-
-  /**
-   * Pushes nodes' annotation values. Restored with
-   * {@link #popNodeAnnotations()}. Nodes' annotation values are cleared.
-   */
-  public final void pushNodeAnnotations() {
-    if (nodeAnnotationStack == null) {
-      nodeAnnotationStack = Lists.newLinkedList();
-    }
-    pushAnnotations(nodeAnnotationStack, getNodes());
-  }
-
-  /**
-   * Restores nodes' annotation values to state before last
-   * {@link #pushNodeAnnotations()}.
-   */
-  public final void popNodeAnnotations() {
-    Preconditions.checkNotNull(nodeAnnotationStack,
-        "Popping node annotations without pushing.");
-    popAnnotations(nodeAnnotationStack);
-  }
-
-  /**
-   * Pushes edges' annotation values. Restored with
-   * {@link #popEdgeAnnotations()}. Edges' annotation values are cleared.
-   */
-  public final void pushEdgeAnnotations() {
-    if (edgeAnnotationStack == null) {
-      edgeAnnotationStack = Lists.newLinkedList();
-    }
-    pushAnnotations(edgeAnnotationStack, getEdges());
-  }
-
-  /**
-   * Restores edges' annotation values to state before last
-   * {@link #pushEdgeAnnotations()}.
-   */
-  public final void popEdgeAnnotations() {
-    Preconditions.checkNotNull(edgeAnnotationStack,
-        "Popping edge annotations without pushing.");
-    popAnnotations(edgeAnnotationStack);
-  }
-
-  /**
-   * A generic edge.
-   *
-   * @param <N> Value type that the graph node stores.
-   * @param <E> Value type that the graph edge stores.
-   */
-  public interface GraphEdge<N, E> extends Annotatable {
     /**
-     * Retrieves the edge's value.
-     *
-     * @return The value.
+     * Pseudo typedef for a pair of annotations. Record of an object's
+     * annotation at some state.
      */
-    E getValue();
+    private static final class AnnotationState {
+        private final Annotatable first;
+        private final Annotation second;
 
-    GraphNode<N, E> getNodeA();
-
-    GraphNode<N, E> getNodeB();
-  }
-
-  /**
-   * A simple implementation of SubGraph that calculates adjacency by iterating
-   * over a node's neighbors.
-   */
-  class SimpleSubGraph<N, E> implements SubGraph<N, E> {
-    private Graph<N, E> graph;
-    private List<GraphNode<N, E>> nodes = Lists.newArrayList();
-
-    SimpleSubGraph(Graph<N, E> graph) {
-      this.graph = graph;
-    }
-
-    public boolean isIndependentOf(N value) {
-      GraphNode<N, E> node = graph.getNode(value);
-      for (GraphNode<N, E> n : nodes) {
-        if (graph.getNeighborNodes(n.getValue()).contains(node)) {
-          return false;
+        public AnnotationState(Annotatable annotatable, Annotation annotation) {
+            this.first = annotatable;
+            this.second = annotation;
         }
-      }
-      return true;
     }
 
-    public void addNode(N value) {
-      if (!graph.hasNode(value)) {
-        throw new IllegalArgumentException(value + " does not exist in graph");
-      }
-      nodes.add(graph.getNode(value));
-    }
-  }
+    /**
+     * Pseudo typedef for ArrayList<AnnotationState>. Record of a collection of
+     * objects' annotations at some state.
+     */
+    private static class GraphAnnotationState extends ArrayList<AnnotationState> {
+        private static final long serialVersionUID = 1L;
 
-  /**
-   * Pushes a new list on stack and stores nodes annotations in the new list.
-   * Clears objects' annotations as well.
-   */
-  private static void pushAnnotations(
-      Deque<GraphAnnotationState> stack,
-      Collection<? extends Annotatable> haveAnnotations) {
-    stack.push(new GraphAnnotationState(haveAnnotations.size()));
-    for (Annotatable h : haveAnnotations) {
-      stack.peek().add(new AnnotationState(h, h.getAnnotation()));
-      h.setAnnotation(null);
+        public GraphAnnotationState(int size) {
+            super(size);
+        }
     }
-  }
 
-  /**
-   * Restores the node annotations on the top of stack and pops stack.
-   */
-  private static void popAnnotations(Deque<GraphAnnotationState> stack) {
-    for (AnnotationState as : stack.pop()) {
-      as.first.setAnnotation(as.second);
+    /**
+     * Used by {@link #pushNodeAnnotations()} and {@link #popNodeAnnotations()}.
+     */
+    private Deque<GraphAnnotationState> nodeAnnotationStack;
+
+    /**
+     * Used by {@link #pushEdgeAnnotations()} and {@link #popEdgeAnnotations()}.
+     */
+    private Deque<GraphAnnotationState> edgeAnnotationStack;
+
+    /**
+     * Connects two nodes in the graph with an edge.
+     *
+     * @param n1   First node.
+     * @param edge The edge.
+     * @param n2   Second node.
+     * @return The newly created graph edge.
+     */
+    public abstract GraphEdge<N, E> connect(N n1, E edge, N n2);
+
+    /**
+     * Disconnects two nodes in the graph by removing all edges between them.
+     *
+     * @param n1 First node.
+     * @param n2 Second node.
+     */
+    public abstract void disconnect(N n1, N n2);
+
+    /**
+     * Connects two nodes in the graph with an edge if such edge does not already
+     * exists between the nodes.
+     *
+     * @param n1   First node.
+     * @param edge The edge.
+     * @param n2   Second node.
+     */
+    public final void connectIfNotFound(N n1, E edge, N n2) {
+        GraphNode<N, E> node1 = getNode(n1);
+        GraphNode<N, E> node2 = getNode(n2);
+        if (node1 == null) {
+            throw new IllegalArgumentException(n1 + " does not exist in graph");
+        }
+        if (node2 == null) {
+            throw new IllegalArgumentException(n2 + " does not exist in graph");
+        }
+        List<GraphEdge<N, E>> edgeList = getEdges(n1, n2);
+        for (GraphEdge<N, E> e : edgeList) {
+            // Check == first to short circuit nulls.
+            if (e.getValue() == edge || e.getValue().equals(edge)) {
+                return;
+            }
+        }
+        connect(n1, edge, n2);
     }
-  }
+
+    /**
+     * Gets a node from the graph given a value. New nodes are created if that
+     * value has not been assigned a graph node. Values equality are compared
+     * using <code>Object.equals</code>.
+     *
+     * @param value The node's value.
+     * @return The corresponding node in the graph.
+     */
+    public abstract GraphNode<N, E> createNode(N value);
+
+    /**
+     * Gets a mutable list of all nodes.
+     */
+    public abstract List<GraphNode<N, E>> getNodes();
+
+    /**
+     * Gets a mutable list of all edges.
+     */
+    public abstract List<GraphEdge<N, E>> getEdges();
+
+    /**
+     * Gets the degree of a node.
+     *
+     * @param value The node's value.
+     * @return The degree of the node.
+     */
+    public abstract int getNodeDegree(N value);
+
+    public int getWeight(N value) {
+        return getNodeDegree(value);
+    }
+
+    /**
+     * Gets the neighboring nodes.
+     *
+     * @param value The node's value.
+     * @return A list of neighboring nodes.
+     */
+    public abstract List<GraphNode<N, E>> getNeighborNodes(N value);
+
+    public abstract Iterator<GraphNode<N, E>> getNeighborNodesIterator(N value);
+
+    /**
+     * Retrieves an edge from the graph.
+     *
+     * @param n1 Node one.
+     * @param n2 Node two.
+     * @return The list of edges between those two values in the graph.
+     */
+    public abstract List<GraphEdge<N, E>> getEdges(N n1, N n2);
+
+    /**
+     * Checks whether the node exists in the graph ({@link #createNode(Object)}
+     * has been called with that value).
+     *
+     * @param n Node.
+     * @return <code>true</code> if it exist.
+     */
+    public final boolean hasNode(N n) {
+        return getNode(n) != null;
+    }
+
+    /**
+     * Checks whether two nodes in the graph are connected.
+     *
+     * @param n1 Node 1.
+     * @param n2 Node 2.
+     * @return <code>true</code> if the two nodes are connected.
+     */
+    public abstract boolean isConnected(N n1, N n2);
+
+    public final void clearNodeAnnotations() {
+        for (GraphNode<N, E> n : getNodes()) {
+            n.setAnnotation(null);
+        }
+    }
+
+    /**
+     * Makes each edge's annotation null.
+     */
+    public final void clearEdgeAnnotations() {
+        for (GraphEdge<N, E> e : getEdges()) {
+            e.setAnnotation(null);
+        }
+    }
+
+    /**
+     * Pushes nodes' annotation values. Restored with
+     * {@link #popNodeAnnotations()}. Nodes' annotation values are cleared.
+     */
+    public final void pushNodeAnnotations() {
+        if (nodeAnnotationStack == null) {
+            nodeAnnotationStack = Lists.newLinkedList();
+        }
+        pushAnnotations(nodeAnnotationStack, getNodes());
+    }
+
+    /**
+     * Restores nodes' annotation values to state before last
+     * {@link #pushNodeAnnotations()}.
+     */
+    public final void popNodeAnnotations() {
+        Preconditions.checkNotNull(nodeAnnotationStack,
+                "Popping node annotations without pushing.");
+        popAnnotations(nodeAnnotationStack);
+    }
+
+    /**
+     * Pushes edges' annotation values. Restored with
+     * {@link #popEdgeAnnotations()}. Edges' annotation values are cleared.
+     */
+    public final void pushEdgeAnnotations() {
+        if (edgeAnnotationStack == null) {
+            edgeAnnotationStack = Lists.newLinkedList();
+        }
+        pushAnnotations(edgeAnnotationStack, getEdges());
+    }
+
+    /**
+     * Restores edges' annotation values to state before last
+     * {@link #pushEdgeAnnotations()}.
+     */
+    public final void popEdgeAnnotations() {
+        Preconditions.checkNotNull(edgeAnnotationStack,
+                "Popping edge annotations without pushing.");
+        popAnnotations(edgeAnnotationStack);
+    }
+
+    /**
+     * A generic edge.
+     *
+     * @param <N> Value type that the graph node stores.
+     * @param <E> Value type that the graph edge stores.
+     */
+    public interface GraphEdge<N, E> extends Annotatable {
+        /**
+         * Retrieves the edge's value.
+         *
+         * @return The value.
+         */
+        E getValue();
+
+        GraphNode<N, E> getNodeA();
+
+        GraphNode<N, E> getNodeB();
+    }
+
+    /**
+     * A simple implementation of SubGraph that calculates adjacency by iterating
+     * over a node's neighbors.
+     */
+    class SimpleSubGraph<N, E> implements SubGraph<N, E> {
+        private Graph<N, E> graph;
+        private List<GraphNode<N, E>> nodes = Lists.newArrayList();
+
+        SimpleSubGraph(Graph<N, E> graph) {
+            this.graph = graph;
+        }
+
+        public boolean isIndependentOf(N value) {
+            GraphNode<N, E> node = graph.getNode(value);
+            for (GraphNode<N, E> n : nodes) {
+                if (graph.getNeighborNodes(n.getValue()).contains(node)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void addNode(N value) {
+            if (!graph.hasNode(value)) {
+                throw new IllegalArgumentException(value + " does not exist in graph");
+            }
+            nodes.add(graph.getNode(value));
+        }
+    }
+
+    /**
+     * Pushes a new list on stack and stores nodes annotations in the new list.
+     * Clears objects' annotations as well.
+     */
+    private static void pushAnnotations(
+            Deque<GraphAnnotationState> stack,
+            Collection<? extends Annotatable> haveAnnotations) {
+        stack.push(new GraphAnnotationState(haveAnnotations.size()));
+        for (Annotatable h : haveAnnotations) {
+            stack.peek().add(new AnnotationState(h, h.getAnnotation()));
+            h.setAnnotation(null);
+        }
+    }
+
+    /**
+     * Restores the node annotations on the top of stack and pops stack.
+     */
+    private static void popAnnotations(Deque<GraphAnnotationState> stack) {
+        for (AnnotationState as : stack.pop()) {
+            as.first.setAnnotation(as.second);
+        }
+    }
 }

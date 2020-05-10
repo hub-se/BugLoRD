@@ -4,13 +4,13 @@
  */
 package org.mockito.internal.util;
 
-import static org.mockito.internal.util.Decamelizer.*;
-
 import org.junit.Test;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.internal.util.Decamelizer.*;
+
 public class DecamelizerTest extends TestBase {
-    
+
     @Test
     public void shouldProduceDecentDescription() throws Exception {
         assertEquals("<Sentence with strong language>", decamelizeMatcher("SentenceWithStrongLanguage"));

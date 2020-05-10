@@ -1,35 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-11">
-			<tests>
-				<testfile path="org/mockito/internal/creation/DelegatingMethodTest">
-					<exception>junit.framework.AssertionFailedError:-
-						org.mockito.internal.creation.DelegatingMethodTest::equals_should_return_true_when_self:--&gt;
-						junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>902</number_tests>
-					<failed>2</failed>
-					<passed>900</passed>
-					<nodes>4246</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/internal/creation/DelegatingMethod.java">
-					<change>60</change>
-					<insert numberlines="7,1">55,56</insert>
-					<bugtypes>
-						<id id="1.1" lines="54,55">
-							<description>Missing cases for validating the object.</description>
-						</id>
-						<id id="2.2" lines="66">
-							<description>Incorrect return.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-11">
+            <tests>
+                <testfile path="org/mockito/internal/creation/DelegatingMethodTest">
+                    <exception>junit.framework.AssertionFailedError:-
+                        org.mockito.internal.creation.DelegatingMethodTest::equals_should_return_true_when_self:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>902</number_tests>
+                    <failed>2</failed>
+                    <passed>900</passed>
+                    <nodes>4246</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/internal/creation/DelegatingMethod.java">
+                    <change>60</change>
+                    <insert numberlines="7,1">55,56</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="54,55">
+                            <description>Missing cases for validating the object.</description>
+                        </id>
+                        <id id="2.2" lines="66">
+                            <description>Incorrect return.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

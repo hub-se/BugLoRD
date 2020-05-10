@@ -4,10 +4,6 @@
  */
 package org.mockitousage.misuse;
 
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -15,10 +11,15 @@ import org.mockito.Mock;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockitoutil.TestBase;
 
+import java.util.List;
+
+import static org.mockito.Mockito.*;
+
 @SuppressWarnings("unchecked")
 public class RestrictedObjectMethodsTest extends TestBase {
 
-    @Mock List mock;
+    @Mock
+    List mock;
 
     @After
     public void after() {
@@ -58,5 +59,5 @@ public class RestrictedObjectMethodsTest extends TestBase {
         // and when user has verification started at that time there will be a mess
         InOrder inOrder = inOrder(mock);
         inOrder.verify(mock).equals(null);
-    }       
+    }
 }

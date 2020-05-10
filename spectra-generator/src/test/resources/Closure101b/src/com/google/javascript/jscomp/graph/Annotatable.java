@@ -19,21 +19,20 @@ package com.google.javascript.jscomp.graph;
 
 /**
  * Object that has an annotation.
-*
  */
 public interface Annotatable {
-  /**
-   * Annotates a piece of information to the object.
-   *
-   * @param data Information to be annotated.
-   */
-  void setAnnotation(Annotation data);
+    /**
+     * Annotates a piece of information to the object.
+     *
+     * @param data Information to be annotated.
+     */
+    void setAnnotation(Annotation data);
 
-  /**
-   * Retrieves a piece of information that has been annotated.
-   *
-   * @return The annotation or <code>null</code> if the object has not
-   *     been annotated.
-   */
-  <A extends Annotation> A getAnnotation();
+    /**
+     * Retrieves a piece of information that has been annotated.
+     *
+     * @return The annotation or <code>null</code> if the object has not
+     * been annotated.
+     */
+    <A extends Annotation> A getAnnotation();
 }

@@ -15,13 +15,14 @@
  */
 package org.joda.time.field;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Locale;
 import org.joda.time.DateTimeField;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DurationField;
 import org.joda.time.ReadablePartial;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * A placeholder implementation to use when a datetime field is not supported.
@@ -33,18 +34,22 @@ import org.joda.time.ReadablePartial;
  */
 public final class UnsupportedDateTimeField extends DateTimeField implements Serializable {
 
-    /** Serialilzation version */
+    /**
+     * Serialilzation version
+     */
     private static final long serialVersionUID = -1934618396111902255L;
 
-    /** The cache of unsupported datetime field instances */
+    /**
+     * The cache of unsupported datetime field instances
+     */
     private static HashMap<DateTimeFieldType, UnsupportedDateTimeField> cCache;
 
     /**
      * Gets an instance of UnsupportedDateTimeField for a specific named field.
      * Names should be of standard format, such as 'monthOfYear' or 'hourOfDay'.
      * The returned instance is cached.
-     * 
-     * @param type  the type to obtain
+     *
+     * @param type the type to obtain
      * @return the instance
      * @throws IllegalArgumentException if durationField is null
      */
@@ -68,16 +73,20 @@ public final class UnsupportedDateTimeField extends DateTimeField implements Ser
         return field;
     }
 
-    /** The field type */
+    /**
+     * The field type
+     */
     private final DateTimeFieldType iType;
-    /** The duration of the datetime field */
+    /**
+     * The duration of the datetime field
+     */
     private final DurationField iDurationField;
 
     /**
      * Constructor.
-     * 
-     * @param type  the field type
-     * @param durationField  the duration to use
+     *
+     * @param type          the field type
+     * @param durationField the duration to use
      */
     private UnsupportedDateTimeField(DateTimeFieldType type, DurationField durationField) {
         if (type == null || durationField == null) {
@@ -524,9 +533,10 @@ public final class UnsupportedDateTimeField extends DateTimeField implements Ser
     }
 
     //------------------------------------------------------------------------
+
     /**
      * Get a suitable debug string.
-     * 
+     *
      * @return debug string
      */
     public String toString() {

@@ -1,47 +1,48 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-65">
-			<tests>
-				<testfile path="org/apache/commons/lang/time/DateUtilsTest">
-					<exception>junit.framework.AssertionFailedError:Truncate
-						Calendar.SECOND expected:&lt;Sun Oct 31 01:02:03 MDT 2004&gt; but
-						was:&lt;Sun Oct 31 01:02:03 MST 2004&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>30</number_tests>
-					<failed>1</failed>
-					<passed>29</passed>
-					<nodes>9350</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang/time/DateUtils.java">
-					<insert numberlines="28">623-641</insert>
-					<insert numberlines="1,1">708-709,710</insert>
-					<bugtypes>
-						<id id="1.1" lines="623">
-							<description>Missing field type check.</description>
-						</id>
-						<id id="1.1" lines="630,632">
-							<description>Missing check for milliseconds.</description>
-						</id>
-						<id id="1.1" lines="630,634">
-							<description>Missing check for seconds.</description>
-						</id>
-						<id id="1.1" lines="630,636">
-							<description>Missing check for minutes.</description>
-						</id>
-						<id id="1.1" lines="630,638">
-							<description>Missing check for time.</description>
-						</id>
-						<id id="1.1" lines="708,709">
-							<description>Missing case handling for offset.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>8</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-65">
+            <tests>
+                <testfile path="org/apache/commons/lang/time/DateUtilsTest">
+                    <exception>junit.framework.AssertionFailedError:Truncate
+                        Calendar.SECOND expected:&lt;Sun Oct 31 01:02:03 MDT 2004&gt; but
+                        was:&lt;Sun Oct 31 01:02:03 MST 2004&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>30</number_tests>
+                    <failed>1</failed>
+                    <passed>29</passed>
+                    <nodes>9350</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang/time/DateUtils.java">
+                    <insert numberlines="28">623-641</insert>
+                    <insert numberlines="1,1">708-709,710</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="623">
+                            <description>Missing field type check.</description>
+                        </id>
+                        <id id="1.1" lines="630,632">
+                            <description>Missing check for milliseconds.</description>
+                        </id>
+                        <id id="1.1" lines="630,634">
+                            <description>Missing check for seconds.</description>
+                        </id>
+                        <id id="1.1" lines="630,636">
+                            <description>Missing check for minutes.</description>
+                        </id>
+                        <id id="1.1" lines="630,638">
+                            <description>Missing check for time.</description>
+                        </id>
+                        <id id="1.1" lines="708,709">
+                            <description>Missing case handling for offset.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>8</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

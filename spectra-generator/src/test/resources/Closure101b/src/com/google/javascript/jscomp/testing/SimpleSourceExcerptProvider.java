@@ -21,26 +21,26 @@ import com.google.javascript.jscomp.SourceExcerptProvider;
 import com.google.javascript.jscomp.SourceFile;
 
 
-
 /**
  * A simple source excerpt provider for testing.
+ *
  * @author nicksantos@google.com (Nick Santos)
  */
 public class SimpleSourceExcerptProvider implements SourceExcerptProvider {
 
-  private final SourceFile sourceFile;
+    private final SourceFile sourceFile;
 
-  public SimpleSourceExcerptProvider(String source) {
-    sourceFile = SourceFile.fromCode("input", source);
-  }
+    public SimpleSourceExcerptProvider(String source) {
+        sourceFile = SourceFile.fromCode("input", source);
+    }
 
-  @Override
-  public String getSourceLine(String sourceName, int lineNumber) {
-    return sourceFile.getLine(lineNumber);
-  }
+    @Override
+    public String getSourceLine(String sourceName, int lineNumber) {
+        return sourceFile.getLine(lineNumber);
+    }
 
-  @Override
-  public Region getSourceRegion(String sourceName, int lineNumber) {
-    return sourceFile.getRegion(lineNumber);
-  }
+    @Override
+    public Region getSourceRegion(String sourceName, int lineNumber) {
+        return sourceFile.getRegion(lineNumber);
+    }
 }

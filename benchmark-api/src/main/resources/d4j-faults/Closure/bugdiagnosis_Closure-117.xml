@@ -1,32 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-117">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;...p
-						never defined on C[2]&gt; but was:&lt;...p never defined on
-						C[3.c2_]&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>7149</number_tests>
-					<failed>1</failed>
-					<passed>7148</passed>
-					<nodes>49450</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/TypeValidator.java">
-					<delete>756-767</delete>
-					<insert numberlines="12">725-731</insert>
-					<bugtypes>
-						<id id="1.5" lines="724,726,756-767">
-							<description>Incorrect order of statements.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-117">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/TypeCheckTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;...p
+                        never defined on C[2]&gt; but was:&lt;...p never defined on
+                        C[3.c2_]&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>7149</number_tests>
+                    <failed>1</failed>
+                    <passed>7148</passed>
+                    <nodes>49450</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/TypeValidator.java">
+                    <delete>756-767</delete>
+                    <insert numberlines="12">725-731</insert>
+                    <bugtypes>
+                        <id id="1.5" lines="724,726,756-767">
+                            <description>Incorrect order of statements.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

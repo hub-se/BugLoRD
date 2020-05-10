@@ -4,28 +4,31 @@
  */
 package org.mockitousage.annotation;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockitoutil.TestBase;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @SuppressWarnings("unchecked")
 public class SpyInjectionTest extends TestBase {
 
-    @Spy List spy = new LinkedList();
-    @InjectMocks HasSpy hasSpy = new HasSpy();
-    
+    @Spy
+    List spy = new LinkedList();
+    @InjectMocks
+    HasSpy hasSpy = new HasSpy();
+
     static class HasSpy {
         private List spy;
+
         public void setSpy(List spy) {
             this.spy = spy;
-        }        
+        }
     }
-    
-	@Test
+
+    @Test
     public void shouldDoStuff() throws Exception {
         isMock(hasSpy.spy);
     }

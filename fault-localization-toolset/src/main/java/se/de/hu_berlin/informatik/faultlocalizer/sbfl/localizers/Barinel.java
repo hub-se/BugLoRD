@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Barinel fault localizer $1 -\frac{\EP}{\EP+\EF}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Barinel<T> extends AbstractFaultLocalizer<T> {
 

@@ -11,12 +11,11 @@ package se.de.hu_berlin.informatik.spectra.provider;
 
 import org.junit.Assert;
 import org.junit.Test;
-
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
-import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
@@ -32,8 +31,8 @@ public class CoberturaProviderTest {
         checkSimpleTraceNormal(s);
     }
 
-	private static void checkSimpleNodes(final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s) {
-		// assert loaded count is correct
+    private static void checkSimpleNodes(final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s) {
+        // assert loaded count is correct
         Assert.assertEquals(s.getNodes().size(), 3);
         Assert.assertEquals(s.getTraces().size(), 1);
 
@@ -41,19 +40,19 @@ public class CoberturaProviderTest {
         Assert.assertTrue(s.hasNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "<init>()V", 3, NodeType.NORMAL)));
         Assert.assertTrue(s.hasNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 9, NodeType.NORMAL)));
         Assert.assertTrue(s.hasNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 10, NodeType.NORMAL)));
-	}
+    }
 
-	private static void checkSimpleTraceNormal(final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s) {
-		// assert trace has correct involvement loaded
+    private static void checkSimpleTraceNormal(final ISpectra<SourceCodeBlock, ? super HitTrace<SourceCodeBlock>> s) {
+        // assert trace has correct involvement loaded
         final ITrace<SourceCodeBlock> t = s.getTraces().iterator().next();
         Assert.assertFalse(t.isInvolved(s.getOrCreateNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "<init>()V", 3, NodeType.NORMAL))));
         Assert.assertTrue(t.isInvolved(s.getOrCreateNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 9, NodeType.NORMAL))));
         Assert.assertTrue(t.isInvolved(s.getOrCreateNode(new SourceCodeBlock("cobertura", "cobertura/CoverageTest.java", "main([Ljava/lang/String;)V", 10, NodeType.NORMAL))));
-        
+
         //assert that trace is loaded as 'successful'
         Assert.assertTrue(t.isSuccessful());
-	}
-	
+    }
+
     @Test
     public void loadLargeCoverage() {
         final CoberturaXMLProvider<HitTrace<SourceCodeBlock>> c = CoberturaSpectraProviderFactory.getHitSpectraFromXMLProvider(true);

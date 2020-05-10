@@ -1,57 +1,58 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-50">
-			<tests>
-				<testfile path="org/apache/commons/lang/time/FastDateFormatTest">
-					<exception>junit.framework.AssertionFailedError:expected
-						same:&lt;de_DE&gt; was not:&lt;en_US&gt;:-
-						org.apache.commons.lang.time.FastDateFormatTest::test_changeDefault_Locale_DateTimeInstance:--&gt;
-						junit.framework.AssertionFailedError:expected same:&lt;de_DE&gt;
-						was not:&lt;en_US&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>35</number_tests>
-					<failed>2</failed>
-					<passed>33</passed>
-					<nodes>9965</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang/time/FastDateFormat.java">
-					<change>285</change>
-					<change>465</change>
-					<delete>286</delete>
-					<delete>292-294</delete>
-					<delete>466</delete>
-					<delete>471-473</delete>
-					<insert numberlines="1">286-287</insert>
-					<insert numberlines="1">288-290</insert>
-					<insert numberlines="1">466-467</insert>
-					<insert numberlines="1">468-469</insert>
-					<bugtypes>
-						<id id="1.2" lines="285,286">
-							<description>Incorrect check for null value.</description>
-						</id>
-						<id id="3.1" lines="288">
-							<description>Missing initialization.</description>
-						</id>
-						<id id="1.2" lines="292-294">
-							<description>Unnecessary null value check.</description>
-						</id>
-						<id id="1.2" lines="465,466">
-							<description>Incorrect check for mull value.</description>
-						</id>
-						<id id="3.1" lines="467">
-							<description>Missing initialization.</description>
-						</id>
-						<id id="1.2" lines="471-473">
-							<description>Unnecessary null value check.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>6</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-50">
+            <tests>
+                <testfile path="org/apache/commons/lang/time/FastDateFormatTest">
+                    <exception>junit.framework.AssertionFailedError:expected
+                        same:&lt;de_DE&gt; was not:&lt;en_US&gt;:-
+                        org.apache.commons.lang.time.FastDateFormatTest::test_changeDefault_Locale_DateTimeInstance:--&gt;
+                        junit.framework.AssertionFailedError:expected same:&lt;de_DE&gt;
+                        was not:&lt;en_US&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>35</number_tests>
+                    <failed>2</failed>
+                    <passed>33</passed>
+                    <nodes>9965</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang/time/FastDateFormat.java">
+                    <change>285</change>
+                    <change>465</change>
+                    <delete>286</delete>
+                    <delete>292-294</delete>
+                    <delete>466</delete>
+                    <delete>471-473</delete>
+                    <insert numberlines="1">286-287</insert>
+                    <insert numberlines="1">288-290</insert>
+                    <insert numberlines="1">466-467</insert>
+                    <insert numberlines="1">468-469</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="285,286">
+                            <description>Incorrect check for null value.</description>
+                        </id>
+                        <id id="3.1" lines="288">
+                            <description>Missing initialization.</description>
+                        </id>
+                        <id id="1.2" lines="292-294">
+                            <description>Unnecessary null value check.</description>
+                        </id>
+                        <id id="1.2" lines="465,466">
+                            <description>Incorrect check for mull value.</description>
+                        </id>
+                        <id id="3.1" lines="467">
+                            <description>Missing initialization.</description>
+                        </id>
+                        <id id="1.2" lines="471-473">
+                            <description>Unnecessary null value check.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>6</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

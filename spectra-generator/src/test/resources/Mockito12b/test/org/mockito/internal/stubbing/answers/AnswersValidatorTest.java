@@ -4,17 +4,17 @@
  */
 package org.mockito.internal.stubbing.answers;
 
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
-import java.nio.charset.CharacterCodingException;
-import java.util.ArrayList;
-
 import org.junit.Test;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockito.internal.invocation.Invocation;
 import org.mockito.internal.invocation.InvocationBuilder;
 import org.mockitoutil.TestBase;
+
+import java.io.IOException;
+import java.nio.charset.CharacterCodingException;
+import java.util.ArrayList;
+
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 public class AnswersValidatorTest extends TestBase {
@@ -27,7 +27,8 @@ public class AnswersValidatorTest extends TestBase {
         try {
             validator.validate(new ThrowsException(null), null);
             fail();
-        } catch (MockitoException e) {}
+        } catch (MockitoException e) {
+        }
     }
 
     @Test
@@ -39,28 +40,28 @@ public class AnswersValidatorTest extends TestBase {
     public void shouldFailInvalidCheckedException() throws Throwable {
         validator.validate(new ThrowsException(new IOException()), invocation);
     }
-    
+
     @Test
     public void shouldPassRuntimeExceptions() throws Throwable {
         validator.validate(new ThrowsException(new Error()), invocation);
         validator.validate(new ThrowsException(new RuntimeException()), invocation);
     }
-    
+
     @Test(expected = MockitoException.class)
     public void shouldFailWhenReturnValueIsSetForVoidMethod() throws Throwable {
         validator.validate(new Returns("one"), new InvocationBuilder().method("voidMethod").toInvocation());
     }
-    
+
     @Test(expected = MockitoException.class)
     public void shouldFailWhenNonVoidMethodDoesNothing() throws Throwable {
         validator.validate(new DoesNothing(), new InvocationBuilder().simpleMethod().toInvocation());
     }
-    
+
     @Test
     public void shouldAllowVoidReturnForVoidMethod() throws Throwable {
         validator.validate(new DoesNothing(), new InvocationBuilder().method("voidMethod").toInvocation());
     }
-    
+
     @Test
     public void shouldAllowCorrectTypeOfReturnValue() throws Throwable {
         validator.validate(new Returns("one"), new InvocationBuilder().simpleMethod().toInvocation());
@@ -72,12 +73,12 @@ public class AnswersValidatorTest extends TestBase {
         validator.validate(new Returns(null), new InvocationBuilder().method("objectReturningMethodNoArgs").toInvocation());
         validator.validate(new Returns(1), new InvocationBuilder().method("objectReturningMethodNoArgs").toInvocation());
     }
-    
+
     @Test(expected = MockitoException.class)
     public void shouldFailOnReturnTypeMismatch() throws Throwable {
         validator.validate(new Returns("String"), new InvocationBuilder().method("booleanReturningMethod").toInvocation());
     }
-    
+
     @Test(expected = MockitoException.class)
     public void shouldFailOnWrongPrimitive() throws Throwable {
         validator.validate(new Returns(1), new InvocationBuilder().method("doubleReturningMethod").toInvocation());
@@ -87,7 +88,7 @@ public class AnswersValidatorTest extends TestBase {
     public void shouldFailOnNullWithPrimitive() throws Throwable {
         validator.validate(new Returns(null), new InvocationBuilder().method("booleanReturningMethod").toInvocation());
     }
-    
+
     @Test
     public void shouldFailWhenCallingRealMethodOnIterface() throws Throwable {
         //given
@@ -97,9 +98,10 @@ public class AnswersValidatorTest extends TestBase {
             validator.validate(new CallsRealMethods(), inovcationOnIterface);
             //then
             fail();
-        } catch (MockitoException e) {}
+        } catch (MockitoException e) {
+        }
     }
-            
+
     @Test
     public void shouldBeOKWhenCallingRealMethodOnConcreteClass() throws Throwable {
         //given

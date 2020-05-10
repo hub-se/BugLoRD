@@ -4,15 +4,15 @@
  */
 package org.mockitousage.performance;
 
-import static org.mockito.Mockito.*;
-
-import java.util.LinkedList;
-import java.util.List;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 public class LoadsOfMocksTest extends TestBase {
@@ -25,13 +25,13 @@ public class LoadsOfMocksTest extends TestBase {
             System.out.println("Mock no: " + i);
             IMethods mock = mock(IMethods.class);
             mocks.add(mock);
-            
+
             when(mock.simpleMethod(1)).thenReturn("one");
             when(mock.simpleMethod(2)).thenReturn("two");
-            
+
             assertEquals("one", mock.simpleMethod(1));
             assertEquals("two", mock.simpleMethod(2));
-            
+
             verify(mock).simpleMethod(1);
             verify(mock).simpleMethod(2);
         }

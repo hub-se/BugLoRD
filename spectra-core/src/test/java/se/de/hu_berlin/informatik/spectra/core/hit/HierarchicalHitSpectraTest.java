@@ -11,17 +11,13 @@ package se.de.hu_berlin.informatik.spectra.core.hit;
 
 import org.junit.Assert;
 import org.junit.Test;
-
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
-import se.de.hu_berlin.informatik.spectra.core.hit.HierarchicalHitSpectra;
-import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
-import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.test.data.SimpleSpectraProvider;
 
 public class HierarchicalHitSpectraTest {
 
-	private final double smallDelta = 0.00001;
-	
+    private final double smallDelta = 0.00001;
+
     /**
      * Provide test data
      */
@@ -159,7 +155,7 @@ public class HierarchicalHitSpectraTest {
 
         // add new trace
         final HitTrace<String> newTrace = bottom.addTrace("trace1", 1, true);
-        
+
         Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 1, smallDelta); // one more
         Assert.assertEquals(one.getOrCreateNode("P1").getNF(), 1, smallDelta);
         Assert.assertEquals(one.getOrCreateNode("P1").getEP(), 3, smallDelta);
@@ -169,7 +165,7 @@ public class HierarchicalHitSpectraTest {
         Assert.assertEquals(one.getOrCreateNode("P2").getNF(), 0, smallDelta);
         Assert.assertEquals(one.getOrCreateNode("P2").getEP(), 2, smallDelta);
         Assert.assertEquals(one.getOrCreateNode("P2").getEF(), 2, smallDelta);
-        
+
         newTrace.setInvolvement("S1", true);
 
         Assert.assertEquals(one.getOrCreateNode("P1").getNP(), 0, smallDelta);

@@ -4,14 +4,14 @@
  */
 package org.mockito.internal.util.reflection;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.mockitoutil.TestBase;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 
-import org.junit.Test;
-import org.mockitoutil.TestBase;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 public class LenientCopyToolTest extends TestBase {
@@ -22,7 +22,7 @@ public class LenientCopyToolTest extends TestBase {
         protected String protectedInherited = "protected";
         private String privateInherited = "private";
     }
-    
+
     static class SomeObject extends InheritMe {
         @SuppressWarnings("unused")
         // required because static fields needs to be excluded from copying
@@ -91,7 +91,7 @@ public class LenientCopyToolTest extends TestBase {
         from.privateField = 1;
         from.privateTransientField = 2;
         from.protectedField = 3;
-        
+
         assertNotEquals(from.defaultField, to.defaultField);
         assertNotEquals(from.instancePublicField, to.instancePublicField);
         assertNotEquals(from.privateField, to.privateField);
@@ -108,59 +108,59 @@ public class LenientCopyToolTest extends TestBase {
         assertEquals(from.privateTransientField, to.privateTransientField);
         assertEquals(from.protectedField, to.protectedField);
     }
-    
+
     @Test
     public void shouldCopyValuesOfInheritedFields() throws Exception {
         //given
         ((InheritMe) from).privateInherited = "foo";
         ((InheritMe) from).protectedInherited = "bar";
-    
+
         assertNotEquals(((InheritMe) from).privateInherited, ((InheritMe) to).privateInherited);
         assertNotEquals(((InheritMe) from).privateInherited, ((InheritMe) to).privateInherited);
-        
+
         //when
         tool.copyToMock(from, to);
-        
+
         //then
         assertEquals(((InheritMe) from).privateInherited, ((InheritMe) to).privateInherited);
         assertEquals(((InheritMe) from).privateInherited, ((InheritMe) to).privateInherited);
     }
-    
+
     @Test
     public void shouldEnableAndThenDisableAccessibility() throws Exception {
         //given
         Field privateField = SomeObject.class.getDeclaredField("privateField");
         assertFalse(privateField.isAccessible());
-        
+
         //when
         tool.copyToMock(from, to);
-        
+
         //then
         privateField = SomeObject.class.getDeclaredField("privateField");
         assertFalse(privateField.isAccessible());
     }
-    
+
     @Test
     public void shouldContinueEvenIfThereAreProblemsCopyingSingleFieldValue() throws Exception {
         //given
         tool.fieldCopier = mock(FieldCopier.class);
-        
+
         doNothing().
-        doThrow(new IllegalAccessException()).
-        doNothing().
-        when(tool.fieldCopier).
-        copyValue(anyObject(), anyObject(), any(Field.class));
-        
+                doThrow(new IllegalAccessException()).
+                doNothing().
+                when(tool.fieldCopier).
+                copyValue(anyObject(), anyObject(), any(Field.class));
+
         //when
         tool.copyToMock(from, to);
-        
+
         //then
         verify(tool.fieldCopier, atLeast(3)).copyValue(any(), any(), any(Field.class));
     }
-    
+
     @Test
     public void shouldBeAbleToCopyFromRealObjectToRealObject() throws Exception {
-        
+
         // given
         from.defaultField = "defaultField";
         from.instancePublicField = new SomeOtherObject();
@@ -169,10 +169,10 @@ public class LenientCopyToolTest extends TestBase {
         from.protectedField = "protectedField";
         from.protectedInherited = "protectedInherited";
         to = new SomeObject(0);
-        
+
         // when
         tool.copyToRealObject(from, to);
-        
+
         // then
         assertEquals(from.defaultField, to.defaultField);
         assertEquals(from.instancePublicField, to.instancePublicField);
@@ -180,6 +180,6 @@ public class LenientCopyToolTest extends TestBase {
         assertEquals(from.privateTransientField, to.privateTransientField);
         assertEquals(from.protectedField, to.protectedField);
         assertEquals(from.protectedInherited, to.protectedInherited);
-        
+
     }
 }

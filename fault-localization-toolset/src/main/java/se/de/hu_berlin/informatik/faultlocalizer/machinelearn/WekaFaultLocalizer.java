@@ -9,18 +9,6 @@
 
 package se.de.hu_berlin.informatik.faultlocalizer.machinelearn;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import weka.classifiers.AbstractClassifier;
-import weka.classifiers.Classifier;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
@@ -28,27 +16,37 @@ import se.de.hu_berlin.informatik.spectra.core.ILocalizerCache;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Classifier;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+
+import java.util.*;
 
 /**
  * Machine learning based fault localization approach using Weka as ML backend.
- *
+ * <p>
  * ML algorithms can be configured.
  *
- * @param <T>
- *            type used to identify nodes in the system
+ * @param <T> type used to identify nodes in the system
  */
 public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
 
-    /** classifier name */
+    /**
+     * classifier name
+     */
     private final String classifierName;
-    /** options for the classifier */
+    /**
+     * options for the classifier
+     */
     private final String[] classifierOptions;
 
     /**
      * Construct Weka fault localizer
      *
-     * @param classifierName
-     *            name of the Weka classifier to use
+     * @param classifierName name of the Weka classifier to use
      */
     public WekaFaultLocalizer(final String classifierName) {
         this(classifierName, new String[0]);
@@ -57,10 +55,8 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
     /**
      * Construct Weka fault localizer
      *
-     * @param classifierName
-     *            name of the Weka classifier to use
-     * @param options
-     *            options to pass to the classifier
+     * @param classifierName name of the Weka classifier to use
+     * @param options        options to pass to the classifier
      */
     public WekaFaultLocalizer(final String classifierName, final String[] options) {
         super();
@@ -111,7 +107,6 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
         trainingSet.setClassIndex(attributeList.size() - 1);
 
 
-
         // == 2. add traces to training set
 
         // add an instance for each trace
@@ -146,7 +141,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
             for (final INode<T> node : nodes) {
                 classified++;
                 if (classified % 1000 == 0) {
-                	Log.out(this, String.format("Classified %d nodes.", classified));
+                    Log.out(this, String.format("Classified %d nodes.", classified));
                 }
 
                 // contain only the current node in the network
@@ -168,12 +163,9 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
     /**
      * Builds and trains a classifier.
      *
-     * @param name
-     *            FQCN of the classifier
-     * @param options
-     *            options to pass to the classifier
-     * @param trainingSet
-     *            training set to build the classifier with
+     * @param name        FQCN of the classifier
+     * @param options     options to pass to the classifier
+     * @param trainingSet training set to build the classifier with
      * @return trained classifier
      */
     public Classifier buildClassifier(final String name, final String[] options, final Instances trainingSet) {
@@ -182,7 +174,7 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
             classifier.buildClassifier(trainingSet);
             return classifier;
         } catch (final Exception e1) { // NOCS: Weka throws only raw exceptions
-        	Log.err(this, "Unable to create classifier " + this.classifierName);
+            Log.err(this, "Unable to create classifier " + this.classifierName);
             throw new RuntimeException(e1);
         }
     }
@@ -193,9 +185,9 @@ public class WekaFaultLocalizer<T> implements IFaultLocalizer<T> {
         return "weka-" + this.classifierName.substring(this.classifierName.lastIndexOf(".") + 1);
     }
 
-	@Override
-	public double suspiciousness(INode<T> node, ComputationStrategies strategy) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public double suspiciousness(INode<T> node, ComputationStrategies strategy) {
+        throw new UnsupportedOperationException();
+    }
 
 }

@@ -32,254 +32,252 @@ import java.util.Set;
 
 /**
  * Computes "may be" reaching use for all definitions of each variables.
- *
+ * <p>
  * A use of {@code A} in {@code alert(A)} is a "may be" reaching use of
  * the definition of {@code A} at {@code A = foo()} if at least one path from
  * the use node reaches that definition and it is the last definition before
  * the use on that path.
- *
-*
  */
 class MaybeReachingVariableUse extends
-    DataFlowAnalysis<Node, MaybeReachingVariableUse.ReachingUses> {
+        DataFlowAnalysis<Node, MaybeReachingVariableUse.ReachingUses> {
 
-  // The scope of the function that we are analyzing.
-  private final Scope jsScope;
-  private final Set<Var> escaped;
+    // The scope of the function that we are analyzing.
+    private final Scope jsScope;
+    private final Set<Var> escaped;
 
-  MaybeReachingVariableUse(
-      ControlFlowGraph<Node> cfg, Scope jsScope, AbstractCompiler compiler) {
-    super(cfg, new ReachingUsesJoinOp());
-    this.jsScope = jsScope;
-    this.escaped = Sets.newHashSet();
+    MaybeReachingVariableUse(
+            ControlFlowGraph<Node> cfg, Scope jsScope, AbstractCompiler compiler) {
+        super(cfg, new ReachingUsesJoinOp());
+        this.jsScope = jsScope;
+        this.escaped = Sets.newHashSet();
 
-    // TODO(user): May be comute it somewhere else and re-use the escape
-    // local set here.
-    computeEscaped(jsScope, escaped, compiler);
-  }
-
-  /**
-   * May use definition lattice representation. It captures a product
-   * lattice for each local (non-escaped) variable. The sub-lattice is
-   * a n + 2 power set element lattice with all the Nodes in the program,
-   * TOP and BOTTOM. This is better explained with an example:
-   *
-   * Consider: A sub-lattice element representing the variable A represented
-   * by { N_4, N_5} where N_x is a Node in the program. This implies at
-   * that particular point in the program the content of A is "upward exposed"
-   * at point N_4 and N_5.
-   *
-   * Example:
-   *
-   * A = 1;
-   * ...
-   * N_3:
-   * N_4: print(A);
-   * N_5: y = A;
-   * N_6: A = 1;
-   * N_7: print(A);
-   *
-   * At N_3, reads of A in {N_4, N_5} are said to be upward exposed.
-   */
-  static final class ReachingUses implements DataFlowAnalysis.LatticeElement {
-    final Multimap<Var, Node> mayUseMap;
-
-    public ReachingUses() {
-      mayUseMap = HashMultimap.create();
+        // TODO(user): May be comute it somewhere else and re-use the escape
+        // local set here.
+        computeEscaped(jsScope, escaped, compiler);
     }
 
     /**
-     * Copy constructor.
-     *
-     * @param other The constructed object is a replicated copy of this element.
+     * May use definition lattice representation. It captures a product
+     * lattice for each local (non-escaped) variable. The sub-lattice is
+     * a n + 2 power set element lattice with all the Nodes in the program,
+     * TOP and BOTTOM. This is better explained with an example:
+     * <p>
+     * Consider: A sub-lattice element representing the variable A represented
+     * by { N_4, N_5} where N_x is a Node in the program. This implies at
+     * that particular point in the program the content of A is "upward exposed"
+     * at point N_4 and N_5.
+     * <p>
+     * Example:
+     * <p>
+     * A = 1;
+     * ...
+     * N_3:
+     * N_4: print(A);
+     * N_5: y = A;
+     * N_6: A = 1;
+     * N_7: print(A);
+     * <p>
+     * At N_3, reads of A in {N_4, N_5} are said to be upward exposed.
      */
-    public ReachingUses(ReachingUses other) {
-      mayUseMap = HashMultimap.create(other.mayUseMap);
+    static final class ReachingUses implements DataFlowAnalysis.LatticeElement {
+        final Multimap<Var, Node> mayUseMap;
+
+        public ReachingUses() {
+            mayUseMap = HashMultimap.create();
+        }
+
+        /**
+         * Copy constructor.
+         *
+         * @param other The constructed object is a replicated copy of this element.
+         */
+        public ReachingUses(ReachingUses other) {
+            mayUseMap = HashMultimap.create(other.mayUseMap);
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return (other instanceof ReachingUses) &&
+                    ((ReachingUses) other).mayUseMap.equals(this.mayUseMap);
+        }
+
+        @Override
+        public int hashCode() {
+            return mayUseMap.hashCode();
+        }
+    }
+
+    /**
+     * The join is a simple union because of the "may be" nature of the analysis.
+     * <p>
+     * Consider: A = 1; if (x) { A = 2 }; alert(A);
+     * <p>
+     * The read of A "may be" exposed to A = 1 in the beginning.
+     */
+    private static class ReachingUsesJoinOp implements JoinOp<ReachingUses> {
+        @Override
+        public ReachingUses apply(List<ReachingUses> from) {
+            ReachingUses result = new ReachingUses();
+            for (ReachingUses uses : from) {
+                result.mayUseMap.putAll(uses.mayUseMap);
+            }
+            return result;
+        }
     }
 
     @Override
-    public boolean equals(Object other) {
-      return (other instanceof ReachingUses) &&
-          ((ReachingUses) other).mayUseMap.equals(this.mayUseMap);
+    boolean isForward() {
+        return false;
     }
 
     @Override
-    public int hashCode() {
-      return mayUseMap.hashCode();
+    ReachingUses createEntryLattice() {
+        return new ReachingUses();
     }
-  }
 
-  /**
-   * The join is a simple union because of the "may be" nature of the analysis.
-   *
-   * Consider: A = 1; if (x) { A = 2 }; alert(A);
-   *
-   * The read of A "may be" exposed to A = 1 in the beginning.
-   */
-  private static class ReachingUsesJoinOp implements JoinOp<ReachingUses> {
     @Override
-    public ReachingUses apply(List<ReachingUses> from) {
-      ReachingUses result = new ReachingUses();
-      for (ReachingUses uses : from) {
-        result.mayUseMap.putAll(uses.mayUseMap);
-      }
-      return result;
+    ReachingUses createInitialEstimateLattice() {
+        return new ReachingUses();
     }
-  }
 
-  @Override
-  boolean isForward() {
-    return false;
-  }
+    @Override
+    ReachingUses flowThrough(Node n, ReachingUses input) {
+        ReachingUses output = new ReachingUses(input);
+        computeMayUse(n, n, output, false);
+        return output;
+    }
 
-  @Override
-  ReachingUses createEntryLattice() {
-    return new ReachingUses();
-  }
+    private void computeMayUse(
+            Node n, Node cfgNode, ReachingUses output, boolean conditional) {
+        switch (n.getType()) {
 
-  @Override
-  ReachingUses createInitialEstimateLattice() {
-    return new ReachingUses();
-  }
+            case Token.BLOCK:
+            case Token.FUNCTION:
+                return;
 
-  @Override
-  ReachingUses flowThrough(Node n, ReachingUses input) {
-    ReachingUses output = new ReachingUses(input);
-    computeMayUse(n, n, output, false);
-    return output;
-  }
+            case Token.NAME:
+                addToUseIfLocal(n.getString(), cfgNode, output);
+                return;
 
-  private void computeMayUse(
-      Node n, Node cfgNode, ReachingUses output, boolean conditional) {
-    switch (n.getType()) {
+            case Token.WHILE:
+            case Token.DO:
+            case Token.IF:
+                computeMayUse(
+                        NodeUtil.getConditionExpression(n), cfgNode, output, conditional);
+                return;
 
-      case Token.BLOCK:
-      case Token.FUNCTION:
-        return;
+            case Token.FOR:
+                if (!NodeUtil.isForIn(n)) {
+                    computeMayUse(
+                            NodeUtil.getConditionExpression(n), cfgNode, output, conditional);
+                } else {
+                    // for(x in y) {...}
+                    Node lhs = n.getFirstChild();
+                    Node rhs = lhs.getNext();
+                    if (NodeUtil.isVar(lhs)) {
+                        lhs = lhs.getLastChild(); // for(var x in y) {...}
+                    }
+                    if (NodeUtil.isName(lhs) && !conditional) {
+                        removeFromUseIfLocal(lhs.getString(), output);
+                    }
+                    computeMayUse(rhs, cfgNode, output, conditional);
+                }
+                return;
 
-      case Token.NAME:
-        addToUseIfLocal(n.getString(), cfgNode, output);
-        return;
+            case Token.AND:
+            case Token.OR:
+                computeMayUse(n.getLastChild(), cfgNode, output, true);
+                computeMayUse(n.getFirstChild(), cfgNode, output, conditional);
+                return;
 
-      case Token.WHILE:
-      case Token.DO:
-      case Token.IF:
-        computeMayUse(
-            NodeUtil.getConditionExpression(n), cfgNode, output, conditional);
-        return;
+            case Token.HOOK:
+                computeMayUse(n.getLastChild(), cfgNode, output, true);
+                computeMayUse(n.getFirstChild().getNext(), cfgNode, output, true);
+                computeMayUse(n.getFirstChild(), cfgNode, output, conditional);
+                return;
 
-      case Token.FOR:
-        if (!NodeUtil.isForIn(n)) {
-          computeMayUse(
-              NodeUtil.getConditionExpression(n), cfgNode, output, conditional);
-        } else {
-          // for(x in y) {...}
-          Node lhs = n.getFirstChild();
-          Node rhs = lhs.getNext();
-          if (NodeUtil.isVar(lhs)) {
-            lhs = lhs.getLastChild(); // for(var x in y) {...}
-          }
-          if (NodeUtil.isName(lhs) && !conditional) {
-            removeFromUseIfLocal(lhs.getString(), output);
-          }
-          computeMayUse(rhs, cfgNode, output, conditional);
-        }
-        return;
+            case Token.VAR:
+                Node varName = n.getFirstChild();
+                Preconditions.checkState(n.hasChildren(), "AST should be normalized");
 
-      case Token.AND:
-      case Token.OR:
-        computeMayUse(n.getLastChild(), cfgNode, output, true);
-        computeMayUse(n.getFirstChild(), cfgNode, output, conditional);
-        return;
+                if (varName.hasChildren()) {
+                    computeMayUse(varName.getFirstChild(), cfgNode, output, conditional);
+                    if (!conditional) {
+                        removeFromUseIfLocal(varName.getString(), output);
+                    }
+                }
+                return;
 
-      case Token.HOOK:
-        computeMayUse(n.getLastChild(), cfgNode, output, true);
-        computeMayUse(n.getFirstChild().getNext(), cfgNode, output, true);
-        computeMayUse(n.getFirstChild(), cfgNode, output, conditional);
-        return;
+            default:
+                if (NodeUtil.isAssignmentOp(n) && NodeUtil.isName(n.getFirstChild())) {
+                    Node name = n.getFirstChild();
+                    if (!conditional) {
+                        removeFromUseIfLocal(name.getString(), output);
+                    }
 
-      case Token.VAR:
-        Node varName = n.getFirstChild();
-        Preconditions.checkState(n.hasChildren(), "AST should be normalized");
+                    // In case of a += "Hello". There is a read of a.
+                    if (!NodeUtil.isAssign(n)) {
+                        addToUseIfLocal(name.getString(), cfgNode, output);
+                    }
 
-        if (varName.hasChildren()) {
-          computeMayUse(varName.getFirstChild(), cfgNode, output, conditional);
-          if (!conditional) {
-            removeFromUseIfLocal(varName.getString(), output);
-          }
-        }
-        return;
-
-      default:
-        if (NodeUtil.isAssignmentOp(n) && NodeUtil.isName(n.getFirstChild())) {
-          Node name = n.getFirstChild();
-          if (!conditional) {
-            removeFromUseIfLocal(name.getString(), output);
-          }
-
-          // In case of a += "Hello". There is a read of a.
-          if (!NodeUtil.isAssign(n)) {
-            addToUseIfLocal(name.getString(), cfgNode, output);
-          }
-
-          computeMayUse(name.getNext(), cfgNode, output, conditional);
-        } else {
-          /*
-           * We want to traverse in reverse order because we want the LAST
-           * definition in the sub-tree....
-           * But we have no better way to traverse in reverse other :'(
-           */
-          for (Node c = n.getLastChild(); c != null; c = n.getChildBefore(c)) {
-            computeMayUse(c, cfgNode, output, conditional);
-          }
+                    computeMayUse(name.getNext(), cfgNode, output, conditional);
+                } else {
+                    /*
+                     * We want to traverse in reverse order because we want the LAST
+                     * definition in the sub-tree....
+                     * But we have no better way to traverse in reverse other :'(
+                     */
+                    for (Node c = n.getLastChild(); c != null; c = n.getChildBefore(c)) {
+                        computeMayUse(c, cfgNode, output, conditional);
+                    }
+                }
         }
     }
-  }
 
-  /**
-   * Sets the variable for the given name to the node value in the upward
-   * exposed lattice. Do nothing if the variable name is one of the escaped
-   * variable.
-   */
-  private void addToUseIfLocal(String name, Node node, ReachingUses use) {
-    Var var = jsScope.getVar(name);
-    if (var == null || var.scope != jsScope) {
-      return;
+    /**
+     * Sets the variable for the given name to the node value in the upward
+     * exposed lattice. Do nothing if the variable name is one of the escaped
+     * variable.
+     */
+    private void addToUseIfLocal(String name, Node node, ReachingUses use) {
+        Var var = jsScope.getVar(name);
+        if (var == null || var.scope != jsScope) {
+            return;
+        }
+        if (!escaped.contains(var)) {
+            use.mayUseMap.put(var, node);
+        }
     }
-    if (!escaped.contains(var)) {
-      use.mayUseMap.put(var, node);
-    }
-  }
 
-  /**
-   * Removes the variable for the given name from the node value in the upward
-   * exposed lattice. Do nothing if the variable name is one of the escaped
-   * variable.
-   */
-  private void removeFromUseIfLocal(String name, ReachingUses use) {
-    Var var = jsScope.getVar(name);
-    if (var == null || var.scope != jsScope) {
-      return;
+    /**
+     * Removes the variable for the given name from the node value in the upward
+     * exposed lattice. Do nothing if the variable name is one of the escaped
+     * variable.
+     */
+    private void removeFromUseIfLocal(String name, ReachingUses use) {
+        Var var = jsScope.getVar(name);
+        if (var == null || var.scope != jsScope) {
+            return;
+        }
+        if (!escaped.contains(var)) {
+            use.mayUseMap.removeAll(var);
+        }
     }
-    if (!escaped.contains(var)) {
-      use.mayUseMap.removeAll(var);
-    }
-  }
 
-  /**
-   * Gets a list of nodes that may be using the value assigned to {@code name}
-   * in {@code defNode}. {@code defNode} must be one of the control flow graph
-   * nodes.
-   *
-   * @param name name of the variable. It can only be names of local variable
-   *     that are not function parameters, escaped variables or variables
-   *     declared in catch.
-   * @param defNode The list of upward exposed use for the variable.
-   */
-  Collection<Node> getUses(String name, Node defNode) {
-    GraphNode<Node, Branch> n = getCfg().getNode(defNode);
-    Preconditions.checkNotNull(n);
-    FlowState<ReachingUses> state = n.getAnnotation();
-    return state.getOut().mayUseMap.get(jsScope.getVar(name));
-  }
+    /**
+     * Gets a list of nodes that may be using the value assigned to {@code name}
+     * in {@code defNode}. {@code defNode} must be one of the control flow graph
+     * nodes.
+     *
+     * @param name    name of the variable. It can only be names of local variable
+     *                that are not function parameters, escaped variables or variables
+     *                declared in catch.
+     * @param defNode The list of upward exposed use for the variable.
+     */
+    Collection<Node> getUses(String name, Node defNode) {
+        GraphNode<Node, Branch> n = getCfg().getNode(defNode);
+        Preconditions.checkNotNull(n);
+        FlowState<ReachingUses> state = n.getAnnotation();
+        return state.getOut().mayUseMap.get(jsScope.getVar(name));
+    }
 }

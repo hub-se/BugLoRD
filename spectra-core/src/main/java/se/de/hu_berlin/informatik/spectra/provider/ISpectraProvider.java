@@ -12,21 +12,18 @@ import se.de.hu_berlin.informatik.spectra.core.ITrace;
 /**
  * Interface used by classes that load or provide spectra objects. Can be used
  * in experiments for automation.
- * 
- * @param <T>
- * type used to identify nodes in the system.
- * @param <K>
- * type of traces in the spectra
+ *
+ * @param <T> type used to identify nodes in the system.
+ * @param <K> type of traces in the spectra
  */
 public interface ISpectraProvider<T, K extends ITrace<T>> {
 
-	/**
-	 * Provides a spectra object.
-	 * 
-	 * @return spectra with traces and nodes
-	 * @throws IllegalStateException
-	 * in case providing the spectra fails
-	 */
-	public ISpectra<T, ? super K> loadSpectra() throws IllegalStateException;
+    /**
+     * Provides a spectra object.
+     *
+     * @return spectra with traces and nodes
+     * @throws IllegalStateException in case providing the spectra fails
+     */
+    public ISpectra<T, ? super K> loadSpectra() throws IllegalStateException;
 
 }

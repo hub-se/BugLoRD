@@ -38,394 +38,399 @@
 
 package com.google.javascript.rhino;
 
-import static com.google.javascript.rhino.JSDocInfo.Visibility.PRIVATE;
-import static com.google.javascript.rhino.JSDocInfo.Visibility.PROTECTED;
-import static com.google.javascript.rhino.JSDocInfo.Visibility.PUBLIC;
-import static com.google.javascript.rhino.jstype.JSTypeNative.BOOLEAN_TYPE;
-import static com.google.javascript.rhino.jstype.JSTypeNative.NUMBER_OBJECT_TYPE;
-import static com.google.javascript.rhino.jstype.JSTypeNative.NUMBER_TYPE;
-import static com.google.javascript.rhino.jstype.JSTypeNative.STRING_TYPE;
-
 import com.google.common.collect.Sets;
 import com.google.javascript.rhino.jstype.JSType;
 import com.google.javascript.rhino.jstype.JSTypeNative;
 import com.google.javascript.rhino.jstype.JSTypeRegistry;
 import com.google.javascript.rhino.testing.TestErrorReporter;
-
 import junit.framework.TestCase;
 
+import static com.google.javascript.rhino.JSDocInfo.Visibility.*;
+import static com.google.javascript.rhino.jstype.JSTypeNative.*;
+
 public class JSDocInfoTest extends TestCase {
-  private TestErrorReporter errorReporter = new TestErrorReporter(null, null);
-  private JSTypeRegistry registry = new JSTypeRegistry(errorReporter);
+    private TestErrorReporter errorReporter = new TestErrorReporter(null, null);
+    private JSTypeRegistry registry = new JSTypeRegistry(errorReporter);
 
-  private JSType getNativeType(JSTypeNative typeId) {
-    return registry.getNativeType(typeId);
-  }
+    private JSType getNativeType(JSTypeNative typeId) {
+        return registry.getNativeType(typeId);
+    }
 
-  /**
-   * Tests the assigned ordinal of the elements of the
-   * {@link JSDocInfo.Visibility} enum.
-   */
-  public void testVisibilityOrdinal() {
-    assertEquals(0, PRIVATE.ordinal());
-    assertEquals(1, PROTECTED.ordinal());
-    assertEquals(2, PUBLIC.ordinal());
-  }
+    /**
+     * Tests the assigned ordinal of the elements of the
+     * {@link JSDocInfo.Visibility} enum.
+     */
+    public void testVisibilityOrdinal() {
+        assertEquals(0, PRIVATE.ordinal());
+        assertEquals(1, PROTECTED.ordinal());
+        assertEquals(2, PUBLIC.ordinal());
+    }
 
-  public void testSetType() {
-    JSDocInfo info = new JSDocInfo();
-    info.setType(fromString("string"));
+    public void testSetType() {
+        JSDocInfo info = new JSDocInfo();
+        info.setType(fromString("string"));
 
-    assertNull(info.getBaseType());
-    assertNull(info.getDescription());
-    assertNull(info.getEnumParameterType());
-    assertEquals(0, info.getParameterCount());
-    assertNull(info.getReturnType());
-    assertEquals(getNativeType(STRING_TYPE), resolve(info.getType()));
-    assertNull(info.getVisibility());
-    assertTrue(info.hasType());
-    assertFalse(info.isConstant());
-    assertFalse(info.isConstructor());
-    assertFalse(info.isHidden());
-    assertFalse(info.shouldPreserveTry());
-  }
+        assertNull(info.getBaseType());
+        assertNull(info.getDescription());
+        assertNull(info.getEnumParameterType());
+        assertEquals(0, info.getParameterCount());
+        assertNull(info.getReturnType());
+        assertEquals(getNativeType(STRING_TYPE), resolve(info.getType()));
+        assertNull(info.getVisibility());
+        assertTrue(info.hasType());
+        assertFalse(info.isConstant());
+        assertFalse(info.isConstructor());
+        assertFalse(info.isHidden());
+        assertFalse(info.shouldPreserveTry());
+    }
 
-  public void testSetTypeAndVisibility() {
-    JSDocInfo info = new JSDocInfo();
-    info.setType(fromString("string"));
-    info.setVisibility(PROTECTED);
+    public void testSetTypeAndVisibility() {
+        JSDocInfo info = new JSDocInfo();
+        info.setType(fromString("string"));
+        info.setVisibility(PROTECTED);
 
-    assertNull(info.getBaseType());
-    assertNull(info.getDescription());
-    assertNull(info.getEnumParameterType());
-    assertEquals(0, info.getParameterCount());
-    assertNull(info.getReturnType());
-    assertEquals(getNativeType(STRING_TYPE), resolve(info.getType()));
-    assertEquals(PROTECTED, info.getVisibility());
-    assertTrue(info.hasType());
-    assertFalse(info.isConstant());
-    assertFalse(info.isConstructor());
-    assertFalse(info.isHidden());
-    assertFalse(info.shouldPreserveTry());
-  }
+        assertNull(info.getBaseType());
+        assertNull(info.getDescription());
+        assertNull(info.getEnumParameterType());
+        assertEquals(0, info.getParameterCount());
+        assertNull(info.getReturnType());
+        assertEquals(getNativeType(STRING_TYPE), resolve(info.getType()));
+        assertEquals(PROTECTED, info.getVisibility());
+        assertTrue(info.hasType());
+        assertFalse(info.isConstant());
+        assertFalse(info.isConstructor());
+        assertFalse(info.isHidden());
+        assertFalse(info.shouldPreserveTry());
+    }
 
-  public void testSetReturnType() {
-    JSDocInfo info = new JSDocInfo();
-    info.setReturnType(fromString("string"));
+    public void testSetReturnType() {
+        JSDocInfo info = new JSDocInfo();
+        info.setReturnType(fromString("string"));
 
-    assertNull(info.getBaseType());
-    assertNull(info.getDescription());
-    assertNull(info.getEnumParameterType());
-    assertEquals(0, info.getParameterCount());
-    assertEquals(getNativeType(STRING_TYPE), resolve(info.getReturnType()));
-    assertNull(info.getType());
-    assertNull(info.getVisibility());
-    assertFalse(info.hasType());
-    assertFalse(info.isConstant());
-    assertFalse(info.isConstructor());
-    assertFalse(info.isHidden());
-    assertFalse(info.shouldPreserveTry());
-  }
+        assertNull(info.getBaseType());
+        assertNull(info.getDescription());
+        assertNull(info.getEnumParameterType());
+        assertEquals(0, info.getParameterCount());
+        assertEquals(getNativeType(STRING_TYPE), resolve(info.getReturnType()));
+        assertNull(info.getType());
+        assertNull(info.getVisibility());
+        assertFalse(info.hasType());
+        assertFalse(info.isConstant());
+        assertFalse(info.isConstructor());
+        assertFalse(info.isHidden());
+        assertFalse(info.shouldPreserveTry());
+    }
 
-  public void testSetReturnTypeAndBaseType() {
-    JSDocInfo info = new JSDocInfo();
-    info.setBaseType(
-        new JSTypeExpression(
-            new Node(Token.BANG, Node.newString("Number")), "", registry));
-    info.setReturnType(fromString("string"));
+    public void testSetReturnTypeAndBaseType() {
+        JSDocInfo info = new JSDocInfo();
+        info.setBaseType(
+                new JSTypeExpression(
+                        new Node(Token.BANG, Node.newString("Number")), "", registry));
+        info.setReturnType(fromString("string"));
 
-    assertEquals(getNativeType(NUMBER_OBJECT_TYPE),
-        resolve(info.getBaseType()));
-    assertNull(info.getDescription());
-    assertNull(info.getEnumParameterType());
-    assertEquals(0, info.getParameterCount());
-    assertEquals(getNativeType(STRING_TYPE), resolve(info.getReturnType()));
-    assertNull(info.getType());
-    assertNull(info.getVisibility());
-    assertFalse(info.hasType());
-    assertFalse(info.isConstant());
-    assertFalse(info.isConstructor());
-    assertFalse(info.isHidden());
-    assertFalse(info.shouldPreserveTry());
-  }
+        assertEquals(getNativeType(NUMBER_OBJECT_TYPE),
+                resolve(info.getBaseType()));
+        assertNull(info.getDescription());
+        assertNull(info.getEnumParameterType());
+        assertEquals(0, info.getParameterCount());
+        assertEquals(getNativeType(STRING_TYPE), resolve(info.getReturnType()));
+        assertNull(info.getType());
+        assertNull(info.getVisibility());
+        assertFalse(info.hasType());
+        assertFalse(info.isConstant());
+        assertFalse(info.isConstructor());
+        assertFalse(info.isHidden());
+        assertFalse(info.shouldPreserveTry());
+    }
 
-  public void testSetEnumParameterType() {
-    JSDocInfo info = new JSDocInfo();
-    info.setEnumParameterType(fromString("string"));
+    public void testSetEnumParameterType() {
+        JSDocInfo info = new JSDocInfo();
+        info.setEnumParameterType(fromString("string"));
 
-    assertNull(info.getBaseType());
-    assertNull(info.getDescription());
-    assertEquals(getNativeType(STRING_TYPE),
-        resolve(info.getEnumParameterType()));
-    assertEquals(0, info.getParameterCount());
-    assertNull(info.getReturnType());
-    assertNull(info.getType());
-    assertNull(info.getVisibility());
-    assertFalse(info.hasType());
-    assertFalse(info.isConstant());
-    assertFalse(info.isConstructor());
-    assertFalse(info.isHidden());
-    assertFalse(info.shouldPreserveTry());
-  }
+        assertNull(info.getBaseType());
+        assertNull(info.getDescription());
+        assertEquals(getNativeType(STRING_TYPE),
+                resolve(info.getEnumParameterType()));
+        assertEquals(0, info.getParameterCount());
+        assertNull(info.getReturnType());
+        assertNull(info.getType());
+        assertNull(info.getVisibility());
+        assertFalse(info.hasType());
+        assertFalse(info.isConstant());
+        assertFalse(info.isConstructor());
+        assertFalse(info.isHidden());
+        assertFalse(info.shouldPreserveTry());
+    }
 
-  public void testMultipleSetType() {
-    JSDocInfo info = new JSDocInfo();
-    info.setType(fromString("number"));
+    public void testMultipleSetType() {
+        JSDocInfo info = new JSDocInfo();
+        info.setType(fromString("number"));
 
-    try {
-      info.setReturnType(fromString("boolean"));
-      fail("Expected exception");
-    } catch (IllegalStateException e) {}
+        try {
+            info.setReturnType(fromString("boolean"));
+            fail("Expected exception");
+        } catch (IllegalStateException e) {
+        }
 
-    try {
-      info.setEnumParameterType(fromString("string"));
-      fail("Expected exception");
-    } catch (IllegalStateException e) {}
+        try {
+            info.setEnumParameterType(fromString("string"));
+            fail("Expected exception");
+        } catch (IllegalStateException e) {
+        }
 
-    try {
-      info.setTypedefType(fromString("string"));
-      fail("Expected exception");
-    } catch (IllegalStateException e) {}
+        try {
+            info.setTypedefType(fromString("string"));
+            fail("Expected exception");
+        } catch (IllegalStateException e) {
+        }
 
-    assertEquals(getNativeType(NUMBER_TYPE), resolve(info.getType()));
-    assertNull(info.getReturnType());
-    assertNull(info.getEnumParameterType());
-    assertNull(info.getTypedefType());
-    assertTrue(info.hasType());
-  }
+        assertEquals(getNativeType(NUMBER_TYPE), resolve(info.getType()));
+        assertNull(info.getReturnType());
+        assertNull(info.getEnumParameterType());
+        assertNull(info.getTypedefType());
+        assertTrue(info.hasType());
+    }
 
-  public void testMultipleSetType2() {
-    JSDocInfo info = new JSDocInfo();
+    public void testMultipleSetType2() {
+        JSDocInfo info = new JSDocInfo();
 
-    info.setReturnType(fromString("boolean"));
+        info.setReturnType(fromString("boolean"));
 
-    try {
-      info.setType(fromString("number"));
-      fail("Expected exception");
-    } catch (IllegalStateException e) {}
+        try {
+            info.setType(fromString("number"));
+            fail("Expected exception");
+        } catch (IllegalStateException e) {
+        }
 
-    try {
-      info.setEnumParameterType(fromString("string"));
-      fail("Expected exception");
-    } catch (IllegalStateException e) {}
+        try {
+            info.setEnumParameterType(fromString("string"));
+            fail("Expected exception");
+        } catch (IllegalStateException e) {
+        }
 
-    try {
-      info.setTypedefType(fromString("string"));
-      fail("Expected exception");
-    } catch (IllegalStateException e) {}
+        try {
+            info.setTypedefType(fromString("string"));
+            fail("Expected exception");
+        } catch (IllegalStateException e) {
+        }
 
-    assertEquals(getNativeType(BOOLEAN_TYPE),
-        resolve(info.getReturnType()));
-    assertNull(info.getEnumParameterType());
-    assertNull(info.getType());
-    assertNull(info.getTypedefType());
-    assertFalse(info.hasType());
-  }
+        assertEquals(getNativeType(BOOLEAN_TYPE),
+                resolve(info.getReturnType()));
+        assertNull(info.getEnumParameterType());
+        assertNull(info.getType());
+        assertNull(info.getTypedefType());
+        assertFalse(info.hasType());
+    }
 
-  public void testMultipleSetType3() {
-    JSDocInfo info = new JSDocInfo();
-    info.setEnumParameterType(fromString("boolean"));
+    public void testMultipleSetType3() {
+        JSDocInfo info = new JSDocInfo();
+        info.setEnumParameterType(fromString("boolean"));
 
-    try {
-      info.setType(fromString("number"));
-      fail("Expected exception");
-    } catch (IllegalStateException e) {}
+        try {
+            info.setType(fromString("number"));
+            fail("Expected exception");
+        } catch (IllegalStateException e) {
+        }
 
-    try {
-      info.setReturnType(fromString("string"));
-      fail("Expected exception");
-    } catch (IllegalStateException e) {}
+        try {
+            info.setReturnType(fromString("string"));
+            fail("Expected exception");
+        } catch (IllegalStateException e) {
+        }
 
-    try {
-      info.setTypedefType(fromString("string"));
-      fail("Expected exception");
-    } catch (IllegalStateException e) {}
+        try {
+            info.setTypedefType(fromString("string"));
+            fail("Expected exception");
+        } catch (IllegalStateException e) {
+        }
 
-    assertNull(info.getType());
-    assertNull(info.getTypedefType());
-    assertNull(info.getReturnType());
-    assertEquals(getNativeType(BOOLEAN_TYPE),
-        resolve(info.getEnumParameterType()));
-  }
+        assertNull(info.getType());
+        assertNull(info.getTypedefType());
+        assertNull(info.getReturnType());
+        assertEquals(getNativeType(BOOLEAN_TYPE),
+                resolve(info.getEnumParameterType()));
+    }
 
-  public void testSetTypedefType() {
-    JSDocInfo info = new JSDocInfo();
-    info.setTypedefType(fromString("boolean"));
+    public void testSetTypedefType() {
+        JSDocInfo info = new JSDocInfo();
+        info.setTypedefType(fromString("boolean"));
 
-    assertEquals(getNativeType(BOOLEAN_TYPE),
-        resolve(info.getTypedefType()));
-    assertTrue(info.hasTypedefType());
-    assertFalse(info.hasType());
-    assertFalse(info.hasEnumParameterType());
-    assertFalse(info.hasReturnType());
-  }
+        assertEquals(getNativeType(BOOLEAN_TYPE),
+                resolve(info.getTypedefType()));
+        assertTrue(info.hasTypedefType());
+        assertFalse(info.hasType());
+        assertFalse(info.hasEnumParameterType());
+        assertFalse(info.hasReturnType());
+    }
 
-  public void testSetConstant() {
-    JSDocInfo info = new JSDocInfo();
-    info.setConstant(true);
+    public void testSetConstant() {
+        JSDocInfo info = new JSDocInfo();
+        info.setConstant(true);
 
-    assertFalse(info.hasType());
-    assertTrue(info.isConstant());
-    assertFalse(info.isConstructor());
-    assertFalse(info.isDefine());
-    assertFalse(info.isHidden());
-    assertFalse(info.shouldPreserveTry());
-  }
+        assertFalse(info.hasType());
+        assertTrue(info.isConstant());
+        assertFalse(info.isConstructor());
+        assertFalse(info.isDefine());
+        assertFalse(info.isHidden());
+        assertFalse(info.shouldPreserveTry());
+    }
 
-  public void testSetConstructor() {
-    JSDocInfo info = new JSDocInfo();
-    info.setConstructor(true);
+    public void testSetConstructor() {
+        JSDocInfo info = new JSDocInfo();
+        info.setConstructor(true);
 
-    assertFalse(info.isConstant());
-    assertTrue(info.isConstructor());
-    assertFalse(info.isDefine());
-    assertFalse(info.isHidden());
-    assertFalse(info.shouldPreserveTry());
-  }
+        assertFalse(info.isConstant());
+        assertTrue(info.isConstructor());
+        assertFalse(info.isDefine());
+        assertFalse(info.isHidden());
+        assertFalse(info.shouldPreserveTry());
+    }
 
-  public void testSetDefine() {
-    JSDocInfo info = new JSDocInfo();
-    info.setDefine(true);
+    public void testSetDefine() {
+        JSDocInfo info = new JSDocInfo();
+        info.setDefine(true);
 
-    assertTrue(info.isConstant());
-    assertFalse(info.isConstructor());
-    assertTrue(info.isDefine());
-    assertFalse(info.isHidden());
-    assertFalse(info.shouldPreserveTry());
-  }
+        assertTrue(info.isConstant());
+        assertFalse(info.isConstructor());
+        assertTrue(info.isDefine());
+        assertFalse(info.isHidden());
+        assertFalse(info.shouldPreserveTry());
+    }
 
-  public void testSetHidden() {
-    JSDocInfo info = new JSDocInfo();
-    info.setHidden(true);
+    public void testSetHidden() {
+        JSDocInfo info = new JSDocInfo();
+        info.setHidden(true);
 
-    assertFalse(info.hasType());
-    assertFalse(info.isConstant());
-    assertFalse(info.isConstructor());
-    assertFalse(info.isDefine());
-    assertTrue(info.isHidden());
-    assertFalse(info.shouldPreserveTry());
-  }
+        assertFalse(info.hasType());
+        assertFalse(info.isConstant());
+        assertFalse(info.isConstructor());
+        assertFalse(info.isDefine());
+        assertTrue(info.isHidden());
+        assertFalse(info.shouldPreserveTry());
+    }
 
-  public void testSetShouldPreserveTry() {
-    JSDocInfo info = new JSDocInfo();
-    info.setShouldPreserveTry(true);
+    public void testSetShouldPreserveTry() {
+        JSDocInfo info = new JSDocInfo();
+        info.setShouldPreserveTry(true);
 
-    assertFalse(info.isConstant());
-    assertFalse(info.isConstructor());
-    assertFalse(info.isDefine());
-    assertFalse(info.isHidden());
-    assertTrue(info.shouldPreserveTry());
-  }
+        assertFalse(info.isConstant());
+        assertFalse(info.isConstructor());
+        assertFalse(info.isDefine());
+        assertFalse(info.isHidden());
+        assertTrue(info.shouldPreserveTry());
+    }
 
-  public void testSetNoTypeCheck() {
-    JSDocInfo info = new JSDocInfo();
-    info.setNoCheck(true);
+    public void testSetNoTypeCheck() {
+        JSDocInfo info = new JSDocInfo();
+        info.setNoCheck(true);
 
-    assertFalse(info.isDeprecated());
-    assertFalse(info.isNoAlias());
-    assertFalse(info.isOverride());
-    assertTrue(info.isNoTypeCheck());
-  }
+        assertFalse(info.isDeprecated());
+        assertFalse(info.isNoAlias());
+        assertFalse(info.isOverride());
+        assertTrue(info.isNoTypeCheck());
+    }
 
-  public void testSetOverride() {
-    JSDocInfo info = new JSDocInfo();
-    info.setOverride(true);
+    public void testSetOverride() {
+        JSDocInfo info = new JSDocInfo();
+        info.setOverride(true);
 
-    assertFalse(info.isDeprecated());
-    assertFalse(info.isNoAlias());
-    assertTrue(info.isOverride());
-  }
+        assertFalse(info.isDeprecated());
+        assertFalse(info.isNoAlias());
+        assertTrue(info.isOverride());
+    }
 
-  public void testSetExport() {
-    JSDocInfo info = new JSDocInfo();
-    info.setExport(true);
+    public void testSetExport() {
+        JSDocInfo info = new JSDocInfo();
+        info.setExport(true);
 
-    assertTrue(info.isExport());
-  }
+        assertTrue(info.isExport());
+    }
 
-  public void testSetNoAlias() {
-    JSDocInfo info = new JSDocInfo();
-    info.setNoAlias(true);
+    public void testSetNoAlias() {
+        JSDocInfo info = new JSDocInfo();
+        info.setNoAlias(true);
 
-    assertFalse(info.isDeprecated());
-    assertFalse(info.isOverride());
-    assertTrue(info.isNoAlias());
-  }
+        assertFalse(info.isDeprecated());
+        assertFalse(info.isOverride());
+        assertTrue(info.isNoAlias());
+    }
 
-  public void testSetDeprecated() {
-    JSDocInfo info = new JSDocInfo();
-    info.setDeprecated(true);
+    public void testSetDeprecated() {
+        JSDocInfo info = new JSDocInfo();
+        info.setDeprecated(true);
 
-    assertFalse(info.isNoAlias());
-    assertFalse(info.isOverride());
-    assertTrue(info.isDeprecated());
-  }
+        assertFalse(info.isNoAlias());
+        assertFalse(info.isOverride());
+        assertTrue(info.isDeprecated());
+    }
 
-  public void testMultipleSetFlags1() {
-    JSDocInfo info = new JSDocInfo();
-    info.setConstant(true);
-    info.setConstructor(true);
-    info.setHidden(true);
-    info.setShouldPreserveTry(true);
+    public void testMultipleSetFlags1() {
+        JSDocInfo info = new JSDocInfo();
+        info.setConstant(true);
+        info.setConstructor(true);
+        info.setHidden(true);
+        info.setShouldPreserveTry(true);
 
-    assertFalse(info.hasType());
-    assertTrue(info.isConstant());
-    assertTrue(info.isConstructor());
-    assertFalse(info.isDefine());
-    assertTrue(info.isHidden());
-    assertTrue(info.shouldPreserveTry());
+        assertFalse(info.hasType());
+        assertTrue(info.isConstant());
+        assertTrue(info.isConstructor());
+        assertFalse(info.isDefine());
+        assertTrue(info.isHidden());
+        assertTrue(info.shouldPreserveTry());
 
-    info.setHidden(false);
+        info.setHidden(false);
 
-    assertTrue(info.isConstant());
-    assertTrue(info.isConstructor());
-    assertFalse(info.isDefine());
-    assertFalse(info.isHidden());
-    assertTrue(info.shouldPreserveTry());
+        assertTrue(info.isConstant());
+        assertTrue(info.isConstructor());
+        assertFalse(info.isDefine());
+        assertFalse(info.isHidden());
+        assertTrue(info.shouldPreserveTry());
 
-    info.setConstant(false);
-    info.setConstructor(false);
+        info.setConstant(false);
+        info.setConstructor(false);
 
-    assertFalse(info.isConstant());
-    assertFalse(info.isConstructor());
-    assertFalse(info.isDefine());
-    assertFalse(info.isHidden());
-    assertTrue(info.shouldPreserveTry());
+        assertFalse(info.isConstant());
+        assertFalse(info.isConstructor());
+        assertFalse(info.isDefine());
+        assertFalse(info.isHidden());
+        assertTrue(info.shouldPreserveTry());
 
-    info.setConstructor(true);
+        info.setConstructor(true);
 
-    assertFalse(info.isConstant());
-    assertTrue(info.isConstructor());
-    assertFalse(info.isDefine());
-    assertFalse(info.isHidden());
-    assertTrue(info.shouldPreserveTry());
-  }
+        assertFalse(info.isConstant());
+        assertTrue(info.isConstructor());
+        assertFalse(info.isDefine());
+        assertFalse(info.isHidden());
+        assertTrue(info.shouldPreserveTry());
+    }
 
-  public void testSetFileOverviewWithDocumentationOff() {
-    JSDocInfo info = new JSDocInfo();
-    info.documentFileOverview("hi bob");
-    assertNull(info.getFileOverview());
-  }
+    public void testSetFileOverviewWithDocumentationOff() {
+        JSDocInfo info = new JSDocInfo();
+        info.documentFileOverview("hi bob");
+        assertNull(info.getFileOverview());
+    }
 
-  public void testSetFileOverviewWithDocumentationOn() {
-    JSDocInfo info = new JSDocInfo(true);
-    info.documentFileOverview("hi bob");
-    assertEquals("hi bob", info.getFileOverview());
-  }
+    public void testSetFileOverviewWithDocumentationOn() {
+        JSDocInfo info = new JSDocInfo(true);
+        info.documentFileOverview("hi bob");
+        assertEquals("hi bob", info.getFileOverview());
+    }
 
-  public void testSetSuppressions() {
-    JSDocInfo info = new JSDocInfo(true);
-    info.setSuppressions(Sets.newHashSet("sam", "bob"));
-    assertEquals(Sets.newHashSet("bob", "sam"), info.getSuppressions());
-  }
+    public void testSetSuppressions() {
+        JSDocInfo info = new JSDocInfo(true);
+        info.setSuppressions(Sets.newHashSet("sam", "bob"));
+        assertEquals(Sets.newHashSet("bob", "sam"), info.getSuppressions());
+    }
 
-  /** Gets the type expression for a simple type name. */
-  private JSTypeExpression fromString(String s) {
-    return new JSTypeExpression(Node.newString(s), "", registry);
-  }
+    /**
+     * Gets the type expression for a simple type name.
+     */
+    private JSTypeExpression fromString(String s) {
+        return new JSTypeExpression(Node.newString(s), "", registry);
+    }
 
-  private JSType resolve(JSTypeExpression n, String... warnings) {
-    errorReporter.setWarnings(warnings);
-    return n.evaluate(null);
-  }
+    private JSType resolve(JSTypeExpression n, String... warnings) {
+        errorReporter.setWarnings(warnings);
+        return n.evaluate(null);
+    }
 }

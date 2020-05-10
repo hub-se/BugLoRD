@@ -15,66 +15,66 @@ import org.mockito.stubbing.Stubber;
  * Start learning about BDD here: <a href="http://en.wikipedia.org/wiki/Behavior_Driven_Development">http://en.wikipedia.org/wiki/Behavior_Driven_Development</a>
  * <p>
  * The problem is that current stubbing api with canonical role of <b>when</b> word does not integrate nicely with <b>//given //when //then</b> comments.
- * It's because stubbing belongs to <b>given</b> component of the test and not to the <b>when</b> component of the test. 
- * Hence {@link BDDMockito} class introduces an alias so that you stub method calls with {@link BDDMockito#given(Object)} method. 
- * Now it really nicely integrates with the <b>given</b> component of a BDD style test!    
+ * It's because stubbing belongs to <b>given</b> component of the test and not to the <b>when</b> component of the test.
+ * Hence {@link BDDMockito} class introduces an alias so that you stub method calls with {@link BDDMockito#given(Object)} method.
+ * Now it really nicely integrates with the <b>given</b> component of a BDD style test!
  * <p>
- * Here is how the test might look like: 
+ * Here is how the test might look like:
  * <pre>
  * import static org.mockito.BDDMockito.*;
- * 
+ *
  * Seller seller = mock(Seller.class);
  * Shop shop = new Shop(seller);
- * 
+ *
  * public void shouldBuyBread() throws Exception {
- *   //given  
+ *   //given
  *   given(seller.askForBread()).willReturn(new Bread());
- *   
+ *
  *   //when
  *   Goods goods = shop.buyBread();
- *   
+ *
  *   //then
  *   assertThat(goods, containBread());
- * }  
+ * }
  * </pre>
- * 
+ * <p>
  * Stubbing voids with throwables:
  * <pre>
  *   //given
  *   willThrow(new RuntimeException("boo")).given(mock).foo();
- *   
+ *
  *   //when
  *   Result result = systemUnderTest.perform();
- *   
+ *
  *   //then
  *   assertEquals(failure, result);
  * </pre>
  * <p>
- * One of the purposes of BDDMockito is also to show how to tailor the mocking syntax to a different programming style. 
+ * One of the purposes of BDDMockito is also to show how to tailor the mocking syntax to a different programming style.
  */
 @SuppressWarnings("unchecked")
 public class BDDMockito extends Mockito {
-    
+
     /**
      * See original {@link OngoingStubbing}
      */
     public static interface BDDMyOngoingStubbing<T> {
-        
+
         /**
          * See original {@link OngoingStubbing#thenAnswer(Answer)}
          */
         BDDMyOngoingStubbing<T> willAnswer(Answer<?> answer);
-        
+
         /**
          * See original {@link OngoingStubbing#thenReturn(Object)}
          */
         BDDMyOngoingStubbing<T> willReturn(T value);
-        
+
         /**
          * See original {@link OngoingStubbing#thenReturn(Object, Object...)}
          */
         BDDMyOngoingStubbing<T> willReturn(T value, T... values);
-        
+
         /**
          * See original {@link OngoingStubbing#thenThrow(Throwable...)}
          */
@@ -85,7 +85,7 @@ public class BDDMockito extends Mockito {
          */
         BDDMyOngoingStubbing<T> willCallRealMethod();
     }
-    
+
     public static class BDDOngoingStubbingImpl<T> implements BDDMyOngoingStubbing<T> {
 
         private final OngoingStubbing<T> mockitoOngoingStubbing;
@@ -126,14 +126,14 @@ public class BDDMockito extends Mockito {
             return new BDDOngoingStubbingImpl<T>(mockitoOngoingStubbing.thenCallRealMethod());
         }
     }
-    
+
     /**
      * see original {@link Mockito#when(Object)}
      */
     public static <T> BDDMyOngoingStubbing<T> given(T methodCall) {
         return new BDDOngoingStubbingImpl<T>(Mockito.when(methodCall));
     }
-    
+
     /**
      * See original {@link Stubber}
      */
@@ -142,28 +142,28 @@ public class BDDMockito extends Mockito {
          * See original {@link Stubber#doAnswer(Answer)}
          */
         BDDStubber willAnswer(Answer answer);
-        
+
         /**
          * See original {@link Stubber#doNothing()}
          */
         BDDStubber willNothing();
-        
+
         /**
          * See original {@link Stubber#doReturn(Object)}
          */
         BDDStubber willReturn(Object toBeReturned);
-        
+
         /**
          * See original {@link Stubber#doThrow(Throwable)}
          */
         BDDStubber willThrow(Throwable toBeThrown);
-        
+
         /**
          * See original {@link Stubber#when(Object)}
          */
         <T> T given(T mock);
     }
-    
+
     public static class BDDStubberImpl implements BDDStubber {
 
         private final Stubber mockitoStubber;
@@ -207,28 +207,28 @@ public class BDDMockito extends Mockito {
             return new BDDStubberImpl(mockitoStubber.doThrow(toBeThrown));
         }
     }
-    
+
     /**
      * see original {@link Mockito#doThrow(Throwable)}
      */
     public static BDDStubber willThrow(Throwable toBeThrown) {
         return new BDDStubberImpl(Mockito.doThrow(toBeThrown));
     }
-    
+
     /**
      * see original {@link Mockito#doAnswer(Answer)}
      */
     public static BDDStubber willAnswer(Answer answer) {
         return new BDDStubberImpl(Mockito.doAnswer(answer));
-    }  
-    
+    }
+
     /**
      * see original {@link Mockito#doNothing()}
      */
     public static BDDStubber willDoNothing() {
         return new BDDStubberImpl(Mockito.doNothing());
-    }    
-    
+    }
+
     /**
      * see original {@link Mockito#doReturn(Object)}
      */

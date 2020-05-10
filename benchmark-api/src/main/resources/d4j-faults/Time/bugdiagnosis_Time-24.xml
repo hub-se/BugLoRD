@@ -1,44 +1,45 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-24">
-			<tests>
-				<testfile path="org/joda/time/format/TestDateTimeFormatter">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;2010-01-04&gt;
-						but was:&lt;2008-12-29&gt;:-
-						org.joda.time.format.TestDateTimeFormatter::testParseLocalDate_weekyear_month_week_2011:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;2011-01-03&gt;
-						but was:&lt;2010-01-04&gt;:-
-						org.joda.time.format.TestDateTimeFormatter::testParseLocalDate_weekyear_month_week_2012:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;2012-01-02&gt;
-						but was:&lt;2011-01-03&gt;:-
-						org.joda.time.format.TestDateTimeFormatter::testParseLocalDate_year_month_week_2010:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;2010-01-04&gt;
-						but was:&lt;2008-12-29&gt;:-
-						org.joda.time.format.TestDateTimeFormatter::testParseLocalDate_year_month_week_2011:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;2011-01-03&gt;
-						but was:&lt;2010-01-04&gt;:-
-						org.joda.time.format.TestDateTimeFormatter::testParseLocalDate_year_month_week_2012:--&gt;
-						junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1038</number_tests>
-					<failed>7</failed>
-					<passed>1031</passed>
-					<nodes>13087</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/format/DateTimeParserBucket.java">
-					<insert numberlines="5">355</insert>
-					<bugtypes>
-						<id id="1.1" lines="354">
-							<description>Missing case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-24">
+            <tests>
+                <testfile path="org/joda/time/format/TestDateTimeFormatter">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;2010-01-04&gt;
+                        but was:&lt;2008-12-29&gt;:-
+                        org.joda.time.format.TestDateTimeFormatter::testParseLocalDate_weekyear_month_week_2011:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;2011-01-03&gt;
+                        but was:&lt;2010-01-04&gt;:-
+                        org.joda.time.format.TestDateTimeFormatter::testParseLocalDate_weekyear_month_week_2012:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;2012-01-02&gt;
+                        but was:&lt;2011-01-03&gt;:-
+                        org.joda.time.format.TestDateTimeFormatter::testParseLocalDate_year_month_week_2010:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;2010-01-04&gt;
+                        but was:&lt;2008-12-29&gt;:-
+                        org.joda.time.format.TestDateTimeFormatter::testParseLocalDate_year_month_week_2011:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;2011-01-03&gt;
+                        but was:&lt;2010-01-04&gt;:-
+                        org.joda.time.format.TestDateTimeFormatter::testParseLocalDate_year_month_week_2012:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1038</number_tests>
+                    <failed>7</failed>
+                    <passed>1031</passed>
+                    <nodes>13087</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/format/DateTimeParserBucket.java">
+                    <insert numberlines="5">355</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="354">
+                            <description>Missing case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -19,34 +19,32 @@ package com.google.javascript.jscomp;
 
 /**
  * Tests for {@link ObjectPropertyStringPostprocess}.
- *
-*
  */
 public class ObjectPropertyStringPostprocessTest extends CompilerTestCase {
-  @Override
-  protected CompilerPass getProcessor(final Compiler compiler) {
-    return new ObjectPropertyStringPostprocess(compiler);
-  }
+    @Override
+    protected CompilerPass getProcessor(final Compiler compiler) {
+        return new ObjectPropertyStringPostprocess(compiler);
+    }
 
-  @Override
-  protected int getNumRepetitions() {
-    return 1;
-  }
+    @Override
+    protected int getNumRepetitions() {
+        return 1;
+    }
 
-  public void testFooDotBar() {
-    testPass("goog.global, foo.bar", "foo, 'bar'");
-  }
+    public void testFooDotBar() {
+        testPass("goog.global, foo.bar", "foo, 'bar'");
+    }
 
-  public void testFooGetElemBar() {
-    testPass("goog.global, foo[bar]", "foo, bar");
-  }
+    public void testFooGetElemBar() {
+        testPass("goog.global, foo[bar]", "foo, bar");
+    }
 
-  public void testFooBar() {
-    testPass("goog.global, foo$bar", "goog.global, 'foo$bar'");
-  }
+    public void testFooBar() {
+        testPass("goog.global, foo$bar", "goog.global, 'foo$bar'");
+    }
 
-  private void testPass(String input, String expected) {
-    test("new JSCompiler_ObjectPropertyString(" + input + ")",
-         "new JSCompiler_ObjectPropertyString(" + expected + ")");
-  }
+    private void testPass(String input, String expected) {
+        test("new JSCompiler_ObjectPropertyString(" + input + ")",
+                "new JSCompiler_ObjectPropertyString(" + expected + ")");
+    }
 }

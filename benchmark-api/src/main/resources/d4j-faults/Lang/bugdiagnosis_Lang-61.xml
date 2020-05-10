@@ -1,32 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-61">
-			<tests>
-				<testfile path="org/apache/commons/lang/text/StrBuilderTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;-1&gt;
-						but was:&lt;6&gt;:-
-						org.apache.commons.lang.text.StrBuilderTest::testLang294:--&gt;
-						java.lang.ArrayIndexOutOfBoundsException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>184</number_tests>
-					<failed>2</failed>
-					<passed>182</passed>
-					<nodes>9561</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang/text/StrBuilder.java">
-					<change>1776</change>
-					<bugtypes>
-						<id id="3.1" lines="1776">
-							<description>Incorrect variable used.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-61">
+            <tests>
+                <testfile path="org/apache/commons/lang/text/StrBuilderTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;-1&gt;
+                        but was:&lt;6&gt;:-
+                        org.apache.commons.lang.text.StrBuilderTest::testLang294:--&gt;
+                        java.lang.ArrayIndexOutOfBoundsException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>184</number_tests>
+                    <failed>2</failed>
+                    <passed>182</passed>
+                    <nodes>9561</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang/text/StrBuilder.java">
+                    <change>1776</change>
+                    <bugtypes>
+                        <id id="3.1" lines="1776">
+                            <description>Incorrect variable used.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -15,24 +15,18 @@
  */
 package org.joda.time.convert;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTimeField;
-import org.joda.time.DateTimeZone;
-import org.joda.time.ReadablePartial;
-import org.joda.time.TimeOfDay;
-import org.joda.time.YearMonthDay;
+import org.joda.time.*;
 import org.joda.time.base.BasePartial;
 import org.joda.time.chrono.BuddhistChronology;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.chrono.JulianChronology;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 /**
  * This class is a Junit unit test for ReadablePartialConverter.
@@ -47,7 +41,7 @@ public class TestReadablePartialConverter extends TestCase {
     private static Chronology JULIAN;
     private static Chronology ISO;
     private static Chronology BUDDHIST;
-    
+
     private DateTimeZone zone = null;
 
     public static void main(String[] args) {
@@ -74,11 +68,11 @@ public class TestReadablePartialConverter extends TestCase {
         assertEquals(false, Modifier.isPublic(cls.getModifiers()));
         assertEquals(false, Modifier.isProtected(cls.getModifiers()));
         assertEquals(false, Modifier.isPrivate(cls.getModifiers()));
-        
+
         Constructor con = cls.getDeclaredConstructor((Class[]) null);
         assertEquals(1, cls.getDeclaredConstructors().length);
         assertEquals(true, Modifier.isProtected(con.getModifiers()));
-        
+
         Field fld = cls.getDeclaredField("INSTANCE");
         assertEquals(false, Modifier.isPublic(fld.getModifiers()));
         assertEquals(false, Modifier.isProtected(fld.getModifiers()));
@@ -106,34 +100,37 @@ public class TestReadablePartialConverter extends TestCase {
     //-----------------------------------------------------------------------
     public void testGetPartialValues() throws Exception {
         TimeOfDay tod = new TimeOfDay();
-        int[] expected = new int[] {1, 2, 3, 4};
+        int[] expected = new int[]{1, 2, 3, 4};
         int[] actual = ReadablePartialConverter.INSTANCE.getPartialValues(tod, new TimeOfDay(1, 2, 3, 4), ISOChronology.getInstance(PARIS));
         assertEquals(true, Arrays.equals(expected, actual));
-        
+
         try {
             ReadablePartialConverter.INSTANCE.getPartialValues(tod, new YearMonthDay(2005, 6, 9), JULIAN);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             ReadablePartialConverter.INSTANCE.getPartialValues(tod, new MockTOD(), JULIAN);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     static class MockTOD extends BasePartial {
         protected DateTimeField getField(int index, Chronology chrono) {
             switch (index) {
                 case 0:
-                return chrono.hourOfDay();
+                    return chrono.hourOfDay();
                 case 1:
-                return chrono.minuteOfHour();
+                    return chrono.minuteOfHour();
                 case 2:
-                return chrono.year();
+                    return chrono.year();
                 case 3:
-                return chrono.era();
+                    return chrono.era();
             }
             return null;
         }
+
         public int size() {
             return 4;
         }

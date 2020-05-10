@@ -16,11 +16,7 @@
  */
 package org.apache.commons.lang3.concurrent;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -91,15 +87,17 @@ import java.util.concurrent.ExecutorService;
  * by {@code MultiBackgroundInitializer} waits forever.
  * </p>
  *
- * @since 3.0
  * @version $Id$
+ * @since 3.0
  */
 public class MultiBackgroundInitializer
         extends
         BackgroundInitializer<MultiBackgroundInitializer.MultiBackgroundInitializerResults> {
-    /** A map with the child initializers. */
+    /**
+     * A map with the child initializers.
+     */
     private final Map<String, BackgroundInitializer<?>> childInitializers =
-        new HashMap<String, BackgroundInitializer<?>>();
+            new HashMap<String, BackgroundInitializer<?>>();
 
     /**
      * Creates a new instance of {@code MultiBackgroundInitializer}.
@@ -113,7 +111,7 @@ public class MultiBackgroundInitializer
      * initializes it with the given external {@code ExecutorService}.
      *
      * @param exec the {@code ExecutorService} for executing the background
-     * tasks
+     *             tasks
      */
     public MultiBackgroundInitializer(ExecutorService exec) {
         super(exec);
@@ -127,9 +125,9 @@ public class MultiBackgroundInitializer
      *
      * @param name the name of the initializer (must not be <b>null</b>)
      * @param init the {@code BackgroundInitializer} to add (must not be
-     * <b>null</b>)
+     *             <b>null</b>)
      * @throws IllegalArgumentException if a required parameter is missing
-     * @throws IllegalStateException if {@code start()} has already been called
+     * @throws IllegalStateException    if {@code start()} has already been called
      */
     public void addInitializer(String name, BackgroundInitializer<?> init) {
         if (name == null) {
@@ -225,13 +223,19 @@ public class MultiBackgroundInitializer
      * caused an exception.
      */
     public static class MultiBackgroundInitializerResults {
-        /** A map with the child initializers. */
+        /**
+         * A map with the child initializers.
+         */
         private final Map<String, BackgroundInitializer<?>> initializers;
 
-        /** A map with the result objects. */
+        /**
+         * A map with the result objects.
+         */
         private final Map<String, Object> resultObjects;
 
-        /** A map with the exceptions. */
+        /**
+         * A map with the exceptions.
+         */
         private final Map<String, ConcurrentException> exceptions;
 
         /**
@@ -239,7 +243,7 @@ public class MultiBackgroundInitializer
          * and initializes it with maps for the {@code BackgroundInitializer}
          * objects, their result objects and the exceptions thrown by them.
          *
-         * @param inits the {@code BackgroundInitializer} objects
+         * @param inits   the {@code BackgroundInitializer} objects
          * @param results the result objects
          * @param excepts the exceptions
          */

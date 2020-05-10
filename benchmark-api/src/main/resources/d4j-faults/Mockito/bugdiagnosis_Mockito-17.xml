@@ -1,44 +1,45 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-17">
-			<tests>
-				<testfile path="org/mockitousage/basicapi/MocksSerializationTest">
-					<exception>java.io.NotSerializableException:org.mockitousage.IMethods$$EnhancerByMockitoWithCGLIB$$3a0bdfbc
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>656</number_tests>
-					<failed>1</failed>
-					<passed>655</passed>
-					<nodes>2618</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/internal/creation/MockSettingsImpl.java">
-					<change>22</change>
-					<change>74</change>
-					<insert numberlines="1"></insert>
-					<bugtypes>
-						<id id="2.2" lines="MockSettingsImpl, 19,22">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="MockSettingsImpl, 19,74">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="org/mockito/internal/util/MockUtil.java">
-					<insert numberlines="1"></insert>
-					<insert numberlines="4">45,46-47</insert>
-					<bugtypes>
-						<id id="1.2" lines="MockUtil, 18,44,45">
-							<description>Missing case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>6</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-17">
+            <tests>
+                <testfile path="org/mockitousage/basicapi/MocksSerializationTest">
+                    <exception>
+                        java.io.NotSerializableException:org.mockitousage.IMethods$$EnhancerByMockitoWithCGLIB$$3a0bdfbc
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>656</number_tests>
+                    <failed>1</failed>
+                    <passed>655</passed>
+                    <nodes>2618</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/internal/creation/MockSettingsImpl.java">
+                    <change>22</change>
+                    <change>74</change>
+                    <insert numberlines="1"></insert>
+                    <bugtypes>
+                        <id id="2.2" lines="MockSettingsImpl, 19,22">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="MockSettingsImpl, 19,74">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="org/mockito/internal/util/MockUtil.java">
+                    <insert numberlines="1"></insert>
+                    <insert numberlines="4">45,46-47</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="MockUtil, 18,44,45">
+                            <description>Missing case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>6</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

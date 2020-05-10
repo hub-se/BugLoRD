@@ -1,36 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-112">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
-					<exception>junit.framework.AssertionFailedError:unexpected
-						warnings(s):-
-						com.google.javascript.jscomp.TypeCheckTest::testTemplatized11:--&gt;
-						junit.framework.AssertionFailedError:unexpected warnings(s)
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>3222</number_tests>
-					<failed>2</failed>
-					<passed>3220</passed>
-					<nodes>49520</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/TypeInference.java">
-					<change>1192-1193</change>
-					<bugtypes>
-						<id id="3.1" lines="1192,1193">
-							<description>Incorrect initialization.</description>
-						</id>
-						<id id="1.4" lines="1194">
-							<description>Missing function override.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-112">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/TypeCheckTest">
+                    <exception>junit.framework.AssertionFailedError:unexpected
+                        warnings(s):-
+                        com.google.javascript.jscomp.TypeCheckTest::testTemplatized11:--&gt;
+                        junit.framework.AssertionFailedError:unexpected warnings(s)
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>3222</number_tests>
+                    <failed>2</failed>
+                    <passed>3220</passed>
+                    <nodes>49520</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/TypeInference.java">
+                    <change>1192-1193</change>
+                    <bugtypes>
+                        <id id="3.1" lines="1192,1193">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                        <id id="1.4" lines="1194">
+                            <description>Missing function override.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

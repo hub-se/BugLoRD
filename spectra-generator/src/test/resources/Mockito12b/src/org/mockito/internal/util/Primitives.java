@@ -9,27 +9,27 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class Primitives {
-    
+
     public static boolean isPrimitiveWrapper(Class<?> type) {
         return wrapperReturnValues.containsKey(type);
     }
-    
+
     public static <T> T primitiveWrapperOf(Class<T> type) {
         return (T) wrapperReturnValues.get(type);
     }
-    
+
     public static <T> Class<T> primitiveTypeOf(Class<T> clazz) {
         return (Class<T>) primitiveTypes.get(clazz);
     }
-    
+
     public static <T> T primitiveValueOrNullFor(Class<T> primitiveType) {
         return (T) primitiveValues.get(primitiveType);
     }
-    
+
     private static Map<Class<?>, Object> wrapperReturnValues = new HashMap<Class<?>, Object>();
     private static Map<Class<?>, Class<?>> primitiveTypes = new HashMap<Class<?>, Class<?>>();
     private static Map<Class<?>, Object> primitiveValues = new HashMap<Class<?>, Object>();
-    
+
     static {
         wrapperReturnValues.put(Boolean.class, Boolean.FALSE);
         wrapperReturnValues.put(Character.class, new Character((char) 0));
@@ -40,7 +40,7 @@ public class Primitives {
         wrapperReturnValues.put(Float.class, new Float(0));
         wrapperReturnValues.put(Double.class, new Double(0));
     }
-    
+
     static {
         primitiveTypes.put(Boolean.class, Boolean.TYPE);
         primitiveTypes.put(Character.class, Character.TYPE);

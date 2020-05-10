@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -70,18 +70,18 @@ public class FunctionNode extends ScriptOrFnNode {
      * is a function statement. This is a function appearing as a top-level
      * statement (i.e., not nested inside some other statement) in either a
      * script or a function.
-     *
+     * <p>
      * The second is a function expression, which is a function appearing in
      * an expression except for the third type, which is...
-     *
+     * <p>
      * The third type is a function expression where the expression is the
      * top-level expression in an expression statement.
-     *
+     * <p>
      * The three types of functions have different treatment and must be
      * distinquished.
      */
-    public static final int FUNCTION_STATEMENT            = 1;
-    public static final int FUNCTION_EXPRESSION           = 2;
+    public static final int FUNCTION_STATEMENT = 1;
+    public static final int FUNCTION_EXPRESSION = 2;
     public static final int FUNCTION_EXPRESSION_STATEMENT = 3;
 
     public int getFunctionType() {

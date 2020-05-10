@@ -19,7 +19,6 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.DurationField;
 
 /**
- * 
  * @author Brian S O'Neill
  */
 class TestGJDayOfYearField extends TestGJDateTimeField {
@@ -29,8 +28,8 @@ class TestGJDayOfYearField extends TestGJDateTimeField {
 
     public int get(long millis) {
         int year = iChronology.gjYearFromMillis(millis);
-        return (int)(iChronology.fixedFromMillis(millis)
-                     - iChronology.fixedFromGJ(year, 1, 1)) + 1;
+        return (int) (iChronology.fixedFromMillis(millis)
+                - iChronology.fixedFromGJ(year, 1, 1)) + 1;
     }
 
     public long set(long millis, int value) {

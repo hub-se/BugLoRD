@@ -12,7 +12,7 @@ public class MockitoAssertionErrorTest extends TestBase {
     private void throwIt() {
         throw new MockitoAssertionError("boom");
     }
-    
+
     @Test
     public void shouldKeepUnfilteredStackTrace() {
         try {

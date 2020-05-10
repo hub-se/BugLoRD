@@ -16,28 +16,28 @@ public class CapturingMatcherTest extends TestBase {
     public void shouldCaptureArguments() throws Exception {
         //given
         CapturingMatcher m = new CapturingMatcher();
-        
+
         //when
         m.captureFrom("foo");
         m.captureFrom("bar");
-        
+
         //then
         Assertions.assertThat(m.getAllValues()).containsSequence("foo", "bar");
     }
-    
+
     @Test
     public void shouldKnowLastCapturedValue() throws Exception {
         //given
         CapturingMatcher m = new CapturingMatcher();
-        
+
         //when
         m.captureFrom("foo");
         m.captureFrom("bar");
-        
+
         //then
         assertEquals("bar", m.getLastValue());
     }
-    
+
     @Test
     public void shouldScreamWhenNothingYetCaptured() throws Exception {
         //given
@@ -48,6 +48,7 @@ public class CapturingMatcherTest extends TestBase {
             m.getLastValue();
             //then
             fail();
-        } catch (MockitoException e) {}
+        } catch (MockitoException e) {
+        }
     }
 }

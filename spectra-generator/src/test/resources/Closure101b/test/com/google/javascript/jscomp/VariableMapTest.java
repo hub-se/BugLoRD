@@ -18,43 +18,40 @@ package com.google.javascript.jscomp;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import junit.framework.TestCase;
 
-import junit.framework.*;
-
-import java.text.*;
-import java.util.*;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Tests for {@link VariableMap}.
- *
-*
  */
 public class VariableMapTest extends TestCase {
 
-  public void testToBytes() {
-    VariableMap vm = new VariableMap(ImmutableMap.of("AAA", "a", "BBB", "b"));
-    String serialized = new String(vm.toBytes(), Charsets.UTF_8);
-    assertTrue(serialized.endsWith("\n"));
+    public void testToBytes() {
+        VariableMap vm = new VariableMap(ImmutableMap.of("AAA", "a", "BBB", "b"));
+        String serialized = new String(vm.toBytes(), Charsets.UTF_8);
+        assertTrue(serialized.endsWith("\n"));
 
-    List<String> lines = Arrays.asList(serialized.split("\n"));
-    assertEquals(2, lines.size());
-    assertTrue(lines.contains("AAA:a"));
-    assertTrue(lines.contains("BBB:b"));
-  }
+        List<String> lines = Arrays.asList(serialized.split("\n"));
+        assertEquals(2, lines.size());
+        assertTrue(lines.contains("AAA:a"));
+        assertTrue(lines.contains("BBB:b"));
+    }
 
-  public void testFromBytes() throws ParseException {
-    VariableMap vm = VariableMap.fromBytes("AAA:a\nBBB:b\n".getBytes());
-    assertEquals(2, vm.getOriginalNameToNewNameMap().size());
-    assertEquals("a", vm.lookupNewName("AAA"));
-    assertEquals("b", vm.lookupNewName("BBB"));
-    assertEquals("AAA", vm.lookupSourceName("a"));
-    assertEquals("BBB", vm.lookupSourceName("b"));
-  }
+    public void testFromBytes() throws ParseException {
+        VariableMap vm = VariableMap.fromBytes("AAA:a\nBBB:b\n".getBytes());
+        assertEquals(2, vm.getOriginalNameToNewNameMap().size());
+        assertEquals("a", vm.lookupNewName("AAA"));
+        assertEquals("b", vm.lookupNewName("BBB"));
+        assertEquals("AAA", vm.lookupSourceName("a"));
+        assertEquals("BBB", vm.lookupSourceName("b"));
+    }
 
-  public void testFromBytesComplex() throws ParseException {
-    VariableMap vm = VariableMap.fromBytes("AAA[':f']:a\n".getBytes());
-    assertEquals(1, vm.getOriginalNameToNewNameMap().size());
-    assertEquals("a", vm.lookupNewName("AAA[':f']"));
-  }
+    public void testFromBytesComplex() throws ParseException {
+        VariableMap vm = VariableMap.fromBytes("AAA[':f']:a\n".getBytes());
+        assertEquals(1, vm.getOriginalNameToNewNameMap().size());
+        assertEquals("a", vm.lookupNewName("AAA[':f']"));
+    }
 }

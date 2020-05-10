@@ -1,52 +1,52 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-14">
-			<tests>
-				<testfile path="org/jfree/chart/plot/junit/XYPlotTests">
-					<exception>java.lang.NullPointerException:-
-						org.jfree.chart.plot.junit.CategoryPlotTests::testRemoveDomainMarker:--&gt;
-						java.lang.NullPointerException:-
-						org.jfree.chart.plot.junit.XYPlotTests::testRemoveRangeMarker:--&gt;
-						java.lang.NullPointerException:-
-						org.jfree.chart.plot.junit.XYPlotTests::testRemoveDomainMarker:--&gt;
-						java.lang.NullPointerException
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>519</number_tests>
-					<failed>4</failed>
-					<passed>515</passed>
-					<nodes>45166</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/jfree/chart/plot/XYPlot.java">
-					<insert numberlines="3">2293</insert>
-					<insert numberlines="3">2529</insert>
-					<bugtypes>
-						<id id="1.1" lines="2292">
-							<description>Missing null value check.</description>
-						</id>
-						<id id="1.1" lines="2527">
-							<description>Missing null value check.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="org/jfree/chart/plot/CategoryPlot.java">
-					<insert numberlines="3">2166</insert>
-					<insert numberlines="3">2448</insert>
-					<bugtypes>
-						<id id="1.1" lines="2165">
-							<description>Missing null value check.</description>
-						</id>
-						<id id="1.1" lines="2446">
-							<description>Missing null value check.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-14">
+            <tests>
+                <testfile path="org/jfree/chart/plot/junit/XYPlotTests">
+                    <exception>java.lang.NullPointerException:-
+                        org.jfree.chart.plot.junit.CategoryPlotTests::testRemoveDomainMarker:--&gt;
+                        java.lang.NullPointerException:-
+                        org.jfree.chart.plot.junit.XYPlotTests::testRemoveRangeMarker:--&gt;
+                        java.lang.NullPointerException:-
+                        org.jfree.chart.plot.junit.XYPlotTests::testRemoveDomainMarker:--&gt;
+                        java.lang.NullPointerException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>519</number_tests>
+                    <failed>4</failed>
+                    <passed>515</passed>
+                    <nodes>45166</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/jfree/chart/plot/XYPlot.java">
+                    <insert numberlines="3">2293</insert>
+                    <insert numberlines="3">2529</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="2292">
+                            <description>Missing null value check.</description>
+                        </id>
+                        <id id="1.1" lines="2527">
+                            <description>Missing null value check.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="org/jfree/chart/plot/CategoryPlot.java">
+                    <insert numberlines="3">2166</insert>
+                    <insert numberlines="3">2448</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="2165">
+                            <description>Missing null value check.</description>
+                        </id>
+                        <id id="1.1" lines="2446">
+                            <description>Missing null value check.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

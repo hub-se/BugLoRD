@@ -1,31 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-13">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/optimization/fitting/PolynomialFitterTest">
-					<exception>java.lang.OutOfMemoryError:Java heap space</exception>
-				</testfile>
-				<spectra>
-					<number_tests>88</number_tests>
-					<failed>1</failed>
-					<passed>87</passed>
-					<nodes>39022</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/optimization/general/AbstractLeastSquaresOptimizer.java">
-					<insert numberlines="8,1">562,564</insert>
-					<bugtypes>
-						<id id="1.1" lines="561,563">
-							<description>Missing check for instance.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-13">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/optimization/fitting/PolynomialFitterTest">
+                    <exception>java.lang.OutOfMemoryError:Java heap space</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>88</number_tests>
+                    <failed>1</failed>
+                    <passed>87</passed>
+                    <nodes>39022</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/optimization/general/AbstractLeastSquaresOptimizer.java">
+                    <insert numberlines="8,1">562,564</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="561,563">
+                            <description>Missing check for instance.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

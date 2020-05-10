@@ -28,7 +28,7 @@ public class ArrayUtilsTest extends TestBase {
     @Test
     public void shouldConcatenateItemToFullArray() throws Exception {
         //when
-        Class<?>[] items = utils.concat(new Class[] {Serializable.class, Map.class}, List.class);
+        Class<?>[] items = utils.concat(new Class[]{Serializable.class, Map.class}, List.class);
 
         //then
         Assertions.assertThat(items).containsOnly(Serializable.class, Map.class, List.class);

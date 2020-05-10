@@ -1,91 +1,86 @@
-
 package se.de.hu_berlin.informatik.changechecker;
+
+import org.apache.commons.cli.Option;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
+import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
 
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
-import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
-import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
-import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
-
-import org.apache.commons.cli.Option;
-
 /**
- * 
- * 
  * @author Simon Heiden
  */
 public class ChangeChecker {
 
-	public enum CmdOptions implements OptionWrapperInterface {
-		/* add options here according to your needs */
-		LEFT_INPUT_OPT("l", "left", true, "Path to the left file (previous).", true),
-		RIGHT_INPUT_OPT("r", "right", true, "Path to the right file (changed).", true),
+    public enum CmdOptions implements OptionWrapperInterface {
+        /* add options here according to your needs */
+        LEFT_INPUT_OPT("l", "left", true, "Path to the left file (previous).", true),
+        RIGHT_INPUT_OPT("r", "right", true, "Path to the right file (changed).", true),
 
-		COMPRESS_AST_CHANGES("c", "compress", false, "Only keep changes with \"real\" changed lines.", false);
+        COMPRESS_AST_CHANGES("c", "compress", false, "Only keep changes with \"real\" changed lines.", false);
 
-		// options.add(OUTPUT_OPT, "output", true, "Path to output file.",
-		// true);
+        // options.add(OUTPUT_OPT, "output", true, "Path to output file.",
+        // true);
 
-		/* the following code blocks should not need to be changed */
-		final private OptionWrapper option;
+        /* the following code blocks should not need to be changed */
+        final private OptionWrapper option;
 
-		// adds an option that is not part of any group
-		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description,
-				final boolean required) {
-			this.option = new OptionWrapper(
-					Option.builder(opt).longOpt(longOpt).required(required).hasArg(hasArg).desc(description).build(),
-					NO_GROUP);
-		}
+        // adds an option that is not part of any group
+        CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description,
+                   final boolean required) {
+            this.option = new OptionWrapper(
+                    Option.builder(opt).longOpt(longOpt).required(required).hasArg(hasArg).desc(description).build(),
+                    NO_GROUP);
+        }
 
-		// adds an option that is part of the group with the specified index
-		// (positive integer)
-		// a negative index means that this option is part of no group
-		// this option will not be required, however, the group itself will be
-		CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description,
-				int groupId) {
-			this.option = new OptionWrapper(
-					Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build(),
-					groupId);
-		}
+        // adds an option that is part of the group with the specified index
+        // (positive integer)
+        // a negative index means that this option is part of no group
+        // this option will not be required, however, the group itself will be
+        CmdOptions(final String opt, final String longOpt, final boolean hasArg, final String description,
+                   int groupId) {
+            this.option = new OptionWrapper(
+                    Option.builder(opt).longOpt(longOpt).required(false).hasArg(hasArg).desc(description).build(),
+                    groupId);
+        }
 
-		// adds the given option that will be part of the group with the given
-		// id
-		CmdOptions(Option option, int groupId) {
-			this.option = new OptionWrapper(option, groupId);
-		}
+        // adds the given option that will be part of the group with the given
+        // id
+        CmdOptions(Option option, int groupId) {
+            this.option = new OptionWrapper(option, groupId);
+        }
 
-		// adds the given option that will be part of no group
-		CmdOptions(Option option) {
-			this(option, NO_GROUP);
-		}
+        // adds the given option that will be part of no group
+        CmdOptions(Option option) {
+            this(option, NO_GROUP);
+        }
 
-		@Override
-		public String toString() {
-			return option.getOption().getOpt();
-		}
+        @Override
+        public String toString() {
+            return option.getOption().getOpt();
+        }
 
-		@Override
-		public OptionWrapper getOptionWrapper() {
-			return option;
-		}
-	}
+        @Override
+        public OptionWrapper getOptionWrapper() {
+            return option;
+        }
+    }
 
-	/**
-	 * @param args
-	 * -s spectra-zip-file [-r ranked-lines-file] [-u unranked-lines-file] -o
-	 * output-file
-	 */
-	public static void main(String[] args) {
+    /**
+     * @param args -s spectra-zip-file [-r ranked-lines-file] [-u unranked-lines-file] -o
+     *             output-file
+     */
+    public static void main(String[] args) {
 
-		OptionParser options = OptionParser.getOptions("ChangeChecker", false, CmdOptions.class, args);
+        OptionParser options = OptionParser.getOptions("ChangeChecker", false, CmdOptions.class, args);
 
-		File left = options.isFile(CmdOptions.LEFT_INPUT_OPT, true).toFile();
-		File right = options.isFile(CmdOptions.RIGHT_INPUT_OPT, true).toFile();
+        File left = options.isFile(CmdOptions.LEFT_INPUT_OPT, true).toFile();
+        File right = options.isFile(CmdOptions.RIGHT_INPUT_OPT, true).toFile();
 
-		
+
 //		List<Action> actions = Collections.emptyList();
 //		Run.initGenerators();
 //		try {
@@ -107,15 +102,15 @@ public class ChangeChecker {
 //		for (Action action : actions) {
 //			Log.out(ChangeChecker.class, "'%s'", action);
 //		}
-		
-		
-		List<ChangeWrapper> changes = ChangeCheckerUtils.checkForChanges(left, right, 
-				options.hasOption(CmdOptions.COMPRESS_AST_CHANGES), false);
 
-		for (ChangeWrapper element : Objects.requireNonNull(changes)) {
+
+        List<ChangeWrapper> changes = ChangeCheckerUtils.checkForChanges(left, right,
+                options.hasOption(CmdOptions.COMPRESS_AST_CHANGES), false);
+
+        for (ChangeWrapper element : Objects.requireNonNull(changes)) {
 //			if (element.getChangeType() != null && element.getChangeType().equals(ChangeType.STATEMENT_ORDERING_CHANGE))
-			Log.out(ChangeChecker.class, element.toString());
-		}
-	}	
+            Log.out(ChangeChecker.class, element.toString());
+        }
+    }
 
 }

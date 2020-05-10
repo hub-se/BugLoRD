@@ -46,7 +46,7 @@ public final class TestJulianChronology extends TestGJChronology {
     }
 
     public DateTimeField dayOfMonth() {
-        return new TestJulianDayOfMonthField(this); 
+        return new TestJulianDayOfMonthField(this);
     }
 
     public DateTimeField weekyear() {
@@ -66,11 +66,11 @@ public final class TestJulianChronology extends TestGJChronology {
     }
 
     long millisPerYear() {
-        return (long)(365.25 * MILLIS_PER_DAY);
+        return (long) (365.25 * MILLIS_PER_DAY);
     }
 
     long millisPerMonth() {
-        return (long)(365.25 * MILLIS_PER_DAY / 12);
+        return (long) (365.25 * MILLIS_PER_DAY / 12);
     }
 
     boolean isLeapYear(int year) {
@@ -90,7 +90,7 @@ public final class TestJulianChronology extends TestGJChronology {
         int y = (year < 0) ? year + 1 : year;
         long y_m1 = y - 1;
         long f = JULIAN_EPOCH - 1 + 365 * y_m1 + div(y_m1, 4)
-            + div(367 * monthOfYear - 362, 12) + dayOfMonth;
+                + div(367 * monthOfYear - 362, 12) + dayOfMonth;
         if (monthOfYear > 2) {
             f += isLeapYear(year) ? -1 : -2;
         }
@@ -112,7 +112,7 @@ public final class TestJulianChronology extends TestGJChronology {
     int[] gjFromFixed(long date) {
         long approx = div(4 * (date - JULIAN_EPOCH) + 1464, 1461);
         long year = (approx <= 0) ? approx - 1 : approx;
-        int year_i = (int)year;
+        int year_i = (int) year;
         if (year_i != year) {
             throw new RuntimeException("year cannot be cast to an int: " + year);
         }
@@ -125,8 +125,8 @@ public final class TestJulianChronology extends TestGJChronology {
         } else {
             correction = 2;
         }
-        int monthOfYear = (int)div(12 * (priorDays + correction) + 373, 367);
-        int day = (int)(date - fixedFromGJ(year_i, monthOfYear, 1) + 1);
+        int monthOfYear = (int) div(12 * (priorDays + correction) + 373, 367);
+        int day = (int) (date - fixedFromGJ(year_i, monthOfYear, 1) + 1);
 
         return new int[]{year_i, monthOfYear, day};
     }
@@ -158,8 +158,8 @@ public final class TestJulianChronology extends TestGJChronology {
         if (date >= fixedFromISO(nextWeekyear, 1, 1)) {
             weekyear = nextWeekyear;
         }
-        int weekOfWeekyear = (int)(div(date - fixedFromISO(weekyear, 1, 1), 7) + 1);
-        int dayOfWeek = (int)amod(date, 7);
+        int weekOfWeekyear = (int) (div(date - fixedFromISO(weekyear, 1, 1), 7) + 1);
+        int dayOfWeek = (int) amod(date, 7);
         return new int[]{weekyear, weekOfWeekyear, dayOfWeek};
     }
 }

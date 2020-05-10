@@ -25,21 +25,19 @@ import java.util.Set;
 /**
  * Generates new variables names that would not collide with existing names in
  * a scope.
- *
-*
- *
  */
 class VariableNameGenerator {
-  private final NameGenerator names;
-  VariableNameGenerator(Scope scope) {
-    Set<String> usedNames = Sets.newHashSet();
-    for (Iterator<Var> i = scope.getVars(); i.hasNext();) {
-      usedNames.add(i.next().getName());
-    }
-    names = new NameGenerator(usedNames, "", null);
-  }
+    private final NameGenerator names;
 
-  String getNameNewName() {
-    return names.generateNextName();
-  }
+    VariableNameGenerator(Scope scope) {
+        Set<String> usedNames = Sets.newHashSet();
+        for (Iterator<Var> i = scope.getVars(); i.hasNext(); ) {
+            usedNames.add(i.next().getName());
+        }
+        names = new NameGenerator(usedNames, "", null);
+    }
+
+    String getNameNewName() {
+        return names.generateNextName();
+    }
 }

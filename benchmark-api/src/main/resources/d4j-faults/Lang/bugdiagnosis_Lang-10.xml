@@ -1,36 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-10">
-			<tests>
-				<testfile path="org/apache/commons/lang3/time/FastDateParserTest">
-					<exception>junit.framework.AssertionFailedError:Parsed dates should
-						be equal expected:&lt;null&gt; but was:&lt;Mon Mar 02 21:00:00 PST
-						1970&gt;:-
-						org.apache.commons.lang3.time.FastDateParserTest::testLANG_831:--&gt;
-						junit.framework.AssertionFailedError:Expected FDF failure, but got
-						Mon Mar 02 21:00:00 PST 1970 for [M E,3 Tue] using
-						(\p{IsNd}++)\s*+(Fri|Friday|Mon|Monday|Sat|Saturday|Sun|Sunday|Thu|Thursday|Tue|Tuesday|Wed|Wednesday)
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>163</number_tests>
-					<failed>2</failed>
-					<passed>161</passed>
-					<nodes>11089</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/time/FastDateParser.java">
-					<delete>304,307-314</delete>
-					<bugtypes>
-						<id id="1.2" lines="304,307-314">
-							<description>Incorrect case handling for whitespaces.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-10">
+            <tests>
+                <testfile path="org/apache/commons/lang3/time/FastDateParserTest">
+                    <exception>junit.framework.AssertionFailedError:Parsed dates should
+                        be equal expected:&lt;null&gt; but was:&lt;Mon Mar 02 21:00:00 PST
+                        1970&gt;:-
+                        org.apache.commons.lang3.time.FastDateParserTest::testLANG_831:--&gt;
+                        junit.framework.AssertionFailedError:Expected FDF failure, but got
+                        Mon Mar 02 21:00:00 PST 1970 for [M E,3 Tue] using
+                        (\p{IsNd}++)\s*+(Fri|Friday|Mon|Monday|Sat|Saturday|Sun|Sunday|Thu|Thursday|Tue|Tuesday|Wed|Wednesday)
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>163</number_tests>
+                    <failed>2</failed>
+                    <passed>161</passed>
+                    <nodes>11089</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/time/FastDateParser.java">
+                    <delete>304,307-314</delete>
+                    <bugtypes>
+                        <id id="1.2" lines="304,307-314">
+                            <description>Incorrect case handling for whitespaces.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

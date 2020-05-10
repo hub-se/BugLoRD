@@ -16,13 +16,13 @@
  */
 package org.apache.commons.lang3;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * <p>Helper methods for working with {@link Annotation} instances.</p>
@@ -40,8 +40,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  * <p>#ThreadSafe#</p>
  *
- * @since 3.0
  * @version $Id$
+ * @since 3.0
  */
 public class AnnotationUtils {
 
@@ -75,7 +75,7 @@ public class AnnotationUtils {
                 if (Annotation.class.isAssignableFrom(iface)) {
                     @SuppressWarnings("unchecked")
                     //because we just checked the assignability
-                    Class<? extends Annotation> found = (Class<? extends Annotation>) iface;
+                            Class<? extends Annotation> found = (Class<? extends Annotation>) iface;
                     annotationType = found;
                     break;
                 }
@@ -108,14 +108,15 @@ public class AnnotationUtils {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Checks if two annotations are equal using the criteria for equality
      * presented in the {@link Annotation#equals(Object)} API docs.</p>
      *
      * @param a1 the first Annotation to compare, {@code null} returns
-     * {@code false} unless both are {@code null}
+     *           {@code false} unless both are {@code null}
      * @param a2 the second Annotation to compare, {@code null} returns
-     * {@code false} unless both are {@code null}
+     *           {@code false} unless both are {@code null}
      * @return {@code true} if the two annotations are {@code equal} or both
      * {@code null}
      */
@@ -157,12 +158,12 @@ public class AnnotationUtils {
      * presented in the {@link Annotation#hashCode()} API docs.</p>
      *
      * @param a the Annotation for a hash code calculation is desired, not
-     * {@code null}
+     *          {@code null}
      * @return the calculated hash code
-     * @throws RuntimeException if an {@code Exception} is encountered during
-     * annotation member access
+     * @throws RuntimeException      if an {@code Exception} is encountered during
+     *                               annotation member access
      * @throws IllegalStateException if an annotation method invocation returns
-     * {@code null}
+     *                               {@code null}
      */
     public static int hashCode(Annotation a) {
         int result = 0;
@@ -232,10 +233,11 @@ public class AnnotationUtils {
     }
 
     //besides modularity, this has the advantage of autoboxing primitives:
+
     /**
      * Helper method for generating a hash code for a member of an annotation.
      *
-     * @param name the name of the member
+     * @param name  the name of the member
      * @param value the value of the member
      * @return a hash code for this member
      */
@@ -256,8 +258,8 @@ public class AnnotationUtils {
      * instances.
      *
      * @param type the type of the objects to be compared
-     * @param o1 the first object
-     * @param o2 the second object
+     * @param o1   the first object
+     * @param o2   the second object
      * @return a flag whether these objects are equal
      */
     private static boolean memberEquals(Class<?> type, Object o1, Object o2) {
@@ -280,8 +282,8 @@ public class AnnotationUtils {
      * Helper method for comparing two objects of an array type.
      *
      * @param componentType the component type of the array
-     * @param o1 the first object
-     * @param o2 the second object
+     * @param o1            the first object
+     * @param o2            the second object
      * @return a flag whether these objects are equal
      */
     private static boolean arrayMemberEquals(Class<?> componentType, Object o1, Object o2) {
@@ -338,7 +340,7 @@ public class AnnotationUtils {
      * Helper method for generating a hash code for an array.
      *
      * @param componentType the component type of the array
-     * @param o the array
+     * @param o             the array
      * @return a hash code for the specified array
      */
     private static int arrayMemberHash(Class<?> componentType, Object o) {

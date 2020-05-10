@@ -16,10 +16,10 @@
  */
 package org.apache.commons.lang3.reflect;
 
+import org.apache.commons.lang3.ClassUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-
-import org.apache.commons.lang3.ClassUtils;
 
 /**
  * Utilities for working with fields by reflection. Adapted and refactored
@@ -29,8 +29,8 @@ import org.apache.commons.lang3.ClassUtils;
  * programmer. This can allow fields to be changed that shouldn't be. This
  * facility should be used with care.
  *
- * @since 2.5
  * @version $Id$
+ * @since 2.5
  */
 public class FieldUtils {
 
@@ -48,8 +48,8 @@ public class FieldUtils {
      * Gets an accessible <code>Field</code> by name respecting scope.
      * Superclasses/interfaces will be considered.
      *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param cls       the class to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the Field object
      * @throws IllegalArgumentException if the class or field name is null
      */
@@ -63,11 +63,11 @@ public class FieldUtils {
      * Gets an accessible <code>Field</code> by name breaking scope
      * if requested. Superclasses/interfaces will be considered.
      *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param cls         the class to reflect, must not be null
+     * @param fieldName   the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @return the Field object
      * @throws IllegalArgumentException if the class or field name is null
      */
@@ -132,8 +132,8 @@ public class FieldUtils {
      * Gets an accessible <code>Field</code> by name respecting scope.
      * Only the specified class will be considered.
      *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param cls       the class to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the Field object
      * @throws IllegalArgumentException if the class or field name is null
      */
@@ -145,10 +145,10 @@ public class FieldUtils {
      * Gets an accessible <code>Field</code> by name breaking scope
      * if requested. Only the specified class will be considered.
      *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. False will only match public fields.
+     * @param cls         the class to reflect, must not be null
+     * @param fieldName   the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. False will only match public fields.
      * @return the Field object
      * @throws IllegalArgumentException if the class or field name is null
      */
@@ -178,10 +178,11 @@ public class FieldUtils {
 
     /**
      * Reads an accessible static Field.
+     *
      * @param field to read
      * @return the field value
      * @throws IllegalArgumentException if the field is null or not static
-     * @throws IllegalAccessException if the field is not accessible
+     * @throws IllegalAccessException   if the field is not accessible
      */
     public static Object readStaticField(Field field) throws IllegalAccessException {
         return readStaticField(field, false);
@@ -189,12 +190,13 @@ public class FieldUtils {
 
     /**
      * Reads a static Field.
-     * @param field to read
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method.
+     *
+     * @param field       to read
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method.
      * @return the field value
      * @throws IllegalArgumentException if the field is null or not static
-     * @throws IllegalAccessException if the field is not made accessible
+     * @throws IllegalAccessException   if the field is not made accessible
      */
     public static Object readStaticField(Field field, boolean forceAccess) throws IllegalAccessException {
         if (field == null) {
@@ -208,11 +210,12 @@ public class FieldUtils {
 
     /**
      * Reads the named public static field. Superclasses will be considered.
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     *
+     * @param cls       the class to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the value of the field
      * @throws IllegalArgumentException if the class is null, the field name is null or if the field could not be found
-     * @throws IllegalAccessException if the field is not accessible
+     * @throws IllegalAccessException   if the field is not accessible
      */
     public static Object readStaticField(Class<?> cls, String fieldName) throws IllegalAccessException {
         return readStaticField(cls, fieldName, false);
@@ -220,17 +223,18 @@ public class FieldUtils {
 
     /**
      * Reads the named static field. Superclasses will be considered.
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     *
+     * @param cls         the class to reflect, must not be null
+     * @param fieldName   the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @return the Field object
      * @throws IllegalArgumentException if the class is null, the field name is null or if the field could not be found
-     * @throws IllegalAccessException if the field is not made accessible
+     * @throws IllegalAccessException   if the field is not made accessible
      */
     public static Object readStaticField(Class<?> cls, String fieldName, boolean forceAccess)
-        throws IllegalAccessException {
+            throws IllegalAccessException {
         Field field = getField(cls, fieldName, forceAccess);
         if (field == null) {
             throw new IllegalArgumentException("Cannot locate field " + fieldName + " on " + cls);
@@ -243,11 +247,11 @@ public class FieldUtils {
      * Gets a static Field value by name. The field must be public.
      * Only the specified class will be considered.
      *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     * @param cls       the class to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the value of the field
      * @throws IllegalArgumentException if the class is null, the field name is null or if the field could not be found
-     * @throws IllegalAccessException if the field is not accessible
+     * @throws IllegalAccessException   if the field is not accessible
      */
     public static Object readDeclaredStaticField(Class<?> cls, String fieldName) throws IllegalAccessException {
         return readDeclaredStaticField(cls, fieldName, false);
@@ -257,14 +261,14 @@ public class FieldUtils {
      * Gets a static Field value by name. Only the specified class will
      * be considered.
      *
-     * @param cls  the class to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param cls         the class to reflect, must not be null
+     * @param fieldName   the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @return the Field object
      * @throws IllegalArgumentException if the class is null, the field name is null or if the field could not be found
-     * @throws IllegalAccessException if the field is not made accessible
+     * @throws IllegalAccessException   if the field is not made accessible
      */
     public static Object readDeclaredStaticField(Class<?> cls, String fieldName, boolean forceAccess)
             throws IllegalAccessException {
@@ -278,11 +282,12 @@ public class FieldUtils {
 
     /**
      * Reads an accessible Field.
+     *
      * @param field  the field to use
-     * @param target  the object to call on, may be null for static fields
+     * @param target the object to call on, may be null for static fields
      * @return the field value
      * @throws IllegalArgumentException if the field is null
-     * @throws IllegalAccessException if the field is not accessible
+     * @throws IllegalAccessException   if the field is not accessible
      */
     public static Object readField(Field field, Object target) throws IllegalAccessException {
         return readField(field, target, false);
@@ -290,13 +295,14 @@ public class FieldUtils {
 
     /**
      * Reads a Field.
-     * @param field  the field to use
-     * @param target  the object to call on, may be null for static fields
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method.
+     *
+     * @param field       the field to use
+     * @param target      the object to call on, may be null for static fields
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method.
      * @return the field value
      * @throws IllegalArgumentException if the field is null
-     * @throws IllegalAccessException if the field is not made accessible
+     * @throws IllegalAccessException   if the field is not made accessible
      */
     public static Object readField(Field field, Object target, boolean forceAccess) throws IllegalAccessException {
         if (field == null) {
@@ -312,11 +318,12 @@ public class FieldUtils {
 
     /**
      * Reads the named public field. Superclasses will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     *
+     * @param target    the object to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the value of the field
      * @throws IllegalArgumentException if the class or field name is null
-     * @throws IllegalAccessException if the named field is not public
+     * @throws IllegalAccessException   if the named field is not public
      */
     public static Object readField(Object target, String fieldName) throws IllegalAccessException {
         return readField(target, fieldName, false);
@@ -324,14 +331,15 @@ public class FieldUtils {
 
     /**
      * Reads the named field. Superclasses will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     *
+     * @param target      the object to reflect, must not be null
+     * @param fieldName   the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @return the field value
      * @throws IllegalArgumentException if the class or field name is null
-     * @throws IllegalAccessException if the named field is not made accessible
+     * @throws IllegalAccessException   if the named field is not made accessible
      */
     public static Object readField(Object target, String fieldName, boolean forceAccess) throws IllegalAccessException {
         if (target == null) {
@@ -348,11 +356,12 @@ public class FieldUtils {
 
     /**
      * Reads the named public field. Only the class of the specified object will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
+     *
+     * @param target    the object to reflect, must not be null
+     * @param fieldName the field name to obtain
      * @return the value of the field
      * @throws IllegalArgumentException if the class or field name is null
-     * @throws IllegalAccessException if the named field is not public
+     * @throws IllegalAccessException   if the named field is not public
      */
     public static Object readDeclaredField(Object target, String fieldName) throws IllegalAccessException {
         return readDeclaredField(target, fieldName, false);
@@ -362,17 +371,17 @@ public class FieldUtils {
      * <p<>Gets a Field value by name. Only the class of the specified
      * object will be considered.
      *
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     * @param target      the object to reflect, must not be null
+     * @param fieldName   the field name to obtain
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @return the Field object
      * @throws IllegalArgumentException if <code>target</code> or <code>fieldName</code> is null
-     * @throws IllegalAccessException if the field is not made accessible
+     * @throws IllegalAccessException   if the field is not made accessible
      */
     public static Object readDeclaredField(Object target, String fieldName, boolean forceAccess)
-        throws IllegalAccessException {
+            throws IllegalAccessException {
         if (target == null) {
             throw new IllegalArgumentException("target object must not be null");
         }
@@ -387,10 +396,11 @@ public class FieldUtils {
 
     /**
      * Writes a public static Field.
+     *
      * @param field to write
      * @param value to set
      * @throws IllegalArgumentException if the field is null or not static
-     * @throws IllegalAccessException if the field is not public or is final
+     * @throws IllegalAccessException   if the field is not public or is final
      */
     public static void writeStaticField(Field field, Object value) throws IllegalAccessException {
         writeStaticField(field, value, false);
@@ -398,13 +408,14 @@ public class FieldUtils {
 
     /**
      * Writes a static Field.
-     * @param field to write
-     * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     *
+     * @param field       to write
+     * @param value       to set
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @throws IllegalArgumentException if the field is null or not static
-     * @throws IllegalAccessException if the field is not made accessible or is final
+     * @throws IllegalAccessException   if the field is not made accessible or is final
      */
     public static void writeStaticField(Field field, Object value, boolean forceAccess) throws IllegalAccessException {
         if (field == null) {
@@ -418,11 +429,12 @@ public class FieldUtils {
 
     /**
      * Writes a named public static Field. Superclasses will be considered.
-     * @param cls Class on which the Field is to be found
+     *
+     * @param cls       Class on which the Field is to be found
      * @param fieldName to write
-     * @param value to set
+     * @param value     to set
      * @throws IllegalArgumentException if the field cannot be located or is not static
-     * @throws IllegalAccessException if the field is not public or is final
+     * @throws IllegalAccessException   if the field is not public or is final
      */
     public static void writeStaticField(Class<?> cls, String fieldName, Object value) throws IllegalAccessException {
         writeStaticField(cls, fieldName, value, false);
@@ -430,14 +442,15 @@ public class FieldUtils {
 
     /**
      * Writes a named static Field. Superclasses will be considered.
-     * @param cls Class on which the Field is to be found
-     * @param fieldName to write
-     * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     *
+     * @param cls         Class on which the Field is to be found
+     * @param fieldName   to write
+     * @param value       to set
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @throws IllegalArgumentException if the field cannot be located or is not static
-     * @throws IllegalAccessException if the field is not made accessible or is final
+     * @throws IllegalAccessException   if the field is not made accessible or is final
      */
     public static void writeStaticField(Class<?> cls, String fieldName, Object value, boolean forceAccess)
             throws IllegalAccessException {
@@ -451,11 +464,12 @@ public class FieldUtils {
 
     /**
      * Writes a named public static Field. Only the specified class will be considered.
-     * @param cls Class on which the Field is to be found
+     *
+     * @param cls       Class on which the Field is to be found
      * @param fieldName to write
-     * @param value to set
+     * @param value     to set
      * @throws IllegalArgumentException if the field cannot be located or is not static
-     * @throws IllegalAccessException if the field is not public or is final
+     * @throws IllegalAccessException   if the field is not public or is final
      */
     public static void writeDeclaredStaticField(Class<?> cls, String fieldName, Object value)
             throws IllegalAccessException {
@@ -464,15 +478,16 @@ public class FieldUtils {
 
     /**
      * Writes a named static Field. Only the specified class will be considered.
-     * @param cls Class on which the Field is to be found
-     * @param fieldName to write
-     * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     *
+     * @param cls         Class on which the Field is to be found
+     * @param fieldName   to write
+     * @param value       to set
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @throws IllegalArgumentException if the field cannot be located or is not static
-     * @throws IllegalAccessException if the field is not made accessible or is final
-      */
+     * @throws IllegalAccessException   if the field is not made accessible or is final
+     */
     public static void writeDeclaredStaticField(Class<?> cls, String fieldName, Object value, boolean forceAccess)
             throws IllegalAccessException {
         Field field = getDeclaredField(cls, fieldName, forceAccess);
@@ -485,11 +500,12 @@ public class FieldUtils {
 
     /**
      * Writes an accessible field.
-     * @param field to write
-     * @param target  the object to call on, may be null for static fields
-     * @param value to set
+     *
+     * @param field  to write
+     * @param target the object to call on, may be null for static fields
+     * @param value  to set
      * @throws IllegalArgumentException if the field is null
-     * @throws IllegalAccessException if the field is not accessible or is final
+     * @throws IllegalAccessException   if the field is not accessible or is final
      */
     public static void writeField(Field field, Object target, Object value) throws IllegalAccessException {
         writeField(field, target, value, false);
@@ -497,17 +513,18 @@ public class FieldUtils {
 
     /**
      * Writes a field.
-     * @param field to write
-     * @param target  the object to call on, may be null for static fields
-     * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     *
+     * @param field       to write
+     * @param target      the object to call on, may be null for static fields
+     * @param value       to set
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @throws IllegalArgumentException if the field is null
-     * @throws IllegalAccessException if the field is not made accessible or is final
+     * @throws IllegalAccessException   if the field is not made accessible or is final
      */
     public static void writeField(Field field, Object target, Object value, boolean forceAccess)
-        throws IllegalAccessException {
+            throws IllegalAccessException {
         if (field == null) {
             throw new IllegalArgumentException("The field must not be null");
         }
@@ -521,11 +538,12 @@ public class FieldUtils {
 
     /**
      * Writes a public field. Superclasses will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param value to set
+     *
+     * @param target    the object to reflect, must not be null
+     * @param fieldName the field name to obtain
+     * @param value     to set
      * @throws IllegalArgumentException if <code>target</code> or <code>fieldName</code> is null
-     * @throws IllegalAccessException if the field is not accessible
+     * @throws IllegalAccessException   if the field is not accessible
      */
     public static void writeField(Object target, String fieldName, Object value) throws IllegalAccessException {
         writeField(target, fieldName, value, false);
@@ -533,14 +551,15 @@ public class FieldUtils {
 
     /**
      * Writes a field. Superclasses will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     *
+     * @param target      the object to reflect, must not be null
+     * @param fieldName   the field name to obtain
+     * @param value       to set
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @throws IllegalArgumentException if <code>target</code> or <code>fieldName</code> is null
-     * @throws IllegalAccessException if the field is not made accessible
+     * @throws IllegalAccessException   if the field is not made accessible
      */
     public static void writeField(Object target, String fieldName, Object value, boolean forceAccess)
             throws IllegalAccessException {
@@ -558,11 +577,12 @@ public class FieldUtils {
 
     /**
      * Writes a public field. Only the specified class will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param value to set
+     *
+     * @param target    the object to reflect, must not be null
+     * @param fieldName the field name to obtain
+     * @param value     to set
      * @throws IllegalArgumentException if <code>target</code> or <code>fieldName</code> is null
-     * @throws IllegalAccessException if the field is not made accessible
+     * @throws IllegalAccessException   if the field is not made accessible
      */
     public static void writeDeclaredField(Object target, String fieldName, Object value) throws IllegalAccessException {
         writeDeclaredField(target, fieldName, value, false);
@@ -570,14 +590,15 @@ public class FieldUtils {
 
     /**
      * Writes a public field. Only the specified class will be considered.
-     * @param target  the object to reflect, must not be null
-     * @param fieldName  the field name to obtain
-     * @param value to set
-     * @param forceAccess  whether to break scope restrictions using the
-     *  <code>setAccessible</code> method. <code>False</code> will only
-     *  match public fields.
+     *
+     * @param target      the object to reflect, must not be null
+     * @param fieldName   the field name to obtain
+     * @param value       to set
+     * @param forceAccess whether to break scope restrictions using the
+     *                    <code>setAccessible</code> method. <code>False</code> will only
+     *                    match public fields.
      * @throws IllegalArgumentException if <code>target</code> or <code>fieldName</code> is null
-     * @throws IllegalAccessException if the field is not made accessible
+     * @throws IllegalAccessException   if the field is not made accessible
      */
     public static void writeDeclaredField(Object target, String fieldName, Object value, boolean forceAccess)
             throws IllegalAccessException {

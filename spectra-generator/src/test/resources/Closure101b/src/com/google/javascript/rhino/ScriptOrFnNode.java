@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -51,22 +51,30 @@ public class ScriptOrFnNode extends Node {
         super(nodeType, lineno, charno);
     }
 
-    public final String getSourceName() { return sourceName; }
+    public final String getSourceName() {
+        return sourceName;
+    }
 
     public final void setSourceName(String sourceName) {
         this.sourceName = sourceName;
     }
 
-    public final int getEncodedSourceStart() { return encodedSourceStart; }
+    public final int getEncodedSourceStart() {
+        return encodedSourceStart;
+    }
 
-    public final int getEncodedSourceEnd() { return encodedSourceEnd; }
+    public final int getEncodedSourceEnd() {
+        return encodedSourceEnd;
+    }
 
     public final void setEncodedSourceBounds(int start, int end) {
         this.encodedSourceStart = start;
         this.encodedSourceEnd = end;
     }
 
-    public final int getBaseLineno() { return baseLineno; }
+    public final int getBaseLineno() {
+        return baseLineno;
+    }
 
     public final void setBaseLineno(int lineno) {
         // One time action
@@ -74,7 +82,9 @@ public class ScriptOrFnNode extends Node {
         baseLineno = lineno;
     }
 
-    public final int getEndLineno() { return endLineno; }
+    public final int getEndLineno() {
+        return endLineno;
+    }
 
     public final void setEndLineno(int lineno) {
         // One time action
@@ -83,37 +93,45 @@ public class ScriptOrFnNode extends Node {
     }
 
     public final int getFunctionCount() {
-        if (functions == null) { return 0; }
+        if (functions == null) {
+            return 0;
+        }
         return functions.size();
     }
 
     public final FunctionNode getFunctionNode(int i) {
-        return (FunctionNode)functions.get(i);
+        return (FunctionNode) functions.get(i);
     }
 
     public final int addFunction(FunctionNode fnNode) {
         if (fnNode == null) Kit.codeBug();
-        if (functions == null) { functions = new ObjArray(); }
+        if (functions == null) {
+            functions = new ObjArray();
+        }
         functions.add(fnNode);
         return functions.size() - 1;
     }
 
     public final int getRegexpCount() {
-        if (regexps == null) { return 0; }
+        if (regexps == null) {
+            return 0;
+        }
         return regexps.size() / 2;
     }
 
     public final String getRegexpString(int index) {
-        return (String)regexps.get(index * 2);
+        return (String) regexps.get(index * 2);
     }
 
     public final String getRegexpFlags(int index) {
-        return (String)regexps.get(index * 2 + 1);
+        return (String) regexps.get(index * 2 + 1);
     }
 
     public final int addRegexp(String string, String flags) {
         if (string == null) Kit.codeBug();
-        if (regexps == null) { regexps = new ObjArray(); }
+        if (regexps == null) {
+            regexps = new ObjArray();
+        }
         regexps.add(string);
         regexps.add(flags);
         return regexps.size() / 2 - 1;
@@ -128,7 +146,7 @@ public class ScriptOrFnNode extends Node {
     }
 
     public final String getParamOrVarName(int index) {
-        return (String)itsVariables.get(index);
+        return (String) itsVariables.get(index);
     }
 
     public final int getParamCount() {
@@ -178,6 +196,7 @@ public class ScriptOrFnNode extends Node {
      * This function adds a variable to the set of var declarations for a
      * function (or script).  This returns an indicator of a duplicate that
      * overrides a formal parameter (false if this dups a parameter).
+     *
      * @param name variable name
      * @return 1 if the name is not any form of duplicate, 0 if it duplicates a
      * non-parameter, -1 if it duplicates a parameter and -2 if it duplicates a
@@ -231,13 +250,11 @@ public class ScriptOrFnNode extends Node {
         }
     }
 
-    public final Object getCompilerData()
-    {
+    public final Object getCompilerData() {
         return compilerData;
     }
 
-    public final void setCompilerData(Object data)
-    {
+    public final void setCompilerData(Object data) {
         if (data == null) throw new IllegalArgumentException();
         // Can only call once
         if (compilerData != null) throw new IllegalStateException();

@@ -1,35 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-12">
-			<tests>
-				<testfile path="org/apache/commons/lang3/RandomStringUtilsTest">
-					<exception>java.lang.ArrayIndexOutOfBoundsException:2094380118:-
-						org.apache.commons.lang3.RandomStringUtilsTest::testLANG805:--&gt;
-						java.lang.ArrayIndexOutOfBoundsException:117011530</exception>
-				</testfile>
-				<spectra>
-					<number_tests>10</number_tests>
-					<failed>2</failed>
-					<passed>8</passed>
-					<nodes>11023</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/RandomStringUtils.java">
-					<insert numberlines="3">230-231</insert>
-					<insert numberlines="3,1">232,238</insert>
-					<bugtypes>
-						<id id="1.1" lines="229">
-							<description>Missing check for null value and length.</description>
-						</id>
-						<id id="1.1" lines="231,237">
-							<description>Missing check for null value and else case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-12">
+            <tests>
+                <testfile path="org/apache/commons/lang3/RandomStringUtilsTest">
+                    <exception>java.lang.ArrayIndexOutOfBoundsException:2094380118:-
+                        org.apache.commons.lang3.RandomStringUtilsTest::testLANG805:--&gt;
+                        java.lang.ArrayIndexOutOfBoundsException:117011530
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>10</number_tests>
+                    <failed>2</failed>
+                    <passed>8</passed>
+                    <nodes>11023</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/RandomStringUtils.java">
+                    <insert numberlines="3">230-231</insert>
+                    <insert numberlines="3,1">232,238</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="229">
+                            <description>Missing check for null value and length.</description>
+                        </id>
+                        <id id="1.1" lines="231,237">
+                            <description>Missing check for null value and else case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

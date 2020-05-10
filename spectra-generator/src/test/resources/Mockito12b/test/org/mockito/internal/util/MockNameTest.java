@@ -20,7 +20,8 @@ public class MockNameTest extends TestBase {
     @Test
     public void shouldProvideTheNameForAnonymousClass() throws Exception {
         //given
-        SomeInterface anonymousInstance = new SomeInterface() {};
+        SomeInterface anonymousInstance = new SomeInterface() {
+        };
         //when
         String name = new MockName(null, anonymousInstance.getClass()).toString();
         //then
@@ -35,6 +36,9 @@ public class MockNameTest extends TestBase {
         assertEquals("The Hulk", name);
     }
 
-    private class SomeClass {}
-    private class SomeInterface {}
+    private class SomeClass {
+    }
+
+    private class SomeInterface {
+    }
 }

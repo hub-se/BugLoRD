@@ -21,10 +21,9 @@ import junit.framework.TestSuite;
 
 /**
  * Entry point for all tests in this package.
- * 
- * @version $Id$
- * 
+ *
  * @author Stephen Colebourne
+ * @version $Id$
  */
 public class TestAll extends TestCase {
 
@@ -34,21 +33,21 @@ public class TestAll extends TestCase {
 
     public static void main(String args[]) {
         String[] testCaseName = {
-            TestAll.class.getName()
+                TestAll.class.getName()
         };
         junit.textui.TestRunner.main(testCaseName);
     }
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        
+
         suite.addTest(TestFieldUtils.suite());
 
         suite.addTest(TestBaseDateTimeField.suite());
         suite.addTest(TestOffsetDateTimeField.suite());
         suite.addTest(TestPreciseDurationDateTimeField.suite());
         suite.addTest(TestPreciseDateTimeField.suite());
-        
+
         suite.addTest(TestMillisDurationField.suite());
         suite.addTest(TestPreciseDurationField.suite());
         suite.addTest(TestScaledDurationField.suite());

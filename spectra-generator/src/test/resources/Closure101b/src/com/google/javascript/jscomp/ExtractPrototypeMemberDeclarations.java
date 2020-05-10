@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * When there are multiple prototype member declarations to the same class,
  * use a temp variable to alias the prototype object.
- *
+ * <p>
  * Example:
  *
  * <pre>
@@ -61,7 +61,7 @@ import java.util.List;
  * prototype at a time. So all the {@link PrototypeMemberDeclaration}
  * to be extracted must be in a single line. We call this a single
  * {@link ExtractionInstance}.
- *
+ * <p>
  * The RHS of the declarations can have side effects, however, one good way to
  * break this is the following:
  * <pre>
@@ -70,228 +70,225 @@ import java.util.List;
  * ...
  * </pre>
  * Such logic is highly unlikely and we will assume that it never occurs.
- *
- *
-*
  */
 class ExtractPrototypeMemberDeclarations implements CompilerPass {
 
-  private static final int GLOBAL_VAR_DECL_OVERHEAD = "var t;".length();
+    private static final int GLOBAL_VAR_DECL_OVERHEAD = "var t;".length();
 
-  // Every extraction instance must first use the temp variable to point to
-  // the prototype object.
-  private static final int PER_EXTRACTION_INSTANCE_OVERHEAD =
-      "t=y.prototype;".length();
+    // Every extraction instance must first use the temp variable to point to
+    // the prototype object.
+    private static final int PER_EXTRACTION_INSTANCE_OVERHEAD =
+            "t=y.prototype;".length();
 
-  // The gain we get per prototype declaration. Assuming it can be aliased.
-  private static final int PER_PROTOTYPE_MEMBER_DELTA =
-      "t.y=".length() - "x[p].y=".length();
+    // The gain we get per prototype declaration. Assuming it can be aliased.
+    private static final int PER_PROTOTYPE_MEMBER_DELTA =
+            "t.y=".length() - "x[p].y=".length();
 
-  // The name of variable that will temporary hold the pointer to the prototype
-  // object. Of cause, we assume that it'll be renamed by RenameVars.
-  private String prototypeAlias = null;
+    // The name of variable that will temporary hold the pointer to the prototype
+    // object. Of cause, we assume that it'll be renamed by RenameVars.
+    private String prototypeAlias = null;
 
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  public ExtractPrototypeMemberDeclarations(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    GatherExtractionInfo extractionInfo = new GatherExtractionInfo();
-    NodeTraversal.traverse(compiler, root, extractionInfo);
-    if (extractionInfo.shouldExtract()) {
-      doExtraction(extractionInfo);
-      compiler.reportCodeChange();
+    public ExtractPrototypeMemberDeclarations(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
-  }
-
-  /**
-   * Declares the temp variable to point to prototype objects and iterates
-   * through all ExtractInstance and performs extraction there.
-   */
-  private void doExtraction(GatherExtractionInfo info) {
-    // First declare the temp variable.
-    Node var = new Node(Token.VAR, Node.newString(Token.NAME, prototypeAlias));
-    compiler.getNodeForCodeInsertion(null).addChildrenToFront(var);
-
-    // Go through all extraction instances and extract each of them.
-    for (ExtractionInstance instance : info.instances) {
-      extractInstance(instance);
-    }
-  }
-
-  /**
-   * At a given ExtractionInstance, stores and prototype object in the temp
-   * variable and rewrite each member declaration to assign to the temp variable
-   * instead.
-   */
-  private void extractInstance(ExtractionInstance instance) {
-    // Use the temp variable to hold the prototype.
-    String className = instance.declarations.getFirst().qualifiedClassName;
-    Node stmt = new Node(instance.declarations.getFirst().node.getType(),
-        new Node(Token.ASSIGN,
-            Node.newString(Token.NAME, prototypeAlias),
-            NodeUtil.newQualifiedNameNode(className + ".prototype",
-                instance.parent, className + ".prototype")));
-
-    instance.parent.addChildBefore(stmt, instance.declarations.getFirst().node);
-
-    // Go thought each member declaration and replace it with an assignment
-    // to the prototype variable.
-    for (PrototypeMemberDeclaration declar : instance.declarations) {
-      replacePrototypeMemberDeclaration(declar);
-    }
-  }
-
-  /**
-   * Replaces a member declaration to an assignment to the temp prototype
-   * object.
-   */
-  private void replacePrototypeMemberDeclaration(
-      PrototypeMemberDeclaration declar) {
-    // x.prototype.y = ...  ->  t.y = ...
-    Node assignment = declar.node.getFirstChild();
-    Node lhs = assignment.getFirstChild();
-    Node name = NodeUtil.newQualifiedNameNode(
-        prototypeAlias + "." + declar.memberName, declar.node,
-        declar.memberName);
-
-    // Save the full prototype path on the left hand side of the assignment
-    // for debugging purposes.
-    // declar.lhs = x.prototype.y so first child of the first child
-    // is 'x'.
-    Node accessNode = declar.lhs.getFirstChild().getFirstChild();
-    Object originalName = accessNode.getProp(Node.ORIGINALNAME_PROP);
-
-    String className = "?";
-
-    if (originalName != null) {
-      className = originalName.toString();
-    }
-
-    NodeUtil.setDebugInformation(name.getFirstChild(), lhs,
-                                 className + ".prototype");
-
-    assignment.replaceChild(lhs, name);
-  }
-
-  /**
-   * Collects all the possible extraction instances in a node traversal.
-   */
-  private class GatherExtractionInfo extends AbstractShallowCallback {
-
-    private List<ExtractionInstance> instances = Lists.newLinkedList();
-    private int totalDelta = GLOBAL_VAR_DECL_OVERHEAD;
 
     @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-
-      if (n.getType() != Token.SCRIPT && n.getType() != Token.BLOCK) {
-        return;
-      }
-
-      if (prototypeAlias == null) {
-        // Always in global scope
-        prototypeAlias =
-          new VariableNameGenerator(t.getScope()).getNameNewName();
-      }
-
-      for (Node cur = n.getFirstChild(); cur != null; cur = cur.getNext()) {
-        PrototypeMemberDeclaration prototypeMember =
-            PrototypeMemberDeclaration.extractDeclaration(cur);
-        if (prototypeMember == null) {
-          continue;
+    public void process(Node externs, Node root) {
+        GatherExtractionInfo extractionInfo = new GatherExtractionInfo();
+        NodeTraversal.traverse(compiler, root, extractionInfo);
+        if (extractionInfo.shouldExtract()) {
+            doExtraction(extractionInfo);
+            compiler.reportCodeChange();
         }
-
-        // Found a good site here. The constructor will computes the chain of
-        // declarations that is qualified for extraction.
-        ExtractionInstance instance =
-            new ExtractionInstance(prototypeMember, n);
-        cur = instance.declarations.getLast().node;
-
-        // Only add it to our work list if the extraction at this instance
-        // makes the code smaller.
-        if (instance.isFavorable()) {
-          instances.add(instance);
-          totalDelta += instance.delta;
-        }
-      }
     }
 
     /**
-     * @return <@code true> if the sum of all the extraction instance gain
-     * outweights the overhead of the temp variable declaration.
+     * Declares the temp variable to point to prototype objects and iterates
+     * through all ExtractInstance and performs extraction there.
      */
-    private boolean shouldExtract() {
-      return totalDelta < 0;
-    }
-  }
+    private void doExtraction(GatherExtractionInfo info) {
+        // First declare the temp variable.
+        Node var = new Node(Token.VAR, Node.newString(Token.NAME, prototypeAlias));
+        compiler.getNodeForCodeInsertion(null).addChildrenToFront(var);
 
-  private static class ExtractionInstance {
-    LinkedList<PrototypeMemberDeclaration> declarations = Lists.newLinkedList();
-    private int delta = 0;
-    private final Node parent;
-
-    private ExtractionInstance(PrototypeMemberDeclaration head, Node parent) {
-      this.parent = parent;
-      declarations.add(head);
-      delta = PER_EXTRACTION_INSTANCE_OVERHEAD + PER_PROTOTYPE_MEMBER_DELTA;
-
-      for (Node cur = head.node.getNext(); cur != null; cur = cur.getNext()) {
-        PrototypeMemberDeclaration prototypeMember =
-            PrototypeMemberDeclaration.extractDeclaration(cur);
-        if (prototypeMember == null || !head.isSameClass(prototypeMember)) {
-          break;
+        // Go through all extraction instances and extract each of them.
+        for (ExtractionInstance instance : info.instances) {
+            extractInstance(instance);
         }
-        declarations.add(prototypeMember);
-        delta += PER_PROTOTYPE_MEMBER_DELTA;
-      }
     }
 
     /**
-     * @return {@code true} if extracting all the declarations at this instance
-     * will overweight the overhead of aliasing the prototype object.
+     * At a given ExtractionInstance, stores and prototype object in the temp
+     * variable and rewrite each member declaration to assign to the temp variable
+     * instead.
      */
-    boolean isFavorable() {
-      return delta <= 0;
-    }
-  }
+    private void extractInstance(ExtractionInstance instance) {
+        // Use the temp variable to hold the prototype.
+        String className = instance.declarations.getFirst().qualifiedClassName;
+        Node stmt = new Node(instance.declarations.getFirst().node.getType(),
+                new Node(Token.ASSIGN,
+                        Node.newString(Token.NAME, prototypeAlias),
+                        NodeUtil.newQualifiedNameNode(className + ".prototype",
+                                instance.parent, className + ".prototype")));
 
-  /**
-   * Abstraction for a prototype member declaration.
-   *
-   * <p>{@code a.b.c.prototype.d = ....}
-   */
-  private static class PrototypeMemberDeclaration {
-    final String memberName;
-    final Node node;
-    final String qualifiedClassName;
-    final Node lhs;
+        instance.parent.addChildBefore(stmt, instance.declarations.getFirst().node);
 
-    private PrototypeMemberDeclaration(Node lhs, Node node) {
-      this.lhs = lhs;
-      this.memberName = NodeUtil.getPrototypePropertyName(lhs);
-      this.node = node;
-      this.qualifiedClassName =
-          NodeUtil.getPrototypeClassName(lhs).getQualifiedName();
-    }
-
-    private boolean isSameClass(PrototypeMemberDeclaration other) {
-      return qualifiedClassName.equals(other.qualifiedClassName);
+        // Go thought each member declaration and replace it with an assignment
+        // to the prototype variable.
+        for (PrototypeMemberDeclaration declar : instance.declarations) {
+            replacePrototypeMemberDeclaration(declar);
+        }
     }
 
     /**
-     * @return A prototype member declaration representation if there is one
-     * else it returns {@code null}.
+     * Replaces a member declaration to an assignment to the temp prototype
+     * object.
      */
-    private static PrototypeMemberDeclaration extractDeclaration(Node n) {
-      if (!NodeUtil.isPrototypePropertyDeclaration(n)) {
-        return null;
-      }
-      Node lhs = n.getFirstChild().getFirstChild();
-      return new PrototypeMemberDeclaration(lhs, n);
+    private void replacePrototypeMemberDeclaration(
+            PrototypeMemberDeclaration declar) {
+        // x.prototype.y = ...  ->  t.y = ...
+        Node assignment = declar.node.getFirstChild();
+        Node lhs = assignment.getFirstChild();
+        Node name = NodeUtil.newQualifiedNameNode(
+                prototypeAlias + "." + declar.memberName, declar.node,
+                declar.memberName);
+
+        // Save the full prototype path on the left hand side of the assignment
+        // for debugging purposes.
+        // declar.lhs = x.prototype.y so first child of the first child
+        // is 'x'.
+        Node accessNode = declar.lhs.getFirstChild().getFirstChild();
+        Object originalName = accessNode.getProp(Node.ORIGINALNAME_PROP);
+
+        String className = "?";
+
+        if (originalName != null) {
+            className = originalName.toString();
+        }
+
+        NodeUtil.setDebugInformation(name.getFirstChild(), lhs,
+                className + ".prototype");
+
+        assignment.replaceChild(lhs, name);
     }
-  }
+
+    /**
+     * Collects all the possible extraction instances in a node traversal.
+     */
+    private class GatherExtractionInfo extends AbstractShallowCallback {
+
+        private List<ExtractionInstance> instances = Lists.newLinkedList();
+        private int totalDelta = GLOBAL_VAR_DECL_OVERHEAD;
+
+        @Override
+        public void visit(NodeTraversal t, Node n, Node parent) {
+
+            if (n.getType() != Token.SCRIPT && n.getType() != Token.BLOCK) {
+                return;
+            }
+
+            if (prototypeAlias == null) {
+                // Always in global scope
+                prototypeAlias =
+                        new VariableNameGenerator(t.getScope()).getNameNewName();
+            }
+
+            for (Node cur = n.getFirstChild(); cur != null; cur = cur.getNext()) {
+                PrototypeMemberDeclaration prototypeMember =
+                        PrototypeMemberDeclaration.extractDeclaration(cur);
+                if (prototypeMember == null) {
+                    continue;
+                }
+
+                // Found a good site here. The constructor will computes the chain of
+                // declarations that is qualified for extraction.
+                ExtractionInstance instance =
+                        new ExtractionInstance(prototypeMember, n);
+                cur = instance.declarations.getLast().node;
+
+                // Only add it to our work list if the extraction at this instance
+                // makes the code smaller.
+                if (instance.isFavorable()) {
+                    instances.add(instance);
+                    totalDelta += instance.delta;
+                }
+            }
+        }
+
+        /**
+         * @return <@code true> if the sum of all the extraction instance gain
+         * outweights the overhead of the temp variable declaration.
+         */
+        private boolean shouldExtract() {
+            return totalDelta < 0;
+        }
+    }
+
+    private static class ExtractionInstance {
+        LinkedList<PrototypeMemberDeclaration> declarations = Lists.newLinkedList();
+        private int delta = 0;
+        private final Node parent;
+
+        private ExtractionInstance(PrototypeMemberDeclaration head, Node parent) {
+            this.parent = parent;
+            declarations.add(head);
+            delta = PER_EXTRACTION_INSTANCE_OVERHEAD + PER_PROTOTYPE_MEMBER_DELTA;
+
+            for (Node cur = head.node.getNext(); cur != null; cur = cur.getNext()) {
+                PrototypeMemberDeclaration prototypeMember =
+                        PrototypeMemberDeclaration.extractDeclaration(cur);
+                if (prototypeMember == null || !head.isSameClass(prototypeMember)) {
+                    break;
+                }
+                declarations.add(prototypeMember);
+                delta += PER_PROTOTYPE_MEMBER_DELTA;
+            }
+        }
+
+        /**
+         * @return {@code true} if extracting all the declarations at this instance
+         * will overweight the overhead of aliasing the prototype object.
+         */
+        boolean isFavorable() {
+            return delta <= 0;
+        }
+    }
+
+    /**
+     * Abstraction for a prototype member declaration.
+     *
+     * <p>{@code a.b.c.prototype.d = ....}
+     */
+    private static class PrototypeMemberDeclaration {
+        final String memberName;
+        final Node node;
+        final String qualifiedClassName;
+        final Node lhs;
+
+        private PrototypeMemberDeclaration(Node lhs, Node node) {
+            this.lhs = lhs;
+            this.memberName = NodeUtil.getPrototypePropertyName(lhs);
+            this.node = node;
+            this.qualifiedClassName =
+                    NodeUtil.getPrototypeClassName(lhs).getQualifiedName();
+        }
+
+        private boolean isSameClass(PrototypeMemberDeclaration other) {
+            return qualifiedClassName.equals(other.qualifiedClassName);
+        }
+
+        /**
+         * @return A prototype member declaration representation if there is one
+         * else it returns {@code null}.
+         */
+        private static PrototypeMemberDeclaration extractDeclaration(Node n) {
+            if (!NodeUtil.isPrototypePropertyDeclaration(n)) {
+                return null;
+            }
+            Node lhs = n.getFirstChild().getFirstChild();
+            return new PrototypeMemberDeclaration(lhs, n);
+        }
+    }
 }

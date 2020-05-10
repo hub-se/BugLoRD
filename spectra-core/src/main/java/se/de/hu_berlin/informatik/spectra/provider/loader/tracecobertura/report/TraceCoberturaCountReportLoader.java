@@ -6,28 +6,29 @@
 
 package se.de.hu_berlin.informatik.spectra.provider.loader.tracecobertura.report;
 
-import java.nio.file.Path;
-
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 
-public abstract class TraceCoberturaCountReportLoader<T, K extends CountTrace<T>> extends TraceCoberturaReportLoader<T, K> {
+import java.nio.file.Path;
 
-	public TraceCoberturaCountReportLoader(Path tempOutputDir) {
-		super(tempOutputDir);
-	}
+public abstract class TraceCoberturaCountReportLoader<K extends CountTrace<SourceCodeBlock>> extends TraceCoberturaReportLoader<K> {
 
-	@Override
-	protected void onNewLine(String packageName, String classFilePath, String methodName, T lineIdentifier,
-			ISpectra<T, K> lineSpectra, K currentTrace, boolean fullSpectra, long numberOfHits) {
-		super.onNewLine(
-				packageName, classFilePath, methodName, lineIdentifier, lineSpectra, currentTrace, fullSpectra,
-				numberOfHits);
-		if (numberOfHits > 0) {
-			currentTrace.setHits(lineIdentifier, numberOfHits);
-		} else if (fullSpectra) {
-			lineSpectra.getOrCreateNode(lineIdentifier);
-		}
-	}
+    public TraceCoberturaCountReportLoader(Path tempOutputDir) {
+        super(tempOutputDir);
+    }
+
+    @Override
+    protected void onNewLine(String packageName, String classFilePath, String methodName, SourceCodeBlock lineIdentifier,
+                             ISpectra<SourceCodeBlock, K> lineSpectra, K currentTrace, boolean fullSpectra, long numberOfHits) {
+        super.onNewLine(
+                packageName, classFilePath, methodName, lineIdentifier, lineSpectra, currentTrace, fullSpectra,
+                numberOfHits);
+        if (numberOfHits > 0) {
+            currentTrace.setHits(lineIdentifier, numberOfHits);
+        } else if (fullSpectra) {
+            lineSpectra.getOrCreateNode(lineIdentifier);
+        }
+    }
 
 }

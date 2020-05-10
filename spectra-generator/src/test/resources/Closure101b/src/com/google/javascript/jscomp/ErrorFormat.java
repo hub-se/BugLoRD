@@ -22,49 +22,49 @@ import com.google.javascript.jscomp.SourceExcerptProvider.SourceExcerpt;
  * Error formats available.
  */
 public enum ErrorFormat {
-  LEGACY {
-    @Override
-    public MessageFormatter toFormatter(
-        SourceExcerptProvider source, boolean colorize) {
-      VerboseMessageFormatter formatter = new VerboseMessageFormatter(source);
-      formatter.setColorize(colorize);
-      return formatter;
-    }
-  },
-  SINGLELINE {
-    @Override
-    public MessageFormatter toFormatter(
-        SourceExcerptProvider source, boolean colorize) {
-      LightweightMessageFormatter formatter = new LightweightMessageFormatter(
-          source);
-      formatter.setColorize(colorize);
-      return formatter;
-    }
-  },
-  MULTILINE {
-    @Override
-    public MessageFormatter toFormatter(
-        SourceExcerptProvider source, boolean colorize) {
-      LightweightMessageFormatter formatter = new LightweightMessageFormatter(
-          source, SourceExcerpt.REGION);
-      formatter.setColorize(colorize);
-      return formatter;
-    }
-  },
-  SOURCELESS {
-    @Override
-    public MessageFormatter toFormatter(
-        SourceExcerptProvider source, boolean colorize) {
-      LightweightMessageFormatter formatter =
-          LightweightMessageFormatter.withoutSource();
-      formatter.setColorize(colorize);
-      return formatter;
-    }
-  };
+    LEGACY {
+        @Override
+        public MessageFormatter toFormatter(
+                SourceExcerptProvider source, boolean colorize) {
+            VerboseMessageFormatter formatter = new VerboseMessageFormatter(source);
+            formatter.setColorize(colorize);
+            return formatter;
+        }
+    },
+    SINGLELINE {
+        @Override
+        public MessageFormatter toFormatter(
+                SourceExcerptProvider source, boolean colorize) {
+            LightweightMessageFormatter formatter = new LightweightMessageFormatter(
+                    source);
+            formatter.setColorize(colorize);
+            return formatter;
+        }
+    },
+    MULTILINE {
+        @Override
+        public MessageFormatter toFormatter(
+                SourceExcerptProvider source, boolean colorize) {
+            LightweightMessageFormatter formatter = new LightweightMessageFormatter(
+                    source, SourceExcerpt.REGION);
+            formatter.setColorize(colorize);
+            return formatter;
+        }
+    },
+    SOURCELESS {
+        @Override
+        public MessageFormatter toFormatter(
+                SourceExcerptProvider source, boolean colorize) {
+            LightweightMessageFormatter formatter =
+                    LightweightMessageFormatter.withoutSource();
+            formatter.setColorize(colorize);
+            return formatter;
+        }
+    };
 
-  /**
-   * Convert to a concrete formatter.
-   */
-  public abstract MessageFormatter toFormatter(
-      SourceExcerptProvider source, boolean colorize);
+    /**
+     * Convert to a concrete formatter.
+     */
+    public abstract MessageFormatter toFormatter(
+            SourceExcerptProvider source, boolean colorize);
 }

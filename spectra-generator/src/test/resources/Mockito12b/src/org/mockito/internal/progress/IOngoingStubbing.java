@@ -8,4 +8,5 @@ package org.mockito.internal.progress;
 /**
  * Marking interface to be removed when DeprecatedOngoingStubbing gets deleted
  */
-public interface IOngoingStubbing {}
+public interface IOngoingStubbing {
+}

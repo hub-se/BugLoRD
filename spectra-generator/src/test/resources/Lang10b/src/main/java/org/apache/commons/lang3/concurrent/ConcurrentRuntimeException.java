@@ -30,8 +30,8 @@ package org.apache.commons.lang3.concurrent;
  * does not want to be bothered with checked exceptions.
  * </p>
  *
- * @since 3.0
  * @version $Id$
+ * @since 3.0
  */
 public class ConcurrentRuntimeException extends RuntimeException {
     /**
@@ -62,7 +62,7 @@ public class ConcurrentRuntimeException extends RuntimeException {
      * Creates a new instance of {@code ConcurrentRuntimeException} and
      * initializes it with the given message and cause.
      *
-     * @param msg the error message
+     * @param msg   the error message
      * @param cause the cause of this exception
      * @throws IllegalArgumentException if the cause is not a checked exception
      */

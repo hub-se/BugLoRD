@@ -1,42 +1,42 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-70">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;2&gt;
-						but was:&lt;1&gt;:-
-						com.google.javascript.jscomp.LooseTypeCheckTest::testFunctionArguments13:--&gt;
-						junit.framework.AssertionFailedError:expected a warning:-
-						com.google.javascript.jscomp.TypeCheckTest::testScoping12:--&gt;
-						junit.framework.AssertionFailedError:expected a warning:-
-						com.google.javascript.jscomp.TypeCheckTest::testDuplicateLocalVarDecl:--&gt;
-						junit.framework.AssertionFailedError:unexpected
-						warning(s):JSC_DUP_VAR_DECLARATION. variable x redefined with type
-						string, original definition at [testcode]:2 with type number at
-						[testcode] line 2:42 expected:&lt;2&gt; but was:&lt;1&gt;:-
-						com.google.javascript.jscomp.TypeCheckTest::testFunctionArguments13:--&gt;
-						junit.framework.AssertionFailedError:expected a warning
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>5968</number_tests>
-					<failed>5</failed>
-					<passed>5963</passed>
-					<nodes>44759</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/TypedScopeCreator.java">
-					<change parent="1744-1745">1745</change>
-					<bugtypes>
-						<id id="2.1" lines="1745">
-							<description>Incorrect parameters passed.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-70">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/TypeCheckTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;2&gt;
+                        but was:&lt;1&gt;:-
+                        com.google.javascript.jscomp.LooseTypeCheckTest::testFunctionArguments13:--&gt;
+                        junit.framework.AssertionFailedError:expected a warning:-
+                        com.google.javascript.jscomp.TypeCheckTest::testScoping12:--&gt;
+                        junit.framework.AssertionFailedError:expected a warning:-
+                        com.google.javascript.jscomp.TypeCheckTest::testDuplicateLocalVarDecl:--&gt;
+                        junit.framework.AssertionFailedError:unexpected
+                        warning(s):JSC_DUP_VAR_DECLARATION. variable x redefined with type
+                        string, original definition at [testcode]:2 with type number at
+                        [testcode] line 2:42 expected:&lt;2&gt; but was:&lt;1&gt;:-
+                        com.google.javascript.jscomp.TypeCheckTest::testFunctionArguments13:--&gt;
+                        junit.framework.AssertionFailedError:expected a warning
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>5968</number_tests>
+                    <failed>5</failed>
+                    <passed>5963</passed>
+                    <nodes>44759</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/TypedScopeCreator.java">
+                    <change parent="1744-1745">1745</change>
+                    <bugtypes>
+                        <id id="2.1" lines="1745">
+                            <description>Incorrect parameters passed.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

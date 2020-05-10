@@ -17,7 +17,6 @@ package org.joda.time;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.chrono.GJChronology;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.chrono.JulianChronology;
@@ -88,7 +87,7 @@ public class TestIllegalFieldValueException extends TestCase {
 
     public void testSkipDateTimeField() {
         DateTimeField field = new SkipDateTimeField
-            (ISOChronology.getInstanceUTC(), ISOChronology.getInstanceUTC().year(), 1970);
+                (ISOChronology.getInstanceUTC(), ISOChronology.getInstanceUTC().year(), 1970);
         try {
             field.set(0, 1970);
             fail();
@@ -192,7 +191,7 @@ public class TestIllegalFieldValueException extends TestCase {
 
     public void testZoneTransition() {
         DateTime dt = new DateTime
-            (2005, 4, 3, 1, 0, 0, 0, DateTimeZone.forID("America/Los_Angeles"));
+                (2005, 4, 3, 1, 0, 0, 0, DateTimeZone.forID("America/Los_Angeles"));
         try {
             dt.hourOfDay().setCopy(2);
             fail();
@@ -305,7 +304,7 @@ public class TestIllegalFieldValueException extends TestCase {
     // Test extra constructors not currently called by anything
     public void testOtherConstructors() {
         IllegalFieldValueException e = new IllegalFieldValueException
-            (DurationFieldType.days(), new Integer(1), new Integer(2), new Integer(3));
+                (DurationFieldType.days(), new Integer(1), new Integer(2), new Integer(3));
         assertEquals(null, e.getDateTimeFieldType());
         assertEquals(DurationFieldType.days(), e.getDurationFieldType());
         assertEquals("days", e.getFieldName());

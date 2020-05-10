@@ -15,8 +15,7 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.SimpleRanking;
 /**
  * Class used to create a ranking of nodes with corresponding suspiciousness set.
  *
- * @param <T>
- *            type used to identify nodes in the system
+ * @param <T> type used to identify nodes in the system
  */
 public class NodeRanking<T> extends SimpleRanking<INode<T>> {
 

@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-4">
-			<tests>
-				<testfile path="org/joda/time/TestPartial_Basics">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>770</number_tests>
-					<failed>1</failed>
-					<passed>769</passed>
-					<nodes>13612</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/Partial.java">
-					<change>464</change>
-					<bugtypes>
-						<id id="2.1" lines="464">
-							<description>Incorrect order of the parameters.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-4">
+            <tests>
+                <testfile path="org/joda/time/TestPartial_Basics">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>770</number_tests>
+                    <failed>1</failed>
+                    <passed>769</passed>
+                    <nodes>13612</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/Partial.java">
+                    <change>464</change>
+                    <bugtypes>
+                        <id id="2.1" lines="464">
+                            <description>Incorrect order of the parameters.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

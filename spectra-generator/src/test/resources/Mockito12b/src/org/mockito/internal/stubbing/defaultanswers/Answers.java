@@ -10,6 +10,7 @@ import org.mockito.stubbing.Answer;
 /**
  * Enumeration of pre-configured mock answers
  * <p>
+ *
  * @deprecated - please use Answers from top Mockito package: {@link org.mockito.Answers}
  * <p>
  * <b>WARNING</b> Those answers no longer are used by the framework!!! Please use {@link org.mockito.Answers}
@@ -23,8 +24,7 @@ public enum Answers {
     RETURNS_SMART_NULLS(new ReturnsSmartNulls()),
     RETURNS_MOCKS(new ReturnsMocks()),
     RETURNS_DEEP_STUBS(new ReturnsDeepStubs()),
-    CALLS_REAL_METHODS(new CallsRealMethods())
-	;
+    CALLS_REAL_METHODS(new CallsRealMethods());
 
     private Answer<Object> implementation;
 

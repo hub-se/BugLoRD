@@ -15,10 +15,10 @@
  */
 package org.joda.time.tz;
 
+import org.joda.time.DateTimeZone;
+
 import java.util.Collections;
 import java.util.Set;
-
-import org.joda.time.DateTimeZone;
 
 /**
  * Simple time zone provider that supports only UTC.
@@ -50,7 +50,7 @@ public final class UTCProvider implements Provider {
 
     /**
      * Returns a singleton collection containing only <code>"UTC"</code>.
-     */    
+     */
     public Set<String> getAvailableIDs() {
         return Collections.singleton("UTC");
     }

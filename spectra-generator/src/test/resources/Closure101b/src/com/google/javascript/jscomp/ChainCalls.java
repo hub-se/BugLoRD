@@ -31,165 +31,165 @@ import java.util.Set;
 
 /**
  * Chain calls to functions that return this.
- *
-*
  */
 class ChainCalls implements CompilerPass {
-  private final AbstractCompiler compiler;
-  private final Set<Node> badFunctionNodes = Sets.newHashSet();
-  private final Set<Node> goodFunctionNodes = Sets.newHashSet();
-  private final List<CallSite> callSites = Lists.newArrayList();
-  private SimpleDefinitionFinder defFinder;
-  private GatherFunctions gatherFunctions = new GatherFunctions();
+    private final AbstractCompiler compiler;
+    private final Set<Node> badFunctionNodes = Sets.newHashSet();
+    private final Set<Node> goodFunctionNodes = Sets.newHashSet();
+    private final List<CallSite> callSites = Lists.newArrayList();
+    private SimpleDefinitionFinder defFinder;
+    private GatherFunctions gatherFunctions = new GatherFunctions();
 
-  ChainCalls(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    defFinder = new SimpleDefinitionFinder(compiler);
-    defFinder.process(externs, root);
-
-    NodeTraversal.traverse(compiler, root, new GatherCallSites());
-
-    for (CallSite callSite : callSites) {
-      callSite.parent.removeChild(callSite.n);
-      callSite.n.removeChild(callSite.callNode);
-      callSite.nextGetPropNode.replaceChild(callSite.nextGetPropFirstChildNode,
-                                            callSite.callNode);
-      compiler.reportCodeChange();
+    ChainCalls(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
-  }
 
-  /**
-   * Determines whether a function always returns this.
-   */
-  private class GatherFunctions implements ScopedCallback {
     @Override
-    public void enterScope(NodeTraversal t) {
-      ControlFlowGraph<Node> cfg = t.getControlFlowGraph();
+    public void process(Node externs, Node root) {
+        defFinder = new SimpleDefinitionFinder(compiler);
+        defFinder.process(externs, root);
 
-      for (DiGraphEdge<Node, Branch> s : cfg.getImplicitReturn().getInEdges()) {
-        Node exitNode = s.getSource().getValue();
-        if (exitNode.getType() != Token.RETURN ||
-            exitNode.getFirstChild() == null ||
-            exitNode.getFirstChild().getType() != Token.THIS) {
-          badFunctionNodes.add(t.getScopeRoot());
-          return;
+        NodeTraversal.traverse(compiler, root, new GatherCallSites());
+
+        for (CallSite callSite : callSites) {
+            callSite.parent.removeChild(callSite.n);
+            callSite.n.removeChild(callSite.callNode);
+            callSite.nextGetPropNode.replaceChild(callSite.nextGetPropFirstChildNode,
+                    callSite.callNode);
+            compiler.reportCodeChange();
         }
-      }
-
-      goodFunctionNodes.add(t.getScopeRoot());
     }
 
-    @Override
-    public void exitScope(NodeTraversal t) {
-    }
-
-    @Override
-    public boolean shouldTraverse(NodeTraversal nodeTraversal, Node n,
-                                  Node parent) {
-      return true;
-    }
-
-    @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-    }
-  }
-
-  private class GatherCallSites extends AbstractPostOrderCallback {
     /**
-     * If the function call returns this and the next statement has the same
-     * target expression, record the call site.
+     * Determines whether a function always returns this.
      */
-    @Override
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (!NodeUtil.isExpressionNode(n)) {
-        return;
-      }
+    private class GatherFunctions implements ScopedCallback {
+        @Override
+        public void enterScope(NodeTraversal t) {
+            ControlFlowGraph<Node> cfg = t.getControlFlowGraph();
 
-      Node callNode = n.getFirstChild();
-      if (callNode.getType() != Token.CALL) {
-        return;
-      }
+            for (DiGraphEdge<Node, Branch> s : cfg.getImplicitReturn().getInEdges()) {
+                Node exitNode = s.getSource().getValue();
+                if (exitNode.getType() != Token.RETURN ||
+                        exitNode.getFirstChild() == null ||
+                        exitNode.getFirstChild().getType() != Token.THIS) {
+                    badFunctionNodes.add(t.getScopeRoot());
+                    return;
+                }
+            }
 
-      Node getPropNode = callNode.getFirstChild();
-      if (getPropNode.getType() != Token.GETPROP) {
-        return;
-      }
-
-      Node getPropFirstChildNode = getPropNode.getFirstChild();
-
-      Collection<Definition> definitions =
-          defFinder.getDefinitionsReferencedAt(getPropNode);
-      if (definitions == null) {
-        return;
-      }
-      for (Definition definition : definitions) {
-        Node rValue = definition.getRValue();
-        if (rValue == null) {
-          return;
+            goodFunctionNodes.add(t.getScopeRoot());
         }
-        if (badFunctionNodes.contains(rValue)) {
-          return;
+
+        @Override
+        public void exitScope(NodeTraversal t) {
         }
-        if (!goodFunctionNodes.contains(rValue)) {
-          NodeTraversal.traverse(compiler, rValue, gatherFunctions);
-          if (badFunctionNodes.contains(rValue)) {
-            return;
-          }
+
+        @Override
+        public boolean shouldTraverse(NodeTraversal nodeTraversal, Node n,
+                                      Node parent) {
+            return true;
         }
-      }
 
-      Node nextNode = n.getNext();
-      if (nextNode == null ||
-          nextNode.getType() != Token.EXPR_RESULT) {
-        return;
-      }
-
-      Node nextCallNode = nextNode.getFirstChild();
-      if (nextCallNode.getType() != Token.CALL) {
-        return;
-      }
-
-      Node nextGetPropNode = nextCallNode.getFirstChild();
-      if (nextGetPropNode.getType() != Token.GETPROP) {
-        return;
-      }
-
-      Node nextGetPropFirstChildNode = nextGetPropNode.getFirstChild();
-      if (!compiler.areNodesEqualForInlining(
-              nextGetPropFirstChildNode, getPropFirstChildNode)) {
-        return;
-      }
-
-      if (NodeUtil.mayEffectMutableState(getPropFirstChildNode)) {
-        return;
-      }
-
-      // We can't chain immediately as it we wouldn't recognize further
-      // opportunities to chain.
-      callSites.add(new CallSite(parent, n, callNode, nextGetPropNode,
-                                 nextGetPropFirstChildNode));
+        @Override
+        public void visit(NodeTraversal t, Node n, Node parent) {
+        }
     }
-  }
 
-  /** Records a call site to chain. */
-  private static class CallSite {
-    final Node parent;
-    final Node n;
-    final Node callNode;
-    final Node nextGetPropNode;
-    final Node nextGetPropFirstChildNode;
+    private class GatherCallSites extends AbstractPostOrderCallback {
+        /**
+         * If the function call returns this and the next statement has the same
+         * target expression, record the call site.
+         */
+        @Override
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            if (!NodeUtil.isExpressionNode(n)) {
+                return;
+            }
 
-    CallSite(Node parent, Node n, Node callNode, Node nextGetPropNode,
-             Node nextGetPropFirstChildNode) {
-      this.parent = parent;
-      this.n = n;
-      this.callNode = callNode;
-      this.nextGetPropNode = nextGetPropNode;
-      this.nextGetPropFirstChildNode = nextGetPropFirstChildNode;
+            Node callNode = n.getFirstChild();
+            if (callNode.getType() != Token.CALL) {
+                return;
+            }
+
+            Node getPropNode = callNode.getFirstChild();
+            if (getPropNode.getType() != Token.GETPROP) {
+                return;
+            }
+
+            Node getPropFirstChildNode = getPropNode.getFirstChild();
+
+            Collection<Definition> definitions =
+                    defFinder.getDefinitionsReferencedAt(getPropNode);
+            if (definitions == null) {
+                return;
+            }
+            for (Definition definition : definitions) {
+                Node rValue = definition.getRValue();
+                if (rValue == null) {
+                    return;
+                }
+                if (badFunctionNodes.contains(rValue)) {
+                    return;
+                }
+                if (!goodFunctionNodes.contains(rValue)) {
+                    NodeTraversal.traverse(compiler, rValue, gatherFunctions);
+                    if (badFunctionNodes.contains(rValue)) {
+                        return;
+                    }
+                }
+            }
+
+            Node nextNode = n.getNext();
+            if (nextNode == null ||
+                    nextNode.getType() != Token.EXPR_RESULT) {
+                return;
+            }
+
+            Node nextCallNode = nextNode.getFirstChild();
+            if (nextCallNode.getType() != Token.CALL) {
+                return;
+            }
+
+            Node nextGetPropNode = nextCallNode.getFirstChild();
+            if (nextGetPropNode.getType() != Token.GETPROP) {
+                return;
+            }
+
+            Node nextGetPropFirstChildNode = nextGetPropNode.getFirstChild();
+            if (!compiler.areNodesEqualForInlining(
+                    nextGetPropFirstChildNode, getPropFirstChildNode)) {
+                return;
+            }
+
+            if (NodeUtil.mayEffectMutableState(getPropFirstChildNode)) {
+                return;
+            }
+
+            // We can't chain immediately as it we wouldn't recognize further
+            // opportunities to chain.
+            callSites.add(new CallSite(parent, n, callNode, nextGetPropNode,
+                    nextGetPropFirstChildNode));
+        }
     }
-  }
+
+    /**
+     * Records a call site to chain.
+     */
+    private static class CallSite {
+        final Node parent;
+        final Node n;
+        final Node callNode;
+        final Node nextGetPropNode;
+        final Node nextGetPropFirstChildNode;
+
+        CallSite(Node parent, Node n, Node callNode, Node nextGetPropNode,
+                 Node nextGetPropFirstChildNode) {
+            this.parent = parent;
+            this.n = n;
+            this.callNode = callNode;
+            this.nextGetPropNode = nextGetPropNode;
+            this.nextGetPropFirstChildNode = nextGetPropFirstChildNode;
+        }
+    }
 }

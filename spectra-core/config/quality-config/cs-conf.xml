@@ -9,14 +9,14 @@
   -->
 
 <!DOCTYPE module PUBLIC
-    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
-    
+        "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+        "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
 <module name="Checker">
 
     <!-- KIEKER default is warning instead of error -->
     <property name="severity" value="warning"/>
-    
+
     <!-- KIEKER Filter -->
     <module name="SuppressWithNearbyCommentFilter">
         <property name="commentFormat" value="NOCS"/>
@@ -24,7 +24,7 @@
         <property name="influenceFormat" value="0"/>
     </module>
 
-	<module name="SuppressionCommentFilter"/>
+    <module name="SuppressionCommentFilter"/>
 
     <!--
       If you set the basedir property below, then all reported file
@@ -140,7 +140,7 @@
     <!-- Checks whether files end with a new line.                        !-->
     <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile !-->
     <module name="NewlineAtEndOfFile">
-        <property name="lineSeparator"  value="system"/>
+        <property name="lineSeparator" value="system"/>
         <property name="fileExtensions" value="*.*"/>
     </module>
 
@@ -160,7 +160,7 @@
     <!-- Checks for long source files. !-->
     <!-- See http://checkstyle.sf.net/config_sizes.html !-->
     <module name="FileLength">
-        <property name="max"            value="2000"/>
+        <property name="max" value="2000"/>
         <property name="fileExtensions" value="java"/>
     </module>
 
@@ -195,23 +195,23 @@
             <property name="ignoreAbstractClasses" value="true"/>
         </module>
         -->
-		<!-- KIEKER -->
+        <!-- KIEKER -->
         <!--
 		 <module name="kieker.test.common.cs.JUnitTestsExtendingAbstractKiekerTestCheck">
             <property name="ignoreAbstractClasses" value="true"/>
         </module>
 		-->
-		<!-- KIEKER -->
-		<!--
-		<module name="kieker.test.common.cs.MissingSinceTagCheck">
+        <!-- KIEKER -->
+        <!--
+        <module name="kieker.test.common.cs.MissingSinceTagCheck">
         </module>
-		-->
-		<!-- KIEKER -->
-		 <!--
-		<module name="kieker.test.common.cs.NotAllowedSinceTagCheck">
-        </module>
-		-->
-	
+        -->
+        <!-- KIEKER -->
+        <!--
+       <module name="kieker.test.common.cs.NotAllowedSinceTagCheck">
+       </module>
+       -->
+
         <module name="FileContentsHolder"/>
 
         <!--
@@ -222,9 +222,9 @@
          !-->
         <!-- This check controls the usage style of annotations. !-->
         <!-- See http://checkstyle.sourceforge.net/config_annotation.html#AnnotationUseStyle !-->
-        <module name ="AnnotationUseStyle">
-            <property name="elementStyle"       value="compact_no_array"/>
-            <property name="closingParens"      value="never"/>
+        <module name="AnnotationUseStyle">
+            <property name="elementStyle" value="compact_no_array"/>
+            <property name="closingParens" value="never"/>
             <property name="trailingArrayComma" value="never"/>
         </module>
 
@@ -232,7 +232,7 @@
         <!-- See http://checkstyle.sourceforge.net/config_annotation.html#MissingDeprecated !-->
         <!-- KIEKER -->
         <module name="MissingDeprecated">
-            <property name="severity" value="info"/>        
+            <property name="severity" value="info"/>
         </module>
 
         <!-- Verifies that the java.lang.Override annotation is present when the {@inheritDoc} javadoc tag is present. !-->
@@ -284,9 +284,9 @@
         <!-- Checks for the placement of left curly braces ('{') for code blocks. !-->
         <!-- See http://checkstyle.sf.net/config_blocks.html !-->
         <module name="LeftCurly">
-            <property name="option"        value="eol"/>
+            <property name="option" value="eol"/>
             <property name="maxLineLength" value="165"/>
-            <property name="tokens"        value="CLASS_DEF, CTOR_DEF,
+            <property name="tokens" value="CLASS_DEF, CTOR_DEF,
                                                   INTERFACE_DEF, LITERAL_CATCH, LITERAL_DO, LITERAL_ELSE,
                                                   LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_SWITCH,
                                                   LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE,
@@ -302,8 +302,8 @@
         <!-- Checks the placement of right curly braces ('}') for else, try, and catch tokens. !-->
         <!-- See http://checkstyle.sf.net/config_blocks.html !-->
         <module name="RightCurly">
-            <property name="option"          value="same"/>
-            <property name="tokens"          value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE"/>
+            <property name="option" value="same"/>
+            <property name="tokens" value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE"/>
             <property name="shouldStartLine" value="true"/>
         </module>
 
@@ -356,8 +356,8 @@
         <!-- Checks visibility of class members. !-->
         <!-- See http://checkstyle.sf.net/config_design.html !-->
         <module name="VisibilityModifier">
-            <property name="packageAllowed"      value="false"/>
-            <property name="protectedAllowed"    value="true"/>
+            <property name="packageAllowed" value="false"/>
+            <property name="protectedAllowed" value="true"/>
             <property name="publicMemberPattern" value="^serialVersionUID$"/>
         </module>
 
@@ -384,8 +384,8 @@
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
         <module name="DeclarationOrder">
             <property name="ignoreConstructors" value="false"/>
-            <property name="ignoreMethods"      value="false"/>
-            <property name="ignoreModifiers"    value="true"/>
+            <property name="ignoreMethods" value="false"/>
+            <property name="ignoreModifiers" value="true"/>
         </module>
 
         <!-- Check that the default is after all the cases in a switch statement. !-->
@@ -413,13 +413,13 @@
         <!-- KIEKER off
         <module name="ExplicitInitialization"/>
         !-->
-        
+
         <!-- Checks for fall through in switch statements Finds locations where a case contains Java code ... !-->
         <!-- but lacks a break, return, throw or continue statement. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
         <module name="FallThrough">
             <property name="checkLastCaseGroup" value="false"/>
-            <property name="reliefPattern"      value="fallthru|falls??through"/>
+            <property name="reliefPattern" value="fallthru|falls??through"/>
         </module>
 
         <!-- Checks that local variables that never have their values changed are declared final. !-->
@@ -432,19 +432,20 @@
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
         <!-- KIEKER ignoreConstructorParameter, ignoreSetter -->
         <module name="HiddenField">
-            <property name="tokens"                     value="PARAMETER_DEF, VARIABLE_DEF"/>
+            <property name="tokens" value="PARAMETER_DEF, VARIABLE_DEF"/>
             <!--
             <property name="ignoreFormat"               value=""/>
             !-->
             <property name="ignoreConstructorParameter" value="true"/>
-            <property name="ignoreSetter"               value="true"/>
-            <property name="ignoreAbstractMethods"      value="false"/>
+            <property name="ignoreSetter" value="true"/>
+            <property name="ignoreAbstractMethods" value="false"/>
         </module>
 
         <!-- Catching java.lang.Exception, java.lang.Error or java.lang.RuntimeException is almost never acceptable. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
         <module name="IllegalCatch">
-            <property name="illegalClassNames" value="java.lang.Exception, java.lang.Throwable, java.lang.RuntimeException"/>
+            <property name="illegalClassNames"
+                      value="java.lang.Exception, java.lang.Throwable, java.lang.RuntimeException"/>
         </module>
 
         <!-- Checks for illegal instantiations where a factory method is preferred. !-->
@@ -458,7 +459,8 @@
         <!-- Declaring to throw java.lang.Error or java.lang.RuntimeException is almost never acceptable. !-->
         <!-- See http://checkstyle.sourceforge.net/config_coding.html#IllegalThrows !-->
         <module name="IllegalThrows">
-            <property name="illegalClassNames" value="java.lang.Throwable, java.lang.Error, java.lang.RuntimeException"/>
+            <property name="illegalClassNames"
+                      value="java.lang.Throwable, java.lang.Error, java.lang.RuntimeException"/>
         </module>
 
         <!-- Checks for illegal tokens. !-->
@@ -484,15 +486,15 @@
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
         <!-- KIEKER removed format value="^(.*[\\.])?Abstract.*$" !-->
         <module name="IllegalType">
-             <property name="tokens"                 value="PARAMETER_DEF, VARIABLE_DEF, METHOD_DEF"/>
-             <property name="illegalClassNames"      value="java.util.GregorianCalendar, java.util.Hashtable,
+            <property name="tokens" value="PARAMETER_DEF, VARIABLE_DEF, METHOD_DEF"/>
+            <property name="illegalClassNames" value="java.util.GregorianCalendar, java.util.Hashtable,
                                                             java.util.HashSet, java.util.HashMap, java.util.ArrayList,
                                                             java.util.LinkedList, java.util.LinkedHashMap,
                                                             java.util.LinkedHashSet, java.util.TreeSet,
                                                             java.util.TreeMap, java.util.Vector"/>
             <property name="legalAbstractClassNames" value=""/>
-            <property name="ignoredMethodNames"      value="getInitialContext, getEnvironment"/>
-            <property name="format"                  value="XXX"/>
+            <property name="ignoredMethodNames" value="getInitialContext, getEnvironment"/>
+            <property name="format" value="XXX"/>
         </module>
 
         <!-- Checks for assignments in subexpressions, such as in String s = Integer.toString(i = 2);. !-->
@@ -589,30 +591,30 @@
         <!-- unchecked exceptions or subclasses of another declared exception. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
         <module name="RedundantThrows">
-            <property name="allowUnchecked"     value="true"/>
-            <property name="allowSubclasses"    value="false"/>
-            <property name="logLoadErrors"      value="true"/>
+            <property name="allowUnchecked" value="true"/>
+            <property name="allowSubclasses" value="false"/>
+            <property name="logLoadErrors" value="true"/>
             <property name="suppressLoadErrors" value="false"/>
         </module>
 
         <!-- Checks that code doesn't rely on the "this." default. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
         <module name="RequireThis">
-            <property name="checkFields"  value="true"/>
+            <property name="checkFields" value="true"/>
             <property name="checkMethods" value="true"/>
         </module>
 
         <!-- Restrict the number of return statements. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
         <module name="ReturnCount">
-            <property name="max"    value="2"/>
+            <property name="max" value="2"/>
             <property name="format" value=""/>
         </module>
 
         <!-- Checks for overly complicated boolean expressions. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
-        
-        <module name="SimplifyBooleanExpression"/> 
+
+        <module name="SimplifyBooleanExpression"/>
 
         <!-- Checks for overly complicated boolean return statements. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
@@ -644,8 +646,8 @@
         <!-- Checks that there are no import statements that use the * notation. !-->
         <!-- See http://checkstyle.sf.net/config_import.html !-->
         <module name="AvoidStarImport">
-            <property name="excludes"                 value=""/>
-            <property name="allowClassImports"        value="false"/>
+            <property name="excludes" value=""/>
+            <property name="allowClassImports" value="false"/>
             <property name="allowStaticMemberImports" value="false"/>
         </module>
 
@@ -686,7 +688,7 @@
             <property name="caseSensitive" value="true"/>
         </module>
         -->
-	  
+
         <!-- Checks for redundant import statements. !-->
         <!-- See http://checkstyle.sf.net/config_import.html !-->
         <module name="RedundantImport"/>
@@ -694,8 +696,8 @@
         <!-- Checks for unused import statements. !-->
         <!-- See http://checkstyle.sf.net/config_import.html !-->
         <module name="UnusedImports">
-			<property name="processJavadoc" value="true" />
-		</module>
+            <property name="processJavadoc" value="true"/>
+        </module>
 
 
         <!--
@@ -709,48 +711,48 @@
         <!-- KIEKER: adapted !-->
         <module name="JavadocMethod">
             <property name="severity" value="warning"/>
-            <property name="scope"                        value="protected"/>
+            <property name="scope" value="protected"/>
             <!--
             <property name="excludeScope"                 value=""/>
             !-->
-            <property name="allowUndeclaredRTE"           value="false"/>
+            <property name="allowUndeclaredRTE" value="false"/>
             <property name="allowThrowsTagsForSubclasses" value="false"/>
-            <property name="allowMissingParamTags"        value="false"/>
-            <property name="allowMissingThrowsTags"       value="false"/>
-            <property name="allowMissingReturnTag"        value="false"/>
-            <property name="allowMissingJavadoc"          value="false"/>
-            <property name="allowMissingPropertyJavadoc"  value="false"/>
-            <property name="logLoadErrors"                value="true"/>
-            <property name="suppressLoadErrors"           value="false"/>
-            <property name="tokens"                       value="METHOD_DEF, CTOR_DEF"/>
+            <property name="allowMissingParamTags" value="false"/>
+            <property name="allowMissingThrowsTags" value="false"/>
+            <property name="allowMissingReturnTag" value="false"/>
+            <property name="allowMissingJavadoc" value="false"/>
+            <property name="allowMissingPropertyJavadoc" value="false"/>
+            <property name="logLoadErrors" value="true"/>
+            <property name="suppressLoadErrors" value="false"/>
+            <property name="tokens" value="METHOD_DEF, CTOR_DEF"/>
         </module>
 
         <!-- Validates Javadoc comments to help ensure they are well formed. !-->
         <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocStyle !-->
         <module name="JavadocStyle">
-            <property name="severity"            value="warning"/>
-            <property name="scope"               value="private"/>
+            <property name="severity" value="warning"/>
+            <property name="scope" value="private"/>
             <!--
             <property name="excludeScope"        value=""/>
             !-->
-            <property name="checkFirstSentence"  value="false"/>
+            <property name="checkFirstSentence" value="false"/>
             <!-- <property name="endOfSentenceFormat" value="[^ \*]$"/> -->
-            <property name="checkEmptyJavadoc"   value="true"/>
-            <property name="checkHtml"           value="false"/>
-            <property name="tokens"              value="INTERFACE_DEF, CLASS_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
+            <property name="checkEmptyJavadoc" value="true"/>
+            <property name="checkHtml" value="false"/>
+            <property name="tokens" value="INTERFACE_DEF, CLASS_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
         </module>
 
         <!-- Checks Javadoc comments for class and interface definitions. !-->
         <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocType !-->
         <module name="JavadocType">
             <property name="severity" value="warning"/>
-            <property name="scope"                 value="private"/>
+            <property name="scope" value="private"/>
             <!--<property name="excludeScope"          value=""/>!-->
-            <property name="authorFormat"          value=""/>
+            <property name="authorFormat" value=""/>
             <!--<property name="versionFormat"         value=""/>!-->
             <property name="allowMissingParamTags" value="false"/>
-            <property name="allowUnknownTags"      value="false"/>
-            <property name="tokens"                value="INTERFACE_DEF, CLASS_DEF"/>
+            <property name="allowUnknownTags" value="false"/>
+            <property name="tokens" value="INTERFACE_DEF, CLASS_DEF"/>
         </module>
 
         <module name="JavadocType">
@@ -763,7 +765,7 @@
         <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocVariable !-->
         <module name="JavadocVariable">
             <property name="severity" value="warning"/>
-            <property name="scope"        value="private"/>
+            <property name="scope" value="private"/>
             <!--
             <property name="excludeScope" value=""/>
             !-->
@@ -806,7 +808,7 @@
 
         <!-- The number of other classes a given class relies on. !-->
         <!-- See http://checkstyle.sf.net/config_metrics.html !-->
-         <!--  KIEKER Off -->
+        <!--  KIEKER Off -->
         <!--<module name="ClassFanOutComplexity">
             <property name="severity" value="info"/>
             <property name="max" value="20"/>
@@ -831,11 +833,11 @@
 
         <!-- The NPATH metric computes the number of possible execution paths through a function. !-->
         <!-- See http://checkstyle.sf.net/config_metrics.html !-->
-         <!--  KIEKER Off -->
-         <!--<module name="NPathComplexity">
-            <property name="severity" value="info"/>
-            <property name="max" value="200"/>
-        </module> -->
+        <!--  KIEKER Off -->
+        <!--<module name="NPathComplexity">
+           <property name="severity" value="info"/>
+           <property name="max" value="200"/>
+       </module> -->
 
 
         <!--
@@ -964,9 +966,9 @@
         <!-- See http://checkstyle.sf.net/config_naming.html !-->
         <!-- KIEKER removed |^.*Factory$ -->
         <module name="AbstractClassName">
-            <property name="format"         value="^Abstract.*$"/>
+            <property name="format" value="^Abstract.*$"/>
             <property name="ignoreModifier" value="false"/>
-            <property name="ignoreName"     value="false"/>
+            <property name="ignoreName" value="false"/>
         </module>
 
         <!-- Checks for class type parameter name naming conventions. !-->
@@ -978,11 +980,11 @@
         <!-- Checks for constant name naming conventions. !-->
         <!-- See http://checkstyle.sf.net/config_naming.html !-->
         <module name="ConstantName">
-            <property name="format"           value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
-            <property name="applyToPublic"    value="true"/>
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+            <property name="applyToPublic" value="true"/>
             <property name="applyToProtected" value="true"/>
-            <property name="applyToPackage"   value="true"/>
-            <property name="applyToPrivate"   value="true"/>
+            <property name="applyToPackage" value="true"/>
+            <property name="applyToPrivate" value="true"/>
         </module>
 
         <!-- Checks for local final variable name naming conventions. !-->
@@ -1002,18 +1004,18 @@
         <!-- Checks for member variable name naming conventions. !-->
         <!-- See http://checkstyle.sf.net/config_naming.html !-->
         <module name="MemberName">
-            <property name="format"           value="^[a-z][a-zA-Z0-9]*$"/>
-            <property name="applyToPublic"    value="true"/>
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <property name="applyToPublic" value="true"/>
             <property name="applyToProtected" value="true"/>
-            <property name="applyToPackage"   value="true"/>
-            <property name="applyToPrivate"   value="false"/>
+            <property name="applyToPackage" value="true"/>
+            <property name="applyToPrivate" value="false"/>
         </module>
         <module name="MemberName">
-            <property name="format"           value="^(__)?[a-z][a-zA-Z0-9]*$"/>
-            <property name="applyToPublic"    value="false"/>
+            <property name="format" value="^(__)?[a-z][a-zA-Z0-9]*$"/>
+            <property name="applyToPublic" value="false"/>
             <property name="applyToProtected" value="false"/>
-            <property name="applyToPackage"   value="false"/>
-            <property name="applyToPrivate"   value="true"/>
+            <property name="applyToPackage" value="false"/>
+            <property name="applyToPrivate" value="true"/>
         </module>
 
         <!-- Checks for method name naming conventions. !-->
@@ -1043,32 +1045,32 @@
         <!-- Checks for static variable name naming conventions. !-->
         <!-- See http://checkstyle.sf.net/config_naming.html !-->
         <module name="StaticVariableName">
-            <property name="format"           value="^[a-z][a-zA-Z0-9]*$"/>
-            <property name="applyToPublic"    value="true"/>
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <property name="applyToPublic" value="true"/>
             <property name="applyToProtected" value="true"/>
-            <property name="applyToPackage"   value="true"/>
-            <property name="applyToPrivate"   value="true"/>
+            <property name="applyToPackage" value="true"/>
+            <property name="applyToPrivate" value="true"/>
         </module>
 
         <!-- Checks for type name naming conventions. !-->
         <!-- See http://checkstyle.sf.net/config_naming.html !-->
         <!-- KIEKER: modded -->
         <module name="TypeName">
-            <property name="format"           value="^[A-Z][a-zA-Z0-9]*$"/>
-            <property name="tokens"           value="CLASS_DEF"/>
-            <property name="applyToPublic"    value="true"/>
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+            <property name="tokens" value="CLASS_DEF"/>
+            <property name="applyToPublic" value="true"/>
             <property name="applyToProtected" value="true"/>
-            <property name="applyToPackage"   value="true"/>
-            <property name="applyToPrivate"   value="true"/>
+            <property name="applyToPackage" value="true"/>
+            <property name="applyToPrivate" value="true"/>
         </module>
 
         <module name="TypeName">
-            <property name="format"           value="^I[A-Z][a-zA-Z0-9]*$"/>
-            <property name="tokens"           value="INTERFACE_DEF"/>
-            <property name="applyToPublic"    value="true"/>
+            <property name="format" value="^I[A-Z][a-zA-Z0-9]*$"/>
+            <property name="tokens" value="INTERFACE_DEF"/>
+            <property name="applyToPublic" value="true"/>
             <property name="applyToProtected" value="true"/>
-            <property name="applyToPackage"   value="true"/>
-            <property name="applyToPrivate"   value="true"/>
+            <property name="applyToPackage" value="true"/>
+            <property name="applyToPrivate" value="true"/>
         </module>
 
 
@@ -1135,7 +1137,7 @@
         <module name="LineLength">
             <property name="severity" value="info"/>
             <property name="ignorePattern" value="^$"/>
-            <property name="max"           value="165"/>
+            <property name="max" value="165"/>
         </module>
 
         <!-- Checks the number of methods declared in each type. This includes the number of each scope !-->
@@ -1143,20 +1145,20 @@
         <!-- See http://checkstyle.sourceforge.net/config_sizes.html#MethodCount !-->
         <module name="MethodCount">
             <property name="severity" value="info"/>
-            <property name="maxTotal"     value="100"/>
-            <property name="maxPrivate"   value="100"/>
-            <property name="maxPackage"   value="100"/>
+            <property name="maxTotal" value="100"/>
+            <property name="maxPrivate" value="100"/>
+            <property name="maxPackage" value="100"/>
             <property name="maxProtected" value="100"/>
-            <property name="maxPublic"    value="100"/>
+            <property name="maxPublic" value="100"/>
         </module>
 
         <!-- Checks for long methods and constructors. !-->
         <!-- See http://checkstyle.sf.net/config_sizes.html !-->
         <module name="MethodLength">
             <property name="severity" value="info"/>
-            <property name="max"        value="150"/>
+            <property name="max" value="150"/>
             <property name="countEmpty" value="true"/>
-            <property name="tokens"     value="METHOD_DEF, CTOR_DEF"/>
+            <property name="tokens" value="METHOD_DEF, CTOR_DEF"/>
         </module>
 
         <!-- Checks for the number of types declared at the outer (or root) level in a file. !-->
@@ -1203,8 +1205,8 @@
         <!-- See http://checkstyle.sf.net/config_whitespace.html !-->
         <module name="MethodParamPad">
             <property name="allowLineBreaks" value="false"/>
-            <property name="option"          value="nospace"/>
-            <property name="tokens"          value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF, SUPER_CTOR_CALL "/>
+            <property name="option" value="nospace"/>
+            <property name="tokens" value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF, SUPER_CTOR_CALL "/>
         </module>
 
         <!-- Checks that there is no whitespace after a token. !-->
@@ -1212,14 +1214,14 @@
         <!-- KIEKER removed ARRAY_INIT !-->
         <module name="NoWhitespaceAfter">
             <property name="allowLineBreaks" value="true"/>
-            <property name="tokens"          value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
+            <property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
         </module>
 
         <!-- Checks that there is no whitespace before a token. !-->
         <!-- See http://checkstyle.sf.net/config_whitespace.html !-->
         <module name="NoWhitespaceBefore">
             <property name="allowLineBreaks" value="false"/>
-            <property name="tokens"          value="SEMI, POST_DEC, POST_INC"/>
+            <property name="tokens" value="SEMI, POST_DEC, POST_INC"/>
         </module>
 
         <!-- Checks the policy on how to wrap lines on operators. !-->
@@ -1263,7 +1265,7 @@
                                            MINUS, MINUS_ASSIGN, MOD, MOD_ASSIGN, NOT_EQUAL, PLUS, PLUS_ASSIGN,
                                            QUESTION, SL, SLIST, SL_ASSIGN, SR, SR_ASSIGN, STAR, STAR_ASSIGN"/>
             <property name="allowEmptyConstructors" value="true"/>
-            <property name="allowEmptyMethods"      value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
         </module>
 
     </module>

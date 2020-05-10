@@ -16,15 +16,7 @@
  */
 package org.apache.commons.lang3;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectStreamClass;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,8 +34,9 @@ import java.util.Map;
  * Each method documents its behaviour in more detail.</p>
  *
  * <p>#ThreadSafe#</p>
- * @since 1.0
+ *
  * @version $Id$
+ * @since 1.0
  */
 public class SerializationUtils {
 
@@ -53,6 +46,7 @@ public class SerializationUtils {
      *
      * <p>This constructor is public to permit tools that require a JavaBean instance
      * to operate.</p>
+     *
      * @since 2.0
      */
     public SerializationUtils() {
@@ -61,6 +55,7 @@ public class SerializationUtils {
 
     // Clone
     //-----------------------------------------------------------------------
+
     /**
      * <p>Deep clone an {@code Object} using serialization.</p>
      *
@@ -70,8 +65,8 @@ public class SerializationUtils {
      * be a simple alternative implementation. Of course all the objects
      * must be {@code Serializable}.</p>
      *
-     * @param <T> the type of the object involved
-     * @param object  the {@code Serializable} object to clone
+     * @param <T>    the type of the object involved
+     * @param object the {@code Serializable} object to clone
      * @return the cloned object
      * @throws SerializationException (runtime) if the serialization fails
      */
@@ -92,7 +87,7 @@ public class SerializationUtils {
              * is of the same type as the original serialized object
              */
             @SuppressWarnings("unchecked") // see above
-            T readObject = (T) in.readObject();
+                    T readObject = (T) in.readObject();
             return readObject;
 
         } catch (ClassNotFoundException ex) {
@@ -112,6 +107,7 @@ public class SerializationUtils {
 
     // Serialize
     //-----------------------------------------------------------------------
+
     /**
      * <p>Serializes an {@code Object} to the specified stream.</p>
      *
@@ -122,10 +118,10 @@ public class SerializationUtils {
      * <p>The stream passed in is not buffered internally within this method.
      * This is the responsibility of your application if desired.</p>
      *
-     * @param obj  the object to serialize to bytes, may be null
-     * @param outputStream  the stream to write to, must not be null
+     * @param obj          the object to serialize to bytes, may be null
+     * @param outputStream the stream to write to, must not be null
      * @throws IllegalArgumentException if {@code outputStream} is {@code null}
-     * @throws SerializationException (runtime) if the serialization fails
+     * @throws SerializationException   (runtime) if the serialization fails
      */
     public static void serialize(Serializable obj, OutputStream outputStream) {
         if (outputStream == null) {
@@ -154,7 +150,7 @@ public class SerializationUtils {
      * <p>Serializes an {@code Object} to a byte array for
      * storage/serialization.</p>
      *
-     * @param obj  the object to serialize to bytes
+     * @param obj the object to serialize to bytes
      * @return a byte[] with the converted Serializable
      * @throws SerializationException (runtime) if the serialization fails
      */
@@ -166,34 +162,32 @@ public class SerializationUtils {
 
     // Deserialize
     //-----------------------------------------------------------------------
+
     /**
      * <p>
      * Deserializes an {@code Object} from the specified stream.
      * </p>
-     * 
+     *
      * <p>
      * The stream will be closed once the object is written. This avoids the need for a finally clause, and maybe also
      * exception handling, in the application code.
      * </p>
-     * 
+     *
      * <p>
      * The stream passed in is not buffered internally within this method. This is the responsibility of your
      * application if desired.
      * </p>
-     * 
+     *
      * <p>
      * If the call site incorrectly types the return value, a {@link ClassCastException} is thrown from the call site.
      * Without Generics in this declaration, the call site must type cast and can cause the same ClassCastException.
      * Note that in both cases, the ClassCastException is in the call site, not in this method.
      * </p>
-     * 
-     * @param inputStream
-     *            the serialized object input stream, must not be null
+     *
+     * @param inputStream the serialized object input stream, must not be null
      * @return the deserialized object
-     * @throws IllegalArgumentException
-     *             if {@code inputStream} is {@code null}
-     * @throws SerializationException
-     *             (runtime) if the serialization fails
+     * @throws IllegalArgumentException if {@code inputStream} is {@code null}
+     * @throws SerializationException   (runtime) if the serialization fails
      */
     @SuppressWarnings("unchecked")
     // Don't warn about "(T) deserialize" because we want the avoid type casting call sites.
@@ -226,20 +220,17 @@ public class SerializationUtils {
      * <p>
      * Deserializes a single {@code Object} from an array of bytes.
      * </p>
-     * 
+     *
      * <p>
      * If the call site incorrectly types the return value, a {@link ClassCastException} is thrown from the call site.
      * Without Generics in this declaration, the call site must type cast and can cause the same ClassCastException.
      * Note that in both cases, the ClassCastException is in the call site, not in this method.
      * </p>
-     * 
-     * @param objectData
-     *            the serialized object, must not be null
+     *
+     * @param objectData the serialized object, must not be null
      * @return the deserialized object
-     * @throws IllegalArgumentException
-     *             if {@code objectData} is {@code null}
-     * @throws SerializationException
-     *             (runtime) if the serialization fails
+     * @throws IllegalArgumentException if {@code objectData} is {@code null}
+     * @throws SerializationException   (runtime) if the serialization fails
      */
     @SuppressWarnings("unchecked")
     // Don't warn about "(T) deserialize" because we want the avoid type casting call sites.
@@ -259,18 +250,19 @@ public class SerializationUtils {
      * containers and application servers, no matter in which of the
      * <code>ClassLoader</code> the particular class that encapsulates
      * serialization/deserialization lives. </p>
-     * 
+     *
      * <p>For more in-depth information about the problem for which this
      * class here is a workaround, see the JIRA issue LANG-626. </p>
      */
-     static class ClassLoaderAwareObjectInputStream extends ObjectInputStream {
-        private static final Map<String, Class<?>> primitiveTypes = 
+    static class ClassLoaderAwareObjectInputStream extends ObjectInputStream {
+        private static final Map<String, Class<?>> primitiveTypes =
                 new HashMap<String, Class<?>>();
         private ClassLoader classLoader;
-        
+
         /**
          * Constructor.
-         * @param in The <code>InputStream</code>.
+         *
+         * @param in          The <code>InputStream</code>.
          * @param classLoader classloader to use
          * @throws IOException if an I/O error occurs while reading stream header.
          * @see java.io.ObjectInputStream
@@ -293,9 +285,10 @@ public class SerializationUtils {
         /**
          * Overriden version that uses the parametrized <code>ClassLoader</code> or the <code>ClassLoader</code>
          * of the current <code>Thread</code> to resolve the class.
+         *
          * @param desc An instance of class <code>ObjectStreamClass</code>.
          * @return A <code>Class</code> object corresponding to <code>desc</code>.
-         * @throws IOException Any of the usual Input/Output exceptions.
+         * @throws IOException            Any of the usual Input/Output exceptions.
          * @throws ClassNotFoundException If class of a serialized object cannot be found.
          */
         @Override

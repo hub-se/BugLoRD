@@ -1,32 +1,32 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-111">
-			<tests>
-				<testfile
-					path="com/google/javascript/jscomp/ClosureReverseAbstractInterpreterTest">
-					<exception>junit.framework.AssertionFailedError:Expected:Array
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>2498</number_tests>
-					<failed>1</failed>
-					<passed>2497</passed>
-					<nodes>49762</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="com/google/javascript/jscomp/type/ClosureReverseAbstractInterpreter.java">
-					<change>54</change>
-					<bugtypes>
-						<id id="2.2" lines="54">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-111">
+            <tests>
+                <testfile
+                        path="com/google/javascript/jscomp/ClosureReverseAbstractInterpreterTest">
+                    <exception>junit.framework.AssertionFailedError:Expected:Array
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>2498</number_tests>
+                    <failed>1</failed>
+                    <passed>2497</passed>
+                    <nodes>49762</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="com/google/javascript/jscomp/type/ClosureReverseAbstractInterpreter.java">
+                    <change>54</change>
+                    <bugtypes>
+                        <id id="2.2" lines="54">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

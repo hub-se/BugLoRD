@@ -5,18 +5,20 @@
 package org.mockitousage.verification;
 
 import org.junit.Test;
-import static org.mockito.Matchers.anyString;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.exceptions.base.MockitoAssertionError;
 import org.mockitoutil.TestBase;
 
 import java.util.List;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+
 @SuppressWarnings("unchecked")
 public class AtLeastXVerificationTest extends TestBase {
 
-    @Mock private List mock;
+    @Mock
+    private List mock;
 
     @Test
     public void shouldVerifyAtLeastXTimes() throws Exception {
@@ -37,9 +39,10 @@ public class AtLeastXVerificationTest extends TestBase {
         try {
             verify(mock, atLeast(2)).add(anyString());
             fail();
-        } catch (MockitoAssertionError e) {}
+        } catch (MockitoAssertionError e) {
+        }
     }
-    
+
     @Test
     public void shouldAllowAtLeastZeroForTheSakeOfVerifyNoMoreInteractionsSometimes() throws Exception {
         //when
@@ -50,6 +53,6 @@ public class AtLeastXVerificationTest extends TestBase {
         verify(mock, atLeast(0)).add("one");
         verify(mock, atLeast(0)).clear();
 
-        verifyNoMoreInteractions(mock);        
+        verifyNoMoreInteractions(mock);
     }
 }

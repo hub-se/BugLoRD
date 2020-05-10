@@ -24,19 +24,26 @@ package org.apache.commons.lang3.tuple;
  * @param <L> the left element type
  * @param <M> the middle element type
  * @param <R> the right element type
- *
  * @version $Id$
  */
 public class MutableTriple<L, M, R> extends Triple<L, M, R> {
 
-    /** Serialization version */
+    /**
+     * Serialization version
+     */
     private static final long serialVersionUID = 1L;
 
-    /** Left object */
+    /**
+     * Left object
+     */
     public L left;
-    /** Middle object */
+    /**
+     * Middle object
+     */
     public M middle;
-    /** Right object */
+    /**
+     * Right object
+     */
     public R right;
 
     /**
@@ -45,11 +52,11 @@ public class MutableTriple<L, M, R> extends Triple<L, M, R> {
      * <p>This factory allows the triple to be created using inference to
      * obtain the generic types.</p>
      *
-     * @param <L> the left element type
-     * @param <M> the middle element type
-     * @param <R> the right element type
-     * @param left  the left element, may be null
-     * @param middle  the middle element, may be null
+     * @param <L>    the left element type
+     * @param <M>    the middle element type
+     * @param <R>    the right element type
+     * @param left   the left element, may be null
+     * @param middle the middle element, may be null
      * @param right  the right element, may be null
      * @return a triple formed from the three parameters, not null
      */
@@ -67,8 +74,8 @@ public class MutableTriple<L, M, R> extends Triple<L, M, R> {
     /**
      * Create a new triple instance.
      *
-     * @param left  the left value, may be null
-     * @param middle  the middle value, may be null
+     * @param left   the left value, may be null
+     * @param middle the middle value, may be null
      * @param right  the right value, may be null
      */
     public MutableTriple(L left, M middle, R right) {
@@ -79,6 +86,7 @@ public class MutableTriple<L, M, R> extends Triple<L, M, R> {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * {@inheritDoc}
      */
@@ -90,7 +98,7 @@ public class MutableTriple<L, M, R> extends Triple<L, M, R> {
     /**
      * Sets the left element of the triple.
      *
-     * @param left  the new value of the left element, may be null
+     * @param left the new value of the left element, may be null
      */
     public void setLeft(L left) {
         this.left = left;
@@ -107,7 +115,7 @@ public class MutableTriple<L, M, R> extends Triple<L, M, R> {
     /**
      * Sets the middle element of the triple.
      *
-     * @param middle  the new value of the middle element, may be null
+     * @param middle the new value of the middle element, may be null
      */
     public void setMiddle(M middle) {
         this.middle = middle;
@@ -124,7 +132,7 @@ public class MutableTriple<L, M, R> extends Triple<L, M, R> {
     /**
      * Sets the right element of the triple.
      *
-     * @param right  the new value of the right element, may be null
+     * @param right the new value of the right element, may be null
      */
     public void setRight(R right) {
         this.right = right;

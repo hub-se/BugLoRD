@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,14 +19,14 @@ package org.apache.commons.lang.math;
 
 /**
  * <p><code>Range</code> represents a range of numbers of the same type.</p>
- * 
+ *
  * <p>Specific subclasses hold the range values as different types. Each
  * subclass should be immutable and {@link java.io.Serializable Serializable}
  * if possible.</p>
  *
  * @author Stephen Colebourne
- * @since 2.0
  * @version $Id$
+ * @since 2.0
  */
 public abstract class Range {
 
@@ -49,8 +49,8 @@ public abstract class Range {
 
     /**
      * <p>Gets the minimum number in this range as a <code>long</code>.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumNumber()} method. 
+     *
+     * <p>This implementation uses the {@link #getMinimumNumber()} method.
      * Subclasses may be able to optimise this.</p>
      *
      * @return the minimum number in this range
@@ -61,8 +61,8 @@ public abstract class Range {
 
     /**
      * <p>Gets the minimum number in this range as a <code>int</code>.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumNumber()} method. 
+     *
+     * <p>This implementation uses the {@link #getMinimumNumber()} method.
      * Subclasses may be able to optimise this.</p>
      *
      * @return the minimum number in this range
@@ -73,8 +73,8 @@ public abstract class Range {
 
     /**
      * <p>Gets the minimum number in this range as a <code>double</code>.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumNumber()} method. 
+     *
+     * <p>This implementation uses the {@link #getMinimumNumber()} method.
      * Subclasses may be able to optimise this.</p>
      *
      * @return the minimum number in this range
@@ -85,8 +85,8 @@ public abstract class Range {
 
     /**
      * <p>Gets the minimum number in this range as a <code>float</code>.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumNumber()} method. 
+     *
+     * <p>This implementation uses the {@link #getMinimumNumber()} method.
      * Subclasses may be able to optimise this.</p>
      *
      * @return the minimum number in this range
@@ -104,8 +104,8 @@ public abstract class Range {
 
     /**
      * <p>Gets the maximum number in this range as a <code>long</code>.</p>
-     * 
-     * <p>This implementation uses the {@link #getMaximumNumber()} method. 
+     *
+     * <p>This implementation uses the {@link #getMaximumNumber()} method.
      * Subclasses may be able to optimise this.</p>
      *
      * @return the maximum number in this range
@@ -116,8 +116,8 @@ public abstract class Range {
 
     /**
      * <p>Gets the maximum number in this range as a <code>int</code>.</p>
-     * 
-     * <p>This implementation uses the {@link #getMaximumNumber()} method. 
+     *
+     * <p>This implementation uses the {@link #getMaximumNumber()} method.
      * Subclasses may be able to optimise this.</p>
      *
      * @return the maximum number in this range
@@ -128,8 +128,8 @@ public abstract class Range {
 
     /**
      * <p>Gets the maximum number in this range as a <code>double</code>.</p>
-     * 
-     * <p>This implementation uses the {@link #getMaximumNumber()} method. 
+     *
+     * <p>This implementation uses the {@link #getMaximumNumber()} method.
      * Subclasses may be able to optimise this.</p>
      *
      * @return the maximum number in this range
@@ -140,8 +140,8 @@ public abstract class Range {
 
     /**
      * <p>Gets the maximum number in this range as a <code>float</code>.</p>
-     * 
-     * <p>This implementation uses the {@link #getMaximumNumber()} method. 
+     *
+     * <p>This implementation uses the {@link #getMaximumNumber()} method.
      * Subclasses may be able to optimise this.</p>
      *
      * @return the maximum number in this range
@@ -152,18 +152,18 @@ public abstract class Range {
 
     // Include tests
     //--------------------------------------------------------------------
-    
+
     /**
      * <p>Tests whether the specified <code>Number</code> occurs within
      * this range.</p>
-     * 
+     *
      * <p>The exact comparison implementation varies by subclass. It is
      * intended that an <code>int</code> specific subclass will compare using
      * <code>int</code> comparison.</p>
-     * 
+     *
      * <p><code>null</code> is handled and returns <code>false</code>.</p>
      *
-     * @param number  the number to test, may be <code>null</code>
+     * @param number the number to test, may be <code>null</code>
      * @return <code>true</code> if the specified number occurs within this range
      * @throws IllegalArgumentException if the <code>Number</code> cannot be compared
      */
@@ -172,14 +172,14 @@ public abstract class Range {
     /**
      * <p>Tests whether the specified <code>Number</code> occurs within
      * this range using <code>long</code> comparison..</p>
-     * 
+     *
      * <p><code>null</code> is handled and returns <code>false</code>.</p>
-     * 
+     *
      * <p>This implementation forwards to the {@link #containsLong(long)} method.</p>
      *
-     * @param value  the long to test, may be <code>null</code>
+     * @param value the long to test, may be <code>null</code>
      * @return <code>true</code> if the specified number occurs within this
-     *  range by <code>long</code> comparison
+     * range by <code>long</code> comparison
      */
     public boolean containsLong(Number value) {
         if (value == null) {
@@ -191,13 +191,13 @@ public abstract class Range {
     /**
      * <p>Tests whether the specified <code>long</code> occurs within
      * this range using <code>long</code> comparison.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumLong()} and 
+     *
+     * <p>This implementation uses the {@link #getMinimumLong()} and
      * {@link #getMaximumLong()} methods and should be good for most uses.</p>
-     * 
-     * @param value  the long to test
+     *
+     * @param value the long to test
      * @return <code>true</code> if the specified number occurs within this
-     *  range by <code>long</code> comparison
+     * range by <code>long</code> comparison
      */
     public boolean containsLong(long value) {
         return value >= getMinimumLong() && value <= getMaximumLong();
@@ -206,14 +206,14 @@ public abstract class Range {
     /**
      * <p>Tests whether the specified <code>Number</code> occurs within
      * this range using <code>int</code> comparison..</p>
-     * 
+     *
      * <p><code>null</code> is handled and returns <code>false</code>.</p>
-     * 
+     *
      * <p>This implementation forwards to the {@link #containsInteger(int)} method.</p>
      *
-     * @param value  the integer to test, may be <code>null</code>
+     * @param value the integer to test, may be <code>null</code>
      * @return <code>true</code> if the specified number occurs within this
-     *  range by <code>int</code> comparison
+     * range by <code>int</code> comparison
      */
     public boolean containsInteger(Number value) {
         if (value == null) {
@@ -225,13 +225,13 @@ public abstract class Range {
     /**
      * <p>Tests whether the specified <code>int</code> occurs within
      * this range using <code>int</code> comparison.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumInteger()} and 
+     *
+     * <p>This implementation uses the {@link #getMinimumInteger()} and
      * {@link #getMaximumInteger()} methods and should be good for most uses.</p>
-     * 
-     * @param value  the int to test
+     *
+     * @param value the int to test
      * @return <code>true</code> if the specified number occurs within this
-     *  range by <code>int</code> comparison
+     * range by <code>int</code> comparison
      */
     public boolean containsInteger(int value) {
         return value >= getMinimumInteger() && value <= getMaximumInteger();
@@ -240,14 +240,14 @@ public abstract class Range {
     /**
      * <p>Tests whether the specified <code>Number</code> occurs within
      * this range using <code>double</code> comparison..</p>
-     * 
+     *
      * <p><code>null</code> is handled and returns <code>false</code>.</p>
-     * 
+     *
      * <p>This implementation forwards to the {@link #containsDouble(double)} method.</p>
      *
-     * @param value  the double to test, may be <code>null</code>
+     * @param value the double to test, may be <code>null</code>
      * @return <code>true</code> if the specified number occurs within this
-     *  range by <code>double</code> comparison
+     * range by <code>double</code> comparison
      */
     public boolean containsDouble(Number value) {
         if (value == null) {
@@ -259,13 +259,13 @@ public abstract class Range {
     /**
      * <p>Tests whether the specified <code>double</code> occurs within
      * this range using <code>double</code> comparison.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumDouble()} and 
+     *
+     * <p>This implementation uses the {@link #getMinimumDouble()} and
      * {@link #getMaximumDouble()} methods and should be good for most uses.</p>
-     * 
-     * @param value  the double to test
+     *
+     * @param value the double to test
      * @return <code>true</code> if the specified number occurs within this
-     *  range by <code>double</code> comparison
+     * range by <code>double</code> comparison
      */
     public boolean containsDouble(double value) {
         int compareMin = NumberUtils.compare(getMinimumDouble(), value);
@@ -276,14 +276,14 @@ public abstract class Range {
     /**
      * <p>Tests whether the specified <code>Number</code> occurs within
      * this range using <code>float</code> comparison.</p>
-     * 
+     *
      * <p><code>null</code> is handled and returns <code>false</code>.</p>
-     * 
+     *
      * <p>This implementation forwards to the {@link #containsFloat(float)} method.</p>
      *
-     * @param value  the float to test, may be <code>null</code>
+     * @param value the float to test, may be <code>null</code>
      * @return <code>true</code> if the specified number occurs within this
-     *  range by <code>float</code> comparison
+     * range by <code>float</code> comparison
      */
     public boolean containsFloat(Number value) {
         if (value == null) {
@@ -295,13 +295,13 @@ public abstract class Range {
     /**
      * <p>Tests whether the specified <code>float</code> occurs within
      * this range using <code>float</code> comparison.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumFloat()} and 
+     *
+     * <p>This implementation uses the {@link #getMinimumFloat()} and
      * {@link #getMaximumFloat()} methods and should be good for most uses.</p>
-     * 
-     * @param value  the float to test
+     *
+     * @param value the float to test
      * @return <code>true</code> if the specified number occurs within this
-     *  range by <code>float</code> comparison
+     * range by <code>float</code> comparison
      */
     public boolean containsFloat(float value) {
         int compareMin = NumberUtils.compare(getMinimumFloat(), value);
@@ -314,45 +314,45 @@ public abstract class Range {
 
     /**
      * <p>Tests whether the specified range occurs entirely within this range.</p>
-     * 
+     *
      * <p>The exact comparison implementation varies by subclass. It is
      * intended that an <code>int</code> specific subclass will compare using
      * <code>int</code> comparison.</p>
-     * 
+     *
      * <p><code>null</code> is handled and returns <code>false</code>.</p>
-     * 
+     *
      * <p>This implementation uses the {@link #containsNumber(Number)} method.
      * Subclasses may be able to optimise this.</p>
      *
-     * @param range  the range to test, may be <code>null</code>
+     * @param range the range to test, may be <code>null</code>
      * @return <code>true</code> if the specified range occurs entirely within
-     *  this range; otherwise, <code>false</code>
+     * this range; otherwise, <code>false</code>
      * @throws IllegalArgumentException if the <code>Range</code> cannot be compared
      */
     public boolean containsRange(Range range) {
         if (range == null) {
             return false;
         }
-        return containsNumber(range.getMinimumNumber()) 
-            && containsNumber(range.getMaximumNumber());
+        return containsNumber(range.getMinimumNumber())
+                && containsNumber(range.getMaximumNumber());
     }
 
     /**
      * <p>Tests whether the specified range overlaps with this range.</p>
-     * 
+     *
      * <p>The exact comparison implementation varies by subclass. It is
      * intended that an <code>int</code> specific subclass will compare using
      * <code>int</code> comparison.</p>
-     * 
+     *
      * <p><code>null</code> is handled and returns <code>false</code>.</p>
-     * 
+     *
      * <p>This implementation uses the {@link #containsNumber(Number)} and
      * {@link #containsRange(Range)} methods.
      * Subclasses may be able to optimise this.</p>
      *
-     * @param range  the range to test, may be <code>null</code>
+     * @param range the range to test, may be <code>null</code>
      * @return <code>true</code> if the specified range overlaps with this
-     *  range; otherwise, <code>false</code>
+     * range; otherwise, <code>false</code>
      * @throws IllegalArgumentException if the <code>Range</code> cannot be compared
      */
     public boolean overlapsRange(Range range) {
@@ -360,8 +360,8 @@ public abstract class Range {
             return false;
         }
         return range.containsNumber(getMinimumNumber())
-            || range.containsNumber(getMaximumNumber())
-            || containsNumber(range.getMinimumNumber());
+                || range.containsNumber(getMaximumNumber())
+                || containsNumber(range.getMinimumNumber());
     }
 
     // Basics
@@ -369,11 +369,11 @@ public abstract class Range {
 
     /**
      * <p>Compares this range to another object to test if they are equal.</p>.
-     * 
+     *
      * <p>To be equal, the class, minimum and maximum must be equal.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumNumber()} and 
-     * {@link #getMaximumNumber()} methods. 
+     *
+     * <p>This implementation uses the {@link #getMinimumNumber()} and
+     * {@link #getMaximumNumber()} methods.
      * Subclasses may be able to optimise this.</p>
      *
      * @param obj the reference object with which to compare
@@ -387,15 +387,15 @@ public abstract class Range {
         } else {
             Range range = (Range) obj;
             return getMinimumNumber().equals(range.getMinimumNumber()) &&
-                   getMaximumNumber().equals(range.getMaximumNumber());
+                    getMaximumNumber().equals(range.getMaximumNumber());
         }
     }
 
     /**
      * <p>Gets a hashCode for the range.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumNumber()} and 
-     * {@link #getMaximumNumber()} methods. 
+     *
+     * <p>This implementation uses the {@link #getMinimumNumber()} and
+     * {@link #getMaximumNumber()} methods.
      * Subclasses may be able to optimise this.</p>
      *
      * @return a hash code value for this object
@@ -412,9 +412,9 @@ public abstract class Range {
      * <p>Gets the range as a <code>String</code>.</p>
      *
      * <p>The format of the String is 'Range[<i>min</i>,<i>max</i>]'.</p>
-     * 
-     * <p>This implementation uses the {@link #getMinimumNumber()} and 
-     * {@link #getMaximumNumber()} methods. 
+     *
+     * <p>This implementation uses the {@link #getMinimumNumber()} and
+     * {@link #getMaximumNumber()} methods.
      * Subclasses may be able to optimise this.</p>
      *
      * @return the <code>String</code> representation of this range

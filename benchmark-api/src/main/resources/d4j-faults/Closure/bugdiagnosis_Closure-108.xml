@@ -1,38 +1,38 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-108">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/ScopedAliasesTest">
-					<exception>java.lang.IllegalStateException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>452</number_tests>
-					<failed>1</failed>
-					<passed>451</passed>
-					<nodes>54521</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/ScopedAliases.java">
-					<change>581</change>
-					<insert numberlines="1"></insert>
-					<insert numberlines="1">315-320</insert>
-					<insert numberlines="1">432</insert>
-					<bugtypes>
-						<id id="1.2" lines="258,315">
-							<description>Incorrect case.</description>
-						</id>
-						<id id="1.2" lines="258,431">
-							<description>Incorrect case.</description>
-						</id>
-						<id id="1.2" lines="581">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-108">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/ScopedAliasesTest">
+                    <exception>java.lang.IllegalStateException</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>452</number_tests>
+                    <failed>1</failed>
+                    <passed>451</passed>
+                    <nodes>54521</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/ScopedAliases.java">
+                    <change>581</change>
+                    <insert numberlines="1"></insert>
+                    <insert numberlines="1">315-320</insert>
+                    <insert numberlines="1">432</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="258,315">
+                            <description>Incorrect case.</description>
+                        </id>
+                        <id id="1.2" lines="258,431">
+                            <description>Incorrect case.</description>
+                        </id>
+                        <id id="1.2" lines="581">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

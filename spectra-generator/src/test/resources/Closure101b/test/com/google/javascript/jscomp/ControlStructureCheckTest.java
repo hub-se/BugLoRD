@@ -18,118 +18,116 @@ package com.google.javascript.jscomp;
 
 /**
  * Test for the control structure verification.
- *
-*
  */
 public class ControlStructureCheckTest extends CompilerTestCase {
-  // Rhino parse error message text
-  final String UNLABELED_BREAK =
-    "unlabelled break must be inside loop or switch";
+    // Rhino parse error message text
+    final String UNLABELED_BREAK =
+            "unlabelled break must be inside loop or switch";
 
-  final String UNEXPECTED_CONTINUE = "continue must be inside loop";
+    final String UNEXPECTED_CONTINUE = "continue must be inside loop";
 
-  final String UNEXPECTED_LABLED_CONTINUE =
-    "continue can only use labeles of iteration statements";
+    final String UNEXPECTED_LABLED_CONTINUE =
+            "continue can only use labeles of iteration statements";
 
-  final String UNDEFINED_LABEL = "undefined label";
+    final String UNDEFINED_LABEL = "undefined label";
 
-  @Override
-  public CompilerPass getProcessor(Compiler compiler) {
-    return new ControlStructureCheck(compiler);
-  }
+    @Override
+    public CompilerPass getProcessor(Compiler compiler) {
+        return new ControlStructureCheck(compiler);
+    }
 
-  public void testWhile() {
-    assertNoError("while(1) { break; }");
-  }
+    public void testWhile() {
+        assertNoError("while(1) { break; }");
+    }
 
-  public void testNextedWhile() {
-    assertNoError("while(1) { while(1) { break; } }");
-  }
+    public void testNextedWhile() {
+        assertNoError("while(1) { while(1) { break; } }");
+    }
 
-  public void testBreak() {
-    assertInvalidBreak("break;");
-  }
+    public void testBreak() {
+        assertInvalidBreak("break;");
+    }
 
-  public void testContinue() {
-    assertInvalidContinue("continue;");
-  }
+    public void testContinue() {
+        assertInvalidContinue("continue;");
+    }
 
-  public void testBreakCrossFunction() {
-    assertInvalidBreak("while(1) { function f() { break; } }");
-  }
+    public void testBreakCrossFunction() {
+        assertInvalidBreak("while(1) { function f() { break; } }");
+    }
 
-  public void testBreakCrossFunctionInFor() {
-    assertInvalidBreak("while(1) {for(var f = function () { break; };;) {}}");
-  }
+    public void testBreakCrossFunctionInFor() {
+        assertInvalidBreak("while(1) {for(var f = function () { break; };;) {}}");
+    }
 
-  public void testContinueToSwitch() {
-    assertInvalidContinue("switch(1) {case(1): continue; }");
-  }
+    public void testContinueToSwitch() {
+        assertInvalidContinue("switch(1) {case(1): continue; }");
+    }
 
-  public void testContinueToSwitchWithNoCases() {
-    assertNoError("switch(1){}");
-  }
+    public void testContinueToSwitchWithNoCases() {
+        assertNoError("switch(1){}");
+    }
 
-  public void testContinueToSwitchWithTwoCases() {
-    assertInvalidContinue("switch(1){case(1):break;case(2):continue;}");
-  }
+    public void testContinueToSwitchWithTwoCases() {
+        assertInvalidContinue("switch(1){case(1):break;case(2):continue;}");
+    }
 
-  public void testContinueToSwitchWithDefault() {
-    assertInvalidContinue("switch(1){case(1):break;case(2):default:continue;}");
-  }
+    public void testContinueToSwitchWithDefault() {
+        assertInvalidContinue("switch(1){case(1):break;case(2):default:continue;}");
+    }
 
-  public void testContinueToLabelSwitch() {
-    assertInvalidLabeledContinue(
-        "while(1) {a: switch(1) {case(1): continue a; }}");
-  }
+    public void testContinueToLabelSwitch() {
+        assertInvalidLabeledContinue(
+                "while(1) {a: switch(1) {case(1): continue a; }}");
+    }
 
-  public void testContinueOutsideSwitch() {
-    assertNoError("b: while(1) { a: switch(1) { case(1): continue b; } }");
-  }
+    public void testContinueOutsideSwitch() {
+        assertNoError("b: while(1) { a: switch(1) { case(1): continue b; } }");
+    }
 
-  public void testContinueNotCrossFunction1() {
-    assertNoError("a:switch(1){case(1):function f(){a:while(1){continue a;}}}");
-  }
+    public void testContinueNotCrossFunction1() {
+        assertNoError("a:switch(1){case(1):function f(){a:while(1){continue a;}}}");
+    }
 
-  public void testContinueNotCrossFunction2() {
-    assertUndefinedLabel(
-        "a:switch(1){case(1):function f(){while(1){continue a;}}}");
-  }
+    public void testContinueNotCrossFunction2() {
+        assertUndefinedLabel(
+                "a:switch(1){case(1):function f(){while(1){continue a;}}}");
+    }
 
-  public void testUseOfWith1() {
-    testSame("with(a){}", ControlStructureCheck.USE_OF_WITH);
-  }
+    public void testUseOfWith1() {
+        testSame("with(a){}", ControlStructureCheck.USE_OF_WITH);
+    }
 
-  public void testUseOfWith2() {
-    testSame("/** @suppress {with} */" +
-             "with(a){}");
-  }
+    public void testUseOfWith2() {
+        testSame("/** @suppress {with} */" +
+                "with(a){}");
+    }
 
-  private void assertNoError(String js) {
-    testSame(js);
-  }
+    private void assertNoError(String js) {
+        testSame(js);
+    }
 
-  private void assertInvalidBreak(String js) {
-    testParseError(js, UNLABELED_BREAK);
-  }
+    private void assertInvalidBreak(String js) {
+        testParseError(js, UNLABELED_BREAK);
+    }
 
-  private void assertInvalidContinue(String js) {
-    testParseError(js, UNEXPECTED_CONTINUE);
-  }
+    private void assertInvalidContinue(String js) {
+        testParseError(js, UNEXPECTED_CONTINUE);
+    }
 
-  private void assertInvalidLabeledContinue(String js) {
-    testParseError(js, UNEXPECTED_LABLED_CONTINUE);
-  }
+    private void assertInvalidLabeledContinue(String js) {
+        testParseError(js, UNEXPECTED_LABLED_CONTINUE);
+    }
 
-  private void assertUndefinedLabel(String js) {
-    testParseError(js, UNDEFINED_LABEL);
-  }
+    private void assertUndefinedLabel(String js) {
+        testParseError(js, UNDEFINED_LABEL);
+    }
 
-  private void testParseError(String js, String errorText) {
-    Compiler compiler = new Compiler();
-    compiler.parseTestCode(js);
-    assertTrue(compiler.getErrorCount() == 1);
-    String msg = compiler.getErrors()[0].toString();
-    assertTrue(msg.contains(errorText));
-  }
+    private void testParseError(String js, String errorText) {
+        Compiler compiler = new Compiler();
+        compiler.parseTestCode(js);
+        assertTrue(compiler.getErrorCount() == 1);
+        String msg = compiler.getErrors()[0].toString();
+        assertTrue(msg.contains(errorText));
+    }
 }

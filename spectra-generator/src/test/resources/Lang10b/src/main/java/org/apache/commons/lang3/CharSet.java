@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,11 +17,7 @@
 package org.apache.commons.lang3;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>A set of characters.</p>
@@ -29,44 +25,50 @@ import java.util.Set;
  * <p>Instances are immutable, but instances of subclasses may not be.</p>
  *
  * <p>#ThreadSafe#</p>
- * @since 1.0
+ *
  * @version $Id$
+ * @since 1.0
  */
 public class CharSet implements Serializable {
 
     /**
-     * Required for serialization support. Lang version 2.0. 
-     * 
+     * Required for serialization support. Lang version 2.0.
+     *
      * @see java.io.Serializable
      */
     private static final long serialVersionUID = 5947847346149275958L;
 
-    /** 
-     * A CharSet defining no characters. 
+    /**
+     * A CharSet defining no characters.
+     *
      * @since 2.0
      */
     public static final CharSet EMPTY = new CharSet((String) null);
 
-    /** 
+    /**
      * A CharSet defining ASCII alphabetic characters "a-zA-Z".
+     *
      * @since 2.0
      */
     public static final CharSet ASCII_ALPHA = new CharSet("a-zA-Z");
 
-    /** 
+    /**
      * A CharSet defining ASCII alphabetic characters "a-z".
+     *
      * @since 2.0
      */
     public static final CharSet ASCII_ALPHA_LOWER = new CharSet("a-z");
 
-    /** 
+    /**
      * A CharSet defining ASCII alphabetic characters "A-Z".
+     *
      * @since 2.0
      */
     public static final CharSet ASCII_ALPHA_UPPER = new CharSet("A-Z");
 
-    /** 
+    /**
      * A CharSet defining ASCII alphabetic characters "0-9".
+     *
      * @since 2.0
      */
     public static final CharSet ASCII_NUMERIC = new CharSet("0-9");
@@ -74,10 +76,11 @@ public class CharSet implements Serializable {
     /**
      * A Map of the common cases used in the factory.
      * Subclasses can add more common patterns if desired
+     *
      * @since 2.0
      */
     protected static final Map<String, CharSet> COMMON = Collections.synchronizedMap(new HashMap<String, CharSet>());
-    
+
     static {
         COMMON.put(null, EMPTY);
         COMMON.put("", EMPTY);
@@ -88,10 +91,13 @@ public class CharSet implements Serializable {
         COMMON.put("0-9", ASCII_NUMERIC);
     }
 
-    /** The set of CharRange objects. */
+    /**
+     * The set of CharRange objects.
+     */
     private final Set<CharRange> set = Collections.synchronizedSet(new HashSet<CharRange>());
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Factory method to create a new CharSet using a special syntax.</p>
      *
@@ -131,7 +137,7 @@ public class CharSet implements Serializable {
      *
      * <p>All CharSet objects returned by this method will be immutable.</p>
      *
-     * @param setStrs  Strings to merge into the set, may be null
+     * @param setStrs Strings to merge into the set, may be null
      * @return a CharSet instance
      * @since 2.4
      */
@@ -145,15 +151,16 @@ public class CharSet implements Serializable {
                 return common;
             }
         }
-        return new CharSet(setStrs); 
+        return new CharSet(setStrs);
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Constructs a new CharSet using the set syntax.
      * Each string is merged in with the set.</p>
      *
-     * @param set  Strings to merge into the initial set
+     * @param set Strings to merge into the initial set
      * @throws NullPointerException if set is {@code null}
      */
     protected CharSet(String... set) {
@@ -165,10 +172,11 @@ public class CharSet implements Serializable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Add a set definition string to the {@code CharSet}.</p>
      *
-     * @param str  set definition string
+     * @param str set definition string
      */
     protected void add(String str) {
         if (str == null) {
@@ -200,6 +208,7 @@ public class CharSet implements Serializable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Gets the internal set as an array of CharRange objects.</p>
      *
@@ -213,11 +222,12 @@ public class CharSet implements Serializable {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Does the {@code CharSet} contain the specified
      * character {@code ch}.</p>
      *
-     * @param ch  the character to check for
+     * @param ch the character to check for
      * @return {@code true} if the set contains the characters
      */
     public boolean contains(char ch) {
@@ -231,6 +241,7 @@ public class CharSet implements Serializable {
 
     // Basics
     //-----------------------------------------------------------------------
+
     /**
      * <p>Compares two {@code CharSet} objects, returning true if they represent
      * exactly the same set of characters defined in the same way.</p>
@@ -238,7 +249,7 @@ public class CharSet implements Serializable {
      * <p>The two sets {@code abc} and {@code a-c} are <i>not</i>
      * equal according to this method.</p>
      *
-     * @param obj  the object to compare to
+     * @param obj the object to compare to
      * @return true if equal
      * @since 2.0
      */

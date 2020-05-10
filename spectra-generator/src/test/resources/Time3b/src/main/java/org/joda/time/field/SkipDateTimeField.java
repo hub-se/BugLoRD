@@ -34,21 +34,29 @@ import org.joda.time.IllegalFieldValueException;
  */
 public final class SkipDateTimeField extends DelegatedDateTimeField {
 
-    /** Serialization version. */
+    /**
+     * Serialization version.
+     */
     private static final long serialVersionUID = -8869148464118507846L;
 
-    /** The chronology to wrap. */
+    /**
+     * The chronology to wrap.
+     */
     private final Chronology iChronology;
-    /** The value to skip. */
+    /**
+     * The value to skip.
+     */
     private final int iSkip;
-    /** The calculated minimum value. */
+    /**
+     * The calculated minimum value.
+     */
     private transient int iMinValue;
 
     /**
      * Constructor that skips zero.
-     * 
-     * @param chronology  the chronoogy to use
-     * @param field  the field to skip zero on
+     *
+     * @param chronology the chronoogy to use
+     * @param field      the field to skip zero on
      */
     public SkipDateTimeField(Chronology chronology, DateTimeField field) {
         this(chronology, field, 0);
@@ -56,10 +64,10 @@ public final class SkipDateTimeField extends DelegatedDateTimeField {
 
     /**
      * Constructor.
-     * 
-     * @param chronology  the chronoogy to use
-     * @param field  the field to skip zero on
-     * @param skip  the value to skip
+     *
+     * @param chronology the chronoogy to use
+     * @param field      the field to skip zero on
+     * @param skip       the value to skip
      */
     public SkipDateTimeField(Chronology chronology, DateTimeField field, int skip) {
         super(field);
@@ -89,7 +97,7 @@ public final class SkipDateTimeField extends DelegatedDateTimeField {
         if (value <= iSkip) {
             if (value == iSkip) {
                 throw new IllegalFieldValueException
-                    (DateTimeFieldType.year(), Integer.valueOf(value), null, null);
+                        (DateTimeFieldType.year(), Integer.valueOf(value), null, null);
             }
             value++;
         }

@@ -1,36 +1,39 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-7">
-			<tests>
-				<testfile path="org/jfree/data/time/junit/TimePeriodValuesTests">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;1&gt;
-						but was:&lt;3&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>16</number_tests>
-					<failed>1</failed>
-					<passed>15</passed>
-					<nodes>45244</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/jfree/data/time/TimePeriodValues.java">
-					<change>300</change>
-					<change>302</change>
-					<bugtypes>
-						<id id="3.4" lines="300">
-							<description>Incorrect boundary value, minimum instead of
-								maximum, used.</description>
-						</id>
-						<id id="3.4" lines="302">
-							<description>Incorrect boundary value, minimum instead of
-								maximum, used.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-7">
+            <tests>
+                <testfile path="org/jfree/data/time/junit/TimePeriodValuesTests">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;1&gt;
+                        but was:&lt;3&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>16</number_tests>
+                    <failed>1</failed>
+                    <passed>15</passed>
+                    <nodes>45244</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/jfree/data/time/TimePeriodValues.java">
+                    <change>300</change>
+                    <change>302</change>
+                    <bugtypes>
+                        <id id="3.4" lines="300">
+                            <description>Incorrect boundary value, minimum instead of
+                                maximum, used.
+                            </description>
+                        </id>
+                        <id id="3.4" lines="302">
+                            <description>Incorrect boundary value, minimum instead of
+                                maximum, used.
+                            </description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

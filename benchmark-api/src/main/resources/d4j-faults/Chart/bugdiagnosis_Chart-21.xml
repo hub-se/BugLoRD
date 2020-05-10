@@ -1,36 +1,37 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-21">
-			<tests>
-				<testfile
-					path="org/jfree/data/statistics/junit/DefaultBoxAndWhiskerCategoryDatasetTests">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;Range[8.5,9.6]&gt;
-						but was:&lt;Range[8.6,9.6]&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>17</number_tests>
-					<failed>1</failed>
-					<passed>16</passed>
-					<nodes>44315</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java">
-					<insert numberlines="1,1">157-158,188-189</insert>
-					<insert numberlines="36">742</insert>
-					<bugtypes>
-						<id id="1.1" lines="156,187">
-							<description>Missing else case.</description>
-						</id>
-						<id id="3.4" lines="740,741">
-							<description>Incorrect determination of boundaries.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-21">
+            <tests>
+                <testfile
+                        path="org/jfree/data/statistics/junit/DefaultBoxAndWhiskerCategoryDatasetTests">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;Range[8.5,9.6]&gt;
+                        but was:&lt;Range[8.6,9.6]&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>17</number_tests>
+                    <failed>1</failed>
+                    <passed>16</passed>
+                    <nodes>44315</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java">
+                    <insert numberlines="1,1">157-158,188-189</insert>
+                    <insert numberlines="36">742</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="156,187">
+                            <description>Missing else case.</description>
+                        </id>
+                        <id id="3.4" lines="740,741">
+                            <description>Incorrect determination of boundaries.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -36,99 +36,98 @@ import java.util.List;
  * <pre>
  *   foo();bar()
  * </pre>
- *
-*
  */
 final class RemoveConstantExpressions implements CompilerPass {
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  RemoveConstantExpressions(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    RemoveConstantRValuesCallback cb = new RemoveConstantRValuesCallback();
-    NodeTraversal.traverse(null, root, cb);
-    cb.getResult().notifyCompiler(compiler);
-  }
-
-  /**
-   * Used to simplify expressions by removing subexpressions that have
-   * no side effects which are not inputs to expressions with side
-   * effects.
-   */
-  static class RemoveConstantRValuesCallback extends AbstractPostOrderCallback {
-    private final AstChangeProxy changeProxy;
-    private final Result result = new Result();
-
-    /**
-     * Instantiates AstChangeProxy and registers ChangeListener to
-     * report ast changes to the compiler.
-     */
-    RemoveConstantRValuesCallback() {
-      this.changeProxy = new AstChangeProxy();
-      this.changeProxy.registerListener(
-          new ReportCodeHasChangedListener(result));
+    RemoveConstantExpressions(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
-    
+
     @Override
-    public void visit(NodeTraversal traversal, Node node, Node parent) {
-      trySimplify(parent, node);
+    public void process(Node externs, Node root) {
+        RemoveConstantRValuesCallback cb = new RemoveConstantRValuesCallback();
+        NodeTraversal.traverse(null, root, cb);
+        cb.getResult().notifyCompiler(compiler);
     }
 
     /**
-     * Attempts to replace the input node with a simpler but functionally
-     * equivalent set of nodes.
+     * Used to simplify expressions by removing subexpressions that have
+     * no side effects which are not inputs to expressions with side
+     * effects.
      */
-    private void trySimplify(Node parent, Node node) {
-      if (node.getType() != Token.EXPR_RESULT) {
-        return;
-      }
+    static class RemoveConstantRValuesCallback extends AbstractPostOrderCallback {
+        private final AstChangeProxy changeProxy;
+        private final Result result = new Result();
 
-      Node exprBody = node.getFirstChild();
-      if (!NodeUtil.nodeTypeMayHaveSideEffects(exprBody)) {
-        changeProxy.replaceWith(parent, node, getSideEffectNodes(exprBody));
-      }
+        /**
+         * Instantiates AstChangeProxy and registers ChangeListener to
+         * report ast changes to the compiler.
+         */
+        RemoveConstantRValuesCallback() {
+            this.changeProxy = new AstChangeProxy();
+            this.changeProxy.registerListener(
+                    new ReportCodeHasChangedListener(result));
+        }
+
+        @Override
+        public void visit(NodeTraversal traversal, Node node, Node parent) {
+            trySimplify(parent, node);
+        }
+
+        /**
+         * Attempts to replace the input node with a simpler but functionally
+         * equivalent set of nodes.
+         */
+        private void trySimplify(Node parent, Node node) {
+            if (node.getType() != Token.EXPR_RESULT) {
+                return;
+            }
+
+            Node exprBody = node.getFirstChild();
+            if (!NodeUtil.nodeTypeMayHaveSideEffects(exprBody)) {
+                changeProxy.replaceWith(parent, node, getSideEffectNodes(exprBody));
+            }
+        }
+
+        /**
+         * Extracts a list of replacement nodes to use.
+         */
+        private List<Node> getSideEffectNodes(Node node) {
+            List<Node> subexpressions = Lists.newArrayList();
+            NodeTraversal.traverse(
+                    null, node,
+                    new GatherSideEffectSubexpressionsCallback(
+                            null,
+                            new GatherSideEffectSubexpressionsCallback.
+                                    CopySideEffectSubexpressions(null, subexpressions)));
+
+            List<Node> replacements = Lists.newArrayList();
+            for (Node subexpression : subexpressions) {
+                replacements.add(new Node(Token.EXPR_RESULT, subexpression));
+            }
+            return replacements;
+        }
+
+        public Result getResult() {
+            return result;
+        }
     }
 
     /**
-     * Extracts a list of replacement nodes to use.
+     * Used to reports code changes to the compiler as they happen.
      */
-    private List<Node> getSideEffectNodes(Node node) {
-      List<Node> subexpressions = Lists.newArrayList();
-      NodeTraversal.traverse(
-          null, node,
-          new GatherSideEffectSubexpressionsCallback(
-              null,
-              new GatherSideEffectSubexpressionsCallback.
-              CopySideEffectSubexpressions(null, subexpressions)));
+    private static class ReportCodeHasChangedListener
+            implements AstChangeProxy.ChangeListener {
+        private final Result result;
 
-      List<Node> replacements = Lists.newArrayList();
-      for (Node subexpression : subexpressions) {
-        replacements.add(new Node(Token.EXPR_RESULT, subexpression));
-      }
-      return replacements;
+        private ReportCodeHasChangedListener(Result result) {
+            this.result = result;
+        }
+
+        @Override
+        public void nodeRemoved(Node node) {
+            result.changed = true;
+        }
     }
-    
-    public Result getResult() {
-      return result;
-    }
-  }
-  
-  /**
-   * Used to reports code changes to the compiler as they happen.
-   */
-  private static class ReportCodeHasChangedListener
-      implements AstChangeProxy.ChangeListener {
-    private final Result result;
-    
-    private ReportCodeHasChangedListener(Result result) {
-      this.result = result;
-    }
-    @Override
-    public void nodeRemoved(Node node) {
-      result.changed = true;
-    }
-  }
 }

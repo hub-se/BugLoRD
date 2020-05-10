@@ -73,7 +73,7 @@ import java.util.concurrent.TimeUnit;
  *     ...
  * }
  * </pre>
- *
+ * <p>
  * The following code fragment shows how a {@code TimedSemaphore} is created
  * that allows only 10 operations per second and passed to the statistics
  * thread:
@@ -122,8 +122,8 @@ import java.util.concurrent.TimeUnit;
  * resources. After that {@link #acquire()} must not be called any more.
  * </p>
  *
- * @since 3.0
  * @version $Id$
+ * @since 3.0
  */
 public class TimedSemaphore {
     /**
@@ -133,25 +133,39 @@ public class TimedSemaphore {
      */
     public static final int NO_LIMIT = 0;
 
-    /** Constant for the thread pool size for the executor. */
+    /**
+     * Constant for the thread pool size for the executor.
+     */
     private static final int THREAD_POOL_SIZE = 1;
 
-    /** The executor service for managing the timer thread. */
+    /**
+     * The executor service for managing the timer thread.
+     */
     private final ScheduledExecutorService executorService;
 
-    /** Stores the period for this timed semaphore. */
+    /**
+     * Stores the period for this timed semaphore.
+     */
     private final long period;
 
-    /** The time unit for the period. */
+    /**
+     * The time unit for the period.
+     */
     private final TimeUnit unit;
 
-    /** A flag whether the executor service was created by this object. */
+    /**
+     * A flag whether the executor service was created by this object.
+     */
     private final boolean ownExecutor;
 
-    /** A future object representing the timer task. */
+    /**
+     * A future object representing the timer task.
+     */
     private ScheduledFuture<?> task;
 
-    /** Stores the total number of invocations of the acquire() method. */
+    /**
+     * Stores the total number of invocations of the acquire() method.
+     */
     private long totalAcquireCount;
 
     /**
@@ -160,16 +174,24 @@ public class TimedSemaphore {
      */
     private long periodCount;
 
-    /** The limit. */
+    /**
+     * The limit.
+     */
     private int limit;
 
-    /** The current counter. */
+    /**
+     * The current counter.
+     */
     private int acquireCount;
 
-    /** The number of invocations of acquire() in the last period. */
+    /**
+     * The number of invocations of acquire() in the last period.
+     */
     private int lastCallsPerPeriod;
 
-    /** A flag whether shutdown() was called. */
+    /**
+     * A flag whether shutdown() was called.
+     */
     private boolean shutdown;
 
     /**
@@ -177,8 +199,8 @@ public class TimedSemaphore {
      * the given time period and the limit.
      *
      * @param timePeriod the time period
-     * @param timeUnit the unit for the period
-     * @param limit the limit for the semaphore
+     * @param timeUnit   the unit for the period
+     * @param limit      the limit for the semaphore
      * @throws IllegalArgumentException if the period is less or equals 0
      */
     public TimedSemaphore(long timePeriod, TimeUnit timeUnit, int limit) {
@@ -191,14 +213,14 @@ public class TimedSemaphore {
      * service will be used for creating a periodic task for monitoring the time
      * period. It can be <b>null</b>, then a default service will be created.
      *
-     * @param service the executor service
+     * @param service    the executor service
      * @param timePeriod the time period
-     * @param timeUnit the unit for the period
-     * @param limit the limit for the semaphore
+     * @param timeUnit   the unit for the period
+     * @param limit      the limit for the semaphore
      * @throws IllegalArgumentException if the period is less or equals 0
      */
     public TimedSemaphore(ScheduledExecutorService service, long timePeriod,
-            TimeUnit timeUnit, int limit) {
+                          TimeUnit timeUnit, int limit) {
         if (timePeriod <= 0) {
             throw new IllegalArgumentException("Time period must be greater 0!");
         }
@@ -286,7 +308,7 @@ public class TimedSemaphore {
      * task which monitors the time period set for this {@code TimedSemaphore}.
      * From now on the semaphore is active.
      *
-     * @throws InterruptedException if the thread gets interrupted
+     * @throws InterruptedException  if the thread gets interrupted
      * @throws IllegalStateException if this semaphore is already shut down
      */
     public synchronized void acquire() throws InterruptedException {

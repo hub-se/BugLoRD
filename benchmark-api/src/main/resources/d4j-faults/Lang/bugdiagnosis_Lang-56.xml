@@ -1,38 +1,39 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-56">
-			<tests>
-				<testfile path="org/apache/commons/lang/time/FastDateFormatTest">
-					<exception>org.apache.commons.lang.SerializationException:java.io.NotSerializableException:org.apache.commons.lang.time.FastDateFormat$PaddedNumberField
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>33</number_tests>
-					<failed>1</failed>
-					<passed>32</passed>
-					<nodes>9579</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang/time/FastDateFormat.java">
-					<change>140</change>
-					<change>144</change>
-					<insert numberlines="4"></insert>
-					<bugtypes>
-						<id id="3.1" lines="140">
-							<description>Incorrect property.</description>
-						</id>
-						<id id="3.1" lines="144">
-							<description>Incorrect property.</description>
-						</id>
-						<id id="1.4" lines="1021">
-							<description>Missing function for reading an object.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-56">
+            <tests>
+                <testfile path="org/apache/commons/lang/time/FastDateFormatTest">
+                    <exception>
+                        org.apache.commons.lang.SerializationException:java.io.NotSerializableException:org.apache.commons.lang.time.FastDateFormat$PaddedNumberField
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>33</number_tests>
+                    <failed>1</failed>
+                    <passed>32</passed>
+                    <nodes>9579</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang/time/FastDateFormat.java">
+                    <change>140</change>
+                    <change>144</change>
+                    <insert numberlines="4"></insert>
+                    <bugtypes>
+                        <id id="3.1" lines="140">
+                            <description>Incorrect property.</description>
+                        </id>
+                        <id id="3.1" lines="144">
+                            <description>Incorrect property.</description>
+                        </id>
+                        <id id="1.4" lines="1021">
+                            <description>Missing function for reading an object.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

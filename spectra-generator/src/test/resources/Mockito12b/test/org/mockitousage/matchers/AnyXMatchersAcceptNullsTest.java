@@ -4,18 +4,18 @@
  */
 package org.mockitousage.matchers;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 @SuppressWarnings("unchecked")
 public class AnyXMatchersAcceptNullsTest extends TestBase {
-    
+
     private IMethods mock;
 
     @Before
@@ -31,7 +31,7 @@ public class AnyXMatchersAcceptNullsTest extends TestBase {
         when(mock.forMap(anyMap())).thenReturn("3");
         when(mock.forCollection(anyCollection())).thenReturn("4");
         when(mock.forSet(anySet())).thenReturn("5");
-        
+
         assertEquals("0", mock.oneArg((Object) null));
         assertEquals("1", mock.oneArg((String) null));
         assertEquals("2", mock.forList(null));
@@ -39,7 +39,7 @@ public class AnyXMatchersAcceptNullsTest extends TestBase {
         assertEquals("4", mock.forCollection(null));
         assertEquals("5", mock.forSet(null));
     }
-    
+
     @Test
     public void shouldAnyPrimiteWraperMatchersAcceptNull() {
         when(mock.forInteger(anyInt())).thenReturn("0");
@@ -50,7 +50,7 @@ public class AnyXMatchersAcceptNullsTest extends TestBase {
         when(mock.forLong(anyLong())).thenReturn("5");
         when(mock.forFloat(anyFloat())).thenReturn("6");
         when(mock.forDouble(anyDouble())).thenReturn("7");
-        
+
         assertEquals("0", mock.forInteger(null));
         assertEquals("1", mock.forCharacter(null));
         assertEquals("2", mock.forShort(null));

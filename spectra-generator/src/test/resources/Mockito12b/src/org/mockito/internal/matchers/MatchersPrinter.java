@@ -4,18 +4,18 @@
  */
 package org.mockito.internal.matchers;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.SelfDescribing;
 import org.hamcrest.StringDescription;
 import org.mockito.internal.reporting.PrintSettings;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @SuppressWarnings("unchecked")
 public class MatchersPrinter {
-    
+
     public String getArgumentsLine(List<Matcher> matchers, PrintSettings printSettings) {
         Description result = new StringDescription();
         result.appendList("(", ", ", ");", applyPrintSettings(matchers, printSettings));

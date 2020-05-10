@@ -1,31 +1,32 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-6">
-			<tests>
-				<testfile path="org/apache/commons/lang3/StringUtilsTest">
-					<exception>java.lang.StringIndexOutOfBoundsException:String index
-						out of range:2</exception>
-				</testfile>
-				<spectra>
-					<number_tests>142</number_tests>
-					<failed>1</failed>
-					<passed>141</passed>
-					<nodes>11676</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/lang3/text/translate/CharSequenceTranslator.java">
-					<change>95</change>
-					<bugtypes>
-						<id id="3.1" lines="95">
-							<description>Incorrect variable used.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-6">
+            <tests>
+                <testfile path="org/apache/commons/lang3/StringUtilsTest">
+                    <exception>java.lang.StringIndexOutOfBoundsException:String index
+                        out of range:2
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>142</number_tests>
+                    <failed>1</failed>
+                    <passed>141</passed>
+                    <nodes>11676</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/lang3/text/translate/CharSequenceTranslator.java">
+                    <change>95</change>
+                    <bugtypes>
+                        <id id="3.1" lines="95">
+                            <description>Incorrect variable used.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

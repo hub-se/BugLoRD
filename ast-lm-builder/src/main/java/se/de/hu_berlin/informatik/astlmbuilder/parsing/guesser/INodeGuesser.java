@@ -1,950 +1,862 @@
 package se.de.hu_berlin.informatik.astlmbuilder.parsing.guesser;
 
-import java.util.EnumSet;
-import com.github.javaparser.ast.ArrayCreationLevel;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.AnnotationDeclaration;
-import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
-import com.github.javaparser.ast.body.BodyDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.EnumConstantDeclaration;
-import com.github.javaparser.ast.body.EnumDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.InitializerDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.body.TypeDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.AnnotationExpr;
-import com.github.javaparser.ast.expr.ArrayAccessExpr;
-import com.github.javaparser.ast.expr.ArrayCreationExpr;
-import com.github.javaparser.ast.expr.ArrayInitializerExpr;
-import com.github.javaparser.ast.expr.AssignExpr;
-import com.github.javaparser.ast.expr.BinaryExpr;
-import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.CastExpr;
-import com.github.javaparser.ast.expr.CharLiteralExpr;
-import com.github.javaparser.ast.expr.ClassExpr;
-import com.github.javaparser.ast.expr.ConditionalExpr;
-import com.github.javaparser.ast.expr.DoubleLiteralExpr;
-import com.github.javaparser.ast.expr.EnclosedExpr;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.InstanceOfExpr;
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-import com.github.javaparser.ast.expr.LambdaExpr;
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
-import com.github.javaparser.ast.expr.MemberValuePair;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.MethodReferenceExpr;
-import com.github.javaparser.ast.expr.Name;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.NormalAnnotationExpr;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.SuperExpr;
-import com.github.javaparser.ast.expr.ThisExpr;
-import com.github.javaparser.ast.expr.TypeExpr;
-import com.github.javaparser.ast.expr.UnaryExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.modules.ModuleDeclaration;
-import com.github.javaparser.ast.modules.ModuleExportsStmt;
-import com.github.javaparser.ast.modules.ModuleOpensStmt;
-import com.github.javaparser.ast.modules.ModuleProvidesStmt;
-import com.github.javaparser.ast.modules.ModuleRequiresStmt;
-import com.github.javaparser.ast.modules.ModuleStmt;
-import com.github.javaparser.ast.modules.ModuleUsesStmt;
-import com.github.javaparser.ast.stmt.AssertStmt;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.BreakStmt;
-import com.github.javaparser.ast.stmt.CatchClause;
-import com.github.javaparser.ast.stmt.ContinueStmt;
-import com.github.javaparser.ast.stmt.DoStmt;
-import com.github.javaparser.ast.stmt.EmptyStmt;
-import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
-import com.github.javaparser.ast.stmt.ExpressionStmt;
-import com.github.javaparser.ast.stmt.ForStmt;
-import com.github.javaparser.ast.stmt.ForeachStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.LabeledStmt;
-import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.Statement;
-import com.github.javaparser.ast.stmt.SwitchEntryStmt;
-import com.github.javaparser.ast.stmt.SwitchStmt;
-import com.github.javaparser.ast.stmt.SynchronizedStmt;
-import com.github.javaparser.ast.stmt.ThrowStmt;
-import com.github.javaparser.ast.stmt.TryStmt;
-import com.github.javaparser.ast.stmt.WhileStmt;
-import com.github.javaparser.ast.type.ArrayType;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.IntersectionType;
-import com.github.javaparser.ast.type.PrimitiveType;
+import com.github.javaparser.ast.*;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.modules.*;
+import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.type.PrimitiveType.Primitive;
-import com.github.javaparser.ast.type.ReferenceType;
-import com.github.javaparser.ast.type.Type;
-import com.github.javaparser.ast.type.TypeParameter;
-import com.github.javaparser.ast.type.UnionType;
-import com.github.javaparser.ast.type.UnknownType;
-import com.github.javaparser.ast.type.VoidType;
-import com.github.javaparser.ast.type.WildcardType;
-
 import se.de.hu_berlin.informatik.astlmbuilder.parsing.InformationWrapper;
+
+import java.util.EnumSet;
 
 public interface INodeGuesser extends INodeGuesserBasics {
 
-	public final static String DEFAULT_STRING_LITERAL_VALUE = "default string value";
-	public final static String DEFAULT_SIMPLE_NAME_VALUE = "default simple name value";
-	
-	/**
-	 * This value will be used if no other strings are available but the node needs
-	 * one to exist.
-	 * @return A default string that indicates that no real information were given
-	 */
-	public default String getDefaultStringLiteralValue() {
-		return DEFAULT_STRING_LITERAL_VALUE;
-	}
-	
-	/**
-	 * This value will be used if no other strings are available but the node needs
-	 * one to exist.
-	 * @return A default string that indicates that no real information were given
-	 */
-	public default String getDefaultSimpleNameValue() {
-		return DEFAULT_SIMPLE_NAME_VALUE;
-	}
-	
-	default public <T extends Node> InformationWrapper updateGeneralInfo(Class<T> lastSeenNodeClass,
-			InformationWrapper info, boolean useCopy) {
-		if (useCopy) {
-			info = info.getCopy();
-		}
-		info.addNodeClassToHistory(lastSeenNodeClass);
+    public final static String DEFAULT_STRING_LITERAL_VALUE = "default string value";
+    public final static String DEFAULT_SIMPLE_NAME_VALUE = "default simple name value";
 
-		return info;
-	}
+    /**
+     * This value will be used if no other strings are available but the node needs
+     * one to exist.
+     *
+     * @return A default string that indicates that no real information were given
+     */
+    public default String getDefaultStringLiteralValue() {
+        return DEFAULT_STRING_LITERAL_VALUE;
+    }
 
-	// TODO: fill information wrapper with useful information on the way...
-	// (e.g. last seen nodes, etc.)
+    /**
+     * This value will be used if no other strings are available but the node needs
+     * one to exist.
+     *
+     * @return A default string that indicates that no real information were given
+     */
+    public default String getDefaultSimpleNameValue() {
+        return DEFAULT_SIMPLE_NAME_VALUE;
+    }
 
-	default public ConstructorDeclaration guessConstructorDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(ConstructorDeclaration.class, info, false);
+    default public <T extends Node> InformationWrapper updateGeneralInfo(Class<T> lastSeenNodeClass,
+                                                                         InformationWrapper info, boolean useCopy) {
+        if (useCopy) {
+            info = info.getCopy();
+        }
+        info.addNodeClassToHistory(lastSeenNodeClass);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		NodeList<TypeParameter> typeParameters = guessList(TypeParameter.class, info);
-		SimpleName name = guessSimpleName(info);
-		NodeList<Parameter> parameters = guessList(Parameter.class, info);
-		NodeList<ReferenceType> thrownExceptions = guessList(ReferenceType.class, info);
-		BlockStmt body = guessBlockStmt(info);
+        return info;
+    }
 
-		return new ConstructorDeclaration(modifiers, annotations, typeParameters, name, parameters, thrownExceptions,
-				body);
-	}
+    // TODO: fill information wrapper with useful information on the way...
+    // (e.g. last seen nodes, etc.)
 
-	public default InitializerDeclaration guessInitializerDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(InitializerDeclaration.class, info, false);
+    default public ConstructorDeclaration guessConstructorDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(ConstructorDeclaration.class, info, false);
 
-		boolean isStatic = guessBoolean(info);
-		BlockStmt body = guessBlockStmt(info);
+        EnumSet<Modifier> modifiers = guessModifiers(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        NodeList<TypeParameter> typeParameters = guessList(TypeParameter.class, info);
+        SimpleName name = guessSimpleName(info);
+        NodeList<Parameter> parameters = guessList(Parameter.class, info);
+        NodeList<ReferenceType> thrownExceptions = guessList(ReferenceType.class, info);
+        BlockStmt body = guessBlockStmt(info);
 
-		return new InitializerDeclaration(isStatic, body);
-	}
+        return new ConstructorDeclaration(modifiers, annotations, typeParameters, name, parameters, thrownExceptions,
+                body);
+    }
 
-	public default EnumConstantDeclaration guessEnumConstantDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(EnumConstantDeclaration.class, info, false);
+    public default InitializerDeclaration guessInitializerDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(InitializerDeclaration.class, info, false);
 
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		SimpleName name = guessSimpleName(info);
-		NodeList<Expression> arguments = guessList(Expression.class, info);
-		NodeList<BodyDeclaration<?>> classBody = guessBodyDeclarationList(info);
+        boolean isStatic = guessBoolean(info);
+        BlockStmt body = guessBlockStmt(info);
 
-		return new EnumConstantDeclaration(annotations, name, arguments, classBody);
-	}
+        return new InitializerDeclaration(isStatic, body);
+    }
+
+    public default EnumConstantDeclaration guessEnumConstantDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(EnumConstantDeclaration.class, info, false);
+
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        SimpleName name = guessSimpleName(info);
+        NodeList<Expression> arguments = guessList(Expression.class, info);
+        NodeList<BodyDeclaration<?>> classBody = guessBodyDeclarationList(info);
+
+        return new EnumConstantDeclaration(annotations, name, arguments, classBody);
+    }
 
     public default VariableDeclarator guessVariableDeclarator(InformationWrapper info) {
-		info = updateGeneralInfo(VariableDeclarator.class, info, false);
+        info = updateGeneralInfo(VariableDeclarator.class, info, false);
 
-		Type type = guessNode(Type.class, info);
-		SimpleName name = guessSimpleName(info);
-		Expression initializer = guessNode(Expression.class, info);
+        Type type = guessNode(Type.class, info);
+        SimpleName name = guessSimpleName(info);
+        Expression initializer = guessNode(Expression.class, info);
 
-		return new VariableDeclarator(type, name, initializer);
-	}
+        return new VariableDeclarator(type, name, initializer);
+    }
 
-	public default EnumDeclaration guessEnumDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(EnumDeclaration.class, info, false);
+    public default EnumDeclaration guessEnumDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(EnumDeclaration.class, info, false);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		SimpleName name = guessSimpleName(info);
-		NodeList<ClassOrInterfaceType> implementedTypes = guessList(ClassOrInterfaceType.class, info);
-		NodeList<EnumConstantDeclaration> entries = guessList(EnumConstantDeclaration.class, info);
-		NodeList<BodyDeclaration<?>> members = guessBodyDeclarationList(info);
+        EnumSet<Modifier> modifiers = guessModifiers(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        SimpleName name = guessSimpleName(info);
+        NodeList<ClassOrInterfaceType> implementedTypes = guessList(ClassOrInterfaceType.class, info);
+        NodeList<EnumConstantDeclaration> entries = guessList(EnumConstantDeclaration.class, info);
+        NodeList<BodyDeclaration<?>> members = guessBodyDeclarationList(info);
 
-		return new EnumDeclaration(modifiers, annotations, name, implementedTypes, entries, members);
-	}
+        return new EnumDeclaration(modifiers, annotations, name, implementedTypes, entries, members);
+    }
 
-	public default AnnotationDeclaration guessAnnotationDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(AnnotationDeclaration.class, info, false);
+    public default AnnotationDeclaration guessAnnotationDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(AnnotationDeclaration.class, info, false);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		SimpleName name = guessSimpleName(info);
-		NodeList<BodyDeclaration<?>> members = guessBodyDeclarationList(info);
+        EnumSet<Modifier> modifiers = guessModifiers(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        SimpleName name = guessSimpleName(info);
+        NodeList<BodyDeclaration<?>> members = guessBodyDeclarationList(info);
 
-		return new AnnotationDeclaration(modifiers, annotations, name, members);
-	}
+        return new AnnotationDeclaration(modifiers, annotations, name, members);
+    }
 
-	public default AnnotationMemberDeclaration guessAnnotationMemberDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(AnnotationMemberDeclaration.class, info, false);
+    public default AnnotationMemberDeclaration guessAnnotationMemberDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(AnnotationMemberDeclaration.class, info, false);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		Type type = guessNode(Type.class, info);
-		SimpleName name = guessSimpleName(info);
-		Expression defaultValue = guessNode(Expression.class, info);
+        EnumSet<Modifier> modifiers = guessModifiers(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        Type type = guessNode(Type.class, info);
+        SimpleName name = guessSimpleName(info);
+        Expression defaultValue = guessNode(Expression.class, info);
 
-		return new AnnotationMemberDeclaration(modifiers, annotations, type, name, defaultValue);
-	}
+        return new AnnotationMemberDeclaration(modifiers, annotations, type, name, defaultValue);
+    }
 
-	public default WhileStmt guessWhileStmt(InformationWrapper info) {
-		info = updateGeneralInfo(WhileStmt.class, info, false);
+    public default WhileStmt guessWhileStmt(InformationWrapper info) {
+        info = updateGeneralInfo(WhileStmt.class, info, false);
 
-		Expression condition = guessNode(Expression.class, info);
-		Statement body = guessBlockStmt(info);
+        Expression condition = guessNode(Expression.class, info);
+        Statement body = guessBlockStmt(info);
 
-		return new WhileStmt(condition, body);
-	}
+        return new WhileStmt(condition, body);
+    }
 
-	public default TryStmt guessTryStmt(InformationWrapper info) {
-		info = updateGeneralInfo(TryStmt.class, info, false);
+    public default TryStmt guessTryStmt(InformationWrapper info) {
+        info = updateGeneralInfo(TryStmt.class, info, false);
 
-		NodeList<VariableDeclarationExpr> resources = guessList(VariableDeclarationExpr.class, info);
-		BlockStmt tryBlock = guessBlockStmt(info);
-		NodeList<CatchClause> catchClauses = guessList(CatchClause.class, info);
-		BlockStmt finallyBlock = guessBlockStmt(info);
+        NodeList<VariableDeclarationExpr> resources = guessList(VariableDeclarationExpr.class, info);
+        BlockStmt tryBlock = guessBlockStmt(info);
+        NodeList<CatchClause> catchClauses = guessList(CatchClause.class, info);
+        BlockStmt finallyBlock = guessBlockStmt(info);
 
-		return new TryStmt(resources, tryBlock, catchClauses, finallyBlock);
-	}
+        return new TryStmt(resources, tryBlock, catchClauses, finallyBlock);
+    }
 
-	public default ThrowStmt guessThrowStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ThrowStmt.class, info, false);
+    public default ThrowStmt guessThrowStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ThrowStmt.class, info, false);
 
-		Expression expression = guessNode(Expression.class, info);
+        Expression expression = guessNode(Expression.class, info);
 
-		return new ThrowStmt(expression);
-	}
+        return new ThrowStmt(expression);
+    }
 
-	public default SynchronizedStmt guessSynchronizedStmt(InformationWrapper info) {
-		info = updateGeneralInfo(SynchronizedStmt.class, info, false);
+    public default SynchronizedStmt guessSynchronizedStmt(InformationWrapper info) {
+        info = updateGeneralInfo(SynchronizedStmt.class, info, false);
 
-		Expression expression = guessNode(Expression.class, info);
-		BlockStmt body = guessBlockStmt(info);
+        Expression expression = guessNode(Expression.class, info);
+        BlockStmt body = guessBlockStmt(info);
 
-		return new SynchronizedStmt(expression, body);
-	}
+        return new SynchronizedStmt(expression, body);
+    }
 
-	public default SwitchStmt guessSwitchStmt(InformationWrapper info) {
-		info = updateGeneralInfo(SwitchStmt.class, info, false);
+    public default SwitchStmt guessSwitchStmt(InformationWrapper info) {
+        info = updateGeneralInfo(SwitchStmt.class, info, false);
 
-		Expression selector = guessNode(Expression.class, info);
-		NodeList<SwitchEntryStmt> entries = guessList(SwitchEntryStmt.class, info);
+        Expression selector = guessNode(Expression.class, info);
+        NodeList<SwitchEntryStmt> entries = guessList(SwitchEntryStmt.class, info);
 
-		return new SwitchStmt(selector, entries);
-	}
+        return new SwitchStmt(selector, entries);
+    }
 
-	public default SwitchEntryStmt guessSwitchEntryStmt(InformationWrapper info) {
-		info = updateGeneralInfo(SwitchEntryStmt.class, info, false);
+    public default SwitchEntryStmt guessSwitchEntryStmt(InformationWrapper info) {
+        info = updateGeneralInfo(SwitchEntryStmt.class, info, false);
 
-		Expression label = guessNode(Expression.class, info);
-		NodeList<Statement> statements = guessList(Statement.class, info);
+        Expression label = guessNode(Expression.class, info);
+        NodeList<Statement> statements = guessList(Statement.class, info);
 
-		return new SwitchEntryStmt(label, statements);
-	}
+        return new SwitchEntryStmt(label, statements);
+    }
 
-	public default ReturnStmt guessReturnStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ReturnStmt.class, info, false);
+    public default ReturnStmt guessReturnStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ReturnStmt.class, info, false);
 
-		Expression expression = guessNode(Expression.class, info);
+        Expression expression = guessNode(Expression.class, info);
 
-		return new ReturnStmt(expression);
-	}
+        return new ReturnStmt(expression);
+    }
 
-	public default LabeledStmt guessLabeledStmt(InformationWrapper info) {
-		info = updateGeneralInfo(LabeledStmt.class, info, false);
+    public default LabeledStmt guessLabeledStmt(InformationWrapper info) {
+        info = updateGeneralInfo(LabeledStmt.class, info, false);
 
-		SimpleName label = guessSimpleName(info);
-		Statement statement = guessNode(Statement.class, info);
+        SimpleName label = guessSimpleName(info);
+        Statement statement = guessNode(Statement.class, info);
 
-		return new LabeledStmt(label, statement);
-	}
+        return new LabeledStmt(label, statement);
+    }
 
-	public default IfStmt guessIfStmt(InformationWrapper info) {
-		info = updateGeneralInfo(IfStmt.class, info, false);
+    public default IfStmt guessIfStmt(InformationWrapper info) {
+        info = updateGeneralInfo(IfStmt.class, info, false);
 
-		Expression condition = guessNode(Expression.class, info);
-		Statement thenStmt = guessNode(Statement.class, info);
-		Statement elseStmt = guessNode(Statement.class, info);
+        Expression condition = guessNode(Expression.class, info);
+        Statement thenStmt = guessNode(Statement.class, info);
+        Statement elseStmt = guessNode(Statement.class, info);
 
-		return new IfStmt(condition, thenStmt, elseStmt);
-	}
+        return new IfStmt(condition, thenStmt, elseStmt);
+    }
 
-	public default ForStmt guessForStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ForStmt.class, info, false);
+    public default ForStmt guessForStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ForStmt.class, info, false);
 
-		NodeList<Expression> initialization = guessList(Expression.class, info);
-		Expression compare = guessNode(Expression.class, info);
-		NodeList<Expression> update = guessList(Expression.class, info);
-		Statement body = guessNode(Statement.class, info);
+        NodeList<Expression> initialization = guessList(Expression.class, info);
+        Expression compare = guessNode(Expression.class, info);
+        NodeList<Expression> update = guessList(Expression.class, info);
+        Statement body = guessNode(Statement.class, info);
 
-		return new ForStmt(initialization, compare, update, body);
-	}
+        return new ForStmt(initialization, compare, update, body);
+    }
 
-	public default ForeachStmt guessForeachStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ForeachStmt.class, info, false);
+    public default ForeachStmt guessForeachStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ForeachStmt.class, info, false);
 
-		VariableDeclarationExpr variable = guessVariableDeclarationExpr(info);
-		Expression iterable = guessNode(Expression.class, info);
-		Statement body = guessNode(Statement.class, info);
+        VariableDeclarationExpr variable = guessVariableDeclarationExpr(info);
+        Expression iterable = guessNode(Expression.class, info);
+        Statement body = guessNode(Statement.class, info);
 
-		return new ForeachStmt(variable, iterable, body);
-	}
+        return new ForeachStmt(variable, iterable, body);
+    }
 
-	public default ExpressionStmt guessExpressionStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ExpressionStmt.class, info, false);
+    public default ExpressionStmt guessExpressionStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ExpressionStmt.class, info, false);
 
-		Expression expression = guessNode(Expression.class, info);
+        Expression expression = guessNode(Expression.class, info);
 
-		return new ExpressionStmt(expression);
-	}
+        return new ExpressionStmt(expression);
+    }
 
-	public default ExplicitConstructorInvocationStmt guessExplicitConstructorInvocationStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ExplicitConstructorInvocationStmt.class, info, false);
+    public default ExplicitConstructorInvocationStmt guessExplicitConstructorInvocationStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ExplicitConstructorInvocationStmt.class, info, false);
 
-		NodeList<Type> typeArguments = guessList(Type.class, info);
-		boolean isThis = guessBoolean(info);
-		Expression expression = guessNode(Expression.class, info);
-		NodeList<Expression> arguments = guessList(Expression.class, info);
+        NodeList<Type> typeArguments = guessList(Type.class, info);
+        boolean isThis = guessBoolean(info);
+        Expression expression = guessNode(Expression.class, info);
+        NodeList<Expression> arguments = guessList(Expression.class, info);
 
-		return new ExplicitConstructorInvocationStmt(typeArguments, isThis, expression, arguments);
-	}
+        return new ExplicitConstructorInvocationStmt(typeArguments, isThis, expression, arguments);
+    }
 
-	public default DoStmt guessDoStmt(InformationWrapper info) {
-		info = updateGeneralInfo(DoStmt.class, info, false);
+    public default DoStmt guessDoStmt(InformationWrapper info) {
+        info = updateGeneralInfo(DoStmt.class, info, false);
 
-		Statement body = guessNode(Statement.class, info);
-		Expression condition = guessNode(Expression.class, info);
+        Statement body = guessNode(Statement.class, info);
+        Expression condition = guessNode(Expression.class, info);
 
-		return new DoStmt(body, condition);
-	}
+        return new DoStmt(body, condition);
+    }
 
-	public default ContinueStmt guessContinueStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ContinueStmt.class, info, false);
+    public default ContinueStmt guessContinueStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ContinueStmt.class, info, false);
 
-		SimpleName label = guessSimpleName(info);
+        SimpleName label = guessSimpleName(info);
 
-		return new ContinueStmt(label);
-	}
+        return new ContinueStmt(label);
+    }
 
-	public default CatchClause guessCatchClause(InformationWrapper info) {
-		info = updateGeneralInfo(CatchClause.class, info, false);
+    public default CatchClause guessCatchClause(InformationWrapper info) {
+        info = updateGeneralInfo(CatchClause.class, info, false);
 
-		Parameter parameter = guessParameter(info);
-		BlockStmt body = guessBlockStmt(info);
+        Parameter parameter = guessParameter(info);
+        BlockStmt body = guessBlockStmt(info);
 
-		return new CatchClause(parameter, body);
-	}
+        return new CatchClause(parameter, body);
+    }
 
-	public default BlockStmt guessBlockStmt(InformationWrapper info) {
-		info = updateGeneralInfo(BlockStmt.class, info, false);
+    public default BlockStmt guessBlockStmt(InformationWrapper info) {
+        info = updateGeneralInfo(BlockStmt.class, info, false);
 
-		NodeList<Statement> statements = guessList(Statement.class, info.getCopy());
+        NodeList<Statement> statements = guessList(Statement.class, info.getCopy());
 
-		return new BlockStmt(statements);
-	}
+        return new BlockStmt(statements);
+    }
 
-	public default VariableDeclarationExpr guessVariableDeclarationExpr(InformationWrapper info) {
-		info = updateGeneralInfo(VariableDeclarationExpr.class, info, false);
+    public default VariableDeclarationExpr guessVariableDeclarationExpr(InformationWrapper info) {
+        info = updateGeneralInfo(VariableDeclarationExpr.class, info, false);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		NodeList<VariableDeclarator> variables = guessList(VariableDeclarator.class, info);
+        EnumSet<Modifier> modifiers = guessModifiers(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        NodeList<VariableDeclarator> variables = guessList(VariableDeclarator.class, info);
 
-		return new VariableDeclarationExpr(modifiers, annotations, variables);
-	}
+        return new VariableDeclarationExpr(modifiers, annotations, variables);
+    }
 
-	public default TypeExpr guessTypeExpr(InformationWrapper info) {
-		info = updateGeneralInfo(TypeExpr.class, info, false);
+    public default TypeExpr guessTypeExpr(InformationWrapper info) {
+        info = updateGeneralInfo(TypeExpr.class, info, false);
 
-		Type type = guessNode(Type.class, info);
+        Type type = guessNode(Type.class, info);
 
-		return new TypeExpr(type);
-	}
+        return new TypeExpr(type);
+    }
 
-	public default SuperExpr guessSuperExpr(InformationWrapper info) {
-		info = updateGeneralInfo(SuperExpr.class, info, false);
+    public default SuperExpr guessSuperExpr(InformationWrapper info) {
+        info = updateGeneralInfo(SuperExpr.class, info, false);
 
-		Expression classExpr = guessNode(Expression.class, info);
+        Expression classExpr = guessNode(Expression.class, info);
 
-		return new SuperExpr(classExpr);
-	}
+        return new SuperExpr(classExpr);
+    }
 
-	public default NullLiteralExpr guessNullLiteralExpr(InformationWrapper info) {
-		return new NullLiteralExpr();
-	}
+    public default NullLiteralExpr guessNullLiteralExpr(InformationWrapper info) {
+        return new NullLiteralExpr();
+    }
 
-	public default MethodReferenceExpr guessMethodReferenceExpr(InformationWrapper info) {
-		info = updateGeneralInfo(MethodReferenceExpr.class, info, false);
+    public default MethodReferenceExpr guessMethodReferenceExpr(InformationWrapper info) {
+        info = updateGeneralInfo(MethodReferenceExpr.class, info, false);
 
-		Expression scope = guessNode(Expression.class, info);
-		NodeList<Type> typeArguments = guessList(Type.class, info);
-		String identifier = guessMethodIdentifier(info);
+        Expression scope = guessNode(Expression.class, info);
+        NodeList<Type> typeArguments = guessList(Type.class, info);
+        String identifier = guessMethodIdentifier(info);
 
-		return new MethodReferenceExpr(scope, typeArguments, identifier);
-	}
+        return new MethodReferenceExpr(scope, typeArguments, identifier);
+    }
 
-	public default LambdaExpr guessLambdaExpr(InformationWrapper info) {
-		info = updateGeneralInfo(LambdaExpr.class, info, false);
+    public default LambdaExpr guessLambdaExpr(InformationWrapper info) {
+        info = updateGeneralInfo(LambdaExpr.class, info, false);
 
-		NodeList<Parameter> parameters = guessList(Parameter.class, info);
-		Statement body = guessNode(Statement.class, info);
-		boolean isEnclosingParameters = guessBoolean(info);
+        NodeList<Parameter> parameters = guessList(Parameter.class, info);
+        Statement body = guessNode(Statement.class, info);
+        boolean isEnclosingParameters = guessBoolean(info);
 
-		return new LambdaExpr(parameters, body, isEnclosingParameters);
-	}
+        return new LambdaExpr(parameters, body, isEnclosingParameters);
+    }
 
-	public default InstanceOfExpr guessInstanceOfExpr(InformationWrapper info) {
-		info = updateGeneralInfo(InstanceOfExpr.class, info, false);
+    public default InstanceOfExpr guessInstanceOfExpr(InformationWrapper info) {
+        info = updateGeneralInfo(InstanceOfExpr.class, info, false);
 
-		Expression expression = guessNode(Expression.class, info);
-		ReferenceType type = guessNode(ReferenceType.class, info);
+        Expression expression = guessNode(Expression.class, info);
+        ReferenceType type = guessNode(ReferenceType.class, info);
 
-		return new InstanceOfExpr(expression, type);
-	}
+        return new InstanceOfExpr(expression, type);
+    }
 
-	public default FieldAccessExpr guessFieldAccessExpr(InformationWrapper info) {
-		info = updateGeneralInfo(FieldAccessExpr.class, info, false);
+    public default FieldAccessExpr guessFieldAccessExpr(InformationWrapper info) {
+        info = updateGeneralInfo(FieldAccessExpr.class, info, false);
 
-		Expression scope = guessNode(Expression.class, info);
-		NodeList<Type> typeArguments = guessList(Type.class, info);
-		SimpleName name = guessSimpleName(info);
+        Expression scope = guessNode(Expression.class, info);
+        NodeList<Type> typeArguments = guessList(Type.class, info);
+        SimpleName name = guessSimpleName(info);
 
-		return new FieldAccessExpr(scope, typeArguments, name);
-	}
+        return new FieldAccessExpr(scope, typeArguments, name);
+    }
 
-	public default ConditionalExpr guessConditionalExpr(InformationWrapper info) {
-		info = updateGeneralInfo(ConditionalExpr.class, info, false);
+    public default ConditionalExpr guessConditionalExpr(InformationWrapper info) {
+        info = updateGeneralInfo(ConditionalExpr.class, info, false);
 
-		Expression condition = guessNode(Expression.class, info);
-		Expression thenExpr = guessNode(Expression.class, info);
-		Expression elseExpr = guessNode(Expression.class, info);
+        Expression condition = guessNode(Expression.class, info);
+        Expression thenExpr = guessNode(Expression.class, info);
+        Expression elseExpr = guessNode(Expression.class, info);
 
-		return new ConditionalExpr(condition, thenExpr, elseExpr);
-	}
+        return new ConditionalExpr(condition, thenExpr, elseExpr);
+    }
 
-	public default ClassExpr guessClassExpr(InformationWrapper info) {
-		info = updateGeneralInfo(ClassExpr.class, info, false);
+    public default ClassExpr guessClassExpr(InformationWrapper info) {
+        info = updateGeneralInfo(ClassExpr.class, info, false);
 
-		Type type = guessNode(Type.class, info);
+        Type type = guessNode(Type.class, info);
 
-		return new ClassExpr(type);
-	}
+        return new ClassExpr(type);
+    }
 
-	public default CastExpr guessCastExpr(InformationWrapper info) {
-		info = updateGeneralInfo(CastExpr.class, info, false);
+    public default CastExpr guessCastExpr(InformationWrapper info) {
+        info = updateGeneralInfo(CastExpr.class, info, false);
 
-		Type type = guessNode(Type.class, info);
-		Expression expression = guessNode(Expression.class, info);
+        Type type = guessNode(Type.class, info);
+        Expression expression = guessNode(Expression.class, info);
 
-		return new CastExpr(type, expression);
-	}
+        return new CastExpr(type, expression);
+    }
 
-	public default AssignExpr guessAssignExpr(InformationWrapper info) {
-		info = updateGeneralInfo(AssignExpr.class, info, false);
+    public default AssignExpr guessAssignExpr(InformationWrapper info) {
+        info = updateGeneralInfo(AssignExpr.class, info, false);
 
-		Expression target = guessNode(Expression.class, info);
-		Expression value = guessNode(Expression.class, info);
-		AssignExpr.Operator operator = guessAssignOperator(info);
+        Expression target = guessNode(Expression.class, info);
+        Expression value = guessNode(Expression.class, info);
+        AssignExpr.Operator operator = guessAssignOperator(info);
 
-		return new AssignExpr(target, value, operator);
-	}
+        return new AssignExpr(target, value, operator);
+    }
 
-	public default ArrayInitializerExpr guessArrayInitializerExpr(InformationWrapper info) {
-		info = updateGeneralInfo(ArrayInitializerExpr.class, info, false);
+    public default ArrayInitializerExpr guessArrayInitializerExpr(InformationWrapper info) {
+        info = updateGeneralInfo(ArrayInitializerExpr.class, info, false);
 
-		NodeList<Expression> values = guessList(Expression.class, info);
+        NodeList<Expression> values = guessList(Expression.class, info);
 
-		return new ArrayInitializerExpr(values);
-	}
+        return new ArrayInitializerExpr(values);
+    }
 
-	public default ArrayCreationExpr guessArrayCreationExpr(InformationWrapper info) {
-		info = updateGeneralInfo(ArrayCreationExpr.class, info, false);
+    public default ArrayCreationExpr guessArrayCreationExpr(InformationWrapper info) {
+        info = updateGeneralInfo(ArrayCreationExpr.class, info, false);
 
-		Type elementType = guessNode(Type.class, info);
-		NodeList<ArrayCreationLevel> levels = guessList(ArrayCreationLevel.class, info);
-		ArrayInitializerExpr initializer = guessArrayInitializerExpr(info);
+        Type elementType = guessNode(Type.class, info);
+        NodeList<ArrayCreationLevel> levels = guessList(ArrayCreationLevel.class, info);
+        ArrayInitializerExpr initializer = guessArrayInitializerExpr(info);
 
-		return new ArrayCreationExpr(elementType, levels, initializer);
-	}
+        return new ArrayCreationExpr(elementType, levels, initializer);
+    }
 
-	public default ArrayAccessExpr guessArrayAccessExpr(InformationWrapper info) {
-		info = updateGeneralInfo(ArrayAccessExpr.class, info, false);
+    public default ArrayAccessExpr guessArrayAccessExpr(InformationWrapper info) {
+        info = updateGeneralInfo(ArrayAccessExpr.class, info, false);
 
-		Expression name = guessNode(Expression.class, info);
-		Expression index = guessNode(Expression.class, info);
+        Expression name = guessNode(Expression.class, info);
+        Expression index = guessNode(Expression.class, info);
 
-		return new ArrayAccessExpr(name, index);
-	}
+        return new ArrayAccessExpr(name, index);
+    }
 
-	public default PackageDeclaration guessPackageDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(PackageDeclaration.class, info, false);
+    public default PackageDeclaration guessPackageDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(PackageDeclaration.class, info, false);
 
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		Name name = guessName(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        Name name = guessName(info);
 
-		return new PackageDeclaration(annotations, name);
-	}
+        return new PackageDeclaration(annotations, name);
+    }
 
-	public default ImportDeclaration guessImportDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(ImportDeclaration.class, info, false);
+    public default ImportDeclaration guessImportDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(ImportDeclaration.class, info, false);
 
-		Name name = guessName(info);
-		boolean isStatic = guessBoolean(info);
-		boolean isAsterisk = guessBoolean(info);
+        Name name = guessName(info);
+        boolean isStatic = guessBoolean(info);
+        boolean isAsterisk = guessBoolean(info);
 
-		return new ImportDeclaration(name, isStatic, isAsterisk);
-	}
+        return new ImportDeclaration(name, isStatic, isAsterisk);
+    }
 
-	public default FieldDeclaration guessFieldDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(FieldDeclaration.class, info, false);
+    public default FieldDeclaration guessFieldDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(FieldDeclaration.class, info, false);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		NodeList<VariableDeclarator> variables = guessList(VariableDeclarator.class, info);
+        EnumSet<Modifier> modifiers = guessModifiers(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        NodeList<VariableDeclarator> variables = guessList(VariableDeclarator.class, info);
 
-		return new FieldDeclaration(modifiers, annotations, variables);
-	}
+        return new FieldDeclaration(modifiers, annotations, variables);
+    }
 
-	public default ClassOrInterfaceType guessClassOrInterfaceType(InformationWrapper info) {
-		info = updateGeneralInfo(ClassOrInterfaceType.class, info, false);
+    public default ClassOrInterfaceType guessClassOrInterfaceType(InformationWrapper info) {
+        info = updateGeneralInfo(ClassOrInterfaceType.class, info, false);
 
-		ClassOrInterfaceType scope = guessClassOrInterfaceType(info);
-		SimpleName name = guessSimpleName(info);
-		NodeList<Type> typeArguments = guessList(Type.class, info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        ClassOrInterfaceType scope = guessClassOrInterfaceType(info);
+        SimpleName name = guessSimpleName(info);
+        NodeList<Type> typeArguments = guessList(Type.class, info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 
-		return new ClassOrInterfaceType(scope, name, typeArguments, annotations);
-	}
+        return new ClassOrInterfaceType(scope, name, typeArguments, annotations);
+    }
 
-	public default ClassOrInterfaceDeclaration guessClassOrInterfaceDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(ClassOrInterfaceDeclaration.class, info, false);
+    public default ClassOrInterfaceDeclaration guessClassOrInterfaceDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(ClassOrInterfaceDeclaration.class, info, false);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		boolean isInterface = guessBoolean(info);
-		SimpleName name = guessSimpleName(info);
-		NodeList<TypeParameter> typeParameters = guessList(TypeParameter.class, info);
-		NodeList<ClassOrInterfaceType> extendedTypes = guessList(ClassOrInterfaceType.class, info);
-		NodeList<ClassOrInterfaceType> implementedTypes = guessList(ClassOrInterfaceType.class, info);
-		NodeList<BodyDeclaration<?>> members = guessBodyDeclarationList(info);
+        EnumSet<Modifier> modifiers = guessModifiers(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        boolean isInterface = guessBoolean(info);
+        SimpleName name = guessSimpleName(info);
+        NodeList<TypeParameter> typeParameters = guessList(TypeParameter.class, info);
+        NodeList<ClassOrInterfaceType> extendedTypes = guessList(ClassOrInterfaceType.class, info);
+        NodeList<ClassOrInterfaceType> implementedTypes = guessList(ClassOrInterfaceType.class, info);
+        NodeList<BodyDeclaration<?>> members = guessBodyDeclarationList(info);
 
-		return new ClassOrInterfaceDeclaration(modifiers, annotations, isInterface, name, typeParameters, extendedTypes,
-				implementedTypes, members);
-	}
+        return new ClassOrInterfaceDeclaration(modifiers, annotations, isInterface, name, typeParameters, extendedTypes,
+                implementedTypes, members);
+    }
 
-	public default MethodDeclaration guessMethodDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(MethodDeclaration.class, info, false);
+    public default MethodDeclaration guessMethodDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(MethodDeclaration.class, info, false);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		NodeList<TypeParameter> typeParameters = guessList(TypeParameter.class, info);
-		Type type = guessNode(Type.class, info);
-		SimpleName name = guessSimpleName(info);
-		NodeList<Parameter> parameters = guessList(Parameter.class, info);
-		NodeList<ReferenceType> thrownExceptions = guessList(ReferenceType.class, info);
-		BlockStmt body = guessBlockStmt(info);
+        EnumSet<Modifier> modifiers = guessModifiers(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        NodeList<TypeParameter> typeParameters = guessList(TypeParameter.class, info);
+        Type type = guessNode(Type.class, info);
+        SimpleName name = guessSimpleName(info);
+        NodeList<Parameter> parameters = guessList(Parameter.class, info);
+        NodeList<ReferenceType> thrownExceptions = guessList(ReferenceType.class, info);
+        BlockStmt body = guessBlockStmt(info);
 
-		return new MethodDeclaration(modifiers, annotations, typeParameters, type, name, parameters,
-				thrownExceptions, body);
-	}
+        return new MethodDeclaration(modifiers, annotations, typeParameters, type, name, parameters,
+                thrownExceptions, body);
+    }
 
-	public default BinaryExpr guessBinaryExpr(InformationWrapper info) {
-		info = updateGeneralInfo(BinaryExpr.class, info, false);
+    public default BinaryExpr guessBinaryExpr(InformationWrapper info) {
+        info = updateGeneralInfo(BinaryExpr.class, info, false);
 
-		Expression left = guessNode(Expression.class, info);
-		Expression right = guessNode(Expression.class, info);
-		BinaryExpr.Operator operator = guessBinaryOperator(info);
+        Expression left = guessNode(Expression.class, info);
+        Expression right = guessNode(Expression.class, info);
+        BinaryExpr.Operator operator = guessBinaryOperator(info);
 
-		return new BinaryExpr(left, right, operator);
-	}
+        return new BinaryExpr(left, right, operator);
+    }
 
-	public default UnaryExpr guessUnaryExpr(InformationWrapper info) {
-		info = updateGeneralInfo(UnaryExpr.class, info, false);
+    public default UnaryExpr guessUnaryExpr(InformationWrapper info) {
+        info = updateGeneralInfo(UnaryExpr.class, info, false);
 
-		Expression expression = guessNode(Expression.class, info);
-		UnaryExpr.Operator operator = guessUnaryOperator(info);
+        Expression expression = guessNode(Expression.class, info);
+        UnaryExpr.Operator operator = guessUnaryOperator(info);
 
-		return new UnaryExpr(expression, operator);
-	}
+        return new UnaryExpr(expression, operator);
+    }
 
-	public default MethodCallExpr guessMethodCallExpr(InformationWrapper info) {
-		info = updateGeneralInfo(MethodCallExpr.class, info, false);
+    public default MethodCallExpr guessMethodCallExpr(InformationWrapper info) {
+        info = updateGeneralInfo(MethodCallExpr.class, info, false);
 
-		Expression scope = guessNode(Expression.class, info);
-		NodeList<Type> typeArguments = guessList(Type.class, info);
-		SimpleName name = guessSimpleName(info);
-		NodeList<Expression> arguments = guessList(Expression.class, info);
+        Expression scope = guessNode(Expression.class, info);
+        NodeList<Type> typeArguments = guessList(Type.class, info);
+        SimpleName name = guessSimpleName(info);
+        NodeList<Expression> arguments = guessList(Expression.class, info);
 
-		return new MethodCallExpr(scope, typeArguments, name, arguments);
-	}
+        return new MethodCallExpr(scope, typeArguments, name, arguments);
+    }
 
-	public default NameExpr guessNameExpr(InformationWrapper info) {
-		info = updateGeneralInfo(NameExpr.class, info, false);
+    public default NameExpr guessNameExpr(InformationWrapper info) {
+        info = updateGeneralInfo(NameExpr.class, info, false);
 
-		SimpleName name = guessSimpleName(info);
+        SimpleName name = guessSimpleName(info);
 
-		return new NameExpr(name);
-	}
+        return new NameExpr(name);
+    }
 
-	public default IntegerLiteralExpr guessIntegerLiteralExpr(InformationWrapper info) throws IllegalArgumentException {
-		info = updateGeneralInfo(IntegerLiteralExpr.class, info, false);
+    public default IntegerLiteralExpr guessIntegerLiteralExpr(InformationWrapper info) throws IllegalArgumentException {
+        info = updateGeneralInfo(IntegerLiteralExpr.class, info, false);
 
-		String value = guessStringValue(info);
+        String value = guessStringValue(info);
 
-		return new IntegerLiteralExpr(value);
-	}
+        return new IntegerLiteralExpr(value);
+    }
 
-	public default DoubleLiteralExpr guessDoubleLiteralExpr(InformationWrapper info) {
-		info = updateGeneralInfo(DoubleLiteralExpr.class, info, false);
+    public default DoubleLiteralExpr guessDoubleLiteralExpr(InformationWrapper info) {
+        info = updateGeneralInfo(DoubleLiteralExpr.class, info, false);
 
-		String value = guessStringValue(info);
+        String value = guessStringValue(info);
 
-		return new DoubleLiteralExpr(value);
-	}
+        return new DoubleLiteralExpr(value);
+    }
 
-	public default StringLiteralExpr guessStringLiteralExpr(InformationWrapper info) {
-		info = updateGeneralInfo(StringLiteralExpr.class, info, false);
+    public default StringLiteralExpr guessStringLiteralExpr(InformationWrapper info) {
+        info = updateGeneralInfo(StringLiteralExpr.class, info, false);
 
-		String value = guessStringValue(info);
+        String value = guessStringValue(info);
 
-		// this could also be part of the guessStringValue method
-		if( value == null ) {
-			// creating a StringLiteralExpr with a null value is not allowed
-			// but we do not store the values in the tokens so we need some alternative value
-			// we may need more of those default values and a good place for them
-			value = DEFAULT_STRING_LITERAL_VALUE;
-		}
-		
-		return new StringLiteralExpr(value);
-	}
+        // this could also be part of the guessStringValue method
+        if (value == null) {
+            // creating a StringLiteralExpr with a null value is not allowed
+            // but we do not store the values in the tokens so we need some alternative value
+            // we may need more of those default values and a good place for them
+            value = DEFAULT_STRING_LITERAL_VALUE;
+        }
 
-	public default BooleanLiteralExpr guessBooleanLiteralExpr(InformationWrapper info) {
-		info = updateGeneralInfo(BooleanLiteralExpr.class, info, false);
+        return new StringLiteralExpr(value);
+    }
 
-		boolean value = guessBoolean(info);
+    public default BooleanLiteralExpr guessBooleanLiteralExpr(InformationWrapper info) {
+        info = updateGeneralInfo(BooleanLiteralExpr.class, info, false);
 
-		return new BooleanLiteralExpr(value);
-	}
+        boolean value = guessBoolean(info);
 
-	public default CharLiteralExpr guessCharLiteralExpr(InformationWrapper info) {
-		info = updateGeneralInfo(CharLiteralExpr.class, info, false);
+        return new BooleanLiteralExpr(value);
+    }
 
-		String value = guessStringValue(info);
+    public default CharLiteralExpr guessCharLiteralExpr(InformationWrapper info) {
+        info = updateGeneralInfo(CharLiteralExpr.class, info, false);
 
-		return new CharLiteralExpr(value);
-	}
+        String value = guessStringValue(info);
 
-	public default LongLiteralExpr guessLongLiteralExpr(InformationWrapper info) {
-		info = updateGeneralInfo(LongLiteralExpr.class, info, false);
+        return new CharLiteralExpr(value);
+    }
 
-		String value = guessStringValue(info);
+    public default LongLiteralExpr guessLongLiteralExpr(InformationWrapper info) {
+        info = updateGeneralInfo(LongLiteralExpr.class, info, false);
 
-		return new LongLiteralExpr(value);
-	}
+        String value = guessStringValue(info);
 
-	public default ThisExpr guessThisExpr(InformationWrapper info) {
-		info = updateGeneralInfo(ThisExpr.class, info, false);
+        return new LongLiteralExpr(value);
+    }
 
-		Expression classExpr = guessNode(Expression.class, info);
+    public default ThisExpr guessThisExpr(InformationWrapper info) {
+        info = updateGeneralInfo(ThisExpr.class, info, false);
 
-		return new ThisExpr(classExpr);
-	}
+        Expression classExpr = guessNode(Expression.class, info);
 
-	public default BreakStmt guessBreakStmt(InformationWrapper info) {
-		info = updateGeneralInfo(BreakStmt.class, info, false);
+        return new ThisExpr(classExpr);
+    }
 
-		SimpleName label = guessSimpleName(info);
+    public default BreakStmt guessBreakStmt(InformationWrapper info) {
+        info = updateGeneralInfo(BreakStmt.class, info, false);
 
-		return new BreakStmt(label);
-	}
+        SimpleName label = guessSimpleName(info);
 
-	public default ObjectCreationExpr guessObjectCreationExpr(InformationWrapper info) {
-		info = updateGeneralInfo(ObjectCreationExpr.class, info, false);
+        return new BreakStmt(label);
+    }
 
-		Expression scope = guessNode(Expression.class, info);
-		ClassOrInterfaceType type = guessClassOrInterfaceType(info);
-		NodeList<Type> typeArguments = guessList(Type.class, info);
-		NodeList<Expression> arguments = guessList(Expression.class, info);
-		NodeList<BodyDeclaration<?>> anonymousClassBody = guessBodyDeclarationList(info);
+    public default ObjectCreationExpr guessObjectCreationExpr(InformationWrapper info) {
+        info = updateGeneralInfo(ObjectCreationExpr.class, info, false);
 
-		return new ObjectCreationExpr(scope, type, typeArguments, arguments, anonymousClassBody);
-	}
+        Expression scope = guessNode(Expression.class, info);
+        ClassOrInterfaceType type = guessClassOrInterfaceType(info);
+        NodeList<Type> typeArguments = guessList(Type.class, info);
+        NodeList<Expression> arguments = guessList(Expression.class, info);
+        NodeList<BodyDeclaration<?>> anonymousClassBody = guessBodyDeclarationList(info);
 
-	public default MarkerAnnotationExpr guessMarkerAnnotationExpr(InformationWrapper info) {
-		info = updateGeneralInfo(MarkerAnnotationExpr.class, info, false);
+        return new ObjectCreationExpr(scope, type, typeArguments, arguments, anonymousClassBody);
+    }
 
-		Name name = guessName(info);
+    public default MarkerAnnotationExpr guessMarkerAnnotationExpr(InformationWrapper info) {
+        info = updateGeneralInfo(MarkerAnnotationExpr.class, info, false);
 
-		return new MarkerAnnotationExpr(name);
-	}
+        Name name = guessName(info);
 
-	public default NormalAnnotationExpr guessNormalAnnotationExpr(InformationWrapper info) {
-		info = updateGeneralInfo(NormalAnnotationExpr.class, info, false);
+        return new MarkerAnnotationExpr(name);
+    }
 
-		Name name = guessName(info);
-		NodeList<MemberValuePair> pairs = guessList(MemberValuePair.class, info);
+    public default NormalAnnotationExpr guessNormalAnnotationExpr(InformationWrapper info) {
+        info = updateGeneralInfo(NormalAnnotationExpr.class, info, false);
 
-		return new NormalAnnotationExpr(name, pairs);
-	}
+        Name name = guessName(info);
+        NodeList<MemberValuePair> pairs = guessList(MemberValuePair.class, info);
 
-	public default SingleMemberAnnotationExpr guessSingleMemberAnnotationExpr(InformationWrapper info) {
-		info = updateGeneralInfo(SingleMemberAnnotationExpr.class, info, false);
+        return new NormalAnnotationExpr(name, pairs);
+    }
 
-		Name name = guessName(info);
-		Expression memberValue = guessNode(Expression.class, info);
+    public default SingleMemberAnnotationExpr guessSingleMemberAnnotationExpr(InformationWrapper info) {
+        info = updateGeneralInfo(SingleMemberAnnotationExpr.class, info, false);
 
-		return new SingleMemberAnnotationExpr(name, memberValue);
-	}
+        Name name = guessName(info);
+        Expression memberValue = guessNode(Expression.class, info);
 
-	public default Parameter guessParameter(InformationWrapper info) {
-		info = updateGeneralInfo(Parameter.class, info, false);
+        return new SingleMemberAnnotationExpr(name, memberValue);
+    }
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		Type type = guessNode(Type.class, info);
-		boolean isVarArgs = guessBoolean(info);
-		NodeList<AnnotationExpr> varArgsAnnotations = guessList(AnnotationExpr.class, info);
-		SimpleName name = guessSimpleName(info);
+    public default Parameter guessParameter(InformationWrapper info) {
+        info = updateGeneralInfo(Parameter.class, info, false);
 
-		return new Parameter(modifiers, annotations, type, isVarArgs, varArgsAnnotations, name);
-	}
+        EnumSet<Modifier> modifiers = guessModifiers(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        Type type = guessNode(Type.class, info);
+        boolean isVarArgs = guessBoolean(info);
+        NodeList<AnnotationExpr> varArgsAnnotations = guessList(AnnotationExpr.class, info);
+        SimpleName name = guessSimpleName(info);
 
-	public default EnclosedExpr guessEnclosedExpr(InformationWrapper info) {
-		info = updateGeneralInfo(EnclosedExpr.class, info, false);
+        return new Parameter(modifiers, annotations, type, isVarArgs, varArgsAnnotations, name);
+    }
 
-		Expression inner = guessNode(Expression.class, info);
+    public default EnclosedExpr guessEnclosedExpr(InformationWrapper info) {
+        info = updateGeneralInfo(EnclosedExpr.class, info, false);
 
-		return new EnclosedExpr(inner);
-	}
+        Expression inner = guessNode(Expression.class, info);
 
-	public default AssertStmt guessAssertStmt(InformationWrapper info) {
-		info = updateGeneralInfo(AssertStmt.class, info, false);
+        return new EnclosedExpr(inner);
+    }
 
-		Expression check = guessNode(Expression.class, info);
-		Expression message = guessNode(Expression.class, info);
+    public default AssertStmt guessAssertStmt(InformationWrapper info) {
+        info = updateGeneralInfo(AssertStmt.class, info, false);
 
-		return new AssertStmt(check, message);
-	}
+        Expression check = guessNode(Expression.class, info);
+        Expression message = guessNode(Expression.class, info);
 
-	public default MemberValuePair guessMemberValuePair(InformationWrapper info) throws IllegalArgumentException {
-		info = updateGeneralInfo(MemberValuePair.class, info, false);
+        return new AssertStmt(check, message);
+    }
 
-		SimpleName name = guessSimpleName(info);
-		Expression value = guessNode(Expression.class, info);
+    public default MemberValuePair guessMemberValuePair(InformationWrapper info) throws IllegalArgumentException {
+        info = updateGeneralInfo(MemberValuePair.class, info, false);
 
-		return new MemberValuePair(name, value);
-	}
+        SimpleName name = guessSimpleName(info);
+        Expression value = guessNode(Expression.class, info);
 
-	public default PrimitiveType guessPrimitiveType(InformationWrapper info) {
-		info = updateGeneralInfo(PrimitiveType.class, info, false);
+        return new MemberValuePair(name, value);
+    }
 
-		Primitive type = guessPrimitive(info);
+    public default PrimitiveType guessPrimitiveType(InformationWrapper info) {
+        info = updateGeneralInfo(PrimitiveType.class, info, false);
 
-		return new PrimitiveType(type);
-	}
+        Primitive type = guessPrimitive(info);
 
-	public default UnionType guessUnionType(InformationWrapper info) {
-		info = updateGeneralInfo(UnionType.class, info, false);
+        return new PrimitiveType(type);
+    }
 
-		NodeList<ReferenceType> elements = guessList(ReferenceType.class, info);
+    public default UnionType guessUnionType(InformationWrapper info) {
+        info = updateGeneralInfo(UnionType.class, info, false);
 
-		return new UnionType(elements);
-	}
+        NodeList<ReferenceType> elements = guessList(ReferenceType.class, info);
 
-	public default IntersectionType guessIntersectionType(InformationWrapper info) {
-		info = updateGeneralInfo(IntersectionType.class, info, false);
+        return new UnionType(elements);
+    }
 
-		NodeList<ReferenceType> elements = guessList(ReferenceType.class, info);
+    public default IntersectionType guessIntersectionType(InformationWrapper info) {
+        info = updateGeneralInfo(IntersectionType.class, info, false);
 
-		return new IntersectionType(elements);
-	}
+        NodeList<ReferenceType> elements = guessList(ReferenceType.class, info);
 
-	public default TypeParameter guessTypeParameter(InformationWrapper info) {
-		info = updateGeneralInfo(TypeParameter.class, info, false);
+        return new IntersectionType(elements);
+    }
 
-		SimpleName name = guessSimpleName(info);
-		NodeList<ClassOrInterfaceType> typeBound = guessList(ClassOrInterfaceType.class, info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+    public default TypeParameter guessTypeParameter(InformationWrapper info) {
+        info = updateGeneralInfo(TypeParameter.class, info, false);
 
-		return new TypeParameter(name, typeBound, annotations);
-	}
+        SimpleName name = guessSimpleName(info);
+        NodeList<ClassOrInterfaceType> typeBound = guessList(ClassOrInterfaceType.class, info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 
-	public default WildcardType guessWildcardType(InformationWrapper info) {
-		info = updateGeneralInfo(WildcardType.class, info, false);
+        return new TypeParameter(name, typeBound, annotations);
+    }
 
-		ReferenceType extendedType = guessNode(ReferenceType.class, info);
-		ReferenceType superType = guessNode(ReferenceType.class, info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+    public default WildcardType guessWildcardType(InformationWrapper info) {
+        info = updateGeneralInfo(WildcardType.class, info, false);
 
-		return new WildcardType(extendedType, superType, annotations);
-	}
+        ReferenceType extendedType = guessNode(ReferenceType.class, info);
+        ReferenceType superType = guessNode(ReferenceType.class, info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 
-	public default VoidType guessVoidType(InformationWrapper info) {
-		info = updateGeneralInfo(VoidType.class, info, false);
+        return new WildcardType(extendedType, superType, annotations);
+    }
 
-		return new VoidType();
-	}
+    public default VoidType guessVoidType(InformationWrapper info) {
+        info = updateGeneralInfo(VoidType.class, info, false);
 
-	public default UnknownType guessUnknownType(InformationWrapper info) {
-		info = updateGeneralInfo(UnknownType.class, info, false);
+        return new VoidType();
+    }
 
-		return new UnknownType();
-	}
+    public default UnknownType guessUnknownType(InformationWrapper info) {
+        info = updateGeneralInfo(UnknownType.class, info, false);
 
-	public default Name guessName(InformationWrapper info) {
-		info = updateGeneralInfo(Name.class, info, false);
+        return new UnknownType();
+    }
 
-		// TODO: this is a recursive call that will possibly call itself indefinitely...
-		Name qualifier = guessName(info);
-		String identifier = guessStringValue(info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+    public default Name guessName(InformationWrapper info) {
+        info = updateGeneralInfo(Name.class, info, false);
 
-		return new Name(qualifier, identifier, annotations);
-	}
+        // TODO: this is a recursive call that will possibly call itself indefinitely...
+        Name qualifier = guessName(info);
+        String identifier = guessStringValue(info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 
-	public default SimpleName guessSimpleName(InformationWrapper info) {
-		info = updateGeneralInfo(SimpleName.class, info, false);
+        return new Name(qualifier, identifier, annotations);
+    }
 
-		String identifier = guessStringValue(info);
+    public default SimpleName guessSimpleName(InformationWrapper info) {
+        info = updateGeneralInfo(SimpleName.class, info, false);
 
-		// this could also be part of the guessStringValue method
-		if( identifier == null ) {
-			// creating a SimpleName with a null value is not allowed
-			// but we do not store the values in the tokens so we need some alternative value
-			// we may need more of those default values and a good place for them
-			identifier = DEFAULT_SIMPLE_NAME_VALUE;
-		}
-		
-		return new SimpleName(identifier);
-	}
+        String identifier = guessStringValue(info);
 
-	public default LocalClassDeclarationStmt guessLocalClassDeclarationStmt(InformationWrapper info) {
-		info = updateGeneralInfo(LocalClassDeclarationStmt.class, info, false);
+        // this could also be part of the guessStringValue method
+        if (identifier == null) {
+            // creating a SimpleName with a null value is not allowed
+            // but we do not store the values in the tokens so we need some alternative value
+            // we may need more of those default values and a good place for them
+            identifier = DEFAULT_SIMPLE_NAME_VALUE;
+        }
 
-		ClassOrInterfaceDeclaration classDeclaration = guessClassOrInterfaceDeclaration(info);
+        return new SimpleName(identifier);
+    }
 
-		return new LocalClassDeclarationStmt(classDeclaration);
-	}
+    public default LocalClassDeclarationStmt guessLocalClassDeclarationStmt(InformationWrapper info) {
+        info = updateGeneralInfo(LocalClassDeclarationStmt.class, info, false);
 
-	public default ArrayType guessArrayType(InformationWrapper info) {
-		info = updateGeneralInfo(ArrayType.class, info, false);
+        ClassOrInterfaceDeclaration classDeclaration = guessClassOrInterfaceDeclaration(info);
 
-		Type componentType = guessNode(Type.class, info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        return new LocalClassDeclarationStmt(classDeclaration);
+    }
 
-		return new ArrayType(componentType, annotations);
-	}
+    public default ArrayType guessArrayType(InformationWrapper info) {
+        info = updateGeneralInfo(ArrayType.class, info, false);
 
-	public default ArrayCreationLevel guessArrayCreationLevel(InformationWrapper info) {
-		info = updateGeneralInfo(ArrayCreationLevel.class, info, false);
+        Type componentType = guessNode(Type.class, info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 
-		Expression dimension = guessNode(Expression.class, info);
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        return new ArrayType(componentType, annotations);
+    }
 
-		return new ArrayCreationLevel(dimension, annotations);
-	}
+    public default ArrayCreationLevel guessArrayCreationLevel(InformationWrapper info) {
+        info = updateGeneralInfo(ArrayCreationLevel.class, info, false);
 
-	public default ModuleDeclaration guessModuleDeclaration(InformationWrapper info) {
-		info = updateGeneralInfo(ModuleDeclaration.class, info, false);
+        Expression dimension = guessNode(Expression.class, info);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
 
-		NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
-		Name name = guessName(info);
-		boolean isOpen = guessBoolean(info);
-		NodeList<ModuleStmt> moduleStmts = guessList(ModuleStmt.class, info);
+        return new ArrayCreationLevel(dimension, annotations);
+    }
 
-		return new ModuleDeclaration(annotations, name, isOpen, moduleStmts);
-	}
+    public default ModuleDeclaration guessModuleDeclaration(InformationWrapper info) {
+        info = updateGeneralInfo(ModuleDeclaration.class, info, false);
 
-	public default ModuleExportsStmt guessModuleExportsStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ModuleExportsStmt.class, info, false);
+        NodeList<AnnotationExpr> annotations = guessList(AnnotationExpr.class, info);
+        Name name = guessName(info);
+        boolean isOpen = guessBoolean(info);
+        NodeList<ModuleStmt> moduleStmts = guessList(ModuleStmt.class, info);
 
-		Name name = guessName(info);
-		NodeList<Name> moduleNames = guessList(Name.class, info);
+        return new ModuleDeclaration(annotations, name, isOpen, moduleStmts);
+    }
 
-		return new ModuleExportsStmt(name, moduleNames);
-	}
+    public default ModuleExportsStmt guessModuleExportsStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ModuleExportsStmt.class, info, false);
 
-	public default ModuleOpensStmt guessModuleOpensStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ModuleOpensStmt.class, info, false);
+        Name name = guessName(info);
+        NodeList<Name> moduleNames = guessList(Name.class, info);
 
-		Name name = guessName(info);
-		NodeList<Name> moduleNames = guessList(Name.class, info);
+        return new ModuleExportsStmt(name, moduleNames);
+    }
 
-		return new ModuleOpensStmt(name, moduleNames);
-	}
+    public default ModuleOpensStmt guessModuleOpensStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ModuleOpensStmt.class, info, false);
 
-	public default ModuleProvidesStmt guessModuleProvidesStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ModuleProvidesStmt.class, info, false);
+        Name name = guessName(info);
+        NodeList<Name> moduleNames = guessList(Name.class, info);
 
-		Type type = guessNode(Type.class, info);
-		NodeList<Type> withTypes = guessList(Type.class, info);
+        return new ModuleOpensStmt(name, moduleNames);
+    }
 
-		return new ModuleProvidesStmt(type, withTypes);
-	}
+    public default ModuleProvidesStmt guessModuleProvidesStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ModuleProvidesStmt.class, info, false);
 
-	public default ModuleRequiresStmt guessModuleRequiresStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ModuleRequiresStmt.class, info, false);
+        Type type = guessNode(Type.class, info);
+        NodeList<Type> withTypes = guessList(Type.class, info);
 
-		EnumSet<Modifier> modifiers = guessModifiers(info);
-		Name name = guessName(info);
+        return new ModuleProvidesStmt(type, withTypes);
+    }
 
-		return new ModuleRequiresStmt(modifiers, name);
-	}
+    public default ModuleRequiresStmt guessModuleRequiresStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ModuleRequiresStmt.class, info, false);
 
-	public default ModuleUsesStmt guessModuleUsesStmt(InformationWrapper info) {
-		info = updateGeneralInfo(ModuleUsesStmt.class, info, false);
+        EnumSet<Modifier> modifiers = guessModifiers(info);
+        Name name = guessName(info);
 
-		Type type = guessNode(Type.class, info);
+        return new ModuleRequiresStmt(modifiers, name);
+    }
 
-		return new ModuleUsesStmt(type);
-	}
+    public default ModuleUsesStmt guessModuleUsesStmt(InformationWrapper info) {
+        info = updateGeneralInfo(ModuleUsesStmt.class, info, false);
 
-	public default CompilationUnit guessCompilationUnit(InformationWrapper info) {
-		info = updateGeneralInfo(CompilationUnit.class, info, false);
+        Type type = guessNode(Type.class, info);
 
-		PackageDeclaration packageDeclaration = guessNode(PackageDeclaration.class, info);
-		NodeList<ImportDeclaration> imports = guessList(ImportDeclaration.class, info);
-		NodeList<TypeDeclaration<?>> types = guessTypeDeclarationList(info);
-		ModuleDeclaration module = guessNode(ModuleDeclaration.class, info);
+        return new ModuleUsesStmt(type);
+    }
 
-		return new CompilationUnit(packageDeclaration, imports, types, module);
-	}
-	
-	public default EmptyStmt guessEmptyStmt(InformationWrapper info) {
-		info = updateGeneralInfo(EmptyStmt.class, info, false);
+    public default CompilationUnit guessCompilationUnit(InformationWrapper info) {
+        info = updateGeneralInfo(CompilationUnit.class, info, false);
 
-		return new EmptyStmt();
-	}
+        PackageDeclaration packageDeclaration = guessNode(PackageDeclaration.class, info);
+        NodeList<ImportDeclaration> imports = guessList(ImportDeclaration.class, info);
+        NodeList<TypeDeclaration<?>> types = guessTypeDeclarationList(info);
+        ModuleDeclaration module = guessNode(ModuleDeclaration.class, info);
+
+        return new CompilationUnit(packageDeclaration, imports, types, module);
+    }
+
+    public default EmptyStmt guessEmptyStmt(InformationWrapper info) {
+        info = updateGeneralInfo(EmptyStmt.class, info, false);
+
+        return new EmptyStmt();
+    }
 
 }

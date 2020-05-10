@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,30 +36,28 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 /**
  * An object type with a declared default index type.
- *
+ * <p>
  * For example, <code>Object.<number, string></code> can take only numbers as
  * keys.
- *
-*
  */
 final class IndexedType extends ProxyObjectType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  final JSType indexType;
+    final JSType indexType;
 
-  IndexedType(
-      JSTypeRegistry registry, ObjectType objectType, JSType indexType) {
-    super(registry, objectType);
-    this.indexType = indexType;
-  }
+    IndexedType(
+            JSTypeRegistry registry, ObjectType objectType, JSType indexType) {
+        super(registry, objectType);
+        this.indexType = indexType;
+    }
 
-  @Override
-  public JSType getIndexType() {
-    return indexType;
-  }
+    @Override
+    public JSType getIndexType() {
+        return indexType;
+    }
 }

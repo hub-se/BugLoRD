@@ -26,105 +26,103 @@ import java.util.List;
 /**
  * Proxy that provides a high level interface that compiler passes can
  * use to replace or remove sections of the AST.
- *
-*
  */
 class AstChangeProxy {
 
-  /**
-   * Interface used to notify client code about changes done by
-   * AstChangeProxy.
-   */
-  interface ChangeListener {
+    /**
+     * Interface used to notify client code about changes done by
+     * AstChangeProxy.
+     */
+    interface ChangeListener {
+
+        /**
+         * Notifies clients about node removals.
+         */
+        void nodeRemoved(Node node);
+    }
+
+    private final List<ChangeListener> listeners;
+
+    AstChangeProxy() {
+        listeners = Lists.newArrayList();
+    }
 
     /**
-     * Notifies clients about node removals.
+     * Registers a change listener.
      */
-    void nodeRemoved(Node node);
-  }
-
-  private final List<ChangeListener> listeners;
-
-  AstChangeProxy() {
-    listeners = Lists.newArrayList();
-  }
-
-  /**
-   * Registers a change listener.
-   */
-  final void registerListener(ChangeListener listener) {
-    listeners.add(listener);
-  }
-
-  /**
-   * Unregisters a change listener.
-   */
-  final void unregisterListener(ChangeListener listener) {
-    listeners.remove(listener);
-  }
-
-  /**
-   * Notifies listeners about a removal.
-   */
-  private void notifyOfRemoval(Node node) {
-    for (ChangeListener listener : listeners) {
-      listener.nodeRemoved(node);
-    }
-  }
-
-  /**
-   * Removes a node from the parent's child list.
-   */
-  final void removeChild(Node parent, Node node) {
-    parent.removeChild(node);
-
-    notifyOfRemoval(node);
-  }
-
-  /**
-   * Replaces a node from the parent's child list.
-   */
-  final void replaceWith(Node parent, Node node, Node replacement) {
-    replaceWith(parent, node, Lists.newArrayList(replacement));
-  }
-
-  /**
-   * Replaces a node with the provided list.
-   */
-  final void replaceWith(Node parent, Node node, List<Node> replacements) {
-    Preconditions.checkNotNull(replacements, "\"replacements\" is null.");
-
-    int size = replacements.size();
-
-    if ((size == 1) && node.checkTreeEqualsSilent(replacements.get(0))) {
-      // trees are equal... don't replace
-      return;
+    final void registerListener(ChangeListener listener) {
+        listeners.add(listener);
     }
 
-    int parentType = parent.getType();
-
-    Preconditions.checkState(size == 1 ||
-        parentType == Token.BLOCK ||
-        parentType == Token.SCRIPT ||
-        parentType == Token.LABEL);
-
-    if (parentType == Token.LABEL && size != 1) {
-      Node block = new Node(Token.BLOCK);
-      for (Node newChild : replacements) {
-        Node oldParent = newChild.getParent();
-        block.addChildToBack(newChild);
-      }
-
-      parent.replaceChild(node, block);
-
-    } else {
-      for (Node newChild : replacements) {
-        Node oldParent = newChild.getParent();
-        parent.addChildBefore(newChild, node);
-      }
-      parent.removeChild(node);
-
+    /**
+     * Unregisters a change listener.
+     */
+    final void unregisterListener(ChangeListener listener) {
+        listeners.remove(listener);
     }
-    notifyOfRemoval(node);
-  }
+
+    /**
+     * Notifies listeners about a removal.
+     */
+    private void notifyOfRemoval(Node node) {
+        for (ChangeListener listener : listeners) {
+            listener.nodeRemoved(node);
+        }
+    }
+
+    /**
+     * Removes a node from the parent's child list.
+     */
+    final void removeChild(Node parent, Node node) {
+        parent.removeChild(node);
+
+        notifyOfRemoval(node);
+    }
+
+    /**
+     * Replaces a node from the parent's child list.
+     */
+    final void replaceWith(Node parent, Node node, Node replacement) {
+        replaceWith(parent, node, Lists.newArrayList(replacement));
+    }
+
+    /**
+     * Replaces a node with the provided list.
+     */
+    final void replaceWith(Node parent, Node node, List<Node> replacements) {
+        Preconditions.checkNotNull(replacements, "\"replacements\" is null.");
+
+        int size = replacements.size();
+
+        if ((size == 1) && node.checkTreeEqualsSilent(replacements.get(0))) {
+            // trees are equal... don't replace
+            return;
+        }
+
+        int parentType = parent.getType();
+
+        Preconditions.checkState(size == 1 ||
+                parentType == Token.BLOCK ||
+                parentType == Token.SCRIPT ||
+                parentType == Token.LABEL);
+
+        if (parentType == Token.LABEL && size != 1) {
+            Node block = new Node(Token.BLOCK);
+            for (Node newChild : replacements) {
+                Node oldParent = newChild.getParent();
+                block.addChildToBack(newChild);
+            }
+
+            parent.replaceChild(node, block);
+
+        } else {
+            for (Node newChild : replacements) {
+                Node oldParent = newChild.getParent();
+                parent.addChildBefore(newChild, node);
+            }
+            parent.removeChild(node);
+
+        }
+        notifyOfRemoval(node);
+    }
 }

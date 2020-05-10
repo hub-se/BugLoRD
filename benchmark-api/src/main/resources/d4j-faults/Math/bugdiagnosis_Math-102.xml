@@ -1,56 +1,56 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-102">
-			<tests>
-				<testfile path="org/apache/commons/math/stat/inference/TestUtilsTest">
-					<exception>junit.framework.AssertionFailedError:chi-square test
-						statistic expected:&lt;114875.90421929007&gt; but
-						was:&lt;3624883.3429077636&gt;:-
-						org.apache.commons.math.stat.inference.ChiSquareFactoryTest::testChiSquare:--&gt;
-						junit.framework.AssertionFailedError:chi-square test statistic
-						expected:&lt;9.023307936427388&gt; but
-						was:&lt;16.413107036160778&gt;:-
-						org.apache.commons.math.stat.inference.ChiSquareTestTest::testChiSquareLargeTestStatistic:--&gt;
-						junit.framework.AssertionFailedError:chi-square test statistic
-						expected:&lt;114875.90421929007&gt; but
-						was:&lt;3624883.3429077636&gt;:-
-						org.apache.commons.math.stat.inference.ChiSquareTestTest::testChiSquare:--&gt;
-						junit.framework.AssertionFailedError:chi-square test statistic
-						expected:&lt;9.023307936427388&gt; but
-						was:&lt;16.413107036160778&gt;:-
-						org.apache.commons.math.stat.inference.TestUtilsTest::testChiSquareLargeTestStatistic:--&gt;
-						junit.framework.AssertionFailedError:chi-square test statistic
-						expected:&lt;114875.90421929007&gt; but
-						was:&lt;3624883.3429077636&gt;:-
-						org.apache.commons.math.stat.inference.TestUtilsTest::testChiSquare:--&gt;
-						junit.framework.AssertionFailedError
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>30</number_tests>
-					<failed>6</failed>
-					<passed>24</passed>
-					<nodes>8232</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math/stat/inference/ChiSquareTestImpl.java">
-					<insert numberlines="12">74-76</insert>
-					<insert numberlines="4,1">77,79</insert>
-					<bugtypes>
-						<id id="1.1" lines="73">
-							<description>Missing case for result greater than 10e-6.
-							</description>
-						</id>
-						<id id="1.1" lines="76,78">
-							<description>Missing case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-102">
+            <tests>
+                <testfile path="org/apache/commons/math/stat/inference/TestUtilsTest">
+                    <exception>junit.framework.AssertionFailedError:chi-square test
+                        statistic expected:&lt;114875.90421929007&gt; but
+                        was:&lt;3624883.3429077636&gt;:-
+                        org.apache.commons.math.stat.inference.ChiSquareFactoryTest::testChiSquare:--&gt;
+                        junit.framework.AssertionFailedError:chi-square test statistic
+                        expected:&lt;9.023307936427388&gt; but
+                        was:&lt;16.413107036160778&gt;:-
+                        org.apache.commons.math.stat.inference.ChiSquareTestTest::testChiSquareLargeTestStatistic:--&gt;
+                        junit.framework.AssertionFailedError:chi-square test statistic
+                        expected:&lt;114875.90421929007&gt; but
+                        was:&lt;3624883.3429077636&gt;:-
+                        org.apache.commons.math.stat.inference.ChiSquareTestTest::testChiSquare:--&gt;
+                        junit.framework.AssertionFailedError:chi-square test statistic
+                        expected:&lt;9.023307936427388&gt; but
+                        was:&lt;16.413107036160778&gt;:-
+                        org.apache.commons.math.stat.inference.TestUtilsTest::testChiSquareLargeTestStatistic:--&gt;
+                        junit.framework.AssertionFailedError:chi-square test statistic
+                        expected:&lt;114875.90421929007&gt; but
+                        was:&lt;3624883.3429077636&gt;:-
+                        org.apache.commons.math.stat.inference.TestUtilsTest::testChiSquare:--&gt;
+                        junit.framework.AssertionFailedError
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>30</number_tests>
+                    <failed>6</failed>
+                    <passed>24</passed>
+                    <nodes>8232</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math/stat/inference/ChiSquareTestImpl.java">
+                    <insert numberlines="12">74-76</insert>
+                    <insert numberlines="4,1">77,79</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="73">
+                            <description>Missing case for result greater than 10e-6.
+                            </description>
+                        </id>
+                        <id id="1.1" lines="76,78">
+                            <description>Missing case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

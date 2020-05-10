@@ -15,23 +15,16 @@
  */
 package org.joda.time.convert;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.*;
+import org.joda.time.chrono.ISOChronology;
+import org.joda.time.chrono.JulianChronology;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Instant;
-import org.joda.time.MutableDateTime;
-import org.joda.time.ReadableInstant;
-import org.joda.time.TimeOfDay;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.chrono.JulianChronology;
 
 /**
  * This class is a Junit unit test for ReadableInstantConverter.
@@ -45,7 +38,7 @@ public class TestReadableInstantConverter extends TestCase {
     private static final Chronology ISO_PARIS = ISOChronology.getInstance(PARIS);
     private static Chronology JULIAN;
     private static Chronology ISO;
-    
+
     private DateTimeZone zone = null;
 
     public static void main(String[] args) {
@@ -71,11 +64,11 @@ public class TestReadableInstantConverter extends TestCase {
         assertEquals(false, Modifier.isPublic(cls.getModifiers()));
         assertEquals(false, Modifier.isProtected(cls.getModifiers()));
         assertEquals(false, Modifier.isPrivate(cls.getModifiers()));
-        
+
         Constructor con = cls.getDeclaredConstructor((Class[]) null);
         assertEquals(1, cls.getDeclaredConstructors().length);
         assertEquals(true, Modifier.isProtected(con.getModifiers()));
-        
+
         Field fld = cls.getDeclaredField("INSTANCE");
         assertEquals(false, Modifier.isPublic(fld.getModifiers()));
         assertEquals(false, Modifier.isProtected(fld.getModifiers()));
@@ -103,9 +96,9 @@ public class TestReadableInstantConverter extends TestCase {
         assertEquals(ISO, ReadableInstantConverter.INSTANCE.getChronology(new DateTime(123L), DateTimeZone.getDefault()));
         assertEquals(ISO, ReadableInstantConverter.INSTANCE.getChronology(new Instant(123L), (DateTimeZone) null));
         assertEquals(ISO, ReadableInstantConverter.INSTANCE.getChronology(new DateTime(123L), (DateTimeZone) null));
-        
+
         assertEquals(ISO_PARIS, ReadableInstantConverter.INSTANCE.getChronology(new DateTime(123L, new MockBadChronology()), PARIS));
-        
+
         MutableDateTime mdt = new MutableDateTime() {
             public Chronology getChronology() {
                 return null; // bad
@@ -117,7 +110,7 @@ public class TestReadableInstantConverter extends TestCase {
     public void testGetChronology_Object_nullChronology() throws Exception {
         assertEquals(ISO.withUTC(), ReadableInstantConverter.INSTANCE.getChronology(new Instant(123L), (Chronology) null));
         assertEquals(ISO, ReadableInstantConverter.INSTANCE.getChronology(new DateTime(123L), (Chronology) null));
-        
+
         MutableDateTime mdt = new MutableDateTime() {
             public Chronology getChronology() {
                 return null; // bad

@@ -26,15 +26,14 @@ public final class IBugsUtils {
      * whereas cobertura prints the real java
      * class names into the XML file. This method converts the file path into
      * its corresponding class name.
-     * 
-     * @param fileName
-     * the file name to resolve
+     *
+     * @param fileName the file name to resolve
      * @return corresponding class name of the file name
      */
     public static String resolveFileName(final String fileName) {
         // remove prefix
-        final String[] prefixes = new String[] { "org.aspectj/modules/weaver/src/",
-                "org.aspectj/modules/org.aspectj.ajdt.core/src/", "org.aspectj/modules/tests/src/", };
+        final String[] prefixes = new String[]{"org.aspectj/modules/weaver/src/",
+                "org.aspectj/modules/org.aspectj.ajdt.core/src/", "org.aspectj/modules/tests/src/",};
         String file = null;
         for (final String prefix : prefixes) {
             if (fileName.startsWith(prefix)) {

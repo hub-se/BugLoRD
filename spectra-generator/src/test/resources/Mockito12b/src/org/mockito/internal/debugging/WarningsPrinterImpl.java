@@ -4,12 +4,12 @@
  */
 package org.mockito.internal.debugging;
 
-import java.util.List;
-
 import org.mockito.internal.invocation.Invocation;
 import org.mockito.internal.invocation.InvocationMatcher;
 import org.mockito.internal.util.MockitoLogger;
 import org.mockito.internal.util.SimpleMockitoLogger;
+
+import java.util.List;
 
 public class WarningsPrinterImpl {
 
@@ -28,7 +28,7 @@ public class WarningsPrinterImpl {
         this.warnAboutUnstubbed = warnAboutUnstubbed;
         this.finder = finder;
     }
-    
+
     public void print(final MockitoLogger logger) {
         finder.find(new LoggingListener(warnAboutUnstubbed, logger));
     }

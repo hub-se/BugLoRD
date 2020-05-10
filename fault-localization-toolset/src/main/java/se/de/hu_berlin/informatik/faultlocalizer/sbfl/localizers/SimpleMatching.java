@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Simple Matching fault localizer $\frac{\EF+\NP}{\EF+\NF+\EP+\NP}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class SimpleMatching<T> extends AbstractFaultLocalizer<T> {
 
@@ -30,10 +29,10 @@ public class SimpleMatching<T> extends AbstractFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-    	double numerator = node.getEF(strategy) + node.getNP(strategy);
-    	if (numerator == 0) {
-    		return 0;
-    	}
+        double numerator = node.getEF(strategy) + node.getNP(strategy);
+        if (numerator == 0) {
+            return 0;
+        }
         return numerator / (node.getEF(strategy) + node.getNF(strategy) + node.getEP(strategy) + node.getNP(strategy));
     }
 

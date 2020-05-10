@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 /**
  * <p>Operations on <code>Object</code>.</p>
- * 
+ *
  * <p>This class tries to handle <code>null</code> input gracefully.
  * An exception will generally not be thrown for a <code>null</code> input.
  * Each method documents its behaviour in more detail.</p>
@@ -32,11 +32,11 @@ import java.io.Serializable;
  * @author Stephen Colebourne
  * @author Gary Gregory
  * @author Mario Winterer
- * @since 1.0
  * @version $Id$
+ * @since 1.0
  */
 public class ObjectUtils {
-    
+
     /**
      * <p>Singleton used as a <code>null</code> placeholder where
      * <code>null</code> has another meaning.</p>
@@ -54,7 +54,7 @@ public class ObjectUtils {
      * <p>This instance is Serializable.</p>
      */
     public static final Null NULL = new Null();
-    
+
     /**
      * <p><code>ObjectUtils</code> instances should NOT be constructed in
      * standard programming. Instead, the class should be used as
@@ -69,10 +69,11 @@ public class ObjectUtils {
 
     // Defaulting
     //-----------------------------------------------------------------------
+
     /**
      * <p>Returns a default value if the object passed is
      * <code>null</code>.</p>
-     * 
+     *
      * <pre>
      * ObjectUtils.defaultIfNull(null, null)      = null
      * ObjectUtils.defaultIfNull(null, "")        = ""
@@ -81,8 +82,8 @@ public class ObjectUtils {
      * ObjectUtils.defaultIfNull(Boolean.TRUE, *) = Boolean.TRUE
      * </pre>
      *
-     * @param object  the <code>Object</code> to test, may be <code>null</code>
-     * @param defaultValue  the default value to return, may be <code>null</code>
+     * @param object       the <code>Object</code> to test, may be <code>null</code>
+     * @param defaultValue the default value to return, may be <code>null</code>
      * @return <code>object</code> if it is not <code>null</code>, defaultValue otherwise
      */
     public static Object defaultIfNull(Object object, Object defaultValue) {
@@ -104,8 +105,8 @@ public class ObjectUtils {
      * ObjectUtils.equals(Boolean.TRUE, Boolean.FALSE) = false
      * </pre>
      *
-     * @param object1  the first object, may be <code>null</code>
-     * @param object2  the second object, may be <code>null</code>
+     * @param object1 the first object, may be <code>null</code>
+     * @param object2 the second object, may be <code>null</code>
      * @return <code>true</code> if the values of both objects are the same
      */
     public static boolean equals(Object object1, Object object2) {
@@ -127,7 +128,7 @@ public class ObjectUtils {
      * ObjectUtils.hashCode(obj)    = obj.hashCode()
      * </pre>
      *
-     * @param obj  the object to obtain the hash code of, may be <code>null</code>
+     * @param obj the object to obtain the hash code of, may be <code>null</code>
      * @return the hash code of the object, or zero if null
      * @since 2.1
      */
@@ -137,6 +138,7 @@ public class ObjectUtils {
 
     // Identity ToString
     //-----------------------------------------------------------------------
+
     /**
      * <p>Gets the toString that would be produced by <code>Object</code>
      * if a class did not override toString itself. <code>null</code>
@@ -148,10 +150,10 @@ public class ObjectUtils {
      * ObjectUtils.identityToString(Boolean.TRUE) = "java.lang.Boolean@7fa"
      * </pre>
      *
-     * @param object  the object to create a toString for, may be
-     *  <code>null</code>
+     * @param object the object to create a toString for, may be
+     *               <code>null</code>
      * @return the default toString text, or <code>null</code> if
-     *  <code>null</code> passed in
+     * <code>null</code> passed in
      */
     public static String identityToString(Object object) {
         if (object == null) {
@@ -172,10 +174,10 @@ public class ObjectUtils {
      * ObjectUtils.appendIdentityToString(buf, Boolean.TRUE)  = buf.append("java.lang.Boolean@7fa")
      * </pre>
      *
-     * @param buffer  the buffer to append to, may be <code>null</code>
-     * @param object  the object to create a toString for, may be <code>null</code>
+     * @param buffer the buffer to append to, may be <code>null</code>
+     * @param object the object to create a toString for, may be <code>null</code>
      * @return the default toString text, or <code>null</code> if
-     *  <code>null</code> passed in
+     * <code>null</code> passed in
      * @since 2.0
      */
     public static StringBuffer appendIdentityToString(StringBuffer buffer, Object object) {
@@ -186,28 +188,29 @@ public class ObjectUtils {
             buffer = new StringBuffer();
         }
         return buffer
-            .append(object.getClass().getName())
-            .append('@')
-            .append(Integer.toHexString(System.identityHashCode(object)));
+                .append(object.getClass().getName())
+                .append('@')
+                .append(Integer.toHexString(System.identityHashCode(object)));
     }
 
     // ToString
     //-----------------------------------------------------------------------
+
     /**
      * <p>Gets the <code>toString</code> of an <code>Object</code> returning
      * an empty string ("") if <code>null</code> input.</p>
-     * 
+     *
      * <pre>
      * ObjectUtils.toString(null)         = ""
      * ObjectUtils.toString("")           = ""
      * ObjectUtils.toString("bat")        = "bat"
      * ObjectUtils.toString(Boolean.TRUE) = "true"
      * </pre>
-     * 
+     *
+     * @param obj the Object to <code>toString</code>, may be null
+     * @return the passed in Object's toString, or nullStr if <code>null</code> input
      * @see StringUtils#defaultString(String)
      * @see String#valueOf(Object)
-     * @param obj  the Object to <code>toString</code>, may be null
-     * @return the passed in Object's toString, or nullStr if <code>null</code> input
      * @since 2.0
      */
     public static String toString(Object obj) {
@@ -217,7 +220,7 @@ public class ObjectUtils {
     /**
      * <p>Gets the <code>toString</code> of an <code>Object</code> returning
      * a specified text if <code>null</code> input.</p>
-     * 
+     *
      * <pre>
      * ObjectUtils.toString(null, null)           = null
      * ObjectUtils.toString(null, "null")         = "null"
@@ -225,12 +228,12 @@ public class ObjectUtils {
      * ObjectUtils.toString("bat", "null")        = "bat"
      * ObjectUtils.toString(Boolean.TRUE, "null") = "true"
      * </pre>
-     * 
-     * @see StringUtils#defaultString(String,String)
-     * @see String#valueOf(Object)
-     * @param obj  the Object to <code>toString</code>, may be null
-     * @param nullStr  the String to return if <code>null</code> input, may be null
+     *
+     * @param obj     the Object to <code>toString</code>, may be null
+     * @param nullStr the String to return if <code>null</code> input, may be null
      * @return the passed in Object's toString, or nullStr if <code>null</code> input
+     * @see StringUtils#defaultString(String, String)
+     * @see String#valueOf(Object)
      * @since 2.0
      */
     public static String toString(Object obj, String nullStr) {
@@ -239,6 +242,7 @@ public class ObjectUtils {
 
     // Null
     //-----------------------------------------------------------------------
+
     /**
      * <p>Class used as a null placeholder where <code>null</code>
      * has another meaning.</p>
@@ -256,26 +260,26 @@ public class ObjectUtils {
     public static class Null implements Serializable {
         /**
          * Required for serialization support. Declare serialization compatibility with Commons Lang 1.0
-         * 
+         *
          * @see java.io.Serializable
          */
         private static final long serialVersionUID = 7092611880189329093L;
-        
+
         /**
          * Restricted constructor - singleton.
          */
         Null() {
             super();
         }
-        
+
         /**
          * <p>Ensure singleton.</p>
-         * 
+         *
          * @return the singleton value
          */
         private Object readResolve() {
             return ObjectUtils.NULL;
         }
     }
-    
+
 }

@@ -4,11 +4,6 @@
  */
 package org.mockito.runners;
 
-import static org.mockitoutil.ExtraMatchers.*;
-
-import java.util.LinkedList;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunListener;
@@ -16,14 +11,21 @@ import org.junit.runner.notification.RunNotifier;
 import org.mockito.internal.runners.util.FrameworkUsageValidator;
 import org.mockitoutil.TestBase;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.mockitoutil.ExtraMatchers.*;
+
 @SuppressWarnings({"unchecked", "deprecation"})
 public class RunnersValidateFrameworkUsageTest extends TestBase {
-    
+
     private Runner runner;
     private RunNotifierStub notifier = new RunNotifierStub();
-    
+
     public static class DummyTest extends TestBase {
-        @Test public void dummy() throws Exception {}
+        @Test
+        public void dummy() throws Exception {
+        }
     }
 
     public class RunNotifierStub extends RunNotifier {
@@ -43,11 +45,11 @@ public class RunnersValidateFrameworkUsageTest extends TestBase {
 
         //when
         runner.run(notifier);
-        
+
         //then
         assertThat(notifier.addedListeners, contains(clazz(FrameworkUsageValidator.class)));
     }
-    
+
     @Test
     public void shouldValidateWithD44Runner() throws Exception {
         //given
@@ -55,19 +57,19 @@ public class RunnersValidateFrameworkUsageTest extends TestBase {
 
         //when
         runner.run(notifier);
-        
+
         //then
         assertThat(notifier.addedListeners, contains(clazz(FrameworkUsageValidator.class)));
     }
-    
+
     @Test
     public void shouldValidateWithVerboseRunner() throws Exception {
         //given
         runner = new ConsoleSpammingMockitoJUnitRunner(DummyTest.class);
-        
+
         //when
         runner.run(notifier);
-        
+
         //then
         assertEquals(2, notifier.addedListeners.size());
         assertThat(notifier.addedListeners, contains(clazz(FrameworkUsageValidator.class)));

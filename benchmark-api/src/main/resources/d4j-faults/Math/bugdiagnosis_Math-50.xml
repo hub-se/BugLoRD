@@ -1,33 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-50">
-			<tests>
-				<testfile
-					path="org/apache/commons/math/analysis/solvers/RegulaFalsiSolverTest">
-					<exception>junit.framework.AssertionFailedError:Expected
-						exception:org.apache.commons.math.exception.TooManyEvaluationsException
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>36</number_tests>
-					<failed>1</failed>
-					<passed>35</passed>
-					<nodes>30234</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math/analysis/solvers/BaseSecantSolver.java">
-					<delete>187-190</delete>
-					<bugtypes>
-						<id id="1.2" lines="187-190">
-							<description>Unnecessary check for equality of values.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-50">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math/analysis/solvers/RegulaFalsiSolverTest">
+                    <exception>junit.framework.AssertionFailedError:Expected
+                        exception:org.apache.commons.math.exception.TooManyEvaluationsException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>36</number_tests>
+                    <failed>1</failed>
+                    <passed>35</passed>
+                    <nodes>30234</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math/analysis/solvers/BaseSecantSolver.java">
+                    <delete>187-190</delete>
+                    <bugtypes>
+                        <id id="1.2" lines="187-190">
+                            <description>Unnecessary check for equality of values.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-104">
-			<tests>
-				<testfile path="org/apache/commons/math/special/GammaTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;0.632120558828558&gt;
-						but was:&lt;0.6321205587649603&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>133</number_tests>
-					<failed>1</failed>
-					<passed>132</passed>
-					<nodes>7991</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/special/Gamma.java">
-					<change>37</change>
-					<bugtypes>
-						<id id="3.1" lines="37">
-							<description>Incorrect initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-104">
+            <tests>
+                <testfile path="org/apache/commons/math/special/GammaTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;0.632120558828558&gt;
+                        but was:&lt;0.6321205587649603&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>133</number_tests>
+                    <failed>1</failed>
+                    <passed>132</passed>
+                    <nodes>7991</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/special/Gamma.java">
+                    <change>37</change>
+                    <bugtypes>
+                        <id id="3.1" lines="37">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

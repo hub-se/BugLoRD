@@ -15,13 +15,13 @@
  */
 package org.joda.time;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
  * This class is a Junit unit test for Seconds.
@@ -78,7 +78,7 @@ public class TestSeconds extends TestCase {
         DateTime start = new DateTime(2006, 6, 9, 12, 0, 3, 0, PARIS);
         DateTime end1 = new DateTime(2006, 6, 9, 12, 0, 6, 0, PARIS);
         DateTime end2 = new DateTime(2006, 6, 9, 12, 0, 9, 0, PARIS);
-        
+
         assertEquals(3, Seconds.secondsBetween(start, end1).getSeconds());
         assertEquals(0, Seconds.secondsBetween(start, start).getSeconds());
         assertEquals(0, Seconds.secondsBetween(end1, end1).getSeconds());
@@ -91,7 +91,7 @@ public class TestSeconds extends TestCase {
         LocalTime end1 = new LocalTime(12, 0, 6);
         @SuppressWarnings("deprecation")
         TimeOfDay end2 = new TimeOfDay(12, 0, 9);
-        
+
         assertEquals(3, Seconds.secondsBetween(start, end1).getSeconds());
         assertEquals(0, Seconds.secondsBetween(start, start).getSeconds());
         assertEquals(0, Seconds.secondsBetween(end1, end1).getSeconds());
@@ -103,7 +103,7 @@ public class TestSeconds extends TestCase {
         DateTime start = new DateTime(2006, 6, 9, 12, 0, 3, 0, PARIS);
         DateTime end1 = new DateTime(2006, 6, 9, 12, 0, 6, 0, PARIS);
         DateTime end2 = new DateTime(2006, 6, 9, 12, 0, 9, 0, PARIS);
-        
+
         assertEquals(0, Seconds.secondsIn((ReadableInterval) null).getSeconds());
         assertEquals(3, Seconds.secondsIn(new Interval(start, end1)).getSeconds());
         assertEquals(0, Seconds.secondsIn(new Interval(start, start)).getSeconds());
@@ -184,7 +184,7 @@ public class TestSeconds extends TestCase {
     public void testToString() {
         Seconds test = Seconds.seconds(20);
         assertEquals("PT20S", test.toString());
-        
+
         test = Seconds.seconds(-20);
         assertEquals("PT-20S", test.toString());
     }
@@ -192,18 +192,18 @@ public class TestSeconds extends TestCase {
     //-----------------------------------------------------------------------
     public void testSerialization() throws Exception {
         Seconds test = Seconds.THREE;
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(test);
         byte[] bytes = baos.toByteArray();
         oos.close();
-        
+
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bais);
         Seconds result = (Seconds) ois.readObject();
         ois.close();
-        
+
         assertSame(test, result);
     }
 
@@ -236,7 +236,7 @@ public class TestSeconds extends TestCase {
         Seconds test = Seconds.seconds(20);
         Duration expected = new Duration(20L * DateTimeConstants.MILLIS_PER_SECOND);
         assertEquals(expected, test.toStandardDuration());
-        
+
         expected = new Duration(((long) Integer.MAX_VALUE) * DateTimeConstants.MILLIS_PER_SECOND);
         assertEquals(expected, Seconds.MAX_VALUE.toStandardDuration());
     }
@@ -247,9 +247,9 @@ public class TestSeconds extends TestCase {
         Seconds result = test2.plus(3);
         assertEquals(2, test2.getSeconds());
         assertEquals(5, result.getSeconds());
-        
+
         assertEquals(1, Seconds.ONE.plus(0).getSeconds());
-        
+
         try {
             Seconds.MAX_VALUE.plus(1);
             fail();
@@ -265,10 +265,10 @@ public class TestSeconds extends TestCase {
         assertEquals(2, test2.getSeconds());
         assertEquals(3, test3.getSeconds());
         assertEquals(5, result.getSeconds());
-        
+
         assertEquals(1, Seconds.ONE.plus(Seconds.ZERO).getSeconds());
         assertEquals(1, Seconds.ONE.plus((Seconds) null).getSeconds());
-        
+
         try {
             Seconds.MAX_VALUE.plus(Seconds.ONE);
             fail();
@@ -282,9 +282,9 @@ public class TestSeconds extends TestCase {
         Seconds result = test2.minus(3);
         assertEquals(2, test2.getSeconds());
         assertEquals(-1, result.getSeconds());
-        
+
         assertEquals(1, Seconds.ONE.minus(0).getSeconds());
-        
+
         try {
             Seconds.MIN_VALUE.minus(1);
             fail();
@@ -300,10 +300,10 @@ public class TestSeconds extends TestCase {
         assertEquals(2, test2.getSeconds());
         assertEquals(3, test3.getSeconds());
         assertEquals(-1, result.getSeconds());
-        
+
         assertEquals(1, Seconds.ONE.minus(Seconds.ZERO).getSeconds());
         assertEquals(1, Seconds.ONE.minus((Seconds) null).getSeconds());
-        
+
         try {
             Seconds.MIN_VALUE.minus(Seconds.ONE);
             fail();
@@ -318,7 +318,7 @@ public class TestSeconds extends TestCase {
         assertEquals(2, test.getSeconds());
         assertEquals(-6, test.multipliedBy(-3).getSeconds());
         assertSame(test, test.multipliedBy(1));
-        
+
         Seconds halfMax = Seconds.seconds(Integer.MAX_VALUE / 2 + 1);
         try {
             halfMax.multipliedBy(2);
@@ -337,7 +337,7 @@ public class TestSeconds extends TestCase {
         assertEquals(2, test.dividedBy(5).getSeconds());
         assertEquals(2, test.dividedBy(6).getSeconds());
         assertSame(test, test.dividedBy(1));
-        
+
         try {
             Seconds.ONE.dividedBy(0);
             fail();
@@ -350,7 +350,7 @@ public class TestSeconds extends TestCase {
         Seconds test = Seconds.seconds(12);
         assertEquals(-12, test.negated().getSeconds());
         assertEquals(12, test.getSeconds());
-        
+
         try {
             Seconds.MIN_VALUE.negated();
             fail();

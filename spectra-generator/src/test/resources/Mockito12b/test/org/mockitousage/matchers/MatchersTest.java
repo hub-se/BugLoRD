@@ -4,14 +4,6 @@
  */
 package org.mockitousage.matchers;
 
-import static org.mockito.AdditionalMatchers.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -20,6 +12,14 @@ import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.mockito.exceptions.verification.junit.ArgumentsAreDifferent;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.mockito.AdditionalMatchers.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 
 @SuppressWarnings("unchecked")
@@ -60,7 +60,7 @@ public class MatchersTest extends TestBase {
 
         assertEquals("9", mock.oneArg(Object.class));
     }
-    
+
     @Test
     public void orOverloaded() {
         when(mock.oneArg(or(eq(false), eq(true)))).thenReturn("0");
@@ -221,11 +221,11 @@ public class MatchersTest extends TestBase {
         assertEquals("0", mock.oneArg(new BigDecimal("1.50")));
         assertEquals(null, mock.oneArg(new BigDecimal("1.51")));
     }
-    
+
     @Test
     public void anyStringMatcher() {
         when(mock.oneArg(anyString())).thenReturn("1");
-        
+
         assertEquals("1", mock.oneArg(""));
         assertEquals("1", mock.oneArg("any string"));
         assertEquals(null, mock.oneArg((Object) null));
@@ -243,7 +243,7 @@ public class MatchersTest extends TestBase {
         when(mock.oneArg(anyShort())).thenReturn("7");
         when(mock.oneArg((String) anyObject())).thenReturn("8");
         when(mock.oneArg(anyObject())).thenReturn("9");
-        
+
         assertEquals("0", mock.oneArg(true));
         assertEquals("0", mock.oneArg(false));
 
@@ -280,58 +280,58 @@ public class MatchersTest extends TestBase {
     @Test
     public void shouldUseSmartEqualsForArrays() throws Exception {
         //issue 143
-        mock.arrayMethod(new String[] {"one"});
-        verify(mock).arrayMethod(eq(new String[] {"one"}));
-        verify(mock).arrayMethod(new String[] {"one"});
+        mock.arrayMethod(new String[]{"one"});
+        verify(mock).arrayMethod(eq(new String[]{"one"}));
+        verify(mock).arrayMethod(new String[]{"one"});
     }
 
     @Test
     public void shouldUseSmartEqualsForPrimitiveArrays() throws Exception {
         //issue 143
-        mock.objectArgMethod(new int[] {1, 2});
-        verify(mock).objectArgMethod(eq(new int[] {1, 2}));
-        verify(mock).objectArgMethod(new int[] {1, 2});
+        mock.objectArgMethod(new int[]{1, 2});
+        verify(mock).objectArgMethod(eq(new int[]{1, 2}));
+        verify(mock).objectArgMethod(new int[]{1, 2});
     }
-    
-    @Test(expected=ArgumentsAreDifferent.class)
-    public void arrayEqualsShouldThrowArgumentsAreDifferentExceptionForNonMatchingArguments() {        
+
+    @Test(expected = ArgumentsAreDifferent.class)
+    public void arrayEqualsShouldThrowArgumentsAreDifferentExceptionForNonMatchingArguments() {
         List list = Mockito.mock(List.class);
-        
+
         list.add("test"); // testing fix for issue 20
-        list.contains(new Object[] {"1"});
-        
-        Mockito.verify(list).contains(new Object[] {"1", "2", "3"});    
+        list.contains(new Object[]{"1"});
+
+        Mockito.verify(list).contains(new Object[]{"1", "2", "3"});
     }
 
     @Test
     public void arrayEqualsMatcher() {
-        when(mock.oneArray(aryEq(new boolean[] { true, false, false }))).thenReturn("0");
-        when(mock.oneArray(aryEq(new byte[] { 1 }))).thenReturn("1");
-        when(mock.oneArray(aryEq(new char[] { 1 }))).thenReturn("2");
-        when(mock.oneArray(aryEq(new double[] { 1 }))).thenReturn("3");
-        when(mock.oneArray(aryEq(new float[] { 1 }))).thenReturn("4");
-        when(mock.oneArray(aryEq(new int[] { 1 }))).thenReturn("5");
-        when(mock.oneArray(aryEq(new long[] { 1 }))).thenReturn("6");
-        when(mock.oneArray(aryEq(new short[] { 1 }))).thenReturn("7");
-        when(mock.oneArray(aryEq(new String[] { "Test" }))).thenReturn("8");
-        when(mock.oneArray(aryEq(new Object[] { "Test", new Integer(4) }))).thenReturn("9");
+        when(mock.oneArray(aryEq(new boolean[]{true, false, false}))).thenReturn("0");
+        when(mock.oneArray(aryEq(new byte[]{1}))).thenReturn("1");
+        when(mock.oneArray(aryEq(new char[]{1}))).thenReturn("2");
+        when(mock.oneArray(aryEq(new double[]{1}))).thenReturn("3");
+        when(mock.oneArray(aryEq(new float[]{1}))).thenReturn("4");
+        when(mock.oneArray(aryEq(new int[]{1}))).thenReturn("5");
+        when(mock.oneArray(aryEq(new long[]{1}))).thenReturn("6");
+        when(mock.oneArray(aryEq(new short[]{1}))).thenReturn("7");
+        when(mock.oneArray(aryEq(new String[]{"Test"}))).thenReturn("8");
+        when(mock.oneArray(aryEq(new Object[]{"Test", new Integer(4)}))).thenReturn("9");
 
-        assertEquals("0", mock.oneArray(new boolean[] { true, false, false }));
-        assertEquals("1", mock.oneArray(new byte[] { 1 }));
-        assertEquals("2", mock.oneArray(new char[] { 1 }));
-        assertEquals("3", mock.oneArray(new double[] { 1 }));
-        assertEquals("4", mock.oneArray(new float[] { 1 }));
-        assertEquals("5", mock.oneArray(new int[] { 1 }));
-        assertEquals("6", mock.oneArray(new long[] { 1 }));
-        assertEquals("7", mock.oneArray(new short[] { 1 }));
-        assertEquals("8", mock.oneArray(new String[] { "Test" }));
-        assertEquals("9", mock.oneArray(new Object[] { "Test", new Integer(4) }));
+        assertEquals("0", mock.oneArray(new boolean[]{true, false, false}));
+        assertEquals("1", mock.oneArray(new byte[]{1}));
+        assertEquals("2", mock.oneArray(new char[]{1}));
+        assertEquals("3", mock.oneArray(new double[]{1}));
+        assertEquals("4", mock.oneArray(new float[]{1}));
+        assertEquals("5", mock.oneArray(new int[]{1}));
+        assertEquals("6", mock.oneArray(new long[]{1}));
+        assertEquals("7", mock.oneArray(new short[]{1}));
+        assertEquals("8", mock.oneArray(new String[]{"Test"}));
+        assertEquals("9", mock.oneArray(new Object[]{"Test", new Integer(4)}));
 
-        assertEquals(null, mock.oneArray(new Object[] { "Test", new Integer(999) }));
-        assertEquals(null, mock.oneArray(new Object[] { "Test", new Integer(4), "x" }));
+        assertEquals(null, mock.oneArray(new Object[]{"Test", new Integer(999)}));
+        assertEquals(null, mock.oneArray(new Object[]{"Test", new Integer(4), "x"}));
 
-        assertEquals(null, mock.oneArray(new boolean[] { true, false }));
-        assertEquals(null, mock.oneArray(new boolean[] { true, true, false }));
+        assertEquals(null, mock.oneArray(new boolean[]{true, false}));
+        assertEquals(null, mock.oneArray(new boolean[]{true, true, false}));
     }
 
     @Test
@@ -483,7 +483,7 @@ public class MatchersTest extends TestBase {
 
         assertEquals(null, mock.oneArg(2.2F));
     }
-    
+
     @Test
     public void deltaMatcherPrintsItself() {
         try {
@@ -493,7 +493,7 @@ public class MatchersTest extends TestBase {
             assertContains("eq(1.0, 0.1)", e.getMessage());
         }
     }
-    
+
     @Test
     public void sameMatcher() {
         Object one = new String("1243");

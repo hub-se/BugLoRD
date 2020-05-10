@@ -37,81 +37,81 @@ import java.util.Collection;
  *
  * <p>Methods with the same name with different signatures are handled, it is
  * assumed that callers have to match at least one of the signatures.</p>
- *
-*
  */
 class MethodCheck extends MethodCompilerPass {
 
-  private final CheckLevel level;
+    private final CheckLevel level;
 
-  /** Map from method names to possible signatures */
-  final Multimap<String,FunctionInfo> methodSignatures =
-      HashMultimap.create();
+    /**
+     * Map from method names to possible signatures
+     */
+    final Multimap<String, FunctionInfo> methodSignatures =
+            HashMultimap.create();
 
-  final MethodCompilerPass.SignatureStore signatureCallback = new Store();
+    final MethodCompilerPass.SignatureStore signatureCallback = new Store();
 
-  MethodCheck(AbstractCompiler compiler, CheckLevel level) {
-    super(compiler);
-    this.level = level;
-  }
-
-  /**
-   * Checks method calls based on signatures that have been gathered. Only
-   * calls of the form foo.bar() will be checked (as opposed to foo["bar"]).
-   */
-  private class CheckUsage extends InvocationsCallback {
-
-    @Override
-    void visit(NodeTraversal t, Node callNode, Node parent, String callName) {
-      if (externMethodsWithoutSignatures.contains(callName)) {
-        return;
-      }
-
-      Collection<FunctionInfo> signatures = methodSignatures.get(callName);
-
-      if (signatures.isEmpty()) {
-        // Unfortunately we can't warn directly here since we still can't catch
-        // all of the places where object methods are defined, like in arbitrary
-        // object literals and as inline properties
-        return;
-      }
-
-      FunctionCheck.checkCall(callNode, callName, signatures, t, level);
+    MethodCheck(AbstractCompiler compiler, CheckLevel level) {
+        super(compiler);
+        this.level = level;
     }
-  }
 
-  @Override
-  protected Callback getActingCallback() {
-    return new CheckUsage();
-  }
+    /**
+     * Checks method calls based on signatures that have been gathered. Only
+     * calls of the form foo.bar() will be checked (as opposed to foo["bar"]).
+     */
+    private class CheckUsage extends InvocationsCallback {
 
-  @Override
-  SignatureStore getSignatureStore() {
-    return this.signatureCallback;
-  }
+        @Override
+        void visit(NodeTraversal t, Node callNode, Node parent, String callName) {
+            if (externMethodsWithoutSignatures.contains(callName)) {
+                return;
+            }
 
-  /**
-   * Maintains the methodSignatures map.
-   */
-  private class Store implements MethodCompilerPass.SignatureStore {
-    @Override
-    public void addSignature(
-        String functionName, Node functionNode, String sourceFile) {
-      methodSignatures.put(functionName,
-          FunctionCheck.createFunctionInfo(compiler, functionNode, sourceFile));
+            Collection<FunctionInfo> signatures = methodSignatures.get(callName);
+
+            if (signatures.isEmpty()) {
+                // Unfortunately we can't warn directly here since we still can't catch
+                // all of the places where object methods are defined, like in arbitrary
+                // object literals and as inline properties
+                return;
+            }
+
+            FunctionCheck.checkCall(callNode, callName, signatures, t, level);
+        }
     }
 
     @Override
-    public void removeSignature(String functionName) {
-      // No signature, we remove any ones we've already found and add
-      // it to the list of methods to skip checks for
-      if (methodSignatures.containsKey(functionName)) {
-        methodSignatures.removeAll(functionName);
-      }
+    protected Callback getActingCallback() {
+        return new CheckUsage();
     }
 
-    public void reset() {
-      methodSignatures.clear();
+    @Override
+    SignatureStore getSignatureStore() {
+        return this.signatureCallback;
     }
-  }
+
+    /**
+     * Maintains the methodSignatures map.
+     */
+    private class Store implements MethodCompilerPass.SignatureStore {
+        @Override
+        public void addSignature(
+                String functionName, Node functionNode, String sourceFile) {
+            methodSignatures.put(functionName,
+                    FunctionCheck.createFunctionInfo(compiler, functionNode, sourceFile));
+        }
+
+        @Override
+        public void removeSignature(String functionName) {
+            // No signature, we remove any ones we've already found and add
+            // it to the list of methods to skip checks for
+            if (methodSignatures.containsKey(functionName)) {
+                methodSignatures.removeAll(functionName);
+            }
+        }
+
+        public void reset() {
+            methodSignatures.clear();
+        }
+    }
 }

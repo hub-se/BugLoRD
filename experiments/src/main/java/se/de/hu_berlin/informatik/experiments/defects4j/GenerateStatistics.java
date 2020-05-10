@@ -1,12 +1,6 @@
 package se.de.hu_berlin.informatik.experiments.defects4j;
 
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.cli.Option;
-
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
@@ -30,322 +24,335 @@ import se.de.hu_berlin.informatik.utils.processors.basics.ThreadedProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.ProcessorSocket;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Stores the generated spectra for future usage.
- * 
+ *
  * @author SimHigh
  */
 public class GenerateStatistics {
 
-	public enum CmdOptions implements OptionWrapperInterface {
-		/* add options here according to your needs */
-		OUTPUT("o", "output", true, "Path to output csv statistics file (e.g. '~/outputDir/project/bugID/data.csv').", true),
-		SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, 
-				"Which spectra should be used?.", false);
+    public enum CmdOptions implements OptionWrapperInterface {
+        /* add options here according to your needs */
+        OUTPUT("o", "output", true, "Path to output csv statistics file (e.g. '~/outputDir/project/bugID/data.csv').", true),
+        SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.TRACE_COBERTURA,
+                "Which spectra should be used?.", false);
 
-		/* the following code blocks should not need to be changed */
-		final private OptionWrapper option;
+        /* the following code blocks should not need to be changed */
+        final private OptionWrapper option;
 
-		//adds an option that is not part of any group
-		CmdOptions(final String opt, final String longOpt, 
-				final boolean hasArg, final String description, final boolean required) {
-			this.option = new OptionWrapper(
-					Option.builder(opt).longOpt(longOpt).required(required).
-					hasArg(hasArg).desc(description).build(), NO_GROUP);
-		}
+        //adds an option that is not part of any group
+        CmdOptions(final String opt, final String longOpt,
+                   final boolean hasArg, final String description, final boolean required) {
+            this.option = new OptionWrapper(
+                    Option.builder(opt).longOpt(longOpt).required(required).
+                            hasArg(hasArg).desc(description).build(), NO_GROUP);
+        }
 
-		//adds an option that is part of the group with the specified index (positive integer)
-		//a negative index means that this option is part of no group
-		//this option will not be required, however, the group itself will be
-		CmdOptions(final String opt, final String longOpt, 
-				final boolean hasArg, final String description, int groupId) {
-			this.option = new OptionWrapper(
-					Option.builder(opt).longOpt(longOpt).required(false).
-					hasArg(hasArg).desc(description).build(), groupId);
-		}
+        //adds an option that is part of the group with the specified index (positive integer)
+        //a negative index means that this option is part of no group
+        //this option will not be required, however, the group itself will be
+        CmdOptions(final String opt, final String longOpt,
+                   final boolean hasArg, final String description, int groupId) {
+            this.option = new OptionWrapper(
+                    Option.builder(opt).longOpt(longOpt).required(false).
+                            hasArg(hasArg).desc(description).build(), groupId);
+        }
 
-		//adds an option that may have arguments from a given set (Enum)
-		<T extends Enum<T>> CmdOptions(final String opt, final String longOpt, 
-				Class<T> valueSet, T defaultValue, final String description, final boolean required) {
-			if (defaultValue == null) {
-				this.option = new OptionWrapper(
-						Option.builder(opt).longOpt(longOpt).required(required).
-						hasArgs().desc(description + " Possible arguments: " +
-								Misc.enumToString(valueSet) + ".").build(), NO_GROUP);
-			} else {
-				this.option = new OptionWrapper(
-						Option.builder(opt).longOpt(longOpt).required(required).
-						hasArg(true).desc(description + " Possible arguments: " +
-								Misc.enumToString(valueSet) + ". Default: " + 
-								defaultValue.toString() + ".").build(), NO_GROUP);
-			}
-		}
+        //adds an option that may have arguments from a given set (Enum)
+        <T extends Enum<T>> CmdOptions(final String opt, final String longOpt,
+                                       Class<T> valueSet, T defaultValue, final String description, final boolean required) {
+            if (defaultValue == null) {
+                this.option = new OptionWrapper(
+                        Option.builder(opt).longOpt(longOpt).required(required).
+                                hasArgs().desc(description + " Possible arguments: " +
+                                Misc.enumToString(valueSet) + ".").build(), NO_GROUP);
+            } else {
+                this.option = new OptionWrapper(
+                        Option.builder(opt).longOpt(longOpt).required(required).
+                                hasArg(true).desc(description + " Possible arguments: " +
+                                Misc.enumToString(valueSet) + ". Default: " +
+                                defaultValue.toString() + ".").build(), NO_GROUP);
+            }
+        }
 
-		//adds the given option that will be part of the group with the given id
-		CmdOptions(Option option, int groupId) {
-			this.option = new OptionWrapper(option, groupId);
-		}
+        //adds the given option that will be part of the group with the given id
+        CmdOptions(Option option, int groupId) {
+            this.option = new OptionWrapper(option, groupId);
+        }
 
-		//adds the given option that will be part of no group
-		CmdOptions(Option option) {
-			this(option, NO_GROUP);
-		}
+        //adds the given option that will be part of no group
+        CmdOptions(Option option) {
+            this(option, NO_GROUP);
+        }
 
-		@Override public String toString() { return option.getOption().getOpt(); }
-		@Override public OptionWrapper getOptionWrapper() { return option; }
-	}
+        @Override
+        public String toString() {
+            return option.getOption().getOpt();
+        }
 
-	/**
-	 * @param args
-	 * command line arguments
-	 */
-	public static void main(String[] args) {
+        @Override
+        public OptionWrapper getOptionWrapper() {
+            return option;
+        }
+    }
 
-		OptionParser options = OptionParser.getOptions("GenerateStatistics", true, CmdOptions.class, args);
+    /**
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
 
-		//		AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
-		//		
-		//		File archiveMainDir = mainEntity.getBenchmarkDir(false).toFile();
-		//		
-		//		if (!archiveMainDir.exists()) {
-		//			Log.abort(GenerateSpectraArchive.class, 
-		//					"Archive main directory doesn't exist: '" + mainEntity.getBenchmarkDir(false) + "'.");
-		//		}
+        OptionParser options = OptionParser.getOptions("GenerateStatistics", true, CmdOptions.class, args);
 
-		/* #====================================================================================
-		 * # load the compressed spectra files and generate a statistics csv file
-		 * #==================================================================================== */
+        //		AbstractEntity mainEntity = Defects4JEntity.getDummyEntity();
+        //		
+        //		File archiveMainDir = mainEntity.getBenchmarkDir(false).toFile();
+        //		
+        //		if (!archiveMainDir.exists()) {
+        //			Log.abort(GenerateSpectraArchive.class, 
+        //					"Archive main directory doesn't exist: '" + mainEntity.getBenchmarkDir(false) + "'.");
+        //		}
 
-		//get the output path (does not need to exist)
-		Path output = options.isFile(CmdOptions.OUTPUT, false);
-		
-		ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL, 
-				ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, true);
-		final String subDirName = BugLoRD.getSubDirName(toolSpecific);
-		
-		PipeLinker linker = new PipeLinker().append(
-				new ThreadedProcessor<>(
-						options.getNumberOfThreads(), 
-						new GenStatisticsProcessor(subDirName)),
-				new AbstractProcessor<String[], List<String>>() {
-					final Map<String, String> map = new HashMap<>();
-					@Override
-					public List<String> processItem(String[] item) {
-						map.put(item[0], CSVUtils.toCsvLine(item));
-						return null;
-					}
-					@Override
-					public List<String> getResultFromCollectedItems() {
-						String[] titleArray = { "identifier", "file size (kb)", "#nodes", 
-								"#tests", "#succ.", "#fail.", 
-								"#changes", "#deletes", "#inserts", "#refactorings" };
-						map.put("", CSVUtils.toCsvLine(titleArray));
-						return Misc.sortByKeyToValueList(map);
-					}
-				},
-				new ListToFileWriter<List<String>>(output, true)
-				);
+        /* #====================================================================================
+         * # load the compressed spectra files and generate a statistics csv file
+         * #==================================================================================== */
 
-		//		,
-		//		new AbstractPipe<BuggyFixedEntity,Object>(true) {
-		//			@Override
-		//			public Object processItem(BuggyFixedEntity item) {
-		//				Path spectraFile = item.getWorkDataDir()
-		//				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
-		//				.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-		//				
-		//				Log.out(GenerateSpectraArchive.class, "Processing file '%s'.", spectraFile);
-		//				int count = spectraFile.getNameCount();
-		//				String filename = spectraFile.getName(count-4).toString() + "-" + spectraFile.getName(count-3).toString();
-		//				ISpectra<String> spectra = SpectraUtils.loadSpectraFromZipFile(spectraFile);
-		//				SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, filename + ".zip"), true);
-		//				SpectraUtils.saveSpectraToBugMinerZipFile(spectra, Paths.get(spectraArchiveDir, filename + "_BugMiner.zip"));
-		//				return null;
-		//			}
-		//		}
+        //get the output path (does not need to exist)
+        Path output = options.isFile(CmdOptions.OUTPUT, false);
 
-		//iterate over all projects
-		for (String project : Defects4J.getAllProjects()) {
-			String[] ids = Defects4J.getAllBugIDs(project); 
-			for (String id : ids) {
-				linker.submit(new Defects4JBuggyFixedEntity(project, id));
-			}
-		}
-		linker.shutdown();
+        ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL,
+                ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, true);
+        final String subDirName = BugLoRD.getSubDirName(toolSpecific);
 
-		Log.out(GenerateStatistics.class, "All done!");
+        PipeLinker linker = new PipeLinker().append(
+                new ThreadedProcessor<>(
+                        options.getNumberOfThreads(),
+                        new GenStatisticsProcessor(subDirName)),
+                new AbstractProcessor<String[], List<String>>() {
+                    final Map<String, String> map = new HashMap<>();
 
-	}
-	
-	
-	private static class GenStatisticsProcessor extends AbstractProcessor<BuggyFixedEntity<?>, String[]> {
+                    @Override
+                    public List<String> processItem(String[] item) {
+                        map.put(item[0], CSVUtils.toCsvLine(item));
+                        return null;
+                    }
 
-		private final String subDirName;
+                    @Override
+                    public List<String> getResultFromCollectedItems() {
+                        String[] titleArray = {"identifier", "file size (kb)", "#nodes",
+                                "#tests", "#succ.", "#fail.",
+                                "#changes", "#deletes", "#inserts", "#refactorings"};
+                        map.put("", CSVUtils.toCsvLine(titleArray));
+                        return Misc.sortByKeyToValueList(map);
+                    }
+                },
+                new ListToFileWriter<List<String>>(output, true)
+        );
 
-		private GenStatisticsProcessor(String subDirName) {
-			this.subDirName = subDirName;
-		}
+        //		,
+        //		new AbstractPipe<BuggyFixedEntity,Object>(true) {
+        //			@Override
+        //			public Object processItem(BuggyFixedEntity item) {
+        //				Path spectraFile = item.getWorkDataDir()
+        //				.resolve(BugLoRDConstants.DIR_NAME_RANKING)
+        //				.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+        //				
+        //				Log.out(GenerateSpectraArchive.class, "Processing file '%s'.", spectraFile);
+        //				int count = spectraFile.getNameCount();
+        //				String filename = spectraFile.getName(count-4).toString() + "-" + spectraFile.getName(count-3).toString();
+        //				ISpectra<String> spectra = SpectraUtils.loadSpectraFromZipFile(spectraFile);
+        //				SpectraUtils.saveSpectraToZipFile(spectra, Paths.get(spectraArchiveDir, filename + ".zip"), true);
+        //				SpectraUtils.saveSpectraToBugMinerZipFile(spectra, Paths.get(spectraArchiveDir, filename + "_BugMiner.zip"));
+        //				return null;
+        //			}
+        //		}
 
-		@Override
-		public String[] processItem(BuggyFixedEntity<?> input, ProcessorSocket<BuggyFixedEntity<?>, String[]> socket) {
-			Log.out(GenerateStatistics.class, "Processing %s.", input);
-			Entity bug = input.getBuggyVersion();
-			
-			Path spectraFile = BugLoRD.getSpectraFilePath(bug, subDirName);
-			
-			if (!spectraFile.toFile().exists()) {
-				Log.err(GenerateStatistics.class, "Spectra file does not exist for %s.", input);
-				return null;
-			}
+        //iterate over all projects
+        for (String project : Defects4J.getAllProjects()) {
+            String[] ids = Defects4J.getAllBugIDs(project);
+            for (String id : ids) {
+                linker.submit(new Defects4JBuggyFixedEntity(project, id));
+            }
+        }
+        linker.shutdown();
 
-			Map<String, List<Modification>> changesMap = input.loadChangesFromFile();
-			if (changesMap == null) {
-				Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
-				return null;
-			}
+        Log.out(GenerateStatistics.class, "All done!");
+
+    }
+
+
+    private static class GenStatisticsProcessor extends AbstractProcessor<BuggyFixedEntity<?>, String[]> {
+
+        private final String subDirName;
+
+        private GenStatisticsProcessor(String subDirName) {
+            this.subDirName = subDirName;
+        }
+
+        @Override
+        public String[] processItem(BuggyFixedEntity<?> input, ProcessorSocket<BuggyFixedEntity<?>, String[]> socket) {
+            Log.out(GenerateStatistics.class, "Processing %s.", input);
+            Entity bug = input.getBuggyVersion();
+
+            Path spectraFile = BugLoRD.getSpectraFilePath(bug, subDirName);
+
+            if (!spectraFile.toFile().exists()) {
+                Log.err(GenerateStatistics.class, "Spectra file does not exist for %s.", input);
+                return null;
+            }
+
+            Map<String, List<Modification>> changesMap = input.loadChangesFromFile();
+            if (changesMap == null) {
+                Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
+                return null;
+            }
 //			Log.out(this, "%s: changes count -> %d", input, changesMap.size());
 
-			ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+            ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
 
-			int changeCount = 0;
-			int deleteCount = 0;
-			int insertCount = 0;
+            int changeCount = 0;
+            int deleteCount = 0;
+            int insertCount = 0;
 
-			int changesCount = 0;
-			for (INode<SourceCodeBlock> node : spectra.getNodes()) {
-				SourceCodeBlock block = node.getIdentifier();
-				List<Modification> changes = Modification.getModifications(block.getFilePath(), 
-						block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap, null);
-				if (changes == null) {
-					continue;
-				}
-				if (!changes.isEmpty()) {
-					++changesCount;
-				}
-				boolean isChange = false;
-				boolean isInsert = false;
-				boolean isDelete = false;
-				for (Modification change : changes) {
-					switch (change.getModificationType()) {
-					case CHANGE:
-						isChange = true;
-						break;
-					case DELETE:
-						isDelete = true;
-						break;
-					case INSERT:
-						isInsert = true;
-						break;
-					default:
-						break;
-					}
-				}
-				if (isChange) {
-					++changeCount;
-				}
-				if (isInsert) {
-					++insertCount;
-				}
-				if (isDelete) {
-					++deleteCount;
-				}
-			}
+            int changesCount = 0;
+            for (INode<SourceCodeBlock> node : spectra.getNodes()) {
+                SourceCodeBlock block = node.getIdentifier();
+                List<Modification> changes = Modification.getModifications(block.getFilePath(),
+                        block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap, null);
+                if (changes == null) {
+                    continue;
+                }
+                if (!changes.isEmpty()) {
+                    ++changesCount;
+                }
+                boolean isChange = false;
+                boolean isInsert = false;
+                boolean isDelete = false;
+                for (Modification change : changes) {
+                    switch (change.getModificationType()) {
+                        case CHANGE:
+                            isChange = true;
+                            break;
+                        case DELETE:
+                            isDelete = true;
+                            break;
+                        case INSERT:
+                            isInsert = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (isChange) {
+                    ++changeCount;
+                }
+                if (isInsert) {
+                    ++insertCount;
+                }
+                if (isDelete) {
+                    ++deleteCount;
+                }
+            }
 
-			Log.out(this, "%s: changed nodes count -> %d", input, changesCount);
+            Log.out(this, "%s: changed nodes count -> %d", input, changesCount);
 
-			String[] objectArray = new String[9];
+            String[] objectArray = new String[9];
 
-			int i = 0;
-			objectArray[i++] = bug.getUniqueIdentifier().replace(';','_');
+            int i = 0;
+            objectArray[i++] = bug.getUniqueIdentifier().replace(';', '_');
 
-			objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
+            objectArray[i++] = String.valueOf(spectraFile.toFile().length() / 1024);
 
-			objectArray[i++] = String.valueOf(spectra.getNodes().size());
-			objectArray[i++] = String.valueOf(spectra.getTraces().size());
-			objectArray[i++] = String.valueOf(spectra.getSuccessfulTraces().size());
-			objectArray[i++] = String.valueOf(spectra.getFailingTraces().size());
+            objectArray[i++] = String.valueOf(spectra.getNodes().size());
+            objectArray[i++] = String.valueOf(spectra.getTraces().size());
+            objectArray[i++] = String.valueOf(spectra.getSuccessfulTraces().size());
+            objectArray[i++] = String.valueOf(spectra.getFailingTraces().size());
 
-			objectArray[i++] = String.valueOf(changeCount);
-			objectArray[i++] = String.valueOf(deleteCount);
-			objectArray[i] = String.valueOf(insertCount);
+            objectArray[i++] = String.valueOf(changeCount);
+            objectArray[i++] = String.valueOf(deleteCount);
+            objectArray[i] = String.valueOf(insertCount);
 
-			socket.produce(objectArray);
+            socket.produce(objectArray);
 
 
-			Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
-			
-			if (!spectraFileFiltered.toFile().exists()) {
-				Log.warn(GenerateStatistics.class, "Filtered spectra file does not exist for %s.", input);
-				spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
-				spectraFileFiltered = spectraFile;
-			} else {
-				spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
-			}
-			
+            Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
+
+            if (!spectraFileFiltered.toFile().exists()) {
+                Log.warn(GenerateStatistics.class, "Filtered spectra file does not exist for %s.", input);
+                spectra = new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO).submit(spectra).getResult();
+                spectraFileFiltered = spectraFile;
+            } else {
+                spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFileFiltered);
+            }
+
 //			changesMap = input.loadChangesFromFile();
 //			if (changesMap == null) {
 //				Log.err(GenerateStatistics.class, "Could not load changes for %s.", input);
 //				return null;
 //			}
 
-			changeCount = 0;
-			deleteCount = 0;
-			insertCount = 0;
+            changeCount = 0;
+            deleteCount = 0;
+            insertCount = 0;
 
-			for (INode<SourceCodeBlock> node : spectra.getNodes()) {
-				SourceCodeBlock block = node.getIdentifier();
-				List<Modification> changes = Modification.getModifications(block.getFilePath(), 
-						block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap, null);
-				if (changes == null) {
-					continue;
-				}
-				boolean isChange = false;
-				boolean isInsert = false;
-				boolean isDelete = false;
-				for (Modification change : changes) {
-					switch (change.getModificationType()) {
-					case CHANGE:
-						isChange = true;
-						break;
-					case DELETE:
-						isDelete = true;
-						break;
-					case INSERT:
-						isInsert = true;
-						break;
-					default:
-						break;
-					}
-				}
-				if (isChange) {
-					++changeCount;
-				}
-				if (isInsert) {
-					++insertCount;
-				}
-				if (isDelete) {
-					++deleteCount;
-				}
-			}
+            for (INode<SourceCodeBlock> node : spectra.getNodes()) {
+                SourceCodeBlock block = node.getIdentifier();
+                List<Modification> changes = Modification.getModifications(block.getFilePath(),
+                        block.getStartLineNumber(), block.getEndLineNumber(), false, changesMap, null);
+                if (changes == null) {
+                    continue;
+                }
+                boolean isChange = false;
+                boolean isInsert = false;
+                boolean isDelete = false;
+                for (Modification change : changes) {
+                    switch (change.getModificationType()) {
+                        case CHANGE:
+                            isChange = true;
+                            break;
+                        case DELETE:
+                            isDelete = true;
+                            break;
+                        case INSERT:
+                            isInsert = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (isChange) {
+                    ++changeCount;
+                }
+                if (isInsert) {
+                    ++insertCount;
+                }
+                if (isDelete) {
+                    ++deleteCount;
+                }
+            }
 
-			objectArray = new String[9];
+            objectArray = new String[9];
 
-			i = 0;
-			objectArray[i++] = bug.getUniqueIdentifier().replace(';','_') + "_filtered";
+            i = 0;
+            objectArray[i++] = bug.getUniqueIdentifier().replace(';', '_') + "_filtered";
 
-			objectArray[i++] = String.valueOf(spectraFileFiltered.toFile().length() / 1024);
+            objectArray[i++] = String.valueOf(spectraFileFiltered.toFile().length() / 1024);
 
-			objectArray[i++] = String.valueOf(spectra.getNodes().size());
-			objectArray[i++] = String.valueOf(spectra.getTraces().size());
-			objectArray[i++] = String.valueOf(spectra.getSuccessfulTraces().size());
-			objectArray[i++] = String.valueOf(spectra.getFailingTraces().size());
+            objectArray[i++] = String.valueOf(spectra.getNodes().size());
+            objectArray[i++] = String.valueOf(spectra.getTraces().size());
+            objectArray[i++] = String.valueOf(spectra.getSuccessfulTraces().size());
+            objectArray[i++] = String.valueOf(spectra.getFailingTraces().size());
 
-			objectArray[i++] = String.valueOf(changeCount);
-			objectArray[i++] = String.valueOf(deleteCount);
-			objectArray[i] = String.valueOf(insertCount);
+            objectArray[i++] = String.valueOf(changeCount);
+            objectArray[i++] = String.valueOf(deleteCount);
+            objectArray[i] = String.valueOf(insertCount);
 
-			return objectArray;
-		}
-	}
+            return objectArray;
+        }
+    }
 
 }

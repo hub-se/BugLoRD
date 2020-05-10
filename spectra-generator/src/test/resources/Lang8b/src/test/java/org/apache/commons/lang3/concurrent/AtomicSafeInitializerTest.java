@@ -16,12 +16,12 @@
  */
 package org.apache.commons.lang3.concurrent;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test class for {@code AtomicSafeInitializer}.
@@ -30,7 +30,9 @@ import org.junit.Test;
  */
 public class AtomicSafeInitializerTest extends
         AbstractConcurrentInitializerTest {
-    /** The instance to be tested. */
+    /**
+     * The instance to be tested.
+     */
     private AtomicSafeInitializerTestImpl initializer;
 
     @Before
@@ -66,7 +68,9 @@ public class AtomicSafeInitializerTest extends
      */
     private static class AtomicSafeInitializerTestImpl extends
             AtomicSafeInitializer<Object> {
-        /** A counter for initialize() invocations. */
+        /**
+         * A counter for initialize() invocations.
+         */
         final AtomicInteger initCounter = new AtomicInteger();
 
         @Override

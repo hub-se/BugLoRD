@@ -26,36 +26,36 @@ import com.google.javascript.rhino.Token;
  * @author nicksantos@google.com (Nick Santos)
  */
 class SyntheticAst implements SourceAst {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private final String sourceName;
+    private final String sourceName;
 
-  private Node root;
+    private Node root;
 
-  SyntheticAst(String sourceName) {
-    this.sourceName = sourceName;
-    clearAst();
-  }
+    SyntheticAst(String sourceName) {
+        this.sourceName = sourceName;
+        clearAst();
+    }
 
-  @Override
-  public Node getAstRoot(AbstractCompiler compiler) {
-    return root;
-  }
+    @Override
+    public Node getAstRoot(AbstractCompiler compiler) {
+        return root;
+    }
 
-  @Override
-  public void clearAst() {
-    root = new Node(Token.SCRIPT);
-    root.putProp(Node.SOURCENAME_PROP, sourceName);
-  }
+    @Override
+    public void clearAst() {
+        root = new Node(Token.SCRIPT);
+        root.putProp(Node.SOURCENAME_PROP, sourceName);
+    }
 
-  @Override
-  public SourceFile getSourceFile() {
-    return null;
-  }
+    @Override
+    public SourceFile getSourceFile() {
+        return null;
+    }
 
-  @Override
-  public void setSourceFile(SourceFile file) {
-    throw new IllegalStateException(
-        "Cannot set a source file for a synthetic AST");
-  }
+    @Override
+    public void setSourceFile(SourceFile file) {
+        throw new IllegalStateException(
+                "Cannot set a source file for a synthetic AST");
+    }
 }

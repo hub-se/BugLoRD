@@ -4,11 +4,11 @@
  */
 package org.concurrentmockito;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
+
+import static org.mockito.Mockito.*;
 
 public class ThreadsShareAMockTest extends TestBase {
 
@@ -16,7 +16,7 @@ public class ThreadsShareAMockTest extends TestBase {
 
     @Test
     public void shouldAllowVerifyingInThreads() throws Exception {
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < 100; i++) {
             performTest();
         }
     }

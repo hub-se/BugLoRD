@@ -4,8 +4,6 @@
  */
 package org.mockitousage.matchers;
 
-import static org.mockito.Matchers.*;
-
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.AdditionalMatchers;
@@ -15,9 +13,12 @@ import org.mockito.exceptions.misusing.InvalidUseOfMatchersException;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Matchers.*;
+
 public class InvalidUseOfMatchersTest extends TestBase {
 
-    @Mock private IMethods mock;
+    @Mock
+    private IMethods mock;
 
     @After
     public void resetState() {
@@ -30,7 +31,8 @@ public class InvalidUseOfMatchersTest extends TestBase {
         try {
             Mockito.when(mock.threeArgumentMethod(1, eq("2"), "3")).thenReturn(null);
             fail();
-        } catch (InvalidUseOfMatchersException e) {}
+        } catch (InvalidUseOfMatchersException e) {
+        }
     }
 
     @Test
@@ -41,7 +43,8 @@ public class InvalidUseOfMatchersTest extends TestBase {
         try {
             Mockito.verify(mock).oneArg(true);
             fail();
-        } catch (InvalidUseOfMatchersException e) {}
+        } catch (InvalidUseOfMatchersException e) {
+        }
     }
 
     @Test

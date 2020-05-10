@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-27">
-			<tests>
-				<testfile path="org/joda/time/format/TestPeriodFormatterBuilder">
-					<exception>java.lang.IllegalArgumentException:Invalid
-						format:"PT1003199059S" is malformed at "1003199059S"</exception>
-				</testfile>
-				<spectra>
-					<number_tests>739</number_tests>
-					<failed>1</failed>
-					<passed>738</passed>
-					<nodes>13007</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/format/PeriodFormatterBuilder.java">
-					<insert numberlines="1,1">801,804</insert>
-					<bugtypes>
-						<id id="1.1" lines="800,803">
-							<description>Missing case handling for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-27">
+            <tests>
+                <testfile path="org/joda/time/format/TestPeriodFormatterBuilder">
+                    <exception>java.lang.IllegalArgumentException:Invalid
+                        format:"PT1003199059S" is malformed at "1003199059S"
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>739</number_tests>
+                    <failed>1</failed>
+                    <passed>738</passed>
+                    <nodes>13007</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/format/PeriodFormatterBuilder.java">
+                    <insert numberlines="1,1">801,804</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="800,803">
+                            <description>Missing case handling for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

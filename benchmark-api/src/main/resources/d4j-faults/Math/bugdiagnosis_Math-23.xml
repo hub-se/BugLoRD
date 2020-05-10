@@ -1,42 +1,42 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-23">
-			<tests>
-				<testfile
-					path="org/apache/commons/math3/optimization/univariate/BrentOptimizerTest">
-					<exception>junit.framework.AssertionFailedError:Best point not
-						reported
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>17</number_tests>
-					<failed>1</failed>
-					<passed>16</passed>
-					<nodes>33890</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/apache/commons/math3/optimization/univariate/BrentOptimizer.java">
-					<change>237</change>
-					<change>274-277</change>
-					<insert numberlines="1">150-153</insert>
-					<insert numberlines="5">234-235</insert>
-					<bugtypes>
-						<id id="1.5" lines="150,233,274">
-							<description>Missing computation.</description>
-						</id>
-						<id id="2.2" lines="150,274">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="150,276">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>5</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-23">
+            <tests>
+                <testfile
+                        path="org/apache/commons/math3/optimization/univariate/BrentOptimizerTest">
+                    <exception>junit.framework.AssertionFailedError:Best point not
+                        reported
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>17</number_tests>
+                    <failed>1</failed>
+                    <passed>16</passed>
+                    <nodes>33890</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/apache/commons/math3/optimization/univariate/BrentOptimizer.java">
+                    <change>237</change>
+                    <change>274-277</change>
+                    <insert numberlines="1">150-153</insert>
+                    <insert numberlines="5">234-235</insert>
+                    <bugtypes>
+                        <id id="1.5" lines="150,233,274">
+                            <description>Missing computation.</description>
+                        </id>
+                        <id id="2.2" lines="150,274">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="150,276">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>5</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

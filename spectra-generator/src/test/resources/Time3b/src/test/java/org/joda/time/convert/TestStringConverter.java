@@ -15,25 +15,18 @@
  */
 package org.joda.time.convert;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.*;
+import org.joda.time.chrono.BuddhistChronology;
+import org.joda.time.chrono.ISOChronology;
+import org.joda.time.chrono.JulianChronology;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Locale;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.MutableInterval;
-import org.joda.time.MutablePeriod;
-import org.joda.time.PeriodType;
-import org.joda.time.TimeOfDay;
-import org.joda.time.chrono.BuddhistChronology;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.chrono.JulianChronology;
 
 /**
  * This class is a Junit unit test for StringConverter.
@@ -54,7 +47,7 @@ public class TestStringConverter extends TestCase {
     private static final Chronology ISO_LONDON = ISOChronology.getInstance(LONDON);
     private static Chronology ISO;
     private static Chronology JULIAN;
-    
+
     private DateTimeZone zone = null;
     private Locale locale = null;
 
@@ -75,7 +68,7 @@ public class TestStringConverter extends TestCase {
         locale = Locale.getDefault();
         DateTimeZone.setDefault(LONDON);
         Locale.setDefault(Locale.UK);
-        
+
         JULIAN = JulianChronology.getInstance();
         ISO = ISOChronology.getInstance();
     }
@@ -92,11 +85,11 @@ public class TestStringConverter extends TestCase {
         assertEquals(false, Modifier.isPublic(cls.getModifiers()));
         assertEquals(false, Modifier.isProtected(cls.getModifiers()));
         assertEquals(false, Modifier.isPrivate(cls.getModifiers()));
-        
+
         Constructor con = cls.getDeclaredConstructor((Class[]) null);
         assertEquals(1, cls.getDeclaredConstructors().length);
         assertEquals(true, Modifier.isProtected(con.getModifiers()));
-        
+
         Field fld = cls.getDeclaredField("INSTANCE");
         assertEquals(false, Modifier.isPublic(fld.getModifiers()));
         assertEquals(false, Modifier.isProtected(fld.getModifiers()));
@@ -112,43 +105,43 @@ public class TestStringConverter extends TestCase {
     public void testGetInstantMillis_Object() throws Exception {
         DateTime dt = new DateTime(2004, 6, 9, 12, 24, 48, 501, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12:24:48.501+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 1, 1, 0, 0, 0, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004T+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 1, 0, 0, 0, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06T+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 9, 0, 0, 0, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 9, 0, 0, 0, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-161T+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 9, 0, 0, 0, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-W24-3T+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 7, 0, 0, 0, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-W24T+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 9, 12, 0, 0, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 9, 12, 24, 0, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12:24+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 9, 12, 24, 48, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12:24:48+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 9, 12, 30, 0, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12.5+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 9, 12, 24, 30, 0, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12:24.5+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 9, 12, 24, 48, 500, EIGHT);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12:24:48.5+08:00", ISO_EIGHT));
-        
+
         dt = new DateTime(2004, 6, 9, 12, 24, 48, 501);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12:24:48.501", ISO));
     }
@@ -156,13 +149,13 @@ public class TestStringConverter extends TestCase {
     public void testGetInstantMillis_Object_Zone() throws Exception {
         DateTime dt = new DateTime(2004, 6, 9, 12, 24, 48, 501, PARIS);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12:24:48.501+02:00", ISO_PARIS));
-        
+
         dt = new DateTime(2004, 6, 9, 12, 24, 48, 501, PARIS);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12:24:48.501", ISO_PARIS));
-        
+
         dt = new DateTime(2004, 6, 9, 12, 24, 48, 501, LONDON);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12:24:48.501+01:00", ISO_LONDON));
-        
+
         dt = new DateTime(2004, 6, 9, 12, 24, 48, 501, LONDON);
         assertEquals(dt.getMillis(), StringConverter.INSTANCE.getInstantMillis("2004-06-09T12:24:48.501", ISO_LONDON));
     }
@@ -176,11 +169,13 @@ public class TestStringConverter extends TestCase {
         try {
             StringConverter.INSTANCE.getInstantMillis("", (Chronology) null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             StringConverter.INSTANCE.getInstantMillis("X", (Chronology) null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -201,7 +196,7 @@ public class TestStringConverter extends TestCase {
     //-----------------------------------------------------------------------
     public void testGetPartialValues() throws Exception {
         TimeOfDay tod = new TimeOfDay();
-        int[] expected = new int[] {3, 4, 5, 6};
+        int[] expected = new int[]{3, 4, 5, 6};
         int[] actual = StringConverter.INSTANCE.getPartialValues(tod, "T03:04:05.006", ISOChronology.getInstance());
         assertEquals(true, Arrays.equals(expected, actual));
     }
@@ -289,19 +284,19 @@ public class TestStringConverter extends TestCase {
     public void testGetDurationMillis_Object1() throws Exception {
         long millis = StringConverter.INSTANCE.getDurationMillis("PT12.345S");
         assertEquals(12345, millis);
-        
+
         millis = StringConverter.INSTANCE.getDurationMillis("pt12.345s");
         assertEquals(12345, millis);
-        
+
         millis = StringConverter.INSTANCE.getDurationMillis("pt12s");
         assertEquals(12000, millis);
-        
+
         millis = StringConverter.INSTANCE.getDurationMillis("pt12.s");
         assertEquals(12000, millis);
-        
+
         millis = StringConverter.INSTANCE.getDurationMillis("pt-12.32s");
         assertEquals(-12320, millis);
-        
+
         millis = StringConverter.INSTANCE.getDurationMillis("pt-0.32s");
         assertEquals(-320, millis);
 
@@ -319,45 +314,54 @@ public class TestStringConverter extends TestCase {
         try {
             StringConverter.INSTANCE.getDurationMillis("P2Y6M9DXYZ");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             StringConverter.INSTANCE.getDurationMillis("PTS");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             StringConverter.INSTANCE.getDurationMillis("XT0S");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             StringConverter.INSTANCE.getDurationMillis("PX0S");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             StringConverter.INSTANCE.getDurationMillis("PT0X");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             StringConverter.INSTANCE.getDurationMillis("PTXS");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             StringConverter.INSTANCE.getDurationMillis("PT0.0.0S");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             StringConverter.INSTANCE.getDurationMillis("PT0-00S");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             StringConverter.INSTANCE.getDurationMillis("PT-.001S");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
     public void testGetPeriodType_Object() throws Exception {
         assertEquals(PeriodType.standard(),
-            StringConverter.INSTANCE.getPeriodType("P2Y6M9D"));
+                StringConverter.INSTANCE.getPeriodType("P2Y6M9D"));
     }
 
     public void testSetIntoPeriod_Object1() throws Exception {
@@ -382,7 +386,7 @@ public class TestStringConverter extends TestCase {
         assertEquals(24, m.getMinutes());
         assertEquals(48, m.getSeconds());
         assertEquals(0, m.getMillis());
-    }        
+    }
 
     public void testSetIntoPeriod_Object3() throws Exception {
         MutablePeriod m = new MutablePeriod(PeriodType.yearWeekDayTime());
@@ -394,7 +398,7 @@ public class TestStringConverter extends TestCase {
         assertEquals(24, m.getMinutes());
         assertEquals(48, m.getSeconds());
         assertEquals(34, m.getMillis());
-    }        
+    }
 
     public void testSetIntoPeriod_Object4() throws Exception {
         MutablePeriod m = new MutablePeriod(PeriodType.yearWeekDayTime());
@@ -406,7 +410,7 @@ public class TestStringConverter extends TestCase {
         assertEquals(24, m.getMinutes());
         assertEquals(0, m.getSeconds());
         assertEquals(56, m.getMillis());
-    }        
+    }
 
     public void testSetIntoPeriod_Object5() throws Exception {
         MutablePeriod m = new MutablePeriod(PeriodType.yearWeekDayTime());
@@ -418,7 +422,7 @@ public class TestStringConverter extends TestCase {
         assertEquals(24, m.getMinutes());
         assertEquals(56, m.getSeconds());
         assertEquals(0, m.getMillis());
-    }        
+    }
 
     public void testSetIntoPeriod_Object6() throws Exception {
         MutablePeriod m = new MutablePeriod(PeriodType.yearWeekDayTime());
@@ -430,7 +434,7 @@ public class TestStringConverter extends TestCase {
         assertEquals(24, m.getMinutes());
         assertEquals(56, m.getSeconds());
         assertEquals(123, m.getMillis());
-    }        
+    }
 
     public void testSetIntoPeriod_Object7() throws Exception {
         MutablePeriod m = new MutablePeriod(1, 0, 1, 1, 1, 1, 1, 1, PeriodType.yearWeekDayTime());
@@ -442,28 +446,32 @@ public class TestStringConverter extends TestCase {
         assertEquals(0, m.getMinutes());
         assertEquals(0, m.getSeconds());
         assertEquals(0, m.getMillis());
-    }        
+    }
 
     public void testSetIntoPeriod_Object8() throws Exception {
         MutablePeriod m = new MutablePeriod();
         try {
             StringConverter.INSTANCE.setInto(m, "", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
+        } catch (IllegalArgumentException ex) {
+        }
+
         try {
             StringConverter.INSTANCE.setInto(m, "PXY", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
-        
+        } catch (IllegalArgumentException ex) {
+        }
+
         try {
             StringConverter.INSTANCE.setInto(m, "PT0SXY", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             StringConverter.INSTANCE.setInto(m, "P2Y4W3DT12H24M48SX", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -540,7 +548,8 @@ public class TestStringConverter extends TestCase {
         try {
             StringConverter.INSTANCE.setInto(m, "", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetIntoIntervalEx_Object_Chronology2() throws Exception {
@@ -548,7 +557,8 @@ public class TestStringConverter extends TestCase {
         try {
             StringConverter.INSTANCE.setInto(m, "/", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetIntoIntervalEx_Object_Chronology3() throws Exception {
@@ -556,7 +566,8 @@ public class TestStringConverter extends TestCase {
         try {
             StringConverter.INSTANCE.setInto(m, "P1Y/", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetIntoIntervalEx_Object_Chronology4() throws Exception {
@@ -564,7 +575,8 @@ public class TestStringConverter extends TestCase {
         try {
             StringConverter.INSTANCE.setInto(m, "/P1Y", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testSetIntoIntervalEx_Object_Chronology5() throws Exception {
@@ -572,7 +584,8 @@ public class TestStringConverter extends TestCase {
         try {
             StringConverter.INSTANCE.setInto(m, "P1Y/P2Y", null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------

@@ -3,7 +3,6 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TouchPointListener;
 
 /**
@@ -12,59 +11,59 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.TouchPoin
  * @author piotr.tabor@gmail.com
  */
 public class BuildClassMapTouchPointListener implements TouchPointListener {
-	private final ClassMap classmap;
+    private final ClassMap classmap;
 
-	public BuildClassMapTouchPointListener(ClassMap classMap) {
-		this.classmap = classMap;
-	}
+    public BuildClassMapTouchPointListener(ClassMap classMap) {
+        this.classmap = classMap;
+    }
 
-	public void beforeJump(int eventId, Label label, int currentLine,
-			MethodVisitor nextMethodVisitor) {
-		classmap.registerNewJump(eventId, currentLine, label);
-	}
+    public void beforeJump(int eventId, Label label, int currentLine,
+                           MethodVisitor nextMethodVisitor) {
+        classmap.registerNewJump(eventId, currentLine, label);
+    }
 
-	public void beforeLabel(int eventId, Label label, int currentLine,
-			MethodVisitor mv) {
-		classmap.registerNewLabel(eventId, currentLine, label);
-	}
+    public void beforeLabel(int eventId, Label label, int currentLine,
+                            MethodVisitor mv) {
+        classmap.registerNewLabel(eventId, currentLine, label);
+    }
 
-	public void afterLineNumber(int eventId, Label label, int currentLine,
-			MethodVisitor nextMethodVisitor, String methodName,
-			String methodSignature) {
-		classmap.registerLineNumber(eventId, currentLine, label, methodName,
-				methodSignature);
-	}
+    public void afterLineNumber(int eventId, Label label, int currentLine,
+                                MethodVisitor nextMethodVisitor, String methodName,
+                                String methodSignature) {
+        classmap.registerLineNumber(eventId, currentLine, label, methodName,
+                methodSignature);
+    }
 
-	public void beforeSwitch(int eventId, Label def, Label[] labels,
-			int currentLine, MethodVisitor mv, String conditionType) {
-		classmap.registerSwitch(eventId, currentLine, def, labels,
-				conditionType);
-	}
-	
-	@Override
-	public void beforeTryCatchCatchBlock(int eventId, Label handler, int currentLine, MethodVisitor mv) {
-		classmap.registerNewTryCatchBlock(eventId, currentLine, handler);
-	}
+    public void beforeSwitch(int eventId, Label def, Label[] labels,
+                             int currentLine, MethodVisitor mv, String conditionType) {
+        classmap.registerSwitch(eventId, currentLine, def, labels,
+                conditionType);
+    }
 
-	public void ignoreLine(int eventId, int currentLine) {
-		classmap.unregisterLine(eventId, currentLine);
-	}
+    @Override
+    public void beforeTryCatchCatchBlock(int eventId, Label handler, int currentLine, MethodVisitor mv) {
+        classmap.registerNewTryCatchBlock(eventId, currentLine, handler);
+    }
 
-	// --------------- Not interesting events for analysis ---------------------------
-	public void afterJump(int eventId, Label label, int currentLine,
-			MethodVisitor nextMethodVisitor) {
-	}
+    public void ignoreLine(int eventId, int currentLine) {
+        classmap.unregisterLine(eventId, currentLine);
+    }
 
-	public void afterLabel(int eventId, Label label, int currentLine,
-			MethodVisitor mv) {
-	}
+    // --------------- Not interesting events for analysis ---------------------------
+    public void afterJump(int eventId, Label label, int currentLine,
+                          MethodVisitor nextMethodVisitor) {
+    }
 
-	public void afterMethodStart(MethodVisitor nextMethodVisitor) {
-	}
+    public void afterLabel(int eventId, Label label, int currentLine,
+                           MethodVisitor mv) {
+    }
 
-	@Override
-	public void afterMethodCall(int eventId, int opcode, String owner, String method, String descr, int currentLine,
-			MethodVisitor mv) {
-	}
+    public void afterMethodStart(MethodVisitor nextMethodVisitor) {
+    }
+
+    @Override
+    public void afterMethodCall(int eventId, int opcode, String owner, String method, String descr, int currentLine,
+                                MethodVisitor mv) {
+    }
 
 }

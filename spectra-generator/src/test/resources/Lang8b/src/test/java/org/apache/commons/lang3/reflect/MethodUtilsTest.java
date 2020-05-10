@@ -16,19 +16,6 @@
  */
 package org.apache.commons.lang3.reflect;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -36,20 +23,29 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+
 /**
  * Unit tests MethodUtils
+ *
  * @version $Id$
  */
 public class MethodUtilsTest {
-  
-    private static interface PrivateInterface {}
-    
+
+    private static interface PrivateInterface {
+    }
+
     static class TestBeanWithInterfaces implements PrivateInterface {
         public String foo() {
             return "foo()";
         }
     }
-    
+
     public static class TestBean {
 
         public static String bar() {
@@ -75,7 +71,7 @@ public class MethodUtilsTest {
         public static String bar(Object o) {
             return "bar(Object)";
         }
-        
+
         public static void oneParameterStatic(String s) {
             // empty
         }
@@ -108,7 +104,7 @@ public class MethodUtilsTest {
         public String foo(Object o) {
             return "foo(Object)";
         }
-        
+
         public void oneParameter(String s) {
             // empty
         }
@@ -145,7 +141,7 @@ public class MethodUtilsTest {
                 (Object[]) ArrayUtils.EMPTY_CLASS_ARRAY));
         assertEquals("foo()", MethodUtils.invokeMethod(testBean, "foo",
                 (Object[]) null));
-        assertEquals("foo()", MethodUtils.invokeMethod(testBean, "foo", 
+        assertEquals("foo()", MethodUtils.invokeMethod(testBean, "foo",
                 (Object[]) null, (Class<?>[]) null));
         assertEquals("foo(String)", MethodUtils.invokeMethod(testBean, "foo",
                 ""));
@@ -169,7 +165,7 @@ public class MethodUtilsTest {
                 (Object[]) ArrayUtils.EMPTY_CLASS_ARRAY));
         assertEquals("foo()", MethodUtils.invokeExactMethod(testBean, "foo",
                 (Object[]) null));
-        assertEquals("foo()", MethodUtils.invokeExactMethod(testBean, "foo", 
+        assertEquals("foo()", MethodUtils.invokeExactMethod(testBean, "foo",
                 (Object[]) null, (Class<?>[]) null));
         assertEquals("foo(String)", MethodUtils.invokeExactMethod(testBean,
                 "foo", ""));
@@ -178,8 +174,8 @@ public class MethodUtilsTest {
         assertEquals("foo(Integer)", MethodUtils.invokeExactMethod(testBean,
                 "foo", NumberUtils.INTEGER_ONE));
         assertEquals("foo(double)", MethodUtils.invokeExactMethod(testBean,
-                "foo", new Object[] { NumberUtils.DOUBLE_ONE },
-                new Class[] { Double.TYPE }));
+                "foo", new Object[]{NumberUtils.DOUBLE_ONE},
+                new Class[]{Double.TYPE}));
 
         try {
             MethodUtils
@@ -222,7 +218,7 @@ public class MethodUtilsTest {
                 TestBean.class, "bar", NumberUtils.LONG_ONE));
         assertEquals("bar(double)", MethodUtils.invokeStaticMethod(
                 TestBean.class, "bar", NumberUtils.DOUBLE_ONE));
-        
+
         try {
             MethodUtils.invokeStaticMethod(TestBean.class, "does_not_exist");
             fail("should throw NoSuchMethodException");
@@ -245,8 +241,8 @@ public class MethodUtilsTest {
         assertEquals("bar(Integer)", MethodUtils.invokeExactStaticMethod(
                 TestBean.class, "bar", NumberUtils.INTEGER_ONE));
         assertEquals("bar(double)", MethodUtils.invokeExactStaticMethod(
-                TestBean.class, "bar", new Object[] { NumberUtils.DOUBLE_ONE },
-                new Class[] { Double.TYPE }));
+                TestBean.class, "bar", new Object[]{NumberUtils.DOUBLE_ONE},
+                new Class[]{Double.TYPE}));
 
         try {
             MethodUtils.invokeExactStaticMethod(TestBean.class, "bar",
@@ -270,7 +266,7 @@ public class MethodUtilsTest {
 
     @Test
     public void testGetAccessibleInterfaceMethod() throws Exception {
-        Class<?>[][] p = { ArrayUtils.EMPTY_CLASS_ARRAY, null };
+        Class<?>[][] p = {ArrayUtils.EMPTY_CLASS_ARRAY, null};
         for (Class<?>[] element : p) {
             Method method = TestMutable.class.getMethod("getValue", element);
             Method accessibleMethod = MethodUtils.getAccessibleMethod(method);
@@ -278,7 +274,7 @@ public class MethodUtilsTest {
             assertSame(Mutable.class, accessibleMethod.getDeclaringClass());
         }
     }
-    
+
     @Test
     public void testGetAccessibleMethodPrivateInterface() throws Exception {
         Method expected = TestBeanWithInterfaces.class.getMethod("foo");
@@ -290,7 +286,7 @@ public class MethodUtilsTest {
     @Test
     public void testGetAccessibleInterfaceMethodFromDescription()
             throws Exception {
-        Class<?>[][] p = { ArrayUtils.EMPTY_CLASS_ARRAY, null };
+        Class<?>[][] p = {ArrayUtils.EMPTY_CLASS_ARRAY, null};
         for (Class<?>[] element : p) {
             Method accessibleMethod = MethodUtils.getAccessibleMethod(
                     TestMutable.class, "getValue", element);
@@ -311,16 +307,16 @@ public class MethodUtilsTest {
                 MutableObject.class, "getValue", ArrayUtils.EMPTY_CLASS_ARRAY)
                 .getDeclaringClass());
     }
-    
+
     @Test
-   public void testGetAccessibleMethodInaccessible() throws Exception {
+    public void testGetAccessibleMethodInaccessible() throws Exception {
         Method expected = TestBean.class.getDeclaredMethod("privateStuff");
         Method actual = MethodUtils.getAccessibleMethod(expected);
         assertNull(actual);
     }
 
     @Test
-   public void testGetMatchingAccessibleMethod() throws Exception {
+    public void testGetMatchingAccessibleMethod() throws Exception {
         expectMatchingAccessibleMethodParameterTypes(TestBean.class, "foo",
                 ArrayUtils.EMPTY_CLASS_ARRAY, ArrayUtils.EMPTY_CLASS_ARRAY);
         expectMatchingAccessibleMethodParameterTypes(TestBean.class, "foo",
@@ -378,7 +374,7 @@ public class MethodUtilsTest {
     }
 
     private void expectMatchingAccessibleMethodParameterTypes(Class<?> cls,
-            String methodName, Class<?>[] requestTypes, Class<?>[] actualTypes) {
+                                                              String methodName, Class<?>[] requestTypes, Class<?>[] actualTypes) {
         Method m = MethodUtils.getMatchingAccessibleMethod(cls, methodName,
                 requestTypes);
         assertTrue(toString(m.getParameterTypes()) + " not equals "
@@ -393,24 +389,42 @@ public class MethodUtilsTest {
     private Class<?>[] singletonArray(Class<?> c) {
         Class<?>[] result = classCache.get(c);
         if (result == null) {
-            result = new Class[] { c };
+            result = new Class[]{c};
             classCache.put(c, result);
         }
         return result;
     }
 
     public static class InheritanceBean {
-        public void testOne(Object obj) {}
-        public void testOne(GrandParentObject obj) {}
-        public void testOne(ParentObject obj) {}
-        public void testTwo(Object obj) {}
-        public void testTwo(GrandParentObject obj) {}
-        public void testTwo(ChildInterface obj) {}
+        public void testOne(Object obj) {
+        }
+
+        public void testOne(GrandParentObject obj) {
+        }
+
+        public void testOne(ParentObject obj) {
+        }
+
+        public void testTwo(Object obj) {
+        }
+
+        public void testTwo(GrandParentObject obj) {
+        }
+
+        public void testTwo(ChildInterface obj) {
+        }
     }
-    
-    interface ChildInterface {}    
-    public static class GrandParentObject {}
-    public static class ParentObject extends GrandParentObject {}
-    public static class ChildObject extends ParentObject implements ChildInterface {}
-    
+
+    interface ChildInterface {
+    }
+
+    public static class GrandParentObject {
+    }
+
+    public static class ParentObject extends GrandParentObject {
+    }
+
+    public static class ChildObject extends ParentObject implements ChildInterface {
+    }
+
 }

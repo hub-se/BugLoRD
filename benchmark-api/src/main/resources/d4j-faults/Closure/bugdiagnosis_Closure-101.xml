@@ -1,33 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-101">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/CommandLineRunnerTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>21</number_tests>
-					<failed>1</failed>
-					<passed>20</passed>
-					<nodes>34242</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/CommandLineRunner.java">
-					<delete>433,435</delete>
-					<change>434</change>
-					<bugtypes>
-						<id id="1.2" lines="433-435">
-							<description>Unnecessary case.</description>
-						</id>
-						<id id="3.1" lines="436">
-							<description>Missing initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-101">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/CommandLineRunnerTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>21</number_tests>
+                    <failed>1</failed>
+                    <passed>20</passed>
+                    <nodes>34242</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/CommandLineRunner.java">
+                    <delete>433,435</delete>
+                    <change>434</change>
+                    <bugtypes>
+                        <id id="1.2" lines="433-435">
+                            <description>Unnecessary case.</description>
+                        </id>
+                        <id id="3.1" lines="436">
+                            <description>Missing initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

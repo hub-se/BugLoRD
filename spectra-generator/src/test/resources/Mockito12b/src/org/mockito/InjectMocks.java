@@ -19,8 +19,8 @@ import static java.lang.annotation.ElementType.FIELD;
  * <p>
  * Currently it only supports setter injection. If you prefer constructor injection - please contribute a patch.
  * <p>
- * Mockito tries to inject by type (using name in case types are the same). 
- * Mockito does not throw anything when injection fails - you will have to satisfy the dependencies manually.  
+ * Mockito tries to inject by type (using name in case types are the same).
+ * Mockito does not throw anything when injection fails - you will have to satisfy the dependencies manually.
  * <p>
  * Example:
  * <pre>
@@ -55,6 +55,7 @@ import static java.lang.annotation.ElementType.FIELD;
  * You can also put injectMocks() in your JUnit runner (&#064;RunWith) or use built-in runners: {@link org.mockito.runners.MockitoJUnitRunner}
  */
 @Documented
-@Target( { FIELD })
+@Target({FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface InjectMocks {}
+public @interface InjectMocks {
+}

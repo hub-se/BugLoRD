@@ -15,25 +15,14 @@
  */
 package org.joda.time.convert;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.*;
+import org.joda.time.chrono.*;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Interval;
-import org.joda.time.MutableInterval;
-import org.joda.time.MutablePeriod;
-import org.joda.time.PeriodType;
-import org.joda.time.ReadableInterval;
-import org.joda.time.chrono.BuddhistChronology;
-import org.joda.time.chrono.CopticChronology;
-import org.joda.time.chrono.GJChronology;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.chrono.JulianChronology;
 
 /**
  * This class is a JUnit test for ReadableIntervalConverter.
@@ -47,7 +36,7 @@ public class TestReadableIntervalConverter extends TestCase {
     private static final Chronology ISO_PARIS = ISOChronology.getInstance(PARIS);
     private static Chronology JULIAN;
     private static Chronology ISO;
-    
+
     private DateTimeZone zone = null;
 
     public static void main(String[] args) {
@@ -73,11 +62,11 @@ public class TestReadableIntervalConverter extends TestCase {
         assertEquals(false, Modifier.isPublic(cls.getModifiers()));
         assertEquals(false, Modifier.isProtected(cls.getModifiers()));
         assertEquals(false, Modifier.isPrivate(cls.getModifiers()));
-        
+
         Constructor con = cls.getDeclaredConstructor((Class[]) null);
         assertEquals(1, cls.getDeclaredConstructors().length);
         assertEquals(true, Modifier.isProtected(con.getModifiers()));
-        
+
         Field fld = cls.getDeclaredField("INSTANCE");
         assertEquals(false, Modifier.isPublic(fld.getModifiers()));
         assertEquals(false, Modifier.isProtected(fld.getModifiers()));
@@ -99,7 +88,7 @@ public class TestReadableIntervalConverter extends TestCase {
     public void testGetPeriodType_Object() throws Exception {
         Interval i = new Interval(100L, 223L);
         assertEquals(PeriodType.standard(),
-            ReadableIntervalConverter.INSTANCE.getPeriodType(i));
+                ReadableIntervalConverter.INSTANCE.getPeriodType(i));
     }
 
     public void testSetIntoPeriod_Object1() throws Exception {

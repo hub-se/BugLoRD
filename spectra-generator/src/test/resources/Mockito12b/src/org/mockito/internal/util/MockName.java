@@ -7,7 +7,7 @@ package org.mockito.internal.util;
 import java.io.Serializable;
 
 public class MockName implements Serializable {
-    
+
     private static final long serialVersionUID = 8014974700844306925L;
     private final String mockName;
     private boolean surrogate;
@@ -31,11 +31,11 @@ public class MockName implements Serializable {
         //lower case first letter
         return className.substring(0, 1).toLowerCase() + className.substring(1);
     }
-    
+
     public boolean isSurrogate() {
         return surrogate;
     }
-    
+
     @Override
     public String toString() {
         return mockName;

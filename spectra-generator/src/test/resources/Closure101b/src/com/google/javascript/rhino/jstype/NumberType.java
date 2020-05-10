@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,7 +36,7 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 import static com.google.javascript.rhino.jstype.TernaryValue.FALSE;
@@ -45,70 +45,69 @@ import static com.google.javascript.rhino.jstype.TernaryValue.UNKNOWN;
 
 /**
  * Number type.
-*
  */
 public class NumberType extends ValueType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  NumberType(JSTypeRegistry registry) {
-    super(registry);
-  }
-
-  @Override
-  public boolean isNullable() {
-    return false;
-  }
-
-  @Override
-  public TernaryValue testForEquality(JSType that) {
-    if (UNKNOWN.equals(super.testForEquality(that))) {
-      return UNKNOWN;
+    NumberType(JSTypeRegistry registry) {
+        super(registry);
     }
-    if (that.isUnknownType() || that.isSubtype(
-            getNativeType(JSTypeNative.OBJECT_NUMBER_STRING_BOOLEAN))) {
-      return UNKNOWN;
+
+    @Override
+    public boolean isNullable() {
+        return false;
     }
-    return FALSE;
-  }
 
-  @Override
-  public boolean isNumberValueType() {
-    return true;
-  }
+    @Override
+    public TernaryValue testForEquality(JSType that) {
+        if (UNKNOWN.equals(super.testForEquality(that))) {
+            return UNKNOWN;
+        }
+        if (that.isUnknownType() || that.isSubtype(
+                getNativeType(JSTypeNative.OBJECT_NUMBER_STRING_BOOLEAN))) {
+            return UNKNOWN;
+        }
+        return FALSE;
+    }
 
-  @Override
-  public boolean matchesNumberContext() {
-    return true;
-  }
+    @Override
+    public boolean isNumberValueType() {
+        return true;
+    }
 
-  @Override
-  public boolean matchesStringContext() {
-    return true;
-  }
+    @Override
+    public boolean matchesNumberContext() {
+        return true;
+    }
 
-  @Override
-  public boolean matchesObjectContext() {
-    // TODO(user): Revisit this for ES4, which is stricter.
-    return true;
-  }
+    @Override
+    public boolean matchesStringContext() {
+        return true;
+    }
 
-  @Override
-  public String toString() {
-    return "number";
-  }
+    @Override
+    public boolean matchesObjectContext() {
+        // TODO(user): Revisit this for ES4, which is stricter.
+        return true;
+    }
 
-  @Override
-  public BooleanLiteralSet getPossibleToBooleanOutcomes() {
-    return BooleanLiteralSet.BOTH;
-  }
+    @Override
+    public String toString() {
+        return "number";
+    }
 
-  @Override
-  public <T> T visit(Visitor<T> visitor) {
-    return visitor.caseNumberType();
-  }
+    @Override
+    public BooleanLiteralSet getPossibleToBooleanOutcomes() {
+        return BooleanLiteralSet.BOTH;
+    }
 
-  @Override
-  public JSType autoboxesTo() {
-    return getNativeType(JSTypeNative.NUMBER_OBJECT_TYPE);
-  }
+    @Override
+    public <T> T visit(Visitor<T> visitor) {
+        return visitor.caseNumberType();
+    }
+
+    @Override
+    public JSType autoboxesTo() {
+        return getNativeType(JSTypeNative.NUMBER_OBJECT_TYPE);
+    }
 }

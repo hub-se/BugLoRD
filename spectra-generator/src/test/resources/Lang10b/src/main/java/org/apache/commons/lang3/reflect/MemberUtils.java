@@ -16,32 +16,34 @@
  */
 package org.apache.commons.lang3.reflect;
 
+import org.apache.commons.lang3.ClassUtils;
+
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
-
-import org.apache.commons.lang3.ClassUtils;
 
 /**
  * Contains common code for working with Methods/Constructors, extracted and
  * refactored from <code>MethodUtils</code> when it was imported from Commons
  * BeanUtils.
  *
- * @since 2.5
  * @version $Id$
+ * @since 2.5
  */
 abstract class MemberUtils {
     // TODO extract an interface to implement compareParameterSets(...)?
 
     private static final int ACCESS_TEST = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
 
-    /** Array of primitive number types ordered by "promotability" */
-    private static final Class<?>[] ORDERED_PRIMITIVE_TYPES = { Byte.TYPE, Short.TYPE,
-            Character.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE };
+    /**
+     * Array of primitive number types ordered by "promotability"
+     */
+    private static final Class<?>[] ORDERED_PRIMITIVE_TYPES = {Byte.TYPE, Short.TYPE,
+            Character.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE};
 
     /**
      * XXX Default access superclass workaround
-     *
+     * <p>
      * When a public class has a default access superclass with public members,
      * these members are accessible. Calling them from compiled code works fine.
      * Unfortunately, on some JVMs, using reflection to invoke these members
@@ -49,6 +51,7 @@ abstract class MemberUtils {
      * Calling setAccessible(true) solves the problem but will only work from
      * sufficiently privileged code. Better workarounds would be gratefully
      * accepted.
+     *
      * @param o the AccessibleObject to set as accessible
      */
     static void setAccessibleWorkaround(AccessibleObject o) {
@@ -68,6 +71,7 @@ abstract class MemberUtils {
 
     /**
      * Returns whether a given set of modifiers implies package access.
+     *
      * @param modifiers to test
      * @return true unless package/protected/private modifier detected
      */
@@ -77,6 +81,7 @@ abstract class MemberUtils {
 
     /**
      * Returns whether a Member is accessible.
+     *
      * @param m Member to check
      * @return true if <code>m</code> is accessible
      */
@@ -90,10 +95,10 @@ abstract class MemberUtils {
      * by the results of the comparison would return the best match first
      * (least).
      *
-     * @param left the "left" parameter set
-     * @param right the "right" parameter set
+     * @param left   the "left" parameter set
+     * @param right  the "right" parameter set
      * @param actual the runtime parameter types to match against
-     * <code>left</code>/<code>right</code>
+     *               <code>left</code>/<code>right</code>
      * @return int consistent with <code>compare</code> semantics
      */
     static int compareParameterTypes(Class<?>[] left, Class<?>[] right, Class<?>[] actual) {
@@ -105,7 +110,8 @@ abstract class MemberUtils {
     /**
      * Returns the sum of the object transformation cost for each class in the
      * source argument list.
-     * @param srcArgs The source arguments
+     *
+     * @param srcArgs  The source arguments
      * @param destArgs The destination arguments
      * @return The total transformation cost
      */
@@ -124,7 +130,8 @@ abstract class MemberUtils {
      * Gets the number of steps required needed to turn the source class into
      * the destination class. This represents the number of steps in the object
      * hierarchy graph.
-     * @param srcClass The source class
+     *
+     * @param srcClass  The source class
      * @param destClass The destination class
      * @return The cost of transforming an object
      */
@@ -159,7 +166,8 @@ abstract class MemberUtils {
     /**
      * Gets the number of steps required to promote a primitive number to another
      * type.
-     * @param srcClass the (primitive) source class
+     *
+     * @param srcClass  the (primitive) source class
      * @param destClass the (primitive) destination class
      * @return The cost of promoting the primitive
      */

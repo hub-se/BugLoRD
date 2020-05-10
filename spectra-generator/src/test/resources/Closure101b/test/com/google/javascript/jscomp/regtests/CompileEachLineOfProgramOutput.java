@@ -16,96 +16,91 @@
 
 package com.google.javascript.jscomp.regtests;
 
+import com.google.javascript.jscomp.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 
-import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.JSSourceFile;
-import com.google.javascript.jscomp.Result;
-import com.google.javascript.jscomp.WarningLevel;
-
 public class CompileEachLineOfProgramOutput {
-  private static final JSSourceFile extern =
-      JSSourceFile.fromCode("externs.js", "");
-  private static final CompilerOptions options =
-      new CompilerOptions();
+    private static final JSSourceFile extern =
+            JSSourceFile.fromCode("externs.js", "");
+    private static final CompilerOptions options =
+            new CompilerOptions();
 
-  static {
-    CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(
-        options);
-    WarningLevel.QUIET.setOptionsForWarningLevel(options);
-    Compiler.setLoggingLevel(Level.OFF);
-  }
-
-  public static void main(String[] args) throws IOException {
-    if (args.length == 0){
-      usage();
-    }
-    Runtime r = Runtime.getRuntime();
-    Process p = null;
-    try {
-      p = r.exec(args);
-    } catch (IOException e) {
-      if (args[0].equals("generatejs")) {
-        // assuming that the command wasn't found
-        System.out.println("generatejs not found, required for generating " +
-            "fuzz test cases");
-        System.out.println("See: http://github.com/rictic/generatejs");
-        System.exit(2);
-      } else {
-        throw e;
-      }
+    static {
+        CompilationLevel.SIMPLE_OPTIMIZATIONS.setOptionsForCompilationLevel(
+                options);
+        WarningLevel.QUIET.setOptionsForWarningLevel(options);
+        Compiler.setLoggingLevel(Level.OFF);
     }
 
-    BufferedReader br = new BufferedReader(
-        new InputStreamReader(p.getInputStream()));
-    int programsCompiled = 0, compilerErrors = 0;
-    for (String program = br.readLine(); program != null; program =
-             br.readLine()) {
-      try {
-        compile(program, programsCompiled);
-      } catch(Exception e) {
-        System.out.println("Compiler error on program #" +
-            programsCompiled + ":");
-        System.out.println(program);
-        System.out.println("Details:");
-        e.printStackTrace(System.out);
-        System.out.println("\n\n\n");
-        compilerErrors++;
-      }
+    public static void main(String[] args) throws IOException {
+        if (args.length == 0) {
+            usage();
+        }
+        Runtime r = Runtime.getRuntime();
+        Process p = null;
+        try {
+            p = r.exec(args);
+        } catch (IOException e) {
+            if (args[0].equals("generatejs")) {
+                // assuming that the command wasn't found
+                System.out.println("generatejs not found, required for generating " +
+                        "fuzz test cases");
+                System.out.println("See: http://github.com/rictic/generatejs");
+                System.exit(2);
+            } else {
+                throw e;
+            }
+        }
 
-      programsCompiled++;
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(p.getInputStream()));
+        int programsCompiled = 0, compilerErrors = 0;
+        for (String program = br.readLine(); program != null; program =
+                br.readLine()) {
+            try {
+                compile(program, programsCompiled);
+            } catch (Exception e) {
+                System.out.println("Compiler error on program #" +
+                        programsCompiled + ":");
+                System.out.println(program);
+                System.out.println("Details:");
+                e.printStackTrace(System.out);
+                System.out.println("\n\n\n");
+                compilerErrors++;
+            }
+
+            programsCompiled++;
+        }
+
+        if (compilerErrors == 0) {
+            System.out.println(programsCompiled +
+                    " programs compiled without error");
+            System.exit(0);
+        } else {
+            System.out.println("==========FAILURE===========");
+            System.out.println(compilerErrors +
+                    " programs caused an error within the compiler out of " +
+                    programsCompiled + " tested.");
+            System.exit(1);
+        }
     }
 
-    if (compilerErrors == 0){
-      System.out.println(programsCompiled +
-          " programs compiled without error");
-      System.exit(0);
-    } else {
-      System.out.println("==========FAILURE===========");
-      System.out.println(compilerErrors +
-          " programs caused an error within the compiler out of " +
-          programsCompiled + " tested.");
-      System.exit(1);
+    public static Result compile(String program, int num) {
+        JSSourceFile input = JSSourceFile.fromCode("" + num, program);
+        Compiler compiler = new Compiler();
+        Result result = compiler.compile(extern, input, options);
+        return result;
     }
-  }
 
-  public static Result compile(String program, int num) {
-    JSSourceFile input = JSSourceFile.fromCode(""+num, program);
-    Compiler compiler = new Compiler();
-    Result result = compiler.compile(extern, input, options);
-    return result;
-  }
-
-  private static void usage() {
-    System.out.println(
-        "Usage: pass in a program to execute (with arguments)");
-    System.out.println(
-        "The program is expected to produce js programs to stdout, " +
-        "one per line");
-  }
+    private static void usage() {
+        System.out.println(
+                "Usage: pass in a program to execute (with arguments)");
+        System.out.println(
+                "The program is expected to produce js programs to stdout, " +
+                        "one per line");
+    }
 }

@@ -41,145 +41,145 @@ import java.util.Set;
  */
 class VariableReferenceCheck implements CompilerPass {
 
-  static final DiagnosticType UNDECLARED_REFERENCE = DiagnosticType.warning(
-      "JSC_REFERENCE_BEFORE_DECLARE",
-      "Variable referenced before declaration: {0}");
+    static final DiagnosticType UNDECLARED_REFERENCE = DiagnosticType.warning(
+            "JSC_REFERENCE_BEFORE_DECLARE",
+            "Variable referenced before declaration: {0}");
 
-  static final DiagnosticType REDECLARED_VARIABLE = DiagnosticType.warning(
-      "JSC_REDECLARED_VARIABLE",
-      "Redeclared variable: {0}");
+    static final DiagnosticType REDECLARED_VARIABLE = DiagnosticType.warning(
+            "JSC_REDECLARED_VARIABLE",
+            "Redeclared variable: {0}");
 
-  static final boolean CHECK_UNHOISTED_NAMED_FUNCTIONS = false;
+    static final boolean CHECK_UNHOISTED_NAMED_FUNCTIONS = false;
 
-  static final DiagnosticType AMBIGUOUS_FUNCTION_DECL =
-    DiagnosticType.warning("AMBIGUIOUS_FUNCTION_DECL",
-        "Ambiguious use of a named function: {0}.");
+    static final DiagnosticType AMBIGUOUS_FUNCTION_DECL =
+            DiagnosticType.warning("AMBIGUIOUS_FUNCTION_DECL",
+                    "Ambiguious use of a named function: {0}.");
 
-  private AbstractCompiler compiler;
-  private CheckLevel checkLevel;
+    private AbstractCompiler compiler;
+    private CheckLevel checkLevel;
 
-  // NOTE(nicksantos): It's a lot faster to use a shared Set that
-  // we clear after each method call, because the Set never gets too big.
-  private Set<BasicBlock> blocksWithDeclarations = Sets.newHashSet();
+    // NOTE(nicksantos): It's a lot faster to use a shared Set that
+    // we clear after each method call, because the Set never gets too big.
+    private Set<BasicBlock> blocksWithDeclarations = Sets.newHashSet();
 
-  public VariableReferenceCheck(AbstractCompiler compiler,
-      CheckLevel checkLevel) {
-    this.compiler = compiler;
-    this.checkLevel = checkLevel;
-  }
-
-  @Override
-  public void process(Node externs, Node root) {
-    ReferenceCollectingCallback callback = new ReferenceCollectingCallback(
-        compiler, new ReferenceCheckingBehavior());
-    callback.process(externs, root);
-  }
-
-  /**
-   * Behavior that checks variables for redeclaration or early references
-   * just after they go out of scope.
-   */
-  private class ReferenceCheckingBehavior implements Behavior {
+    public VariableReferenceCheck(AbstractCompiler compiler,
+                                  CheckLevel checkLevel) {
+        this.compiler = compiler;
+        this.checkLevel = checkLevel;
+    }
 
     @Override
-    public void afterExitScope(NodeTraversal t,
-        Map<Var, ReferenceCollection> referenceMap) {
-
-      // Check all vars after finishing a scope
-      for (Iterator<Var> it = t.getScope().getVars(); it.hasNext();) {
-        Var v = it.next();
-        checkVar(t, v, referenceMap.get(v).references);
-      }
+    public void process(Node externs, Node root) {
+        ReferenceCollectingCallback callback = new ReferenceCollectingCallback(
+                compiler, new ReferenceCheckingBehavior());
+        callback.process(externs, root);
     }
 
     /**
-     * If the variable is declared more than once in a basic block, generate a
-     * warning. Also check if a variable is used in a given scope before it is
-     * declared, which suggest a likely error. Relies on the fact that
-     * references is in parse-tree order.
+     * Behavior that checks variables for redeclaration or early references
+     * just after they go out of scope.
      */
-    private void checkVar(NodeTraversal t, Var v, List<Reference> references) {
-      blocksWithDeclarations.clear();
-      boolean isDeclaredInScope = false;
-      boolean isUnhoistedNamedFunction = false;
-      Reference hoistedFn = null;
+    private class ReferenceCheckingBehavior implements Behavior {
 
-      // Look for hoisted functions.
-      for (Reference reference : references) {
-        if (reference.isHoistedFunction()) {
-          blocksWithDeclarations.add(reference.getBasicBlock());
-          isDeclaredInScope = true;
-          hoistedFn = reference;
-          break;
-        } else if (NodeUtil.isFunctionDeclaration(
-            reference.getNameNode().getParent())) {
-          isUnhoistedNamedFunction = true;
-        }
-      }
+        @Override
+        public void afterExitScope(NodeTraversal t,
+                                   Map<Var, ReferenceCollection> referenceMap) {
 
-      for (Reference reference : references) {
-        if (reference == hoistedFn) {
-          continue;
-        }
-
-        BasicBlock basicBlock = reference.getBasicBlock();
-        boolean isDeclaration = reference.isDeclaration();
-
-        if (isDeclaration) {
-          // Look through all the declarations we've found so far, and
-          // check if any of them are before this block.
-          for (BasicBlock declaredBlock : blocksWithDeclarations) {
-            if (declaredBlock.provablyExecutesBefore(basicBlock)) {
-              compiler.report(
-                  JSError.make(reference.getSourceName(),
-                      reference.getNameNode(),
-                      checkLevel,
-                      REDECLARED_VARIABLE, v.name));
-              break;
+            // Check all vars after finishing a scope
+            for (Iterator<Var> it = t.getScope().getVars(); it.hasNext(); ) {
+                Var v = it.next();
+                checkVar(t, v, referenceMap.get(v).references);
             }
-          }
         }
 
-        if (CHECK_UNHOISTED_NAMED_FUNCTIONS && isUnhoistedNamedFunction
-            && !isDeclaration && isDeclaredInScope) {
-          // Only allow an unhoisted named function to be used within the
-          // block it is declared.
-          for (BasicBlock declaredBlock : blocksWithDeclarations) {
-            if (!declaredBlock.provablyExecutesBefore(basicBlock)) {
-              compiler.report(
-                  JSError.make(reference.getSourceName(),
-                      reference.getNameNode(),
-                      checkLevel,
-                      AMBIGUOUS_FUNCTION_DECL, v.name));
-              break;
+        /**
+         * If the variable is declared more than once in a basic block, generate a
+         * warning. Also check if a variable is used in a given scope before it is
+         * declared, which suggest a likely error. Relies on the fact that
+         * references is in parse-tree order.
+         */
+        private void checkVar(NodeTraversal t, Var v, List<Reference> references) {
+            blocksWithDeclarations.clear();
+            boolean isDeclaredInScope = false;
+            boolean isUnhoistedNamedFunction = false;
+            Reference hoistedFn = null;
+
+            // Look for hoisted functions.
+            for (Reference reference : references) {
+                if (reference.isHoistedFunction()) {
+                    blocksWithDeclarations.add(reference.getBasicBlock());
+                    isDeclaredInScope = true;
+                    hoistedFn = reference;
+                    break;
+                } else if (NodeUtil.isFunctionDeclaration(
+                        reference.getNameNode().getParent())) {
+                    isUnhoistedNamedFunction = true;
+                }
             }
-          }
-        }
 
-        if (!isDeclaration && !isDeclaredInScope) {
-          // Special case to deal with var goog = goog || {}
-          Node grandparent = reference.getGrandparent();
-          if (grandparent.getType() == Token.NAME
-              && grandparent.getString() == v.name) {
-            continue;
-          }
+            for (Reference reference : references) {
+                if (reference == hoistedFn) {
+                    continue;
+                }
 
-          // Only generate warnings if the scopes do not match in order
-          // to deal with possible forward declarations and recursion
-          if (reference.getScope() == v.scope) {
-            compiler.report(
-                JSError.make(reference.getSourceName(),
-                             reference.getNameNode(),
-                             checkLevel,
-                             UNDECLARED_REFERENCE, v.name));
-          }
-        }
+                BasicBlock basicBlock = reference.getBasicBlock();
+                boolean isDeclaration = reference.isDeclaration();
 
-        if (isDeclaration) {
-          blocksWithDeclarations.add(basicBlock);
-          isDeclaredInScope = true;
+                if (isDeclaration) {
+                    // Look through all the declarations we've found so far, and
+                    // check if any of them are before this block.
+                    for (BasicBlock declaredBlock : blocksWithDeclarations) {
+                        if (declaredBlock.provablyExecutesBefore(basicBlock)) {
+                            compiler.report(
+                                    JSError.make(reference.getSourceName(),
+                                            reference.getNameNode(),
+                                            checkLevel,
+                                            REDECLARED_VARIABLE, v.name));
+                            break;
+                        }
+                    }
+                }
+
+                if (CHECK_UNHOISTED_NAMED_FUNCTIONS && isUnhoistedNamedFunction
+                        && !isDeclaration && isDeclaredInScope) {
+                    // Only allow an unhoisted named function to be used within the
+                    // block it is declared.
+                    for (BasicBlock declaredBlock : blocksWithDeclarations) {
+                        if (!declaredBlock.provablyExecutesBefore(basicBlock)) {
+                            compiler.report(
+                                    JSError.make(reference.getSourceName(),
+                                            reference.getNameNode(),
+                                            checkLevel,
+                                            AMBIGUOUS_FUNCTION_DECL, v.name));
+                            break;
+                        }
+                    }
+                }
+
+                if (!isDeclaration && !isDeclaredInScope) {
+                    // Special case to deal with var goog = goog || {}
+                    Node grandparent = reference.getGrandparent();
+                    if (grandparent.getType() == Token.NAME
+                            && grandparent.getString() == v.name) {
+                        continue;
+                    }
+
+                    // Only generate warnings if the scopes do not match in order
+                    // to deal with possible forward declarations and recursion
+                    if (reference.getScope() == v.scope) {
+                        compiler.report(
+                                JSError.make(reference.getSourceName(),
+                                        reference.getNameNode(),
+                                        checkLevel,
+                                        UNDECLARED_REFERENCE, v.name));
+                    }
+                }
+
+                if (isDeclaration) {
+                    blocksWithDeclarations.add(basicBlock);
+                    isDeclaredInScope = true;
+                }
+            }
         }
-      }
     }
-  }
 }

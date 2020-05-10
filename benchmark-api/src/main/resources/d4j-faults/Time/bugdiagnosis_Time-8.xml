@@ -1,38 +1,39 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-8">
-			<tests>
-				<testfile path="org/joda/time/TestDateTimeZone">
-					<exception>java.lang.IllegalArgumentException:Minutes out of
-						range:-15</exception>
-				</testfile>
-				<spectra>
-					<number_tests>3950</number_tests>
-					<failed>1</failed>
-					<passed>3949</passed>
-					<nodes>13372</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/DateTimeZone.java">
-					<change>279</change>
-					<change>286</change>
-					<insert numberlines="3">282</insert>
-					<bugtypes>
-						<id id="1.2" lines="279">
-							<description>Incorrect condition for offset.</description>
-						</id>
-						<id id="1.1" lines="281">
-							<description>Missing case for offset.</description>
-						</id>
-						<id id="1.5" lines="286">
-							<description>Incorrect calculation of offset.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-8">
+            <tests>
+                <testfile path="org/joda/time/TestDateTimeZone">
+                    <exception>java.lang.IllegalArgumentException:Minutes out of
+                        range:-15
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>3950</number_tests>
+                    <failed>1</failed>
+                    <passed>3949</passed>
+                    <nodes>13372</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/DateTimeZone.java">
+                    <change>279</change>
+                    <change>286</change>
+                    <insert numberlines="3">282</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="279">
+                            <description>Incorrect condition for offset.</description>
+                        </id>
+                        <id id="1.1" lines="281">
+                            <description>Missing case for offset.</description>
+                        </id>
+                        <id id="1.5" lines="286">
+                            <description>Incorrect calculation of offset.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

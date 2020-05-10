@@ -24,37 +24,39 @@ import com.google.javascript.rhino.Token;
  * Converts property accesses from quoted string syntax to dot syntax, where
  * possible. Dot syntax is more compact and avoids an object allocation in
  * IE 6.
- *
-*
  */
 class ConvertToDottedProperties extends AbstractPostOrderCallback
-    implements CompilerPass {
+        implements CompilerPass {
 
-  private final AbstractCompiler compiler;
+    private final AbstractCompiler compiler;
 
-  ConvertToDottedProperties(AbstractCompiler compiler) {
-    this.compiler = compiler;
-  }
-
-  /** {@inheritDoc} */
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, root, this);
-  }
-
-  /** {@inheritDoc} */
-  public void visit(NodeTraversal t, Node n, Node parent) {
-    switch (n.getType()) {
-      case Token.GETELEM:
-        Node left = n.getFirstChild();
-        Node right = left.getNext();
-        if (right.getType() == Token.STRING &&
-            NodeUtil.isValidPropertyName(right.getString())) {
-          n.removeChild(left);
-          n.removeChild(right);
-          parent.replaceChild(n, new Node(Token.GETPROP, left, right));
-          compiler.reportCodeChange();
-        }
-        break;
+    ConvertToDottedProperties(AbstractCompiler compiler) {
+        this.compiler = compiler;
     }
-  }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, root, this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visit(NodeTraversal t, Node n, Node parent) {
+        switch (n.getType()) {
+            case Token.GETELEM:
+                Node left = n.getFirstChild();
+                Node right = left.getNext();
+                if (right.getType() == Token.STRING &&
+                        NodeUtil.isValidPropertyName(right.getString())) {
+                    n.removeChild(left);
+                    n.removeChild(right);
+                    parent.replaceChild(n, new Node(Token.GETPROP, left, right));
+                    compiler.reportCodeChange();
+                }
+                break;
+        }
+    }
 }

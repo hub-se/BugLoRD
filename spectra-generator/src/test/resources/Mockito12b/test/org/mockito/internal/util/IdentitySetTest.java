@@ -4,15 +4,15 @@
  */
 package org.mockito.internal.util;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 
 public class IdentitySetTest {
-    
+
     IdentitySet set = new IdentitySet();
-    
+
     @Test
     public void shouldWork() throws Exception {
         //when
@@ -23,20 +23,20 @@ public class IdentitySetTest {
         assertTrue(set.contains(o));
         assertFalse(set.contains(new Object()));
     }
-    
+
     class Fake {
         @Override
         public boolean equals(Object obj) {
             return true;
         }
     }
-    
+
     @Test
     public void shouldWorkEvenIfEqualsTheSame() throws Exception {
         //given
         assertEquals(new Fake(), new Fake());
         Fake fake = new Fake();
-        
+
         //when
         set.add(fake);
 

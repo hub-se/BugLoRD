@@ -15,25 +15,19 @@
  */
 package org.joda.time.base;
 
-import java.io.Serializable;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTimeUtils;
-import org.joda.time.Interval;
-import org.joda.time.Period;
-import org.joda.time.PeriodType;
-import org.joda.time.ReadableDuration;
-import org.joda.time.ReadableInstant;
+import org.joda.time.*;
 import org.joda.time.convert.ConverterManager;
 import org.joda.time.convert.DurationConverter;
 import org.joda.time.field.FieldUtils;
+
+import java.io.Serializable;
 
 /**
  * BaseDuration is an abstract implementation of ReadableDuration that stores
  * data in a <code>long</code> duration milliseconds field.
  * <p>
  * This class should generally not be used directly by API users.
- * The {@link ReadableDuration} interface should be used when different 
+ * The {@link ReadableDuration} interface should be used when different
  * kinds of duration objects are to be referenced.
  * <p>
  * BaseDuration subclasses may be mutable and not thread-safe.
@@ -46,16 +40,20 @@ public abstract class BaseDuration
         extends AbstractDuration
         implements ReadableDuration, Serializable {
 
-    /** Serialization version */
+    /**
+     * Serialization version
+     */
     private static final long serialVersionUID = 2581698638990L;
 
-    /** The duration length */
+    /**
+     * The duration length
+     */
     private volatile long iMillis;
 
     /**
      * Creates a duration from the given millisecond duration.
      *
-     * @param duration  the duration, in milliseconds
+     * @param duration the duration, in milliseconds
      */
     protected BaseDuration(long duration) {
         super();
@@ -65,8 +63,8 @@ public abstract class BaseDuration
     /**
      * Creates a duration from the given interval endpoints.
      *
-     * @param startInstant  interval start, in milliseconds
-     * @param endInstant  interval end, in milliseconds
+     * @param startInstant interval start, in milliseconds
+     * @param endInstant   interval end, in milliseconds
      * @throws ArithmeticException if the duration exceeds a 64-bit long
      */
     protected BaseDuration(long startInstant, long endInstant) {
@@ -77,8 +75,8 @@ public abstract class BaseDuration
     /**
      * Creates a duration from the given interval endpoints.
      *
-     * @param start  interval start, null means now
-     * @param end  interval end, null means now
+     * @param start interval start, null means now
+     * @param end   interval end, null means now
      * @throws ArithmeticException if the duration exceeds a 64-bit long
      */
     protected BaseDuration(ReadableInstant start, ReadableInstant end) {
@@ -96,7 +94,7 @@ public abstract class BaseDuration
      * Creates a duration from the specified object using the
      * {@link org.joda.time.convert.ConverterManager ConverterManager}.
      *
-     * @param duration  duration to convert
+     * @param duration duration to convert
      * @throws IllegalArgumentException if duration is invalid
      */
     protected BaseDuration(Object duration) {
@@ -106,6 +104,7 @@ public abstract class BaseDuration
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the length of this duration in milliseconds.
      *
@@ -116,16 +115,18 @@ public abstract class BaseDuration
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Sets the length of this duration in milliseconds.
-     * 
-     * @param duration  the new length of the duration
+     *
+     * @param duration the new length of the duration
      */
     protected void setMillis(long duration) {
         iMillis = duration;
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Converts this duration to a Period instance using the specified period type
      * and the ISO chronology.
@@ -136,8 +137,8 @@ public abstract class BaseDuration
      * <p>
      * For more control over the conversion process, you must pair the duration with
      * an instant, see {@link #toPeriodFrom(ReadableInstant, PeriodType)}.
-     * 
-     * @param type  the period type to use, null means standard
+     *
+     * @param type the period type to use, null means standard
      * @return a Period created using the millisecond duration from this instance
      */
     public Period toPeriod(PeriodType type) {
@@ -156,8 +157,8 @@ public abstract class BaseDuration
      * For more control over the conversion process, you must pair the duration with
      * an instant, see {@link #toPeriodFrom(ReadableInstant)} and
      * {@link #toPeriodTo(ReadableInstant)}
-     * 
-     * @param chrono  the chronology to use, null means ISO default
+     *
+     * @param chrono the chronology to use, null means ISO default
      * @return a Period created using the millisecond duration from this instance
      */
     public Period toPeriod(Chronology chrono) {
@@ -176,9 +177,9 @@ public abstract class BaseDuration
      * For more control over the conversion process, you must pair the duration with
      * an instant, see {@link #toPeriodFrom(ReadableInstant, PeriodType)} and
      * {@link #toPeriodTo(ReadableInstant, PeriodType)}
-     * 
-     * @param type  the period type to use, null means standard
-     * @param chrono  the chronology to use, null means ISO default
+     *
+     * @param type   the period type to use, null means standard
+     * @param chrono the chronology to use, null means ISO default
      * @return a Period created using the millisecond duration from this instance
      */
     public Period toPeriod(PeriodType type, Chronology chrono) {
@@ -192,8 +193,8 @@ public abstract class BaseDuration
      * This conversion will determine the fields of a period accurately.
      * The results are based on the instant millis, the chronology of the instant,
      * the standard period type and the length of this duration.
-     * 
-     * @param startInstant  the instant to calculate the period from, null means now
+     *
+     * @param startInstant the instant to calculate the period from, null means now
      * @return a Period created using the millisecond duration from this instance
      */
     public Period toPeriodFrom(ReadableInstant startInstant) {
@@ -207,9 +208,9 @@ public abstract class BaseDuration
      * This conversion will determine the fields of a period accurately.
      * The results are based on the instant millis, the chronology of the instant,
      * the period type and the length of this duration.
-     * 
-     * @param startInstant  the instant to calculate the period from, null means now
-     * @param type  the period type determining how to split the duration into fields, null means All type
+     *
+     * @param startInstant the instant to calculate the period from, null means now
+     * @param type         the period type determining how to split the duration into fields, null means All type
      * @return a Period created using the millisecond duration from this instance
      */
     public Period toPeriodFrom(ReadableInstant startInstant, PeriodType type) {
@@ -224,8 +225,8 @@ public abstract class BaseDuration
      * This conversion will determine the fields of a period accurately.
      * The results are based on the instant millis, the chronology of the instant,
      * the standard period type and the length of this duration.
-     * 
-     * @param endInstant  the instant to calculate the period to, null means now
+     *
+     * @param endInstant the instant to calculate the period to, null means now
      * @return a Period created using the millisecond duration from this instance
      */
     public Period toPeriodTo(ReadableInstant endInstant) {
@@ -240,9 +241,9 @@ public abstract class BaseDuration
      * This conversion will determine the fields of a period accurately.
      * The results are based on the instant millis, the chronology of the instant,
      * the period type and the length of this duration.
-     * 
-     * @param endInstant  the instant to calculate the period to, null means now
-     * @param type  the period type determining how to split the duration into fields, null means All type
+     *
+     * @param endInstant the instant to calculate the period to, null means now
+     * @param type       the period type determining how to split the duration into fields, null means All type
      * @return a Period created using the millisecond duration from this instance
      */
     public Period toPeriodTo(ReadableInstant endInstant, PeriodType type) {
@@ -251,8 +252,8 @@ public abstract class BaseDuration
 
     /**
      * Converts this duration to an Interval starting at the specified instant.
-     * 
-     * @param startInstant  the instant to start the interval at, null means now
+     *
+     * @param startInstant the instant to start the interval at, null means now
      * @return an Interval starting at the specified instant
      */
     public Interval toIntervalFrom(ReadableInstant startInstant) {
@@ -261,8 +262,8 @@ public abstract class BaseDuration
 
     /**
      * Converts this duration to an Interval ending at the specified instant.
-     * 
-     * @param endInstant  the instant to end the interval at, null means now
+     *
+     * @param endInstant the instant to end the interval at, null means now
      * @return an Interval ending at the specified instant
      */
     public Interval toIntervalTo(ReadableInstant endInstant) {

@@ -4,10 +4,10 @@
  */
 package org.mockito.internal.matchers;
 
+import org.hamcrest.Description;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
-
-import org.hamcrest.Description;
 
 public class ArrayEquals extends Equals {
 

@@ -1,31 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-45">
-			<tests>
-				<testfile path="org/apache/commons/math/linear/OpenMapRealMatrixTest">
-					<exception>junit.framework.AssertionFailedError:Expected
-						exception:org.apache.commons.math.exception.NumberIsTooLargeException
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>460</number_tests>
-					<failed>1</failed>
-					<passed>459</passed>
-					<nodes>30803</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/linear/OpenMapRealMatrix.java">
-					<insert numberlines="5">50</insert>
-					<bugtypes>
-						<id id="1.1" lines="49">
-							<description>Missing check for dimensions.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-45">
+            <tests>
+                <testfile path="org/apache/commons/math/linear/OpenMapRealMatrixTest">
+                    <exception>junit.framework.AssertionFailedError:Expected
+                        exception:org.apache.commons.math.exception.NumberIsTooLargeException
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>460</number_tests>
+                    <failed>1</failed>
+                    <passed>459</passed>
+                    <nodes>30803</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/linear/OpenMapRealMatrix.java">
+                    <insert numberlines="5">50</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="49">
+                            <description>Missing check for dimensions.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

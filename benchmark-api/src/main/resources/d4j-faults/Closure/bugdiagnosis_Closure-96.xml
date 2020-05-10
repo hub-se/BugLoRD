@@ -1,34 +1,34 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-96">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
-					<exception>junit.framework.AssertionFailedError:expected a warning
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>5083</number_tests>
-					<failed>1</failed>
-					<passed>5082</passed>
-					<nodes>38902</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/TypeCheck.java">
-					<change parent="1408-1409">1409</change>
-					<insert numberlines="1,1">1410-1412,1413</insert>
-					<bugtypes>
-						<id id="1.2" lines="1409">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.1" lines="1411,1412">
-							<description>Missing case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-96">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/TypeCheckTest">
+                    <exception>junit.framework.AssertionFailedError:expected a warning
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>5083</number_tests>
+                    <failed>1</failed>
+                    <passed>5082</passed>
+                    <nodes>38902</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/TypeCheck.java">
+                    <change parent="1408-1409">1409</change>
+                    <insert numberlines="1,1">1410-1412,1413</insert>
+                    <bugtypes>
+                        <id id="1.2" lines="1409">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.1" lines="1411,1412">
+                            <description>Missing case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

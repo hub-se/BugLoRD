@@ -16,21 +16,12 @@
  */
 package org.apache.commons.lang3.concurrent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
 import org.easymock.EasyMock;
 import org.junit.Test;
+
+import java.util.concurrent.*;
+
+import static org.junit.Assert.*;
 
 /**
  * Test class for {@link ConcurrentUtils}.
@@ -306,6 +297,7 @@ public class ConcurrentUtilsTest {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Tests initialize() for a null argument.
      */
@@ -375,6 +367,7 @@ public class ConcurrentUtilsTest {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Tests constant future.
      */
@@ -408,6 +401,7 @@ public class ConcurrentUtilsTest {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Tests putIfAbsent() if the map contains the key in question.
      */

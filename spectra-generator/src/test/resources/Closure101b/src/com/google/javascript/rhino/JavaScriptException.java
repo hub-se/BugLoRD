@@ -44,11 +44,8 @@ package com.google.javascript.rhino;
 /**
  * Java reflection of JavaScript exceptions.
  * Instances of this class are thrown by the JavaScript 'throw' keyword.
- *
-*
  */
-class JavaScriptException extends RhinoException
-{
+class JavaScriptException extends RhinoException {
     static final long serialVersionUID = -7666130513694669293L;
 
     /**
@@ -56,8 +53,7 @@ class JavaScriptException extends RhinoException
      *
      * @param value the JavaScript value thrown.
      */
-    JavaScriptException(Object value, String sourceName, int lineNumber)
-    {
+    JavaScriptException(Object value, String sourceName, int lineNumber) {
         recordErrorOrigin(sourceName, lineNumber, null, 0);
         this.value = value;
     }
@@ -65,8 +61,7 @@ class JavaScriptException extends RhinoException
     /**
      * @return the value wrapped by this exception
      */
-    Object getValue()
-    {
+    Object getValue() {
         return value;
     }
 

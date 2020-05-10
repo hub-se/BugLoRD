@@ -18,56 +18,54 @@ package com.google.javascript.jscomp;
 
 /**
  * Tests for {@link GoogleCodeRemoval}
- *
-*
  */
 public class GoogleCodeRemovalTest extends CompilerTestCase {
 
-  private static String EXTERNS = "var window;";
+    private static String EXTERNS = "var window;";
 
-  public GoogleCodeRemovalTest() {
-    super(EXTERNS);
-  }
+    public GoogleCodeRemovalTest() {
+        super(EXTERNS);
+    }
 
-  public void testRemoveAbstract() {
-    test("function Foo() {}; Foo.prototype.doSomething = goog.abstractMethod;",
-        "function Foo() {};");
-  }
+    public void testRemoveAbstract() {
+        test("function Foo() {}; Foo.prototype.doSomething = goog.abstractMethod;",
+                "function Foo() {};");
+    }
 
-  public void testRemoveMultiplySetAbstract() {
-    test("function Foo() {}; Foo.prototype.doSomething = " +
-        "Foo.prototype.doSomethingElse = Foo.prototype.oneMore = " +
-        "goog.abstractMethod;",
-        "function Foo() {};");
-  }
+    public void testRemoveMultiplySetAbstract() {
+        test("function Foo() {}; Foo.prototype.doSomething = " +
+                        "Foo.prototype.doSomethingElse = Foo.prototype.oneMore = " +
+                        "goog.abstractMethod;",
+                "function Foo() {};");
+    }
 
-  public void testDoNotRemoveNormal() {
-    testSame("function Foo() {}; Foo.prototype.doSomething = function() {};");
-  }
+    public void testDoNotRemoveNormal() {
+        testSame("function Foo() {}; Foo.prototype.doSomething = function() {};");
+    }
 
-  public void testDoNotRemoveOverride() {
-    test("function Foo() {}; Foo.prototype.doSomething = goog.abstractMethod;" +
-         "function Bar() {}; goog.inherits(Bar, Foo);" +
-         "Bar.prototype.doSomething = function() {}",
-         "function Foo() {}; function Bar() {}; goog.inherits(Bar, Foo);" +
-         "Bar.prototype.doSomething = function() {}");
-  }
+    public void testDoNotRemoveOverride() {
+        test("function Foo() {}; Foo.prototype.doSomething = goog.abstractMethod;" +
+                        "function Bar() {}; goog.inherits(Bar, Foo);" +
+                        "Bar.prototype.doSomething = function() {}",
+                "function Foo() {}; function Bar() {}; goog.inherits(Bar, Foo);" +
+                        "Bar.prototype.doSomething = function() {}");
+    }
 
-  public void testDoNotRemoveNonQualifiedName() {
-    testSame("document.getElementById('x').y = goog.abstractMethod;");
-  }
+    public void testDoNotRemoveNonQualifiedName() {
+        testSame("document.getElementById('x').y = goog.abstractMethod;");
+    }
 
-  public void testStopRemovalAtNonQualifiedName() {
-    test("function Foo() {}; function Bar() {};" +
-         "Foo.prototype.x = document.getElementById('x').y = Bar.prototype.x" +
-         " = goog.abstractMethod;",
-         "function Foo() {}; function Bar() {};" +
-         "Foo.prototype.x = document.getElementById('x').y = " +
-         "goog.abstractMethod;");
-  }
+    public void testStopRemovalAtNonQualifiedName() {
+        test("function Foo() {}; function Bar() {};" +
+                        "Foo.prototype.x = document.getElementById('x').y = Bar.prototype.x" +
+                        " = goog.abstractMethod;",
+                "function Foo() {}; function Bar() {};" +
+                        "Foo.prototype.x = document.getElementById('x').y = " +
+                        "goog.abstractMethod;");
+    }
 
-  @Override
-  protected GoogleCodeRemoval getProcessor(Compiler compiler) {
-    return new GoogleCodeRemoval(compiler);
-  }
+    @Override
+    protected GoogleCodeRemoval getProcessor(Compiler compiler) {
+        return new GoogleCodeRemoval(compiler);
+    }
 }

@@ -1,37 +1,38 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-22">
-			<tests>
-				<testfile path="org/apache/commons/lang3/math/FractionTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;-1073741824&gt;
-						but was:&lt;-2147483648&gt;:-
-						org.apache.commons.lang3.math.FractionTest::testReduce:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;-1073741824&gt;
-						but was:&lt;-2147483648&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>25</number_tests>
-					<failed>2</failed>
-					<passed>23</passed>
-					<nodes>10358</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/math/Fraction.java">
-					<change>584</change>
-					<insert numberlines="6">582-584</insert>
-					<bugtypes>
-						<id id="1.1" lines="582">
-							<description>Missing check for zero value of variables.</description>
-						</id>
-						<id id="1.2" lines="584">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-22">
+            <tests>
+                <testfile path="org/apache/commons/lang3/math/FractionTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;-1073741824&gt;
+                        but was:&lt;-2147483648&gt;:-
+                        org.apache.commons.lang3.math.FractionTest::testReduce:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;-1073741824&gt;
+                        but was:&lt;-2147483648&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>25</number_tests>
+                    <failed>2</failed>
+                    <passed>23</passed>
+                    <nodes>10358</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/math/Fraction.java">
+                    <change>584</change>
+                    <insert numberlines="6">582-584</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="582">
+                            <description>Missing check for zero value of variables.</description>
+                        </id>
+                        <id id="1.2" lines="584">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

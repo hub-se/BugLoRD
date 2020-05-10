@@ -22,7 +22,7 @@ import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Map;
 
 /**
  * Extract a list of all function nodes defined in a javascript
@@ -30,148 +30,148 @@ import java.util.*;
  * qualified names.  Function names are derived from the property they
  * are assigned to and the scope they are defined in.  For instance,
  * the following code
- *
+ * <p>
  * goog.widget = function(str) {
- *   this.member_fn = function() {}
- *   local_fn = function() {}
- *   goog.array.map(arr, function(){});
+ * this.member_fn = function() {}
+ * local_fn = function() {}
+ * goog.array.map(arr, function(){});
  * }
- *
+ * <p>
  * defines the following functions
- *
- *  goog.widget
- *  goog.widget.member_fn
- *  goog.widget::local_fn
- *  goog.widget::<anonymous>
- *
-*
+ * <p>
+ * goog.widget
+ * goog.widget.member_fn
+ * goog.widget::local_fn
+ * goog.widget::<anonymous>
  */
 
 class FunctionNames implements CompilerPass, Serializable {
-  private static final long serialVersionUID = 1L;
-
-  private final transient AbstractCompiler compiler;
-  private final Map<Node, FunctionRecord> functionMap = Maps.newLinkedHashMap();
-  private final transient FunctionListExtractor functionListExtractor;
-
-  FunctionNames(AbstractCompiler compiler) {
-    this.compiler = compiler;
-    this.functionListExtractor = new FunctionListExtractor(functionMap);
-  }
-
-  /** {@inheritDoc} */
-  public void process(Node externs, Node root) {
-    NodeTraversal.traverse(compiler, root, functionListExtractor);
-    AnonymousFunctionNamer namer = new AnonymousFunctionNamer(functionMap);
-    AnonymousFunctionNamingCallback namingCallback =
-        new AnonymousFunctionNamingCallback(namer);
-    NodeTraversal.traverse(compiler, root, namingCallback);
-  }
-
-  public Iterable<Node> getFunctionNodeList() {
-    return functionMap.keySet();
-  }
-
-  public int getFunctionId(Node f) {
-    FunctionRecord record = functionMap.get(f);
-    if (record != null) {
-      return record.id;
-    } else {
-      return -1;
-    }
-  }
-
-  public String getFunctionName(Node f) {
-    FunctionRecord record = functionMap.get(f);
-    if (record == null) {
-      // Function node was added during compilation and has no name.
-      return null;
-    }
-
-    String str = record.name;
-    if (str.isEmpty()) {
-      str = "<anonymous>";
-    }
-
-    Node parent = record.parent;
-    if (parent != null) {
-      str = getFunctionName(parent) + "::" + str;
-    }
-
-    // this.foo -> foo
-    str = str.replaceAll("::this\\.", ".");
-    // foo.prototype.bar -> foo.bar
-    // AnonymousFunctionNamingCallback already replaces ".prototype."
-    // with "..", just remove the extra dot.
-    str = str.replaceAll("\\.\\.", ".");
-    // remove toplevel anonymous blocks, if they exists.
-    str = str.replaceFirst("^(<anonymous>::)*", "");
-    return str;
-  }
-
-  private static class FunctionRecord implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public final int id;
-    public final Node parent;
-    public String name;
+    private final transient AbstractCompiler compiler;
+    private final Map<Node, FunctionRecord> functionMap = Maps.newLinkedHashMap();
+    private final transient FunctionListExtractor functionListExtractor;
 
-    FunctionRecord(int id, Node parent, String name) {
-      this.id = id;
-      this.parent = parent;
-      this.name = name;
-    }
-  }
-
-  private static class FunctionListExtractor extends AbstractPostOrderCallback {
-    private final Map<Node, FunctionRecord> functionMap;
-    private int nextId = 0;
-
-    FunctionListExtractor(Map<Node, FunctionRecord> functionMap) {
-      this.functionMap = functionMap;
+    FunctionNames(AbstractCompiler compiler) {
+        this.compiler = compiler;
+        this.functionListExtractor = new FunctionListExtractor(functionMap);
     }
 
-    public void visit(NodeTraversal t, Node n, Node parent) {
-      if (n.getType() == Token.FUNCTION) {
-        Node functionNameNode = n.getFirstChild();
-        String functionName = functionNameNode.getString();
-
-        Node enclosingFunction = t.getEnclosingFunction();
-
-        functionMap.put(n,
-            new FunctionRecord(nextId, enclosingFunction, functionName));
-        nextId++;
-      }
-    }
-  }
-
-  private static class AnonymousFunctionNamer
-      implements AnonymousFunctionNamingCallback.FunctionNamer {
-    private static final char DELIMITER = '.';
-    private static final NodeNameExtractor extractor =
-        new NodeNameExtractor(DELIMITER);
-    private final Map<Node, FunctionRecord> functionMap;
-
-    AnonymousFunctionNamer(Map<Node, FunctionRecord> functionMap) {
-      this.functionMap = functionMap;
+    /**
+     * {@inheritDoc}
+     */
+    public void process(Node externs, Node root) {
+        NodeTraversal.traverse(compiler, root, functionListExtractor);
+        AnonymousFunctionNamer namer = new AnonymousFunctionNamer(functionMap);
+        AnonymousFunctionNamingCallback namingCallback =
+                new AnonymousFunctionNamingCallback(namer);
+        NodeTraversal.traverse(compiler, root, namingCallback);
     }
 
-    @Override
-    public final String getName(Node node) {
-      return extractor.getName(node);
+    public Iterable<Node> getFunctionNodeList() {
+        return functionMap.keySet();
     }
 
-    @Override
-    public final void setFunctionName(String name, Node fnNode) {
-      FunctionRecord record = functionMap.get(fnNode);
-      assert(record != null);
-      assert(record.name.isEmpty());
-      record.name = name;
+    public int getFunctionId(Node f) {
+        FunctionRecord record = functionMap.get(f);
+        if (record != null) {
+            return record.id;
+        } else {
+            return -1;
+        }
     }
 
-    @Override
-    public final String getCombinedName(String lhs, String rhs) {
-      return lhs + DELIMITER + rhs;
+    public String getFunctionName(Node f) {
+        FunctionRecord record = functionMap.get(f);
+        if (record == null) {
+            // Function node was added during compilation and has no name.
+            return null;
+        }
+
+        String str = record.name;
+        if (str.isEmpty()) {
+            str = "<anonymous>";
+        }
+
+        Node parent = record.parent;
+        if (parent != null) {
+            str = getFunctionName(parent) + "::" + str;
+        }
+
+        // this.foo -> foo
+        str = str.replaceAll("::this\\.", ".");
+        // foo.prototype.bar -> foo.bar
+        // AnonymousFunctionNamingCallback already replaces ".prototype."
+        // with "..", just remove the extra dot.
+        str = str.replaceAll("\\.\\.", ".");
+        // remove toplevel anonymous blocks, if they exists.
+        str = str.replaceFirst("^(<anonymous>::)*", "");
+        return str;
     }
-  }
+
+    private static class FunctionRecord implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public final int id;
+        public final Node parent;
+        public String name;
+
+        FunctionRecord(int id, Node parent, String name) {
+            this.id = id;
+            this.parent = parent;
+            this.name = name;
+        }
+    }
+
+    private static class FunctionListExtractor extends AbstractPostOrderCallback {
+        private final Map<Node, FunctionRecord> functionMap;
+        private int nextId = 0;
+
+        FunctionListExtractor(Map<Node, FunctionRecord> functionMap) {
+            this.functionMap = functionMap;
+        }
+
+        public void visit(NodeTraversal t, Node n, Node parent) {
+            if (n.getType() == Token.FUNCTION) {
+                Node functionNameNode = n.getFirstChild();
+                String functionName = functionNameNode.getString();
+
+                Node enclosingFunction = t.getEnclosingFunction();
+
+                functionMap.put(n,
+                        new FunctionRecord(nextId, enclosingFunction, functionName));
+                nextId++;
+            }
+        }
+    }
+
+    private static class AnonymousFunctionNamer
+            implements AnonymousFunctionNamingCallback.FunctionNamer {
+        private static final char DELIMITER = '.';
+        private static final NodeNameExtractor extractor =
+                new NodeNameExtractor(DELIMITER);
+        private final Map<Node, FunctionRecord> functionMap;
+
+        AnonymousFunctionNamer(Map<Node, FunctionRecord> functionMap) {
+            this.functionMap = functionMap;
+        }
+
+        @Override
+        public final String getName(Node node) {
+            return extractor.getName(node);
+        }
+
+        @Override
+        public final void setFunctionName(String name, Node fnNode) {
+            FunctionRecord record = functionMap.get(fnNode);
+            assert (record != null);
+            assert (record.name.isEmpty());
+            record.name = name;
+        }
+
+        @Override
+        public final String getCombinedName(String lhs, String rhs) {
+            return lhs + DELIMITER + rhs;
+        }
+    }
 }

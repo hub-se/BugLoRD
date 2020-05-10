@@ -4,13 +4,13 @@
  */
 package org.mockito.internal.matchers;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.mockito.ArgumentMatcher;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class Or extends ArgumentMatcher implements Serializable {
@@ -33,7 +33,7 @@ public class Or extends ArgumentMatcher implements Serializable {
 
     public void describeTo(Description description) {
         description.appendText("or(");
-        for (Iterator<Matcher> it = matchers.iterator(); it.hasNext();) {
+        for (Iterator<Matcher> it = matchers.iterator(); it.hasNext(); ) {
             it.next().describeTo(description);
             if (it.hasNext()) {
                 description.appendText(", ");

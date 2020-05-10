@@ -1,40 +1,40 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-98">
-			<tests>
-				<testfile path="org/apache/commons/math/linear/RealMatrixImplTest">
-					<exception>java.lang.ArrayIndexOutOfBoundsException:2:-
-						org.apache.commons.math.linear.RealMatrixImplTest::testMath209:--&gt;
-						java.lang.ArrayIndexOutOfBoundsException:2
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>133</number_tests>
-					<failed>2</failed>
-					<passed>131</passed>
-					<nodes>8716</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math/linear/BigMatrixImpl.java">
-					<change>991</change>
-					<bugtypes>
-						<id id="3.1" lines="991">
-							<description>Incorrect initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="org/apache/commons/math/linear/RealMatrixImpl.java">
-					<change>779</change>
-					<bugtypes>
-						<id id="3.1" lines="779">
-							<description>Incorrect initialization.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-98">
+            <tests>
+                <testfile path="org/apache/commons/math/linear/RealMatrixImplTest">
+                    <exception>java.lang.ArrayIndexOutOfBoundsException:2:-
+                        org.apache.commons.math.linear.RealMatrixImplTest::testMath209:--&gt;
+                        java.lang.ArrayIndexOutOfBoundsException:2
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>133</number_tests>
+                    <failed>2</failed>
+                    <passed>131</passed>
+                    <nodes>8716</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math/linear/BigMatrixImpl.java">
+                    <change>991</change>
+                    <bugtypes>
+                        <id id="3.1" lines="991">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="org/apache/commons/math/linear/RealMatrixImpl.java">
+                    <change>779</change>
+                    <bugtypes>
+                        <id id="3.1" lines="779">
+                            <description>Incorrect initialization.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

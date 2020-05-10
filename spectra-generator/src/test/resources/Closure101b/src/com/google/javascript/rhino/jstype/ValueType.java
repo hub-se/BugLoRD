@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,7 +36,7 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 import com.google.javascript.rhino.ErrorReporter;
@@ -45,17 +45,17 @@ import com.google.javascript.rhino.ErrorReporter;
  * Value types (null, void, number, boolean, string).
  */
 abstract class ValueType extends JSType {
-  ValueType(JSTypeRegistry registry) {
-    super(registry);
-  }
+    ValueType(JSTypeRegistry registry) {
+        super(registry);
+    }
 
-  @Override
-  public boolean isSubtype(JSType that) {
-    return JSType.isSubtype(this, that);
-  }
+    @Override
+    public boolean isSubtype(JSType that) {
+        return JSType.isSubtype(this, that);
+    }
 
-  @Override
-  final JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope) {
-    return this;
-  }
+    @Override
+    final JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope) {
+        return this;
+    }
 }

@@ -1,31 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-20">
-			<tests>
-				<testfile
-					path="com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntaxTest">
-					<exception>junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>369</number_tests>
-					<failed>1</failed>
-					<passed>368</passed>
-					<nodes>46290</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java">
-					<change>220</change>
-					<bugtypes>
-						<id id="1.2" lines="220">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-20">
+            <tests>
+                <testfile
+                        path="com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntaxTest">
+                    <exception>junit.framework.AssertionFailedError:</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>369</number_tests>
+                    <failed>1</failed>
+                    <passed>368</passed>
+                    <nodes>46290</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java">
+                    <change>220</change>
+                    <bugtypes>
+                        <id id="1.2" lines="220">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

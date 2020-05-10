@@ -4,10 +4,10 @@
  */
 package org.mockito.configuration;
 
+import org.mockito.MockitoAnnotations;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-
-import org.mockito.MockitoAnnotations;
 
 /**
  * Configures mock creation logic behind &#064;Mock, &#064;Captor and &#064;Spy annotations
@@ -17,15 +17,13 @@ import org.mockito.MockitoAnnotations;
 public interface AnnotationEngine {
 
     /**
-     * @Deprecated
-     * Please use AnnotationProcessor 'execute' method instead that is more robust
-     * <p>
-     * Creates mock, ArgumentCaptor or wraps field instance in spy object.
-     * Only if of correct annotation type.
-     *
      * @param annotation
      * @param field
      * @return
+     * @Deprecated Please use AnnotationProcessor 'execute' method instead that is more robust
+     * <p>
+     * Creates mock, ArgumentCaptor or wraps field instance in spy object.
+     * Only if of correct annotation type.
      */
     @Deprecated
     Object createMockFor(Annotation annotation, Field field);
@@ -34,9 +32,9 @@ public interface AnnotationEngine {
      * Allows extending the interface to perform action on specific fields on the test class
      * <p>
      * See the implementation of this method to figure out what is it for
-     * 
+     *
      * @param context
-     * @param testClass 
+     * @param testClass
      */
     void process(Class<?> context, Object testClass);
 }

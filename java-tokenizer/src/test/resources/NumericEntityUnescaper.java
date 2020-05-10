@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,12 +20,12 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Translate XML numeric entities of the form &#[xX]?\d+; to 
+ * Translate XML numeric entities of the form &#[xX]?\d+; to
  * the specific codepoint.
- * 
+ *
  * @author Apache Software Foundation
- * @since 3.0
  * @version $Id$
+ * @since 3.0
  */
 public class NumericEntityUnescaper extends CharSequenceTranslator {
 
@@ -35,33 +35,33 @@ public class NumericEntityUnescaper extends CharSequenceTranslator {
     @Override
     public int translate(CharSequence input, int index, Writer out) throws IOException {
         // TODO: Protect from ArrayIndexOutOfBounds
-        if(input.charAt(index) == '&' && input.charAt(index + 1) == '#') {
+        if (input.charAt(index) == '&' && input.charAt(index + 1) == '#') {
             int start = index + 2;
             boolean isHex = false;
 
             char firstChar = input.charAt(start);
-            if(firstChar == 'x' || firstChar == 'X') {
+            if (firstChar == 'x' || firstChar == 'X') {
                 start++;
                 isHex = true;
             }
 
             int end = start;
-            while(input.charAt(end) != ';') {
+            while (input.charAt(end) != ';') {
                 end++;
             }
 
             int entityValue;
             try {
-                if(isHex) {
+                if (isHex) {
                     entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 16);
                 } else {
                     entityValue = Integer.parseInt(input.subSequence(start, end).toString(), 10);
                 }
-            } catch(NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 return 0;
             }
 
-            if(entityValue > 0xFFFF) {
+            if (entityValue > 0xFFFF) {
                 char[] chrs = Character.toChars(entityValue);
                 out.write(chrs[0]);
                 out.write(chrs[1]);

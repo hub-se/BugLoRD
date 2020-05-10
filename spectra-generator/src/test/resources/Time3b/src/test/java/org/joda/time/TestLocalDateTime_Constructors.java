@@ -15,18 +15,17 @@
  */
 package org.joda.time;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.chrono.BuddhistChronology;
 import org.joda.time.chrono.GregorianChronology;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * This class is a Junit unit test for LocalDateTime.
@@ -45,24 +44,24 @@ public class TestLocalDateTime_Constructors extends TestCase {
     private static final Chronology BUDDHIST_UTC = BuddhistChronology.getInstanceUTC();
     private static final int OFFSET_PARIS = PARIS.getOffset(0L) / DateTimeConstants.MILLIS_PER_HOUR;
     private static final int OFFSET_MOSCOW = MOSCOW.getOffset(0L) / DateTimeConstants.MILLIS_PER_HOUR;
-    
+
     private long MILLIS_OF_DAY =
-        10L * DateTimeConstants.MILLIS_PER_HOUR
-        + 20L * DateTimeConstants.MILLIS_PER_MINUTE
-        + 30L * DateTimeConstants.MILLIS_PER_SECOND
-        + 40L;
+            10L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 20L * DateTimeConstants.MILLIS_PER_MINUTE
+                    + 30L * DateTimeConstants.MILLIS_PER_SECOND
+                    + 40L;
     private long TEST_TIME_NOW =
-        (31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY
-        + MILLIS_OF_DAY;
+            (31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + MILLIS_OF_DAY;
 
     private long TEST_TIME1 =
-        (31L + 28L + 31L + 6L -1L) * DateTimeConstants.MILLIS_PER_DAY
-        + 12L * DateTimeConstants.MILLIS_PER_HOUR
-        + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
+            (31L + 28L + 31L + 6L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 12L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
     private long TEST_TIME2 =
-        (365L + 31L + 28L + 31L + 30L + 7L -1L) * DateTimeConstants.MILLIS_PER_DAY
-        + 14L * DateTimeConstants.MILLIS_PER_HOUR
-        + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
+            (365L + 31L + 28L + 31L + 30L + 7L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 14L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
 
     private DateTimeZone zone = null;
 
@@ -129,21 +128,22 @@ public class TestLocalDateTime_Constructors extends TestCase {
         try {
             LocalDateTime.fromCalendarFields((Calendar) null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
     public void testFactory_fromDateFields_after1970() throws Exception {
         GregorianCalendar cal = new GregorianCalendar(1970, 1, 3, 4, 5, 6);
         cal.set(Calendar.MILLISECOND, 7);
-        LocalDateTime expected = new LocalDateTime(1970, 2, 3, 4, 5 ,6, 7);
+        LocalDateTime expected = new LocalDateTime(1970, 2, 3, 4, 5, 6, 7);
         assertEquals(expected, LocalDateTime.fromDateFields(cal.getTime()));
     }
 
     public void testFactory_fromDateFields_before1970() throws Exception {
         GregorianCalendar cal = new GregorianCalendar(1969, 1, 3, 4, 5, 6);
         cal.set(Calendar.MILLISECOND, 7);
-        LocalDateTime expected = new LocalDateTime(1969, 2, 3, 4, 5 ,6, 7);
+        LocalDateTime expected = new LocalDateTime(1969, 2, 3, 4, 5, 6, 7);
         assertEquals(expected, LocalDateTime.fromDateFields(cal.getTime()));
     }
 
@@ -167,7 +167,8 @@ public class TestLocalDateTime_Constructors extends TestCase {
         try {
             LocalDateTime.fromDateFields((Date) null);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -189,7 +190,7 @@ public class TestLocalDateTime_Constructors extends TestCase {
         DateTime dt = new DateTime(2005, 6, 8, 23, 59, 0, 0, LONDON);
         DateTimeUtils.setCurrentMillisFixed(dt.getMillis());
         // 23:59 in London is 00:59 the following day in Paris
-        
+
         LocalDateTime test = new LocalDateTime(LONDON);
         assertEquals(ISO_UTC, test.getChronology());
         assertEquals(2005, test.getYear());
@@ -200,7 +201,7 @@ public class TestLocalDateTime_Constructors extends TestCase {
         assertEquals(0, test.getSecondOfMinute());
         assertEquals(0, test.getMillisOfSecond());
         assertEquals(test, LocalDateTime.now(LONDON));
-        
+
         test = new LocalDateTime(PARIS);
         assertEquals(ISO_UTC, test.getChronology());
         assertEquals(2005, test.getYear());
@@ -428,42 +429,48 @@ public class TestLocalDateTime_Constructors extends TestCase {
         try {
             new LocalDateTime("1970-04-06T+14:00");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testConstructor_ObjectStringEx2() throws Throwable {
         try {
             new LocalDateTime("1970-04-06T10:20:30.040+14:00");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testConstructor_ObjectStringEx3() throws Throwable {
         try {
             new LocalDateTime("T10:20:30.040");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testConstructor_ObjectStringEx4() throws Throwable {
         try {
             new LocalDateTime("T10:20:30.040+14:00");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testConstructor_ObjectStringEx5() throws Throwable {
         try {
             new LocalDateTime("10:20:30.040");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testConstructor_ObjectStringEx6() throws Throwable {
         try {
             new LocalDateTime("10:20:30.040+14:00");
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testConstructor_ObjectLocalDateTime() throws Throwable {
@@ -484,7 +491,8 @@ public class TestLocalDateTime_Constructors extends TestCase {
         try {
             new LocalDateTime(date);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testConstructor_ObjectLocalTime() throws Throwable {
@@ -492,7 +500,8 @@ public class TestLocalDateTime_Constructors extends TestCase {
         try {
             new LocalDateTime(time);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     //-----------------------------------------------------------------------
@@ -524,7 +533,7 @@ public class TestLocalDateTime_Constructors extends TestCase {
     public void testConstructor_Object_DateTimeZoneMoscowBadDateTime() throws Throwable {
         // 1981-03-31T23:59:59.999+03:00 followed by 1981-04-01T01:00:00.000+04:00
         // 1981-09-30T23:59:59.999+04:00 followed by 1981-09-30T23:00:00.000+03:00
-        
+
         // when a DST non-existing time is passed in, it should still work (ie. zone ignored)
         LocalDateTime test = new LocalDateTime("1981-04-01T00:30:00", MOSCOW);  // doesnt exist
         assertEquals(ISO_UTC, test.getChronology());
@@ -616,7 +625,7 @@ public class TestLocalDateTime_Constructors extends TestCase {
     public void testConstructor_Object_ChronologyMoscowBadDateTime() throws Throwable {
         // 1981-03-31T23:59:59.999+03:00 followed by 1981-04-01T01:00:00.000+04:00
         // 1981-09-30T23:59:59.999+04:00 followed by 1981-09-30T23:00:00.000+03:00
-        
+
         // when a DST non-existing time is passed in, it should still work (ie. zone ignored)
         LocalDateTime test = new LocalDateTime("1981-04-01T00:30:00", GREGORIAN_MOSCOW);  // doesnt exist
         assertEquals(GREGORIAN_UTC, test.getChronology());
@@ -706,32 +715,39 @@ public class TestLocalDateTime_Constructors extends TestCase {
         try {
             new LocalDateTime(Integer.MIN_VALUE, 6, 9, 10, 20, 30, 40);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new LocalDateTime(Integer.MAX_VALUE, 6, 9, 10, 20, 30, 40);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new LocalDateTime(2005, 0, 9, 10, 20, 30, 40);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new LocalDateTime(2005, 13, 9, 10, 20, 30, 40);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new LocalDateTime(2005, 6, 0, 10, 20, 30, 40);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new LocalDateTime(2005, 6, 31, 10, 20, 30, 40);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         new LocalDateTime(2005, 7, 31, 10, 20, 30, 40);
         try {
             new LocalDateTime(2005, 7, 32, 10, 20, 30, 40);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testConstructor_int_int_int_Chronology() throws Throwable {
@@ -747,32 +763,39 @@ public class TestLocalDateTime_Constructors extends TestCase {
         try {
             new LocalDateTime(Integer.MIN_VALUE, 6, 9, 10, 20, 30, 40, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new LocalDateTime(Integer.MAX_VALUE, 6, 9, 10, 20, 30, 40, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new LocalDateTime(2005, 0, 9, 10, 20, 30, 40, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new LocalDateTime(2005, 13, 9, 10, 20, 30, 40, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new LocalDateTime(2005, 6, 0, 10, 20, 30, 40, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         try {
             new LocalDateTime(2005, 6, 31, 10, 20, 30, 40, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
         new LocalDateTime(2005, 7, 31, 10, 20, 30, 40, GREGORIAN_PARIS);
         try {
             new LocalDateTime(2005, 7, 32, 10, 20, 30, 40, GREGORIAN_PARIS);
             fail();
-        } catch (IllegalArgumentException ex) {}
+        } catch (IllegalArgumentException ex) {
+        }
     }
 
     public void testConstructor_int_int_int_nullChronology() throws Throwable {

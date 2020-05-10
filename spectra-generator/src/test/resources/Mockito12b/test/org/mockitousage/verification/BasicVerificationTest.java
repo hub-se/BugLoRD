@@ -4,10 +4,6 @@
  */
 package org.mockitousage.verification;
 
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.exceptions.verification.NoInteractionsWanted;
@@ -16,12 +12,18 @@ import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import java.util.List;
+
+import static org.mockito.Mockito.*;
+
 @SuppressWarnings("unchecked")
 public class BasicVerificationTest extends TestBase {
 
-    @Mock private List mock;
-    @Mock private List mockTwo;
-    
+    @Mock
+    private List mock;
+    @Mock
+    private List mockTwo;
+
     @Test
     public void shouldVerify() throws Exception {
         mock.clear();
@@ -33,7 +35,7 @@ public class BasicVerificationTest extends TestBase {
         verifyNoMoreInteractions(mock);
     }
 
-    @Test(expected=WantedButNotInvoked.class)
+    @Test(expected = WantedButNotInvoked.class)
     public void shouldFailVerification() throws Exception {
         verify(mock).clear();
     }
@@ -47,14 +49,15 @@ public class BasicVerificationTest extends TestBase {
         try {
             verify(mock).add("bar");
             fail();
-        } catch (AssertionError expected) {}
+        } catch (AssertionError expected) {
+        }
     }
 
     @Test
     public void shouldFailOnWrongMethod() throws Exception {
         mock.clear();
         mock.clear();
-        
+
         mockTwo.add("add");
 
         verify(mock, atLeastOnce()).clear();
@@ -62,7 +65,8 @@ public class BasicVerificationTest extends TestBase {
         try {
             verify(mockTwo, atLeastOnce()).add("foo");
             fail();
-        } catch (WantedButNotInvoked e) {}
+        } catch (WantedButNotInvoked e) {
+        }
     }
 
     @Test
@@ -77,41 +81,44 @@ public class BasicVerificationTest extends TestBase {
         try {
             verifyNoMoreInteractions(mock);
             fail();
-        } catch (NoInteractionsWanted e) {}
+        } catch (NoInteractionsWanted e) {
+        }
     }
-    
+
     @Test
     public void shouldDetectWhenInvokedMoreThanOnce() throws Exception {
         mock.add("foo");
         mock.clear();
         mock.clear();
-        
+
         verify(mock).add("foo");
 
         try {
             verify(mock).clear();
             fail();
-        } catch (TooManyActualInvocations e) {}
+        } catch (TooManyActualInvocations e) {
+        }
     }
 
     @Test
     public void shouldVerifyStubbedMethods() throws Exception {
         when(mock.add("test")).thenReturn(Boolean.FALSE);
-        
+
         mock.add("test");
-        
+
         verify(mock).add("test");
     }
-    
+
 
     @Test
     public void shouldDetectWhenOverloadedMethodCalled() throws Exception {
         IMethods mockThree = mock(IMethods.class);
-        
-        mockThree.varargs((Object[]) new Object[] {});
+
+        mockThree.varargs((Object[]) new Object[]{});
         try {
-            verify(mockThree).varargs((String[]) new String[] {});
+            verify(mockThree).varargs((String[]) new String[]{});
             fail();
-        } catch(WantedButNotInvoked e) {}
+        } catch (WantedButNotInvoked e) {
+        }
     }
 }

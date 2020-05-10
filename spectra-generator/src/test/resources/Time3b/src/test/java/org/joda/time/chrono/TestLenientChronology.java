@@ -17,14 +17,12 @@ package org.joda.time.chrono;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.MockZone;
 
 /**
- *
  * @author Brian S O'Neill
  * @author Blair Martin
  */
@@ -50,7 +48,7 @@ public class TestLenientChronology extends TestCase {
     //-----------------------------------------------------------------------
     public void test_setYear() {
         Chronology zone = LenientChronology.getInstance(ISOChronology.getInstanceUTC());
-        DateTime dt = new DateTime(2007, 1, 1, 0, 0 ,0, 0, zone);
+        DateTime dt = new DateTime(2007, 1, 1, 0, 0, 0, 0, zone);
         assertEquals("2007-01-01T00:00:00.000Z", dt.toString());
         dt = dt.withYear(2008);
         assertEquals("2008-01-01T00:00:00.000Z", dt.toString());
@@ -59,7 +57,7 @@ public class TestLenientChronology extends TestCase {
     //-----------------------------------------------------------------------
     public void test_setMonthOfYear() {
         Chronology zone = LenientChronology.getInstance(ISOChronology.getInstanceUTC());
-        DateTime dt = new DateTime(2007, 1, 1, 0, 0 ,0, 0, zone);
+        DateTime dt = new DateTime(2007, 1, 1, 0, 0, 0, 0, zone);
         assertEquals("2007-01-01T00:00:00.000Z", dt.toString());
         dt = dt.withMonthOfYear(13);
         assertEquals("2008-01-01T00:00:00.000Z", dt.toString());
@@ -70,7 +68,7 @@ public class TestLenientChronology extends TestCase {
     //-----------------------------------------------------------------------
     public void test_setDayOfMonth() {
         Chronology zone = LenientChronology.getInstance(ISOChronology.getInstanceUTC());
-        DateTime dt = new DateTime(2007, 1, 1, 0, 0 ,0, 0, zone);
+        DateTime dt = new DateTime(2007, 1, 1, 0, 0, 0, 0, zone);
         assertEquals("2007-01-01T00:00:00.000Z", dt.toString());
         dt = dt.withDayOfMonth(32);
         assertEquals("2007-02-01T00:00:00.000Z", dt.toString());
@@ -81,7 +79,7 @@ public class TestLenientChronology extends TestCase {
     //-----------------------------------------------------------------------
     public void test_setHourOfDay() {
         Chronology zone = LenientChronology.getInstance(ISOChronology.getInstanceUTC());
-        DateTime dt = new DateTime(2007, 1, 1, 0, 0 ,0, 0, zone);
+        DateTime dt = new DateTime(2007, 1, 1, 0, 0, 0, 0, zone);
         assertEquals("2007-01-01T00:00:00.000Z", dt.toString());
         dt = dt.withHourOfDay(24);
         assertEquals("2007-01-02T00:00:00.000Z", dt.toString());
@@ -99,17 +97,17 @@ public class TestLenientChronology extends TestCase {
         DateTime dt;
 
         dt = new DateTime(2006, 10, 29, hour, 0, 0, 0,
-                          ISOChronology.getInstance(DateTimeZone.forID("America/Los_Angeles")));
+                ISOChronology.getInstance(DateTimeZone.forID("America/Los_Angeles")));
         assertEquals(hour, dt.getHourOfDay()); // OK - no LenientChronology
 
         dt = new DateTime(2006, 10, 29, hour, 0, 0, 0,
-                          LenientChronology.getInstance
-                          (ISOChronology.getInstance(DateTimeZone.forOffsetHours(-8))));
+                LenientChronology.getInstance
+                        (ISOChronology.getInstance(DateTimeZone.forOffsetHours(-8))));
         assertEquals(hour, dt.getHourOfDay()); // OK - no TZ ID
 
         dt = new DateTime(2006, 10, 29, hour, 0, 0, 0,
-                          LenientChronology.getInstance
-                          (ISOChronology.getInstance(DateTimeZone.forID("America/Los_Angeles"))));
+                LenientChronology.getInstance
+                        (ISOChronology.getInstance(DateTimeZone.forID("America/Los_Angeles"))));
 
         assertEquals(hour, dt.getHourOfDay()); // Used to fail - hour was 22
     }
@@ -117,7 +115,9 @@ public class TestLenientChronology extends TestCase {
     //-----------------------------------------------------------------------
     //------------------------ Bug [1755161] --------------------------------
     //-----------------------------------------------------------------------
-    /** Mock zone simulating America/Grand_Turk cutover at midnight 2007-04-01 */
+    /**
+     * Mock zone simulating America/Grand_Turk cutover at midnight 2007-04-01
+     */
     private static long CUTOVER_TURK = 1175403600000L;
     private static int OFFSET_TURK = -18000000;  // -05:00
     private static final DateTimeZone MOCK_TURK = new MockZone(CUTOVER_TURK, OFFSET_TURK, 3600);

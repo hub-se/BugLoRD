@@ -23,63 +23,61 @@ import com.google.javascript.rhino.Token;
  * Annotates nodes with information from their original input file
  * before the compiler performs work that changes this information (such
  * as its original location, its original name, etc).
- *
+ * <p>
  * Information saved:
- *
+ * <p>
  * - Annotates all nodes with a SOURCEFILE_PROP indicating the input
- *   file from which it was generated.
- *
+ * file from which it was generated.
+ * <p>
  * - Annotates all NAME nodes with an ORIGINALNAME_PROP indicating its original
- *   name.
- *
+ * name.
+ * <p>
  * - Annotates all string GET_PROP nodes with an ORIGINALNAME_PROP.
- *
+ * <p>
  * - Annotates all OBJECT_LITERAL unquoted string key nodes with an
- *   ORIGINALNAME_PROP.
- *
-*
+ * ORIGINALNAME_PROP.
  */
 class SourceInformationAnnotator extends
-  NodeTraversal.AbstractPostOrderCallback {
-  private String sourceFile = null;
+        NodeTraversal.AbstractPostOrderCallback {
+    private String sourceFile = null;
 
-  public SourceInformationAnnotator(String sourceFile) {
-    this.sourceFile = sourceFile;
-  }
-
-  @Override
-  public void visit(NodeTraversal t, Node n, Node parent) {
-    // Annotate with the source file.
-    if (sourceFile != null) {
-      n.putProp(Node.SOURCEFILE_PROP, sourceFile);
+    public SourceInformationAnnotator(String sourceFile) {
+        this.sourceFile = sourceFile;
     }
 
-    // Annotate the original name.
-    switch (n.getType()) {
-      case Token.GETPROP:
-        Node propNode = n.getFirstChild().getNext();
-        if (propNode.getType() == Token.STRING) {
-          n.putProp(Node.ORIGINALNAME_PROP, propNode.getString());
+    @Override
+    public void visit(NodeTraversal t, Node n, Node parent) {
+        // Annotate with the source file.
+        if (sourceFile != null) {
+            n.putProp(Node.SOURCEFILE_PROP, sourceFile);
         }
 
-        break;
+        // Annotate the original name.
+        switch (n.getType()) {
+            case Token.GETPROP:
+                Node propNode = n.getFirstChild().getNext();
+                if (propNode.getType() == Token.STRING) {
+                    n.putProp(Node.ORIGINALNAME_PROP, propNode.getString());
+                }
 
-      case Token.NAME:
-        n.putProp(Node.ORIGINALNAME_PROP, n.getString());
-        break;
+                break;
 
-      case Token.OBJECTLIT:
-         for (Node key = n.getFirstChild(); key != null;
-              key = key.getNext().getNext()) {
-           // We only want keys that are strings (not numbers), and only keys
-           // that were unquoted.
-           if (key.getType() == Token.STRING) {
-             if (!key.isQuotedString()) {
-               key.putProp(Node.ORIGINALNAME_PROP, key.getString());
-             }
-           }
-         }
-        break;
+            case Token.NAME:
+                n.putProp(Node.ORIGINALNAME_PROP, n.getString());
+                break;
+
+            case Token.OBJECTLIT:
+                for (Node key = n.getFirstChild(); key != null;
+                     key = key.getNext().getNext()) {
+                    // We only want keys that are strings (not numbers), and only keys
+                    // that were unquoted.
+                    if (key.getType() == Token.STRING) {
+                        if (!key.isQuotedString()) {
+                            key.putProp(Node.ORIGINALNAME_PROP, key.getString());
+                        }
+                    }
+                }
+                break;
+        }
     }
-  }
 }

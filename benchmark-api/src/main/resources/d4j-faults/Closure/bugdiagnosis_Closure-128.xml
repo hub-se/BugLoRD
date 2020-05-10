@@ -1,34 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-128">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/CodePrinterTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;var
-						x={[0]:1}&gt; but was:&lt;var x={["0"]:1}&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>4283</number_tests>
-					<failed>1</failed>
-					<passed>4282</passed>
-					<nodes>47560</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/CodeGenerator.java">
-					<change>791</change>
-					<insert numberlines="3">785</insert>
-					<bugtypes>
-						<id id="1.1" lines="784">
-							<description>Missing check for zero value.</description>
-						</id>
-						<id id="2.2" lines="791">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-128">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/CodePrinterTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;var
+                        x={[0]:1}&gt; but was:&lt;var x={["0"]:1}&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>4283</number_tests>
+                    <failed>1</failed>
+                    <passed>4282</passed>
+                    <nodes>47560</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/CodeGenerator.java">
+                    <change>791</change>
+                    <insert numberlines="3">785</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="784">
+                            <description>Missing check for zero value.</description>
+                        </id>
+                        <id id="2.2" lines="791">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

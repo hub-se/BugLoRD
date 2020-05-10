@@ -1,34 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Math">
-		<bug bugid="Math-26">
-			<tests>
-				<testfile path="org/apache/commons/math3/fraction/FractionTest">
-					<exception>junit.framework.AssertionFailedError:an exception should
-						have been thrown</exception>
-				</testfile>
-				<spectra>
-					<number_tests>213</number_tests>
-					<failed>1</failed>
-					<passed>212</passed>
-					<nodes>32563</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/math3/fraction/Fraction.java">
-					<change>181</change>
-					<change>209</change>
-					<bugtypes>
-						<id id="1.2" lines="181">
-							<description>Incorrect condition.</description>
-						</id>
-						<id id="1.2" lines="209">
-							<description>Incorrect condition.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Math">
+        <bug bugid="Math-26">
+            <tests>
+                <testfile path="org/apache/commons/math3/fraction/FractionTest">
+                    <exception>junit.framework.AssertionFailedError:an exception should
+                        have been thrown
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>213</number_tests>
+                    <failed>1</failed>
+                    <passed>212</passed>
+                    <nodes>32563</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/math3/fraction/Fraction.java">
+                    <change>181</change>
+                    <change>209</change>
+                    <bugtypes>
+                        <id id="1.2" lines="181">
+                            <description>Incorrect condition.</description>
+                        </id>
+                        <id id="1.2" lines="209">
+                            <description>Incorrect condition.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

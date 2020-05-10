@@ -15,9 +15,9 @@ import se.de.hu_berlin.informatik.spectra.provider.IHitSpectraProvider;
 
 /**
  * Provides a small and simple spectra for testing.
- * 
+ * <p>
  * Test data taken from Table 1 from:
- * 
+ * <p>
  * Lee Naish, Hua Jie Lee, and Kotagiri Ramamohanarao. 2011. A model for spectra-based software diagnosis. ACM
  * Trans. Softw. Eng. Methodol. 20, 3, Article 11 (August 2011), 32 pages. DOI=10.1145/2000791.2000795
  * http://doi.acm.org/10.1145/2000791.2000795
@@ -52,10 +52,10 @@ public class SimpleSpectraProvider2 implements IHitSpectraProvider<String> {
         final HitTrace<String> t5 = s.addTrace("t5", 5, true);
         t5.setInvolvement("S1", true);
         t5.setInvolvement("S3", true);
-        
+
         final HitTrace<String> t6 = s.addTrace("t6", 6, false);
         t6.setInvolvement("PureFailing", true);
-        
+
         s.getOrCreateNode("uncovered");
 
         return s;

@@ -15,21 +15,15 @@
  */
 package org.joda.time.chrono;
 
-import java.util.HashMap;
-import java.util.Locale;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeField;
-import org.joda.time.DateTimeZone;
-import org.joda.time.DurationField;
-import org.joda.time.MutableDateTime;
-import org.joda.time.ReadableDateTime;
+import org.joda.time.*;
 import org.joda.time.field.DecoratedDateTimeField;
 import org.joda.time.field.DecoratedDurationField;
 import org.joda.time.field.FieldUtils;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
+import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Wraps another Chronology to impose limits on the range of instants that
@@ -48,7 +42,9 @@ import org.joda.time.format.ISODateTimeFormat;
  */
 public final class LimitChronology extends AssembledChronology {
 
-    /** Serialization lock */
+    /**
+     * Serialization lock
+     */
     private static final long serialVersionUID = 7670866536893052522L;
 
     /**
@@ -56,9 +52,9 @@ public final class LimitChronology extends AssembledChronology {
      * withZone is called, the returned LimitChronology instance has
      * the same limits, except they are time zone adjusted.
      *
-     * @param base  base chronology to wrap
-     * @param lowerLimit  inclusive lower limit, or null if none
-     * @param upperLimit  exclusive upper limit, or null if none
+     * @param base       base chronology to wrap
+     * @param lowerLimit inclusive lower limit, or null if none
+     * @param upperLimit exclusive upper limit, or null if none
      * @throws IllegalArgumentException if chronology is null or limits are invalid
      */
     public static LimitChronology getInstance(Chronology base,
@@ -74,11 +70,11 @@ public final class LimitChronology extends AssembledChronology {
         if (lowerLimit != null && upperLimit != null) {
             if (!lowerLimit.isBefore(upperLimit)) {
                 throw new IllegalArgumentException
-                    ("The lower limit must be come before than the upper limit");
+                        ("The lower limit must be come before than the upper limit");
             }
         }
 
-        return new LimitChronology(base, (DateTime)lowerLimit, (DateTime)upperLimit);
+        return new LimitChronology(base, (DateTime) lowerLimit, (DateTime) upperLimit);
     }
 
     final DateTime iLowerLimit;
@@ -91,8 +87,8 @@ public final class LimitChronology extends AssembledChronology {
      * withZone is called, the returned LimitChronology instance has
      * the same limits, except they are time zone adjusted.
      *
-     * @param lowerLimit  inclusive lower limit, or null if none
-     * @param upperLimit  exclusive upper limit, or null if none
+     * @param lowerLimit inclusive lower limit, or null if none
+     * @param upperLimit exclusive upper limit, or null if none
      */
     private LimitChronology(Chronology base,
                             DateTime lowerLimit, DateTime upperLimit) {
@@ -104,7 +100,7 @@ public final class LimitChronology extends AssembledChronology {
 
     /**
      * Returns the inclusive lower limit instant.
-     * 
+     *
      * @return lower limit
      */
     public DateTime getLowerLimit() {
@@ -113,7 +109,7 @@ public final class LimitChronology extends AssembledChronology {
 
     /**
      * Returns the inclusive upper limit instant.
-     * 
+     *
      * @return upper limit
      */
     public DateTime getUpperLimit() {
@@ -159,9 +155,9 @@ public final class LimitChronology extends AssembledChronology {
             mdt.setZoneRetainFields(zone);
             upperLimit = mdt.toDateTime();
         }
-        
+
         LimitChronology chrono = getInstance
-            (getBase().withZone(zone), lowerLimit, upperLimit);
+                (getBase().withZone(zone), lowerLimit, upperLimit);
 
         if (zone == DateTimeZone.UTC) {
             iWithUTC = chrono;
@@ -172,8 +168,7 @@ public final class LimitChronology extends AssembledChronology {
 
     public long getDateTimeMillis(int year, int monthOfYear, int dayOfMonth,
                                   int millisOfDay)
-        throws IllegalArgumentException
-    {
+            throws IllegalArgumentException {
         long instant = getBase().getDateTimeMillis(year, monthOfYear, dayOfMonth, millisOfDay);
         checkLimits(instant, "resulting");
         return instant;
@@ -182,11 +177,10 @@ public final class LimitChronology extends AssembledChronology {
     public long getDateTimeMillis(int year, int monthOfYear, int dayOfMonth,
                                   int hourOfDay, int minuteOfHour,
                                   int secondOfMinute, int millisOfSecond)
-        throws IllegalArgumentException
-    {
+            throws IllegalArgumentException {
         long instant = getBase().getDateTimeMillis
-            (year, monthOfYear, dayOfMonth,
-             hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
+                (year, monthOfYear, dayOfMonth,
+                        hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
         checkLimits(instant, "resulting");
         return instant;
     }
@@ -194,11 +188,10 @@ public final class LimitChronology extends AssembledChronology {
     public long getDateTimeMillis(long instant,
                                   int hourOfDay, int minuteOfHour,
                                   int secondOfMinute, int millisOfSecond)
-        throws IllegalArgumentException
-    {
+            throws IllegalArgumentException {
         checkLimits(instant, null);
         instant = getBase().getDateTimeMillis
-            (instant, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
+                (instant, hourOfDay, minuteOfHour, secondOfMinute, millisOfSecond);
         checkLimits(instant, "resulting");
         return instant;
     }
@@ -257,7 +250,7 @@ public final class LimitChronology extends AssembledChronology {
             return field;
         }
         if (converted.containsKey(field)) {
-            return (DurationField)converted.get(field);
+            return (DurationField) converted.get(field);
         }
         LimitDurationField limitField = new LimitDurationField(field);
         converted.put(field, limitField);
@@ -269,13 +262,13 @@ public final class LimitChronology extends AssembledChronology {
             return field;
         }
         if (converted.containsKey(field)) {
-            return (DateTimeField)converted.get(field);
+            return (DateTimeField) converted.get(field);
         }
         LimitDateTimeField limitField =
-            new LimitDateTimeField(field,
-                                   convertField(field.getDurationField(), converted),
-                                   convertField(field.getRangeDurationField(), converted),
-                                   convertField(field.getLeapDurationField(), converted));
+                new LimitDateTimeField(field,
+                        convertField(field.getDurationField(), converted),
+                        convertField(field.getRangeDurationField(), converted),
+                        convertField(field.getLeapDurationField(), converted));
         converted.put(field, limitField);
         return limitField;
     }
@@ -291,11 +284,12 @@ public final class LimitChronology extends AssembledChronology {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * A limit chronology is only equal to a limit chronology with the
      * same base chronology and limits.
-     * 
-     * @param obj  the object to compare to
+     *
+     * @param obj the object to compare to
      * @return true if equal
      * @since 1.4
      */
@@ -308,14 +302,14 @@ public final class LimitChronology extends AssembledChronology {
         }
         LimitChronology chrono = (LimitChronology) obj;
         return
-            getBase().equals(chrono.getBase()) &&
-            FieldUtils.equals(getLowerLimit(), chrono.getLowerLimit()) &&
-            FieldUtils.equals(getUpperLimit(), chrono.getUpperLimit());
+                getBase().equals(chrono.getBase()) &&
+                        FieldUtils.equals(getLowerLimit(), chrono.getLowerLimit()) &&
+                        FieldUtils.equals(getUpperLimit(), chrono.getUpperLimit());
     }
 
     /**
      * A suitable hashcode for the chronology.
-     * 
+     *
      * @return the hashcode
      * @since 1.4
      */
@@ -329,16 +323,17 @@ public final class LimitChronology extends AssembledChronology {
 
     /**
      * A debugging string for the chronology.
-     * 
+     *
      * @return the debugging string
      */
     public String toString() {
         return "LimitChronology[" + getBase().toString() + ", " +
-            (getLowerLimit() == null ? "NoLimit" : getLowerLimit().toString()) + ", " +
-            (getUpperLimit() == null ? "NoLimit" : getUpperLimit().toString()) + ']';
+                (getLowerLimit() == null ? "NoLimit" : getLowerLimit().toString()) + ", " +
+                (getUpperLimit() == null ? "NoLimit" : getUpperLimit().toString()) + ']';
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Extends IllegalArgumentException such that the exception message is not
      * generated unless it is actually requested.
@@ -372,7 +367,7 @@ public final class LimitChronology extends AssembledChronology {
                 buf.append("above the supported maximum of ");
                 p.printTo(buf, getUpperLimit().getMillis());
             }
-            
+
             buf.append(" (");
             buf.append(getBase());
             buf.append(')');
@@ -462,17 +457,17 @@ public final class LimitChronology extends AssembledChronology {
             checkLimits(instant, null);
             return getWrappedField().get(instant);
         }
-        
+
         public String getAsText(long instant, Locale locale) {
             checkLimits(instant, null);
             return getWrappedField().getAsText(instant, locale);
         }
-        
+
         public String getAsShortText(long instant, Locale locale) {
             checkLimits(instant, null);
             return getWrappedField().getAsShortText(instant, locale);
         }
-        
+
         public long add(long instant, int amount) {
             checkLimits(instant, null);
             long result = getWrappedField().add(instant, amount);
@@ -493,33 +488,33 @@ public final class LimitChronology extends AssembledChronology {
             checkLimits(result, "resulting");
             return result;
         }
-        
+
         public int getDifference(long minuendInstant, long subtrahendInstant) {
             checkLimits(minuendInstant, "minuend");
             checkLimits(subtrahendInstant, "subtrahend");
             return getWrappedField().getDifference(minuendInstant, subtrahendInstant);
         }
-        
+
         public long getDifferenceAsLong(long minuendInstant, long subtrahendInstant) {
             checkLimits(minuendInstant, "minuend");
             checkLimits(subtrahendInstant, "subtrahend");
             return getWrappedField().getDifferenceAsLong(minuendInstant, subtrahendInstant);
         }
-        
+
         public long set(long instant, int value) {
             checkLimits(instant, null);
             long result = getWrappedField().set(instant, value);
             checkLimits(result, "resulting");
             return result;
         }
-        
+
         public long set(long instant, String text, Locale locale) {
             checkLimits(instant, null);
             long result = getWrappedField().set(instant, text, locale);
             checkLimits(result, "resulting");
             return result;
         }
-        
+
         public final DurationField getDurationField() {
             return iDurationField;
         }
@@ -532,51 +527,51 @@ public final class LimitChronology extends AssembledChronology {
             checkLimits(instant, null);
             return getWrappedField().isLeap(instant);
         }
-        
+
         public int getLeapAmount(long instant) {
             checkLimits(instant, null);
             return getWrappedField().getLeapAmount(instant);
         }
-        
+
         public final DurationField getLeapDurationField() {
             return iLeapDurationField;
         }
-        
+
         public long roundFloor(long instant) {
             checkLimits(instant, null);
             long result = getWrappedField().roundFloor(instant);
             checkLimits(result, "resulting");
             return result;
         }
-        
+
         public long roundCeiling(long instant) {
             checkLimits(instant, null);
             long result = getWrappedField().roundCeiling(instant);
             checkLimits(result, "resulting");
             return result;
         }
-        
+
         public long roundHalfFloor(long instant) {
             checkLimits(instant, null);
             long result = getWrappedField().roundHalfFloor(instant);
             checkLimits(result, "resulting");
             return result;
         }
-        
+
         public long roundHalfCeiling(long instant) {
             checkLimits(instant, null);
             long result = getWrappedField().roundHalfCeiling(instant);
             checkLimits(result, "resulting");
             return result;
         }
-        
+
         public long roundHalfEven(long instant) {
             checkLimits(instant, null);
             long result = getWrappedField().roundHalfEven(instant);
             checkLimits(result, "resulting");
             return result;
         }
-        
+
         public long remainder(long instant) {
             checkLimits(instant, null);
             long result = getWrappedField().remainder(instant);

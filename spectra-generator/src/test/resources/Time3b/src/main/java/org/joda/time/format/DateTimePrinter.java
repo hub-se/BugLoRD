@@ -15,13 +15,13 @@
  */
 package org.joda.time.format;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Locale;
-
 import org.joda.time.Chronology;
 import org.joda.time.DateTimeZone;
 import org.joda.time.ReadablePartial;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Locale;
 
 /**
  * Internal interface for creating textual representations of datetimes.
@@ -46,23 +46,24 @@ public interface DateTimePrinter {
     /**
      * Returns the expected maximum number of characters produced.
      * The actual amount should rarely exceed this estimate.
-     * 
+     *
      * @return the estimated length
      */
     int estimatePrintedLength();
 
     //-----------------------------------------------------------------------
+
     /**
      * Prints an instant from milliseconds since 1970-01-01T00:00:00Z,
      * using the given Chronology.
      *
-     * @param buf  formatted instant is appended to this buffer, not null
-     * @param instant  millis since 1970-01-01T00:00:00Z
-     * @param chrono  the chronology to use, not null
-     * @param displayOffset  if a time zone offset is printed, force it to use
-     * this millisecond value
-     * @param displayZone  the time zone to use, null means local time
-     * @param locale  the locale to use, null means default locale
+     * @param buf           formatted instant is appended to this buffer, not null
+     * @param instant       millis since 1970-01-01T00:00:00Z
+     * @param chrono        the chronology to use, not null
+     * @param displayOffset if a time zone offset is printed, force it to use
+     *                      this millisecond value
+     * @param displayZone   the time zone to use, null means local time
+     * @param locale        the locale to use, null means default locale
      */
     void printTo(StringBuffer buf, long instant, Chronology chrono,
                  int displayOffset, DateTimeZone displayZone, Locale locale);
@@ -71,23 +72,24 @@ public interface DateTimePrinter {
      * Prints an instant from milliseconds since 1970-01-01T00:00:00Z,
      * using the given Chronology.
      *
-     * @param out  formatted instant is written out
-     * @param instant  millis since 1970-01-01T00:00:00Z
-     * @param chrono  the chronology to use, not null
-     * @param displayOffset  if a time zone offset is printed, force it to use
-     * this millisecond value
-     * @param displayZone  the time zone to use, null means local time
-     * @param locale  the locale to use, null means default locale
+     * @param out           formatted instant is written out
+     * @param instant       millis since 1970-01-01T00:00:00Z
+     * @param chrono        the chronology to use, not null
+     * @param displayOffset if a time zone offset is printed, force it to use
+     *                      this millisecond value
+     * @param displayZone   the time zone to use, null means local time
+     * @param locale        the locale to use, null means default locale
      */
     void printTo(Writer out, long instant, Chronology chrono,
                  int displayOffset, DateTimeZone displayZone, Locale locale) throws IOException;
 
     //-----------------------------------------------------------------------
+
     /**
      * Prints a ReadablePartial.
      *
-     * @param buf  formatted partial is appended to this buffer, not null
-     * @param partial  partial to format, not null
+     * @param buf     formatted partial is appended to this buffer, not null
+     * @param partial partial to format, not null
      * @param locale  the locale to use, null means default locale
      */
     void printTo(StringBuffer buf, ReadablePartial partial, Locale locale);
@@ -95,8 +97,8 @@ public interface DateTimePrinter {
     /**
      * Prints a ReadablePartial.
      *
-     * @param out  formatted partial is written out, not null
-     * @param partial  partial to format, not null
+     * @param out     formatted partial is written out, not null
+     * @param partial partial to format, not null
      * @param locale  the locale to use, null means default locale
      */
     void printTo(Writer out, ReadablePartial partial, Locale locale) throws IOException;

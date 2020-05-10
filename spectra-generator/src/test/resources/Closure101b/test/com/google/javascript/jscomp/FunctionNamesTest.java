@@ -22,74 +22,72 @@ import java.util.Map;
 
 /**
  * Tests for {@link FunctionNames}
- *
-*
  */
 public class FunctionNamesTest extends CompilerTestCase {
-  private FunctionNames functionNames;
+    private FunctionNames functionNames;
 
-  public FunctionNamesTest() {
-    this.functionNames = null;
-  }
-
-  @Override
-  protected CompilerPass getProcessor(Compiler compiler) {
-    functionNames = new FunctionNames(compiler);
-    return functionNames;
-  }
-
-  public void testFunctionsNamesAndIds() {
-    final String jsSource =
-        "goog.widget = function(str) {\n" +
-        "  this.member_fn = function() {};\n" +
-        "  local_fn = function() {};\n" +
-        "  (function(a){})(1);\n" +
-        "}\n" +
-        "function foo() {\n" +
-        "  function bar() {}\n" +
-        "}\n" +
-        "literal = {f1 : function(){}, f2 : function(){}};\n" +
-        "goog.array.map(arr, function named(){});\n" +
-        "goog.array.map(arr, function(){});\n" +
-        "named_twice = function quax(){};\n" +
-        "recliteral = {l1 : {l2 : function(){}}};\n" +
-        "namedliteral = {n1 : function litnamed(){}};\n" +
-        "namedrecliteral = {n1 : {n2 : function reclitnamed(){}}};\n" +
-        "numliteral = {1 : function(){}};\n" +
-        "recnumliteral = {1 : {a : function(){}}};\n";
-
-    testSame(jsSource);
-
-    final Map<Integer, String> idNameMap = Maps.newLinkedHashMap();
-    int count = 0;
-    for (Node f : functionNames.getFunctionNodeList()) {
-      int id = functionNames.getFunctionId(f);
-      String name = functionNames.getFunctionName(f);
-      idNameMap.put(id, name);
-      count++;
+    public FunctionNamesTest() {
+        this.functionNames = null;
     }
 
-    assertEquals("Unexpected number of functions", 16, count);
+    @Override
+    protected CompilerPass getProcessor(Compiler compiler) {
+        functionNames = new FunctionNames(compiler);
+        return functionNames;
+    }
 
-    final Map<Integer, String> expectedMap = Maps.newLinkedHashMap();
+    public void testFunctionsNamesAndIds() {
+        final String jsSource =
+                "goog.widget = function(str) {\n" +
+                        "  this.member_fn = function() {};\n" +
+                        "  local_fn = function() {};\n" +
+                        "  (function(a){})(1);\n" +
+                        "}\n" +
+                        "function foo() {\n" +
+                        "  function bar() {}\n" +
+                        "}\n" +
+                        "literal = {f1 : function(){}, f2 : function(){}};\n" +
+                        "goog.array.map(arr, function named(){});\n" +
+                        "goog.array.map(arr, function(){});\n" +
+                        "named_twice = function quax(){};\n" +
+                        "recliteral = {l1 : {l2 : function(){}}};\n" +
+                        "namedliteral = {n1 : function litnamed(){}};\n" +
+                        "namedrecliteral = {n1 : {n2 : function reclitnamed(){}}};\n" +
+                        "numliteral = {1 : function(){}};\n" +
+                        "recnumliteral = {1 : {a : function(){}}};\n";
 
-    expectedMap.put(0, "goog.widget.member_fn");
-    expectedMap.put(1, "goog.widget::local_fn");
-    expectedMap.put(2, "goog.widget::<anonymous>");
-    expectedMap.put(3, "goog.widget");
-    expectedMap.put(4, "foo::bar");
-    expectedMap.put(5, "foo");
-    expectedMap.put(6, "literal.f1");
-    expectedMap.put(7, "literal.f2");
-    expectedMap.put(8, "named");
-    expectedMap.put(9, "<anonymous>");
-    expectedMap.put(10, "quax");
-    expectedMap.put(11, "recliteral.l1.l2");
-    expectedMap.put(12, "litnamed");
-    expectedMap.put(13, "reclitnamed");
-    expectedMap.put(14, "<anonymous>");
-    expectedMap.put(15, "<anonymous>");
-    assertEquals("Function id/name mismatch",
-                 expectedMap, idNameMap);
-  }
+        testSame(jsSource);
+
+        final Map<Integer, String> idNameMap = Maps.newLinkedHashMap();
+        int count = 0;
+        for (Node f : functionNames.getFunctionNodeList()) {
+            int id = functionNames.getFunctionId(f);
+            String name = functionNames.getFunctionName(f);
+            idNameMap.put(id, name);
+            count++;
+        }
+
+        assertEquals("Unexpected number of functions", 16, count);
+
+        final Map<Integer, String> expectedMap = Maps.newLinkedHashMap();
+
+        expectedMap.put(0, "goog.widget.member_fn");
+        expectedMap.put(1, "goog.widget::local_fn");
+        expectedMap.put(2, "goog.widget::<anonymous>");
+        expectedMap.put(3, "goog.widget");
+        expectedMap.put(4, "foo::bar");
+        expectedMap.put(5, "foo");
+        expectedMap.put(6, "literal.f1");
+        expectedMap.put(7, "literal.f2");
+        expectedMap.put(8, "named");
+        expectedMap.put(9, "<anonymous>");
+        expectedMap.put(10, "quax");
+        expectedMap.put(11, "recliteral.l1.l2");
+        expectedMap.put(12, "litnamed");
+        expectedMap.put(13, "reclitnamed");
+        expectedMap.put(14, "<anonymous>");
+        expectedMap.put(15, "<anonymous>");
+        assertEquals("Function id/name mismatch",
+                expectedMap, idNameMap);
+    }
 }

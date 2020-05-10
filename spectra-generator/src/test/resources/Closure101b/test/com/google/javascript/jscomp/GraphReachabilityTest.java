@@ -16,73 +16,70 @@
 
 package com.google.javascript.jscomp;
 
+import com.google.javascript.jscomp.graph.DiGraph;
 import com.google.javascript.jscomp.graph.GraphReachability;
 import com.google.javascript.jscomp.graph.LinkedDirectedGraph;
-import com.google.javascript.jscomp.graph.DiGraph;
-
 import junit.framework.TestCase;
 
 /**
  * Tests for {@link GraphReachability}.
- * 
-*
  */
 public class GraphReachabilityTest extends TestCase {
-  GraphReachability<String, String> reachability = null;
-  DiGraph<String, String> graph = null;
-  
-  public void testSimple() {
-    graph = new LinkedDirectedGraph<String, String>();
-    graph.createNode("A");
-    reachability = new GraphReachability<String, String>(graph);
-    reachability.compute("A");
-    assertReachable("A");
-    
-    graph.createNode("B");
-    reachability = new GraphReachability<String, String>(graph);
-    reachability.compute("A");
-    assertReachable("A");
-    assertNotReachable("B");
-    
-    graph.connect("A", "--->", "B");
-    reachability = new GraphReachability<String, String>(graph);
-    reachability.compute("B");
-    assertNotReachable("A");
-    assertReachable("B");
-    
-    graph.connect("B", "--->", "A");
-    reachability = new GraphReachability<String, String>(graph);
-    reachability.compute("B");
-    assertReachable("A");
-    assertReachable("B");
-    
-    graph.createNode("C");
-    reachability = new GraphReachability<String, String>(graph);
-    reachability.compute("A");
-    assertReachable("A");
-    assertReachable("B");
-    assertNotReachable("C");
+    GraphReachability<String, String> reachability = null;
+    DiGraph<String, String> graph = null;
 
-    graph.createNode("D");
-    graph.connect("C", "--->", "D");
-    reachability = new GraphReachability<String, String>(graph);
-    reachability.compute("A");
-    assertReachable("A");
-    assertReachable("B");
-    assertNotReachable("C");
-    assertNotReachable("D");
-    reachability.recompute("C");
-    assertReachable("C");
-    assertReachable("D");
-  }
-  
-  public void assertReachable(String s) {
-    assertSame(s + " should be reachable", graph.getNode(s).getAnnotation(),
-        GraphReachability.REACHABLE);
-  }
-  
-  public void assertNotReachable(String s) {
-    assertNotSame(s + " should not be reachable",
-        graph.getNode(s).getAnnotation(), GraphReachability.REACHABLE);
-  }
+    public void testSimple() {
+        graph = new LinkedDirectedGraph<String, String>();
+        graph.createNode("A");
+        reachability = new GraphReachability<String, String>(graph);
+        reachability.compute("A");
+        assertReachable("A");
+
+        graph.createNode("B");
+        reachability = new GraphReachability<String, String>(graph);
+        reachability.compute("A");
+        assertReachable("A");
+        assertNotReachable("B");
+
+        graph.connect("A", "--->", "B");
+        reachability = new GraphReachability<String, String>(graph);
+        reachability.compute("B");
+        assertNotReachable("A");
+        assertReachable("B");
+
+        graph.connect("B", "--->", "A");
+        reachability = new GraphReachability<String, String>(graph);
+        reachability.compute("B");
+        assertReachable("A");
+        assertReachable("B");
+
+        graph.createNode("C");
+        reachability = new GraphReachability<String, String>(graph);
+        reachability.compute("A");
+        assertReachable("A");
+        assertReachable("B");
+        assertNotReachable("C");
+
+        graph.createNode("D");
+        graph.connect("C", "--->", "D");
+        reachability = new GraphReachability<String, String>(graph);
+        reachability.compute("A");
+        assertReachable("A");
+        assertReachable("B");
+        assertNotReachable("C");
+        assertNotReachable("D");
+        reachability.recompute("C");
+        assertReachable("C");
+        assertReachable("D");
+    }
+
+    public void assertReachable(String s) {
+        assertSame(s + " should be reachable", graph.getNode(s).getAnnotation(),
+                GraphReachability.REACHABLE);
+    }
+
+    public void assertNotReachable(String s) {
+        assertNotSame(s + " should not be reachable",
+                graph.getNode(s).getAnnotation(), GraphReachability.REACHABLE);
+    }
 }

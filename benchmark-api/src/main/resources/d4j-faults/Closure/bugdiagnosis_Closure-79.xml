@@ -1,49 +1,50 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-79">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/VarCheckTest">
-					<exception>java.lang.RuntimeException:INTERNAL COMPILER ERROR.:-
-						com.google.javascript.jscomp.VarCheckTest::testPropReferenceInExterns1:--&gt;
-						junit.framework.AssertionFailedError:compiler.reportCodeChange()
-						should have been called:-
-						com.google.javascript.jscomp.VarCheckTest::testPropReferenceInExterns3:--&gt;
-						junit.framework.AssertionFailedError:compiler.reportCodeChange()
-						should have been called:-
-						com.google.javascript.jscomp.VarCheckTest::testVarReferenceInExterns:--&gt;
-						junit.framework.AssertionFailedError:compiler.reportCodeChange()
-						should have been called:-
-						com.google.javascript.jscomp.VarCheckTest::testCallInExterns:--&gt;
-						junit.framework.AssertionFailedError:compiler.reportCodeChange()
-						should have been called</exception>
-				</testfile>
-				<spectra>
-					<number_tests>5675</number_tests>
-					<failed>5</failed>
-					<passed>5670</passed>
-					<nodes>40709</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/VarCheck.java">
-					<insert numberlines="1">221</insert>
-					<bugtypes>
-						<id id="3.1" lines="220">
-							<description>Incorrect data usage.</description>
-						</id>
-					</bugtypes>
-				</file>
-				<file path="com/google/javascript/jscomp/Normalize.java">
-					<change parent="121-122">122</change>
-					<bugtypes>
-						<id id="2.1" lines="122">
-							<description>Incorrect parameters passed.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-79">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/VarCheckTest">
+                    <exception>java.lang.RuntimeException:INTERNAL COMPILER ERROR.:-
+                        com.google.javascript.jscomp.VarCheckTest::testPropReferenceInExterns1:--&gt;
+                        junit.framework.AssertionFailedError:compiler.reportCodeChange()
+                        should have been called:-
+                        com.google.javascript.jscomp.VarCheckTest::testPropReferenceInExterns3:--&gt;
+                        junit.framework.AssertionFailedError:compiler.reportCodeChange()
+                        should have been called:-
+                        com.google.javascript.jscomp.VarCheckTest::testVarReferenceInExterns:--&gt;
+                        junit.framework.AssertionFailedError:compiler.reportCodeChange()
+                        should have been called:-
+                        com.google.javascript.jscomp.VarCheckTest::testCallInExterns:--&gt;
+                        junit.framework.AssertionFailedError:compiler.reportCodeChange()
+                        should have been called
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>5675</number_tests>
+                    <failed>5</failed>
+                    <passed>5670</passed>
+                    <nodes>40709</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/VarCheck.java">
+                    <insert numberlines="1">221</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="220">
+                            <description>Incorrect data usage.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+                <file path="com/google/javascript/jscomp/Normalize.java">
+                    <change parent="121-122">122</change>
+                    <bugtypes>
+                        <id id="2.1" lines="122">
+                            <description>Incorrect parameters passed.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

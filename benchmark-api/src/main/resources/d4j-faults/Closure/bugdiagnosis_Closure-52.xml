@@ -1,30 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-52">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/CodePrinterTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;var
-						x={["010"]:1}&gt; but was:&lt;var x={[10]:1}&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>3803</number_tests>
-					<failed>1</failed>
-					<passed>3802</passed>
-					<nodes>47968</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/CodeGenerator.java">
-					<change>745</change>
-					<bugtypes>
-						<id id="2.2" lines="745">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-52">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/CodePrinterTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;var
+                        x={["010"]:1}&gt; but was:&lt;var x={[10]:1}&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>3803</number_tests>
+                    <failed>1</failed>
+                    <passed>3802</passed>
+                    <nodes>47968</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/CodeGenerator.java">
+                    <change>745</change>
+                    <bugtypes>
+                        <id id="2.2" lines="745">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

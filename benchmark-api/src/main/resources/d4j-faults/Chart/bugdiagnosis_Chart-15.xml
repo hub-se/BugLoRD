@@ -1,33 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-15">
-			<tests>
-				<testfile path="org/jfree/chart/plot/junit/PiePlot3DTests">
-					<exception>junit.framework.AssertionFailedError</exception>
-				</testfile>
-				<spectra>
-					<number_tests>199</number_tests>
-					<failed>1</failed>
-					<passed>198</passed>
-					<nodes>45008</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/jfree/chart/plot/PiePlot.java">
-					<insert numberlines="3">1378-1379</insert>
-					<insert numberlines="1,1">2051,2053</insert>
-					<bugtypes>
-						<id id="1.1" lines="1377">
-							<description>Missing null value check.</description>
-						</id>
-						<id id="1.1" lines="2050,2052">
-							<description>Missing null value check.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>3</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-15">
+            <tests>
+                <testfile path="org/jfree/chart/plot/junit/PiePlot3DTests">
+                    <exception>junit.framework.AssertionFailedError</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>199</number_tests>
+                    <failed>1</failed>
+                    <passed>198</passed>
+                    <nodes>45008</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/jfree/chart/plot/PiePlot.java">
+                    <insert numberlines="3">1378-1379</insert>
+                    <insert numberlines="1,1">2051,2053</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="1377">
+                            <description>Missing null value check.</description>
+                        </id>
+                        <id id="1.1" lines="2050,2052">
+                            <description>Missing null value check.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>3</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

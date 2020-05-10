@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * ArithmeticMean fault localizer $\frac{2\EF\NP - 2\NF\EP}{(\EF+\EP)\cdot(\NP+\NF)+(\EF+\NF)\cdot(\EP+\NP)}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class ArithmeticMean<T> extends AbstractFaultLocalizer<T> {
 
@@ -39,8 +38,8 @@ public class ArithmeticMean<T> extends AbstractFaultLocalizer<T> {
         final double denom = denom1 + denom2;
 
         if (enu == 0) {
-    		return 0;
-    	}
+            return 0;
+        }
         return enu / denom;
     }
 

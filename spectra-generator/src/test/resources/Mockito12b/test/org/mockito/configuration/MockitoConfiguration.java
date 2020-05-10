@@ -4,13 +4,13 @@
  */
 package org.mockito.configuration;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-
 import org.mockito.Mockito;
 import org.mockito.internal.configuration.InjectingAnnotationEngine;
 import org.mockito.stubbing.Answer;
 import org.mockitousage.configuration.SmartMock;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
 public class MockitoConfiguration extends DefaultMockitoConfiguration implements IMockitoConfiguration {
 
@@ -27,7 +27,7 @@ public class MockitoConfiguration extends DefaultMockitoConfiguration implements
     public void overrideCleansStackTrace(boolean cleansStackTrace) {
         this.cleansStackTrace = cleansStackTrace;
     }
-    
+
     //for testing purposes, allow to override the annotation engine
     public void overrideAnnotationEngine(AnnotationEngine engine) {
         this.overriddenEngine = engine;
@@ -41,7 +41,7 @@ public class MockitoConfiguration extends DefaultMockitoConfiguration implements
             return overriddenDefaultAnswer;
         }
     }
-    
+
     @Override
     public AnnotationEngine getAnnotationEngine() {
         if (this.overriddenEngine != null) {
@@ -58,7 +58,7 @@ public class MockitoConfiguration extends DefaultMockitoConfiguration implements
             }
         };
     }
-    
+
     @Override
     public boolean cleansStackTrace() {
         return cleansStackTrace;

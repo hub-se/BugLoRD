@@ -12,5 +12,6 @@ import org.mockitoutil.TestBase;
 @RunWith(MockitoJUnitRunner.class)
 @Ignore("for demo only. this test cannot be enabled as it fails :)")
 public class MockitoRunnerBreaksWhenNoTestMethodsTest extends TestBase {
-    public void notATestMethod() {}
+    public void notATestMethod() {
+    }
 }

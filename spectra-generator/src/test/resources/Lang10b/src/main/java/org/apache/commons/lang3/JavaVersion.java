@@ -21,16 +21,16 @@ package org.apache.commons.lang3;
  * This is intended to mirror available values from the
  * <em>java.specification.version</em> System property. </p>
  *
- * @since 3.0
  * @version $Id: $
+ * @since 3.0
  */
 public enum JavaVersion {
-    
+
     /**
      * The Java version reported by Android. This is not an official Java version number.
      */
     JAVA_0_9(1.5f, "0.9"),
-    
+
     /**
      * Java 1.1.
      */
@@ -83,7 +83,7 @@ public enum JavaVersion {
     /**
      * Constructor.
      *
-     * @param value  the float value
+     * @param value the float value
      * @param name  the standard name, not null
      */
     JavaVersion(final float value, final String name) {
@@ -92,13 +92,14 @@ public enum JavaVersion {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Whether this version of Java is at least the version of Java passed in.</p>
      *
      * <p>For example:<br />
-     *  {@code myVersion.atLeast(JavaVersion.JAVA_1_4)}<p>
+     * {@code myVersion.atLeast(JavaVersion.JAVA_1_4)}<p>
      *
-     * @param requiredVersion  the version to check against, not null
+     * @param requiredVersion the version to check against, not null
      * @return true if this version is equal to or greater than the specified version
      */
     public boolean atLeast(JavaVersion requiredVersion) {
@@ -153,6 +154,7 @@ public enum JavaVersion {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>The string value is overridden to return the standard name.</p>
      *

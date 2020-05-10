@@ -1,70 +1,72 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-76">
-			<tests>
-				<testfile
-					path="com/google/javascript/jscomp/DeadAssignmentsEliminationTest">
-					<exception>junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue384b:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue384c:--&gt;
-						junit.framework.AssertionFailedError::-
-						com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue384d:--&gt;
-						junit.framework.AssertionFailedError:</exception>
-				</testfile>
-				<spectra>
-					<number_tests>107</number_tests>
-					<failed>4</failed>
-					<passed>103</passed>
-					<nodes>40937</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/DeadAssignmentsElimination.java">
-					<delete>309,318</delete>
-					<delete>313-317</delete>
-					<delete>372,377</delete>
-					<insert numberlines="8">297-301</insert>
-					<insert numberlines="5">302-306</insert>
-					<insert numberlines="3">311-313</insert>
-					<insert numberlines="5">320</insert>
-					<insert numberlines="3">340-341</insert>
-					<insert numberlines="11">362-364</insert>
-					<insert numberlines="5">365</insert>
-					<bugtypes>
-						<id id="1.1" lines="299">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="304">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.2" lines="309">
-							<description>Unnecessary case handling.</description>
-						</id>
-						<id id="1.1" lines="310">
-							<description>Missing case for checking inequality of state and
-								variable.</description>
-						</id>
-						<id id="1.2" lines="317-319">
-							<description>Incorrect case handling.</description>
-						</id>
-						<id id="1.1" lines="339">
-							<description>Missing case.</description>
-						</id>
-						<id id="1.2" lines="361,363">
-							<description>Incorrect case.</description>
-						</id>
-						<id id="1.2" lines="364">
-							<description>Incorrect case.</description>
-						</id>
-						<id id="1.2" lines="372,378">
-							<description>Unnecessary case handling.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>11</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-76">
+            <tests>
+                <testfile
+                        path="com/google/javascript/jscomp/DeadAssignmentsEliminationTest">
+                    <exception>junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue384b:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue384c:--&gt;
+                        junit.framework.AssertionFailedError::-
+                        com.google.javascript.jscomp.DeadAssignmentsEliminationTest::testIssue384d:--&gt;
+                        junit.framework.AssertionFailedError:
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>107</number_tests>
+                    <failed>4</failed>
+                    <passed>103</passed>
+                    <nodes>40937</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/DeadAssignmentsElimination.java">
+                    <delete>309,318</delete>
+                    <delete>313-317</delete>
+                    <delete>372,377</delete>
+                    <insert numberlines="8">297-301</insert>
+                    <insert numberlines="5">302-306</insert>
+                    <insert numberlines="3">311-313</insert>
+                    <insert numberlines="5">320</insert>
+                    <insert numberlines="3">340-341</insert>
+                    <insert numberlines="11">362-364</insert>
+                    <insert numberlines="5">365</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="299">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="304">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.2" lines="309">
+                            <description>Unnecessary case handling.</description>
+                        </id>
+                        <id id="1.1" lines="310">
+                            <description>Missing case for checking inequality of state and
+                                variable.
+                            </description>
+                        </id>
+                        <id id="1.2" lines="317-319">
+                            <description>Incorrect case handling.</description>
+                        </id>
+                        <id id="1.1" lines="339">
+                            <description>Missing case.</description>
+                        </id>
+                        <id id="1.2" lines="361,363">
+                            <description>Incorrect case.</description>
+                        </id>
+                        <id id="1.2" lines="364">
+                            <description>Incorrect case.</description>
+                        </id>
+                        <id id="1.2" lines="372,378">
+                            <description>Unnecessary case handling.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>11</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

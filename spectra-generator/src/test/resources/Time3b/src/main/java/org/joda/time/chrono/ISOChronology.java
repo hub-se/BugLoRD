@@ -15,18 +15,18 @@
  */
 package org.joda.time.chrono;
 
+import org.joda.time.Chronology;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
+import org.joda.time.field.DividedDateTimeField;
+import org.joda.time.field.RemainderDateTimeField;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.DateTimeZone;
-import org.joda.time.field.DividedDateTimeField;
-import org.joda.time.field.RemainderDateTimeField;
 
 /**
  * Implements a chronology that follows the rules of the ISO8601 standard,
@@ -47,20 +47,29 @@ import org.joda.time.field.RemainderDateTimeField;
  * @since 1.0
  */
 public final class ISOChronology extends AssembledChronology {
-    
-    /** Serialization lock */
+
+    /**
+     * Serialization lock
+     */
     private static final long serialVersionUID = -6212696554273812441L;
 
-    /** Singleton instance of a UTC ISOChronology */
+    /**
+     * Singleton instance of a UTC ISOChronology
+     */
     private static final ISOChronology INSTANCE_UTC;
-        
+
     private static final int FAST_CACHE_SIZE = 64;
 
-    /** Fast cache of zone to chronology */
+    /**
+     * Fast cache of zone to chronology
+     */
     private static final ISOChronology[] cFastCache;
 
-    /** Cache of zone to chronology */
+    /**
+     * Cache of zone to chronology
+     */
     private static final Map<DateTimeZone, ISOChronology> cCache = new HashMap<DateTimeZone, ISOChronology>();
+
     static {
         cFastCache = new ISOChronology[FAST_CACHE_SIZE];
         INSTANCE_UTC = new ISOChronology(GregorianChronology.getInstanceUTC());
@@ -70,7 +79,7 @@ public final class ISOChronology extends AssembledChronology {
     /**
      * Gets an instance of the ISOChronology.
      * The time zone of the returned instance is UTC.
-     * 
+     *
      * @return a singleton UTC instance of the chronology
      */
     public static ISOChronology getInstanceUTC() {
@@ -79,7 +88,7 @@ public final class ISOChronology extends AssembledChronology {
 
     /**
      * Gets an instance of the ISOChronology in the default time zone.
-     * 
+     *
      * @return a chronology in the default time zone
      */
     public static ISOChronology getInstance() {
@@ -88,8 +97,8 @@ public final class ISOChronology extends AssembledChronology {
 
     /**
      * Gets an instance of the ISOChronology in the given time zone.
-     * 
-     * @param zone  the time zone to get the chronology in, null is default
+     *
+     * @param zone the time zone to get the chronology in, null is default
      * @return a chronology in the specified time zone
      */
     public static ISOChronology getInstance(DateTimeZone zone) {
@@ -124,9 +133,10 @@ public final class ISOChronology extends AssembledChronology {
 
     // Conversion
     //-----------------------------------------------------------------------
+
     /**
      * Gets the Chronology in the UTC time zone.
-     * 
+     *
      * @return the chronology in UTC
      */
     public Chronology withUTC() {
@@ -135,8 +145,8 @@ public final class ISOChronology extends AssembledChronology {
 
     /**
      * Gets the Chronology in a specific time zone.
-     * 
-     * @param zone  the zone to get the chronology in, null is default
+     *
+     * @param zone the zone to get the chronology in, null is default
      * @return the chronology
      */
     public Chronology withZone(DateTimeZone zone) {
@@ -151,9 +161,10 @@ public final class ISOChronology extends AssembledChronology {
 
     // Output
     //-----------------------------------------------------------------------
+
     /**
      * Gets a debugging toString.
-     * 
+     *
      * @return a debugging string
      */
     public String toString() {
@@ -169,21 +180,22 @@ public final class ISOChronology extends AssembledChronology {
         if (getBase().getZone() == DateTimeZone.UTC) {
             // Use zero based century and year of century.
             fields.centuryOfEra = new DividedDateTimeField(
-                ISOYearOfEraDateTimeField.INSTANCE, DateTimeFieldType.centuryOfEra(), 100);
+                    ISOYearOfEraDateTimeField.INSTANCE, DateTimeFieldType.centuryOfEra(), 100);
             fields.centuries = fields.centuryOfEra.getDurationField();
-            
+
             fields.yearOfCentury = new RemainderDateTimeField(
-                (DividedDateTimeField) fields.centuryOfEra, DateTimeFieldType.yearOfCentury());
+                    (DividedDateTimeField) fields.centuryOfEra, DateTimeFieldType.yearOfCentury());
             fields.weekyearOfCentury = new RemainderDateTimeField(
-                (DividedDateTimeField) fields.centuryOfEra, fields.weekyears, DateTimeFieldType.weekyearOfCentury());
+                    (DividedDateTimeField) fields.centuryOfEra, fields.weekyears, DateTimeFieldType.weekyearOfCentury());
         }
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Checks if this chronology instance equals another.
-     * 
-     * @param obj  the object to compare to
+     *
+     * @param obj the object to compare to
      * @return true if equal
      * @since 1.6
      */
@@ -200,7 +212,7 @@ public final class ISOChronology extends AssembledChronology {
 
     /**
      * A suitable hash code for the chronology.
-     * 
+     *
      * @return the hash code
      * @since 1.6
      */
@@ -209,6 +221,7 @@ public final class ISOChronology extends AssembledChronology {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Serialize ISOChronology instances using a small stub. This reduces the
      * serialized size, and deserialized instances come from the cache.
@@ -235,9 +248,8 @@ public final class ISOChronology extends AssembledChronology {
         }
 
         private void readObject(ObjectInputStream in)
-            throws IOException, ClassNotFoundException
-        {
-            iZone = (DateTimeZone)in.readObject();
+                throws IOException, ClassNotFoundException {
+            iZone = (DateTimeZone) in.readObject();
         }
     }
 

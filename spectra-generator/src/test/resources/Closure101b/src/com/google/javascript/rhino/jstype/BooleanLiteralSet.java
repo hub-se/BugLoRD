@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,63 +36,71 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.google.javascript.rhino.jstype;
 
 /**
  * A set in the domain {true,false}.
  * There are four possible sets: {}, {true}, {false}, {true,false}.
- *
-*
  */
 public enum BooleanLiteralSet {
-  EMPTY,
-  TRUE,
-  FALSE,
-  BOTH;
+    EMPTY,
+    TRUE,
+    FALSE,
+    BOTH;
 
-  private BooleanLiteralSet fromOrdinal(int ordinal) {
-    switch (ordinal) {
-      case 0: return EMPTY;
-      case 1: return TRUE;
-      case 2: return FALSE;
-      case 3: return BOTH;
-      default: throw new IllegalArgumentException("Ordinal: " + ordinal);
+    private BooleanLiteralSet fromOrdinal(int ordinal) {
+        switch (ordinal) {
+            case 0:
+                return EMPTY;
+            case 1:
+                return TRUE;
+            case 2:
+                return FALSE;
+            case 3:
+                return BOTH;
+            default:
+                throw new IllegalArgumentException("Ordinal: " + ordinal);
+        }
     }
-  }
 
-  /**
-   * Computes the intersection of this set and {@code that}.
-   */
-  public BooleanLiteralSet intersection(BooleanLiteralSet that) {
-    return fromOrdinal(this.ordinal() & that.ordinal());
-  }
-
-  /**
-   * Computes the union of this set and {@code that}.
-   */
-  public BooleanLiteralSet union(BooleanLiteralSet that) {
-    return fromOrdinal(this.ordinal() | that.ordinal());
-  }
-
-  /**
-   * Returns whether {@code this} contains the given literal value.
-   */
-  public boolean contains(boolean literalValue) {
-    switch (this.ordinal()) {
-      case 0: return false;
-      case 1: return literalValue;
-      case 2: return !literalValue;
-      case 3: return true;
-      default: throw new IndexOutOfBoundsException("Ordinal: " +
-          this.ordinal());
+    /**
+     * Computes the intersection of this set and {@code that}.
+     */
+    public BooleanLiteralSet intersection(BooleanLiteralSet that) {
+        return fromOrdinal(this.ordinal() & that.ordinal());
     }
-  }
 
-  /**
-   * Returns the singleton set {literalValue}.
-   */
-  public static BooleanLiteralSet get(boolean literalValue) {
-    return literalValue ? TRUE : FALSE;
-  }
+    /**
+     * Computes the union of this set and {@code that}.
+     */
+    public BooleanLiteralSet union(BooleanLiteralSet that) {
+        return fromOrdinal(this.ordinal() | that.ordinal());
+    }
+
+    /**
+     * Returns whether {@code this} contains the given literal value.
+     */
+    public boolean contains(boolean literalValue) {
+        switch (this.ordinal()) {
+            case 0:
+                return false;
+            case 1:
+                return literalValue;
+            case 2:
+                return !literalValue;
+            case 3:
+                return true;
+            default:
+                throw new IndexOutOfBoundsException("Ordinal: " +
+                        this.ordinal());
+        }
+    }
+
+    /**
+     * Returns the singleton set {literalValue}.
+     */
+    public static BooleanLiteralSet get(boolean literalValue) {
+        return literalValue ? TRUE : FALSE;
+    }
 }

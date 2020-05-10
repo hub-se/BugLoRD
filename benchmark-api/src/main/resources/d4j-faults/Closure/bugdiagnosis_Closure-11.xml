@@ -1,33 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Closure">
-		<bug bugid="Closure-11">
-			<tests>
-				<testfile path="com/google/javascript/jscomp/TypeCheckTest">
-					<exception>junit.framework.AssertionFailedError:expected a
-						warning:-
-						com.google.javascript.jscomp.TypeCheckTest::testIssue810:--&gt;
-						junit.framework.AssertionFailedError:expected a warning
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>6586</number_tests>
-					<failed>2</failed>
-					<passed>6584</passed>
-					<nodes>46555</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="com/google/javascript/jscomp/TypeCheck.java">
-					<delete>1314-1315</delete>
-					<bugtypes>
-						<id id="1.2" lines="1314,1315">
-							<description>Unnecessary case.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Closure">
+        <bug bugid="Closure-11">
+            <tests>
+                <testfile path="com/google/javascript/jscomp/TypeCheckTest">
+                    <exception>junit.framework.AssertionFailedError:expected a
+                        warning:-
+                        com.google.javascript.jscomp.TypeCheckTest::testIssue810:--&gt;
+                        junit.framework.AssertionFailedError:expected a warning
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>6586</number_tests>
+                    <failed>2</failed>
+                    <passed>6584</passed>
+                    <nodes>46555</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="com/google/javascript/jscomp/TypeCheck.java">
+                    <delete>1314-1315</delete>
+                    <bugtypes>
+                        <id id="1.2" lines="1314,1315">
+                            <description>Unnecessary case.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

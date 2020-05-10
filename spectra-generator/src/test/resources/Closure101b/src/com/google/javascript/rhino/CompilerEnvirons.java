@@ -41,10 +41,8 @@ package com.google.javascript.rhino;
 
 import java.util.Hashtable;
 
-public class CompilerEnvirons
-{
-    public CompilerEnvirons()
-    {
+public class CompilerEnvirons {
+    public CompilerEnvirons() {
         languageVersion = Context.VERSION_DEFAULT;
         generateDebugInfo = true;
         useDynamicScope = false;
@@ -58,22 +56,21 @@ public class CompilerEnvirons
         parseJSDocDocumentation = false;
     }
 
-    public void initFromContext(Context cx)
-    {
+    public void initFromContext(Context cx) {
         setErrorReporter(cx.getErrorReporter());
         this.languageVersion = cx.getLanguageVersion();
         useDynamicScope = cx.compileFunctionsWithDynamicScopeFlag;
         generateDebugInfo = (!cx.isGeneratingDebugChanged()
-                             || cx.isGeneratingDebug());
+                || cx.isGeneratingDebug());
         reservedKeywordAsIdentifier
-            = cx.hasFeature(Context.FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER);
+                = cx.hasFeature(Context.FEATURE_RESERVED_KEYWORD_AS_IDENTIFIER);
         allowMemberExprAsFunctionName
-            = cx.hasFeature(Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME);
+                = cx.hasFeature(Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME);
         strictMode
-            = cx.hasFeature(Context.FEATURE_STRICT_MODE);
+                = cx.hasFeature(Context.FEATURE_STRICT_MODE);
         warningAsError = cx.hasFeature(Context.FEATURE_WARNING_AS_ERROR);
         xmlAvailable
-            = cx.hasFeature(Context.FEATURE_E4X);
+                = cx.hasFeature(Context.FEATURE_E4X);
 
         optimizationLevel = cx.getOptimizationLevel();
 
@@ -81,91 +78,74 @@ public class CompilerEnvirons
         activationNames = cx.activationNames;
     }
 
-    public final ErrorReporter getErrorReporter()
-    {
+    public final ErrorReporter getErrorReporter() {
         return errorReporter;
     }
 
-    public void setErrorReporter(ErrorReporter errorReporter)
-    {
+    public void setErrorReporter(ErrorReporter errorReporter) {
         if (errorReporter == null) throw new IllegalArgumentException();
         this.errorReporter = errorReporter;
     }
 
-    public final int getLanguageVersion()
-    {
+    public final int getLanguageVersion() {
         return languageVersion;
     }
 
-    public void setLanguageVersion(int languageVersion)
-    {
+    public void setLanguageVersion(int languageVersion) {
         Context.checkLanguageVersion(languageVersion);
         this.languageVersion = languageVersion;
     }
 
-    public final boolean isGenerateDebugInfo()
-    {
+    public final boolean isGenerateDebugInfo() {
         return generateDebugInfo;
     }
 
-    public void setGenerateDebugInfo(boolean flag)
-    {
+    public void setGenerateDebugInfo(boolean flag) {
         this.generateDebugInfo = flag;
     }
 
-    public final boolean isUseDynamicScope()
-    {
+    public final boolean isUseDynamicScope() {
         return useDynamicScope;
     }
 
-    public final boolean isReservedKeywordAsIdentifier()
-    {
+    public final boolean isReservedKeywordAsIdentifier() {
         return reservedKeywordAsIdentifier;
     }
 
-    public void setReservedKeywordAsIdentifier(boolean flag)
-    {
+    public void setReservedKeywordAsIdentifier(boolean flag) {
         reservedKeywordAsIdentifier = flag;
     }
 
-    public final boolean isAllowMemberExprAsFunctionName()
-    {
+    public final boolean isAllowMemberExprAsFunctionName() {
         return allowMemberExprAsFunctionName;
     }
 
-    public void setAllowMemberExprAsFunctionName(boolean flag)
-    {
+    public void setAllowMemberExprAsFunctionName(boolean flag) {
         allowMemberExprAsFunctionName = flag;
     }
 
-    public final boolean isXmlAvailable()
-    {
+    public final boolean isXmlAvailable() {
         return xmlAvailable;
     }
 
-    public void setXmlAvailable(boolean flag)
-    {
+    public void setXmlAvailable(boolean flag) {
         xmlAvailable = flag;
     }
 
-    public final int getOptimizationLevel()
-    {
+    public final int getOptimizationLevel() {
         return optimizationLevel;
     }
 
-    public void setOptimizationLevel(int level)
-    {
+    public void setOptimizationLevel(int level) {
         Context.checkOptimizationLevel(level);
         this.optimizationLevel = level;
     }
 
-    public boolean getAnnotateTypes()
-    {
+    public boolean getAnnotateTypes() {
         return annotateTypes;
     }
 
-    public void setAnnotateTypes(boolean flag)
-    {
+    public void setAnnotateTypes(boolean flag) {
         annotateTypes = flag;
     }
 
@@ -177,30 +157,26 @@ public class CompilerEnvirons
         parseJSDocDocumentation = flag;
     }
 
-    public boolean getParseJSDoc()
-    {
+    public boolean getParseJSDoc() {
         return parseJSDoc;
     }
 
-    public void setParseJSDoc(boolean flag)
-    {
+    public void setParseJSDoc(boolean flag) {
         parseJSDoc = flag;
     }
 
-    public final boolean isGeneratingSource()
-    {
+    public final boolean isGeneratingSource() {
         return generatingSource;
     }
 
-    public final boolean isStrictMode()
-    {
+    public final boolean isStrictMode() {
         return strictMode;
     }
 
-    public final boolean reportWarningAsError()
-    {
+    public final boolean reportWarningAsError() {
         return warningAsError;
     }
+
     /**
      * Specify whether or not source information should be generated.
      * <p>
@@ -210,8 +186,7 @@ public class CompilerEnvirons
      * Note that code generated without source is not fully ECMA
      * conformant.
      */
-    public void setGeneratingSource(boolean generatingSource)
-    {
+    public void setGeneratingSource(boolean generatingSource) {
         this.generatingSource = generatingSource;
     }
 

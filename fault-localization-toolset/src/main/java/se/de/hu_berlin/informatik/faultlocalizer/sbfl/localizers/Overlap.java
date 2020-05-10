@@ -15,9 +15,8 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 
 /**
  * Overlap fault localizer $\frac{\EF}{\min(\EF.\NF.\EP)}$
- * 
- * @param <T>
- *            type used to identify nodes in the system
+ *
+ * @param <T> type used to identify nodes in the system
  */
 public class Overlap<T> extends AbstractFaultLocalizer<T> {
 
@@ -30,10 +29,10 @@ public class Overlap<T> extends AbstractFaultLocalizer<T> {
 
     @Override
     public double suspiciousness(final INode<T> node, ComputationStrategies strategy) {
-    	if (node.getEF(strategy) == 0) {
-    		return 0;
-    	}
-    	return node.getEF(strategy) / Math.min(node.getEF(strategy), Math.min(node.getNF(strategy), node.getEP(strategy)));
+        if (node.getEF(strategy) == 0) {
+            return 0;
+        }
+        return node.getEF(strategy) / Math.min(node.getEF(strategy), Math.min(node.getNF(strategy), node.getEP(strategy)));
     }
 
 }

@@ -1,35 +1,36 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-31">
-			<tests>
-				<testfile path="org/apache/commons/lang3/StringUtilsEqualsIndexOfTest">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;false&gt;
-						but was:&lt;true&gt;:-
-						org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAnyStringWithSupplementaryChars:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;false&gt; but
-						was:&lt;true&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>571</number_tests>
-					<failed>2</failed>
-					<passed>569</passed>
-					<nodes>9653</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/StringUtils.java">
-					<insert numberlines="1">1445-1446</insert>
-					<insert numberlines="1">1446</insert>
-					<insert numberlines="5,1">1450-1452,1453</insert>
-					<bugtypes>
-						<id id="1.1" lines="1445,1449,1450,1452">
-							<description>Missing check for last indexes.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-31">
+            <tests>
+                <testfile path="org/apache/commons/lang3/StringUtilsEqualsIndexOfTest">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;false&gt;
+                        but was:&lt;true&gt;:-
+                        org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAnyStringWithSupplementaryChars:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;false&gt; but
+                        was:&lt;true&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>571</number_tests>
+                    <failed>2</failed>
+                    <passed>569</passed>
+                    <nodes>9653</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/StringUtils.java">
+                    <insert numberlines="1">1445-1446</insert>
+                    <insert numberlines="1">1446</insert>
+                    <insert numberlines="5,1">1450-1452,1453</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="1445,1449,1450,1452">
+                            <description>Missing check for last indexes.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

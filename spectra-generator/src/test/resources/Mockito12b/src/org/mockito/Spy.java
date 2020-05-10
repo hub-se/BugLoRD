@@ -8,10 +8,10 @@ import java.lang.annotation.*;
 
 /**
  * Allows shorthand wrapping of field instances in an spy object.
- * 
+ *
  * <p>
  * Example:
- * 
+ *
  * <pre>
  * public class Test{
  *    &#64;Spy Foo spyOnFoo = new Foo();
@@ -24,11 +24,11 @@ import java.lang.annotation.*;
  * </pre>
  * <p>
  * Same as doing:
- * 
+ *
  * <pre>
  * Foo spyOnFoo = Mockito.spy(new Foo());
  * </pre>
- * 
+ *
  * <b>Warning</b> if you call <code>MockitoAnnotations.initMocks(this)</code> in a
  * super class <b>constructor</b> then this will not work. It is because fields
  * in subclass are only instantiated after super class constructor has returned.

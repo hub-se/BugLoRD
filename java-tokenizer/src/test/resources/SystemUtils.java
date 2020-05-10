@@ -30,8 +30,8 @@ import java.io.File;
  * #ThreadSafe#
  * </p>
  *
- * @since 1.0
  * @version $Id$
+ * @since 1.0
  */
 public class SystemUtils {
 
@@ -79,7 +79,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -100,7 +100,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -112,7 +112,7 @@ public class SystemUtils {
 
     /**
      * <p>
-     * The {@code file.separator} System Property. 
+     * The {@code file.separator} System Property.
      * The file separator is:
      * <ul>
      * <li>{@code "/"}</code> on UNIX</li>
@@ -124,7 +124,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -142,7 +142,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -160,7 +160,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -179,7 +179,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -199,7 +199,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -217,7 +217,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -235,7 +235,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -254,7 +254,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -272,7 +272,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -290,7 +290,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -308,7 +308,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -326,7 +326,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -344,7 +344,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -362,7 +362,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -381,7 +381,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -400,7 +400,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -418,7 +418,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -436,7 +436,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -455,7 +455,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -464,7 +464,7 @@ public class SystemUtils {
      * @since Java 1.4
      */
     public static final String JAVA_UTIL_PREFS_PREFERENCES_FACTORY =
-        getSystemProperty("java.util.prefs.PreferencesFactory");
+            getSystemProperty("java.util.prefs.PreferencesFactory");
 
     /**
      * <p>
@@ -475,7 +475,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -493,7 +493,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -511,7 +511,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -529,7 +529,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -548,7 +548,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -566,7 +566,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -584,7 +584,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -602,7 +602,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -620,7 +620,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -638,7 +638,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -656,7 +656,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -674,7 +674,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -692,7 +692,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -710,7 +710,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -728,7 +728,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -747,7 +747,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -767,7 +767,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -785,7 +785,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -803,7 +803,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -822,7 +822,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -840,7 +840,7 @@ public class SystemUtils {
      * not exist.
      * </p>
      * <p>
-     * This value is initialized when the class is loaded. If {@link System#setProperty(String,String)} or
+     * This value is initialized when the class is loaded. If {@link System#setProperty(String, String)} or
      * {@link System#setProperties(java.util.Properties)} is called after this class is loaded, the value will be out of
      * sync with that System property.
      * </p>
@@ -1247,7 +1247,7 @@ public class SystemUtils {
      *
      * @return a directory
      * @throws SecurityException if a security manager exists and its {@code checkPropertyAccess} method doesn't allow
-     * access to the specified system property.
+     *                           access to the specified system property.
      * @see System#getProperty(String)
      * @since 2.1
      */
@@ -1262,7 +1262,7 @@ public class SystemUtils {
      *
      * @return a directory
      * @throws SecurityException if a security manager exists and its {@code checkPropertyAccess} method doesn't allow
-     * access to the specified system property.
+     *                           access to the specified system property.
      * @see System#getProperty(String)
      * @since 2.1
      */
@@ -1285,7 +1285,7 @@ public class SystemUtils {
     /**
      * Decides if the operating system matches.
      *
-     * @param osNamePrefix the prefix for the os name
+     * @param osNamePrefix    the prefix for the os name
      * @param osVersionPrefix the prefix for the version
      * @return true if matches, or false if not or can't determine
      */
@@ -1304,6 +1304,7 @@ public class SystemUtils {
     }
 
     // -----------------------------------------------------------------------
+
     /**
      * <p>
      * Gets a System property, defaulting to {@code null} if the property cannot be read.
@@ -1334,7 +1335,7 @@ public class SystemUtils {
      *
      * @return a directory
      * @throws SecurityException if a security manager exists and its {@code checkPropertyAccess} method doesn't allow
-     * access to the specified system property.
+     *                           access to the specified system property.
      * @see System#getProperty(String)
      * @since 2.1
      */
@@ -1349,7 +1350,7 @@ public class SystemUtils {
      *
      * @return a directory
      * @throws SecurityException if a security manager exists and its {@code checkPropertyAccess} method doesn't allow
-     * access to the specified system property.
+     *                           access to the specified system property.
      * @see System#getProperty(String)
      * @since 2.1
      */
@@ -1396,7 +1397,7 @@ public class SystemUtils {
      * This method is package private instead of private to support unit test invocation.
      * </p>
      *
-     * @param version the actual Java version
+     * @param version       the actual Java version
      * @param versionPrefix the prefix for the expected Java version
      * @return true if matches, or false if not or can't determine
      */
@@ -1413,9 +1414,9 @@ public class SystemUtils {
      * This method is package private instead of private to support unit test invocation.
      * </p>
      *
-     * @param osName the actual OS name
-     * @param osVersion the actual OS version
-     * @param osNamePrefix the prefix for the expected OS name
+     * @param osName          the actual OS name
+     * @param osVersion       the actual OS version
+     * @param osNamePrefix    the prefix for the expected OS name
      * @param osVersionPrefix the prefix for the expected OS version
      * @return true if matches, or false if not or can't determine
      */
@@ -1432,7 +1433,7 @@ public class SystemUtils {
      * This method is package private instead of private to support unit test invocation.
      * </p>
      *
-     * @param osName the actual OS name
+     * @param osName       the actual OS name
      * @param osNamePrefix the prefix for the expected OS name
      * @return true if matches, or false if not or can't determine
      */
@@ -1444,6 +1445,7 @@ public class SystemUtils {
     }
 
     // -----------------------------------------------------------------------
+
     /**
      * <p>
      * SystemUtils instances should NOT be constructed in standard programming. Instead, the class should be used as
@@ -1454,7 +1456,8 @@ public class SystemUtils {
      * </p>
      */
     public SystemUtils() {
-        super(); int i = 0;
+        super();
+        int i = 0;
     }
 
 }

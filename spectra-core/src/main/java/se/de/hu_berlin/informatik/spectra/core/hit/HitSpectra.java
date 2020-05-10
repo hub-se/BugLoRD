@@ -6,14 +6,14 @@
 
 package se.de.hu_berlin.informatik.spectra.core.hit;
 
-import java.nio.file.Path;
-
 import se.de.hu_berlin.informatik.spectra.core.AbstractSpectra;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 
+import java.nio.file.Path;
+
 /**
  * The spectra class holds all nodes and traces belonging to the spectra.
- *
+ * <p>
  * You can imagine the information accessible through this class has a matrix
  * layout:
  *
@@ -28,17 +28,16 @@ import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
  *  --------|--------|--------|--------|-----|--------|
  *  Result  |   1    |   1    |   0    | ... |   0    |
  * </pre>
- *
+ * <p>
  * The nodes are the components of a system that are analyzed. For each trace
  * the involvement of the node is stored. A '1' denotes node involvement, a '0'
  * denotes no involvement of the node in the current execution trace. For each
  * execution trace we also know whether the execution was successful or not.
- *
+ * <p>
  * Given this information, it is possible to use this spectra as input for
  * various fault localization techniques.
  *
- * @param <T>
- * type used to identify nodes in the system.
+ * @param <T> type used to identify nodes in the system.
  */
 public class HitSpectra<T> extends AbstractSpectra<T, HitTrace<T>> {
 
@@ -48,29 +47,28 @@ public class HitSpectra<T> extends AbstractSpectra<T, HitTrace<T>> {
 //	public HitSpectra() {
 //		super();
 //	}
-	
-	public HitSpectra(Path spectraZipFile) {
-		super(spectraZipFile);
-	}
 
-	@Override
-	protected HitTrace<T> createNewTrace(String identifier, int traceIndex, boolean successful) {
-		return new HitTrace<>(this, identifier, traceIndex, successful);
-	}
+    public HitSpectra(Path spectraZipFile) {
+        super(spectraZipFile);
+    }
 
-	/**
-	 * Inverts involvements of nodes for successful and/or failing traces to the
-	 * respective opposite. Returns a new Spectra object that has the required
-	 * properties. This spectra is left unmodified. Node identifiers are shared
-	 * between the two spectra objects, though.
-	 * @param invertSuccessfulTraces
-	 * whether to invert involvements of nodes in successful traces
-	 * @param invertFailedTraces
-	 * whether to invert involvements of nodes in failed traces
-	 * @return a new spectra with inverted involvements
-	 */
-	public HitSpectra<T> createInvertedSpectra(boolean invertSuccessfulTraces, boolean invertFailedTraces) {
-		return SpectraUtils.createInvertedSpectrum(this, invertSuccessfulTraces, invertFailedTraces);
-	}
+    @Override
+    protected HitTrace<T> createNewTrace(String identifier, int traceIndex, boolean successful) {
+        return new HitTrace<>(this, identifier, traceIndex, successful);
+    }
+
+    /**
+     * Inverts involvements of nodes for successful and/or failing traces to the
+     * respective opposite. Returns a new Spectra object that has the required
+     * properties. This spectra is left unmodified. Node identifiers are shared
+     * between the two spectra objects, though.
+     *
+     * @param invertSuccessfulTraces whether to invert involvements of nodes in successful traces
+     * @param invertFailedTraces     whether to invert involvements of nodes in failed traces
+     * @return a new spectra with inverted involvements
+     */
+    public HitSpectra<T> createInvertedSpectra(boolean invertSuccessfulTraces, boolean invertFailedTraces) {
+        return SpectraUtils.createInvertedSpectrum(this, invertSuccessfulTraces, invertFailedTraces);
+    }
 
 }

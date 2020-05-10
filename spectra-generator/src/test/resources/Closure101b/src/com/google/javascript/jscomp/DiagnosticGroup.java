@@ -28,83 +28,86 @@ import java.util.Set;
 /**
  * Group a set of related diagnostic types together, so that they can
  * be toggled on and off as one unit.
+ *
  * @author nicksantos@google.com (Nick Santos)
  */
 public class DiagnosticGroup {
 
-  // The set of types represented by this group, hashed by key.
-  private final Set<DiagnosticType> types;
+    // The set of types represented by this group, hashed by key.
+    private final Set<DiagnosticType> types;
 
-  /**
-   * Create a group that matches all errors of the given types.
-   */
-  public DiagnosticGroup(DiagnosticType ...types) {
-    this.types = ImmutableSet.copyOf(Arrays.asList(types));
-  }
-
-  /**
-   * Create a diagnostic group with no name that only matches the given type.
-   */
-  private DiagnosticGroup(DiagnosticType type) {
-    this.types = ImmutableSet.of(type);
-  }
-
-  // DiagnosticGroups with only a single DiagnosticType.
-  private static final Map<DiagnosticType, DiagnosticGroup> singletons =
-      Maps.newHashMap();
-
-  /** Create a diagnostic group that matches only the given type. */
-  static DiagnosticGroup forType(DiagnosticType type) {
-    if (!singletons.containsKey(type)) {
-      singletons.put(type, new DiagnosticGroup(type));
-    }
-    return singletons.get(type);
-  }
-
-  /**
-   * Create a composite group.
-   */
-  public DiagnosticGroup(DiagnosticGroup ...groups) {
-    Set<DiagnosticType> set = Sets.newHashSet();
-
-    for (DiagnosticGroup group : groups) {
-      set.addAll(group.types);
+    /**
+     * Create a group that matches all errors of the given types.
+     */
+    public DiagnosticGroup(DiagnosticType... types) {
+        this.types = ImmutableSet.copyOf(Arrays.asList(types));
     }
 
-    this.types = ImmutableSet.copyOf(set);
-  }
-
-  /**
-   * Returns whether the given error's type matches a type
-   * in this group.
-   */
-  public boolean matches(JSError error) {
-    return matches(error.getType());
-  }
-
-  /**
-   * Returns whether the given type matches a type in this group.
-   */
-  public boolean matches(DiagnosticType type) {
-    return types.contains(type);
-  }
-
-  /**
-   * Returns whether all of the types in the given group are in this group.
-   */
-  boolean isSubGroup(DiagnosticGroup group) {
-    for (DiagnosticType type : group.types) {
-      if (!matches(type)) {
-        return false;
-      }
+    /**
+     * Create a diagnostic group with no name that only matches the given type.
+     */
+    private DiagnosticGroup(DiagnosticType type) {
+        this.types = ImmutableSet.of(type);
     }
-    return true;
-  }
 
-  /**
-   * Returns an iterator over all the types in this group.
-   */
-  Collection<DiagnosticType> getTypes() {
-    return types;
-  }
+    // DiagnosticGroups with only a single DiagnosticType.
+    private static final Map<DiagnosticType, DiagnosticGroup> singletons =
+            Maps.newHashMap();
+
+    /**
+     * Create a diagnostic group that matches only the given type.
+     */
+    static DiagnosticGroup forType(DiagnosticType type) {
+        if (!singletons.containsKey(type)) {
+            singletons.put(type, new DiagnosticGroup(type));
+        }
+        return singletons.get(type);
+    }
+
+    /**
+     * Create a composite group.
+     */
+    public DiagnosticGroup(DiagnosticGroup... groups) {
+        Set<DiagnosticType> set = Sets.newHashSet();
+
+        for (DiagnosticGroup group : groups) {
+            set.addAll(group.types);
+        }
+
+        this.types = ImmutableSet.copyOf(set);
+    }
+
+    /**
+     * Returns whether the given error's type matches a type
+     * in this group.
+     */
+    public boolean matches(JSError error) {
+        return matches(error.getType());
+    }
+
+    /**
+     * Returns whether the given type matches a type in this group.
+     */
+    public boolean matches(DiagnosticType type) {
+        return types.contains(type);
+    }
+
+    /**
+     * Returns whether all of the types in the given group are in this group.
+     */
+    boolean isSubGroup(DiagnosticGroup group) {
+        for (DiagnosticType type : group.types) {
+            if (!matches(type)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns an iterator over all the types in this group.
+     */
+    Collection<DiagnosticType> getTypes() {
+        return types;
+    }
 }

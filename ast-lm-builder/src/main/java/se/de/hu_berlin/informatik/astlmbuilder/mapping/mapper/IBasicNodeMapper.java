@@ -1,110 +1,105 @@
 package se.de.hu_berlin.informatik.astlmbuilder.mapping.mapper;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitor;
 
+import java.util.Collection;
+import java.util.List;
+
 public interface IBasicNodeMapper<T> {
 
-	static class EmptyListNode extends Node {
+    static class EmptyListNode extends Node {
 
-		public EmptyListNode(TokenRange tokenRange) {
-			super(tokenRange);
-		}
+        public EmptyListNode(TokenRange tokenRange) {
+            super(tokenRange);
+        }
 
-		@Override
-		public <A> void accept(VoidVisitor<A> v, A arg) {
-			// nothing
-		}
+        @Override
+        public <A> void accept(VoidVisitor<A> v, A arg) {
+            // nothing
+        }
 
-		@Override
-		public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
-			// nothing
-			return null;
-		}
-		
-	}
+        @Override
+        public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
+            // nothing
+            return null;
+        }
 
-	static class NullListNode extends Node {
+    }
 
-		public NullListNode(TokenRange tokenRange) {
-			super(tokenRange);
-		}
+    static class NullListNode extends Node {
 
-		@Override
-		public <A> void accept(VoidVisitor<A> v, A arg) {
-			// nothing
-		}
+        public NullListNode(TokenRange tokenRange) {
+            super(tokenRange);
+        }
 
-		@Override
-		public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
-			// nothing
-			return null;
-		}
-	}
-	
-	static class NullNode extends Node {
+        @Override
+        public <A> void accept(VoidVisitor<A> v, A arg) {
+            // nothing
+        }
 
-		public NullNode(TokenRange tokenRange) {
-			super(tokenRange);
-		}
+        @Override
+        public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
+            // nothing
+            return null;
+        }
+    }
 
-		@Override
-		public <A> void accept(VoidVisitor<A> v, A arg) {
-			// nothing
-		}
+    static class NullNode extends Node {
 
-		@Override
-		public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
-			// nothing
-			return null;
-		}
-	}
+        public NullNode(TokenRange tokenRange) {
+            super(tokenRange);
+        }
 
-	/**
-	 * Returns the mapping of the abstract syntax tree node to fit the language
-	 * model
-	 * @param aNode
-	 * The node that will be used for the creation of the tokens
-	 * @param aDepth
-	 * The depth of serialization or abstraction
-	 * @param parent
-	 * the parent node, if any; null otherwise
-	 * @param includeParent
-	 * whether to include information about the parent node
-	 * @param nextNodes
-	 * a list of child nodes to generate tokens for next
-	 * @return A token that represents the nodes according to the used method
-	 * and depth
-	 */
-	public T getMappingForNode(Node aNode, Node parent, int aDepth, boolean includeParent, List<Node> nextNodes);
+        @Override
+        public <A> void accept(VoidVisitor<A> v, A arg) {
+            // nothing
+        }
 
-	public T getClosingMapping(T mapping);
+        @Override
+        public <R, A> R accept(GenericVisitor<R, A> v, A arg) {
+            // nothing
+            return null;
+        }
+    }
 
-	public boolean isClosingMapping(T mapping);
+    /**
+     * Returns the mapping of the abstract syntax tree node to fit the language
+     * model
+     *
+     * @param aNode         The node that will be used for the creation of the tokens
+     * @param aDepth        The depth of serialization or abstraction
+     * @param parent        the parent node, if any; null otherwise
+     * @param includeParent whether to include information about the parent node
+     * @param nextNodes     a list of child nodes to generate tokens for next
+     * @return A token that represents the nodes according to the used method
+     * and depth
+     */
+    public T getMappingForNode(Node aNode, Node parent, int aDepth, boolean includeParent, List<Node> nextNodes);
 
-	public T concatenateMappings(T firstMapping, T secondMapping);
+    public T getClosingMapping(T mapping);
 
-	/**
-	 * Passes a black list of method names to the mapper.
-	 * 
-	 * @param aBL
-	 * a collection of method names that should be handled differently
-	 */
-	public void setPrivateMethodBlackList(Collection<String> aBL);
+    public boolean isClosingMapping(T mapping);
 
-	/**
-	 * @return the black list of method names; null if not set
-	 */
-	public Collection<String> getPrivateMethodBlackList();
+    public T concatenateMappings(T firstMapping, T secondMapping);
 
-	/**
-	 * Clears the black list of method names from this mapper
-	 */
-	public void clearPrivateMethodBlackList();
+    /**
+     * Passes a black list of method names to the mapper.
+     *
+     * @param aBL a collection of method names that should be handled differently
+     */
+    public void setPrivateMethodBlackList(Collection<String> aBL);
+
+    /**
+     * @return the black list of method names; null if not set
+     */
+    public Collection<String> getPrivateMethodBlackList();
+
+    /**
+     * Clears the black list of method names from this mapper
+     */
+    public void clearPrivateMethodBlackList();
 
 }

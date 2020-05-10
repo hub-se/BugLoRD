@@ -35,10 +35,10 @@ package org.joda.time;
  * Periods are independent of chronology, and can only be treated as durations
  * when paired with a time via an interval.
  *
- * @see ReadableDuration
- * @see ReadableInterval
  * @author Brian S O'Neill
  * @author Stephen Colebourne
+ * @see ReadableDuration
+ * @see ReadableInterval
  * @since 1.0
  */
 public interface ReadablePeriod {
@@ -60,7 +60,7 @@ public interface ReadablePeriod {
     /**
      * Gets the field type at the specified index.
      *
-     * @param index  the index to retrieve
+     * @param index the index to retrieve
      * @return the field at the specified index
      * @throws IndexOutOfBoundsException if the index is invalid
      */
@@ -69,7 +69,7 @@ public interface ReadablePeriod {
     /**
      * Gets the value at the specified index.
      *
-     * @param index  the index to retrieve
+     * @param index the index to retrieve
      * @return the value of the field at the specified index
      * @throws IndexOutOfBoundsException if the index is invalid
      */
@@ -81,7 +81,7 @@ public interface ReadablePeriod {
      * If the field type specified is not supported by the period then zero
      * is returned.
      *
-     * @param field  the field type to query, null returns zero
+     * @param field the field type to query, null returns zero
      * @return the value of that field, zero if field not supported
      */
     int get(DurationFieldType field);
@@ -89,17 +89,18 @@ public interface ReadablePeriod {
     /**
      * Checks whether the field type specified is supported by this period.
      *
-     * @param field  the field to check, may be null which returns false
+     * @param field the field to check, may be null which returns false
      * @return true if the field is supported
      */
     boolean isSupported(DurationFieldType field);
 
     //-----------------------------------------------------------------------
+
     /**
      * Get this period as an immutable <code>Period</code> object.
      * <p>
      * This will either typecast this instance, or create a new <code>Period</code>.
-     * 
+     *
      * @return a Duration using the same field set and values
      */
     Period toPeriod();
@@ -108,12 +109,13 @@ public interface ReadablePeriod {
      * Get this object as a <code>MutablePeriod</code>.
      * <p>
      * This will always return a new <code>MutablePeriod</code> with the same fields.
-     * 
+     *
      * @return a MutablePeriod using the same field set and values
      */
     MutablePeriod toMutablePeriod();
 
     //-----------------------------------------------------------------------
+
     /**
      * Compares this object with the specified object for equality based
      * on the value and type of each supported field.
@@ -131,9 +133,9 @@ public interface ReadablePeriod {
      * {@link Duration}s, an operation that emphasises that the result may
      * differ according to the date you choose.
      *
-     * @param readablePeriod  a readable period to check against
+     * @param readablePeriod a readable period to check against
      * @return true if all the field values and types are equal, false if
-     *  not or the period is null or of an incorrect type
+     * not or the period is null or of an incorrect type
      */
     boolean equals(Object readablePeriod);
 
@@ -154,6 +156,7 @@ public interface ReadablePeriod {
     int hashCode();
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the value as a String in the style of the ISO8601 duration format.
      * Technically, the output can breach the ISO specification as weeks may be included.

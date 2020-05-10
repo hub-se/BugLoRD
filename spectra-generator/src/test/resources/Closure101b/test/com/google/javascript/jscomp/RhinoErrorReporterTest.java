@@ -19,54 +19,55 @@ package com.google.javascript.jscomp;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.javascript.rhino.Node;
-
 import junit.framework.TestCase;
 
 /**
  * Tests for error message filtering.
+ *
  * @author nicksantos@google.com (Nick Santos)
  */
 public class RhinoErrorReporterTest extends TestCase {
 
-  public CompilerPass getProcessor(Compiler compiler) {
-    return new CompilerPass() {
-      public void process(Node externs, Node root) {}
-    };
-  }
+    public CompilerPass getProcessor(Compiler compiler) {
+        return new CompilerPass() {
+            public void process(Node externs, Node root) {
+            }
+        };
+    }
 
-  public void testTrailingComma() throws Exception {
-    String message =
-        "Parse error. Internet Explorer has a non-standard " +
-        "intepretation of trailing commas. Arrays will have the wrong " +
-        "length and objects will not parse at all.";
-    assertError(
-        "var x = [1,];",
-        RhinoErrorReporter.TRAILING_COMMA,
-        message);
-    assertError(
-        "var x = {1: 2,};",
-        RhinoErrorReporter.TRAILING_COMMA,
-        message);
-  }
+    public void testTrailingComma() throws Exception {
+        String message =
+                "Parse error. Internet Explorer has a non-standard " +
+                        "intepretation of trailing commas. Arrays will have the wrong " +
+                        "length and objects will not parse at all.";
+        assertError(
+                "var x = [1,];",
+                RhinoErrorReporter.TRAILING_COMMA,
+                message);
+        assertError(
+                "var x = {1: 2,};",
+                RhinoErrorReporter.TRAILING_COMMA,
+                message);
+    }
 
 
-  /**
-   * Verifies that the compiler emits an error for the given code.
-   */
-  private void assertError(
-      String code, DiagnosticType type, String description) {
-    Compiler compiler = new Compiler();
-    JSSourceFile[] externs = new JSSourceFile[] {};
-    JSSourceFile[] inputs =  new JSSourceFile[] {
-      JSSourceFile.fromCode("input", code)
-    };
-    compiler.init(externs, inputs, new CompilerOptions());
-    compiler.parseInputs();
-    assertEquals("Expected error", 1, compiler.getErrorCount());
+    /**
+     * Verifies that the compiler emits an error for the given code.
+     */
+    private void assertError(
+            String code, DiagnosticType type, String description) {
+        Compiler compiler = new Compiler();
+        JSSourceFile[] externs = new JSSourceFile[]{};
+        JSSourceFile[] inputs = new JSSourceFile[]{
+                JSSourceFile.fromCode("input", code)
+        };
+        compiler.init(externs, inputs, new CompilerOptions());
+        compiler.parseInputs();
+        assertEquals("Expected error", 1, compiler.getErrorCount());
 
-    JSError error =
-        Iterables.getOnlyElement(Lists.newArrayList(compiler.getErrors()));
-    assertEquals(type, error.getType());
-    assertEquals(description, error.description);
-  }
+        JSError error =
+                Iterables.getOnlyElement(Lists.newArrayList(compiler.getErrors()));
+        assertEquals(type, error.getType());
+        assertEquals(description, error.description);
+    }
 }

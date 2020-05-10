@@ -1,43 +1,44 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Lang">
-		<bug bugid="Lang-32">
-			<tests>
-				<testfile path="org/apache/commons/lang3/builder/HashCodeBuilderTest">
-					<exception>junit.framework.AssertionFailedError:Expected:&lt;null&gt;
-						but was:[]</exception>
-				</testfile>
-				<spectra>
-					<number_tests>45</number_tests>
-					<failed>1</failed>
-					<passed>44</passed>
-					<nodes>9529</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/apache/commons/lang3/builder/HashCodeBuilder.java">
-					<change>104-109</change>
-					<change>152</change>
-					<change>538</change>
-					<insert numberlines="5">522</insert>
-					<insert numberlines="2,6">538,539</insert>
-					<bugtypes>
-						<id id="2.2" lines="104-109">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="152">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="1.1" lines="521">
-							<description>Missing check for null value.</description>
-						</id>
-						<id id="1.1" lines="538">
-							<description>Missing check for null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>4</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Lang">
+        <bug bugid="Lang-32">
+            <tests>
+                <testfile path="org/apache/commons/lang3/builder/HashCodeBuilderTest">
+                    <exception>junit.framework.AssertionFailedError:Expected:&lt;null&gt;
+                        but was:[]
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>45</number_tests>
+                    <failed>1</failed>
+                    <passed>44</passed>
+                    <nodes>9529</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/apache/commons/lang3/builder/HashCodeBuilder.java">
+                    <change>104-109</change>
+                    <change>152</change>
+                    <change>538</change>
+                    <insert numberlines="5">522</insert>
+                    <insert numberlines="2,6">538,539</insert>
+                    <bugtypes>
+                        <id id="2.2" lines="104-109">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="152">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="1.1" lines="521">
+                            <description>Missing check for null value.</description>
+                        </id>
+                        <id id="1.1" lines="538">
+                            <description>Missing check for null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>4</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

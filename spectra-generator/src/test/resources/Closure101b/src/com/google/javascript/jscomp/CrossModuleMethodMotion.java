@@ -34,168 +34,169 @@ import java.util.logging.Logger;
  */
 class CrossModuleMethodMotion implements CompilerPass {
 
-  private static final Logger logger =
-    Logger.getLogger(CrossModuleMethodMotion.class.getName());
+    private static final Logger logger =
+            Logger.getLogger(CrossModuleMethodMotion.class.getName());
 
-  // Internal errors
-  static final DiagnosticType NULL_COMMON_MODULE_ERROR = DiagnosticType.error(
-      "JSC_INTERNAL_ERROR_MODULE_DEPEND",
-      "null deepest common module");
+    // Internal errors
+    static final DiagnosticType NULL_COMMON_MODULE_ERROR = DiagnosticType.error(
+            "JSC_INTERNAL_ERROR_MODULE_DEPEND",
+            "null deepest common module");
 
-  private final AbstractCompiler compiler;
-  private final IdGenerator idGenerator;
-  private final AnalyzePrototypeProperties analyzer;
-  private final JSModuleGraph moduleGraph;
+    private final AbstractCompiler compiler;
+    private final IdGenerator idGenerator;
+    private final AnalyzePrototypeProperties analyzer;
+    private final JSModuleGraph moduleGraph;
 
-  static final String STUB_METHOD_NAME = "JSCompiler_stubMethod";
-  static final String UNSTUB_METHOD_NAME = "JSCompiler_unstubMethod";
+    static final String STUB_METHOD_NAME = "JSCompiler_stubMethod";
+    static final String UNSTUB_METHOD_NAME = "JSCompiler_unstubMethod";
 
-  // Visible for testing
-  static final String STUB_DECLARATIONS =
-      "var JSCompiler_stubMap = [];" +
-      "function JSCompiler_stubMethod(id) {" +
-      "  return function() {" +
-      "    return JSCompiler_stubMap[id].apply(this, arguments);" +
-      "  };" +
-      "}" +
-      "function JSCompiler_unstubMethod(id, body) {" +
-      "  return JSCompiler_stubMap[id] = body;" +
-      "}";
+    // Visible for testing
+    static final String STUB_DECLARATIONS =
+            "var JSCompiler_stubMap = [];" +
+                    "function JSCompiler_stubMethod(id) {" +
+                    "  return function() {" +
+                    "    return JSCompiler_stubMap[id].apply(this, arguments);" +
+                    "  };" +
+                    "}" +
+                    "function JSCompiler_unstubMethod(id, body) {" +
+                    "  return JSCompiler_stubMap[id] = body;" +
+                    "}";
 
-  /**
-   * Creates a new pass for moving prototype properties.
-   * @param compiler The compiler.
-   * @param idGenerator An id generator for method stubs.
-   * @param canModifyExterns If true, then we can move prototype
-   *     properties that are declared in the externs file.
-   */
-  CrossModuleMethodMotion(AbstractCompiler compiler, IdGenerator idGenerator,
-      boolean canModifyExterns) {
-    this.compiler = compiler;
-    this.idGenerator = idGenerator;
-    this.moduleGraph = compiler.getModuleGraph();
-    this.analyzer = new AnalyzePrototypeProperties(compiler, moduleGraph,
-        canModifyExterns, false);
-  }
-
-  public void process(Node externRoot, Node root) {
-    // If there are < 2 modules, then we will never move anything,
-    // so we're done.
-    if (moduleGraph != null && moduleGraph.getModuleCount() > 1) {
-      analyzer.process(externRoot, root);
-      moveMethods(analyzer.getAllNameInfo());
+    /**
+     * Creates a new pass for moving prototype properties.
+     *
+     * @param compiler         The compiler.
+     * @param idGenerator      An id generator for method stubs.
+     * @param canModifyExterns If true, then we can move prototype
+     *                         properties that are declared in the externs file.
+     */
+    CrossModuleMethodMotion(AbstractCompiler compiler, IdGenerator idGenerator,
+                            boolean canModifyExterns) {
+        this.compiler = compiler;
+        this.idGenerator = idGenerator;
+        this.moduleGraph = compiler.getModuleGraph();
+        this.analyzer = new AnalyzePrototypeProperties(compiler, moduleGraph,
+                canModifyExterns, false);
     }
-  }
 
-  /**
-   * Move methods deeper in the module graph when possible.
-   */
-  private void moveMethods(Collection<NameInfo> allNameInfo) {
-    boolean hasStubDeclaration = idGenerator.hasGeneratedAnyIds();
-    for (NameInfo nameInfo : allNameInfo) {
-      if (!nameInfo.isReferenced()) {
-        // The code below can't do anything with unreferenced name
-        // infos.  They should be skipped to avoid NPE since their
-        // deepestCommonModuleRef is null.
-        continue;
-      }
-
-      JSModule deepestCommonModuleRef = nameInfo.getDeepestCommonModuleRef();
-      if(deepestCommonModuleRef == null) {
-        compiler.report(JSError.make(NULL_COMMON_MODULE_ERROR));
-        continue;
-      }
-
-      Iterator<Symbol> declarations =
-          nameInfo.getDeclarations().descendingIterator();
-      while (declarations.hasNext()) {
-        Symbol symbol = declarations.next();
-        if (!(symbol instanceof Property)) {
-          continue;
+    public void process(Node externRoot, Node root) {
+        // If there are < 2 modules, then we will never move anything,
+        // so we're done.
+        if (moduleGraph != null && moduleGraph.getModuleCount() > 1) {
+            analyzer.process(externRoot, root);
+            moveMethods(analyzer.getAllNameInfo());
         }
-        Property prop = (Property) symbol;
+    }
 
-        // We should only move a property across modules if:
-        // 1) We can move it deeper in the module graph, and
-        // 2) it's a function.
-        //
-        // #1 should be obvious. #2 is more subtle. It's possible
-        // to copy off of a prototype, as in the code:
-        // for (var k in Foo.prototype) {
-        //   doSomethingWith(Foo.prototype[k]);
-        // }
-        // This is a common way to implement pseudo-multiple inheritance in JS.
-        //
-        // So if we move a prototype method into a deeper module, we must
-        // replace it with a stub function so that it preserves its original
-        // behavior.
-        Node value = prop.getValue();
-        if (moduleGraph.dependsOn(deepestCommonModuleRef, prop.getModule()) &&
-            value.getType() == Token.FUNCTION) {
-          Node valueParent = prop.getValueParent();
-          Node proto = prop.getPrototype();
-          int stubId = idGenerator.newId();
+    /**
+     * Move methods deeper in the module graph when possible.
+     */
+    private void moveMethods(Collection<NameInfo> allNameInfo) {
+        boolean hasStubDeclaration = idGenerator.hasGeneratedAnyIds();
+        for (NameInfo nameInfo : allNameInfo) {
+            if (!nameInfo.isReferenced()) {
+                // The code below can't do anything with unreferenced name
+                // infos.  They should be skipped to avoid NPE since their
+                // deepestCommonModuleRef is null.
+                continue;
+            }
 
-          // stub out the method in the original module
-          valueParent.replaceChild(value,
-              // A.prototype.b = JSCompiler_stubMethod(id);
-              new Node(Token.CALL,
-                  Node.newString(Token.NAME, STUB_METHOD_NAME),
-                  Node.newNumber(stubId)));
+            JSModule deepestCommonModuleRef = nameInfo.getDeepestCommonModuleRef();
+            if (deepestCommonModuleRef == null) {
+                compiler.report(JSError.make(NULL_COMMON_MODULE_ERROR));
+                continue;
+            }
 
-          // unstub the function body in the deeper module
-          Node unstubParent = compiler.getNodeForCodeInsertion(
-              deepestCommonModuleRef);
-          unstubParent.addChildToFront(
-              // A.prototype.b = JSCompiler_unstubMethod(id, body);
-              new Node(Token.EXPR_RESULT,
-                  new Node(Token.ASSIGN,
-                      new Node(Token.GETPROP,
-                          proto.cloneTree(),
-                          Node.newString(Token.STRING, nameInfo.name)),
-                      new Node(Token.CALL,
-                          Node.newString(Token.NAME, UNSTUB_METHOD_NAME),
-                          Node.newNumber(stubId),
-                          value))));
+            Iterator<Symbol> declarations =
+                    nameInfo.getDeclarations().descendingIterator();
+            while (declarations.hasNext()) {
+                Symbol symbol = declarations.next();
+                if (!(symbol instanceof Property)) {
+                    continue;
+                }
+                Property prop = (Property) symbol;
 
-          compiler.reportCodeChange();
-          logger.fine("Moved method: " +
-              proto.getQualifiedName() + "." + nameInfo.name +
-              " from module " + prop.getModule() + " to module " +
-              deepestCommonModuleRef);
+                // We should only move a property across modules if:
+                // 1) We can move it deeper in the module graph, and
+                // 2) it's a function.
+                //
+                // #1 should be obvious. #2 is more subtle. It's possible
+                // to copy off of a prototype, as in the code:
+                // for (var k in Foo.prototype) {
+                //   doSomethingWith(Foo.prototype[k]);
+                // }
+                // This is a common way to implement pseudo-multiple inheritance in JS.
+                //
+                // So if we move a prototype method into a deeper module, we must
+                // replace it with a stub function so that it preserves its original
+                // behavior.
+                Node value = prop.getValue();
+                if (moduleGraph.dependsOn(deepestCommonModuleRef, prop.getModule()) &&
+                        value.getType() == Token.FUNCTION) {
+                    Node valueParent = prop.getValueParent();
+                    Node proto = prop.getPrototype();
+                    int stubId = idGenerator.newId();
+
+                    // stub out the method in the original module
+                    valueParent.replaceChild(value,
+                            // A.prototype.b = JSCompiler_stubMethod(id);
+                            new Node(Token.CALL,
+                                    Node.newString(Token.NAME, STUB_METHOD_NAME),
+                                    Node.newNumber(stubId)));
+
+                    // unstub the function body in the deeper module
+                    Node unstubParent = compiler.getNodeForCodeInsertion(
+                            deepestCommonModuleRef);
+                    unstubParent.addChildToFront(
+                            // A.prototype.b = JSCompiler_unstubMethod(id, body);
+                            new Node(Token.EXPR_RESULT,
+                                    new Node(Token.ASSIGN,
+                                            new Node(Token.GETPROP,
+                                                    proto.cloneTree(),
+                                                    Node.newString(Token.STRING, nameInfo.name)),
+                                            new Node(Token.CALL,
+                                                    Node.newString(Token.NAME, UNSTUB_METHOD_NAME),
+                                                    Node.newNumber(stubId),
+                                                    value))));
+
+                    compiler.reportCodeChange();
+                    logger.fine("Moved method: " +
+                            proto.getQualifiedName() + "." + nameInfo.name +
+                            " from module " + prop.getModule() + " to module " +
+                            deepestCommonModuleRef);
+                }
+            }
         }
-      }
+
+        if (!hasStubDeclaration && idGenerator.hasGeneratedAnyIds()) {
+            // Declare stub functions in the top-most module.
+            Node declarations = compiler.parseSyntheticCode(STUB_DECLARATIONS);
+            compiler.getNodeForCodeInsertion(null).addChildrenToFront(
+                    declarations.removeChildren());
+        }
     }
 
-    if (!hasStubDeclaration && idGenerator.hasGeneratedAnyIds()) {
-      // Declare stub functions in the top-most module.
-      Node declarations = compiler.parseSyntheticCode(STUB_DECLARATIONS);
-      compiler.getNodeForCodeInsertion(null).addChildrenToFront(
-          declarations.removeChildren());
+    static class IdGenerator implements Serializable {
+        private static final long serialVersionUID = 0L;
+
+        /**
+         * Ids for cross-module method stubbing, so that each method has
+         * a unique id.
+         */
+        private int currentId = 0;
+
+        /**
+         * Returns whether we've generated any new ids.
+         */
+        boolean hasGeneratedAnyIds() {
+            return currentId != 0;
+        }
+
+        /**
+         * Creates a new id for stubbing a method.
+         */
+        int newId() {
+            return currentId++;
+        }
     }
-  }
-
-  static class IdGenerator implements Serializable {
-    private static final long serialVersionUID = 0L;
-
-    /**
-     * Ids for cross-module method stubbing, so that each method has
-     * a unique id.
-     */
-    private int currentId = 0;
-
-    /**
-     * Returns whether we've generated any new ids.
-     */
-    boolean hasGeneratedAnyIds() {
-      return currentId != 0;
-    }
-
-    /**
-     * Creates a new id for stubbing a method.
-     */
-    int newId() {
-      return currentId++;
-    }
-  }
 }

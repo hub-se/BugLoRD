@@ -1,34 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Time">
-		<bug bugid="Time-22">
-			<tests>
-				<testfile path="org/joda/time/TestPeriod_Constructors">
-					<exception>junit.framework.AssertionFailedError:expected:&lt;0&gt;
-						but was:&lt;64&gt;:-
-						org.joda.time.TestPeriod_Constructors::testConstructor_long_fixedZone:--&gt;
-						junit.framework.AssertionFailedError:expected:&lt;0&gt; but
-						was:&lt;64&gt;</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1875</number_tests>
-					<failed>2</failed>
-					<passed>1873</passed>
-					<nodes>13103</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/joda/time/base/BasePeriod.java">
-					<change>222</change>
-					<insert numberlines="5">223-224</insert>
-					<bugtypes>
-						<id id="3.1" lines="222,223">
-							<description>Incorrect data usage.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Time">
+        <bug bugid="Time-22">
+            <tests>
+                <testfile path="org/joda/time/TestPeriod_Constructors">
+                    <exception>junit.framework.AssertionFailedError:expected:&lt;0&gt;
+                        but was:&lt;64&gt;:-
+                        org.joda.time.TestPeriod_Constructors::testConstructor_long_fixedZone:--&gt;
+                        junit.framework.AssertionFailedError:expected:&lt;0&gt; but
+                        was:&lt;64&gt;
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1875</number_tests>
+                    <failed>2</failed>
+                    <passed>1873</passed>
+                    <nodes>13103</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/joda/time/base/BasePeriod.java">
+                    <change>222</change>
+                    <insert numberlines="5">223-224</insert>
+                    <bugtypes>
+                        <id id="3.1" lines="222,223">
+                            <description>Incorrect data usage.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

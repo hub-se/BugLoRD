@@ -4,31 +4,36 @@ package se.de.hu_berlin.informatik.rankingplotter.plotter.datatables;
  * @author Simon Heiden
  */
 public class SinglePlotStatisticsCollection extends StatisticsCollection<SinglePlotStatisticsCollection.StatisticsCategories> {
-	
-	public enum StatisticsCategories {
 
-		MOD_CHANGE("MODCHANGE"),
-		MOD_DELETE("MODDELETE"),
-		MOD_INSERT("MODINSERT"),
-		MOD_UNKNOWN("MODUNK"),
+    public enum StatisticsCategories {
 
-		ALL("ALL"),
+        MOD_CHANGE("MODCHANGE"),
+        MOD_DELETE("MODDELETE"),
+        MOD_INSERT("MODINSERT"),
+        MOD_UNKNOWN("MODUNK"),
 
-		UNKNOWN("UNKNOWNCATEGORY");
+        ALL("ALL"),
 
-		private final String identifier;
-		StatisticsCategories(String identifier) {
-			this.identifier = identifier;
-		}
-		@Override public String toString() { return identifier; }
-	}
+        UNKNOWN("UNKNOWNCATEGORY");
 
-	public SinglePlotStatisticsCollection() {
-		super();
-	}
+        private final String identifier;
 
-	public SinglePlotStatisticsCollection(String identifier) {
-		super(identifier);
-	}
+        StatisticsCategories(String identifier) {
+            this.identifier = identifier;
+        }
+
+        @Override
+        public String toString() {
+            return identifier;
+        }
+    }
+
+    public SinglePlotStatisticsCollection() {
+        super();
+    }
+
+    public SinglePlotStatisticsCollection(String identifier) {
+        super(identifier);
+    }
 
 }

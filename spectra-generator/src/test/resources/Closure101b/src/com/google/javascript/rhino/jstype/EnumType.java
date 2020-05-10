@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0
@@ -36,11 +36,8 @@
  * file under either the MPL or the GPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
-package com.google.javascript.rhino.jstype;
 
-import static com.google.javascript.rhino.jstype.TernaryValue.FALSE;
-import static com.google.javascript.rhino.jstype.TernaryValue.TRUE;
+package com.google.javascript.rhino.jstype;
 
 import com.google.javascript.rhino.ErrorReporter;
 
@@ -48,111 +45,113 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.google.javascript.rhino.jstype.TernaryValue.FALSE;
+import static com.google.javascript.rhino.jstype.TernaryValue.TRUE;
+
 /**
  * An enum type representing a branded collection of elements. Each element
  * is referenced by its name, and has an {@link EnumElementType} type.
-*
-*
  */
 public class EnumType extends PrototypeObjectType {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  // the type of the individual elements
-  private EnumElementType elementsType;
-  // the elements' names (they all have the same type)
-  private final Set<String> elements = new HashSet<String>();
+    // the type of the individual elements
+    private EnumElementType elementsType;
+    // the elements' names (they all have the same type)
+    private final Set<String> elements = new HashSet<String>();
 
-  /**
-   * Creates an enum type.
-   *
-   * @param name the enum's name
-   * @param elementsType the base type of the individual elements
-   */
-  EnumType(JSTypeRegistry registry, String name, JSType elementsType) {
-    super(registry, "enum{" + name + "}", null);
-    this.elementsType = new EnumElementType(registry, elementsType, name);
-  }
-
-  @Override
-  public boolean isEnumType() {
-    return true;
-  }
-
-  @Override
-  public ObjectType getImplicitPrototype() {
-    return registry.getNativeObjectType(JSTypeNative.OBJECT_TYPE);
-  }
-
-  /**
-   * Gets the elements defined on this enum.
-   * @return the elements' names defined on this enum. The returned set is
-   *         immutable.
-   */
-  public Set<String> getElements() {
-    return Collections.unmodifiableSet(elements);
-  }
-
-  public boolean defineElement(String name) {
-    elements.add(name);
-    return defineDeclaredProperty(name, elementsType, false);
-  }
-
-  /**
-   * Gets the elements' type.
-   */
-  public EnumElementType getElementsType() {
-    return elementsType;
-  }
-
-  @Override
-  public TernaryValue testForEquality(JSType that) {
-    TernaryValue result = super.testForEquality(that);
-    if (result != null) {
-      return result;
+    /**
+     * Creates an enum type.
+     *
+     * @param name         the enum's name
+     * @param elementsType the base type of the individual elements
+     */
+    EnumType(JSTypeRegistry registry, String name, JSType elementsType) {
+        super(registry, "enum{" + name + "}", null);
+        this.elementsType = new EnumElementType(registry, elementsType, name);
     }
-    return this.equals(that) ? TRUE : FALSE;
-  }
 
-  @Override
-  public boolean isSubtype(JSType that) {
-    return that.equals(getNativeType(JSTypeNative.OBJECT_TYPE)) ||
-        that.equals(getNativeType(JSTypeNative.OBJECT_PROTOTYPE)) ||
-        JSType.isSubtype(this, that);
-  }
+    @Override
+    public boolean isEnumType() {
+        return true;
+    }
 
-  @Override
-  public String toString() {
-    return getReferenceName();
-  }
+    @Override
+    public ObjectType getImplicitPrototype() {
+        return registry.getNativeObjectType(JSTypeNative.OBJECT_TYPE);
+    }
 
-  @Override
-  public <T> T visit(Visitor<T> visitor) {
-    return visitor.caseObjectType(this);
-  }
+    /**
+     * Gets the elements defined on this enum.
+     *
+     * @return the elements' names defined on this enum. The returned set is
+     * immutable.
+     */
+    public Set<String> getElements() {
+        return Collections.unmodifiableSet(elements);
+    }
 
-  @Override
-  public FunctionType getConstructor() {
-    return null;
-  }
+    public boolean defineElement(String name) {
+        elements.add(name);
+        return defineDeclaredProperty(name, elementsType, false);
+    }
 
-  @Override
-  public boolean matchesNumberContext() {
-    return false;
-  }
+    /**
+     * Gets the elements' type.
+     */
+    public EnumElementType getElementsType() {
+        return elementsType;
+    }
 
-  @Override
-  public boolean matchesStringContext() {
-    return true;
-  }
+    @Override
+    public TernaryValue testForEquality(JSType that) {
+        TernaryValue result = super.testForEquality(that);
+        if (result != null) {
+            return result;
+        }
+        return this.equals(that) ? TRUE : FALSE;
+    }
 
-  @Override
-  public boolean matchesObjectContext() {
-    return true;
-  }
+    @Override
+    public boolean isSubtype(JSType that) {
+        return that.equals(getNativeType(JSTypeNative.OBJECT_TYPE)) ||
+                that.equals(getNativeType(JSTypeNative.OBJECT_PROTOTYPE)) ||
+                JSType.isSubtype(this, that);
+    }
 
-  @Override
-  JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope) {
-    elementsType = (EnumElementType) elementsType.resolve(t, scope);
-    return super.resolveInternal(t, scope);
-  }
+    @Override
+    public String toString() {
+        return getReferenceName();
+    }
+
+    @Override
+    public <T> T visit(Visitor<T> visitor) {
+        return visitor.caseObjectType(this);
+    }
+
+    @Override
+    public FunctionType getConstructor() {
+        return null;
+    }
+
+    @Override
+    public boolean matchesNumberContext() {
+        return false;
+    }
+
+    @Override
+    public boolean matchesStringContext() {
+        return true;
+    }
+
+    @Override
+    public boolean matchesObjectContext() {
+        return true;
+    }
+
+    @Override
+    JSType resolveInternal(ErrorReporter t, StaticScope<JSType> scope) {
+        elementsType = (EnumElementType) elementsType.resolve(t, scope);
+        return super.resolveInternal(t, scope);
+    }
 }

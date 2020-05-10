@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,33 +16,22 @@
  */
 package org.apache.commons.lang3;
 
-import static org.apache.commons.lang3.JavaVersion.JAVA_1_4;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.apache.commons.lang3.JavaVersion.JAVA_1_4;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link LocaleUtils}.
  *
  * @version $Id$
  */
-public class LocaleUtilsTest  {
+public class LocaleUtilsTest {
 
     private static final Locale LOCALE_EN = new Locale("en", "");
     private static final Locale LOCALE_EN_US = new Locale("en", "US");
@@ -53,7 +42,6 @@ public class LocaleUtilsTest  {
     private static final Locale LOCALE_QQ_ZZ = new Locale("qq", "ZZ");
 
 
-
     @Before
     public void setUp() throws Exception {
         // Testing #LANG-304. Must be called before availableLocaleSet is called.
@@ -61,6 +49,7 @@ public class LocaleUtilsTest  {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test that constructors are public, and work, etc.
      */
@@ -75,10 +64,11 @@ public class LocaleUtilsTest  {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Pass in a valid language, test toLocale.
      *
-     * @param language  the language string
+     * @param language the language string
      */
     private void assertValidToLocale(String language) {
         Locale locale = LocaleUtils.toLocale(language);
@@ -93,8 +83,8 @@ public class LocaleUtilsTest  {
      * Pass in a valid language, test toLocale.
      *
      * @param localeString to pass to toLocale()
-     * @param language of the resulting Locale
-     * @param country of the resulting Locale
+     * @param language     of the resulting Locale
+     * @param country      of the resulting Locale
      */
     private void assertValidToLocale(String localeString, String language, String country) {
         Locale locale = LocaleUtils.toLocale(localeString);
@@ -109,19 +99,19 @@ public class LocaleUtilsTest  {
      * Pass in a valid language, test toLocale.
      *
      * @param localeString to pass to toLocale()
-     * @param language of the resulting Locale
-     * @param country of the resulting Locale
-     * @param variant of the resulting Locale
+     * @param language     of the resulting Locale
+     * @param country      of the resulting Locale
+     * @param variant      of the resulting Locale
      */
     private void assertValidToLocale(
-            String localeString, String language, 
+            String localeString, String language,
             String country, String variant) {
         Locale locale = LocaleUtils.toLocale(localeString);
         assertNotNull("valid locale", locale);
         assertEquals(language, locale.getLanguage());
         assertEquals(country, locale.getCountry());
         assertEquals(variant, locale.getVariant());
-        
+
     }
 
     /**
@@ -130,46 +120,53 @@ public class LocaleUtilsTest  {
     @Test
     public void testToLocale_1Part() {
         assertEquals(null, LocaleUtils.toLocale((String) null));
-        
+
         assertValidToLocale("us");
         assertValidToLocale("fr");
         assertValidToLocale("de");
         assertValidToLocale("zh");
         // Valid format but lang doesnt exist, should make instance anyway
         assertValidToLocale("qq");
-        
+
         try {
             LocaleUtils.toLocale("Us");
             fail("Should fail if not lowercase");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
         try {
             LocaleUtils.toLocale("US");
             fail("Should fail if not lowercase");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
         try {
             LocaleUtils.toLocale("uS");
             fail("Should fail if not lowercase");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
         try {
             LocaleUtils.toLocale("u#");
             fail("Should fail if not lowercase");
-        } catch (IllegalArgumentException iae) {}
-        
+        } catch (IllegalArgumentException iae) {
+        }
+
         try {
             LocaleUtils.toLocale("u");
             fail("Must be 2 chars if less than 5");
-        } catch (IllegalArgumentException iae) {}
-       
+        } catch (IllegalArgumentException iae) {
+        }
+
         try {
             LocaleUtils.toLocale("uuu");
             fail("Must be 2 chars if less than 5");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
 
         try {
             LocaleUtils.toLocale("uu_U");
             fail("Must be 2 chars if less than 5");
-        } catch (IllegalArgumentException iae) {}
-    }        
+        } catch (IllegalArgumentException iae) {
+        }
+    }
 
     /**
      * Test toLocale() method.
@@ -179,32 +176,38 @@ public class LocaleUtilsTest  {
         assertValidToLocale("us_EN", "us", "EN");
         //valid though doesnt exist
         assertValidToLocale("us_ZH", "us", "ZH");
-        
+
         try {
             LocaleUtils.toLocale("us-EN");
             fail("Should fail as not underscore");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
         try {
             LocaleUtils.toLocale("us_En");
             fail("Should fail second part not uppercase");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
         try {
             LocaleUtils.toLocale("us_en");
             fail("Should fail second part not uppercase");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
         try {
             LocaleUtils.toLocale("us_eN");
             fail("Should fail second part not uppercase");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
         try {
             LocaleUtils.toLocale("uS_EN");
             fail("Should fail first part not lowercase");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
         try {
             LocaleUtils.toLocale("us_E3");
             fail("Should fail second part not uppercase");
-        } catch (IllegalArgumentException iae) {}
-    }        
+        } catch (IllegalArgumentException iae) {
+        }
+    }
 
     /**
      * Test toLocale() method.
@@ -221,36 +224,40 @@ public class LocaleUtilsTest  {
             assertValidToLocale("us_EN_a", "us", "EN", "A");
             assertValidToLocale("us_EN_SFsafdFDsdfF", "us", "EN", "SFSAFDFDSDFF");
         }
-        
+
         try {
             LocaleUtils.toLocale("us_EN-a");
             fail("Should fail as not underscore");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
         try {
             LocaleUtils.toLocale("uu_UU_");
             fail("Must be 3, 5 or 7+ in length");
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+        }
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Helper method for local lookups.
      *
-     * @param locale  the input locale
-     * @param defaultLocale  the input default locale
-     * @param expected  expected results
+     * @param locale        the input locale
+     * @param defaultLocale the input default locale
+     * @param expected      expected results
      */
     private void assertLocaleLookupList(Locale locale, Locale defaultLocale, Locale[] expected) {
         List<Locale> localeList = defaultLocale == null ?
                 LocaleUtils.localeLookupList(locale) :
                 LocaleUtils.localeLookupList(locale, defaultLocale);
-        
+
         assertEquals(expected.length, localeList.size());
         assertEquals(Arrays.asList(expected), localeList);
         assertUnmodifiableCollection(localeList);
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test localeLookupList() method.
      */
@@ -261,71 +268,72 @@ public class LocaleUtilsTest  {
         assertLocaleLookupList(LOCALE_EN, null, new Locale[]{LOCALE_EN});
         assertLocaleLookupList(LOCALE_EN, null, new Locale[]{LOCALE_EN});
         assertLocaleLookupList(LOCALE_EN_US, null,
-            new Locale[] {
-                LOCALE_EN_US,
-                LOCALE_EN});
+                new Locale[]{
+                        LOCALE_EN_US,
+                        LOCALE_EN});
         assertLocaleLookupList(LOCALE_EN_US_ZZZZ, null,
-            new Locale[] {
-                LOCALE_EN_US_ZZZZ,
-                LOCALE_EN_US,
-                LOCALE_EN});
-    }        
+                new Locale[]{
+                        LOCALE_EN_US_ZZZZ,
+                        LOCALE_EN_US,
+                        LOCALE_EN});
+    }
 
     /**
      * Test localeLookupList() method.
      */
     @Test
     public void testLocaleLookupList_LocaleLocale() {
-        assertLocaleLookupList(LOCALE_QQ, LOCALE_QQ, 
+        assertLocaleLookupList(LOCALE_QQ, LOCALE_QQ,
                 new Locale[]{LOCALE_QQ});
-        assertLocaleLookupList(LOCALE_EN, LOCALE_EN, 
+        assertLocaleLookupList(LOCALE_EN, LOCALE_EN,
                 new Locale[]{LOCALE_EN});
-        
-        assertLocaleLookupList(LOCALE_EN_US, LOCALE_EN_US, 
-            new Locale[]{
-                LOCALE_EN_US,
-                LOCALE_EN});
+
+        assertLocaleLookupList(LOCALE_EN_US, LOCALE_EN_US,
+                new Locale[]{
+                        LOCALE_EN_US,
+                        LOCALE_EN});
         assertLocaleLookupList(LOCALE_EN_US, LOCALE_QQ,
-            new Locale[] {
-                LOCALE_EN_US,
-                LOCALE_EN,
-                LOCALE_QQ});
+                new Locale[]{
+                        LOCALE_EN_US,
+                        LOCALE_EN,
+                        LOCALE_QQ});
         assertLocaleLookupList(LOCALE_EN_US, LOCALE_QQ_ZZ,
-            new Locale[] {
-                LOCALE_EN_US,
-                LOCALE_EN,
-                LOCALE_QQ_ZZ});
-        
+                new Locale[]{
+                        LOCALE_EN_US,
+                        LOCALE_EN,
+                        LOCALE_QQ_ZZ});
+
         assertLocaleLookupList(LOCALE_EN_US_ZZZZ, null,
-            new Locale[] {
-                LOCALE_EN_US_ZZZZ,
-                LOCALE_EN_US,
-                LOCALE_EN});
+                new Locale[]{
+                        LOCALE_EN_US_ZZZZ,
+                        LOCALE_EN_US,
+                        LOCALE_EN});
         assertLocaleLookupList(LOCALE_EN_US_ZZZZ, LOCALE_EN_US_ZZZZ,
-            new Locale[] {
-                LOCALE_EN_US_ZZZZ,
-                LOCALE_EN_US,
-                LOCALE_EN});
+                new Locale[]{
+                        LOCALE_EN_US_ZZZZ,
+                        LOCALE_EN_US,
+                        LOCALE_EN});
         assertLocaleLookupList(LOCALE_EN_US_ZZZZ, LOCALE_QQ,
-            new Locale[] {
-                LOCALE_EN_US_ZZZZ,
-                LOCALE_EN_US,
-                LOCALE_EN,
-                LOCALE_QQ});
+                new Locale[]{
+                        LOCALE_EN_US_ZZZZ,
+                        LOCALE_EN_US,
+                        LOCALE_EN,
+                        LOCALE_QQ});
         assertLocaleLookupList(LOCALE_EN_US_ZZZZ, LOCALE_QQ_ZZ,
-            new Locale[] {
-                LOCALE_EN_US_ZZZZ,
-                LOCALE_EN_US,
-                LOCALE_EN,
-                LOCALE_QQ_ZZ});
+                new Locale[]{
+                        LOCALE_EN_US_ZZZZ,
+                        LOCALE_EN_US,
+                        LOCALE_EN,
+                        LOCALE_QQ_ZZ});
         assertLocaleLookupList(LOCALE_FR_CA, LOCALE_EN,
-            new Locale[] {
-                LOCALE_FR_CA,
-                LOCALE_FR,
-                LOCALE_EN});
+                new Locale[]{
+                        LOCALE_FR_CA,
+                        LOCALE_FR,
+                        LOCALE_EN});
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test availableLocaleList() method.
      */
@@ -336,13 +344,14 @@ public class LocaleUtilsTest  {
         assertNotNull(list);
         assertSame(list, list2);
         assertUnmodifiableCollection(list);
-        
+
         Locale[] jdkLocaleArray = Locale.getAvailableLocales();
         List<Locale> jdkLocaleList = Arrays.asList(jdkLocaleArray);
         assertEquals(jdkLocaleList, list);
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test availableLocaleSet() method.
      */
@@ -353,7 +362,7 @@ public class LocaleUtilsTest  {
         assertNotNull(set);
         assertSame(set, set2);
         assertUnmodifiableCollection(set);
-        
+
         Locale[] jdkLocaleArray = Locale.getAvailableLocales();
         List<Locale> jdkLocaleList = Arrays.asList(jdkLocaleArray);
         Set<Locale> jdkLocaleSet = new HashSet<Locale>(jdkLocaleList);
@@ -361,6 +370,7 @@ public class LocaleUtilsTest  {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Test availableLocaleSet() method.
      */
@@ -377,10 +387,11 @@ public class LocaleUtilsTest  {
     }
 
     //-----------------------------------------------------------------------
+
     /**
-     * Make sure the language by country is correct. It checks that 
-     * the LocaleUtils.languagesByCountry(country) call contains the 
-     * array of languages passed in. It may contain more due to JVM 
+     * Make sure the language by country is correct. It checks that
+     * the LocaleUtils.languagesByCountry(country) call contains the
+     * array of languages passed in. It may contain more due to JVM
      * variations.
      *
      * @param country
@@ -427,12 +438,12 @@ public class LocaleUtilsTest  {
     }
 
     //-----------------------------------------------------------------------
+
     /**
-     * Make sure the country by language is correct. It checks that 
-     * the LocaleUtils.countryByLanguage(language) call contains the 
-     * array of countries passed in. It may contain more due to JVM 
+     * Make sure the country by language is correct. It checks that
+     * the LocaleUtils.countryByLanguage(language) call contains the
+     * array of countries passed in. It may contain more due to JVM
      * variations.
-     *
      *
      * @param language
      * @param countries array of countries that should be returned
@@ -478,13 +489,14 @@ public class LocaleUtilsTest  {
     }
 
     /**
-     * @param coll  the collection to check
+     * @param coll the collection to check
      */
     private static void assertUnmodifiableCollection(Collection<?> coll) {
         try {
             coll.add(null);
             fail();
-        } catch (UnsupportedOperationException ex) {}
+        } catch (UnsupportedOperationException ex) {
+        }
     }
 
     /**

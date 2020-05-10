@@ -1,120 +1,121 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-6">
-			<tests>
-				<testfile path="org/mockitousage/matchers/NewMatchersTest">
-					<exception>junit.framework.ComparisonFailure:expected:&lt;null&gt;
-						but was:&lt;0&gt;:-
-						org.mockitousage.matchers.AnyXMatchersAcceptNullsTest::shouldNotAcceptNullInAnyXMatchers:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;null&gt; but
-						was:&lt;0&gt;:-
-						org.mockitousage.matchers.MatchersTest::anyStringMatcher:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;null&gt; but
-						was:&lt;matched&gt;:-
-						org.mockitousage.matchers.NewMatchersTest::shouldAllowAnyCollection:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;null&gt; but
-						was:&lt;matched&gt;:-
-						org.mockitousage.matchers.NewMatchersTest::shouldAllowAnyList:--&gt;
-						junit.framework.ComparisonFailure:expected:&lt;null&gt; but
-						was:&lt;matched&gt;:-
-						org.mockitousage.matchers.NewMatchersTest::shouldAllowAnyMap:--&gt;
-						junit.framework.ComparisonFailure</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1089</number_tests>
-					<failed>7</failed>
-					<passed>1082</passed>
-					<nodes>4435</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/mockito/Matchers.java">
-					<change>122</change>
-					<change>137</change>
-					<change>152</change>
-					<change>167</change>
-					<change>182</change>
-					<change>197</change>
-					<change>212</change>
-					<change>227</change>
-					<change>244</change>
-					<change>292</change>
-					<change>309</change>
-					<change>324</change>
-					<change>339</change>
-					<change>358</change>
-					<change>373</change>
-					<change>392</change>
-					<change>407</change>
-					<change>427</change>
-					<change>442</change>
-					<change>461</change>
-					<bugtypes>
-						<id id="2.2" lines="122">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="137">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="152">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="167">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="182">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="197">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="212">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="227">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="244">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="292">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="309">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="324">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="339">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="358">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="373">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="392">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="407">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="427">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="442">
-							<description>Incorrect return value.</description>
-						</id>
-						<id id="2.2" lines="461">
-							<description>Incorrect return value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>20</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-6">
+            <tests>
+                <testfile path="org/mockitousage/matchers/NewMatchersTest">
+                    <exception>junit.framework.ComparisonFailure:expected:&lt;null&gt;
+                        but was:&lt;0&gt;:-
+                        org.mockitousage.matchers.AnyXMatchersAcceptNullsTest::shouldNotAcceptNullInAnyXMatchers:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;null&gt; but
+                        was:&lt;0&gt;:-
+                        org.mockitousage.matchers.MatchersTest::anyStringMatcher:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;null&gt; but
+                        was:&lt;matched&gt;:-
+                        org.mockitousage.matchers.NewMatchersTest::shouldAllowAnyCollection:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;null&gt; but
+                        was:&lt;matched&gt;:-
+                        org.mockitousage.matchers.NewMatchersTest::shouldAllowAnyList:--&gt;
+                        junit.framework.ComparisonFailure:expected:&lt;null&gt; but
+                        was:&lt;matched&gt;:-
+                        org.mockitousage.matchers.NewMatchersTest::shouldAllowAnyMap:--&gt;
+                        junit.framework.ComparisonFailure
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1089</number_tests>
+                    <failed>7</failed>
+                    <passed>1082</passed>
+                    <nodes>4435</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/mockito/Matchers.java">
+                    <change>122</change>
+                    <change>137</change>
+                    <change>152</change>
+                    <change>167</change>
+                    <change>182</change>
+                    <change>197</change>
+                    <change>212</change>
+                    <change>227</change>
+                    <change>244</change>
+                    <change>292</change>
+                    <change>309</change>
+                    <change>324</change>
+                    <change>339</change>
+                    <change>358</change>
+                    <change>373</change>
+                    <change>392</change>
+                    <change>407</change>
+                    <change>427</change>
+                    <change>442</change>
+                    <change>461</change>
+                    <bugtypes>
+                        <id id="2.2" lines="122">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="137">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="152">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="167">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="182">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="197">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="212">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="227">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="244">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="292">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="309">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="324">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="339">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="358">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="373">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="392">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="407">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="427">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="442">
+                            <description>Incorrect return value.</description>
+                        </id>
+                        <id id="2.2" lines="461">
+                            <description>Incorrect return value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>20</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

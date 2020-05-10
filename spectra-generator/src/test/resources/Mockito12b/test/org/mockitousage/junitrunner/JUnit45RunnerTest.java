@@ -4,24 +4,27 @@
  */
 package org.mockitousage.junitrunner;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.mockitousage.junitrunner.Filters.*;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.*;
+import static org.mockitousage.junitrunner.Filters.*;
+
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")
 public class JUnit45RunnerTest {
 
-	@InjectMocks private ListDependent listDependent = new ListDependent();
-    @Mock private List list;
+    @InjectMocks
+    private ListDependent listDependent = new ListDependent();
+    @Mock
+    private List list;
 
     @Test
     public void shouldInitMocksUsingRunner() {
@@ -36,19 +39,19 @@ public class JUnit45RunnerTest {
     }
 
     @Test
-    public void shouldFilterTestMethodsCorrectly() throws Exception{
-    	MockitoJUnitRunner runner = new MockitoJUnitRunner(this.getClass());
+    public void shouldFilterTestMethodsCorrectly() throws Exception {
+        MockitoJUnitRunner runner = new MockitoJUnitRunner(this.getClass());
 
-    	runner.filter(methodNameContains("shouldInitMocksUsingRunner"));
+        runner.filter(methodNameContains("shouldInitMocksUsingRunner"));
 
-    	assertEquals(1, runner.testCount());
+        assertEquals(1, runner.testCount());
     }
 
-	class ListDependent {
-		private List list;
+    class ListDependent {
+        private List list;
 
-		public List getList() {
-			return list;
-		}
-	}
+        public List getList() {
+            return list;
+        }
+    }
 }

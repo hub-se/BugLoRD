@@ -22,24 +22,26 @@ package org.joda.time;
  * @since 1.1
  */
 public class IllegalFieldValueException extends IllegalArgumentException {
-    
-    /** Serialization lock. */
+
+    /**
+     * Serialization lock.
+     */
     private static final long serialVersionUID = 6305711765985447737L;
 
     /**
      * Creates a message for the exception.
      *
      * @param fieldName  the field name
-     * @param value  the value rejected
-     * @param lowerBound  the lower bound allowed
-     * @param upperBound  the uppe bound allowed
-     * @param explain  an explanation
+     * @param value      the value rejected
+     * @param lowerBound the lower bound allowed
+     * @param upperBound the uppe bound allowed
+     * @param explain    an explanation
      * @return the message
      */
     private static String createMessage(String fieldName, Number value,
                                         Number lowerBound, Number upperBound, String explain) {
         StringBuilder buf = new StringBuilder()
-            .append("Value ").append(value).append(" for ").append(fieldName).append(' ');
+                .append("Value ").append(value).append(" for ").append(fieldName).append(' ');
 
         if (lowerBound == null) {
             if (upperBound == null) {
@@ -51,10 +53,10 @@ public class IllegalFieldValueException extends IllegalArgumentException {
             buf.append("must not be smaller than ").append(lowerBound);
         } else {
             buf.append("must be in the range [")
-                .append(lowerBound)
-                .append(',')
-                .append(upperBound)
-                .append(']');
+                    .append(lowerBound)
+                    .append(',')
+                    .append(upperBound)
+                    .append(']');
         }
         if (explain != null) {
             buf.append(": ").append(explain);
@@ -66,8 +68,8 @@ public class IllegalFieldValueException extends IllegalArgumentException {
     /**
      * Creates a message for the exception.
      *
-     * @param fieldName  the field name
-     * @param value  the value rejected
+     * @param fieldName the field name
+     * @param value     the value rejected
      * @return the message
      */
     private static String createMessage(String fieldName, String value) {
@@ -82,7 +84,7 @@ public class IllegalFieldValueException extends IllegalArgumentException {
         }
 
         buf.append(" for ").append(fieldName).append(' ').append("is not supported");
-        
+
         return buf.toString();
     }
 
@@ -97,11 +99,11 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param fieldType  type of field being set
-     * @param value  illegal value being set
-     * @param lowerBound  lower legal field value, or null if not applicable
-     * @param upperBound  upper legal field value, or null if not applicable
+     * @param value      illegal value being set
+     * @param lowerBound lower legal field value, or null if not applicable
+     * @param upperBound upper legal field value, or null if not applicable
      */
     public IllegalFieldValueException(DateTimeFieldType fieldType,
                                       Number value, Number lowerBound, Number upperBound) {
@@ -118,10 +120,10 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Constructor.
-     * 
-     * @param fieldType  type of field being set
-     * @param value  illegal value being set
-     * @param explain  an explanation
+     *
+     * @param fieldType type of field being set
+     * @param value     illegal value being set
+     * @param explain   an explanation
      * @since 1.5
      */
     public IllegalFieldValueException(DateTimeFieldType fieldType,
@@ -139,11 +141,11 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param fieldType  type of field being set
-     * @param value  illegal value being set
-     * @param lowerBound  lower legal field value, or null if not applicable
-     * @param upperBound  upper legal field value, or null if not applicable
+     * @param value      illegal value being set
+     * @param lowerBound lower legal field value, or null if not applicable
+     * @param upperBound upper legal field value, or null if not applicable
      */
     public IllegalFieldValueException(DurationFieldType fieldType,
                                       Number value, Number lowerBound, Number upperBound) {
@@ -160,11 +162,11 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param fieldName  name of field being set
-     * @param value  illegal value being set
-     * @param lowerBound  lower legal field value, or null if not applicable
-     * @param upperBound  upper legal field value, or null if not applicable
+     * @param value      illegal value being set
+     * @param lowerBound lower legal field value, or null if not applicable
+     * @param upperBound upper legal field value, or null if not applicable
      */
     public IllegalFieldValueException(String fieldName,
                                       Number value, Number lowerBound, Number upperBound) {
@@ -181,9 +183,9 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Constructor.
-     * 
-     * @param fieldType  type of field being set
-     * @param value  illegal value being set
+     *
+     * @param fieldType type of field being set
+     * @param value     illegal value being set
      */
     public IllegalFieldValueException(DateTimeFieldType fieldType, String value) {
         super(createMessage(fieldType.getName(), value));
@@ -199,9 +201,9 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Constructor.
-     * 
-     * @param fieldType  type of field being set
-     * @param value  illegal value being set
+     *
+     * @param fieldType type of field being set
+     * @param value     illegal value being set
      */
     public IllegalFieldValueException(DurationFieldType fieldType, String value) {
         super(createMessage(fieldType.getName(), value));
@@ -217,9 +219,9 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Constructor.
-     * 
-     * @param fieldName  name of field being set
-     * @param value  illegal value being set
+     *
+     * @param fieldName name of field being set
+     * @param value     illegal value being set
      */
     public IllegalFieldValueException(String fieldName, String value) {
         super(createMessage(fieldName, value));
@@ -234,9 +236,10 @@ public class IllegalFieldValueException extends IllegalArgumentException {
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Returns the DateTimeFieldType whose value was invalid, or null if not applicable.
-     * 
+     *
      * @return the datetime field type
      */
     public DateTimeFieldType getDateTimeFieldType() {
@@ -245,7 +248,7 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Returns the DurationFieldType whose value was invalid, or null if not applicable.
-     * 
+     *
      * @return the duration field type
      */
     public DurationFieldType getDurationFieldType() {
@@ -254,7 +257,7 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Returns the name of the field whose value was invalid.
-     * 
+     *
      * @return the field name
      */
     public String getFieldName() {
@@ -263,7 +266,7 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Returns the illegal integer value assigned to the field, or null if not applicable.
-     * 
+     *
      * @return the value
      */
     public Number getIllegalNumberValue() {
@@ -272,7 +275,7 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Returns the illegal string value assigned to the field, or null if not applicable.
-     * 
+     *
      * @return the value
      */
     public String getIllegalStringValue() {
@@ -281,7 +284,7 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Returns the illegal value assigned to the field as a non-null string.
-     * 
+     *
      * @return the value
      */
     public String getIllegalValueAsString() {
@@ -294,7 +297,7 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Returns the lower bound of the legal value range, or null if not applicable.
-     * 
+     *
      * @return the lower bound
      */
     public Number getLowerBound() {
@@ -303,7 +306,7 @@ public class IllegalFieldValueException extends IllegalArgumentException {
 
     /**
      * Returns the upper bound of the legal value range, or null if not applicable.
-     * 
+     *
      * @return the upper bound
      */
     public Number getUpperBound() {
@@ -317,6 +320,7 @@ public class IllegalFieldValueException extends IllegalArgumentException {
     /**
      * Provide additional detail by prepending a message to the existing message.
      * A colon is separator is automatically inserted between the messages.
+     *
      * @since 1.3
      */
     public void prependMessage(String message) {

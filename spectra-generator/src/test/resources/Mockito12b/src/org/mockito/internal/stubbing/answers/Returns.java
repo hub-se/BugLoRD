@@ -4,10 +4,10 @@
  */
 package org.mockito.internal.stubbing.answers;
 
-import java.io.Serializable;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import java.io.Serializable;
 
 public class Returns implements Answer<Object>, Serializable {
 
@@ -33,7 +33,7 @@ public class Returns implements Answer<Object>, Serializable {
     public boolean returnsNull() {
         return value == null;
     }
-    
+
     @Override
     public String toString() {
         return "Returns: " + value;

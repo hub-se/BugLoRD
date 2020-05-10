@@ -27,5 +27,5 @@ public class JUnitFailureHacker {
 
     private boolean isEmpty(String warnings) {
         return warnings == null || "".equals(warnings); // isEmpty() is in JDK 6+ 
-    }   
+    }
 }

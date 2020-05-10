@@ -26,7 +26,7 @@ import com.google.javascript.rhino.Token;
  * Checks for certain uses of the {@code this} keyword that are considered
  * unsafe because they are likely to reference the global {@code this} object
  * unintentionally.
- * 
+ *
  * <p>A use of {@code this} is considered unsafe if it's on the left side of an
  * assignment and not inside one of the following:
  * <ol>
@@ -50,109 +50,106 @@ import com.google.javascript.rhino.Token;
  * }
  * </pre>
  * which would get flagged.
- *
-*
-*
  */
 final class CheckGlobalThis implements Callback {
 
-  static final DiagnosticType GLOBAL_THIS = DiagnosticType.warning(
-      "JSC_USED_GLOBAL_THIS",
-      "dangerous use of the global 'this' object");
+    static final DiagnosticType GLOBAL_THIS = DiagnosticType.warning(
+            "JSC_USED_GLOBAL_THIS",
+            "dangerous use of the global 'this' object");
 
-  private final AbstractCompiler compiler;
-  private final CheckLevel level;
+    private final AbstractCompiler compiler;
+    private final CheckLevel level;
 
-  /**
-   * If {@code assignLhsChild != null}, then the node being traversed is
-   * a descendant of the first child of an ASSIGN node. assignLhsChild's
-   * parent is this ASSIGN node.
-   */
-  private Node assignLhsChild = null;
+    /**
+     * If {@code assignLhsChild != null}, then the node being traversed is
+     * a descendant of the first child of an ASSIGN node. assignLhsChild's
+     * parent is this ASSIGN node.
+     */
+    private Node assignLhsChild = null;
 
-  CheckGlobalThis(AbstractCompiler compiler, CheckLevel level) {
-    this.compiler = compiler;
-    this.level = level;
-  }
-
-  /**
-   * Since this pass reports errors only when a global {@code this} keyword
-   * is encountered, there is no reason to traverse non global contexts.
-   */
-  public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
-    
-    if (n.getType() == Token.FUNCTION) {
-      // Don't traverse functions that are constructors or have the @this
-      // annotation.
-      JSDocInfo jsDoc = getFunctionJsDocInfo(n);
-      if (jsDoc != null && (jsDoc.isConstructor() || jsDoc.hasThisType())) {
-        return false;
-      }
+    CheckGlobalThis(AbstractCompiler compiler, CheckLevel level) {
+        this.compiler = compiler;
+        this.level = level;
     }
-    
-    if (parent != null && parent.getType() == Token.ASSIGN) {
-      Node lhs = parent.getFirstChild();
-      Node rhs = lhs.getNext();
-      
-      if (n == lhs) {
-        // Always traverse the left side of the assignment. To handle
-        // nested assignments properly (e.g., (a = this).property = c;),
-        // assignLhsChild should not be overridden.
-        if (assignLhsChild == null) {
-          assignLhsChild = lhs;
+
+    /**
+     * Since this pass reports errors only when a global {@code this} keyword
+     * is encountered, there is no reason to traverse non global contexts.
+     */
+    public boolean shouldTraverse(NodeTraversal t, Node n, Node parent) {
+
+        if (n.getType() == Token.FUNCTION) {
+            // Don't traverse functions that are constructors or have the @this
+            // annotation.
+            JSDocInfo jsDoc = getFunctionJsDocInfo(n);
+            if (jsDoc != null && (jsDoc.isConstructor() || jsDoc.hasThisType())) {
+                return false;
+            }
         }
-      } else {
-        // Only traverse the right side if it's not an assignment to a prototype
-        // property or subproperty.
-        if (lhs.getType() == Token.GETPROP) {
-          if (lhs.getLastChild().getString().equals("prototype")) {
-            return false;
-          }
-          String leftName = lhs.getQualifiedName();
-          if (leftName != null && leftName.contains(".prototype.")) {
-            return false;
-          }
-        }
-      }
-    }
-    
-    return true;
-  }
 
-  public void visit(NodeTraversal t, Node n, Node parent) {
-    if (assignLhsChild != null && n.getType() == Token.THIS) {
-      compiler.report(JSError.make(t, n, level, GLOBAL_THIS));
-    }
-    if (n == assignLhsChild) {
-      assignLhsChild = null;
-    }
-  }
+        if (parent != null && parent.getType() == Token.ASSIGN) {
+            Node lhs = parent.getFirstChild();
+            Node rhs = lhs.getNext();
 
-  /**
-   * Gets a function's JSDoc information, if it has any. Checks for a few
-   * patterns (ellipses show where JSDoc would be):
-   * <pre>
-   * ... function() {}
-   * ... x = function() {};
-   * var ... x = function() {};
-   * ... var x = function() {};
-   * </pre>
-   */
-  private JSDocInfo getFunctionJsDocInfo(Node n) {
-    JSDocInfo jsDoc = n.getJSDocInfo();
-    Node parent = n.getParent();
-    if (jsDoc == null) {
-      int parentType = parent.getType();
-      if (parentType == Token.NAME || parentType == Token.ASSIGN) {
-        jsDoc = parent.getJSDocInfo();
-        if (jsDoc == null && parentType == Token.NAME) {
-          Node gramps = parent.getParent();
-          if (gramps.getType() == Token.VAR) {
-            jsDoc = gramps.getJSDocInfo();
-          }
+            if (n == lhs) {
+                // Always traverse the left side of the assignment. To handle
+                // nested assignments properly (e.g., (a = this).property = c;),
+                // assignLhsChild should not be overridden.
+                if (assignLhsChild == null) {
+                    assignLhsChild = lhs;
+                }
+            } else {
+                // Only traverse the right side if it's not an assignment to a prototype
+                // property or subproperty.
+                if (lhs.getType() == Token.GETPROP) {
+                    if (lhs.getLastChild().getString().equals("prototype")) {
+                        return false;
+                    }
+                    String leftName = lhs.getQualifiedName();
+                    if (leftName != null && leftName.contains(".prototype.")) {
+                        return false;
+                    }
+                }
+            }
         }
-      }
+
+        return true;
     }
-    return jsDoc;
-  }
+
+    public void visit(NodeTraversal t, Node n, Node parent) {
+        if (assignLhsChild != null && n.getType() == Token.THIS) {
+            compiler.report(JSError.make(t, n, level, GLOBAL_THIS));
+        }
+        if (n == assignLhsChild) {
+            assignLhsChild = null;
+        }
+    }
+
+    /**
+     * Gets a function's JSDoc information, if it has any. Checks for a few
+     * patterns (ellipses show where JSDoc would be):
+     * <pre>
+     * ... function() {}
+     * ... x = function() {};
+     * var ... x = function() {};
+     * ... var x = function() {};
+     * </pre>
+     */
+    private JSDocInfo getFunctionJsDocInfo(Node n) {
+        JSDocInfo jsDoc = n.getJSDocInfo();
+        Node parent = n.getParent();
+        if (jsDoc == null) {
+            int parentType = parent.getType();
+            if (parentType == Token.NAME || parentType == Token.ASSIGN) {
+                jsDoc = parent.getJSDocInfo();
+                if (jsDoc == null && parentType == Token.NAME) {
+                    Node gramps = parent.getParent();
+                    if (gramps.getType() == Token.VAR) {
+                        jsDoc = gramps.getJSDocInfo();
+                    }
+                }
+            }
+        }
+        return jsDoc;
+    }
 }

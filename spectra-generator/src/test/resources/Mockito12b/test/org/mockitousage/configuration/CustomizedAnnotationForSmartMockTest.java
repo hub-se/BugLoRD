@@ -4,15 +4,16 @@
  */
 package org.mockitousage.configuration;
 
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
 
+import static org.mockito.Mockito.*;
+
 public class CustomizedAnnotationForSmartMockTest extends TestBase {
-    
-    @SmartMock IMethods smartMock;
+
+    @SmartMock
+    IMethods smartMock;
 
     @Test
     public void shouldUseCustomAnnotation() {

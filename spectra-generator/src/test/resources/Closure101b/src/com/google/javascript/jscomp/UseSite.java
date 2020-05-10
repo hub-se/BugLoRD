@@ -22,16 +22,14 @@ import com.google.javascript.rhino.Node;
  * Information about the context in which a Definition is used.
  * Includes the refering node, and context in which the reference
  * occurs - including the module in which the reference appears.
- *
-*
  */
 
 class UseSite {
-  final Node node;
-  final JSModule module;
+    final Node node;
+    final JSModule module;
 
-  UseSite(Node node, JSModule module) {
-    this.node = node;
-    this.module = module;
-  }
+    UseSite(Node node, JSModule module) {
+        this.node = node;
+        this.module = module;
+    }
 }

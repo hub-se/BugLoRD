@@ -15,14 +15,13 @@
  */
 package org.joda.time;
 
-import java.util.Locale;
-
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.joda.time.chrono.CopticChronology;
 import org.joda.time.chrono.LenientChronology;
 import org.joda.time.chrono.StrictChronology;
+
+import java.util.Locale;
 
 /**
  * This class is a Junit unit test for DateTime.
@@ -40,32 +39,32 @@ public class TestDateMidnight_Properties extends TestCase {
 
     //private static final DateTimeZone PARIS = DateTimeZone.forID("Europe/Paris");
     private static final DateTimeZone LONDON = DateTimeZone.forID("Europe/London");
-    
-    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365;
-    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 
-                     366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 
-                     365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
-                     366 + 365 + 365;
-    
+
+    long y2002days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365;
+    long y2003days = 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 +
+            365 + 365 + 366 + 365 + 365 + 365 + 366 + 365 + 365 + 365 +
+            366 + 365 + 365;
+
     // 2002-06-09
     private long TEST_TIME_NOW =
-            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L -1L) * DateTimeConstants.MILLIS_PER_DAY;
-            
+            (y2002days + 31L + 28L + 31L + 30L + 31L + 9L - 1L) * DateTimeConstants.MILLIS_PER_DAY;
+
     // 2002-04-05 Fri
     private long TEST_TIME1 =
-            (y2002days + 31L + 28L + 31L + 5L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 12L * DateTimeConstants.MILLIS_PER_HOUR
-            + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (y2002days + 31L + 28L + 31L + 5L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 12L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 24L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     // 2003-05-06 Tue
     private long TEST_TIME2 =
-            (y2003days + 31L + 28L + 31L + 30L + 6L -1L) * DateTimeConstants.MILLIS_PER_DAY
-            + 14L * DateTimeConstants.MILLIS_PER_HOUR
-            + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
-        
+            (y2003days + 31L + 28L + 31L + 30L + 6L - 1L) * DateTimeConstants.MILLIS_PER_DAY
+                    + 14L * DateTimeConstants.MILLIS_PER_HOUR
+                    + 28L * DateTimeConstants.MILLIS_PER_MINUTE;
+
     private DateTimeZone zone = null;
     private Locale locale = null;
 
@@ -320,11 +319,11 @@ public class TestDateMidnight_Properties extends TestCase {
         DateMidnight test = new DateMidnight(2004, 6, 16);
         DateMidnight copy = test.monthOfYear().roundHalfFloorCopy();
         assertEquals("2004-06-01T00:00:00.000+01:00", copy.toString());
-        
+
         test = new DateMidnight(2004, 6, 17);
         copy = test.monthOfYear().roundHalfFloorCopy();
         assertEquals("2004-07-01T00:00:00.000+01:00", copy.toString());
-        
+
         test = new DateMidnight(2004, 6, 15);
         copy = test.monthOfYear().roundHalfFloorCopy();
         assertEquals("2004-06-01T00:00:00.000+01:00", copy.toString());
@@ -334,11 +333,11 @@ public class TestDateMidnight_Properties extends TestCase {
         DateMidnight test = new DateMidnight(2004, 6, 16);
         DateMidnight copy = test.monthOfYear().roundHalfCeilingCopy();
         assertEquals("2004-07-01T00:00:00.000+01:00", copy.toString());
-        
+
         test = new DateMidnight(2004, 6, 17);
         copy = test.monthOfYear().roundHalfCeilingCopy();
         assertEquals("2004-07-01T00:00:00.000+01:00", copy.toString());
-        
+
         test = new DateMidnight(2004, 6, 15);
         copy = test.monthOfYear().roundHalfCeilingCopy();
         assertEquals("2004-06-01T00:00:00.000+01:00", copy.toString());
@@ -348,15 +347,15 @@ public class TestDateMidnight_Properties extends TestCase {
         DateMidnight test = new DateMidnight(2004, 6, 16);
         DateMidnight copy = test.monthOfYear().roundHalfEvenCopy();
         assertEquals("2004-06-01T00:00:00.000+01:00", copy.toString());
-        
+
         test = new DateMidnight(2004, 9, 16);
         copy = test.monthOfYear().roundHalfEvenCopy();
         assertEquals("2004-10-01T00:00:00.000+01:00", copy.toString());
-        
+
         test = new DateMidnight(2004, 6, 17);
         copy = test.monthOfYear().roundHalfEvenCopy();
         assertEquals("2004-07-01T00:00:00.000+01:00", copy.toString());
-        
+
         test = new DateMidnight(2004, 6, 15);
         copy = test.monthOfYear().roundHalfEvenCopy();
         assertEquals("2004-06-01T00:00:00.000+01:00", copy.toString());
@@ -479,43 +478,43 @@ public class TestDateMidnight_Properties extends TestCase {
 
     //-----------------------------------------------------------------------
     public void testPropertyToIntervalYearOfEra() {
-      DateMidnight test = new DateMidnight(2004, 6, 9);
-      Interval testInterval = test.yearOfEra().toInterval();
-      assertEquals(new DateMidnight(2004, 1, 1), testInterval.getStart());
-      assertEquals(new DateMidnight(2005, 1, 1), testInterval.getEnd());
+        DateMidnight test = new DateMidnight(2004, 6, 9);
+        Interval testInterval = test.yearOfEra().toInterval();
+        assertEquals(new DateMidnight(2004, 1, 1), testInterval.getStart());
+        assertEquals(new DateMidnight(2005, 1, 1), testInterval.getEnd());
     }
 
     public void testPropertyToIntervalYearOfCentury() {
-      DateMidnight test = new DateMidnight(2004, 6, 9);
-      Interval testInterval = test.yearOfCentury().toInterval();
-      assertEquals(new DateMidnight(2004, 1, 1), testInterval.getStart());
-      assertEquals(new DateMidnight(2005, 1, 1), testInterval.getEnd());
+        DateMidnight test = new DateMidnight(2004, 6, 9);
+        Interval testInterval = test.yearOfCentury().toInterval();
+        assertEquals(new DateMidnight(2004, 1, 1), testInterval.getStart());
+        assertEquals(new DateMidnight(2005, 1, 1), testInterval.getEnd());
     }
 
     public void testPropertyToIntervalYear() {
-      DateMidnight test = new DateMidnight(2004, 6, 9);
-      Interval testInterval = test.year().toInterval();
-      assertEquals(new DateMidnight(2004, 1, 1), testInterval.getStart());
-      assertEquals(new DateMidnight(2005, 1, 1), testInterval.getEnd());
+        DateMidnight test = new DateMidnight(2004, 6, 9);
+        Interval testInterval = test.year().toInterval();
+        assertEquals(new DateMidnight(2004, 1, 1), testInterval.getStart());
+        assertEquals(new DateMidnight(2005, 1, 1), testInterval.getEnd());
     }
 
     public void testPropertyToIntervalMonthOfYear() {
-      DateMidnight test = new DateMidnight(2004, 6, 9);
-      Interval testInterval = test.monthOfYear().toInterval();
-      assertEquals(new DateMidnight(2004, 6, 1), testInterval.getStart());
-      assertEquals(new DateMidnight(2004, 7, 1), testInterval.getEnd());
+        DateMidnight test = new DateMidnight(2004, 6, 9);
+        Interval testInterval = test.monthOfYear().toInterval();
+        assertEquals(new DateMidnight(2004, 6, 1), testInterval.getStart());
+        assertEquals(new DateMidnight(2004, 7, 1), testInterval.getEnd());
     }
 
     public void testPropertyToIntervalDayOfMonth() {
-      DateMidnight test = new DateMidnight(2004, 6, 9);
-      Interval testInterval = test.dayOfMonth().toInterval();
-      assertEquals(new DateMidnight(2004, 6, 9), testInterval.getStart());
-      assertEquals(new DateMidnight(2004, 6, 10), testInterval.getEnd());
+        DateMidnight test = new DateMidnight(2004, 6, 9);
+        Interval testInterval = test.dayOfMonth().toInterval();
+        assertEquals(new DateMidnight(2004, 6, 9), testInterval.getStart());
+        assertEquals(new DateMidnight(2004, 6, 10), testInterval.getEnd());
 
-      DateMidnight febTest = new DateMidnight(2004, 2, 29);
-      Interval febTestInterval = febTest.dayOfMonth().toInterval();
-      assertEquals(new DateMidnight(2004, 2, 29), febTestInterval.getStart());
-      assertEquals(new DateMidnight(2004, 3, 1), febTestInterval.getEnd());
+        DateMidnight febTest = new DateMidnight(2004, 2, 29);
+        Interval febTestInterval = febTest.dayOfMonth().toInterval();
+        assertEquals(new DateMidnight(2004, 2, 29), febTestInterval.getStart());
+        assertEquals(new DateMidnight(2004, 3, 1), febTestInterval.getEnd());
     }
 
     public void testPropertyEqualsHashCodeLenient() {

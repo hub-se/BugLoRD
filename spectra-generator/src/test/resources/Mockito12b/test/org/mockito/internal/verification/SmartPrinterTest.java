@@ -16,14 +16,15 @@ public class SmartPrinterTest extends TestBase {
 
     private PrintingFriendlyInvocation multi;
     private PrintingFriendlyInvocation shortie;
-    @Mock private IMethods mock;
+    @Mock
+    private IMethods mock;
 
     @Before
     public void setup() throws Exception {
         mock.varargs("first very long argument", "second very long argument", "another very long argument");
         multi = getLastInvocation();
         multi.toString();
-        
+
         mock.varargs("short arg");
         shortie = getLastInvocation();
     }
@@ -32,7 +33,7 @@ public class SmartPrinterTest extends TestBase {
     public void shouldPrintBothInMultilinesWhenFirstIsMulti() {
         //when
         SmartPrinter printer = new SmartPrinter(multi, shortie);
-        
+
         //then
         assertContains("\n", printer.getWanted().toString());
         assertContains("\n", printer.getActual().toString());
@@ -42,7 +43,7 @@ public class SmartPrinterTest extends TestBase {
     public void shouldPrintBothInMultilinesWhenSecondIsMulti() {
         //when
         SmartPrinter printer = new SmartPrinter(shortie, multi);
-        
+
         //then
         assertContains("\n", printer.getWanted().toString());
         assertContains("\n", printer.getActual().toString());
@@ -52,7 +53,7 @@ public class SmartPrinterTest extends TestBase {
     public void shouldPrintBothInMultilinesWhenBothAreMulti() {
         //when
         SmartPrinter printer = new SmartPrinter(multi, multi);
-        
+
         //then
         assertContains("\n", printer.getWanted().toString());
         assertContains("\n", printer.getActual().toString());
@@ -62,7 +63,7 @@ public class SmartPrinterTest extends TestBase {
     public void shouldPrintBothInSingleLineWhenBothAreShort() {
         //when
         SmartPrinter printer = new SmartPrinter(shortie, shortie);
-        
+
         //then
         assertNotContains("\n", printer.getWanted().toString());
         assertNotContains("\n", printer.getActual().toString());

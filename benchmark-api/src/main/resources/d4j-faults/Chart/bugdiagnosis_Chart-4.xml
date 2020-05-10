@@ -1,47 +1,47 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Chart">
-		<bug bugid="Chart-4">
-			<tests>
-				<testfile path="org/jfree/chart/junit/TimeSeriesChartTests">
-					<exception>java.lang.NullPointerException:-
-						org.jfree.chart.axis.junit.LogAxisTests::testXYAutoRange2:--&gt;
-						java.lang.NullPointerException:-
-						org.jfree.chart.axis.junit.NumberAxisTests::testXYAutoRange1:--&gt;
-						java.lang.NullPointerException:-
-						org.jfree.chart.axis.junit.NumberAxisTests::testXYAutoRange2:--&gt;
-						java.lang.NullPointerException:-
-						org.jfree.chart.axis.junit.ValueAxisTests::testAxisMargins:--&gt;
-						java.lang.NullPointerException:-
-						org.jfree.chart.junit.JFreeChartTests::testSerialization4:--&gt;
-						java.lang.NullPointerException:-
-						org.jfree.chart.junit.ScatterPlotTests::testDrawWithNullInfo:--&gt;
-						java.lang.NullPointerException:-
-						org.jfree.chart.junit.ScatterPlotTests::testSetSeriesToolTipGenerator:--&gt;
-						java.lang.NullPointerException:-
-						org.jfree.chart.junit.ScatterPlotTests::testReplaceDataset:--&gt;
-						java.lang.NullPointerException:-
-						org.jfree.chart.junit.TimeSeriesChartTests::testDrawWithNullInfo
-					</exception>
-				</testfile>
-				<spectra>
-					<number_tests>431</number_tests>
-					<failed>22</failed>
-					<passed>409</passed>
-					<nodes>51168</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file path="org/jfree/chart/plot/XYPlot.java">
-					<insert numberlines="1,1">4492-4493,4501</insert>
-					<bugtypes>
-						<id id="1.1" lines="4492,4500">
-							<description>Missing check for the null value.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>2</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Chart">
+        <bug bugid="Chart-4">
+            <tests>
+                <testfile path="org/jfree/chart/junit/TimeSeriesChartTests">
+                    <exception>java.lang.NullPointerException:-
+                        org.jfree.chart.axis.junit.LogAxisTests::testXYAutoRange2:--&gt;
+                        java.lang.NullPointerException:-
+                        org.jfree.chart.axis.junit.NumberAxisTests::testXYAutoRange1:--&gt;
+                        java.lang.NullPointerException:-
+                        org.jfree.chart.axis.junit.NumberAxisTests::testXYAutoRange2:--&gt;
+                        java.lang.NullPointerException:-
+                        org.jfree.chart.axis.junit.ValueAxisTests::testAxisMargins:--&gt;
+                        java.lang.NullPointerException:-
+                        org.jfree.chart.junit.JFreeChartTests::testSerialization4:--&gt;
+                        java.lang.NullPointerException:-
+                        org.jfree.chart.junit.ScatterPlotTests::testDrawWithNullInfo:--&gt;
+                        java.lang.NullPointerException:-
+                        org.jfree.chart.junit.ScatterPlotTests::testSetSeriesToolTipGenerator:--&gt;
+                        java.lang.NullPointerException:-
+                        org.jfree.chart.junit.ScatterPlotTests::testReplaceDataset:--&gt;
+                        java.lang.NullPointerException:-
+                        org.jfree.chart.junit.TimeSeriesChartTests::testDrawWithNullInfo
+                    </exception>
+                </testfile>
+                <spectra>
+                    <number_tests>431</number_tests>
+                    <failed>22</failed>
+                    <passed>409</passed>
+                    <nodes>51168</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file path="org/jfree/chart/plot/XYPlot.java">
+                    <insert numberlines="1,1">4492-4493,4501</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="4492,4500">
+                            <description>Missing check for the null value.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>2</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

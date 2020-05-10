@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,29 +16,16 @@
  */
 package org.apache.commons.lang3;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.SerializationUtils}.
@@ -47,9 +34,9 @@ import org.junit.Test;
  */
 public class SerializationUtilsTest {
 
-  static final String CLASS_NOT_FOUND_MESSAGE = "ClassNotFoundSerialization.readObject fake exception";
+    static final String CLASS_NOT_FOUND_MESSAGE = "ClassNotFoundSerialization.readObject fake exception";
     protected static final String SERIALIZE_IO_EXCEPTION_MESSAGE = "Anonymous OutputStream I/O exception";
-  
+
     private String iString;
     private Integer iInteger;
     private HashMap<Object, Object> iMap;
@@ -74,29 +61,29 @@ public class SerializationUtilsTest {
         assertTrue(Modifier.isPublic(SerializationUtils.class.getModifiers()));
         assertFalse(Modifier.isFinal(SerializationUtils.class.getModifiers()));
     }
-    
+
     @Test
     public void testException() {
         SerializationException serEx;
         Exception ex = new Exception();
-        
+
         serEx = new SerializationException();
         assertSame(null, serEx.getMessage());
         assertSame(null, serEx.getCause());
-        
+
         serEx = new SerializationException("Message");
         assertSame("Message", serEx.getMessage());
         assertSame(null, serEx.getCause());
-        
+
         serEx = new SerializationException(ex);
         assertEquals("java.lang.Exception", serEx.getMessage());
         assertSame(ex, serEx.getCause());
-        
+
         serEx = new SerializationException("Message", ex);
         assertSame("Message", serEx.getMessage());
         assertSame(ex, serEx.getCause());
     }
-    
+
     //-----------------------------------------------------------------------
 
     @Test
@@ -168,7 +155,7 @@ public class SerializationUtilsTest {
         }
         fail();
     }
-    
+
     @Test
     public void testSerializeIOException() throws Exception {
         // forces an IOException when the ObjectOutputStream is created, to test not closing the stream
@@ -181,8 +168,7 @@ public class SerializationUtilsTest {
         };
         try {
             SerializationUtils.serialize(iMap, streamTest);
-        }
-        catch(SerializationException e) {
+        } catch (SerializationException e) {
             assertEquals("java.io.IOException: " + SERIALIZE_IO_EXCEPTION_MESSAGE, e.getMessage());
         }
     }
@@ -210,7 +196,7 @@ public class SerializationUtilsTest {
         assertEquals(iMap, testMap);
     }
 
-    @Test(expected=ClassCastException.class)
+    @Test(expected = ClassCastException.class)
     public void testDeserializeClassCastException() {
         final String value = "Hello";
         byte[] serialized = SerializationUtils.serialize(value);
@@ -264,11 +250,11 @@ public class SerializationUtilsTest {
         try {
             @SuppressWarnings("unused")
             Object test = SerializationUtils.deserialize(inTest);
-        } catch(SerializationException se) {
+        } catch (SerializationException se) {
             assertEquals("java.lang.ClassNotFoundException: " + CLASS_NOT_FOUND_MESSAGE, se.getMessage());
         }
     }
-    
+
     //-----------------------------------------------------------------------
 
     @Test
@@ -376,7 +362,7 @@ public class SerializationUtilsTest {
     public void testClone() throws Exception {
         Object test = SerializationUtils.clone(iMap);
         assertNotNull(test);
-        assertTrue(test instanceof HashMap<?,?>);
+        assertTrue(test instanceof HashMap<?, ?>);
         assertTrue(test != iMap);
         HashMap<?, ?> testMap = (HashMap<?, ?>) test;
         assertEquals(iString, testMap.get("FOO"));
@@ -402,11 +388,11 @@ public class SerializationUtilsTest {
         }
         fail();
     }
-    
+
     @Test
     public void testPrimitiveTypeClassSerialization() {
-        Class<?>[] primitiveTypes = { byte.class, short.class, int.class, long.class, float.class, double.class,
-                boolean.class, char.class, void.class };
+        Class<?>[] primitiveTypes = {byte.class, short.class, int.class, long.class, float.class, double.class,
+                boolean.class, char.class, void.class};
 
         for (Class<?> primitiveType : primitiveTypes) {
             Class<?> clone = SerializationUtils.clone(primitiveType);
@@ -417,10 +403,9 @@ public class SerializationUtilsTest {
 }
 
 @SuppressWarnings("serial")
-class ClassNotFoundSerialization implements Serializable
-{
+class ClassNotFoundSerialization implements Serializable {
 
-    private void readObject(ObjectInputStream in) throws ClassNotFoundException    {
+    private void readObject(ObjectInputStream in) throws ClassNotFoundException {
         throw new ClassNotFoundException(SerializationUtilsTest.CLASS_NOT_FOUND_MESSAGE);
     }
 }

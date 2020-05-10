@@ -1,31 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <defects4j>
-	<project projectid="Mockito">
-		<bug bugid="Mockito-18">
-			<tests>
-				<testfile
-					path="org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValuesTest">
-					<exception>java.lang.NullPointerException</exception>
-				</testfile>
-				<spectra>
-					<number_tests>1111</number_tests>
-					<failed>1</failed>
-					<passed>1110</passed>
-					<nodes>4488</nodes>
-				</spectra>
-			</tests>
-			<fixlocations>
-				<file
-					path="org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValues.java">
-					<insert numberlines="2">87,89,91,93,95,97,99,101,103,105,107,109,111,113,115</insert>
-					<bugtypes>
-						<id id="1.1" lines="86">
-							<description>Missing case for ArrayLists.</description>
-						</id>
-					</bugtypes>
-				</file>
-			</fixlocations>
-			<numberfixedlines>1</numberfixedlines>
-		</bug>
-	</project>
+    <project projectid="Mockito">
+        <bug bugid="Mockito-18">
+            <tests>
+                <testfile
+                        path="org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValuesTest">
+                    <exception>java.lang.NullPointerException</exception>
+                </testfile>
+                <spectra>
+                    <number_tests>1111</number_tests>
+                    <failed>1</failed>
+                    <passed>1110</passed>
+                    <nodes>4488</nodes>
+                </spectra>
+            </tests>
+            <fixlocations>
+                <file
+                        path="org/mockito/internal/stubbing/defaultanswers/ReturnsEmptyValues.java">
+                    <insert numberlines="2">87,89,91,93,95,97,99,101,103,105,107,109,111,113,115</insert>
+                    <bugtypes>
+                        <id id="1.1" lines="86">
+                            <description>Missing case for ArrayLists.</description>
+                        </id>
+                    </bugtypes>
+                </file>
+            </fixlocations>
+            <numberfixedlines>1</numberfixedlines>
+        </bug>
+    </project>
 </defects4j>

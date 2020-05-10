@@ -4,9 +4,6 @@
  */
 package org.mockitousage.misuse;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -14,6 +11,9 @@ import org.mockito.exceptions.misusing.InvalidUseOfMatchersException;
 import org.mockito.exceptions.misusing.UnfinishedVerificationException;
 import org.mockitousage.IMethods;
 import org.mockitoutil.TestBase;
+
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 public class DetectingMisusedMatchersTest extends TestBase {
 
@@ -23,8 +23,9 @@ public class DetectingMisusedMatchersTest extends TestBase {
         }
     }
 
-    @Mock private WithFinal withFinal;
-    
+    @Mock
+    private WithFinal withFinal;
+
     @After
     public void resetState() {
         super.resetState();
@@ -44,13 +45,14 @@ public class DetectingMisusedMatchersTest extends TestBase {
             assertContains("Misplaced argument matcher", e.getMessage());
         }
     }
-    
+
     @Test
     public void shouldSayUnfinishedVerificationButNotInvalidUseOfMatchers() {
         verify(withFinal).finalMethod(anyObject());
         try {
             verify(withFinal);
             fail();
-        } catch (UnfinishedVerificationException e) {}
+        } catch (UnfinishedVerificationException e) {
+        }
     }
 }

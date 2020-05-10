@@ -16,20 +16,14 @@
  */
 package org.apache.commons.lang3.time;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.lang3.SerializationUtils;
+import org.junit.Test;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
-import org.apache.commons.lang3.SerializationUtils;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.time.FastDatePrinter}.
@@ -37,12 +31,12 @@ import org.junit.Test;
  * @since 3.0
  */
 public class FastDatePrinterTest {
-    
+
     private static final String YYYY_MM_DD = "yyyy/MM/dd";
     private static final TimeZone NEW_YORK = TimeZone.getTimeZone("America/New_York");
     private static final Locale SWEDEN = new Locale("sv", "SE");
 
-        DatePrinter getInstance(String format) {
+    DatePrinter getInstance(String format) {
         return getInstance(format, TimeZone.getDefault(), Locale.getDefault());
     }
 
@@ -60,6 +54,7 @@ public class FastDatePrinterTest {
 
     /**
      * Override this method in derived tests to change the construction of instances
+     *
      * @param format
      * @param timeZone
      * @param locale
@@ -113,7 +108,7 @@ public class FastDatePrinterTest {
             assertEquals("-04:00", fdf.format(millis2));
 
             String pattern = "GGGG GGG GG G yyyy yyy yy y MMMM MMM MM M" +
-                " dddd ddd dd d DDDD DDD DD D EEEE EEE EE E aaaa aaa aa a zzzz zzz zz z";
+                    " dddd ddd dd d DDDD DDD DD D EEEE EEE EE E aaaa aaa aa a zzzz zzz zz z";
             fdf = getInstance(pattern);
             sdf = new SimpleDateFormat(pattern);
             // SDF bug fix starting with Java 7
@@ -150,15 +145,16 @@ public class FastDatePrinterTest {
         Calendar cal = Calendar.getInstance();
         DatePrinter format = getInstance(YYYY_MM_DD);
 
-        cal.set(1,0,1);
+        cal.set(1, 0, 1);
         assertEquals("0001/01/01", format.format(cal));
-        cal.set(10,0,1);
+        cal.set(10, 0, 1);
         assertEquals("0010/01/01", format.format(cal));
-        cal.set(100,0,1);
+        cal.set(100, 0, 1);
         assertEquals("0100/01/01", format.format(cal));
-        cal.set(999,0,1);
+        cal.set(999, 0, 1);
         assertEquals("0999/01/01", format.format(cal));
     }
+
     /**
      * Show Bug #39410 is solved
      */
@@ -167,7 +163,7 @@ public class FastDatePrinterTest {
         Calendar cal = Calendar.getInstance();
         DatePrinter format = getInstance("dd.MM.yyyy");
 
-        cal.set(1000,0,1);
+        cal.set(1000, 0, 1);
         assertEquals("01.01.1000", format.format(cal));
     }
 
@@ -180,11 +176,11 @@ public class FastDatePrinterTest {
         Calendar cal = Calendar.getInstance();
         DatePrinter format = getInstance(YYYY_MM_DD);
 
-        cal.set(2004,11,31);
+        cal.set(2004, 11, 31);
         assertEquals("2004/12/31", format.format(cal));
-        cal.set(999,11,31);
+        cal.set(999, 11, 31);
         assertEquals("0999/12/31", format.format(cal));
-        cal.set(1,2,2);
+        cal.set(1, 2, 2);
         assertEquals("0001/03/02", format.format(cal));
     }
 
@@ -225,39 +221,39 @@ public class FastDatePrinterTest {
 
         assertEquals("fredag, week 53", fdf.format(d));
     }
-    
+
     @Test
     public void testEquals() {
-        DatePrinter printer1= getInstance(YYYY_MM_DD);
-        DatePrinter printer2= getInstance(YYYY_MM_DD);
+        DatePrinter printer1 = getInstance(YYYY_MM_DD);
+        DatePrinter printer2 = getInstance(YYYY_MM_DD);
 
         assertEquals(printer1, printer2);
-        assertEquals(printer1.hashCode(), printer2.hashCode());        
+        assertEquals(printer1.hashCode(), printer2.hashCode());
 
         assertFalse(printer1.equals(new Object()));
     }
-    
+
     @Test
     public void testToStringContainsName() {
-        DatePrinter printer= getInstance(YYYY_MM_DD);
+        DatePrinter printer = getInstance(YYYY_MM_DD);
         assertTrue(printer.toString().startsWith("FastDate"));
     }
-    
+
     @Test
     public void testPatternMatches() {
-        DatePrinter printer= getInstance(YYYY_MM_DD);
+        DatePrinter printer = getInstance(YYYY_MM_DD);
         assertEquals(YYYY_MM_DD, printer.getPattern());
     }
-    
+
     @Test
     public void testLocaleMatches() {
-        DatePrinter printer= getInstance(YYYY_MM_DD, SWEDEN);
+        DatePrinter printer = getInstance(YYYY_MM_DD, SWEDEN);
         assertEquals(SWEDEN, printer.getLocale());
     }
-    
+
     @Test
     public void testTimeZoneMatches() {
-        DatePrinter printer= getInstance(YYYY_MM_DD, NEW_YORK);
+        DatePrinter printer = getInstance(YYYY_MM_DD, NEW_YORK);
         assertEquals(NEW_YORK, printer.getTimeZone());
     }
 }

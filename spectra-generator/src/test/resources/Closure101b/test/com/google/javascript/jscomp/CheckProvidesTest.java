@@ -15,70 +15,68 @@
  */
 package com.google.javascript.jscomp;
 
-import static com.google.javascript.jscomp.CheckProvides.MISSING_PROVIDE_WARNING;
-
 import com.google.javascript.jscomp.CheckLevel;
+
+import static com.google.javascript.jscomp.CheckProvides.MISSING_PROVIDE_WARNING;
 
 /**
  * Tests for {@link CheckProvides}.
- *
-*
  */
 public class CheckProvidesTest extends CompilerTestCase {
-  @Override
-  protected CompilerPass getProcessor(Compiler compiler) {
-    return new CheckProvides(compiler, CheckLevel.WARNING);
-  }
+    @Override
+    protected CompilerPass getProcessor(Compiler compiler) {
+        return new CheckProvides(compiler, CheckLevel.WARNING);
+    }
 
-  public void testIrrelevant() {
-    testSame("var str = 'g4';");
-  }
+    public void testIrrelevant() {
+        testSame("var str = 'g4';");
+    }
 
-  public void testHarmlessProcedural() {
-    testSame("goog.provide('X'); /** @constructor */ function X(){};");
-  }
+    public void testHarmlessProcedural() {
+        testSame("goog.provide('X'); /** @constructor */ function X(){};");
+    }
 
-  public void testHarmless() {
-    String js = "goog.provide('X'); /** @constructor */ X = function(){};";
-    testSame(js);
-  }
+    public void testHarmless() {
+        String js = "goog.provide('X'); /** @constructor */ X = function(){};";
+        testSame(js);
+    }
 
-  public void testMissingGoogProvide(){
-    String[] js = new String[]{"/** @constructor */ X = function(){};"};
-    String warning = "missing goog.provide('X')";
-    test(js, js, null, MISSING_PROVIDE_WARNING, warning);
-  }
+    public void testMissingGoogProvide() {
+        String[] js = new String[]{"/** @constructor */ X = function(){};"};
+        String warning = "missing goog.provide('X')";
+        test(js, js, null, MISSING_PROVIDE_WARNING, warning);
+    }
 
-  public void testMissingGoogProvideWithNamespace(){
-    String[] js = new String[]{"goog = {}; " +
-                               "/** @constructor */ goog.X = function(){};"};
-    String warning = "missing goog.provide('goog.X')";
-    test(js, js, null, MISSING_PROVIDE_WARNING, warning);
-  }
+    public void testMissingGoogProvideWithNamespace() {
+        String[] js = new String[]{"goog = {}; " +
+                "/** @constructor */ goog.X = function(){};"};
+        String warning = "missing goog.provide('goog.X')";
+        test(js, js, null, MISSING_PROVIDE_WARNING, warning);
+    }
 
-  public void testGoogProvideInWrongFileShouldCreateWarning(){
-    String bad = "/** @constructor */ X = function(){};";
-    String good = "goog.provide('X'); goog.provide('Y');" +
-                  "/** @constructor */ X = function(){};" +
-                  "/** @constructor */ Y = function(){};";
-    String[] js = new String[] {good, bad};
-    String warning = "missing goog.provide('X')";
-    test(js, js, null, MISSING_PROVIDE_WARNING, warning);
-  }
+    public void testGoogProvideInWrongFileShouldCreateWarning() {
+        String bad = "/** @constructor */ X = function(){};";
+        String good = "goog.provide('X'); goog.provide('Y');" +
+                "/** @constructor */ X = function(){};" +
+                "/** @constructor */ Y = function(){};";
+        String[] js = new String[]{good, bad};
+        String warning = "missing goog.provide('X')";
+        test(js, js, null, MISSING_PROVIDE_WARNING, warning);
+    }
 
-  public void testGoogProvideMissingConstructorIsOkForNow(){
-    // TODO(user) to prevent orphan goog.provide calls, the pass would have to
-    // account for enums, static functions and constants
-    testSame(new String[]{"goog.provide('Y'); X = function(){};"});
-  }
+    public void testGoogProvideMissingConstructorIsOkForNow() {
+        // TODO(user) to prevent orphan goog.provide calls, the pass would have to
+        // account for enums, static functions and constants
+        testSame(new String[]{"goog.provide('Y'); X = function(){};"});
+    }
 
-  public void testIgnorePrivateConstructor() {
-    String js = "/** @constructor*/ X_ = function(){};";
-    testSame(js);
-  }
+    public void testIgnorePrivateConstructor() {
+        String js = "/** @constructor*/ X_ = function(){};";
+        testSame(js);
+    }
 
-  public void testIgnorePrivatelyAnnotatedConstructor() {
-    testSame("/** @private\n@constructor */ X = function(){};");
-    testSame("/** @constructor\n@private */ X = function(){};");
-  }
+    public void testIgnorePrivatelyAnnotatedConstructor() {
+        testSame("/** @private\n@constructor */ X = function(){};");
+        testSame("/** @constructor\n@private */ X = function(){};");
+    }
 }

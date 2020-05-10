@@ -15,14 +15,13 @@
  */
 package org.joda.time.tz;
 
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import org.joda.time.DateTimeZone;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Set;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-import org.joda.time.DateTimeZone;
 
 /**
  * This class is a JUnit test for UTCProvider.
@@ -49,7 +48,7 @@ public class TestUTCProvider extends TestCase {
     public void testClass() throws Exception {
         Class cls = UTCProvider.class;
         assertEquals(true, Modifier.isPublic(cls.getModifiers()));
-        
+
         Constructor con = cls.getDeclaredConstructor((Class[]) null);
         assertEquals(1, cls.getDeclaredConstructors().length);
         assertEquals(true, Modifier.isPublic(con.getModifiers()));

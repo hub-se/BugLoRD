@@ -45,122 +45,122 @@ package com.google.javascript.rhino.jstype;
  * {@link com.google.javascript.rhino.jstype.JSTypeRegistry#getNativeType(JSTypeNative)}.
  */
 public enum JSTypeNative {
-  // Built-in types (please keep alphabetized)
+    // Built-in types (please keep alphabetized)
 
-  ARRAY_TYPE,
-  ARRAY_FUNCTION_TYPE,
+    ARRAY_TYPE,
+    ARRAY_FUNCTION_TYPE,
 
-  BOOLEAN_TYPE,
-  BOOLEAN_OBJECT_TYPE,
-  BOOLEAN_OBJECT_FUNCTION_TYPE,
+    BOOLEAN_TYPE,
+    BOOLEAN_OBJECT_TYPE,
+    BOOLEAN_OBJECT_FUNCTION_TYPE,
 
-  /**
-   * A checked unknown type is a type that we know something about,
-   * but we're not really sure what we know about it.
-   *
-   * Examples of checked unknown types include:
-   * <code>
-   * if (x) { // x is unknown
-   *   alert(x); // x is checked unknown
-   * }
-   * </code>
-   *
-   * <code>
-   * /* @param {SomeForwardDeclaredType} x /
-   * function f(x) {
-   *   // x is checked unknown. We know it's some type, but the type
-   *   // has not been included in this binary.
-   * }
-   * </code>
-   *
-   * This is useful for missing property warnings, where we don't
-   * want to emit warnings on things that have been checked.
-   */
-  CHECKED_UNKNOWN_TYPE,
+    /**
+     * A checked unknown type is a type that we know something about,
+     * but we're not really sure what we know about it.
+     * <p>
+     * Examples of checked unknown types include:
+     * <code>
+     * if (x) { // x is unknown
+     * alert(x); // x is checked unknown
+     * }
+     * </code>
+     *
+     * <code>
+     * /* @param {SomeForwardDeclaredType} x /
+     * function f(x) {
+     * // x is checked unknown. We know it's some type, but the type
+     * // has not been included in this binary.
+     * }
+     * </code>
+     * <p>
+     * This is useful for missing property warnings, where we don't
+     * want to emit warnings on things that have been checked.
+     */
+    CHECKED_UNKNOWN_TYPE,
 
-  DATE_TYPE,
-  DATE_FUNCTION_TYPE,
+    DATE_TYPE,
+    DATE_FUNCTION_TYPE,
 
-  ERROR_FUNCTION_TYPE,
-  ERROR_TYPE,
+    ERROR_FUNCTION_TYPE,
+    ERROR_TYPE,
 
-  EVAL_ERROR_FUNCTION_TYPE,
-  EVAL_ERROR_TYPE,
+    EVAL_ERROR_FUNCTION_TYPE,
+    EVAL_ERROR_TYPE,
 
-  FUNCTION_FUNCTION_TYPE,
-  FUNCTION_INSTANCE_TYPE, // equivalent to U2U_CONSTRUCTOR_TYPE
-  FUNCTION_PROTOTYPE,
+    FUNCTION_FUNCTION_TYPE,
+    FUNCTION_INSTANCE_TYPE, // equivalent to U2U_CONSTRUCTOR_TYPE
+    FUNCTION_PROTOTYPE,
 
-  NULL_TYPE,
+    NULL_TYPE,
 
-  NUMBER_TYPE,
-  NUMBER_OBJECT_TYPE,
-  NUMBER_OBJECT_FUNCTION_TYPE,
+    NUMBER_TYPE,
+    NUMBER_OBJECT_TYPE,
+    NUMBER_OBJECT_FUNCTION_TYPE,
 
-  OBJECT_TYPE,
-  OBJECT_FUNCTION_TYPE,
-  OBJECT_PROTOTYPE,
+    OBJECT_TYPE,
+    OBJECT_FUNCTION_TYPE,
+    OBJECT_PROTOTYPE,
 
-  RANGE_ERROR_FUNCTION_TYPE,
-  RANGE_ERROR_TYPE,
+    RANGE_ERROR_FUNCTION_TYPE,
+    RANGE_ERROR_TYPE,
 
-  REFERENCE_ERROR_FUNCTION_TYPE,
-  REFERENCE_ERROR_TYPE,
+    REFERENCE_ERROR_FUNCTION_TYPE,
+    REFERENCE_ERROR_TYPE,
 
-  REGEXP_TYPE,
-  REGEXP_FUNCTION_TYPE,
+    REGEXP_TYPE,
+    REGEXP_FUNCTION_TYPE,
 
-  STRING_OBJECT_TYPE,
-  STRING_OBJECT_FUNCTION_TYPE,
-  STRING_TYPE,
+    STRING_OBJECT_TYPE,
+    STRING_OBJECT_FUNCTION_TYPE,
+    STRING_TYPE,
 
-  SYNTAX_ERROR_FUNCTION_TYPE,
-  SYNTAX_ERROR_TYPE,
+    SYNTAX_ERROR_FUNCTION_TYPE,
+    SYNTAX_ERROR_TYPE,
 
-  TYPE_ERROR_FUNCTION_TYPE,
-  TYPE_ERROR_TYPE,
+    TYPE_ERROR_FUNCTION_TYPE,
+    TYPE_ERROR_TYPE,
 
-  UNKNOWN_TYPE,
+    UNKNOWN_TYPE,
 
-  URI_ERROR_FUNCTION_TYPE,
-  URI_ERROR_TYPE,
+    URI_ERROR_FUNCTION_TYPE,
+    URI_ERROR_TYPE,
 
-  VOID_TYPE,
+    VOID_TYPE,
 
-  // Commonly used types
+    // Commonly used types
 
-  TOP_LEVEL_PROTOTYPE,
-  STRING_VALUE_OR_OBJECT_TYPE,
-  NUMBER_VALUE_OR_OBJECT_TYPE,
-  ALL_TYPE,
-  NO_TYPE,
-  NO_OBJECT_TYPE,
-  GLOBAL_THIS,
-  U2U_CONSTRUCTOR_TYPE,
-  U2U_FUNCTION_TYPE,
+    TOP_LEVEL_PROTOTYPE,
+    STRING_VALUE_OR_OBJECT_TYPE,
+    NUMBER_VALUE_OR_OBJECT_TYPE,
+    ALL_TYPE,
+    NO_TYPE,
+    NO_OBJECT_TYPE,
+    GLOBAL_THIS,
+    U2U_CONSTRUCTOR_TYPE,
+    U2U_FUNCTION_TYPE,
 
-  // TODO(nicksantos): Fix up these types so that they fit into the
-  // type lattice properly. Right now, they're broken.
-  LEAST_FUNCTION_TYPE,
-  GREATEST_FUNCTION_TYPE,
+    // TODO(nicksantos): Fix up these types so that they fit into the
+    // type lattice properly. Right now, they're broken.
+    LEAST_FUNCTION_TYPE,
+    GREATEST_FUNCTION_TYPE,
 
-  /**
-   * (Object,number,string)
-   */
-  OBJECT_NUMBER_STRING,
+    /**
+     * (Object,number,string)
+     */
+    OBJECT_NUMBER_STRING,
 
-  /**
-   * (Object,number,string,boolean)
-   */
-  OBJECT_NUMBER_STRING_BOOLEAN,
+    /**
+     * (Object,number,string,boolean)
+     */
+    OBJECT_NUMBER_STRING_BOOLEAN,
 
-  /**
-   * (number,string,boolean)
-   */
-  NUMBER_STRING_BOOLEAN,
+    /**
+     * (number,string,boolean)
+     */
+    NUMBER_STRING_BOOLEAN,
 
-  /**
-   * (number,string)
-   */
-  NUMBER_STRING,
+    /**
+     * (number,string)
+     */
+    NUMBER_STRING,
 }
