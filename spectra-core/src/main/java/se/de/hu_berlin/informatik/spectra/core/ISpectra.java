@@ -165,6 +165,16 @@ public interface ISpectra<T, K extends ITrace<T>> {
         SpectraUtils.removeNodesWithCoverageType(this, coverageType);
         return this;
     }
+    
+    /**
+     * Removes all nodes from this spectra that belong to test classes.
+     *
+     * @return this spectra (modified)
+     */
+    default public ISpectra<T, K> removeTestClassNodes(T dummy) {
+        SpectraUtils.removeTestClassNodes(dummy, this);
+        return this;
+    }
 
     public Map<K, TraceInfo> getSimilarityMap(ITrace<T> failingTrace);
 

@@ -42,7 +42,9 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
         //probably check if branch is gapless, but need better data structures probably
         /*====================================================================================*/
 
-        this.branchElements = ImmutableList.copyOf(programBlocks);
+    	// immutable lists prohibit the removal of nodes which we need to, for example, remove statements in test classes
+//        this.branchElements = ImmutableList.copyOf(programBlocks);
+        this.branchElements = programBlocks;
 
         //store the hashCode now
         int immutableHashCode = 31 * (527 + branchElements.size());
@@ -245,7 +247,7 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
         return this.branchElements.get(index);
     }
 
-    public ImmutableList<SourceCodeBlock> getElements() {
+    public List<SourceCodeBlock> getElements() {
         return this.branchElements;
     }
 
@@ -287,7 +289,7 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
      * FIELDS
      *====================================================================================*/
 
-    private ImmutableList<SourceCodeBlock> branchElements;
+    private List<SourceCodeBlock> branchElements;
 
     public final static String IDENTIFIER_SEPARATOR_CHAR = "#";
 

@@ -5,6 +5,7 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
@@ -570,6 +571,57 @@ public class SpectraUtils {
 
         return result;
     }
+
+	public static <T> void removeTestClassNodes(T dummy, ISpectra<T, ?> spectra) {
+		Collection<String> testClassNames = new HashSet<>();
+		Collection<? extends ITrace<?>> traces = (Collection<? extends ITrace<?>>) spectra.getTraces();
+		for (ITrace<?> trace : traces) {
+			String testClassName = getTestClassName(trace.getIdentifier());
+			if (testClassName != null) {
+				testClassNames.add(testClassName);
+			}
+		}
+		
+		if (dummy instanceof SourceCodeBlock) {
+			Collection<Integer> nodesToRemove = new HashSet<>();
+			for (INode<T> node : spectra.getNodes()) {
+				// is the node part of a test class?
+				if (testClassNames.contains(getClassName((SourceCodeBlock) node.getIdentifier()))) {
+					nodesToRemove.add(node.getIndex());
+				}
+			}
+			spectra.removeNodesByIndex(nodesToRemove);
+		} else if (dummy instanceof ProgramBranch) {
+			for (INode<T> node : spectra.getNodes()) {
+				// iterate over the branch
+				ProgramBranch branch = (ProgramBranch) node.getIdentifier();
+				for (Iterator<SourceCodeBlock> iterator = branch.getElements().iterator(); iterator.hasNext();) {
+					SourceCodeBlock sourceCodeBlock = iterator.next();
+					// is the node part of a test class?
+					if (testClassNames.contains(getClassName(sourceCodeBlock))) {
+						iterator.remove();
+					}
+				}
+			}
+		} else {
+			throw new UnsupportedOperationException("Spectra node type not supported.");
+		}
+	}
+	
+	private static String getClassName(SourceCodeBlock node) {
+		// file name is something like 'class/Name.java' TODO: lower case correct/necessary?
+		return node.getFilePath().replace(".java", "").replace('/', '.');
+	}
+
+	private static String getTestClassName(String testIdentifier) {
+		// test name should be 'class.name::testName' TODO: lower case correct/necessary?
+		int index = testIdentifier.indexOf(':');
+		if (index < 0) {
+			return null;
+		} else {
+			return testIdentifier.substring(0, index);
+		}
+	}
 }
 
 

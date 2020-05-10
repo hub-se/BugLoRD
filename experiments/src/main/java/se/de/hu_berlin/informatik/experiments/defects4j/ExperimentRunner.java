@@ -49,8 +49,10 @@ public class ExperimentRunner {
         CONDENSE("c", "condenseNodes", false, "Whether to combine several lines "
                 + "with equal trace involvement to larger blocks. (Only for experiment 'computeSBFL'!)", false),
         FILTER("f", "filterSpectra", false,
-                "Whether to compute rankings based on filtered spectra. " + "(Only for experiment 'computeSBFL'!)",
+                "Whether to compute rankings based on filtered spectra. (Only for experiment 'computeSBFL'!)",
                 false),
+        REMOVE_TEST_CLASSES("r", "removeTestClasses", false, 
+        		"Whether to remove nodes that are part of a test class. (Only for experiment 'computeSBFL'!)", false),
         SUFFIX("s", "suffix", true, "A suffix to append to the ranking directory.", false),
         FORCE_LOAD_SPECTRA_FOR_FL("frc", "forceload", false, "Whether the spectra should always be loaded, regardless if a "
                 + "trace file has previously been created that would usually be sufficient to compute SBFL rankings.",
@@ -176,7 +178,9 @@ public class ExperimentRunner {
                     new ThreadedProcessor<>(threadCount, limit,
                             new ERComputeSBFLRankingsFromSpectraEH(toolSpecific,
                                     options.getOptionValue(CmdOptions.SUFFIX, null),
-                                    options.hasOption(CmdOptions.FILTER), options.hasOption(CmdOptions.CONDENSE),
+                                    options.hasOption(CmdOptions.FILTER), 
+                                    options.hasOption(CmdOptions.REMOVE_TEST_CLASSES),
+                                    options.hasOption(CmdOptions.CONDENSE),
                                     options.hasOption(CmdOptions.FORCE_LOAD_SPECTRA_FOR_FL))));
         }
 

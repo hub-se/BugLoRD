@@ -11,6 +11,7 @@ import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.BuildBlockSpectraModule;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.ReadSpectraModule;
+import se.de.hu_berlin.informatik.spectra.core.manipulation.RemoveTestClassNodesFromSpectraModule;
 import se.de.hu_berlin.informatik.spectra.util.Indexable;
 import se.de.hu_berlin.informatik.spectra.util.TraceFileModule;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
@@ -45,6 +46,7 @@ final public class Spectra2Ranking {
         OUTPUT("o", "output", true, "Path to output directory.", true),
         FILTER("f", "filterNodes", false, "Whether to remove irrelevant nodes, i.e. "
                 + "nodes that were not touched by any failing trace.", false),
+        REMOVE_TEST_CLASSES("r", "removeTestClasses", false, "Whether to remove nodes that are part of a test class.", false),
         CONDENSE("c", "condenseNodes", false, "Whether to combine several lines "
                 + "with equal trace involvement to larger blocks.", false),
         SIMILARITY_SBFL("sim", "similarity", false, "Whether the ranking should be based on similarity between traces.", false),
@@ -105,6 +107,7 @@ final public class Spectra2Ranking {
                 options.getOptionValue(CmdOptions.OUTPUT),
                 options.getOptionValues(CmdOptions.LOCALIZERS),
                 options.hasOption(CmdOptions.FILTER),
+                options.hasOption(CmdOptions.REMOVE_TEST_CLASSES),
                 options.hasOption(CmdOptions.CONDENSE),
                 options.hasOption(CmdOptions.SIMILARITY_SBFL)
                         ? ComputationStrategies.SIMILARITY_FL : ComputationStrategies.STANDARD_SBFL,
@@ -122,13 +125,15 @@ final public class Spectra2Ranking {
      * @param localizers            an array of String representation of fault localizers
      *                              as used by STARDUST
      * @param removeIrrelevantNodes whether to remove nodes that were not touched by any failed traces
+     * @param removeTestClassNodes  whether to remove nodes that are part of test classes
      * @param condenseNodes         whether to combine several lines with equal trace involvement
      * @param strategy              the strategy to use for computation of the rankings
      * @param suffix                a suffix to append to generated trace files and metrics files
      */
     public static void generateRanking(
             final String spectraFileOption, final String rankingDir, final String[] localizers,
-            final boolean removeIrrelevantNodes, final boolean condenseNodes, ComputationStrategies strategy, String suffix) {
+            final boolean removeIrrelevantNodes, final boolean removeTestClassNodes, 
+            final boolean condenseNodes, ComputationStrategies strategy, String suffix) {
         final Path spectraFile = FileUtils.checkIfAnExistingFile(null, spectraFileOption);
         if (spectraFile == null) {
             Log.abort(Spectra2Ranking.class, "'%s' is not an existing file.", spectraFileOption);
@@ -141,7 +146,7 @@ final public class Spectra2Ranking {
             Log.abort(Spectra2Ranking.class, "No localizers given.");
         }
         generateRankingForCheckedInputs(spectraFile, outputDir.toString(),
-                localizers, removeIrrelevantNodes, condenseNodes, strategy, suffix);
+                localizers, removeIrrelevantNodes, removeTestClassNodes, condenseNodes, strategy, suffix);
     }
 
     /**
@@ -152,13 +157,17 @@ final public class Spectra2Ranking {
      * @param localizers            an array of String representation of fault localizers
      *                              as used by STARDUST
      * @param removeIrrelevantNodes whether to remove nodes that were not touched by any failed traces
+     * @param removeTestClassNodes  whether to remove nodes that are part of test classes
      * @param condenseNodes         whether to combine several lines with equal trace involvement
      * @param strategy              the strategy to use for computation of the rankings
      * @param suffix                a suffix to append to generated trace files and metrics files
      */
     private static void generateRankingForCheckedInputs(final Path spectraFile,
                                                         final String outputDir, final String[] localizers,
-                                                        final boolean removeIrrelevantNodes, final boolean condenseNodes, ComputationStrategies strategy, String suffix) {
+                                                        final boolean removeIrrelevantNodes,
+                                                        final boolean removeTestClassNodes, 
+                                                        final boolean condenseNodes, 
+                                                        ComputationStrategies strategy, String suffix) {
         ModuleLinker linker = new ModuleLinker()
                 .append(new ReadSpectraModule<>(SourceCodeBlock.DUMMY));
         if (condenseNodes) {
@@ -166,6 +175,9 @@ final public class Spectra2Ranking {
         }
         if (removeIrrelevantNodes) {
             linker.append(new FilterSpectraModule<SourceCodeBlock>(INode.CoverageType.EF_EQUALS_ZERO));
+        }
+        if (removeTestClassNodes) {
+        	linker.append(new RemoveTestClassNodesFromSpectraModule<>(SourceCodeBlock.DUMMY));
         }
         linker.append(new TraceFileModule<SourceCodeBlock>(Paths.get(outputDir), suffix));
         linker.append(new RankingModule<SourceCodeBlock>(strategy, outputDir, localizers))
@@ -183,14 +195,16 @@ final public class Spectra2Ranking {
      * @param localizers            an array of String representation of fault localizers
      *                              as used by STARDUST
      * @param removeIrrelevantNodes whether to remove nodes that were not touched by any failed traces
+     * @param removeTestClassNodes  whether to remove nodes that are part of test classes
      * @param strategy              the strategy to use for computation of the rankings
      * @param suffix                a suffix to append to generated trace files and metrics files
      * @param <T>                   type of node identifiers
      */
     public static <T extends Indexable<T> & Comparable<T>> void generateRanking(T dummy,
-                                                                                final String spectraFileOption, final String rankingDir, final String[] localizers,
-                                                                                final boolean removeIrrelevantNodes, ComputationStrategies strategy, String suffix) {
-        final Path spectraFile = FileUtils.checkIfAnExistingFile(null, spectraFileOption);
+    		final String spectraFileOption, final String rankingDir, final String[] localizers,
+    		final boolean removeIrrelevantNodes, final boolean removeTestClassNodes, 
+    		ComputationStrategies strategy, String suffix) {
+    	final Path spectraFile = FileUtils.checkIfAnExistingFile(null, spectraFileOption);
         if (spectraFile == null) {
             Log.abort(Spectra2Ranking.class, "'%s' is not an existing file.", spectraFileOption);
         }
@@ -202,7 +216,7 @@ final public class Spectra2Ranking {
             Log.abort(Spectra2Ranking.class, "No localizers given.");
         }
         generateRankingForCheckedInputs(dummy, spectraFile, outputDir.toString(),
-                localizers, removeIrrelevantNodes, strategy, suffix);
+                localizers, removeIrrelevantNodes, removeTestClassNodes, strategy, suffix);
     }
 
     /**
@@ -214,18 +228,23 @@ final public class Spectra2Ranking {
      * @param localizers            an array of String representation of fault localizers
      *                              as used by STARDUST
      * @param removeIrrelevantNodes whether to remove nodes that were not touched by any failed traces
+     * @param removeTestClassNodes  whether to remove nodes that are part of test classes
      * @param strategy              the strategy to use for computation of the rankings
      * @param suffix                a suffix to append to generated trace files and metrics files
      * @param <T>                   type of node identifiers
      */
-    private static <T extends Indexable<T> & Comparable<T>> void generateRankingForCheckedInputs(T dummy, final Path spectraFile,
-                                                                                                 final String outputDir, final String[] localizers,
-                                                                                                 final boolean removeIrrelevantNodes,
-                                                                                                 ComputationStrategies strategy, String suffix) {
-        ModuleLinker linker = new ModuleLinker()
+    private static <T extends Indexable<T> & Comparable<T>> void generateRankingForCheckedInputs(
+    		T dummy, final Path spectraFile,
+    		final String outputDir, final String[] localizers, 
+    		final boolean removeIrrelevantNodes, final boolean removeTestClassNodes, 
+    		ComputationStrategies strategy, String suffix) {
+    	ModuleLinker linker = new ModuleLinker()
                 .append(new ReadSpectraModule<T>(dummy));
         if (removeIrrelevantNodes) {
             linker.append(new FilterSpectraModule<T>(INode.CoverageType.EF_EQUALS_ZERO));
+        }
+        if (removeTestClassNodes) {
+        	linker.append(new RemoveTestClassNodesFromSpectraModule<T>(dummy));
         }
         linker.append(new TraceFileModule<T>(Paths.get(outputDir), suffix));
         linker.append(new RankingModule<T>(strategy, outputDir, localizers))

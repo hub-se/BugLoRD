@@ -25,6 +25,7 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 
     final private static String[] localizers = BugLoRD.getValueOf(BugLoRDProperties.LOCALIZERS).split(" ");
     final private boolean removeIrrelevantNodes;
+    final private boolean removeTestClassNodes;
     final private boolean condenseNodes;
     final private boolean forceLoadSpectra;
     final private String suffix;
@@ -36,16 +37,18 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
      * @param toolSpecific          chooses what kind of spectra to use
      * @param suffix                a suffix to append to the ranking directory (may be null)
      * @param removeIrrelevantNodes whether to remove nodes that were not touched by any failed traces
+     * @param removeTestClassNodes  whether to remove nodes that are part of test classes
      * @param condenseNodes         whether to combine several lines with equal trace involvement
      * @param forceLoadSpectra      whether the spectra file should be used regardless of whether a trace file exists
      */
     public ERComputeSBFLRankingsFromSpectraEH(ToolSpecific toolSpecific,
-                                              String suffix, final boolean removeIrrelevantNodes,
+                                              String suffix, final boolean removeIrrelevantNodes, final boolean removeTestClassNodes,
                                               final boolean condenseNodes, boolean forceLoadSpectra) {
         super();
         this.toolSpecific = toolSpecific;
         this.suffix = suffix;
         this.removeIrrelevantNodes = removeIrrelevantNodes;
+        this.removeTestClassNodes = removeTestClassNodes;
         this.condenseNodes = condenseNodes;
         this.forceLoadSpectra = forceLoadSpectra;
     }
@@ -102,14 +105,14 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 
                     if (new File(compressedSpectraFileFiltered).exists()) {
                         Spectra2Ranking.generateRanking(ProgramBranch.DUMMY, compressedSpectraFileFiltered, rankingDir.toString(),
-                                localizers, false, ComputationStrategies.STANDARD_SBFL, null);
+                                localizers, false, removeTestClassNodes, ComputationStrategies.STANDARD_SBFL, null);
                     } else {
                         Spectra2Ranking.generateRanking(ProgramBranch.DUMMY, compressedSpectraFile, rankingDir.toString(),
-                                localizers, true, ComputationStrategies.STANDARD_SBFL, null);
+                                localizers, true, removeTestClassNodes, ComputationStrategies.STANDARD_SBFL, null);
                     }
                 } else {
                     Spectra2Ranking.generateRanking(ProgramBranch.DUMMY, compressedSpectraFile, rankingDir.toString(),
-                            localizers, false, ComputationStrategies.STANDARD_SBFL, null);
+                            localizers, false, removeTestClassNodes, ComputationStrategies.STANDARD_SBFL, null);
                 }
             } else {
                 if (removeIrrelevantNodes) {
@@ -117,14 +120,14 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
 
                     if (new File(compressedSpectraFileFiltered).exists()) {
                         Spectra2Ranking.generateRanking(compressedSpectraFileFiltered, rankingDir.toString(),
-                                localizers, false, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
+                                localizers, false, removeTestClassNodes, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
                     } else {
                         Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(),
-                                localizers, true, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
+                                localizers, true, removeTestClassNodes, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
                     }
                 } else {
                     Spectra2Ranking.generateRanking(compressedSpectraFile, rankingDir.toString(),
-                            localizers, false, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
+                            localizers, false, removeTestClassNodes, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
                 }
             }
         }
