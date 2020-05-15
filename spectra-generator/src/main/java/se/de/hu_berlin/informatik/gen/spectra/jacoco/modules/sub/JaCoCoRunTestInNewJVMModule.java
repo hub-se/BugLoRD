@@ -64,9 +64,9 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
                     TestRunner.class,
                     instrumentedClassPath,
                     projectDir,
-                    AbstractSpectraGenerationFactory.GC,
-                    AbstractSpectraGenerationFactory.INITIAL_HEAP,
-                    AbstractSpectraGenerationFactory.MAX_HEAP,
+                    AbstractSpectraGenerationFactory.GC_SMALL,
+                    AbstractSpectraGenerationFactory.INITIAL_HEAP_SMALL,
+                    AbstractSpectraGenerationFactory.MAX_HEAP_SMALL,
                     "-Djacoco-agent.dumponexit=false",
                     "-Djacoco-agent.output=tcpserver",
                     "-Djacoco-agent.excludes=*",
@@ -88,9 +88,9 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
                     TestRunner.class,
                     instrumentedClassPath,
                     projectDir,
-                    AbstractSpectraGenerationFactory.GC,
-                    AbstractSpectraGenerationFactory.INITIAL_HEAP,
-                    AbstractSpectraGenerationFactory.MAX_HEAP,
+                    AbstractSpectraGenerationFactory.GC_SMALL,
+                    AbstractSpectraGenerationFactory.INITIAL_HEAP_SMALL,
+                    AbstractSpectraGenerationFactory.MAX_HEAP_SMALL,
                     "-javaagent:" + Objects.requireNonNull(jacocoAgentJar).getAbsolutePath()
                             + "=dumponexit=false,"
                             + "output=tcpserver,"

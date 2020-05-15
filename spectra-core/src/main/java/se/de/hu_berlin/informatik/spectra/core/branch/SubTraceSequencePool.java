@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SubTraceSequencePool {
 
-    private static final int SEQUENCE_POOL_SUB_MAP_SIZE = 500;
+    private static final int SEQUENCE_POOL_SUB_MAP_SIZE = 1000;
 
 	private Path tempOutputDir;
 

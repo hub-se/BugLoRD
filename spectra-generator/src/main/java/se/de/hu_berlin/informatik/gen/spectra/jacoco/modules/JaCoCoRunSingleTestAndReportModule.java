@@ -9,6 +9,8 @@ import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.IBundleCoverage;
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.data.ExecutionDataStore;
+
+import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.JaCoCoSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoRunTestInNewJVMModule;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoRunTestInNewJVMModuleWithJava7Runner;
@@ -155,7 +157,7 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
         String[] properties;
         if (JaCoCoSpectraGenerationFactory.OFFLINE_INSTRUMENTATION) {
             properties = Misc.createArrayFromItems(
-                    "-Xmx1024m", "-Xms1024m",
+                    AbstractSpectraGenerationFactory.MAX_HEAP_SMALL, AbstractSpectraGenerationFactory.INITIAL_HEAP_SMALL,
                     "-Djacoco-agent.dumponexit=true",
                     "-Djacoco-agent.output=file",
                     "-Djacoco-agent.destfile=" + dataFile.toAbsolutePath().toString(),
@@ -172,7 +174,7 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
             testClassPath += Objects.requireNonNull(jacocoAgentJar).getAbsolutePath() + File.pathSeparator;
 
             properties = Misc.createArrayFromItems(
-                    "-Xmx1024m", "-Xms1024m",
+            		AbstractSpectraGenerationFactory.MAX_HEAP_SMALL, AbstractSpectraGenerationFactory.INITIAL_HEAP_SMALL,
                     "-javaagent:" + jacocoAgentJar.getAbsolutePath()
                             + "=dumponexit=true,"
                             + "output=file,"

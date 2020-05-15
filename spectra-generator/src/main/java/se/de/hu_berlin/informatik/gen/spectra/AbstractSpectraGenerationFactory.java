@@ -21,10 +21,17 @@ import java.nio.file.Path;
  */
 public abstract class AbstractSpectraGenerationFactory<T extends Serializable, R, S> {
 
-    public static final String MAX_HEAP = "-Xmx2g";
-    public static final String INITIAL_HEAP = "-Xms1g";
-    public static final String GC = "-XX:+UseParallelGC";
-    public static final String MAX_DIRECT_MEMORY = "-XX:MaxDirectMemorySize=512m";
+    public static final String MAX_HEAP = "-Xmx4g";
+    public static final String INITIAL_HEAP = ""; //"-Xms1g";
+    public static final String GC = "-XX:+UseG1GC"; //"-XX:+UseParallelGC";
+    public static final String MAX_DIRECT_MEMORY = ""; //"-XX:MaxDirectMemorySize=512m";
+    public static final String NUMA = ""; //"-XX:+UseNUMA";
+    
+    public static final String MAX_HEAP_SMALL = "-Xmx1g";
+    public static final String INITIAL_HEAP_SMALL = ""; //"-Xms1g";
+    public static final String GC_SMALL = "-XX:+UseG1GC"; //"-XX:+UseParallelGC";
+    public static final String MAX_DIRECT_MEMORY_SMALL = ""; //"-XX:MaxDirectMemorySize=512m";
+    public static final String NUMA_SMALL = ""; //"-XX:+UseNUMA";
 
     /**
      * Defines which tool (or modified tool...) to use.
