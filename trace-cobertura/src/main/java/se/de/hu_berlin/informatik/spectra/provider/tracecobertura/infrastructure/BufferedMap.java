@@ -1,7 +1,11 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+
+import de.hammacher.util.Pair;
 
 
 /**
@@ -43,6 +47,39 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 
     protected transient boolean deleteOnExit;
 
+	// if this is true, always store nodes, since added map 
+	// elements may change AFTER they have been added to the map!
+	private boolean addedElementsMayBeChange = false;
+
+	private transient Node<E> lastObtainedNode;
+
+	
+	public Pair<Integer, Integer> calculateMinAndMaxNodeSizeStats() {
+		int minSize = Integer.MAX_VALUE;
+		int maxSize = 0;
+		Iterator<Map<Integer, E>> subMapIterator = subMapIterator();
+		while (subMapIterator.hasNext()) {
+			Map<Integer, E> next = subMapIterator.next();
+			minSize = Math.min(minSize, next.size());
+			maxSize = Math.max(maxSize, next.size());
+		}
+		
+		return new Pair<>(minSize, maxSize);
+	}
+	
+	public double getAverageNodeSizeStats() {
+		if (existingNodes.isEmpty()) {
+			return Double.NaN;
+		} else {
+			return (double)size / (double)existingNodes.size();
+		}
+	}
+	
+	public String getStats() {
+		Pair<Integer, Integer> pair = calculateMinAndMaxNodeSizeStats();
+		return String.format("#entries: %,d, #files: %,d, entry cap: %,d, min/max/avg #entries per file: %,d/%,d/%.2f", 
+				size, existingNodes.size(), maxSubMapSize, pair.getFirst(), pair.getSecond(), getAverageNodeSizeStats());
+	}
 
     private void writeObject(java.io.ObjectOutputStream stream)
             throws IOException {
@@ -52,6 +89,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
         stream.writeObject(existingNodes);
         stream.writeInt(maxSubMapSize);
         stream.writeInt(size);
+        stream.writeBoolean(addedElementsMayBeChange);
     }
 
     public void sleep() {
@@ -80,6 +118,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
         existingNodes = (Set<Integer>) stream.readObject();
         maxSubMapSize = stream.readInt();
         size = stream.readInt();
+        addedElementsMayBeChange = stream.readBoolean();
 
 //        cachedNodes = new HashMap<>();
 //        cacheSequence = new LinkedList<>();
@@ -115,6 +154,11 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 
     public BufferedMap(File output, String filePrefix, int maxSubMapSize) {
         this(output, filePrefix, maxSubMapSize, true);
+    }
+    
+    public BufferedMap(File output, String filePrefix, int maxSubMapSize, boolean deleteOnExit, boolean addedElementsMayBeChange) {
+        this(output, filePrefix, maxSubMapSize, deleteOnExit);
+        this.addedElementsMayBeChange = addedElementsMayBeChange;
     }
 
     public File getOutputDir() {
@@ -206,6 +250,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
         Integer index = (Integer) key;
         int storeIndex = getStoreindex(index);
         Node<E> node = getNode(storeIndex);
+        this.lastObtainedNode = node;
         return node == null ? null : node.get(key);
     }
 
@@ -312,6 +357,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
     }
 
     private Node<E> createNewNode(Integer key) {
+    	lastObtainedNode = null;
         Node<E> node = reusableNode == null ?
                 new Node<E>(key, maxSubMapSize) :
                 reusableNode.recycle(key);
@@ -340,6 +386,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
     }
 
     protected Node<E> load(int storeIndex, String filename) throws IllegalStateException {
+    	lastObtainedNode = null;
         Node<E> loadedNode;
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
             @SuppressWarnings("unchecked")
@@ -381,7 +428,7 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
             existingNodes.remove(node.storeIndex);
             reusableNode = node.reset();
             return;
-        } else if (node.modified) {
+        } else if (node.modified || addedElementsMayBeChange) {
             String filename = getFileName(node.storeIndex);
             store(node, filename);
             node.modified = false;
@@ -397,7 +444,18 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
                 new File(filename).deleteOnExit();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            try {
+				Files.deleteIfExists(Paths.get(filename));
+				try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+		            outputStream.writeObject(node.subMap);
+		            // do not delete on exit, due to serialization! TODO
+		            if (deleteOnExit) {
+		                new File(filename).deleteOnExit();
+		            }
+		        }
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
         }
     }
 
@@ -537,6 +595,10 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
         }
     }
 
+    public Iterator<Map<Integer, E>> subMapIterator() {
+        return new NodeIterator();
+    }
+    
     public Iterator<java.util.Map.Entry<Integer, E>> entrySetIterator() {
         return new MyBufferedIterator(false);
     }
@@ -554,15 +616,13 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
             }
         }
 
-        private final Iterator<Integer> storeIndexIterator;
+        private final NodeIterator nodeIterator;
         private Iterator<java.util.Map.Entry<Integer, E>> entrySetIterator;
         private boolean sortNodeEntries;
 
         public MyBufferedIterator(boolean sortNodeEntries) {
             this.sortNodeEntries = sortNodeEntries;
-            List<Integer> list = new ArrayList<>(existingNodes);
-            Collections.sort(list);
-            storeIndexIterator = list.iterator();
+            this.nodeIterator = new NodeIterator();
         }
 
         @Override
@@ -572,11 +632,8 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 
         private boolean check() {
             while (entrySetIterator == null || !entrySetIterator.hasNext()) {
-                if (storeIndexIterator.hasNext()) {
-                    Node<E> node = load(storeIndexIterator.next());
-                    if (node == null) {
-                        throw new IllegalStateException();
-                    }
+                if (nodeIterator.hasNext()) {
+                	Map<Integer, E> node = nodeIterator.next();
                     if (sortNodeEntries) {
                         List<Entry<Integer, E>> list = new ArrayList<>(node.entrySet());
                         Collections.sort(list, new KeyComp());
@@ -602,6 +659,32 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
             throw new UnsupportedOperationException();
         }
     }
+    
+    private final class NodeIterator implements Iterator<Map<Integer, E>> {
+
+    	private final Iterator<Integer> storeIndexIterator;
+    	
+    	public NodeIterator() {
+    		List<Integer> list = new ArrayList<>(existingNodes);
+            Collections.sort(list);
+            storeIndexIterator = list.iterator();
+		}
+    	
+		@Override
+		public boolean hasNext() {
+			return storeIndexIterator.hasNext();
+		}
+
+		@Override
+		public Map<Integer, E> next() {
+			Node<E> node = load(storeIndexIterator.next());
+        	if (node == null) {
+        		throw new IllegalStateException();
+        	}
+			return node.getSubMap();
+		}
+    	
+    }
 
     public boolean isDeleteOnExit() {
         return deleteOnExit;
@@ -610,5 +693,11 @@ public class BufferedMap<E> implements Map<Integer, E>, Serializable {
     public void deleteOnExit() {
         deleteOnExit = true;
     }
+
+	public void setLastObtainedNodeToModified() {
+		if (lastObtainedNode != null) {
+			lastObtainedNode.modified = true;
+		}
+	}
 
 }

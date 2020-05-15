@@ -97,6 +97,7 @@ public class SpectraFileUtils {
 
     public static final String NODE_ID_SEQUENCES_DIR = "nodeSeqs";
     public static final String SUB_TRACE_ID_SEQUENCES_DIR = "subTraceSeqs";
+    public static final String SUB_TRACE_ID_SEQUENCE_TREES_DIR = "subTraceTreeSeqs";
 
     // suppress default constructor (class should not be instantiated)
     private SpectraFileUtils() {

@@ -2,9 +2,9 @@ package se.de.hu_berlin.informatik.spectra.util;
 
 import java.nio.file.Path;
 
-public class CachedSequiturMap extends CachedMap<byte[]> {
+public class CachedByteArrayMap extends CachedMap<byte[]> {
 
-    public CachedSequiturMap(Path outputZipFile, int cacheSize, String id, boolean deleteAtShutdown) {
+    public CachedByteArrayMap(Path outputZipFile, int cacheSize, String id, boolean deleteAtShutdown) {
         super(outputZipFile, cacheSize, id, deleteAtShutdown);
     }
 

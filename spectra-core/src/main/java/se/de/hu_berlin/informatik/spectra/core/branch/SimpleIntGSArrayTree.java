@@ -2,70 +2,289 @@ package se.de.hu_berlin.informatik.spectra.core.branch;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedIntArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedIntArrayQueue.MyIterator;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SimpleIntGSArrayTree {
+public class SimpleIntGSArrayTree implements Iterable<Pair<Integer, int[]>>, Serializable {
+	
+	/*
+	 * example tree: (int arrays may be empty)
+	 * 
+	 * 					node(int[], id)
+	 *  					|			\
+	 *  					|			 \
+	 *  				node(int[], id)	node(int[], id)
+	 *  					|
+	 *  					|
+	 *  				node(int[], id)
+	 *  			 /		|		   \
+	 *  			/		|			\
+	 *  node(int[], id)	node(int[], id)	node(int[], id)
+	 *  		|
+	 *  		|
+	 *  node(int[], id)
+	 */
 
+	private static final byte MAGIC_1BYTE = (byte) 255;
+    private static final byte MAGIC_2BYTES = (byte) 254;
+    private static final byte MAGIC_3BYTES = (byte) 253;
+    private static final byte MAGIC_4BYTES = (byte) 252;
+    private static final int LOWER_8_BITS = 0xff;
+    private static final int HIGHER_8_BITS = 0xff000000;
+    private static final int HIGHER_16_BITS = 0xffff0000;
+    private static final int HIGHER_24_BITS = 0xffffff00;
+
+    private static void writeInt(final OutputStream out, final int value) throws IOException {
+        if ((value & HIGHER_24_BITS) == 0) {
+            if (value >= 252)
+                out.write(MAGIC_1BYTE);
+        } else if ((value & HIGHER_16_BITS) == 0) {
+            out.write(MAGIC_2BYTES);
+            out.write(value >>> 8);
+        } else if ((value & HIGHER_8_BITS) == 0) {
+            out.write(MAGIC_3BYTES);
+            out.write(value >>> 16);
+            out.write(value >>> 8);
+        } else {
+            out.write(MAGIC_4BYTES);
+            out.write(value >>> 24);
+            out.write(value >>> 16);
+            out.write(value >>> 8);
+        }
+        out.write(value);
+    }
+
+    private static int readInt(final InputStream in) throws IOException {
+        int b0, b1, b2;
+        int b3 = in.read();
+        switch (b3) {
+            case -1:
+                throw new EOFException();
+            case MAGIC_1BYTE & LOWER_8_BITS:
+                b0 = in.read();
+                if (b0 < 0)
+                    throw new EOFException();
+                return (b0 & LOWER_8_BITS);
+            case MAGIC_2BYTES & LOWER_8_BITS:
+                b1 = in.read();
+                b0 = in.read();
+                if ((b0 | b1) < 0)
+                    throw new EOFException();
+                return ((b1 & LOWER_8_BITS) << 8)
+                        | (b0 & LOWER_8_BITS);
+            case MAGIC_3BYTES & LOWER_8_BITS:
+                b2 = in.read();
+                b1 = in.read();
+                b0 = in.read();
+                if ((b0 | b1 | b2) < 0)
+                    throw new EOFException();
+                return ((b2 & LOWER_8_BITS) << 16)
+                        | ((b1 & LOWER_8_BITS) << 8)
+                        | (b0 & LOWER_8_BITS);
+            case MAGIC_4BYTES & LOWER_8_BITS:
+                b3 = in.read();
+                b2 = in.read();
+                b1 = in.read();
+                b0 = in.read();
+                if ((b0 | b1 | b2 | b3) < 0)
+                    throw new EOFException();
+                return ((b3 & LOWER_8_BITS) << 24)
+                        | ((b2 & LOWER_8_BITS) << 16)
+                        | ((b1 & LOWER_8_BITS) << 8)
+                        | (b0 & LOWER_8_BITS);
+            default:
+                return (b3 & LOWER_8_BITS);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+    	writeNode(stream, startNode);
+    }
+
+    public static void writeNode(ObjectOutputStream objOut, IntGSArrayTreeNode node) throws IOException {
+    	// sequence index
+    	writeInt(objOut, node.getIndex());
+    	int[] sequence = node.getSequence();
+    	// sequence length
+		writeInt(objOut, sequence.length);
+		// sequence
+        for (int value : sequence) {
+            writeInt(objOut, value);
+        }
+        List<IntGSArrayTreeNode> edges = node.getEdges();
+        // number of edges (may be 0)
+		writeInt(objOut, edges.size());
+		// edges (nodes)
+		for (IntGSArrayTreeNode edge : edges) {
+			// write edges recursively
+			writeNode(objOut, edge);
+		}
+	}
+    
+    private void readObject(ObjectInputStream stream) throws IOException {
+    	this.startNode = readNode(stream);
+    }
+
+	public static IntGSArrayTreeNode readNode(ObjectInputStream objIn) throws IOException {
+		// sequence index
+		int index = readInt(objIn);
+		// sequence length
+		int seqLength = readInt(objIn);
+		// sequence
+        int[] sequence = new int[seqLength];
+        for (int i = 0; i < seqLength; ++i) {
+        	sequence[i] = readInt(objIn);
+        }
+        // number of edges (may be 0)
+        int edgeCount = readInt(objIn);
+        // edges (nodes)
+        List<IntGSArrayTreeNode> edges;
+        if (edgeCount <= 0) {
+        	edges = null;
+        } else {
+        	edges = new ArrayList<>(edgeCount);
+        	for (int i = 0; i < edgeCount; ++i) {
+        		// read edges recursively
+        		edges.add(readNode(objIn));
+        	}
+        	
+		}
+		return new IntGSArrayTreeNode(sequence, edges, index);
+	}
+	
     // some element not contained in the input sequences TODO maybe set to 0?
     // in the future, negative indices will possibly point to node sequences, themselves...
 //	public static final int SEQUENCE_END = -2;
-    public static final int BAD_INDEX = -3;
+    public static final int BAD_INDEX = 0;
 
     // the (virtual) root node has a lot of branches, the inner nodes should not branch that much
     // so we use a map here, and we use lists of edges in the inner nodes
     private IntGSArrayTreeNode startNode;
     
-    // used to obtain new, unique IDs
-	private final AtomicInteger idGenerator;
-	private int endNodeCount;
+    public SimpleIntGSArrayTree() {
+	}
     
-    public SimpleIntGSArrayTree(AtomicInteger idGenerator) {
-		this.idGenerator = idGenerator;
+    public SimpleIntGSArrayTree(IntGSArrayTreeNode startNode) {
+		this.startNode = startNode;
 	}
 
     // for testing purposes
-    public int addSequence(int[] is) {
+    public int addSequence(AtomicInteger idGenerator, int[] is) {
 		SingleLinkedIntArrayQueue queue = new SingleLinkedIntArrayQueue(50);
 		for (int i : is) {
 			queue.addNoAutoBoxing(i);
 		}
-		return addSequence(queue);
+		return addSequence(idGenerator, queue);
 	}
     
-    public int addSequence(SingleLinkedIntArrayQueue sequence) {
+    public int addSequence(AtomicInteger idGenerator, SingleLinkedIntArrayQueue sequence) {
         if (sequence == null) {
             return BAD_INDEX;
         }
 
-        return addSequence(sequence.iterator2(), sequence.size());
+        return addSequence(idGenerator, sequence.iterator2(), sequence.size());
     }
 
-    private int addSequence(MyIterator unprocessedIterator, int length) {
-        return addNewNodeOrGetID(unprocessedIterator, length);
+    private int addSequence(AtomicInteger idGenerator, MyIterator unprocessedIterator, int length) {
+        return addNewNodeOrGetID(idGenerator, unprocessedIterator, length);
     }
 
-    private int addNewNodeOrGetID(MyIterator unprocessedIterator, int length) {
+    private int addNewNodeOrGetID(AtomicInteger idGenerator, MyIterator unprocessedIterator, int length) {
 		if (startNode == null) {
 			startNode = new IntGSArrayTreeNode();
 		}
-		return startNode.addSequence(this, unprocessedIterator, length);
+		return startNode.addSequence(idGenerator, unprocessedIterator, length);
 	}
 
 	
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("GS Tree: ").append(endNodeCount).append(" sequences");
+        sb.append("GS Tree: ").append(getNumberOfSequences()).append(" sequences");
         sb.append(System.lineSeparator());
         // iterate over the tree structure
         collectAllSuffixes("", startNode, sb);
         return sb.toString();
     }
+    
+    @Override
+	public Iterator<Pair<Integer, int[]>> iterator() {
+		// iterates over all valid sequences in the tree
+		return new TreeIterator();
+	}
+    
+    private class TreeIterator implements Iterator<Pair<Integer,int[]>> {
+    	
+    	// depth-first iteration
+    	Stack<Pair<int[], IntGSArrayTreeNode>> openNodes;
+    	// next element
+    	Pair<Integer,int[]> next = null;
+    	
+    	public TreeIterator() {
+    		openNodes = new Stack<Pair<int[],IntGSArrayTreeNode>>();
+    		openNodes.push(new Pair<int[], SimpleIntGSArrayTree.IntGSArrayTreeNode>(new int[0], startNode));
+		}
 
+		@Override
+		public boolean hasNext() {
+			if (next == null) {
+				next = getNextSequence(openNodes);
+			}
+			if (next == null) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		@Override
+		public Pair<Integer, int[]> next() {
+			Pair<Integer,int[]> temp = next;
+			next = null;
+			return temp;
+		}
+		
+		private Pair<Integer, int[]> getNextSequence(Stack<Pair<int[], IntGSArrayTreeNode>> openNodes) {
+			while (!openNodes.isEmpty()) {
+				// get the next node from the stack
+				Pair<int[], IntGSArrayTreeNode> node = openNodes.pop();
+				// append this node's sequence to the previous sequence (make a copy)
+				int[] previousSequence = node.first();
+				int[] nodeSequence = node.second().getSequence();
+				int[] currentSequence = new int[previousSequence.length + nodeSequence.length];
+				System.arraycopy(previousSequence, 0, currentSequence, 0, previousSequence.length);
+				System.arraycopy(nodeSequence, 0, currentSequence, previousSequence.length, nodeSequence.length);
+
+				// push edges onto the stack
+				for (IntGSArrayTreeNode edge : node.second().getEdges()) {
+					openNodes.push(new Pair<>(currentSequence, edge));
+				}
+
+				if (node.second().index != BAD_INDEX) {
+					return new Pair<Integer, int[]>(node.second().index, currentSequence);
+				}
+			}
+
+			// no valid sequences found in stack
+			return null;
+	    }
+	};
+	
+    
     private void collectAllSuffixes(String sequence, IntGSArrayTreeNode node, StringBuilder sb) {
         sequence += ">";
         StringBuilder sequenceBuilder = new StringBuilder(sequence);
@@ -85,10 +304,27 @@ public class SimpleIntGSArrayTree {
             collectAllSuffixes(sequence, edge, sb);
         }
     }
+    
+    private int countAllSuffixes(IntGSArrayTreeNode node) {
+    	int validNodes = 0;
+    	if (node.index != BAD_INDEX) {
+            ++validNodes;
+        }
+        
+        
+        for (IntGSArrayTreeNode edge : node.getEdges()) {
+        	validNodes += countAllSuffixes(edge);
+        }
+        return validNodes;
+    }
+    
+    public IntGSArrayTreeNode getStartNode() {
+    	return startNode;
+	}
 
 
-    public int getNumberOfDifferentBranches() {
-        return endNodeCount;
+    public int getNumberOfSequences() {
+        return countAllSuffixes(startNode);
     }
     
     public static class IntGSArrayTreeNode {
@@ -100,11 +336,18 @@ public class SimpleIntGSArrayTree {
         public IntGSArrayTreeNode() {
         }
 
-        private IntGSArrayTreeNode(int[] sequence, List<IntGSArrayTreeNode> edges, int index) {
+        public IntGSArrayTreeNode(int[] sequence, List<IntGSArrayTreeNode> edges, int index) {
 			this.sequence = sequence;
 			this.edges = edges;
+			if (edges != null && edges.isEmpty()) {
+				this.edges = null;
+			}
 			this.index = index;
 		}
+        
+        public int getIndex() {
+        	return index;
+        }
 
 		public int[] getSequence() {
             return sequence;
@@ -114,7 +357,7 @@ public class SimpleIntGSArrayTree {
             return edges == null ? Collections.emptyList() : edges;
         }
 
-        public int addSequence(SimpleIntGSArrayTree tree, MyIterator unprocessedIterator, int length) {
+        public int addSequence(AtomicInteger idGenerator, MyIterator unprocessedIterator, int length) {
         	if (this.sequence == null) {
         		// fresh node!
         		// set the sequence and add an ending edge
@@ -123,7 +366,7 @@ public class SimpleIntGSArrayTree {
                 	sequence[j] = unprocessedIterator.nextNoAutoBoxing();
                 }
 //                this.edges = new ArrayList<>(1);
-                return addNewEndNode(tree);
+                return addNewEndNode(idGenerator);
         	} else {
         		// check how much of this node's sequence is identical to the sequence to add;
         		
@@ -146,7 +389,7 @@ public class SimpleIntGSArrayTree {
 
         					// add a branch for the new, diverging sequence
         					//    					int[] remainingSequenceToAdd = Arrays.copyOfRange(sequenceToAdd, posIndex, endIndex);
-        					return addNewBranch(tree, unprocessedIterator, length - i);
+        					return addNewBranch(idGenerator, unprocessedIterator, length - i);
         				}
         			} else {
         				// sequence to add is smaller than existing sequence
@@ -154,7 +397,7 @@ public class SimpleIntGSArrayTree {
         				splitSequenceAtIndex(i);
 
         				// add a branch for the new, diverging sequence (sequence ending, in this case)
-        				return addNewEndNode(tree);
+        				return addNewEndNode(idGenerator);
         			}
         		}
 
@@ -170,17 +413,17 @@ public class SimpleIntGSArrayTree {
         			for (IntGSArrayTreeNode edge : this.getEdges()) {
         				if (edge.getFirstElement() == nextAddedElement) {
         					// follow the branch and add the remaining sequence
-        					return edge.addSequence(tree, unprocessedIterator, length - i);
+        					return edge.addSequence(idGenerator, unprocessedIterator, length - i);
         				}
         			}
         			// no branch with the next element exists, so simply add a new branch with the remaining sequence
-        			return addNewBranch(tree, unprocessedIterator, length - i);
+        			return addNewBranch(idGenerator, unprocessedIterator, length - i);
         		} else {
         			// if we get to this point, both sequences are identical up to the end
 
         			// we still need to check if there already exists an ending edge, in this case
         			if (this.index == BAD_INDEX) {
-        				return addNewEndNode(tree);
+        				return addNewEndNode(idGenerator);
         			} else {
 						return this.index;
 					}
@@ -189,19 +432,21 @@ public class SimpleIntGSArrayTree {
         	}
         }
 
-		private int addNewBranch(SimpleIntGSArrayTree tree, MyIterator unprocessedIterator, int length) {
+		private int addNewBranch(AtomicInteger idGenerator, MyIterator unprocessedIterator, int length) {
 			IntGSArrayTreeNode node = new IntGSArrayTreeNode();
 			if (this.edges == null) {
 				this.edges  = new ArrayList<>(1);
 			}
 			this.edges.add(node);
-			return node.addSequence(tree, unprocessedIterator, length);
+			return node.addSequence(idGenerator, unprocessedIterator, length);
 		}
 
-		public int addNewEndNode(SimpleIntGSArrayTree tree) {
-			this.index = tree.idGenerator.incrementAndGet();
+		private int addNewEndNode(AtomicInteger idGenerator) {
+			if (idGenerator == null) {
+				throw new IllegalStateException("No ID generator available! Can not add new node.");
+			}
+			this.index = idGenerator.getAndIncrement();
 //			edges.add(new IntGSArrayTreeEndNode(id));
-			++tree.endNodeCount;
 			return index;
 		}
 
@@ -237,5 +482,6 @@ public class SimpleIntGSArrayTree {
         }
         
     }
+
     
 }

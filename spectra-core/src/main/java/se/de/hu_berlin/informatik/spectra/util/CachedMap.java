@@ -17,7 +17,7 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     private Set<Integer> keys = new HashSet<>();
     private Map<Integer, T> cache = new HashMap<>();
     private Queue<Integer> cacheOrder = new LinkedList<>();
-    private final int cacheSize;
+    private int cacheSize;
 
     private int size = 0;
     private final ZipFileWrapper zipFile;
@@ -41,6 +41,13 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
                 }
             });
         }
+    }
+    
+    public void setCacheSize(int size) {
+    	this.cacheSize = size;
+    	while (cache.size() > cacheSize) {
+    		cache.remove(cacheOrder.remove());
+    	}
     }
 
     private void tryToLoadMapContents() {
@@ -193,6 +200,9 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
             --size;
             // remove the key
             keys.remove(key);
+            // remove from cache
+            cache.remove(key);
+            cacheOrder.remove(key);
             // remove from zip file (rewrites the zip file...)
             zipFile.removeEntries(Collections.singletonList(getFileName((Integer) key)));
         }
