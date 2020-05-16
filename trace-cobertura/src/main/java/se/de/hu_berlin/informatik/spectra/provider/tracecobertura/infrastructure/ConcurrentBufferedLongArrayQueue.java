@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 import java.io.File;
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
  */
+@CoverageIgnore
 public class ConcurrentBufferedLongArrayQueue extends BufferedLongArrayQueue implements Serializable {
 
 

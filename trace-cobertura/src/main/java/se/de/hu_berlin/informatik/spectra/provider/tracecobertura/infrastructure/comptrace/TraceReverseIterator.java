@@ -1,7 +1,9 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
+@CoverageIgnore
 public class TraceReverseIterator<T> implements ReplaceableCloneableIterator<T> {
 
     private final CompressedTrace<T, ?> trace;

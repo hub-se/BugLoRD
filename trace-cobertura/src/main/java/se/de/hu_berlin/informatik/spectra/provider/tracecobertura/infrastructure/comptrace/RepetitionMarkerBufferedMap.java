@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
 
+@CoverageIgnore
 public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 
     /**

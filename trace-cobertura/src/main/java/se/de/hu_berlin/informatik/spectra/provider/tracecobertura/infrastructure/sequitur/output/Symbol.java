@@ -28,7 +28,10 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Queue;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
 // package-private
+@CoverageIgnore
 abstract class Symbol implements Cloneable {
 
     protected static final int NULL_VALUE = -1;

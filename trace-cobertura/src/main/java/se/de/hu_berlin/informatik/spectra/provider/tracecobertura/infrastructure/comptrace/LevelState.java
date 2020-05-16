@@ -1,5 +1,8 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
+@CoverageIgnore
 public class LevelState {
 
 //	public long index = 0;

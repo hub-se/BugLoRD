@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs.ReplaceableCloneableIterator;
 
 import java.io.*;
@@ -11,6 +12,7 @@ import java.util.*;
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
  */
+@CoverageIgnore
 public class BufferedLongArrayQueue implements Serializable {
 
     /**

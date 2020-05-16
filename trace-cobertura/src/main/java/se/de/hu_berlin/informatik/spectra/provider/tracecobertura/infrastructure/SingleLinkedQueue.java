@@ -2,11 +2,14 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import java.util.*;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
 /**
  * Simple single linked queue implementation.
  *
  * @param <E> the type of elements held in the queue
  */
+@CoverageIgnore
 public class SingleLinkedQueue<E> extends AbstractQueue<E> implements Queue<E> {
 
     private int size = 0;

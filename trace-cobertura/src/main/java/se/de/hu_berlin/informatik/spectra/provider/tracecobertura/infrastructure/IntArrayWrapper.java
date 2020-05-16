@@ -3,6 +3,9 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 import java.util.Arrays;
 import java.util.Objects;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
+@CoverageIgnore
 public class IntArrayWrapper {
 
     private final int[] array;

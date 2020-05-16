@@ -1,5 +1,8 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
+@CoverageIgnore
 public class ArrayIterator<T> implements CloneableIterator<T> {
 
     private final T[] array;

@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.IntArrayWrapper;
 
@@ -13,6 +14,7 @@ import java.util.Queue;
  * An execution trace consists structurally of a list of executed nodes
  * and a list of tuples that mark repeated sequences in the trace.
  */
+@CoverageIgnore
 public class CompressedIntArrayTrace extends CompressedTrace<int[], IntArrayWrapper> implements Serializable, Iterable<int[]> {
 
     /**

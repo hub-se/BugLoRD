@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 
@@ -14,6 +15,7 @@ import java.util.Map.Entry;
  * @param <T> type of elements in the trace
  * @param <K> type of a representation for storing elements in a map
  */
+@CoverageIgnore
 public abstract class CompressedTrace<T, K> extends RepetitionMarkerBase implements Serializable {
 
     /**

@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import de.hammacher.util.Pair;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 
 /**
@@ -13,6 +14,7 @@ import de.hammacher.util.Pair;
  *
  * @param <E> the type of elements held in the map(s)
  */
+@CoverageIgnore
 public class BufferedMap<E> implements Map<Integer, E>, Serializable {
 
     /**

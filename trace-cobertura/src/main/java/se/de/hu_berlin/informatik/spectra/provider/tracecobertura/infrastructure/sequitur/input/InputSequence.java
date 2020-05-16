@@ -26,11 +26,13 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import de.hammacher.util.LongHolder;
 import gnu.trove.map.TObjectLongMap;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.*;
 
+@CoverageIgnore
 public class InputSequence {
 
     public static class TraceIterator {

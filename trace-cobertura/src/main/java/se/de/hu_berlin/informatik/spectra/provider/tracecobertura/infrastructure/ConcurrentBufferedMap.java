@@ -7,6 +7,9 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
+@CoverageIgnore
 public class ConcurrentBufferedMap<E> extends BufferedMap<E> {
 
     /**

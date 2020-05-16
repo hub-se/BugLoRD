@@ -24,7 +24,10 @@
  */
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
 // package-private
+@CoverageIgnore
 abstract class Symbol {
 
     protected final int count;

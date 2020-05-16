@@ -6,9 +6,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
  */
+@CoverageIgnore
 public class SingleLinkedIntArrayQueue extends AbstractQueue<Integer> implements Serializable {
 
     /**

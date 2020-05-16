@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Set;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
+@CoverageIgnore
 public class OutputSequence {
 
     private final Grammar grammar;

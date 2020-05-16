@@ -30,6 +30,7 @@ import de.hammacher.util.streams.MyByteArrayInputStream;
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TObjectLongMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // package-private
+@CoverageIgnore
 class Rule {
 
     protected final Symbol[] symbols;

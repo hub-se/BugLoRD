@@ -1,7 +1,9 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.integer.EfficientCompressedIntegerTrace;
 
+@CoverageIgnore
 public class CoberturaStatementEncoding {
 
     private static final long UPPER_BITMASK = 0xFFFFFFFF00000000L;

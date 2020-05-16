@@ -1,8 +1,10 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.LevelState;
 
+@CoverageIgnore
 public class TraceReverseIterator implements ReplaceableCloneableIterator {
 
     private final EfficientCompressedLongTrace trace;

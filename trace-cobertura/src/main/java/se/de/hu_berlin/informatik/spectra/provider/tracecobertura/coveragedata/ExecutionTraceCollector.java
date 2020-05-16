@@ -62,7 +62,7 @@ public class ExecutionTraceCollector {
         try {
             processAllRemainingSubTraces();
             StringBuilder sb = new StringBuilder();
-            sb.append(String.format("%n#statements: %,d%n", counter));
+//            sb.append(String.format("%n#statements: %,d%n", counter));
             Map<Long, byte[]> traces = new HashMap<>();
             for (Entry<Long, OutputSequence> entry : executionTraces.entrySet()) {
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -76,7 +76,9 @@ public class ExecutionTraceCollector {
                 sb.append(String.format(" %,d -> %,d (%.2f%%)%n", entry.getValue().getLength(), bytes.length / 4, -100.00 + 100.0 * (double) (bytes.length / 4) / (double) entry.getValue().getLength()));
             }
             counter = 0;
-            System.out.print(sb.toString());
+            if (sb.length() != 0) {
+            	System.out.print(sb.toString());
+            }
             return traces;
         } catch (IOException e) {
             e.printStackTrace();

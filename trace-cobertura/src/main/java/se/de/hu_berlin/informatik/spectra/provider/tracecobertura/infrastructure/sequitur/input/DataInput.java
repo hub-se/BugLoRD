@@ -28,7 +28,10 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
 // package-private
+@CoverageIgnore
 class DataInput {
 
     private static final byte MAGIC_1BYTE = (byte) 255;

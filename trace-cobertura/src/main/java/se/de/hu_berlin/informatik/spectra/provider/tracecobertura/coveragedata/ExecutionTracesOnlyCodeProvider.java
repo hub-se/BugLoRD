@@ -1,12 +1,14 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import org.objectweb.asm.*;
+
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
 
 import java.util.Set;
 
-
+@CoverageIgnore
 public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
         implements
         CodeProvider {
@@ -74,11 +76,13 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
 //		nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 //				.getInternalName(ExecutionTraceCollector.class), "processLastSubTrace",
 //				"()V");
-        // load the current thread's trace
-        nextMethodVisitor.visitVarInsn(Opcodes.ALOAD, threadIdVariableIndex);
-        nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-                        .getInternalName(ExecutionTraceCollector.class), "startNewSubTrace",
-                "(L" + Type.getInternalName(OutputSequence.class) + ";)V");
+    	if (collectExecutionTrace) {
+    		// load the current thread's trace
+    		nextMethodVisitor.visitVarInsn(Opcodes.ALOAD, threadIdVariableIndex);
+    		nextMethodVisitor.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+    				.getInternalName(ExecutionTraceCollector.class), "startNewSubTrace",
+    				"(L" + Type.getInternalName(OutputSequence.class) + ";)V");
+    	}
     }
 
     @SuppressWarnings("deprecation")
@@ -87,11 +91,12 @@ public class ExecutionTracesOnlyCodeProvider extends AbstractCodeProvider
             MethodVisitor mv, int threadIdVariableIndex) {
         // should request the current thread's id like this:
 //		long threadId = Thread.currentThread().getId();
-
-        mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type
-                        .getInternalName(ExecutionTraceCollector.class),
-                "getOutputSequence", "()L" + Type.getInternalName(OutputSequence.class) + ";");
-        mv.visitVarInsn(Opcodes.ASTORE, threadIdVariableIndex);
+    	if (collectExecutionTrace) {
+    		mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type
+    				.getInternalName(ExecutionTraceCollector.class),
+    				"getOutputSequence", "()L" + Type.getInternalName(OutputSequence.class) + ";");
+    		mv.visitVarInsn(Opcodes.ASTORE, threadIdVariableIndex);
+    	}
     }
 
 

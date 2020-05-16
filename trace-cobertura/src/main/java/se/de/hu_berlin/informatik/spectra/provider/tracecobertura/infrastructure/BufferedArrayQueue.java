@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.Function;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.ReplaceableCloneableIterator;
 
 import java.io.*;
@@ -11,6 +12,7 @@ import java.util.*;
  *
  * @param <E> the type of elements held in the queue
  */
+@CoverageIgnore
 public class BufferedArrayQueue<E> extends AbstractQueue<E> implements Serializable {
 
 

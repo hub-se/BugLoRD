@@ -24,6 +24,7 @@
  */
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.Rule.Dummy;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ import java.io.ObjectOutputStream;
 import java.util.Queue;
 
 // package-private
+@CoverageIgnore
 class Terminal extends Symbol {
 
     protected final int value;

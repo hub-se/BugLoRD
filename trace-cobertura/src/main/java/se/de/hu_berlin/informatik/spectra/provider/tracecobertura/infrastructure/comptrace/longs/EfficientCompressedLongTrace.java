@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.longs;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedLongArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace.RepetitionMarkerBase;
@@ -15,6 +16,7 @@ import java.util.Map.Entry;
  * An execution trace consists structurally of a list of executed nodes
  * and a list of tuples that mark repeated sequences in the trace.
  */
+@CoverageIgnore
 public class EfficientCompressedLongTrace extends RepetitionMarkerBase implements Serializable {
 
 

@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.comptrace;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
 
 import java.io.File;
@@ -9,6 +10,7 @@ import java.util.Queue;
 /**
  * Stores/handles repetition markers for compressed traces.
  */
+@CoverageIgnore
 public abstract class RepetitionMarkerBase implements Serializable {
 
     /**

@@ -16,6 +16,7 @@ import se.de.hu_berlin.informatik.utils.statistics.Statistics;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Runs a single test inside a new JVM and generates statistics. A timeout may
@@ -50,6 +51,8 @@ public abstract class AbstractRunTestInNewJVMModuleWithServer<T extends Serializ
         }
         
         String[] jvmArgs = Misc.joinArrays(customJvmArgs, properties);
+        
+        //Log.out(this, Arrays.toString(jvmArgs));
         
         this.executeModule = new ExecuteMainClassInNewJVM(
                 javaHome,

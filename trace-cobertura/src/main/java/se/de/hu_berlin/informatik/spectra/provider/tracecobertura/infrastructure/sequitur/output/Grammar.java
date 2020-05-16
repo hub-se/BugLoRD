@@ -25,6 +25,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output;
 
 import de.hammacher.util.LongArrayList;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.Rule.Dummy;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 // package-private
+@CoverageIgnore
 class Grammar {
 
     static final int prime = 2265539;

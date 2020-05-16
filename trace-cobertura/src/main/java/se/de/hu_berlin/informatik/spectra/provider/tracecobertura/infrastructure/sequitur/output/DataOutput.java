@@ -27,7 +27,10 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 import java.io.IOException;
 import java.io.OutputStream;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+
 // package-private
+@CoverageIgnore
 class DataOutput {
 
     private static final byte MAGIC_1BYTE = (byte) 255;

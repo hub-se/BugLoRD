@@ -26,12 +26,14 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import de.hammacher.util.ArrayQueue;
 import de.hammacher.util.Pair;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.*;
 
 // package-private
+@CoverageIgnore
 class Rule {
 
     protected static class Dummy extends Symbol {

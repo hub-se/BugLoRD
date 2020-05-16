@@ -25,6 +25,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input;
 
 import de.hammacher.util.LongArrayList;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -32,6 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 // package-private
+@CoverageIgnore
 class Grammar {
 
     private final LongArrayList<Rule> rules;

@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.SharedInputGrammar;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
@@ -7,6 +8,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 
 import java.io.*;
 
+@CoverageIgnore
 public class SequiturUtils {
 
     public static InputSequence getInputSequenceFromByteArray(byte[] bytes,
