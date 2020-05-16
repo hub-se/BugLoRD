@@ -15,6 +15,7 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.report.CoberturaReportWrapper;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -58,8 +59,9 @@ public class CoberturaSpectraGenerationFactory
 
     @Override
     public String[] getPropertiesForMainTestRunner(Path projectDir, boolean useSeparateJVM) {
-        return new String[]{"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath(),
-        		NUMA, GC, INITIAL_HEAP, MAX_HEAP};
+    	return Misc.joinArrays(
+        		new String[]{"-Dnet.sourceforge.cobertura.datafile=" + coberturaDataFile.getAbsolutePath()}, 
+        		getJVMConfigArguments());
     }
 
     @Override
@@ -93,7 +95,8 @@ public class CoberturaSpectraGenerationFactory
                 Objects.requireNonNull(testrunnerJar).getAbsolutePath(),
                 options.hasOption(CmdOptions.SEPARATE_JVM), options.hasOption(CmdOptions.JAVA7),
                 options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0),
-                options.getOptionValues(CmdOptions.FAILING_TESTS), statisticsContainer, testAndInstrumentClassLoader);
+                options.getOptionValues(CmdOptions.FAILING_TESTS), statisticsContainer, testAndInstrumentClassLoader,
+                getSmallJVMConfigArguments());
     }
 
     @Override

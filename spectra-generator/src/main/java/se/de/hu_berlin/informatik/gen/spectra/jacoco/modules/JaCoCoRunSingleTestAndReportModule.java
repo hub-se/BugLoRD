@@ -10,7 +10,6 @@ import org.jacoco.core.analysis.IBundleCoverage;
 import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.data.ExecutionDataStore;
 
-import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.JaCoCoSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoRunTestInNewJVMModule;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoRunTestInNewJVMModuleWithJava7Runner;
@@ -65,9 +64,10 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
     public JaCoCoRunSingleTestAndReportModule(final Path dataFile, final String testOutput, File projectDir, final String srcDir, String[] originalClasses, int port,
                                               final boolean debugOutput, Long timeout, final int repeatCount, String instrumentedClassPath,
                                               final String javaHome, final String java7RunnerJar, boolean useSeparateJVMalways, boolean alwaysUseJava7, int maxErrors, String[] failingtests,
-                                              final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
+                                              final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl,
+                                              String[] customJvmArgs) {
         super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7,
-                maxErrors, failingtests, statisticsContainer, cl);
+                maxErrors, failingtests, statisticsContainer, cl, customJvmArgs);
         this.dataFile = dataFile;
         this.testOutput = testOutput;
         this.projectDir = projectDir;
@@ -143,9 +143,33 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
 
     @Override
     public AbstractRunTestInNewJVMModule<SerializableExecFileLoader> newTestRunInNewJVMModule() {
+    	int freePort = SimpleServerFramework.getFreePort(port + 1);
+
+    	String[] properties;
+        if (JaCoCoSpectraGenerationFactory.OFFLINE_INSTRUMENTATION) {
+            properties = new String[] {
+                    "-Djacoco-agent.dumponexit=false",
+                    "-Djacoco-agent.output=tcpserver",
+                    "-Djacoco-agent.excludes=*",
+                    "-Djacoco-agent.port=" + freePort};
+        } else {
+            File jacocoAgentJar = null;
+            try {
+                jacocoAgentJar = AgentJar.extractToTempLocation();
+            } catch (IOException e) {
+                Log.abort(JaCoCoSpectraGenerator.class, e, "Could not create JaCoCo agent jar file.");
+            }
+
+            properties = new String[] {"-javaagent:" + Objects.requireNonNull(jacocoAgentJar).getAbsolutePath()
+                            + "=dumponexit=false,"
+                            + "output=tcpserver,"
+                            + "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
+                            + "port=" + freePort};
+        }
+        
         return new JaCoCoRunTestInNewJVMModule(testOutput, debugOutput, timeout, repeatCount,
                 instrumentedClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(),
-                javaHome, projectDir, port + 1);
+                null, projectDir, freePort, getCustomSmallJvmArgs(), properties);
     }
 
     @Override
@@ -157,7 +181,6 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
         String[] properties;
         if (JaCoCoSpectraGenerationFactory.OFFLINE_INSTRUMENTATION) {
             properties = Misc.createArrayFromItems(
-                    AbstractSpectraGenerationFactory.MAX_HEAP_SMALL, AbstractSpectraGenerationFactory.INITIAL_HEAP_SMALL,
                     "-Djacoco-agent.dumponexit=true",
                     "-Djacoco-agent.output=file",
                     "-Djacoco-agent.destfile=" + dataFile.toAbsolutePath().toString(),
@@ -174,8 +197,7 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
             testClassPath += Objects.requireNonNull(jacocoAgentJar).getAbsolutePath() + File.pathSeparator;
 
             properties = Misc.createArrayFromItems(
-            		AbstractSpectraGenerationFactory.MAX_HEAP_SMALL, AbstractSpectraGenerationFactory.INITIAL_HEAP_SMALL,
-                    "-javaagent:" + jacocoAgentJar.getAbsolutePath()
+            		"-javaagent:" + jacocoAgentJar.getAbsolutePath()
                             + "=dumponexit=true,"
                             + "output=file,"
                             + "destfile=" + dataFile.toAbsolutePath().toString() + ","
@@ -194,7 +216,7 @@ public class JaCoCoRunSingleTestAndReportModule extends AbstractRunSingleTestAnd
         return new JaCoCoRunTestInNewJVMModuleWithJava7Runner(testOutput,
                 debugOutput, timeout, repeatCount, testClassPath,
                 // + File.pathSeparator + systemClasspath.getClasspath(), 
-                dataFile, javaHome, projectDir, (String[]) properties);
+                dataFile, javaHome, projectDir, getCustomSmallJvmArgs(), properties);
     }
 
     @Override

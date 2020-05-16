@@ -2,6 +2,7 @@ package se.de.hu_berlin.informatik.gen.spectra;
 
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunSingleTestAndReportModule;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -9,6 +10,7 @@ import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
 
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 /**
  * A factory that has to provide methods for providing necessary functionality
@@ -21,17 +23,55 @@ import java.nio.file.Path;
  */
 public abstract class AbstractSpectraGenerationFactory<T extends Serializable, R, S> {
 
-    public static final String MAX_HEAP = "-Xmx4g";
+    public static final String MAX_HEAP = "-Xmx6g";
     public static final String INITIAL_HEAP = ""; //"-Xms1g";
     public static final String GC = "-XX:+UseG1GC"; //"-XX:+UseParallelGC";
     public static final String MAX_DIRECT_MEMORY = ""; //"-XX:MaxDirectMemorySize=512m";
     public static final String NUMA = ""; //"-XX:+UseNUMA";
     
-    public static final String MAX_HEAP_SMALL = "-Xmx1g";
+    public static final String MAX_HEAP_SMALL = "-Xmx2g";
     public static final String INITIAL_HEAP_SMALL = ""; //"-Xms1g";
     public static final String GC_SMALL = "-XX:+UseG1GC"; //"-XX:+UseParallelGC";
     public static final String MAX_DIRECT_MEMORY_SMALL = ""; //"-XX:MaxDirectMemorySize=512m";
     public static final String NUMA_SMALL = ""; //"-XX:+UseNUMA";
+    
+    private static String[] getDefaultJVMConfigArguments() {
+    	return new String[] {INITIAL_HEAP, MAX_HEAP, GC, MAX_DIRECT_MEMORY, NUMA};  
+    }
+    
+    private static String[] getDefaultSmallJVMConfigArguments() {
+    	return new String[] {INITIAL_HEAP_SMALL, MAX_HEAP_SMALL, GC_SMALL, MAX_DIRECT_MEMORY_SMALL, NUMA_SMALL};  
+    }
+
+	private String[] customSmallJvmArgs;
+    
+    public void setCustomSmallJvmArgs(String[] customJvmArgs) {
+		this.customSmallJvmArgs = customJvmArgs;
+	}
+	
+	private String[] customJvmArgs;
+    
+    public void setCustomJvmArgs(String[] customJvmArgs) {
+		this.customJvmArgs = customJvmArgs;
+	}
+	
+	public String[] getJVMConfigArguments() {
+    	String[] args = customJvmArgs == null ? getDefaultJVMConfigArguments() : customJvmArgs;
+    	Log.out(this, "Main JVM arguments: " + Arrays.toString(args));
+		return args;
+    }
+	
+	public String[] getSmallJVMConfigArguments() {
+    	String[] args = customSmallJvmArgs == null ? getDefaultSmallJVMConfigArguments() : customSmallJvmArgs;
+    	Log.out(this, "Test Runner JVM arguments: " + Arrays.toString(args));
+		return args;
+    }
+
+//	private static void addArg(StringBuilder sb, String arg) {
+//		if (!arg.isEmpty()) {
+//    		sb.append(arg).append(" ");
+//    	}
+//	}
 
     /**
      * Defines which tool (or modified tool...) to use.

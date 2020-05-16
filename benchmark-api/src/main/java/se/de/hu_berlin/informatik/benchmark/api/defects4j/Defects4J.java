@@ -37,7 +37,11 @@ public final class Defects4J extends Defects4JBase {
                 "set the path to the archive of spectra directory, if it exists"),
         CHANGES_ARCHIVE_DIR("changesArchive_dir", "/path/to/../changesArchive",
                 "set the path to the archive of changes directory, if it exists"),
-        D4J_DIR("defects4j_dir", "/path/to/../defects4j/framework/bin", "path to the defects4j framework");
+        D4J_DIR("defects4j_dir", "/path/to/../defects4j/framework/bin", "path to the defects4j framework"),
+        MAIN_JVM_ARGS("jvm_args", "-Xmx6g -XX:+UseG1GC",
+                "JVM arguments used for generating program spectra"),
+        SMALL_JVM_ARGS("small_jvm_args", "-Xmx2g -XX:+UseG1GC",
+                "JVM arguments used for separately started JVMs used for running tests when generating program spectra");
 
         final private String[] descriptionLines;
         final private String identifier;

@@ -28,9 +28,10 @@ public class JaCoCoRunTestInNewJVMModuleWithJava7Runner extends AbstractRunTestI
 
     public JaCoCoRunTestInNewJVMModuleWithJava7Runner(final String testOutput,
                                                       final boolean debugOutput, final Long timeout, final int repeatCount,
-                                                      String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir, String... properties) {
+                                                      String instrumentedClassPath, final Path dataFile, final String javaHome, 
+                                                      File projectDir, String[] customJvmArgs, String... properties) {
         super(testOutput, debugOutput, timeout, repeatCount, instrumentedClassPath,
-                dataFile, javaHome, projectDir, (String[]) properties);
+                dataFile, javaHome, projectDir, customJvmArgs, properties);
         this.dataFile = dataFile.toFile();
     }
 

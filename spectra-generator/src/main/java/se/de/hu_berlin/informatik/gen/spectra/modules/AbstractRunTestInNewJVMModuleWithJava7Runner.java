@@ -7,6 +7,7 @@ import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.java7.testrunner.UnitTestRunnerNoServer;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
 
@@ -35,15 +36,17 @@ public abstract class AbstractRunTestInNewJVMModuleWithJava7Runner<T extends Ser
     public AbstractRunTestInNewJVMModuleWithJava7Runner(final String testOutput,
                                                         final boolean debugOutput, final Long timeout, final int repeatCount,
                                                         String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir,
-                                                        String... properties) {
+                                                        String[] customJvmArgs, String... properties) {
         super(testOutput);
 
+        String[] jvmArgs = Misc.joinArrays(customJvmArgs, properties);
+        
         this.executeModule = new ExecuteMainClassInNewJVM(
                 javaHome,
                 UnitTestRunnerNoServer.class,
                 instrumentedClassPath,
                 projectDir,
-                (String[]) properties)
+                jvmArgs)
                 .setEnvVariable("LC_ALL", "en_US.UTF-8")
                 .setEnvVariable("TZ", "America/Los_Angeles");
 

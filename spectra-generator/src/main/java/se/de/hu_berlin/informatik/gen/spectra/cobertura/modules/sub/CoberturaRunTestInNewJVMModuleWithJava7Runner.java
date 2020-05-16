@@ -3,7 +3,6 @@
  */
 package se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub;
 
-import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithJava7RunnerAndServer;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.ProjectData;
 
@@ -24,11 +23,10 @@ public class CoberturaRunTestInNewJVMModuleWithJava7Runner extends AbstractRunTe
 
     public CoberturaRunTestInNewJVMModuleWithJava7Runner(final String testOutput,
                                                          final boolean debugOutput, final Long timeout, final int repeatCount,
-                                                         String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir) {
+                                                         String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir,
+                                                         String[] customJvmArgs, String... properties) {
         super(testOutput, debugOutput, timeout, repeatCount, instrumentedClassPath,
-                dataFile, javaHome, projectDir, AbstractSpectraGenerationFactory.GC_SMALL,
-                AbstractSpectraGenerationFactory.INITIAL_HEAP_SMALL, AbstractSpectraGenerationFactory.MAX_HEAP_SMALL,
-                "-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString());
+                dataFile, javaHome, projectDir, customJvmArgs, properties);
     }
 
     @Override

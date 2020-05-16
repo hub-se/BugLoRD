@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.provider.jacoco.report.JaCoCoReportWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
@@ -85,7 +86,7 @@ public class JaCoCoSpectraGenerationFactory extends
         }
         String[] properties;
         if (useSeparateJVM) {
-            properties = new String[]{NUMA, GC, INITIAL_HEAP, MAX_HEAP};
+            properties = getJVMConfigArguments();
         } else {
             // get a port that is not yet used...
             port = getFreePort(port);
@@ -95,15 +96,14 @@ public class JaCoCoSpectraGenerationFactory extends
             Log.out(JaCoCoSpectraGenerator.class, "Using port %d.", port);
 
             if (OFFLINE_INSTRUMENTATION) {
-                properties = new String[]{"-Djacoco-agent.dumponexit=false", "-Djacoco-agent.output=tcpserver",
-                        "-Djacoco-agent.excludes=*", "-Djacoco-agent.port=" + port, NUMA,
-                        GC, INITIAL_HEAP, MAX_HEAP};
+            	properties = new String[]{"-Djacoco-agent.dumponexit=false", "-Djacoco-agent.output=tcpserver",
+                                "-Djacoco-agent.excludes=*", "-Djacoco-agent.port=" + port};
             } else {
-                properties = new String[]{
-                        "-javaagent:" + jacocoAgentJar.getAbsolutePath() + "=dumponexit=false," + "output=tcpserver,"
-                                + "excludes=se.de.hu_berlin.informatik.*:org.junit.*," + "port=" + port,
-                                NUMA, GC, INITIAL_HEAP, MAX_HEAP};
+                properties = new String[]{"-javaagent:" + jacocoAgentJar.getAbsolutePath() + "=dumponexit=false," + "output=tcpserver,"
+                                + "excludes=se.de.hu_berlin.informatik.*:org.junit.*," + "port=" + port};
             }
+            
+            properties = Misc.joinArrays(properties, getJVMConfigArguments());
         }
         return properties;
     }
@@ -152,7 +152,8 @@ public class JaCoCoSpectraGenerationFactory extends
                 Objects.requireNonNull(testrunnerJar).getAbsolutePath(),
                 options.hasOption(CmdOptions.SEPARATE_JVM), options.hasOption(CmdOptions.JAVA7),
                 options.getOptionValueAsInt(CmdOptions.MAX_ERRORS, 0),
-                options.getOptionValues(CmdOptions.FAILING_TESTS), statisticsContainer, testAndInstrumentClassLoader);
+                options.getOptionValues(CmdOptions.FAILING_TESTS), statisticsContainer, testAndInstrumentClassLoader,
+                getSmallJVMConfigArguments());
     }
 
     @Override

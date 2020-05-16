@@ -1,7 +1,7 @@
 package se.de.hu_berlin.informatik.gen.spectra.cobertura.modules.sub;
 
 import org.apache.commons.cli.Option;
-import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
+
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoRunTestInNewJVMModule.TestRunner.CmdOptions;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithServer;
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
@@ -14,8 +14,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
-import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
-
 import java.io.File;
 import java.nio.file.Path;
 
@@ -31,27 +29,14 @@ import java.nio.file.Path;
  */
 public class CoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWithServer<ProjectData> {
 
-    final private ExecuteMainClassInNewJVM executeModule;
     final private String[] args;
 
     public CoberturaRunTestInNewJVMModule(final String testOutput,
                                           final boolean debugOutput, final Long timeout, final int repeatCount,
-                                          String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir) {
-        super(testOutput);
+                                          String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir,
+                                          String[] customJvmArgs, String... properties) {
+        super(TestRunner.class, testOutput, instrumentedClassPath, javaHome, projectDir, customJvmArgs, properties);
         dataFile.toFile();
-
-        this.executeModule = new ExecuteMainClassInNewJVM(
-                //javaHome,
-                null,
-                TestRunner.class,
-                instrumentedClassPath,
-                projectDir,
-                AbstractSpectraGenerationFactory.GC_SMALL,
-                AbstractSpectraGenerationFactory.INITIAL_HEAP_SMALL,
-                AbstractSpectraGenerationFactory.MAX_HEAP_SMALL,
-                "-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString())
-                .setEnvVariable("LC_ALL", "en_US.UTF-8")
-                .setEnvVariable("TZ", "America/Los_Angeles");
 
         int arrayLength = 8;
         if (timeout != null) {
@@ -97,10 +82,7 @@ public class CoberturaRunTestInNewJVMModule extends AbstractRunTestInNewJVMModul
         return args;
     }
 
-    @Override
-    public ExecuteMainClassInNewJVM getMain() {
-        return executeModule;
-    }
+    
 
     public final static class TestRunner {
 

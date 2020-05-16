@@ -9,9 +9,12 @@ import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
+import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
 import se.de.hu_berlin.informatik.utils.statistics.Statistics;
 
+import java.io.File;
 import java.io.Serializable;
 
 /**
@@ -30,8 +33,10 @@ public abstract class AbstractRunTestInNewJVMModuleWithServer<T extends Serializ
 
     protected final ServerSideListener<T, Byte> listener;
     final private int port;
+    final private ExecuteMainClassInNewJVM executeModule;
 
-    public AbstractRunTestInNewJVMModuleWithServer(final String testOutput) {
+    public AbstractRunTestInNewJVMModuleWithServer(Class<?> testRunnerClass, final String testOutput, 
+    		String instrumentedClassPath, final String javaHome, File projectDir, String[] customJvmArgs, String... properties) {
         super(testOutput);
 
         listener = SimpleServerFramework.startServer();
@@ -43,7 +48,23 @@ public abstract class AbstractRunTestInNewJVMModuleWithServer<T extends Serializ
             this.port = -1;
             Log.abort(this, "Unable to establich server.");
         }
+        
+        String[] jvmArgs = Misc.joinArrays(customJvmArgs, properties);
+        
+        this.executeModule = new ExecuteMainClassInNewJVM(
+                javaHome,
+                testRunnerClass,
+                instrumentedClassPath,
+                projectDir,
+                jvmArgs)
+                .setEnvVariable("LC_ALL", "en_US.UTF-8")
+                .setEnvVariable("TZ", "America/Los_Angeles");
 
+    }
+    
+    @Override
+    public ExecuteMainClassInNewJVM getMain() {
+        return executeModule;
     }
 
     protected int getServerPort() {
@@ -53,7 +74,6 @@ public abstract class AbstractRunTestInNewJVMModuleWithServer<T extends Serializ
     @Override
     public Pair<TestStatistics, T> getResultAfterTest(final TestWrapper testWrapper, int result) {
         if (result != 0) {
-            // 
             // reset for next time...
             listener.resetListener();
 //			Log.err(this, testWrapper + ": Running test in separate JVM failed.");

@@ -4,16 +4,12 @@
 package se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub;
 
 import org.apache.commons.cli.Option;
-import org.jacoco.agent.AgentJar;
 import org.jacoco.core.runtime.AgentOptions;
 import org.jacoco.core.runtime.RemoteControlReader;
 import org.jacoco.core.runtime.RemoteControlWriter;
 import org.jacoco.core.tools.ExecFileLoader;
-import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
-import se.de.hu_berlin.informatik.gen.spectra.jacoco.JaCoCoSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.SerializableExecFileLoader;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.modules.sub.JaCoCoRunTestInNewJVMModule.TestRunner.CmdOptions;
-import se.de.hu_berlin.informatik.gen.spectra.main.JaCoCoSpectraGenerator;
 import se.de.hu_berlin.informatik.gen.spectra.modules.AbstractRunTestInNewJVMModuleWithServer;
 import se.de.hu_berlin.informatik.java7.testrunner.TestWrapper;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
@@ -24,15 +20,12 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.SimpleServerFramework;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapperInterface;
-import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.file.Path;
-import java.util.Objects;
 
 /**
  * Runs a single test inside a new JVM and generates statistics. A timeout may be set
@@ -46,60 +39,13 @@ import java.util.Objects;
  */
 public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWithServer<SerializableExecFileLoader> {
 
-    final private ExecuteMainClassInNewJVM executeModule;
-
-    final private String[] args;
+   final private String[] args;
 
     public JaCoCoRunTestInNewJVMModule(final String testOutput,
                                        final boolean debugOutput, final Long timeout, final int repeatCount,
-                                       String instrumentedClassPath, final String javaHome, File projectDir, int port) {
-        super(testOutput);
-
-        int freePort = SimpleServerFramework.getFreePort(port);
-
-        if (JaCoCoSpectraGenerationFactory.OFFLINE_INSTRUMENTATION) {
-            this.executeModule = new ExecuteMainClassInNewJVM(
-                    //javaHome,
-                    null,
-                    TestRunner.class,
-                    instrumentedClassPath,
-                    projectDir,
-                    AbstractSpectraGenerationFactory.GC_SMALL,
-                    AbstractSpectraGenerationFactory.INITIAL_HEAP_SMALL,
-                    AbstractSpectraGenerationFactory.MAX_HEAP_SMALL,
-                    "-Djacoco-agent.dumponexit=false",
-                    "-Djacoco-agent.output=tcpserver",
-                    "-Djacoco-agent.excludes=*",
-                    "-Djacoco-agent.port=" + freePort
-            )
-                    .setEnvVariable("LC_ALL", "en_US.UTF-8")
-                    .setEnvVariable("TZ", "America/Los_Angeles");
-        } else {
-            File jacocoAgentJar = null;
-            try {
-                jacocoAgentJar = AgentJar.extractToTempLocation();
-            } catch (IOException e) {
-                Log.abort(JaCoCoSpectraGenerator.class, e, "Could not create JaCoCo agent jar file.");
-            }
-
-            this.executeModule = new ExecuteMainClassInNewJVM(
-                    //javaHome,
-                    null,
-                    TestRunner.class,
-                    instrumentedClassPath,
-                    projectDir,
-                    AbstractSpectraGenerationFactory.GC_SMALL,
-                    AbstractSpectraGenerationFactory.INITIAL_HEAP_SMALL,
-                    AbstractSpectraGenerationFactory.MAX_HEAP_SMALL,
-                    "-javaagent:" + Objects.requireNonNull(jacocoAgentJar).getAbsolutePath()
-                            + "=dumponexit=false,"
-                            + "output=tcpserver,"
-                            + "excludes=se.de.hu_berlin.informatik.*:org.junit.*,"
-                            + "port=" + freePort
-            )
-                    .setEnvVariable("LC_ALL", "en_US.UTF-8")
-                    .setEnvVariable("TZ", "America/Los_Angeles");
-        }
+                                       String instrumentedClassPath, final String javaHome, File projectDir, int port,
+                                       String[] customJvmArgs, String... properties) {
+        super(TestRunner.class, testOutput, instrumentedClassPath, javaHome, projectDir, customJvmArgs, properties);
 
         int arrayLength = 10;
         if (timeout != null) {
@@ -123,7 +69,7 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
         args[++argCounter] = String.valueOf(getServerPort());
 
         args[++argCounter] = TestRunner.CmdOptions.AGENT_PORT.asArg();
-        args[++argCounter] = String.valueOf(freePort);
+        args[++argCounter] = String.valueOf(port);
 
         if (timeout != null) {
             args[++argCounter] = TestRunner.CmdOptions.TIMEOUT.asArg();
@@ -147,10 +93,6 @@ public class JaCoCoRunTestInNewJVMModule extends AbstractRunTestInNewJVMModuleWi
         return args;
     }
 
-    @Override
-    public ExecuteMainClassInNewJVM getMain() {
-        return executeModule;
-    }
 
     public final static class TestRunner {
 

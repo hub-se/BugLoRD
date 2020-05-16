@@ -9,8 +9,6 @@ import se.de.hu_berlin.informatik.java7.testrunner.UnitTestRunnerNoServer;
 import se.de.hu_berlin.informatik.junittestutils.data.StatisticsData;
 import se.de.hu_berlin.informatik.junittestutils.data.TestStatistics;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
-import se.de.hu_berlin.informatik.utils.processors.basics.ExecuteMainClassInNewJVM;
-
 import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -29,24 +27,13 @@ import java.nio.file.Path;
 public abstract class AbstractRunTestInNewJVMModuleWithJava7RunnerAndServer<T extends Serializable>
         extends AbstractRunTestInNewJVMModuleWithServer<T> {
 
-    final private ExecuteMainClassInNewJVM executeModule;
-
     final private String[] args;
 
     public AbstractRunTestInNewJVMModuleWithJava7RunnerAndServer(final String testOutput,
                                                                  final boolean debugOutput, final Long timeout, final int repeatCount,
                                                                  String instrumentedClassPath, final Path dataFile, final String javaHome, File projectDir,
-                                                                 String... properties) {
-        super(testOutput);
-
-        this.executeModule = new ExecuteMainClassInNewJVM(
-                javaHome,
-                UnitTestRunner.class,
-                instrumentedClassPath,
-                projectDir,
-                (String[]) properties)
-                .setEnvVariable("LC_ALL", "en_US.UTF-8")
-                .setEnvVariable("TZ", "America/Los_Angeles");
+                                                                 String[] customJvmArgs, String... properties) {
+        super(UnitTestRunner.class, testOutput, instrumentedClassPath, javaHome, projectDir, customJvmArgs, properties);
 
         int arrayLength = 4;
         if (timeout != null) {
@@ -72,11 +59,6 @@ public abstract class AbstractRunTestInNewJVMModuleWithJava7RunnerAndServer<T ex
         args[0] = testClassName;
         args[1] = testMethodName;
         return args;
-    }
-
-    @Override
-    public ExecuteMainClassInNewJVM getMain() {
-        return executeModule;
     }
 
     @Override

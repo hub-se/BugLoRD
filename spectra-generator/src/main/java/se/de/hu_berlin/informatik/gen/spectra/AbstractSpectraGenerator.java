@@ -302,6 +302,8 @@ public abstract class AbstractSpectraGenerator {
         protected boolean useJava7;
         protected int maxErrors = 0;
         private boolean condenseNodes;
+		private String[] customJvmArgs;
+		private String[] customSmallJvmArgs;
 
         public AbstractBuilder setProjectDir(String projectDir) {
             this.projectDir = projectDir;
@@ -398,10 +400,22 @@ public abstract class AbstractSpectraGenerator {
             this.condenseNodes = condenseNodes;
             return this;
         }
+        
+        public AbstractBuilder setCustomJvmArgs(String[] customJvmArgs) {
+        	this.customJvmArgs = customJvmArgs;
+			return this;
+        }
+        
+        public AbstractBuilder setCustomSmallJvmArgs(String[] customSmallJvmArgs) {
+        	this.customSmallJvmArgs = customSmallJvmArgs;
+			return this;
+        }
 
         public abstract void run();
 
         public void run(AbstractSpectraGenerationFactory<?, ?, ?> factory, Integer agentPort) {
+        	factory.setCustomJvmArgs(customJvmArgs);
+        	factory.setCustomSmallJvmArgs(customSmallJvmArgs);
             generateSpectra(
                     factory, projectDir, sourceDir, testClassDir, outputDir,
                     testClassPath, testClassList, testList, javaHome,

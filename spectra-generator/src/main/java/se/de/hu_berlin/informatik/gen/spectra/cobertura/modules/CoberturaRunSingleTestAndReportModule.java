@@ -53,9 +53,10 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
                                                  final boolean fullSpectra, final boolean debugOutput, Long timeout, final int repeatCount,
                                                  String instrumentedClassPath, final String javaHome, final String java7RunnerJar, boolean useSeparateJVMalways,
                                                  boolean alwaysUseJava7, int maxErrors, String[] failingtests,
-                                                 final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
+                                                 final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl,
+                                                 String[] customJvmArgs) {
         super(testOutput, debugOutput, timeout, repeatCount, useSeparateJVMalways, alwaysUseJava7,
-                maxErrors, failingtests, statisticsContainer, cl);
+                maxErrors, failingtests, statisticsContainer, cl, customJvmArgs);
         this.testOutput = testOutput;
         this.projectDir = projectDir;
         this.fullSpectra = fullSpectra;
@@ -176,7 +177,8 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
     public AbstractRunTestInNewJVMModule<ProjectData> newTestRunInNewJVMModule() {
         return new CoberturaRunTestInNewJVMModule(testOutput, debugOutput, timeout,
                 repeatCount, instrumentedClassPath + File.pathSeparator + new ClassPathParser().parseSystemClasspath().getClasspath(),
-                dataFile, javaHome, projectDir);
+                dataFile, null, projectDir, getCustomSmallJvmArgs(), 
+                "-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString());
     }
 
     @Override
@@ -194,7 +196,8 @@ public class CoberturaRunSingleTestAndReportModule extends AbstractRunSingleTest
         return new CoberturaRunTestInNewJVMModuleWithJava7Runner(testOutput,
                 debugOutput, timeout, repeatCount, testClassPath,
                 // + File.pathSeparator + systemClasspath.getClasspath(), 
-                dataFile, javaHome, projectDir);
+                dataFile, javaHome, projectDir, getCustomSmallJvmArgs(),
+                "-Dnet.sourceforge.cobertura.datafile=" + dataFile.toAbsolutePath().toString());
     }
 
     @Override

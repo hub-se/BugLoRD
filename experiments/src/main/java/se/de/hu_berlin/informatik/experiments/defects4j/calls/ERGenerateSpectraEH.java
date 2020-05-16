@@ -369,6 +369,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
         }
 
         builder
+        		.setCustomJvmArgs(Defects4JProperties.MAIN_JVM_ARGS.getValue().split(" ", 0))
+        		.setCustomSmallJvmArgs(Defects4JProperties.SMALL_JVM_ARGS.getValue().split(" ", 0))
                 .setJavaHome(Defects4JProperties.JAVA7_HOME.getValue())
                 .setProjectDir(bug.getWorkDir(true).toString())
                 .setSourceDir(buggyMainSrcDir)

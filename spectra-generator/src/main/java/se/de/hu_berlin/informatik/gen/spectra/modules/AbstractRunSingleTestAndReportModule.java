@@ -48,11 +48,15 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
 
     private final int maxErrors;
 
+	private String[] customJvmArgs;
+
     public AbstractRunSingleTestAndReportModule(final String testOutput,
                                                 final boolean debugOutput, Long timeout, final int repeatCount,
                                                 boolean useSeparateJVMalways, boolean alwaysUseJava7, int maxErrors, String[] failingtests,
-                                                final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl) {
+                                                final StatisticsCollector<StatisticsData> statisticsContainer, ClassLoader cl, 
+                                                String[] customJvmArgs) {
         super();
+		this.customJvmArgs = customJvmArgs;
         if (failingtests == null) {
             knownFailingtests = null;
         } else {
@@ -68,8 +72,16 @@ public abstract class AbstractRunSingleTestAndReportModule<T extends Serializabl
         this.alwaysUseJava7 = alwaysUseJava7;
 
     }
+    
+    
 
-    private AbstractRunTestLocallyModule<T> getTestRunLocallyModule() {
+    public String[] getCustomSmallJvmArgs() {
+		return customJvmArgs;
+	}
+
+
+
+	private AbstractRunTestLocallyModule<T> getTestRunLocallyModule() {
         if (testRunLocallyModule == null) {
             testRunLocallyModule = newTestRunLocallyModule();
         }
