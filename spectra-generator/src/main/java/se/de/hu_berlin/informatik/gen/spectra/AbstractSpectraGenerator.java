@@ -70,6 +70,8 @@ public abstract class AbstractSpectraGenerator {
      * @param failingtests
      * a list of known failing tests to compare the test execution results with;
      * if {@code null}, then it will just be ignored
+     * @param testRunnerJVMArgs
+     * JVM arguments for test runner JVMs
      * @param pathsToBinaries
      * a list of paths to class files or directories with class files
      */
@@ -79,7 +81,7 @@ public abstract class AbstractSpectraGenerator {
                                         String testClassPath, String testClassList, String testList,
                                         final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, boolean useJava7, boolean condenseNodes,
                                         Long timeout, int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests,
-                                        String... pathsToBinaries) {
+                                        String[] testRunnerJVMArgs, String... pathsToBinaries) {
         final Path projectDir = FileUtils.checkIfAnExistingDirectory(null, projectDirOptionValue);
         final Path testClassDir = FileUtils.checkIfAnExistingDirectory(projectDir, testClassDirOptionValue);
         final Path sourceDir = FileUtils.checkIfAnExistingDirectory(projectDir, sourceDirOptionValue);
@@ -166,7 +168,7 @@ public abstract class AbstractSpectraGenerator {
         runTestsAndGenerateSpectra(
                 factory, projectDirOptionValue, sourceDirOptionValue, testClassPath, testClassList, testList, javaHome,
                 useFullSpectra, useSeparateJVM, useJava7, condenseNodes, timeout, testRepeatCount, maxErrors, agentPort, failingtests,
-                projectDir, testClassDir, outputDir, instrumentedDir, pathsToBinaries);
+                projectDir, testClassDir, outputDir, instrumentedDir, testRunnerJVMArgs, pathsToBinaries);
 
 
         /* #====================================================================================
@@ -182,12 +184,13 @@ public abstract class AbstractSpectraGenerator {
                                                    String sourceDirOptionValue, String testClassPath, String testClassList, String testList,
                                                    final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, boolean useJava7, boolean condenseNodes, Long timeout,
                                                    int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests, final Path projectDir,
-                                                   final Path testClassDir, final String outputDir, final Path instrumentedDir, String... pathsToBinaries) {
+                                                   final Path testClassDir, final String outputDir, final Path instrumentedDir, 
+                                                   String[] testRunnerJVMArgs, String... pathsToBinaries) {
 
         String[] newArgs = getArgs(factory.getStrategy(), factory.getSpecificArgsForMainTestRunner(),
                 projectDirOptionValue, sourceDirOptionValue, testClassDir, testClassPath, outputDir, instrumentedDir,
                 testClassList, testList, javaHome, useFullSpectra, useSeparateJVM, useJava7, condenseNodes, timeout, testRepeatCount,
-                maxErrors, agentPort, failingtests, pathsToBinaries);
+                maxErrors, agentPort, failingtests, testRunnerJVMArgs, pathsToBinaries);
 
         String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
 
@@ -207,7 +210,8 @@ public abstract class AbstractSpectraGenerator {
     private static String[] getArgs(Strategy strategy, String[] specificArgs, String projectDirOptionValue, String sourceDirOptionValue, final Path testClassDir,
                                     String testClassPath, final String outputDir, final Path instrumentedDir, String testClassList,
                                     String testList, final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, boolean useJava7, boolean condenseNodes,
-                                    Long timeout, int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests, String... pathsToBinaries) {
+                                    Long timeout, int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests, 
+                                    String[] testRunnerJVMArgs, String... pathsToBinaries) {
         //build arguments for the "real" application (running the tests...)
         String[] newArgs = {
                 RunAllTestsAndGenSpectra.CmdOptions.PROJECT_DIR.asArg(), projectDirOptionValue,
@@ -217,6 +221,11 @@ public abstract class AbstractSpectraGenerator {
                 RunAllTestsAndGenSpectra.CmdOptions.ORIGINAL_CLASSES_DIRS.asArg()};
 
         newArgs = Misc.joinArrays(newArgs, pathsToBinaries);
+        
+        if (testRunnerJVMArgs != null) {
+        	newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.TESTRUNNER_JVM_ARGS.asArg());
+        	newArgs = Misc.joinArrays(newArgs, testRunnerJVMArgs);
+        }
 
         if (javaHome != null) {
             newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.JAVA_HOME_DIR.asArg(), javaHome);
@@ -415,12 +424,11 @@ public abstract class AbstractSpectraGenerator {
 
         public void run(AbstractSpectraGenerationFactory<?, ?, ?> factory, Integer agentPort) {
         	factory.setCustomJvmArgs(customJvmArgs);
-        	factory.setCustomSmallJvmArgs(customSmallJvmArgs);
             generateSpectra(
                     factory, projectDir, sourceDir, testClassDir, outputDir,
                     testClassPath, testClassList, testList, javaHome,
                     useFullSpectra, useSeparateJVM, useJava7, condenseNodes, timeout, testRepeatCount,
-                    maxErrors, agentPort, failingTests, (String[]) classesToInstrument);
+                    maxErrors, agentPort, failingTests, customSmallJvmArgs, (String[]) classesToInstrument);
         }
 
     }

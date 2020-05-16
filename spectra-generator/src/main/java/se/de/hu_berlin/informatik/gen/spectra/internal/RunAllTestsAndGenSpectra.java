@@ -52,7 +52,9 @@ public class RunAllTestsAndGenSpectra {
         SOURCE_DIR("sd", "sourceDir", true, "Relative path to the main directory containing the sources from the project directory.", true),
         OUTPUT("o", "output", true, "Path to output directory.", true),
         FAILING_TESTS(Option.builder("ft").longOpt("failingTests")
-                .hasArgs().desc("A list of tests that should (only) fail. format: qualified.class.name::testMethodName").build());
+                .hasArgs().desc("A list of tests that should (only) fail. format: qualified.class.name::testMethodName").build()),
+        TESTRUNNER_JVM_ARGS(Option.builder("vm").longOpt("jvmArgs")
+        		.hasArgs().desc("Configuration arguments for starting separate test runner JVMs.").build());
 
         /* the following code blocks should not need to be changed */
         final private OptionWrapper option;

@@ -32,7 +32,13 @@ import static org.junit.Assert.*;
  */
 public class TraceCoberturaToSpectraTest extends TestSettings {
 
-    /**
+    private static final String GC = "-XX:+UseG1GC";
+
+	private static final String MAX_SMALL_HEAP = "-Xmx2g";
+
+	private static final String MAX_HEAP = "-Xmx6g";
+
+	/**
      */
     @BeforeClass
     public static void setUpBeforeClass() {
@@ -100,6 +106,8 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
                 .useJava7only(useJava7)
                 .setTimeout(timeout)
                 .setTestRepeatCount(testrepeatCount)
+                .setCustomJvmArgs(new String[] {MAX_HEAP, GC})
+                .setCustomSmallJvmArgs(new String[] {MAX_SMALL_HEAP, GC})
                 .run();
         long endTime = new Date().getTime();
 
@@ -209,6 +217,8 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
                 .useJava7only(useJava7)
                 .setTimeout(timeout)
                 .setTestRepeatCount(testrepeatCount)
+                .setCustomJvmArgs(new String[] {MAX_HEAP, GC})
+                .setCustomSmallJvmArgs(new String[] {MAX_SMALL_HEAP, GC})
                 .run();
         long endTime = new Date().getTime();
 
@@ -244,6 +254,8 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
                 .useJava7only(useJava7)
                 .setTimeout(timeout)
                 .setTestRepeatCount(testrepeatCount)
+                .setCustomJvmArgs(new String[] {MAX_HEAP, GC})
+                .setCustomSmallJvmArgs(new String[] {MAX_SMALL_HEAP, GC})
                 .run();
         long endTime = new Date().getTime();
 
@@ -277,6 +289,8 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
                 .useJava7only(useJava7)
                 .setTimeout(timeout)
                 .setTestRepeatCount(testrepeatCount)
+                .setCustomJvmArgs(new String[] {MAX_HEAP, GC})
+                .setCustomSmallJvmArgs(new String[] {MAX_SMALL_HEAP, GC})
                 .run();
         long endTime = new Date().getTime();
 

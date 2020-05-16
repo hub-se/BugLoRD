@@ -195,6 +195,10 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
 
         // need a special class loader to run the tests...
         ClassLoader testAndInstrumentClassLoader = testClassLoader;
+        
+        if (options.hasOption(CmdOptions.TESTRUNNER_JVM_ARGS)) {
+        	factory.setCustomSmallJvmArgs(options.getOptionValues(CmdOptions.TESTRUNNER_JVM_ARGS));
+        }
 
         // run tests and collect reports based on used coverage tool
         linker.append(1,
