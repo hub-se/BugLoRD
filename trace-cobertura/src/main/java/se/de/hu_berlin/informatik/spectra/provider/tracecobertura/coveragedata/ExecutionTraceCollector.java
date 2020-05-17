@@ -74,13 +74,13 @@ public class ExecutionTraceCollector {
 //                		entry.getValue().getLength(), bytes.length / 4, 
 //                		-100.00 + 100.0 * (double) (bytes.length / 4) / (double) entry.getValue().getLength()));
             }
+            byte[] grammarByteArray = SequiturUtils.convertToByteArray(grammar);
+            
             System.out.println(String.format("executed statements: %,d, threads: %,d", counter, threadCounter));
             counter = 0;
 //            if (sb.length() != 0) {
 //            	System.out.print(sb.toString());
 //            }
-            
-            byte[] grammarByteArray = SequiturUtils.convertToByteArray(grammar);
             
 //            SharedInputGrammar sharedInputGrammar = SequiturUtils.convertToInputGrammar(grammarByteArray);
 //            for (byte[] trace : traces.values()) {

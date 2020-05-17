@@ -251,7 +251,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 
 
-            	SharedInputGrammar sharedInputGrammar = SequiturUtils.convertToInputGrammar(projectData.getExecutionTraces().getSecond());
+            	SharedInputGrammar sharedInputGrammar = SequiturUtils.getInputGrammarFromByteArray(projectData.getExecutionTraces().getSecond());
                 // convert execution traces from statement sequences to sequences of sub traces
                 Map<Long, byte[]> executionTracesWithSubTraces = new HashMap<>();
                 for (Iterator<Entry<Long, byte[]>> iterator = projectData.getExecutionTraces().getFirst().entrySet().iterator(); iterator.hasNext(); ) {
@@ -571,11 +571,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
             addCurrentSubTraceSequenceToTrace(resultTrace);
         }
 
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
-        resultTrace.writeOut(objOut, !sharedExe);
-        objOut.close();
-        byte[] bytes = byteOut.toByteArray();
+        byte[] bytes = SequiturUtils.convertToByteArray(resultTrace, !sharedExe);
 
         if (!sharedExe) {
             System.out.println(String.format("%n#sub traces: %,d -> %,d (%.2f%%)",

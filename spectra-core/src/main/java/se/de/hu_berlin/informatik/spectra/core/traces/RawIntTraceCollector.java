@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.SequiturUtils;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.AddNamedByteArrayToZipFileProcessor;
@@ -11,9 +12,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.sockets.module.Module;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,13 +61,8 @@ public class RawIntTraceCollector {
         for (int i : traceArray) {
             outSeq.append(i);
         }
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        ObjectOutputStream objOut;
         try {
-            objOut = new ObjectOutputStream(byteOut);
-            outSeq.writeOut(objOut, true);
-            objOut.close();
-            byte[] trace = byteOut.toByteArray();
+            byte[] trace = SequiturUtils.convertToByteArray(outSeq, true);
 
             return addRawTraceToPool(traceIndex, threadId, trace, log);
         } catch (IOException e) {

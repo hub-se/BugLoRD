@@ -239,7 +239,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
     public SharedInputGrammar getExecutionTraceInputGrammar() {
         if (executionTraceInputGrammar == null && storedGrammar != null) {
             try {
-                executionTraceInputGrammar = SequiturUtils.convertToInputGrammar(storedGrammar);
+                executionTraceInputGrammar = SequiturUtils.getInputGrammarFromByteArray(storedGrammar);
             } catch (IOException e) {
                 Log.abort(this, e, "Could not convert grammar.");
             }

@@ -1,12 +1,11 @@
 package se.de.hu_berlin.informatik.spectra.core.traces;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.SequiturUtils;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.InputSequence.TraceIterator;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -42,26 +41,14 @@ public class ExecutionTrace {
         // lazy instantiation
         if (this.trace == null) {
             try {
-                this.trace = getInputSequenceFromByteArray();
-            } catch (IOException | ClassNotFoundException e) {
+                this.trace = SequiturUtils.getInputSequenceFromByteArray(
+                		traceByteArray, sequenceIndexer == null || sequenceIndexer.getExecutionTraceInputGrammar() == null ? 
+                				null : sequenceIndexer.getExecutionTraceInputGrammar());
+            } catch (IOException e) {
                 Log.abort(this, e, "Cannot convert to input sequence.");
             }
         }
         return this.trace;
-    }
-
-    private InputSequence getInputSequenceFromByteArray() throws IOException, ClassNotFoundException {
-        ByteArrayInputStream byteIn = new ByteArrayInputStream(traceByteArray);
-        ObjectInputStream objIn = new ObjectInputStream(byteIn);
-        if (sequenceIndexer == null || sequenceIndexer.getExecutionTraceInputGrammar() == null) {
-            // grammar should be included
-            InputSequence inputSequence = InputSequence.readFrom(objIn);
-            return inputSequence;
-        } else {
-            // grammar should be shared
-            InputSequence inputSequence = InputSequence.readFrom(objIn, sequenceIndexer.getExecutionTraceInputGrammar());
-            return inputSequence;
-        }
     }
 
     public long size() {
