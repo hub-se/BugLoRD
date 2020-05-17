@@ -24,13 +24,13 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
     private static final transient Lock globalProjectDataLock = new ReentrantLock();
 
     private String[] idToClassName;
-    private Map<Long, byte[]> executionTraces;
+    private Pair<Map<Long, byte[]>, byte[]> executionTraces;
 //	private Map<Integer, EfficientCompressedIntegerTrace> idToSubtraceMap;
 
     public ProjectData() {
     }
 
-    public void addExecutionTraces(Map<Long, byte[]> map) {
+    public void addExecutionTraces(Pair<Map<Long, byte[]>,byte[]> map) {
         lock.lock();
         try {
             this.executionTraces = map;
@@ -82,7 +82,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
      * @return the collection of execution traces for all executed threads;
      * the statements in the traces are stored as "class_id:statement_counter"
      */
-    public Map<Long, byte[]> getExecutionTraces() {
+    public Pair<Map<Long, byte[]>, byte[]> getExecutionTraces() {
         return executionTraces;
     }
 
@@ -255,12 +255,12 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
                 this.idToClassName = projectData.idToClassName;
             }
 
-            if (executionTraces == null || executionTraces.isEmpty()) {
+            if (executionTraces == null || executionTraces.getFirst().isEmpty()) {
                 if (projectData.getExecutionTraces() != null) {
                     // just take whatever the other end has
                     executionTraces = projectData.getExecutionTraces();
                 }
-            } else if (projectData.getExecutionTraces() != null && !projectData.getExecutionTraces().isEmpty()) {
+            } else if (projectData.getExecutionTraces() != null && !projectData.getExecutionTraces().getFirst().isEmpty()) {
                 // both contain execution traces
 //				// iterate over all entries in the id to class map
 //				for (Entry<Integer, String> entry : projectData.getIdToClassNameMap().entrySet()) {
@@ -275,9 +275,9 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 //					}
 //				}
 
-//            	throw new IllegalStateException("Merging execution traces not possible...");
+            	throw new IllegalStateException("Merging execution traces not possible...");
                 // assume that the data to merge into this one is the relevant data
-                executionTraces.putAll(projectData.getExecutionTraces());
+//                executionTraces.getFirst().putAll(projectData.getExecutionTraces().getFirst());
 //                executionTraces.getSecond()
             }
 

@@ -389,14 +389,13 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
                 .setOutputDir(rankingDir.toString())
                 .setTestClassList(testClassesFile)
                 .setFailingTests(failingTests)
-//		.useSeparateJVM(true)
+                .useSeparateJVM(Boolean.valueOf(Defects4JProperties.ALWAYS_USE_SEPJVM.getValue()))
                 .useJava7only(Boolean.valueOf(Defects4JProperties.ALWAYS_USE_JAVA7.getValue()))
 //		.setTimeout(5000L)
                 .setCondenseNodes(fillEmptyLines)
-                //~139h
-                .setTimeout(500000L)
+                .setTimeout(Long.valueOf(Defects4JProperties.TEST_TIMEOUT.getValue()))
                 .setTestRepeatCount(1)
-                .setMaxErrors(0);
+                .setMaxErrors(Integer.valueOf(Defects4JProperties.MAX_ERRORS.getValue()));
 
         long startTime = new Date().getTime();
 
