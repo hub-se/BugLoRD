@@ -376,15 +376,15 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
                 .setSourceDir(buggyMainSrcDir)
                 .setTestClassDir(buggyTestBinDir)
                 .setTestClassPath(buggyTestCP);
-        if (bug.getUniqueIdentifier().contains("Mockito")) {
-        	builder
-        	// don't include test class binaries for Mockito?
-        	.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString());
-        } else {
+//        if (bug.getUniqueIdentifier().contains("Mockito")) {
+//        	builder
+//        	// don't include test class binaries for Mockito?
+//        	.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString());
+//        } else {
         	builder
         	// include the test class binaries in instrumentation, because why not?...
         	.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), buggyTestBinDir);
-        }
+//        }
         builder
                 .setOutputDir(rankingDir.toString())
                 .setTestClassList(testClassesFile)
