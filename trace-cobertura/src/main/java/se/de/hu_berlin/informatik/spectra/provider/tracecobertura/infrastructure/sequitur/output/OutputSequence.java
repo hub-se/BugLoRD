@@ -88,6 +88,10 @@ public class OutputSequence {
     }
     
     public void appendConcurrent(final int obj) {
+    	if (grammar.isLocked()) {
+    		System.err.println("Grammar locked!");
+    		return;
+    	}
     	if (length == 0) {
     		firstValue = obj;
     	}

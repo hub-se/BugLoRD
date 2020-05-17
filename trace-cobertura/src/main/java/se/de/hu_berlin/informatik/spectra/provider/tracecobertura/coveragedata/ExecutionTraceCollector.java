@@ -60,6 +60,7 @@ public class ExecutionTraceCollector {
         globalExecutionTraceCollectorLock.lock();
         try {
 //            processAllRemainingSubTraces();
+        	grammar.lock();
 
             int threadCounter = 0;
 //            StringBuilder sb = new StringBuilder();

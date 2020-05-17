@@ -59,4 +59,8 @@ public class SharedOutputGrammar {
         return this.grammar.toString();
     }
 
+	public void lock() {
+		this.grammar.lock();
+	}
+
 }

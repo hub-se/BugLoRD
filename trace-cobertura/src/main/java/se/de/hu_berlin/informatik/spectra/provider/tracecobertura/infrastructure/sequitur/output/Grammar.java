@@ -51,6 +51,8 @@ class Grammar {
     private Map<Rule, Long> ruleNumbers = new IdentityHashMap<Rule, Long>();
     private long nextRuleNumber = 0;
 
+	private volatile boolean locked = false;
+
     /**
      * Checks a new digram. If it appears
      * elsewhere, deals with it by calling
@@ -363,5 +365,13 @@ class Grammar {
                 System.getProperty("line.separator") +
                 this.usingSequences.toString();
     }
+
+	public void lock() {
+		this.locked  = true;
+	}
+
+	public boolean isLocked() {
+		return locked;
+	}
 
 }

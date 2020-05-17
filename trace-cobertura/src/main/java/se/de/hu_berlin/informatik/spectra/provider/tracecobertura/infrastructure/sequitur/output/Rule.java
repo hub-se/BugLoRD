@@ -24,9 +24,9 @@
  */
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output;
 
-import de.hammacher.util.ArrayQueue;
 import de.hammacher.util.Pair;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -209,7 +209,7 @@ class Rule {
         boolean changed = true;
         while (changed) {
             changed = false;
-            final Queue<Rule> queue = new ArrayQueue<Rule>();
+            final Queue<Rule> queue = new SingleLinkedArrayQueue<Rule>(20);
             final Set<Rule> ready = new HashSet<Rule>();
             queue.add(this);
             ready.add(this);
