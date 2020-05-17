@@ -24,13 +24,13 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
     private static final transient Lock globalProjectDataLock = new ReentrantLock();
 
     private String[] idToClassName;
-    private Pair<Map<Long, byte[]>, byte[]> executionTraces;
+    private Pair<List<Pair<Long, byte[]>>, byte[]> executionTraces;
 //	private Map<Integer, EfficientCompressedIntegerTrace> idToSubtraceMap;
 
     public ProjectData() {
     }
 
-    public void addExecutionTraces(Pair<Map<Long, byte[]>,byte[]> map) {
+    public void addExecutionTraces(Pair<List<Pair<Long, byte[]>>,byte[]> map) {
         lock.lock();
         try {
             this.executionTraces = map;
@@ -82,7 +82,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
      * @return the collection of execution traces for all executed threads;
      * the statements in the traces are stored as "class_id:statement_counter"
      */
-    public Pair<Map<Long, byte[]>, byte[]> getExecutionTraces() {
+    public Pair<List<Pair<Long, byte[]>>, byte[]> getExecutionTraces() {
         return executionTraces;
     }
 

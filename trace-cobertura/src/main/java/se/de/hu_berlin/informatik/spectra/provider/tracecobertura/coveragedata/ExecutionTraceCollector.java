@@ -7,9 +7,11 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -25,7 +27,7 @@ public class ExecutionTraceCollector {
     private static final transient Lock globalExecutionTraceCollectorLock = new ReentrantLock();
 
     // shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
-    private static Map<Long, OutputSequence> executionTraces = new HashMap<>();
+    private static Map<Long, OutputSequence> executionTraces = new ConcurrentHashMap<>();
     private static SharedOutputGrammar grammar = new SharedOutputGrammar();
 
     private static int[][] classesToCounterArrayMap = new int[2048][];
@@ -56,7 +58,7 @@ public class ExecutionTraceCollector {
      * the statements in the traces are stored as "class_id:statement_counter";
      * also resets the internal map and collects potentially remaining sub traces.
      */
-    public static Pair<Map<Long, byte[]>,byte[]> getAndResetExecutionTraces() {
+    public static Pair<List<Pair<Long, byte[]>>,byte[]> getAndResetExecutionTraces() {
         globalExecutionTraceCollectorLock.lock();
         try {
 //            processAllRemainingSubTraces();
@@ -65,16 +67,16 @@ public class ExecutionTraceCollector {
         	grammar.lock();
         	SharedOutputGrammar tempGrammar = grammar;
         	
-        	executionTraces = new HashMap<>();
+        	executionTraces = new ConcurrentHashMap<>();
             grammar = new SharedOutputGrammar();
 
             int threadCounter = 0;
 //            StringBuilder sb = new StringBuilder();
 //            sb.append(String.format("%n#statements: %,d%n", counter));
-            Map<Long, byte[]> traces = new HashMap<>();
+            List<Pair<Long, byte[]>> traces = new ArrayList<>(tempMap.size());
             for (Entry<Long, OutputSequence> entry : tempMap.entrySet()) {
             	byte[] bytes = SequiturUtils.convertToByteArray(entry.getValue(), false);
-                traces.put(entry.getKey(), bytes);
+                traces.add(new Pair<>(entry.getKey(), bytes));
                 ++threadCounter;
 
 //                sb.append(String.format(" %,d -> %,d (%.2f%%)%n", 
@@ -94,7 +96,7 @@ public class ExecutionTraceCollector {
 //            	TraceIterator traceIterator = SequiturUtils.getInputSequenceFromByteArray(trace, sharedInputGrammar).iterator();
 //            }
             
-            return new Pair<Map<Long,byte[]>, byte[]>(traces, grammarByteArray);
+            return new Pair<List<Pair<Long, byte[]>>, byte[]>(traces, grammarByteArray);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -261,9 +263,14 @@ public class ExecutionTraceCollector {
         // get the thread's execution trace
         OutputSequence trace = executionTraces.get(threadId);
         if (trace == null) {
-            trace = getNewCollector(threadId);
-            executionTraces.put(threadId, trace);
-//            currentThreads.add(currentThread);
+        	 globalExecutionTraceCollectorLock.lock();
+             try {
+            	 trace = getNewCollector(threadId);
+            	 executionTraces.put(threadId, trace);
+//            	 currentThreads.add(currentThread);
+             } finally {
+            	 globalExecutionTraceCollectorLock.unlock();
+			}
         }
         return trace;
     }

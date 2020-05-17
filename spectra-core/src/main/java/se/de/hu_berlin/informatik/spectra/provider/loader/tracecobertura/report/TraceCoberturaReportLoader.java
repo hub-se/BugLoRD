@@ -30,11 +30,10 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBlock>>
         extends AbstractCoverageDataLoader<SourceCodeBlock, K, TraceCoberturaReportWrapper> {
@@ -253,23 +252,23 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 
             	SharedInputGrammar sharedInputGrammar = SequiturUtils.getInputGrammarFromByteArray(projectData.getExecutionTraces().getSecond());
                 // convert execution traces from statement sequences to sequences of sub traces
-                Map<Long, byte[]> executionTracesWithSubTraces = new HashMap<>();
-                for (Iterator<Entry<Long, byte[]>> iterator = projectData.getExecutionTraces().getFirst().entrySet().iterator(); iterator.hasNext(); ) {
-                    Entry<Long, byte[]> entry = iterator.next();
+            	List<Pair<Long, byte[]>> executionTracesWithSubTraces = new ArrayList<>(projectData.getExecutionTraces().getFirst().size());
+                for (Iterator<Pair<Long, byte[]>> iterator = projectData.getExecutionTraces().getFirst().iterator(); iterator.hasNext(); ) {
+                    Pair<Long, byte[]> entry = iterator.next();
                     iterator.remove();
 
-                    byte[] mappedExecutionTrace = generateSubTraceExecutionTrace(entry.getValue(), sharedInputGrammar, projectData, lineSpectra);
+                    byte[] mappedExecutionTrace = generateSubTraceExecutionTrace(entry.getSecond(), sharedInputGrammar, projectData, lineSpectra);
 
 //				System.out.println(String.format("grammar size: %,d", SpectraFileUtils.convertToByteArray(sharedExecutionTraceGrammar).length/4));
 
-                    executionTracesWithSubTraces.put(entry.getKey(), mappedExecutionTrace);
+                    executionTracesWithSubTraces.add(new Pair<>(entry.getFirst(), mappedExecutionTrace));
                 }
-                projectData.addExecutionTraces(new Pair<Map<Long,byte[]>, byte[]>(executionTracesWithSubTraces, null));
+                projectData.addExecutionTraces(new Pair<List<Pair<Long, byte[]>>, byte[]>(executionTracesWithSubTraces, null));
 
 
                 int threadId = -1;
-                for (Iterator<Entry<Long, byte[]>> iterator = projectData.getExecutionTraces().getFirst().entrySet().iterator(); iterator.hasNext(); ) {
-                    Entry<Long, byte[]> entry = iterator.next();
+                for (Iterator<Pair<Long, byte[]>> iterator = projectData.getExecutionTraces().getFirst().iterator(); iterator.hasNext(); ) {
+                    Pair<Long, byte[]> entry = iterator.next();
                     ++threadId;
 
 
@@ -279,12 +278,12 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
                     if (printTraces) {
                         // only for testing... the arrays in a trace are composed of [ class id, counter id].
                         String[] idToClassNameMap = projectData.getIdToClassNameMap();
-                        Log.out(true, this, "Thread: " + entry.getKey());
+                        Log.out(true, this, "Thread: " + entry.getFirst());
                         // iterate over executed statements in the trace
 
                         SharedInputGrammar inExecutionTraceGrammar = SequiturUtils.convertToInputGrammar(sharedExe ? sharedExecutionTraceGrammar : null);
 
-                        InputSequence inputSequence = SequiturUtils.getInputSequenceFromByteArray(entry.getValue(), inExecutionTraceGrammar);
+                        InputSequence inputSequence = SequiturUtils.getInputSequenceFromByteArray(entry.getSecond(), inExecutionTraceGrammar);
                         TraceIterator traceIterator = inputSequence.iterator();
 
 //		            SharedInputGrammar inSubTraceGrammar = SequiturUtils.convertToInputGrammar(sharedSubTraceGrammar);
@@ -425,7 +424,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 
                     // collect the raw trace for future compression, etc.
                     // this will, among others, extract common sequences for added traces
-                    traceCollector.addRawTraceToPool(traceCount, threadId, entry.getValue());
+                    traceCollector.addRawTraceToPool(traceCount, threadId, entry.getSecond());
 
                 }
 
