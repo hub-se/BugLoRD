@@ -308,6 +308,12 @@ class Grammar {
                     rules.add(null);
                 assert rules.get(e.getValue()) == null;
                 rules.set(e.getValue(), e.getKey());
+                
+                if (numRules % 100000 == 0) {
+                    System.out.print('.');
+                    if (numRules % 10000000 == 0)
+                        System.out.println(String.format("%,d", numRules));
+                }
             }
             assert numRules == rules.size();
             ruleQueue.addAll(rules);
@@ -331,6 +337,12 @@ class Grammar {
             assert getRuleNr(rule) == ruleNr;
             ++ruleNr;
             rule.writeOut(objOut, this, objectWriter, ruleQueue);
+            
+            if (ruleNr % 100000 == 0) {
+                System.out.print(':');
+                if (ruleNr % 10000000 == 0)
+                    System.out.println(String.format("%,d", ruleNr));
+            }
         }
         objOut.write(0); // mark end of rules
     }
