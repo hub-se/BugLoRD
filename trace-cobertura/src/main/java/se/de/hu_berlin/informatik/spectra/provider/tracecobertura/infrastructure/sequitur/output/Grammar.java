@@ -26,6 +26,7 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 
 import de.hammacher.util.LongArrayList;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.Rule.Dummy;
 
 import java.io.IOException;
@@ -291,7 +292,7 @@ class Grammar {
 
     public void writeOut(final ObjectOutputStream objOut, final ObjectWriter objectWriter)
             throws IOException {
-        final Queue<Rule> ruleQueue = new LinkedList<Rule>();
+        final Queue<Rule> ruleQueue = new SingleLinkedArrayQueue<Rule>(50);
         // first, fill in already written rules
         // take care of the order!
         assert (TreeMap.class.equals(this.ruleNumbers.getClass()) ||
@@ -309,9 +310,9 @@ class Grammar {
                 assert rules.get(e.getValue()) == null;
                 rules.set(e.getValue(), e.getKey());
                 
-                if (numRules % 100000 == 0) {
-                    System.out.print('.');
-                    if (numRules % 10000000 == 0)
+                if (numRules % 1000 == 0) {
+                    System.out.print(',');
+                    if (numRules % 100000 == 0)
                         System.out.println(String.format("%,d", numRules));
                 }
             }
@@ -338,9 +339,9 @@ class Grammar {
             ++ruleNr;
             rule.writeOut(objOut, this, objectWriter, ruleQueue);
             
-            if (ruleNr % 100000 == 0) {
+            if (ruleNr % 1000 == 0) {
                 System.out.print(':');
-                if (ruleNr % 10000000 == 0)
+                if (ruleNr % 100000 == 0)
                     System.out.println(String.format("%,d", ruleNr));
             }
         }
