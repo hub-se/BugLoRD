@@ -121,6 +121,24 @@ public final class Defects4J extends Defects4JBase {
 //					executionDir, null, null, null, abortOnError, (String[]) commandArgs);
 //		}
     }
+    
+    /**
+     * Executes a given command in the system's environment. 
+     * Will abort the program in case of an error in the executed process.
+     *
+     * @param executionDir an execution directory in which the command shall be executed
+     * @param abortOnError whether to abort if the command cannot be executed
+     * @param commandArgs  the command to execute, given as an array
+     */
+    public static void executeCommandWithSystemJavaVersion(File executionDir, boolean abortOnError, String... commandArgs) {
+//		try {
+        SystemUtils.executeCommandInJavaEnvironment(
+                executionDir, null, null, null, abortOnError, (String[]) commandArgs);
+//		} catch (Abort a) {
+//			SystemUtils.executeCommandInJavaEnvironment(
+//					executionDir, null, null, null, abortOnError, (String[]) commandArgs);
+//		}
+    }
 
     /**
      * Executes a given command in the system's environment, while additionally

@@ -8,10 +8,8 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -32,7 +30,7 @@ public class ExecutionTraceCollector {
 
     private static int[][] classesToCounterArrayMap = new int[2048][];
 
-    private static Set<Thread> currentThreads = new HashSet<>();
+//    private static Set<Thread> currentThreads = new HashSet<>();
 
     public static void initializeCounterArrayForClass(int classId, int countersCnt) {
         classesToCounterArrayMap[classId] = new int[countersCnt];
@@ -61,23 +59,26 @@ public class ExecutionTraceCollector {
     public static Pair<Map<Long, byte[]>,byte[]> getAndResetExecutionTraces() {
         globalExecutionTraceCollectorLock.lock();
         try {
-            processAllRemainingSubTraces();
+//            processAllRemainingSubTraces();
 
-            StringBuilder sb = new StringBuilder();
+            int threadCounter = 0;
+//            StringBuilder sb = new StringBuilder();
 //            sb.append(String.format("%n#statements: %,d%n", counter));
             Map<Long, byte[]> traces = new HashMap<>();
             for (Entry<Long, OutputSequence> entry : executionTraces.entrySet()) {
             	byte[] bytes = SequiturUtils.convertToByteArray(entry.getValue(), false);
                 traces.put(entry.getKey(), bytes);
+                ++threadCounter;
 
-                sb.append(String.format(" %,d -> %,d (%.2f%%)%n", 
-                		entry.getValue().getLength(), bytes.length / 4, 
-                		-100.00 + 100.0 * (double) (bytes.length / 4) / (double) entry.getValue().getLength()));
+//                sb.append(String.format(" %,d -> %,d (%.2f%%)%n", 
+//                		entry.getValue().getLength(), bytes.length / 4, 
+//                		-100.00 + 100.0 * (double) (bytes.length / 4) / (double) entry.getValue().getLength()));
             }
+            System.out.println(String.format("executed statements: %,d, threads: %,d", counter, threadCounter));
             counter = 0;
-            if (sb.length() != 0) {
-            	System.out.print(sb.toString());
-            }
+//            if (sb.length() != 0) {
+//            	System.out.print(sb.toString());
+//            }
             
             byte[] grammarByteArray = SequiturUtils.convertToByteArray(grammar);
             
@@ -122,54 +123,54 @@ public class ExecutionTraceCollector {
     }
 
 
-    private static void processAllRemainingSubTraces() {
-
-        for (Thread thread : currentThreads) {
-            if (thread.equals(Thread.currentThread())) {
-                continue;
-            }
-            boolean done = false;
-            while (!done) {
-                if (thread.isAlive()) {
-                    System.err.println("Thread " + thread.getId() + " is still alive. Waiting 10 seconds for it to die...");
-                    try {
-                        thread.join(10000); // wait 20 seconds for threads to die... TODO
-                        if (thread.isAlive()) {
-                            System.err.println("(At least) thread " + thread.getId() + " remains alive...");
-                            //						thread.interrupt();
-                            break;
-                        }
-                        done = true;
-                    } catch (InterruptedException e) {
-                        // try again
-                    }
-                } else {
-                    break;
-                }
-            }
-        }
-
-        currentThreads.clear();
-
-//		globalExecutionTraceCollectorLock.lock();
-//		try {
-//			// store execution traces
-//			Iterator<Entry<Long, OutputSequence<Integer>>> iterator2 = executionTraces.entrySet().iterator();
-//			while (iterator2.hasNext()) {
-//				try {
-//					iterator2.next().getValue().sleep();
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					// something went wrong...
-//					iterator2.remove();
-//				}
-//			}
-//			
-//		} finally {
-//			globalExecutionTraceCollectorLock.unlock();
-//		}
-
-    }
+//    private static void processAllRemainingSubTraces() {
+//
+//        for (Thread thread : currentThreads) {
+//            if (thread.equals(Thread.currentThread())) {
+//                continue;
+//            }
+//            boolean done = false;
+//            while (!done) {
+//                if (thread.isAlive()) {
+//                    System.err.println("Thread " + thread.getId() + " is still alive. Waiting 5 seconds for it to die...");
+//                    try {
+//                        thread.join(5000); // wait 5 seconds for threads to die... TODO
+//                        if (thread.isAlive()) {
+//                            System.err.println("(At least) thread " + thread.getId() + " remains alive...");
+//                            //						thread.interrupt();
+//                            break;
+//                        }
+//                        done = true;
+//                    } catch (InterruptedException e) {
+//                        // try again
+//                    }
+//                } else {
+//                    break;
+//                }
+//            }
+//        }
+//
+//        currentThreads.clear();
+//
+////		globalExecutionTraceCollectorLock.lock();
+////		try {
+////			// store execution traces
+////			Iterator<Entry<Long, OutputSequence<Integer>>> iterator2 = executionTraces.entrySet().iterator();
+////			while (iterator2.hasNext()) {
+////				try {
+////					iterator2.next().getValue().sleep();
+////				} catch (Exception e) {
+////					e.printStackTrace();
+////					// something went wrong...
+////					iterator2.remove();
+////				}
+////			}
+////			
+////		} finally {
+////			globalExecutionTraceCollectorLock.unlock();
+////		}
+//
+//    }
 
 
     /**
@@ -250,12 +251,14 @@ public class ExecutionTraceCollector {
      * @return output sequence for the current thread
      */
     public static OutputSequence getOutputSequence() {
-        long threadId = Thread.currentThread().getId();
+        Thread currentThread = Thread.currentThread();
+		long threadId = currentThread.getId();
         // get the thread's execution trace
         OutputSequence trace = executionTraces.get(threadId);
         if (trace == null) {
             trace = getNewCollector(threadId);
             executionTraces.put(threadId, trace);
+//            currentThreads.add(currentThread);
         }
         return trace;
     }

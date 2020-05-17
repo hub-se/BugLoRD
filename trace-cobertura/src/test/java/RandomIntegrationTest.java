@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 public class RandomIntegrationTest {
 
-    private final static int numTests = 4000;
+    private final static int numTests = 1000;
 
     private final int length;
     private final long seed;

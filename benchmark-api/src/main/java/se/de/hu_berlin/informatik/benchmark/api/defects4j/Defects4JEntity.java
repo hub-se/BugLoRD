@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 import se.de.hu_berlin.informatik.benchmark.api.AbstractEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Abort;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
 import java.io.BufferedReader;
@@ -151,8 +152,23 @@ public class Defects4JEntity extends AbstractEntity {
             Log.abort(Defects4JEntity.class, "Defects4J config file doesn't exist: '%s'.",
                     getWorkDir(executionMode).resolve(".defects4j.config"));
         }
-        Defects4J.executeCommand(getWorkDir(executionMode).toFile(), true,
-                Defects4J.getDefects4JExecutable(), "compile");
+        if (getProject().equals("Mockito")) {
+        	// Mockito has trouble being compiled with Java 7, sometimes...
+        	try {
+        		Defects4J.executeCommand(getWorkDir(executionMode).toFile(), true,
+            			Defects4J.getDefects4JExecutable(), "compile");
+        	} catch (Abort e) {
+        		Log.err(this, "Could not compile Mockito bug. Trying with system's Java version...");
+        		Defects4J.executeCommandWithSystemJavaVersion(getWorkDir(executionMode).toFile(), true,
+            			Defects4J.getDefects4JExecutable(), "compile");
+        		Log.out(this, "Trying to compile again with Java 7...");
+        		Defects4J.executeCommand(getWorkDir(executionMode).toFile(), true,
+            			Defects4J.getDefects4JExecutable(), "compile");
+			}
+        } else {
+        	Defects4J.executeCommand(getWorkDir(executionMode).toFile(), true,
+        			Defects4J.getDefects4JExecutable(), "compile");
+        }
         return true;
     }
 
