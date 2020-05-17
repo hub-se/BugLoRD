@@ -86,6 +86,37 @@ public class OutputSequence {
             this.lastValueCount = 1;
         }
     }
+    
+    public void appendConcurrent(final int obj) {
+    	if (length == 0) {
+    		firstValue = obj;
+    	}
+        ++length;
+        if (this.lastValueCount == 0) {
+            this.lastValue = obj;
+            this.lastValueCount = 1;
+        } else if (this.lastValue == Symbol.NULL_VALUE ? obj == Symbol.NULL_VALUE : this.lastValue == obj) {
+            if (++this.lastValueCount == Integer.MAX_VALUE) {
+            	grammar.lock.lock();
+            	try {
+            		this.firstRule.append(new Terminal(this.lastValue, this.lastValueCount), this.grammar);
+            	} finally {
+					grammar.lock.unlock();
+				}
+                this.lastValue = Symbol.NULL_VALUE;
+                this.lastValueCount = 0;
+            }
+        } else {
+        	grammar.lock.lock();
+        	try {
+        		this.firstRule.append(new Terminal(this.lastValue, this.lastValueCount), this.grammar);
+        	} finally {
+        		grammar.lock.unlock();
+			}
+            this.lastValue = obj;
+            this.lastValueCount = 1;
+        }
+    }
 
     public long getLength() {
         return length;

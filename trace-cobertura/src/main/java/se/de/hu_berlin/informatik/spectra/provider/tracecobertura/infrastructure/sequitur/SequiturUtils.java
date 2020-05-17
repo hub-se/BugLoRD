@@ -48,7 +48,7 @@ public class SequiturUtils {
             throws IOException {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
-        outSeq.writeOut(objOut, true);
+        outSeq.writeOut(objOut, includeGrammar);
         objOut.close();
         byte[] bytes = byteOut.toByteArray();
 

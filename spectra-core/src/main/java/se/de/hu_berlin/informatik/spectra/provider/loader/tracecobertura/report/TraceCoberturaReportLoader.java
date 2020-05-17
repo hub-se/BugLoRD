@@ -229,7 +229,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
                     Log.err(this, "Execution trace is null for test '%s'.", testId);
                     return false;
                 }
-                if (!projectData.getExecutionTraces().isEmpty()) {
+                if (!projectData.getExecutionTraces().getFirst().isEmpty()) {
                     Log.err(this, "Execution trace for test '%s' is NOT empty.", testId);
                     return false;
                 }
@@ -241,7 +241,7 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
                 return false;
             }
 
-            if (projectData.getExecutionTraces().isEmpty()) {
+            if (projectData.getExecutionTraces().getFirst().isEmpty()) {
                 Log.warn(this, "No execution trace for test '%s'.", testId);
             } else {
                 // TODO debug output
@@ -251,23 +251,24 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 //			Log.out(true, this, "Trace: " + reportWrapper.getIdentifier());
 
 
+            	SharedInputGrammar sharedInputGrammar = SequiturUtils.convertToInputGrammar(projectData.getExecutionTraces().getSecond());
                 // convert execution traces from statement sequences to sequences of sub traces
                 Map<Long, byte[]> executionTracesWithSubTraces = new HashMap<>();
-                for (Iterator<Entry<Long, byte[]>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext(); ) {
+                for (Iterator<Entry<Long, byte[]>> iterator = projectData.getExecutionTraces().getFirst().entrySet().iterator(); iterator.hasNext(); ) {
                     Entry<Long, byte[]> entry = iterator.next();
                     iterator.remove();
 
-                    byte[] mappedExecutionTrace = generateSubTraceExecutionTrace(entry.getValue(), projectData, lineSpectra);
+                    byte[] mappedExecutionTrace = generateSubTraceExecutionTrace(entry.getValue(), sharedInputGrammar, projectData, lineSpectra);
 
 //				System.out.println(String.format("grammar size: %,d", SpectraFileUtils.convertToByteArray(sharedExecutionTraceGrammar).length/4));
 
                     executionTracesWithSubTraces.put(entry.getKey(), mappedExecutionTrace);
                 }
-                projectData.addExecutionTraces(executionTracesWithSubTraces);
+                projectData.addExecutionTraces(new Pair<Map<Long,byte[]>, byte[]>(executionTracesWithSubTraces, null));
 
 
                 int threadId = -1;
-                for (Iterator<Entry<Long, byte[]>> iterator = projectData.getExecutionTraces().entrySet().iterator(); iterator.hasNext(); ) {
+                for (Iterator<Entry<Long, byte[]>> iterator = projectData.getExecutionTraces().getFirst().entrySet().iterator(); iterator.hasNext(); ) {
                     Entry<Long, byte[]> entry = iterator.next();
                     ++threadId;
 
@@ -437,16 +438,14 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
         }
     }
 
-    private byte[] generateSubTraceExecutionTrace(byte[] trace,
-                                                  ProjectData projectData, ISpectra<SourceCodeBlock, K> lineSpectra) throws ClassNotFoundException, IOException {
+    private byte[] generateSubTraceExecutionTrace(byte[] trace, SharedInputGrammar sharedInputGrammar, 
+    		ProjectData projectData, ISpectra<SourceCodeBlock, K> lineSpectra) throws ClassNotFoundException, IOException {
         OutputSequence resultTrace = sharedExe ? new OutputSequence(sharedExecutionTraceGrammar) : new OutputSequence();
         String[] idToClassNameMap = projectData.getIdToClassNameMap();
         // iterate over trace and generate new trace based on seen sub traces
         // iterate over executed statements in the trace
 
-        ByteArrayInputStream byteIn = new ByteArrayInputStream(trace);
-        ObjectInputStream objIn = new ObjectInputStream(byteIn);
-        TraceIterator traceIterator = InputSequence.readFrom(objIn).iterator();
+        TraceIterator traceIterator = SequiturUtils.getInputSequenceFromByteArray(trace, sharedInputGrammar).iterator();
 
         SingleLinkedIntArrayQueue currentSubTrace = new SingleLinkedIntArrayQueue(15);
         int lastMethod = -1;

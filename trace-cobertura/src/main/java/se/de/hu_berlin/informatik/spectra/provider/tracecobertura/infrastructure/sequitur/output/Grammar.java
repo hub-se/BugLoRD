@@ -32,15 +32,19 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 // package-private
 @CoverageIgnore
 class Grammar {
+	
+	Lock lock = new ReentrantLock();
 
     static final int prime = 2265539;
     private final Map<Symbol, Symbol> digrams = new HashMap<Symbol, Symbol>(prime);
 
-    private final List<OutputSequence> usingSequences = new ArrayList<OutputSequence>();
+    private final List<OutputSequence> usingSequences = new ArrayList<OutputSequence>(3);
 
     // in writeOut, this map is filled
     private Map<Rule, Long> ruleNumbers = new IdentityHashMap<Rule, Long>();

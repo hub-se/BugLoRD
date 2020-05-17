@@ -2,11 +2,11 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.SequiturUtils;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,6 +28,7 @@ public class ExecutionTraceCollector {
 
     // shouldn't need to be thread-safe, as each thread only accesses its own trace (thread id -> sequence of sub trace ids)
     private static Map<Long, OutputSequence> executionTraces = new HashMap<>();
+    private static SharedOutputGrammar grammar = new SharedOutputGrammar();
 
     private static int[][] classesToCounterArrayMap = new int[2048][];
 
@@ -57,41 +58,48 @@ public class ExecutionTraceCollector {
      * the statements in the traces are stored as "class_id:statement_counter";
      * also resets the internal map and collects potentially remaining sub traces.
      */
-    public static Map<Long, byte[]> getAndResetExecutionTraces() {
+    public static Pair<Map<Long, byte[]>,byte[]> getAndResetExecutionTraces() {
         globalExecutionTraceCollectorLock.lock();
         try {
             processAllRemainingSubTraces();
+
             StringBuilder sb = new StringBuilder();
 //            sb.append(String.format("%n#statements: %,d%n", counter));
             Map<Long, byte[]> traces = new HashMap<>();
             for (Entry<Long, OutputSequence> entry : executionTraces.entrySet()) {
-                ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-                ObjectOutputStream objOut = new ObjectOutputStream(byteOut);
-                entry.getValue().writeOut(objOut, true);
-                objOut.close();
-                byte[] bytes = byteOut.toByteArray();
-
+            	byte[] bytes = SequiturUtils.convertToByteArray(entry.getValue(), false);
                 traces.put(entry.getKey(), bytes);
 
-                sb.append(String.format(" %,d -> %,d (%.2f%%)%n", entry.getValue().getLength(), bytes.length / 4, -100.00 + 100.0 * (double) (bytes.length / 4) / (double) entry.getValue().getLength()));
+                sb.append(String.format(" %,d -> %,d (%.2f%%)%n", 
+                		entry.getValue().getLength(), bytes.length / 4, 
+                		-100.00 + 100.0 * (double) (bytes.length / 4) / (double) entry.getValue().getLength()));
             }
             counter = 0;
             if (sb.length() != 0) {
             	System.out.print(sb.toString());
             }
-            return traces;
+            
+            byte[] grammarByteArray = SequiturUtils.convertToByteArray(grammar);
+            
+//            SharedInputGrammar sharedInputGrammar = SequiturUtils.convertToInputGrammar(grammarByteArray);
+//            for (byte[] trace : traces.values()) {
+//            	TraceIterator traceIterator = SequiturUtils.getInputSequenceFromByteArray(trace, sharedInputGrammar).iterator();
+//            }
+            
+            return new Pair<Map<Long,byte[]>, byte[]>(traces, grammarByteArray);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         } finally {
             executionTraces.clear();
+            grammar = new SharedOutputGrammar();
             globalExecutionTraceCollectorLock.unlock();
         }
     }
 
 
     private static OutputSequence getNewCollector(long threadId) {
-        return new OutputSequence();
+        return new OutputSequence(grammar);
     }
 
 
@@ -109,7 +117,7 @@ public class ExecutionTraceCollector {
         }
 
         // add an indicator to the trace that represents a visited catch block
-        trace.append(NEW_SUBTRACE_ID);
+        trace.appendConcurrent(NEW_SUBTRACE_ID);
 
     }
 
@@ -231,7 +239,7 @@ public class ExecutionTraceCollector {
         }
 
         // add the statement to the execution trace
-        trace.append(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(classId, counterId));
+        trace.appendConcurrent(CoberturaStatementEncoding.generateUniqueRepresentationForStatement(classId, counterId));
     }
 
 
