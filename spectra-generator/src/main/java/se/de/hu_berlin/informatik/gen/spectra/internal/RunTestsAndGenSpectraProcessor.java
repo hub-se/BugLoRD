@@ -106,7 +106,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
         // exclude junit classes to be able to extract the tests
         ClassLoader testClassLoader =
                 new ParentLastClassLoader(cpURLs, false
-                        , "junit.runner", "junit.framework", "org.junit", "org.hamcrest", "java.lang", "java.util", "org.fest"
+                        , "junit.runner", "junit.framework", "org.junit", "org.hamcrest", "java.lang", "java.util"
                 );
 
 //		preLoadClasses(instrumentedDir, pathsToBinaries, testClassDir, testClassLoader, false);
