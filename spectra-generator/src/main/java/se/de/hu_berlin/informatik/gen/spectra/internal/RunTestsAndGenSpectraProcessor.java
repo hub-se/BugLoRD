@@ -28,7 +28,8 @@ import java.util.*;
 
 public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extends AbstractConsumingProcessor<OptionParser> {
 
-    public static final boolean TEST_DEBUG_OUTPUT = true;
+    private static final int BUFFER_SIZE = 4;
+	public static final boolean TEST_DEBUG_OUTPUT = true;
     private final AbstractSpectraGenerationFactory<T, R, S> factory;
 
 
@@ -105,7 +106,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
         // exclude junit classes to be able to extract the tests
         ClassLoader testClassLoader =
                 new ParentLastClassLoader(cpURLs, false
-                        , "junit.runner", "junit.framework", "org.junit", "org.hamcrest", "java.lang", "java.util"
+                        , "junit.runner", "junit.framework", "org.junit", "org.hamcrest", "java.lang", "java.util", "org.fest"
                 );
 
 //		preLoadClasses(instrumentedDir, pathsToBinaries, testClassDir, testClassLoader, false);
@@ -128,7 +129,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
 
             Path testOutputFile = Paths.get(outputDir, "minedTests.txt");
 
-            linker.append(1,
+            linker.append(BUFFER_SIZE,
                     new FileLineProcessor<>(new StringProcessor<String>() {
                         private final Set<String> seenClasses = new HashSet<>();
                         private String clazz = null;
@@ -164,7 +165,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
             testFile = options.isFile(CmdOptions.TEST_LIST, true);
             Log.out(this, "Mining tests from test file: %s", testFile);
 
-            linker.append(1,
+            linker.append(BUFFER_SIZE,
                     new FileLineProcessor<>(testClassLoader, new StringProcessor<TestWrapper>() {
                         private TestWrapper testWrapper;
 
@@ -201,10 +202,10 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
         }
 
         // run tests and collect reports based on used coverage tool
-        linker.append(1,
+        linker.append(BUFFER_SIZE,
                 factory.getTestRunnerModule(options, testAndInstrumentClassLoader, changedTestClassPath, statisticsContainer)
 //				.asPipe(instrumentedClassesLoader)
-                        .asPipe(1).enableTracking().allowOnlyForcedTracks(),
+                        .asPipe(BUFFER_SIZE).enableTracking().allowOnlyForcedTracks(),
                 factory.getReportToSpectraProcessor(options, statisticsContainer),
                 // save the resulting spectra + reduced/filtered spectra
                 factory.getSpectraProcessor(options))

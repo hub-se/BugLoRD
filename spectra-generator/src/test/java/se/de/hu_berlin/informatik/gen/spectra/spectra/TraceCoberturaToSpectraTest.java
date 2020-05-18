@@ -34,9 +34,9 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
 
     private static final String GC = "-XX:+UseG1GC";
 
-	private static final String MAX_SMALL_HEAP = "-Xmx4g";
+	private static final String MAX_SMALL_HEAP = "-Xmx1g";
 
-	private static final String MAX_HEAP = "-Xmx6g";
+	private static final String MAX_HEAP = "-Xmx2g";
 
 	/**
      */
