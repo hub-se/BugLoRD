@@ -28,8 +28,7 @@ import java.util.*;
 
 public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extends AbstractConsumingProcessor<OptionParser> {
 
-    private static final int BUFFER_SIZE = 4;
-	public static final boolean TEST_DEBUG_OUTPUT = true;
+    public static final boolean TEST_DEBUG_OUTPUT = true;
     private final AbstractSpectraGenerationFactory<T, R, S> factory;
 
 
@@ -118,6 +117,9 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
 //		preLoadClasses(instrumentedDir, pathsToBinaries, testClassDir, Thread.currentThread().getContextClassLoader(), true);
 
 //		Log.out(RunTestsAndGenSpectra.class, Misc.listToString(cpURLs));
+        
+        
+        int pipeBufferSize = options.getOptionValueAsInt(CmdOptions.PIPE_BUFFER_SIZE, 1);
 
         PipeLinker linker = new PipeLinker();
 
@@ -129,7 +131,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
 
             Path testOutputFile = Paths.get(outputDir, "minedTests.txt");
 
-            linker.append(BUFFER_SIZE,
+            linker.append(pipeBufferSize,
                     new FileLineProcessor<>(new StringProcessor<String>() {
                         private final Set<String> seenClasses = new HashSet<>();
                         private String clazz = null;
@@ -165,7 +167,7 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
             testFile = options.isFile(CmdOptions.TEST_LIST, true);
             Log.out(this, "Mining tests from test file: %s", testFile);
 
-            linker.append(BUFFER_SIZE,
+            linker.append(pipeBufferSize,
                     new FileLineProcessor<>(testClassLoader, new StringProcessor<TestWrapper>() {
                         private TestWrapper testWrapper;
 
@@ -202,10 +204,10 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
         }
 
         // run tests and collect reports based on used coverage tool
-        linker.append(BUFFER_SIZE,
+        linker.append(pipeBufferSize,
                 factory.getTestRunnerModule(options, testAndInstrumentClassLoader, changedTestClassPath, statisticsContainer)
 //				.asPipe(instrumentedClassesLoader)
-                        .asPipe(BUFFER_SIZE).enableTracking().allowOnlyForcedTracks(),
+                        .asPipe(pipeBufferSize).enableTracking().allowOnlyForcedTracks(),
                 factory.getReportToSpectraProcessor(options, statisticsContainer),
                 // save the resulting spectra + reduced/filtered spectra
                 factory.getSpectraProcessor(options))

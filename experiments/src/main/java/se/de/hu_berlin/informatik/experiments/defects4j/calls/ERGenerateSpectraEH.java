@@ -395,7 +395,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
                 .setCondenseNodes(fillEmptyLines)
                 .setTimeout(Long.valueOf(Defects4JProperties.TEST_TIMEOUT.getValue()))
                 .setTestRepeatCount(1)
-                .setMaxErrors(Integer.valueOf(Defects4JProperties.MAX_ERRORS.getValue()));
+                .setMaxErrors(Integer.valueOf(Defects4JProperties.MAX_ERRORS.getValue()))
+                .setPipeBufferSize(Integer.valueOf(Defects4JProperties.PIPE_BUFFER_SIZE.getValue()));
 
         long startTime = new Date().getTime();
 

@@ -34,6 +34,8 @@ public final class Defects4J extends Defects4JBase {
         ALWAYS_USE_SEPJVM("always_use_separate_jvm", "false", "whether tests shall always be run using a test runner in a separate JVM"),
         TEST_TIMEOUT("test_timeout", "3600", "timeout for tests in seconds"),
         MAX_ERRORS("max_errors", "0", "allow errors in tests that should be successful?"),
+        PIPE_BUFFER_SIZE("pipe_buffer_size", "1", "Amount of elements in the test pipeline buffers.",
+        		"(Increases parallelity; don't set too high!)"),
         PLOT_DIR("plot_dir", "/path/to/../plot_dir_for_specific_LM",
                 "specify the main directory to where the generated plot data shall be saved"),
         SPECTRA_ARCHIVE_DIR("spectraArchive_dir", "/path/to/../spectraArchive",

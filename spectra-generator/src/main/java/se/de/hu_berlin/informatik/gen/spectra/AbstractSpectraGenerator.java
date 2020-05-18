@@ -65,6 +65,8 @@ public abstract class AbstractSpectraGenerator {
      * number of times to execute each test case; 1 by default if {@code null}
      * @param maxErrors
      * the maximum of test execution errors to tolerate
+     * @param pipeBufferSize
+     * how many elements can be in parallel in the pipe buffers
      * @param agentPort
      * port to use by the java agent
      * @param failingtests
@@ -79,8 +81,10 @@ public abstract class AbstractSpectraGenerator {
                                         String projectDirOptionValue, String sourceDirOptionValue,
                                         String testClassDirOptionValue, String outputDirOptionValue,
                                         String testClassPath, String testClassList, String testList,
-                                        final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, boolean useJava7, boolean condenseNodes,
-                                        Long timeout, int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests,
+                                        final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, 
+                                        boolean useJava7, boolean condenseNodes,
+                                        Long timeout, int testRepeatCount, int maxErrors, int pipeBufferSize, 
+                                        Integer agentPort, List<String> failingtests,
                                         String[] testRunnerJVMArgs, String... pathsToBinaries) {
         final Path projectDir = FileUtils.checkIfAnExistingDirectory(null, projectDirOptionValue);
         final Path testClassDir = FileUtils.checkIfAnExistingDirectory(projectDir, testClassDirOptionValue);
@@ -167,7 +171,7 @@ public abstract class AbstractSpectraGenerator {
 
         runTestsAndGenerateSpectra(
                 factory, projectDirOptionValue, sourceDirOptionValue, testClassPath, testClassList, testList, javaHome,
-                useFullSpectra, useSeparateJVM, useJava7, condenseNodes, timeout, testRepeatCount, maxErrors, agentPort, failingtests,
+                useFullSpectra, useSeparateJVM, useJava7, condenseNodes, timeout, testRepeatCount, maxErrors, pipeBufferSize, agentPort, failingtests,
                 projectDir, testClassDir, outputDir, instrumentedDir, testRunnerJVMArgs, pathsToBinaries);
 
 
@@ -182,15 +186,17 @@ public abstract class AbstractSpectraGenerator {
 
     private static void runTestsAndGenerateSpectra(AbstractSpectraGenerationFactory<?, ?, ?> factory, String projectDirOptionValue,
                                                    String sourceDirOptionValue, String testClassPath, String testClassList, String testList,
-                                                   final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, boolean useJava7, boolean condenseNodes, Long timeout,
-                                                   int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests, final Path projectDir,
+                                                   final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, 
+                                                   boolean useJava7, boolean condenseNodes, Long timeout,
+                                                   int testRepeatCount, int maxErrors, int pipeBufferSize, 
+                                                   Integer agentPort, List<String> failingtests, final Path projectDir,
                                                    final Path testClassDir, final String outputDir, final Path instrumentedDir, 
                                                    String[] testRunnerJVMArgs, String... pathsToBinaries) {
 
         String[] newArgs = getArgs(factory.getStrategy(), factory.getSpecificArgsForMainTestRunner(),
                 projectDirOptionValue, sourceDirOptionValue, testClassDir, testClassPath, outputDir, instrumentedDir,
                 testClassList, testList, javaHome, useFullSpectra, useSeparateJVM, useJava7, condenseNodes, timeout, testRepeatCount,
-                maxErrors, agentPort, failingtests, testRunnerJVMArgs, pathsToBinaries);
+                maxErrors, pipeBufferSize, agentPort, failingtests, testRunnerJVMArgs, pathsToBinaries);
 
         String systemClassPath = new ClassPathParser().parseSystemClasspath().getClasspath();
 
@@ -210,7 +216,7 @@ public abstract class AbstractSpectraGenerator {
     private static String[] getArgs(Strategy strategy, String[] specificArgs, String projectDirOptionValue, String sourceDirOptionValue, final Path testClassDir,
                                     String testClassPath, final String outputDir, final Path instrumentedDir, String testClassList,
                                     String testList, final String javaHome, boolean useFullSpectra, boolean useSeparateJVM, boolean useJava7, boolean condenseNodes,
-                                    Long timeout, int testRepeatCount, int maxErrors, Integer agentPort, List<String> failingtests, 
+                                    Long timeout, int testRepeatCount, int maxErrors, int pipeBufferSize, Integer agentPort, List<String> failingtests, 
                                     String[] testRunnerJVMArgs, String... pathsToBinaries) {
         //build arguments for the "real" application (running the tests...)
         String[] newArgs = {
@@ -278,6 +284,10 @@ public abstract class AbstractSpectraGenerator {
         if (maxErrors != 0) {
             newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.MAX_ERRORS.asArg(), String.valueOf(maxErrors));
         }
+        
+        if (pipeBufferSize != 0) {
+            newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.PIPE_BUFFER_SIZE.asArg(), String.valueOf(pipeBufferSize));
+        }
 
         if (agentPort != null) {
             newArgs = Misc.addToArrayAndReturnResult(newArgs, RunAllTestsAndGenSpectra.CmdOptions.AGENT_PORT.asArg(), String.valueOf(agentPort.intValue()));
@@ -313,6 +323,7 @@ public abstract class AbstractSpectraGenerator {
         private boolean condenseNodes;
 		private String[] customJvmArgs;
 		private String[] customSmallJvmArgs;
+		private int pipeBufferSize;
 
         public AbstractBuilder setProjectDir(String projectDir) {
             this.projectDir = projectDir;
@@ -399,6 +410,11 @@ public abstract class AbstractSpectraGenerator {
             this.maxErrors = maxErrors;
             return this;
         }
+        
+        public AbstractBuilder setPipeBufferSize(int pipeBufferSize) {
+            this.pipeBufferSize = pipeBufferSize;
+            return this;
+        }
 
         public AbstractBuilder setFailingTests(List<String> failingTests) {
             this.failingTests = failingTests;
@@ -428,7 +444,8 @@ public abstract class AbstractSpectraGenerator {
                     factory, projectDir, sourceDir, testClassDir, outputDir,
                     testClassPath, testClassList, testList, javaHome,
                     useFullSpectra, useSeparateJVM, useJava7, condenseNodes, timeout, testRepeatCount,
-                    maxErrors, agentPort, failingTests, customSmallJvmArgs, (String[]) classesToInstrument);
+                    maxErrors, pipeBufferSize, agentPort, failingTests, customSmallJvmArgs, 
+                    (String[]) classesToInstrument);
         }
 
     }
