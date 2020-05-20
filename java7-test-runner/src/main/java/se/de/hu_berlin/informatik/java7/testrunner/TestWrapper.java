@@ -40,7 +40,11 @@ public class TestWrapper {
         this(clazz, method, null);
     }
 
-    public String getTestClassName() {
+    public String getIdentifier() {
+		return identifier;
+	}
+
+	public String getTestClassName() {
         return testClazzName;
     }
 

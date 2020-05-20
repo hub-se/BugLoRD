@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.ParentLastClassLoader;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
+import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.basics.StringsToFileWriter;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.statistics.StatisticsCollector;
@@ -195,6 +196,21 @@ public class RunTestsAndGenSpectraProcessor<T extends Serializable, R, S> extend
                         }
                     }));
         }
+        
+        // filter out duplicate tests
+        linker.append(new AbstractProcessor<TestWrapper, TestWrapper>() {
+        	Set<String> seenIdentifiers = new HashSet<String>();
+        	@Override
+        	public TestWrapper processItem(TestWrapper item) throws UnsupportedOperationException {
+        		if (!seenIdentifiers.contains(item.getIdentifier())) {
+        			seenIdentifiers.add(item.getIdentifier());
+        			return item;
+        		} else {
+        			Log.warn(this, "Test has already been run: %s", item);
+					return null;
+				}
+        	}
+		});
 
         // need a special class loader to run the tests...
         ClassLoader testAndInstrumentClassLoader = testClassLoader;

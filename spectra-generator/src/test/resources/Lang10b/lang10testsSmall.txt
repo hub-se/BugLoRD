@@ -20,6 +20,9 @@ org.apache.commons.lang3.time.FastDateParserTest::testLANG_831
 #org.apache.commons.lang3.time.FastDateParserTest::testParseLongShort
 #org.apache.commons.lang3.time.FastDateParserTest::testLocales_LongNoEra_AD
 org.apache.commons.lang3.time.FastDateParserTest::testLocales_LongNoEra_BC
+org.apache.commons.lang3.time.FastDateParserTest::testLocales_LongNoEra_BC
+org.apache.commons.lang3.time.FastDateParserTest::testLocales_LongNoEra_BC
+org.apache.commons.lang3.time.FastDateParserTest::testLocales_LongNoEra_BC
 #org.apache.commons.lang3.time.FastDateParserTest::testLocales_Short_BC
 #org.apache.commons.lang3.time.FastDateParserTest::testEquals
 #org.apache.commons.lang3.time.FastDateParserTest::testParses
