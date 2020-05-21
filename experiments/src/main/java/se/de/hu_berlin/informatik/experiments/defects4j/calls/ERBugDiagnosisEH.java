@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,7 +130,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
         	throw new IllegalStateException(e);
 		} finally {
 			process.destroy();   
-			myfile.delete();
+//			myfile.delete();
 		}
         dbg("--------------------------");
         return info;
@@ -156,14 +157,14 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
         {   
             if(info.get("fixlocations"+j) != null)
             {
-                File dir_bug = buggyEntity.getBuggyVersion().getWorkDir(true).toFile();
-                File dir_fix = buggyEntity.getFixedVersion().getWorkDir(true).toFile();
+                Path dir_bug = buggyEntity.getBuggyVersion().getMainSourceDir(true).toAbsolutePath();
+                Path dir_fix = buggyEntity.getFixedVersion().getMainSourceDir(true).toAbsolutePath();
 
                 String searchedfile = info.get("fixlocations"+j);
-                int slash = searchedfile.lastIndexOf("/");
-                String filey = searchedfile.substring(slash+1);
-                List<File> fi_bug = search(dir_bug, filey);
-                List<File> fi_fix = search(dir_fix, filey);
+//                int slash = searchedfile.lastIndexOf("/");
+//                String filey = searchedfile.substring(slash+1);
+//                List<File> fi_bug = search(dir_bug, filey);
+//                List<File> fi_fix = search(dir_fix, filey);
                 
                 String filename = buggyEntity.getBuggyVersion().getWorkDir(true)
                 		.resolve(buggyEntity.getProject() + "_patch_bug_" + buggyEntity.getBugID() + ".txt").toString();
@@ -173,11 +174,13 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 ProcessBuilder builder;
                 Process process;
                 try {
-                	List<File[]> matches = fuzzy_diff(fi_fix, fi_bug);
-                	String buggy = matches.get(0)[1].getCanonicalPath();
-                	String fixy = matches.get(0)[0].getCanonicalPath();
+//                	List<File[]> matches = fuzzy_diff(fi_fix, fi_bug);
+//                	String buggy = matches.get(0)[1].getCanonicalPath();
+//                	String fixy = matches.get(0)[0].getCanonicalPath();
 
-					builder = new ProcessBuilder("diff", buggy, fixy);
+					builder = new ProcessBuilder("diff", 
+							dir_bug.resolve(searchedfile).toString(), 
+							dir_fix.resolve(searchedfile).toString());
 					builder.directory(buggyEntity.getBuggyVersion().getWorkDir(true).toFile());
 					
 					process = builder.start();
@@ -203,8 +206,6 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
 					lines =  searcharray(read, "-p");
 					locations.put("fixlocations"+j,lines);
 					dbg("Range = " + locations.get("fixlocations"+j).get("range"));
-					input.close();
-					buffer = null;
 					out.flush();
 				} catch (IOException e) {
 					throw new IllegalStateException(e);
