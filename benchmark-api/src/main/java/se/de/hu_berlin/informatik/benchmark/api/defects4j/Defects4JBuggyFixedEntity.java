@@ -111,6 +111,12 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
         if (changesMap == null) {
             changesMap = getModificationsFromXmlFile(project, bugID);
         }
+        if (changesMap == null) {
+        	Log.warn(ConvertChangesToPythonFormat.class, "Could not get changes from XML file. Trying to calculate changes for %s", this);
+        	// fall back to change checker
+            changesMap = super.getAllChanges(executionModeBug, resetBug, 
+            		deleteBugAfterwards, executionModeFix, resetFix, deleteFixAfterwards);
+        }
         return changesMap;
     }
 
