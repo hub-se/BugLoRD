@@ -4,6 +4,7 @@ import org.apache.commons.cli.Option;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBase.Defects4JProject;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.GenCombinedRankingsEH;
@@ -124,7 +125,7 @@ public class GenerateCombinedRankings {
 
         List<BuggyFixedEntity<?>> entities = new ArrayList<>();
         //iterate over all projects
-        for (String project : Defects4J.getAllProjects()) {
+        for (Defects4JProject project : Defects4J.getAllProjects()) {
             String[] ids = Defects4J.getAllBugIDs(project);
             for (String id : ids) {
                 entities.add(new Defects4JBuggyFixedEntity(project, id));

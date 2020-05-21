@@ -5,6 +5,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBase.Defects4JProject;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -114,7 +115,7 @@ public class BuildCoherentSpectras {
         );
 
         //iterate over all projects
-        for (String project : Defects4J.getAllProjects()) {
+        for (Defects4JProject project : Defects4J.getAllProjects()) {
             String[] ids = Defects4J.getAllBugIDs(project);
             for (String id : ids) {
                 linker.submit(new Defects4JBuggyFixedEntity(project, id));

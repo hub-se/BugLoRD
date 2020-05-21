@@ -4,6 +4,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBase.Defects4JProject;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.BugLoRDProperties;
@@ -147,7 +148,7 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
         } else { //given project name was "super"; iterate over all project directories
             int numberOfEntities = 0;
             //iterate over all projects
-            for (String project : Defects4J.getAllProjects()) {
+            for (Defects4JProject project : Defects4J.getAllProjects()) {
 //				if (project.equals("Mockito")) {
 //					continue;
 //				}
@@ -157,7 +158,7 @@ public class PlotAverageBucketsEH extends AbstractConsumingProcessor<String> {
             entities = new BuggyFixedEntity[numberOfEntities];
             int i = 0;
             //iterate over all projects
-            for (String project : Defects4J.getAllProjects()) {
+            for (Defects4JProject project : Defects4J.getAllProjects()) {
 //				if (project.equals("Mockito")) {
 //					continue;
 //				}

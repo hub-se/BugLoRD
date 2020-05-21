@@ -112,7 +112,7 @@ public class GenerateTable {
         }
 
         if (allProjects) {
-            projects = Defects4J.getAllProjects();
+            projects = Defects4J.getAllProjectIDs();
         }
 
 

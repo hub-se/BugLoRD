@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.benchmark.api.defects4j;
 
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBase.Defects4JProject;
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -28,18 +29,18 @@ public class ConvertChangesToPythonFormat {
         Path outputMainPath = mainPath.resolve("python-changefiles");
 
         //iterate over all projects
-        for (String project : Defects4JBase.getAllProjects()) {
-            Path outputProjectPath = outputMainPath.resolve(project);
+        for (Defects4JProject project : Defects4JBase.getAllProjects()) {
+            Path outputProjectPath = outputMainPath.resolve(project.getId());
             outputProjectPath.toFile().mkdirs();
 
             String[] ids = Defects4JBase.getAllBugIDs(project);
             for (String id : ids) {
-                Map<String, List<Modification>> changes = Defects4JBuggyFixedEntity.getModificationsFromXmlFile(project, id);
+                Map<String, List<Modification>> changes = Defects4JBuggyFixedEntity.getModificationsFromXmlFile(project.getId(), id);
                 if (changes == null) {
                     continue;
                 }
 
-                generatePythonScriptChangeFiles(changes, outputProjectPath, project, id);
+                generatePythonScriptChangeFiles(changes, outputProjectPath, project.getId(), id);
 
             }
         }

@@ -6,6 +6,7 @@ import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBase.Defects4JProject;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.spectra.core.INode;
@@ -246,7 +247,7 @@ public class GenerateSpectraArchive {
 //		}
 
         //iterate over all projects
-        for (String project : Defects4J.getAllProjects()) {
+        for (Defects4JProject project : Defects4J.getAllProjects()) {
             String[] ids = Defects4J.getAllBugIDs(project);
             for (String id : ids) {
                 linker.submit(new Defects4JBuggyFixedEntity(project, id));

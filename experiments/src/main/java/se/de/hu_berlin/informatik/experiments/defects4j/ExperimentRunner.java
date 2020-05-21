@@ -137,7 +137,7 @@ public class ExperimentRunner {
         Log.out(ExperimentRunner.class, "Using %d parallel threads.", threadCount);
 
         if (projects[0].equals("all")) {
-            projects = Defects4J.getAllProjects();
+            projects = Defects4J.getAllProjectIDs();
         }
 
         PipeLinker linker = new PipeLinker();

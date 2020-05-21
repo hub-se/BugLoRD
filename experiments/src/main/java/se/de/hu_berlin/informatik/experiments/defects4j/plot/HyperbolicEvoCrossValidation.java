@@ -163,7 +163,7 @@ public class HyperbolicEvoCrossValidation {
         int threadCount = options.getNumberOfThreads();
 
         if (allProjects) {
-            projects = Defects4J.getAllProjects();
+            projects = Defects4J.getAllProjectIDs();
         }
 
         String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);

@@ -2,6 +2,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j.plot;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBase.Defects4JProject;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.experiments.defects4j.plot.ComputeSBFLRankingsProcessor.ResultCollection;
@@ -327,7 +328,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
         } else { //given project name was "super"; iterate over all project directories
             int numberOfEntities = 0;
             //iterate over all projects
-            for (String project : Defects4J.getAllProjects()) {
+            for (Defects4JProject project : Defects4J.getAllProjects()) {
 //				if (project.equals("Mockito")) {
 //					continue;
 //				}
@@ -337,7 +338,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
             entities = new BuggyFixedEntity[numberOfEntities];
             int i = 0;
             //iterate over all projects
-            for (String project : Defects4J.getAllProjects()) {
+            for (Defects4JProject project : Defects4J.getAllProjects()) {
 //				if (project.equals("Mockito")) {
 //					continue;
 //				}

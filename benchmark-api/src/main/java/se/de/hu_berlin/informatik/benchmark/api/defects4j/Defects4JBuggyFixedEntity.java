@@ -5,6 +5,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import se.de.hu_berlin.informatik.benchmark.api.AbstractBuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBase.Defects4JProject;
 import se.de.hu_berlin.informatik.benchmark.modification.Change;
 import se.de.hu_berlin.informatik.benchmark.modification.Delete;
 import se.de.hu_berlin.informatik.benchmark.modification.Insert;
@@ -29,6 +30,13 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
         super(Defects4JEntity.getBuggyDefects4JEntity(project, bugId),
                 Defects4JEntity.getFixedDefects4JEntity(project, bugId));
         this.project = project;
+        this.bugID = bugId;
+    }
+    
+    public Defects4JBuggyFixedEntity(Defects4JProject project, String bugId) {
+        super(Defects4JEntity.getBuggyDefects4JEntity(project.getId(), bugId),
+                Defects4JEntity.getFixedDefects4JEntity(project.getId(), bugId));
+        this.project = project.getId();
         this.bugID = bugId;
     }
 
@@ -98,7 +106,8 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
 
     @Override
     public Map<String, List<Modification>> getAllChanges(boolean executionModeBug, boolean resetBug,
-                                                         boolean deleteBugAfterwards, boolean executionModeFix, boolean resetFix, boolean deleteFixAfterwards) {
+                                                         boolean deleteBugAfterwards, boolean executionModeFix, 
+                                                         boolean resetFix, boolean deleteFixAfterwards) {
         if (changesMap == null) {
             changesMap = getModificationsFromXmlFile(project, bugID);
         }

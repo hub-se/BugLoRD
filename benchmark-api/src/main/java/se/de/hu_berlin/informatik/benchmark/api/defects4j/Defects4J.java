@@ -20,14 +20,23 @@ public final class Defects4J extends Defects4JBase {
                 "the archive directory holds all generated project data in the end",
                 "set the archive directory and the execution directory to the same paths if",
                 "you are not sure what to do."),
-        JAVA7_DIR("java7_dir", "/path/to/../jdk1.7.0_79/bin",
-                "the projects in the Defects4J benchmark need Java 1.7 to work properly.",
+        JAVA7_DIR("java7_dir", "/path/to/../jdk1.7.x/bin",
+                "Java 7 version that may be used for running tests.",
                 "you have to set path to the binaries here."),
-        JAVA7_HOME("java7_home", "/path/to/../jdk1.7.0_79",
-                "the projects in the Defects4J benchmark need Java 1.7 to work properly.",
+        JAVA7_HOME("java7_home", "/path/to/../jdk1.7.x",
+                "Java 7 version that may be used for running tests.",
                 "set the path to the java home directory here."),
-        JAVA7_JRE("java7_jre", "/path/to/../jdk1.7.0_79/jre",
-                "the projects in the Defects4J benchmark need Java 1.7 to work properly.",
+        JAVA7_JRE("java7_jre", "/path/to/../jdk1.7.x/jre",
+                "Java 7 version that may be used for running tests.",
+                "set the path to a proper JRE here."),
+        JAVA8_DIR("java7_dir", "/path/to/../jdk1.8.y/bin",
+                "the projects in the Defects4J benchmark need Java 1.8 to work properly.",
+                "you have to set path to the binaries here."),
+        JAVA8_HOME("java7_home", "/path/to/../jdk1.8.y",
+                "the projects in the Defects4J benchmark need Java 1.8 to work properly.",
+                "set the path to the java home directory here."),
+        JAVA8_JRE("java7_jre", "/path/to/../jdk1.8.y/jre",
+                "the projects in the Defects4J benchmark need Java 1.8 to work properly.",
                 "set the path to a proper JRE here."),
         ONLY_RELEVANT_TESTS("only_relevant_tests", "true", "whether only relevant tests shall be considered"),
         ALWAYS_USE_JAVA7("always_use_java7", "false", "whether tests shall always be run using a java 7 based test runner"),
@@ -111,6 +120,8 @@ public final class Defects4J extends Defects4JBase {
      * using a given Java 1.7 environment, which is required for defects4J to
      * function correctly and to compile the projects. Will abort the program in
      * case of an error in the executed process.
+     * 
+     * update for Defects4J 2.0: should be able to use JDK8...
      *
      * @param executionDir an execution directory in which the command shall be executed
      * @param abortOnError whether to abort if the command cannot be executed
@@ -118,27 +129,12 @@ public final class Defects4J extends Defects4JBase {
      */
     public static void executeCommand(File executionDir, boolean abortOnError, String... commandArgs) {
 //		try {
-        SystemUtils.executeCommandInJavaEnvironment(
-                executionDir, Defects4JProperties.JAVA7_DIR.getValue(), Defects4JProperties.JAVA7_HOME.getValue(),
-                Defects4JProperties.JAVA7_JRE.getValue(), abortOnError, (String[]) commandArgs);
-//		} catch (Abort a) {
-//			SystemUtils.executeCommandInJavaEnvironment(
-//					executionDir, null, null, null, abortOnError, (String[]) commandArgs);
-//		}
-    }
-    
-    /**
-     * Executes a given command in the system's environment. 
-     * Will abort the program in case of an error in the executed process.
-     *
-     * @param executionDir an execution directory in which the command shall be executed
-     * @param abortOnError whether to abort if the command cannot be executed
-     * @param commandArgs  the command to execute, given as an array
-     */
-    public static void executeCommandWithSystemJavaVersion(File executionDir, boolean abortOnError, String... commandArgs) {
-//		try {
-        SystemUtils.executeCommandInJavaEnvironment(
-                executionDir, null, null, null, abortOnError, (String[]) commandArgs);
+//        SystemUtils.executeCommandInJavaEnvironment(
+//                executionDir, Defects4JProperties.JAVA7_DIR.getValue(), Defects4JProperties.JAVA7_HOME.getValue(),
+//                Defects4JProperties.JAVA7_JRE.getValue(), abortOnError, (String[]) commandArgs);
+    	SystemUtils.executeCommandInJavaEnvironment(
+                executionDir, Defects4JProperties.JAVA8_DIR.getValue(), Defects4JProperties.JAVA8_HOME.getValue(),
+              Defects4JProperties.JAVA8_JRE.getValue(), abortOnError, (String[]) commandArgs);
 //		} catch (Abort a) {
 //			SystemUtils.executeCommandInJavaEnvironment(
 //					executionDir, null, null, null, abortOnError, (String[]) commandArgs);
@@ -150,6 +146,8 @@ public final class Defects4J extends Defects4JBase {
      * using a given Java 1.7 environment, which is required for defects4J to
      * function correctly and to compile the projects. Returns either the
      * process' output to standard out or to error out.
+     * 
+     * update for Defects4J 2.0: should be able to use JDK8...
      *
      * @param executionDir      an execution directory in which the command shall be executed
      * @param returnErrorOutput whether to output the error output channel instead of standard out
@@ -157,10 +155,15 @@ public final class Defects4J extends Defects4JBase {
      * @return the process' output to standard out or to error out
      */
     public static String executeCommandWithOutput(File executionDir, boolean returnErrorOutput, String... commandArgs) {
-        return SystemUtils.executeCommandWithOutputInJavaEnvironment(
-                executionDir, returnErrorOutput, Defects4JProperties.JAVA7_DIR.getValue(),
-                Defects4JProperties.JAVA7_HOME.getValue(), Defects4JProperties.JAVA7_JRE.getValue(),
-                (String[]) commandArgs);
+//        return SystemUtils.executeCommandWithOutputInJavaEnvironment(
+//                executionDir, returnErrorOutput, Defects4JProperties.JAVA7_DIR.getValue(),
+//                Defects4JProperties.JAVA7_HOME.getValue(), Defects4JProperties.JAVA7_JRE.getValue(),
+//                (String[]) commandArgs);
+    	
+    	 return SystemUtils.executeCommandWithOutputInJavaEnvironment(
+                 executionDir, returnErrorOutput, Defects4JProperties.JAVA8_DIR.getValue(), 
+                 Defects4JProperties.JAVA8_HOME.getValue(), Defects4JProperties.JAVA8_JRE.getValue(), (String[]) commandArgs);
+    	 
     }
 
 }
