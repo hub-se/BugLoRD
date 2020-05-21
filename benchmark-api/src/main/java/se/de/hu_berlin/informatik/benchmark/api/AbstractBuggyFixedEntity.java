@@ -11,7 +11,6 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -80,7 +79,7 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
 							// for extracting the changes, copy the changed files for easier access...
                         	File bugFile = getFilePath(path, bug, executionModeBug);
                         	File fixFile = getFilePath(path, fix, executionModeFix);
-                        	Path outputDir = Paths.get("changes_tmp", this.toString());
+                        	Path outputDir = Paths.get("changes_tmp", getUniqueIdentifier());
                         	try {
                         		outputDir.toFile().mkdirs();
 								FileUtils.copyFileOrDir(bugFile, outputDir.resolve(bugFile.getName() + ".b").toFile(), 
