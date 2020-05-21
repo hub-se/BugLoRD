@@ -433,7 +433,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
         		if(m.group(2).equals("a"))
         		{
         			dbg("Insert = " + m.group(1));
-        			items.put("insert"+cnt3,getLineOrRange(split) + ":" + getNumberOfLines(m.group(3).split("\\p{Punct}+", 0)));
+        			items.put("insert"+cnt3,(Integer.valueOf(split[0]) + 1) + ":" + getNumberOfLines(m.group(3).split("\\p{Punct}+", 0)));
         			cnt3++;
         		}
         		if(m.group(2).equals("c"))
