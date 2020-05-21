@@ -65,7 +65,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
         	HashMap<String, HashMap<String, String>> patches = new HashMap<String, HashMap<String, String>>();
 
         	info = infos(d4jEntity);
-        	patches = patchanalysis(info, d4jEntity);
+        	patches = patchAnalysis(info, d4jEntity);
         	printXML(info, patches, d4jEntity);
         	
         	if (!bugExisted) {
@@ -123,7 +123,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
         	}
 
         	read =  readfile(filenPath);
-        	info =  searcharray(read, "-i");
+        	info =  searcharrayInfo(read);
 
         	out.flush();
         } catch (IOException e) {
@@ -139,7 +139,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
     /***
     Function patchanalysis generates a diff between the bugged and fixed versions and saves them temporarily into files, then reads the files
     ***/
-     public static HashMap<String, HashMap<String, String>> patchanalysis(HashMap<String, String> info, 
+     public static HashMap<String, HashMap<String, String>> patchAnalysis(HashMap<String, String> info, 
     		 Defects4JBuggyFixedEntity buggyEntity)
     {
         dbg("-- Function patchanalysis --");
@@ -205,7 +205,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
 
 					read =  readfile(filename);
 					dbg("Array = " + Arrays.toString(read.toArray()));
-					lines =  searcharray(read, "-p");
+					lines =  searcharrayPatch(read);
 					locations.put("fixlocations"+j,lines);
 					dbg("Range = " + locations.get("fixlocations"+j).get("range"));
 					out.flush();
@@ -256,9 +256,9 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
     }
     
     /***
-    Function searcharray to map data from diff-files and info-files to keywords 
+    Function searcharray to map data from info-files to keywords 
     ***/
-    public static HashMap<String, String> searcharray(ArrayList<String> splitted, String parameter) 
+    public static HashMap<String, String> searcharrayInfo(ArrayList<String> splitted) 
     {
         dbg("-- Function searcharray --");
         
@@ -266,302 +266,250 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
         int cnt = 1;
         int cnt2 = 1;
         int cnt6 = 1;
-        
-        if(parameter.equals("-i"))
-        {
-        
-            for(int m = 0; m < splitted.size(); m++)
-            {
-                if(splitted.get(m) != null)
-                {
-                
-                    if(splitted.get(m).equals("Project ID"))
-                    {
-                        items.put("projectname", splitted.get(m+1));
-                    }
-                
-                    if(splitted.get(m).equals("Summary for Bug"))
-                    {
-                        items.put("bugname", splitted.get(m+1));
-                    }
-                
-                    if(splitted.get(m).equals("Root cause in triggering tests"))
-                    {
-                        String[] temp = new String[50];
-                        for(int q = 1; q < 40; q++)
-                        {
-                            if(splitted.get(m+q).equals("--------------------------------------------------------------------------------"))
-                            {
-                                break;
-                            }
-                            
-                            else
-                            {
-                                temp[q] = splitted.get(m+q);
-                                dbg("Line = " + splitted.get(m+q)); 
-                            }
-                        }
-                        
-                        for(int w = 1; w < temp.length; w++)
-                        {
-                            if(temp[w] != null && temp[w].length() >= 2)
-                            {
-                                dbg(temp[w]); 
-                                String sub = temp[w].substring(0,2);
-                                dbg(sub);
-                                if(sub.equals("- "))
-                                {
-                                    String raw = temp[w].substring(2);
-                                    raw = raw.replace(".","/");
-//                                     int string_split = raw.lastIndexOf("/");
-//                                     String base = raw.substring(0, string_split);
-//                                     String file_name = raw.substring(string_split+1);
-//                                     File file_path = new File(path+"_buggy_"+items.get("bugname"));
-                                    
-//                                     File real_name = try_and_find(file_path, file_name);
-//                                     if(real_name == null)
-//                                     {
-                                        items.put("buglocations"+cnt,raw);
-//                                         cnt++;
-//                                     }
-//                                     else
-//                                     {
-//                                         String blub = base + "/" + real_name.getName();
-//                                         items.put("buglocations"+cnt, blub);
-//                                         dbg("buglocations"+cnt+" = " +items.get("buglocations"+w)); 
-//                                         cnt++;
-//                                     }
-                                }
-                                
-                                if(sub.equals("--"))
-                                {
-                                    String cause = "";
-                                    String subsub = "";
-                                    
-                                    
-                                    for(int k = 0; temp[w+k] != null; k++)
-                                    {
-                                        dbg("#"+ temp[w+k] + "#");
-                                        if(temp[w+k].length() >= 3 )
-                                        {
-                                            subsub = temp[w+k].substring(0,2);
-                                        }
-                                        if(!temp[w+k].equals("--------------------------------------------------------------------------------") || subsub.equals("-->"))
-                                        {
-                                            cause = cause+":"+temp[w+k];
-                                            dbg("Cause = "+cause);
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                    String excp = cause.substring(5);
-                                    
-                                    items.put("exception"+cnt6, excp);
-                                    dbg("Exception = " + items.get("exception"+cnt6));
-                                    cnt6++;
-                                    
-                                    
-                                }
-                            }  
-                        }
-                        
 
-                    }
-                
-                    if(splitted.get(m).equals("List of modified sources"))
-                    {
-                        String[] temp = new String[50];
-                        for(int q = 1; q < 40; q++)
-                        {
-                            if(splitted.get(m+q).equals("--------------------------------------------------------------------------------"))
-                            {
-                                break;
-                            }
-                            
-                            else
-                            {
-                                temp[q] = splitted.get(m+q);
-                                dbg("Line = " + splitted.get(m+q)); 
-                            }
-                        }
-                        
-                        for(int w = 1; w < temp.length; w++)
-                        {
-                            if(temp[w] != null && temp[w].length() >= 2)
-                            {
-                                dbg("Element = "+temp[w]);
-                                String sub = temp[w].substring(0,2);
-                                dbg("Substring = " +sub);
-                                if(sub.equals("- "))
-                                {
-                                    
-                                    items.put("fixlocations"+cnt2, temp[w].substring(2).replace(".","/").concat(".java"));
-                                    dbg("fixlocations"+cnt2+" = " +items.get("fixlocations"+w));
-                                    cnt2++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if(parameter.equals("-p"))
+        for(int m = 0; m < splitted.size(); m++)
         {
-            String regex = "(\\d+\\p{Punct}*\\d*)([acd])(\\d+\\p{Punct}*\\d*)";
-            Pattern r = Pattern.compile(regex);
-            String[] lines = new String[500];
-            int cnt3 = 1;
-            int cnt4 = 1;
-            int cnt5 = 1;
-            
-            for(int n = 0; n < splitted.size(); n++)
-            {   
-                Matcher m = r.matcher(splitted.get(n));
-                if(m.find())
-                {
-                    if(m.group(2).equals("a"))
-                    {
-                        dbg("Insert = " + m.group(1));
-                        items.put("insert"+cnt3,m.group(1));
-                        cnt3++;
-                    }
-                    if(m.group(2).equals("c"))
-                    {
-                        dbg("change = " + m.group(1));
-                        items.put("change"+cnt4,m.group(1));
-                        cnt4++;
-                    }
-                    if(m.group(2).equals("d"))
-                    {
-                        dbg("delete = " + m.group(1));
-                        items.put("delete"+cnt5,m.group(1));
-                        cnt5++;
-                    }
-                    
-                    lines[n] = m.group(1);
-                }
-            }
-            dbg("Lines =");
-            dbg(Arrays.toString(lines));
-            
-            if(lines[0] != null)
-            {
-                int highest = Integer.parseInt(lines[0]);
-                int lowest = Integer.parseInt(lines[0]);
-            
-                String range = "";
-                
-                for(int v = 1; v< lines.length; v++)
-                {
-                    if(lines[v] != null)
-                    {            
-                        if(Integer.parseInt(lines[v]) > highest)
-                        {
-                            highest = Integer.parseInt(lines[v]);
-                        }
-                        if(Integer.parseInt(lines[v]) < lowest)
-                        {
-                            lowest = Integer.parseInt(lines[v]);
-                        }   
-                    }
+        	if(splitted.get(m) != null)
+        	{
 
-                }
-                
-                dbg("Highest = "+highest);
-                dbg("Lowest = " +lowest);
-                
-                if(highest != lowest)
-                {
-                    range = Integer.toString(lowest) + "-" + Integer.toString(highest);
-                }
-                if(highest == lowest)
-                {
-                    range = Integer.toString(lowest);
-                }
-                items.put("range", range);
-                dbg("Range = " + items.get("range"));
-            }
+        		if(splitted.get(m).equals("Project ID"))
+        		{
+        			items.put("projectname", splitted.get(m+1));
+        		}
+
+        		if(splitted.get(m).equals("Summary for Bug"))
+        		{
+        			items.put("bugname", splitted.get(m+1));
+        		}
+
+        		if(splitted.get(m).equals("Root cause in triggering tests"))
+        		{
+        			String[] temp = new String[50];
+        			for(int q = 1; q < 40; q++)
+        			{
+        				if(splitted.get(m+q).equals("--------------------------------------------------------------------------------"))
+        				{
+        					break;
+        				}
+
+        				else
+        				{
+        					temp[q] = splitted.get(m+q);
+        					dbg("Line = " + splitted.get(m+q)); 
+        				}
+        			}
+
+        			for(int w = 1; w < temp.length; w++)
+        			{
+        				if(temp[w] != null && temp[w].length() >= 2)
+        				{
+        					dbg(temp[w]); 
+        					String sub = temp[w].substring(0,2);
+        					dbg(sub);
+        					if(sub.equals("- "))
+        					{
+        						String raw = temp[w].substring(2);
+        						raw = raw.replace(".","/").concat(".java");
+        						//                                     int string_split = raw.lastIndexOf("/");
+        						//                                     String base = raw.substring(0, string_split);
+        						//                                     String file_name = raw.substring(string_split+1);
+        						//                                     File file_path = new File(path+"_buggy_"+items.get("bugname"));
+
+        						//                                     File real_name = try_and_find(file_path, file_name);
+        						//                                     if(real_name == null)
+        						//                                     {
+        						items.put("buglocations"+cnt,raw);
+        						//                                         cnt++;
+        						//                                     }
+        						//                                     else
+        						//                                     {
+        						//                                         String blub = base + "/" + real_name.getName();
+        						//                                         items.put("buglocations"+cnt, blub);
+        						//                                         dbg("buglocations"+cnt+" = " +items.get("buglocations"+w)); 
+        						//                                         cnt++;
+        						//                                     }
+        					}
+
+        					if(sub.equals("--"))
+        					{
+        						String cause = "";
+        						String subsub = "";
+
+
+        						for(int k = 0; temp[w+k] != null; k++)
+        						{
+        							dbg("#"+ temp[w+k] + "#");
+        							if(temp[w+k].length() >= 3 )
+        							{
+        								subsub = temp[w+k].substring(0,2);
+        							}
+        							if(!temp[w+k].equals("--------------------------------------------------------------------------------") || subsub.equals("-->"))
+        							{
+        								cause = cause+":"+temp[w+k];
+        								dbg("Cause = "+cause);
+        							}
+        							else
+        							{
+        								break;
+        							}
+        						}
+        						String excp = cause.substring(5);
+
+        						items.put("exception"+cnt6, excp);
+        						dbg("Exception = " + items.get("exception"+cnt6));
+        						cnt6++;
+
+
+        					}
+        				}  
+        			}
+
+
+        		}
+
+        		if(splitted.get(m).equals("List of modified sources"))
+        		{
+        			String[] temp = new String[50];
+        			for(int q = 1; q < 40; q++)
+        			{
+        				if(splitted.get(m+q).equals("--------------------------------------------------------------------------------"))
+        				{
+        					break;
+        				}
+
+        				else
+        				{
+        					temp[q] = splitted.get(m+q);
+        					dbg("Line = " + splitted.get(m+q)); 
+        				}
+        			}
+
+        			for(int w = 1; w < temp.length; w++)
+        			{
+        				if(temp[w] != null && temp[w].length() >= 2)
+        				{
+        					dbg("Element = "+temp[w]);
+        					String sub = temp[w].substring(0,2);
+        					dbg("Substring = " +sub);
+        					if(sub.equals("- "))
+        					{
+
+        						items.put("fixlocations"+cnt2, temp[w].substring(2).replace(".","/").concat(".java"));
+        						dbg("fixlocations"+cnt2+" = " +items.get("fixlocations"+w));
+        						cnt2++;
+        					}
+        				}
+        			}
+        		}
+        	}
         }
+
         dbg("--------------------------");
         return items;
     }
     
     /***
-    Function try_and_find searches for the correct file names
+    Function searcharray to map data from diff-files to keywords 
     ***/
-    public static File try_and_find(File path, String name)
+    public static HashMap<String, String> searcharrayPatch(ArrayList<String> diffFileLines) 
     {
-        dbg("-- Function try_and_find --");
+        dbg("-- Function searcharray --");
         
-        String[] illegals = new String[] {"_", "Test"};
-        for (String strike : illegals)
-        {
-           name = name.replace(strike, "");
-        }
-        name = name.replace("_", "");
-        String[] splits = name.split("(?=[A-Z])");
-        dbg("Looking for " + name + " in " + path.getAbsolutePath());
-        dbg("Splits are " + splits.length + " long");
-        dbg("My splits are: " + Arrays.toString(splits));
-        for(int it = splits.length - 1; it >= 0; it--)
-        {
-            dbg("Name = " + name);
-            File found = search(path, name + ".java").get(0);
-            if(found != null)
-            {
-                dbg("got it: " + found.getAbsolutePath());
-                return found;
-            }
-            else
-            {
-                name = name.substring(0, name.length() - splits[it].length());
-                dbg("File not found, now trying: " + name);
-                if(name == null)
-                {
-                    return null;
-                }
-            }
-        }
-        dbg("--------------------------");
-        return null;
-    }
-    
-    /***
-    Function search searches for the exact file path
-    ***/
-    public static List<File> search(File folder, String Patter)
-    {
-        List<File> results = new ArrayList<File>();
-        for (File tmp: folder.listFiles())
-        {
-            if(tmp.isDirectory())
-            {
-                List<File> found = search(tmp, Patter);
+        HashMap<String, String> items = new HashMap<String, String>();
 
-                if(found != null)
-                {
-                    results.addAll(found) ;
-                }
-            }
-            else
-            {
-                if(Patter.equals(tmp.getName()))
-                {
-                    results.add(tmp);
-                }
-            }
+        String regex = "(\\d+\\p{Punct}*\\d*)([acd])(\\d+\\p{Punct}*\\d*)";
+        Pattern r = Pattern.compile(regex);
+        String[] lines = new String[500];
+        int cnt3 = 1;
+        int cnt4 = 1;
+        int cnt5 = 1;
+
+        for(int n = 0; n < diffFileLines.size(); n++)
+        {   
+        	Matcher m = r.matcher(diffFileLines.get(n));
+        	if(m.find())
+        	{
+        		String[] split = m.group(1).split("\\p{Punct}+", 0);
+        		if(m.group(2).equals("a"))
+        		{
+        			dbg("Insert = " + m.group(1));
+        			items.put("insert"+cnt3,getLineOrRange(split));
+        			cnt3++;
+        		}
+        		if(m.group(2).equals("c"))
+        		{
+        			dbg("change = " + m.group(1));
+        			items.put("change"+cnt4,getLineOrRange(split));
+        			cnt4++;
+        		}
+        		if(m.group(2).equals("d"))
+        		{
+        			dbg("delete = " + m.group(1));
+        			items.put("delete"+cnt5,getLineOrRange(split));
+        			cnt5++;
+        		}
+
+        		lines[n] = m.group(1);
+        	}
         }
-        if (results.isEmpty()) {
-          return null;
+        dbg("Lines =");
+        dbg(Arrays.toString(lines));
+
+        if(lines[0] != null)
+        {
+        	String[] split = lines[0].split("\\p{Punct}+", 0);
+        	int highest = Integer.parseInt(split.length > 1 ? split[1] : split[0]);
+        	int lowest = Integer.parseInt(split[0]);
+
+        	String range = "";
+
+        	for(int v = 1; v < lines.length; v++)
+        	{
+        		if(lines[v] != null)
+        		{            
+        			split = lines[v].split("\\p{Punct}+", 0);
+        			if(Integer.parseInt(split.length > 1 ? split[1] : split[0]) > highest)
+        			{
+        				highest = Integer.parseInt(split.length > 1 ? split[1] : split[0]);
+        			}
+        			if(Integer.parseInt(split[0]) < lowest)
+        			{
+        				lowest = Integer.parseInt(split[0]);
+        			}   
+        		}
+
+        	}
+
+        	dbg("Highest = "+highest);
+        	dbg("Lowest = " +lowest);
+
+        	if(highest != lowest)
+        	{
+        		range = Integer.toString(lowest) + "-" + Integer.toString(highest);
+        	}
+        	if(highest == lowest)
+        	{
+        		range = Integer.toString(lowest);
+        	}
+        	items.put("range", range);
+        	dbg("Range = " + items.get("range"));
         }
-        else{
-          return results;
-        }
+
+        dbg("--------------------------");
+        return items;
     }
+
     
-    /***
+    private static String getLineOrRange(String[] split) {
+    	if (split.length == 1) {
+    		return split[0];
+    	} else {
+    		return split[0] + "-" + split[1];
+		}
+	}
+
+
+	/***
     Function printXML creates the XML File and puts data in it
     ***/
     public static void printXML(HashMap<String, String> info, 
@@ -601,81 +549,63 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 Element buglocations = doc.createElement("tests");
                 bug.appendChild(buglocations);
 
-                for(int l = 1; ; l++)
-                {
-                dbg("buglocations"+l+" = "+info.get("buglocations"+l));
-                
-                
-                    if(info.get("buglocations"+l) != null)
-                    {
+                for(int l = 1; ; l++) {
+                	dbg("buglocations"+l+" = "+info.get("buglocations"+l));
 
-                        if(!info.get("buglocations"+l).equals(info.get("buglocations"+(l+1))))
-                        {
-                            Element buglocfiles = doc.createElement("testfile");
-                            buglocations.appendChild(buglocfiles);
-            
-                            Attr bugpath = doc.createAttribute("path");
-                            bugpath.setValue(info.get("buglocations"+l));
-                            buglocfiles.setAttributeNode(bugpath);
-                            
-                            Element bugexception = doc.createElement("exception");
-                            bugexception.appendChild(doc.createTextNode(info.get("exception"+l)));
-                            buglocfiles.appendChild(bugexception);
-                            
-                            for(int y = 1; y <= 40; y++)
-                            {
-                                if(info.get("fixlocations"+y) != null && patches.get("fixlocations"+y).get("range") != null)
-                                {
-                                    dbg("Buglocation = "+info.get("buglocations"+l));
-                                    dbg("Fixlocation = "+info.get("fixlocations"+y));
-                                    
-                                    if(info.get("fixlocations"+y).equals(info.get("buglocations"+l)))
-                                    {
-                                        Element range = doc.createElement("range");
-                                        range.appendChild(doc.createTextNode(patches.get("fixlocations"+y).get("range")));
-                                        buglocfiles.appendChild(range);
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                            
+                	if(info.get("buglocations"+l) != null) {
 
-//                     
-//                             Element faultrecognition = doc.createElement("faultrecognition");
-//                             faultrecognition.appendChild(doc.createTextNode("medium"));
-//                     
-//                             bugloclines.appendChild(faultrecognition);
-//         
-//                             buglocfiles.appendChild(bugloclines);
-                        }
-                    }
-                
-                    else
-                    {
-                        break;
-                    }
+                		if(!info.get("buglocations"+l).equals(info.get("buglocations"+(l+1)))) {
+                			Element buglocfiles = doc.createElement("testfile");
+                			buglocations.appendChild(buglocfiles);
+
+                			Attr bugpath = doc.createAttribute("path");
+                			bugpath.setValue(info.get("buglocations"+l));
+                			buglocfiles.setAttributeNode(bugpath);
+
+                			Element bugexception = doc.createElement("exception");
+                			bugexception.appendChild(doc.createTextNode(info.get("exception"+l)));
+                			buglocfiles.appendChild(bugexception);
+
+                			for(int y = 1; y <= 40; y++) {
+                				if(info.get("fixlocations"+y) != null && patches.get("fixlocations"+y).get("range") != null) {
+                					dbg("Buglocation = "+info.get("buglocations"+l));
+                					dbg("Fixlocation = "+info.get("fixlocations"+y));
+
+                					if(info.get("fixlocations"+y).equals(info.get("buglocations"+l))) {
+                						Element range = doc.createElement("range");
+                						range.appendChild(doc.createTextNode(patches.get("fixlocations"+y).get("range")));
+                						buglocfiles.appendChild(range);
+                						break;
+                					} 
+//                					else {
+//                						break;
+//                					}
+                				} else {
+                					break;
+                				}
+                			}
+                			//                     
+                			//                             Element faultrecognition = doc.createElement("faultrecognition");
+                			//                             faultrecognition.appendChild(doc.createTextNode("medium"));
+                			//                     
+                			//                             bugloclines.appendChild(faultrecognition);
+                			//         
+                			//                             buglocfiles.appendChild(bugloclines);
+                		}
+                	} else {
+                		break;
+                	}
                 }
 
                 //fixlocations
                 Element fixlocations = doc.createElement("fixlocations");
                 bug.appendChild(fixlocations);
 
-                for(int z = 1; ; z++)
-                {
+                for(int z = 1; ; z++) {
                     dbg("fixlocations"+z+" = "+info.get("fixlocations"+z)); 
                 
-                    if(info.get("fixlocations"+z) != null)
-                    {
-                        if(!info.get("fixlocations"+z).equals(info.get("fixlocations"+(z+1))))
-                        {
+                    if(info.get("fixlocations"+z) != null) {
+                        if(!info.get("fixlocations"+z).equals(info.get("fixlocations"+(z+1)))) {
                             Element fixlocfiles = doc.createElement("file");
                             fixlocations.appendChild(fixlocfiles);
             
@@ -683,36 +613,26 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                             fixpath.setValue(info.get("fixlocations"+z));
                             fixlocfiles.setAttributeNode(fixpath);
             
-                            for(int ch = 1; ; ch++)
-                            {
-                                if(patches.get("fixlocations"+z).get("change"+ch) != null)
-                                {
+                            for(int ch = 1; ; ch++) {
+                                if(patches.get("fixlocations"+z).get("change"+ch) != null) {
                                     Element change = doc.createElement("change");
                                     change.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("change"+ch)));
                                     fixlocfiles.appendChild(change);
-                                }
-                                else
-                                {
+                                } else {
                                     break;
                                 }
                             }
-                            for(int de = 1; ; de++)
-                            {
-                                if(patches.get("fixlocations"+z).get("delete"+de) != null)
-                                {
+                            for(int de = 1; ; de++) {
+                                if(patches.get("fixlocations"+z).get("delete"+de) != null) {
                                     Element delete = doc.createElement("delete");
                                     delete.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("delete"+de)));
                                     fixlocfiles.appendChild(delete);
-                                }
-                                else
-                                {
+                                } else {
                                     break;
                                 }
                             }
-                            for(int in = 1; ; in++)
-                            {
-                                if(patches.get("fixlocations"+z).get("insert"+in) != null)
-                                {   
+                            for(int in = 1; ; in++) {
+                                if(patches.get("fixlocations"+z).get("insert"+in) != null) {   
                                     Element insert = doc.createElement("insert");
                                     insert.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("insert"+in)));
                                     fixlocfiles.appendChild(insert);
@@ -720,17 +640,12 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                                     Attr lines = doc.createAttribute("numberlines");
                                     lines.setValue(" ");
                                     insert.setAttributeNode(lines);
-                                }
-                                else
-                                {
+                                } else {
                                     break;
                                 }
                             }
                         }
-                    }
-                
-                    else
-                    {
+                    } else {
                         break;
                     }
                 }
@@ -787,68 +702,6 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
             te.printStackTrace();
         }
         
-    }
-    
-    public static List<File[]> fuzzy_diff(List<File> dominant, List<File> submissive) throws IOException
-    {
-        List<File[]> out = new ArrayList<File[]>();
-        String dom_marker = "_fixed_";
-        String sub_marker = "_buggy_";
-        dbg(Arrays.toString(dominant.toArray()));
-        dbg(Arrays.toString(submissive.toArray()));
-        
-        for (File dom : dominant) 
-        {
-          String dom_name = dom.getCanonicalPath();
-          int index = dom_name.lastIndexOf(dom_marker);
-          String dom_pattern = dom_name.substring(index + dom_marker.length());
-          dbg("Dom " + dom_pattern);
-          
-          for (File sub : submissive) 
-          {
-              String sub_name = sub.getCanonicalPath();
-              int index_sub = sub_name.lastIndexOf(sub_marker);
-              String sub_pattern = sub_name.substring(index_sub + sub_marker.length());
-              dbg(sub_pattern);
-              
-              if (dom_pattern.equals(sub_pattern)) 
-              {
-                File[] entry = {dom, sub};
-                dbg(" Match!");
-                if (!contentEquals(dom, sub)) {
-                  dbg("Dom and sub are equal");
-                  out.add(entry);
-                }
-              }
-              dbg("");
-          }
-        }
-        dbg(String.valueOf(out.size()));
-      return out;
-    }
-    
-    public static boolean contentEquals(File file1, File file2) throws IOException, FileNotFoundException
-    {
-      if (file1.length() != file2.length()){
-        return false;
-      }
-      FileReader fR1 = new FileReader(file1);
-      FileReader fR2 = new FileReader(file2);
-      
-      Boolean equal = true;
-      
-      try (BufferedReader reader1 = new BufferedReader(fR1);
-      BufferedReader reader2 = new BufferedReader(fR2)) {
-
-    	  String line1 = null;
-    	  String line2 = null;
-    	  while ((equal) && ((line1 = reader1.readLine()) != null)
-    			  && ((line2 = reader2.readLine()) != null)) {
-    		  if (!line1.equals(line2))
-    			  equal = false;
-    	  }
-    	  return equal;
-      }
     }
     
     /***
