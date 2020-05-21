@@ -644,6 +644,26 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                                     break;
                                 }
                             }
+                            
+                            Element bugtypes = doc.createElement("bugtypes");
+                            fixlocfiles.appendChild(bugtypes);
+                        
+                            Element bugtypeid = doc.createElement("id");
+                        
+                        
+                            Attr bugtypeno = doc.createAttribute("id");
+                            bugtypeno.setValue("");
+                            bugtypeid.setAttributeNode(bugtypeno);
+                            
+                            Attr bugtypenoline = doc.createAttribute("lines");
+                            bugtypeno.setValue("");
+                            bugtypeid.setAttributeNode(bugtypenoline);
+                        
+                            Element description = doc.createElement("description");
+                            description.appendChild(doc.createTextNode(" "));
+                            bugtypeid.appendChild(description);
+
+                            bugtypes.appendChild(bugtypeid);
                         }
                     } else {
                         break;
@@ -655,25 +675,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 numberfixedstatements.appendChild(doc.createTextNode(" "));
                 bug.appendChild(numberfixedstatements);
             
-                Element bugtypes = doc.createElement("bugtypes");
-                bug.appendChild(bugtypes);
-            
-                Element bugtypeid = doc.createElement("id");
-            
-            
-                Attr bugtypeno = doc.createAttribute("id");
-                bugtypeno.setValue("");
-                bugtypeid.setAttributeNode(bugtypeno);
                 
-                Attr bugtypenoline = doc.createAttribute("lines");
-                bugtypeno.setValue("");
-                bugtypeid.setAttributeNode(bugtypenoline);
-            
-                Element description = doc.createElement("description");
-                description.appendChild(doc.createTextNode(" "));
-                bugtypeid.appendChild(description);
-
-                bugtypes.appendChild(bugtypeid);
                         
                 //create XML file
                 TransformerFactory tfactory = TransformerFactory.newInstance();
