@@ -157,8 +157,10 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
         {   
             if(info.get("fixlocations"+j) != null)
             {
-                Path dir_bug = buggyEntity.getBuggyVersion().getMainSourceDir(true).toAbsolutePath();
-                Path dir_fix = buggyEntity.getFixedVersion().getMainSourceDir(true).toAbsolutePath();
+                Path dir_bug = buggyEntity.getBuggyVersion().getWorkDir(true).toAbsolutePath()
+                		.resolve(buggyEntity.getBuggyVersion().getMainSourceDir(true));
+                Path dir_fix = buggyEntity.getFixedVersion().getWorkDir(true).toAbsolutePath()
+                		.resolve(buggyEntity.getFixedVersion().getMainSourceDir(true));
 
                 String searchedfile = info.get("fixlocations"+j);
 //                int slash = searchedfile.lastIndexOf("/");
