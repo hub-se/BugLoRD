@@ -126,7 +126,7 @@ public class GenerateCombinedRankings {
         List<BuggyFixedEntity<?>> entities = new ArrayList<>();
         //iterate over all projects
         for (Defects4JProject project : Defects4J.getAllProjects()) {
-            String[] ids = Defects4J.getAllBugIDs(project);
+            String[] ids = Defects4J.getAllActiveBugIDs(project);
             for (String id : ids) {
                 entities.add(new Defects4JBuggyFixedEntity(project, id));
             }

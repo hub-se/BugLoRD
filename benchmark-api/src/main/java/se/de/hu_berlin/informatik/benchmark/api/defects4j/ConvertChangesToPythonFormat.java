@@ -33,7 +33,7 @@ public class ConvertChangesToPythonFormat {
             Path outputProjectPath = outputMainPath.resolve(project.getId());
             outputProjectPath.toFile().mkdirs();
 
-            String[] ids = Defects4JBase.getAllBugIDs(project);
+            String[] ids = Defects4JBase.getAllActiveBugIDs(project);
             for (String id : ids) {
                 Map<String, List<Modification>> changes = Defects4JBuggyFixedEntity.getModificationsFromXmlFile(project.getId(), id);
                 if (changes == null) {

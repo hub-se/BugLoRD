@@ -18,19 +18,31 @@ public class Defects4JBase {
     public final static String PROP_FILE_NAME = "defects4jProperties.ini";
 
     public static String[] getAllBugIDs(String projectId) {
-        return getAllBugIDs(getProjectFromId(projectId));
+        return getAllActiveBugIDs(getProjectFromId(projectId));
     }
     
-    public static String[] getAllBugIDs(Defects4JProject project) {
+    public static String[] getAllActiveBugIDs(Defects4JProject project) {
         int maxID = getMaxBugID(project);
-        String[] result = new String[maxID];
-        for (int i = 0; i < maxID; ++i) {
-            result[i] = String.valueOf(i + 1);
+        String[] result = new String[maxID - project.excluded.length];
+        int index = 0;
+        for (int i = 1; i < maxID + 1; ++i) {
+        	if (!isExcluded(i, project)) {
+        		result[index++] = String.valueOf(i);
+        	}
         }
         return result;
     }
     
-    // extracted from Defects4J v2.0 - https://github.com/rjust/defects4j
+    private static boolean isExcluded(int i, Defects4JProject project) {
+		for (int j : project.excluded) {
+			if (i == j) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// extracted from Defects4J v2.0 - https://github.com/rjust/defects4j
     public static enum Defects4JProject {
     	CHART("Chart", "jfreechart", 26),
     	CLI("Cli", "commons-cli", 40, 6),

@@ -178,7 +178,7 @@ public class GenerateCsvBugDataFiles {
 
             // iterate over all projects
             for (Defects4JProject project : Defects4J.getAllProjects()) {
-                String[] ids = Defects4J.getAllBugIDs(project);
+                String[] ids = Defects4J.getAllActiveBugIDs(project);
                 for (String id : ids) {
                     linker.submit(new Defects4JBuggyFixedEntity(project, id));
                 }
@@ -221,7 +221,7 @@ public class GenerateCsvBugDataFiles {
 
             // iterate over all projects
             for (Defects4JProject project : Defects4J.getAllProjects()) {
-                String[] ids = Defects4J.getAllBugIDs(project);
+                String[] ids = Defects4J.getAllActiveBugIDs(project);
                 for (String id : ids) {
                     linker2.submit(new Defects4JBuggyFixedEntity(project, id));
                 }

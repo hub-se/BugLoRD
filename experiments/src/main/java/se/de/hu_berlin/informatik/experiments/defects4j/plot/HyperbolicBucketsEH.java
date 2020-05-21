@@ -342,7 +342,7 @@ public class HyperbolicBucketsEH extends AbstractConsumingProcessor<StatisticsCo
 //				if (project.equals("Mockito")) {
 //					continue;
 //				}
-                String[] ids = Defects4J.getAllBugIDs(project);
+                String[] ids = Defects4J.getAllActiveBugIDs(project);
                 for (String id : ids) {
                     entities[i++] = new Defects4JBuggyFixedEntity(project, id);
                 }

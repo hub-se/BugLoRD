@@ -107,7 +107,7 @@ public class PlotAverageEH extends AbstractConsumingProcessor<String> {
 
             //iterate over all projects
             for (Defects4JProject project : Defects4J.getAllProjects()) {
-                String[] ids = Defects4J.getAllBugIDs(project);
+                String[] ids = Defects4J.getAllActiveBugIDs(project);
                 for (String id : ids) {
                     entities.add(new Defects4JBuggyFixedEntity(project, id));
                 }
