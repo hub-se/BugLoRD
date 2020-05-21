@@ -433,7 +433,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
         		if(m.group(2).equals("a"))
         		{
         			dbg("Insert = " + m.group(1));
-        			items.put("insert"+cnt3,getLineOrRange(split));
+        			items.put("insert"+cnt3,getLineOrRange(split) + ":" + getNumberOfLines(m.group(3).split("\\p{Punct}+", 0)));
         			cnt3++;
         		}
         		if(m.group(2).equals("c"))
@@ -500,7 +500,16 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
     }
 
     
-    private static String getLineOrRange(String[] split) {
+    private static int getNumberOfLines(String[] split) {
+    	if (split.length == 1) {
+    		return 1;
+    	} else {
+    		return Integer.valueOf(split[1]) - Integer.valueOf(split[0]) + 1;
+		}
+	}
+
+
+	private static String getLineOrRange(String[] split) {
     	if (split.length == 1) {
     		return split[0];
     	} else {
@@ -616,6 +625,9 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                             for(int ch = 1; ; ch++) {
                                 if(patches.get("fixlocations"+z).get("change"+ch) != null) {
                                     Element change = doc.createElement("change");
+                                    Attr parentStatements = doc.createAttribute("parent");
+                                    parentStatements.setValue(patches.get("fixlocations"+z).get("change"+ch));
+                                    change.setAttributeNode(parentStatements);
                                     change.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("change"+ch)));
                                     fixlocfiles.appendChild(change);
                                 } else {
@@ -634,11 +646,12 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                             for(int in = 1; ; in++) {
                                 if(patches.get("fixlocations"+z).get("insert"+in) != null) {   
                                     Element insert = doc.createElement("insert");
-                                    insert.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("insert"+in)));
+                                    String[] split = patches.get("fixlocations"+z).get("insert"+in).split(":", 0);
+                                    insert.appendChild(doc.createTextNode(split[0]));
                                     fixlocfiles.appendChild(insert);
                                     
                                     Attr lines = doc.createAttribute("numberlines");
-                                    lines.setValue(" ");
+                                    lines.setValue(split[1]);
                                     insert.setAttributeNode(lines);
                                 } else {
                                     break;
@@ -656,7 +669,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                             bugtypeid.setAttributeNode(bugtypeno);
                             
                             Attr bugtypenoline = doc.createAttribute("lines");
-                            bugtypeno.setValue("");
+                            bugtypenoline.setValue("");
                             bugtypeid.setAttributeNode(bugtypenoline);
                         
                             Element description = doc.createElement("description");
