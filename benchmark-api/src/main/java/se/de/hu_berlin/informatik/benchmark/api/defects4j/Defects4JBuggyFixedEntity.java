@@ -40,7 +40,15 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
         this.bugID = bugId;
     }
 
-    @Override
+    public String getProject() {
+		return project;
+	}
+
+	public String getBugID() {
+		return bugID;
+	}
+
+	@Override
     public String getUniqueIdentifier() {
         return project + SEPARATOR_CHAR + bugID;
     }
@@ -118,7 +126,7 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
         	// fall back to change checker
             changesMap = super.getAllChanges(executionModeBug, resetBug, 
             		deleteBugAfterwards, executionModeFix, resetFix, deleteFixAfterwards);
-            
+
             if (!bugExisted) {
             	this.getBuggyVersion().deleteAllButData();
             }

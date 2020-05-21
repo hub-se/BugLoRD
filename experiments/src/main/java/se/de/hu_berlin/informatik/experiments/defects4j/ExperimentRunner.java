@@ -38,7 +38,7 @@ public class ExperimentRunner {
                         + "iterate over all bugs in a project.")
                 .build()),
         EXECUTE(Option.builder("e").longOpt("execute").hasArgs().required().desc(
-                "A list of all experiments to execute. (Acceptable values are 'checkout', 'genSpectra', 'checkChanges', "
+                "A list of all experiments to execute. (Acceptable values are 'checkout', 'genSpectra', 'checkChanges', 'bugDiagnosis', "
                         + "'computeSBFL', 'query' or 'all') Only one option for computing the SBFL rankings should be used. "
                         + "Additionally, you can just checkout the bug and fix with 'check' and clean up with 'cleanup'.")
                 .build()),
@@ -188,6 +188,11 @@ public class ExperimentRunner {
             linker.append(
                     new ThreadedProcessor<>(threadCount, limit,
                             new ERCheckoutFixAndCheckForChangesEH()));
+        }
+        
+        if (toDoContains(toDo, "bugDiagnosis")) {
+            linker.append(
+                    new ThreadedProcessor<>(threadCount, limit, new ERBugDiagnosisEH()));
         }
 
         if (toDoContains(toDo, "query") || toDoContains(toDo, "all")) {
