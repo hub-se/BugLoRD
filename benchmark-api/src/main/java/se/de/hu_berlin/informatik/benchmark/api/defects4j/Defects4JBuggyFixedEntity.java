@@ -113,9 +113,19 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
         }
         if (changesMap == null) {
         	Log.warn(ConvertChangesToPythonFormat.class, "Could not get changes from XML file. Trying to calculate changes for %s", this);
+			boolean bugExisted = this.requireBug(executionModeBug);
+			boolean fixExisted = this.requireFix(executionModeFix);
         	// fall back to change checker
             changesMap = super.getAllChanges(executionModeBug, resetBug, 
             		deleteBugAfterwards, executionModeFix, resetFix, deleteFixAfterwards);
+            
+            if (!bugExisted) {
+            	this.getBuggyVersion().deleteAllButData();
+            }
+
+            if (!fixExisted) {
+            	this.getFixedVersion().deleteAllButData();
+            }
         }
         return changesMap;
     }
