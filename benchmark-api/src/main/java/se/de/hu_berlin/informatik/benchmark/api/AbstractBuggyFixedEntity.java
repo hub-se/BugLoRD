@@ -3,12 +3,18 @@ package se.de.hu_berlin.informatik.benchmark.api;
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.changechecker.ChangeCheckerUtils;
 import se.de.hu_berlin.informatik.changechecker.ChangeWrapper;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +76,22 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
                         List<Modification> modifications = Modification.convertChangeWrappersToModifications(classPath, changes);
                         if (modifications.isEmpty()) {
                             Log.warn(this, "No Changes found: '%s'.", bug);
-                        }
+                        } else {
+							// for extracting the changes, copy the changed files for easier access...
+                        	File bugFile = getFilePath(path, bug, executionModeBug);
+                        	File fixFile = getFilePath(path, fix, executionModeFix);
+                        	Path outputDir = Paths.get("changes_tmp", this.toString());
+                        	try {
+                        		outputDir.toFile().mkdirs();
+								FileUtils.copyFileOrDir(bugFile, outputDir.resolve(bugFile.getName() + ".b").toFile(), 
+										StandardCopyOption.REPLACE_EXISTING);
+								FileUtils.copyFileOrDir(fixFile, outputDir.resolve(fixFile.getName() + ".f").toFile(), 
+										StandardCopyOption.REPLACE_EXISTING);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
                         map.put(classPath, modifications);
                         return null;
                     }
@@ -101,10 +122,13 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
     private List<ChangeWrapper> getChanges(Path path, T bug, boolean executionModeBug, T fix,
                                            boolean executionModeFix) {
         return ChangeCheckerUtils.checkForChanges(
-                bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)).resolve(path).toFile(),
-                fix.getWorkDir(executionModeFix).resolve(fix.getMainSourceDir(executionModeFix)).resolve(path)
-                        .toFile(), false, false);
+                getFilePath(path, bug, executionModeBug),
+                getFilePath(path, fix, executionModeFix), false, false);
     }
+
+	private File getFilePath(Path path, T bug, boolean executionModeBug) {
+		return bug.getWorkDir(executionModeBug).resolve(bug.getMainSourceDir(executionModeBug)).resolve(path).toFile();
+	}
 
     @Override
     public T getBuggyVersion() {
