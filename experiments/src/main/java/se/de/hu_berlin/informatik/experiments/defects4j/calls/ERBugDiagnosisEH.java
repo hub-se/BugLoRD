@@ -40,6 +40,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEnt
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 /**
@@ -183,8 +184,8 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 // for extracting the changes, copy the changed files for easier access...
                 File bugFile = dir_bug.resolve(searchedfile).toFile();
                 File fixFile = dir_fix.resolve(searchedfile).toFile();
-                Path outputDirBug = Paths.get("changes_tmp", "buggy", buggyEntity.getUniqueIdentifier());
-                Path outputDirFix = Paths.get("changes_tmp", "fixed", buggyEntity.getUniqueIdentifier());
+                Path outputDirBug = Paths.get("bugDiagnosis", "diffFiles", "buggy", buggyEntity.getUniqueIdentifier());
+                Path outputDirFix = Paths.get("bugDiagnosis", "diffFiles", "fixed", buggyEntity.getUniqueIdentifier());
                 try {
                 	outputDirBug.toFile().mkdirs();
                 	outputDirFix.toFile().mkdirs();
@@ -654,6 +655,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                             fixpath.setValue(info.get("fixlocations"+z));
                             fixlocfiles.setAttributeNode(fixpath);
             
+                            List<Pair<Integer, Element>> nodes = new ArrayList<>();
                             for(int ch = 1; ; ch++) {
                                 if(patches.get("fixlocations"+z).get("change"+ch) != null) {
                                     Element change = doc.createElement("change");
@@ -661,7 +663,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                                     parentStatements.setValue(patches.get("fixlocations"+z).get("change"+ch));
                                     change.setAttributeNode(parentStatements);
                                     change.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("change"+ch)));
-                                    fixlocfiles.appendChild(change);
+                                    nodes.add(new Pair<>(Integer.valueOf(patches.get("fixlocations"+z).get("change"+ch).split("-",0)[0]), change));
                                 } else {
                                     break;
                                 }
@@ -670,7 +672,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                                 if(patches.get("fixlocations"+z).get("delete"+de) != null) {
                                     Element delete = doc.createElement("delete");
                                     delete.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("delete"+de)));
-                                    fixlocfiles.appendChild(delete);
+                                    nodes.add(new Pair<>(Integer.valueOf(patches.get("fixlocations"+z).get("delete"+de).split("-",0)[0]), delete));
                                 } else {
                                     break;
                                 }
@@ -680,14 +682,21 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                                     Element insert = doc.createElement("insert");
                                     String[] split = patches.get("fixlocations"+z).get("insert"+in).split(":", 0);
                                     insert.appendChild(doc.createTextNode(split[0]));
-                                    fixlocfiles.appendChild(insert);
-                                    
+
                                     Attr lines = doc.createAttribute("numberlines");
                                     lines.setValue(split[1]);
                                     insert.setAttributeNode(lines);
+                                    
+                                    nodes.add(new Pair<>(Integer.valueOf(split[0]), insert));
                                 } else {
                                     break;
                                 }
+                            }
+                            
+                            nodes.sort((k,l) -> Integer.compare(k.first(), l.first()));
+                            
+                            for (Pair<Integer, Element> node : nodes) {
+                            	fixlocfiles.appendChild(node.second());
                             }
                             
                             Element bugtypes = doc.createElement("bugtypes");
@@ -726,9 +735,10 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 TransformerFactory tfactory = TransformerFactory.newInstance();
                 Transformer t = tfactory.newTransformer();
                 DOMSource source = new DOMSource(doc);
-                new File("bugdiagnosis").mkdirs();
-                StreamResult result = new StreamResult(Paths.get("bugdiagnosis", 
-                		"bugdiagnosis_"+buggyEntity.getProject()+"-"+buggyEntity.getBugID()+".xml").toString());
+                Path outputDir = Paths.get("bugDiagnosis", "d4j-faults", buggyEntity.getProject());
+                outputDir.toFile().mkdirs();
+                StreamResult result = new StreamResult(outputDir
+                		.resolve("bugdiagnosis_"+buggyEntity.getProject()+"-"+buggyEntity.getBugID()+".xml").toString());
             
                 t.setOutputProperty(OutputKeys.INDENT, "yes");
                 t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
