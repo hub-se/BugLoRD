@@ -29,6 +29,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Attr;
+import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -609,7 +610,10 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 //fixlocations
                 Element fixlocations = doc.createElement("fixlocations");
                 bug.appendChild(fixlocations);
-
+                
+                Comment comment = doc.createComment("Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.");
+                fixlocations.appendChild(comment);
+                
                 for(int z = 1; ; z++) {
                     dbg("fixlocations"+z+" = "+info.get("fixlocations"+z)); 
                 
