@@ -79,12 +79,14 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
 							// for extracting the changes, copy the changed files for easier access...
                         	File bugFile = getFilePath(path, bug, executionModeBug);
                         	File fixFile = getFilePath(path, fix, executionModeFix);
-                        	Path outputDir = Paths.get("changes_tmp", getUniqueIdentifier());
+                        	Path outputDirBug = Paths.get("changes_tmp", "buggy", getUniqueIdentifier());
+                        	Path outputDirFix = Paths.get("changes_tmp", "fixed", getUniqueIdentifier());
                         	try {
-                        		outputDir.toFile().mkdirs();
-								FileUtils.copyFileOrDir(bugFile, outputDir.resolve(bugFile.getName() + ".b").toFile(), 
+                        		outputDirBug.toFile().mkdirs();
+                        		outputDirFix.toFile().mkdirs();
+								FileUtils.copyFileOrDir(bugFile, outputDirBug.resolve(bugFile.getName()).toFile(), 
 										StandardCopyOption.REPLACE_EXISTING);
-								FileUtils.copyFileOrDir(fixFile, outputDir.resolve(fixFile.getName() + ".f").toFile(), 
+								FileUtils.copyFileOrDir(fixFile, outputDirFix.resolve(fixFile.getName()).toFile(), 
 										StandardCopyOption.REPLACE_EXISTING);
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
