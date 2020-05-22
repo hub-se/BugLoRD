@@ -183,8 +183,10 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 // for extracting the changes, copy the changed files for easier access...
                 Path outputDirBug = Paths.get("bugDiagnosis", "diffFiles", "buggy", buggyEntity.getUniqueIdentifier());
                 Path outputDirFix = Paths.get("bugDiagnosis", "diffFiles", "fixed", buggyEntity.getUniqueIdentifier());
+                File bugFile = null;
+                File fixFile = null;
                 try {
-                	File bugFile = dir_bug.resolve(searchedfile.replace(".","/").concat(".java")).toFile();
+                	bugFile = dir_bug.resolve(searchedfile.replace(".","/").concat(".java")).toFile();
                 	if (!bugFile.exists()) {
                 		// could be a resource file? (see Codec 14, for example)
                 		String extension = FileUtils.getFileExtension(searchedfile);
@@ -200,7 +202,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 	} else {
 						info.put("fixlocations"+j, searchedfile.replace(".","/").concat(".java"));
 					}
-                    File fixFile = dir_fix.resolve(searchedfile.replace(".","/").concat(".java")).toFile();
+                    fixFile = dir_fix.resolve(searchedfile.replace(".","/").concat(".java")).toFile();
                     if (!fixFile.exists()) {
                 		// could be a resource file? (see Codec 14, for example)
                 		String extension = FileUtils.getFileExtension(searchedfile);
@@ -236,9 +238,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
 //                	String buggy = matches.get(0)[1].getCanonicalPath();
 //                	String fixy = matches.get(0)[0].getCanonicalPath();
 
-					builder = new ProcessBuilder("diff", 
-							dir_bug.resolve(searchedfile).toString(), 
-							dir_fix.resolve(searchedfile).toString());
+					builder = new ProcessBuilder("diff", bugFile.toString(), fixFile.toString());
 					builder.directory(buggyEntity.getBuggyVersion().getWorkDir(true).toFile());
 					
 					process = builder.start();
