@@ -11,10 +11,12 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +37,8 @@ import org.w3c.dom.Element;
 
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
+import se.de.hu_berlin.informatik.benchmark.modification.Modification;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
@@ -53,6 +57,13 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
 
         if (buggyEntity instanceof Defects4JBuggyFixedEntity) {
         	Defects4JBuggyFixedEntity d4jEntity = (Defects4JBuggyFixedEntity) buggyEntity;
+        	
+        	Map<String, List<Modification>> xmlFile = Defects4JBuggyFixedEntity.getModificationsFromXmlFile(d4jEntity.getProject(), d4jEntity.getBugID());
+        	if (xmlFile != null) {
+        		Log.out(this, "Bug diagnosis XML file already available for %s.", buggyEntity);
+        		return buggyEntity;
+        	}
+        	
         	boolean bugExisted = buggyEntity.requireBug(true);
         	boolean fixExisted = buggyEntity.requireFix(true);
 
@@ -168,6 +179,23 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
 //                String filey = searchedfile.substring(slash+1);
 //                List<File> fi_bug = search(dir_bug, filey);
 //                List<File> fi_fix = search(dir_fix, filey);
+                
+                // for extracting the changes, copy the changed files for easier access...
+                File bugFile = dir_bug.resolve(searchedfile).toFile();
+                File fixFile = dir_fix.resolve(searchedfile).toFile();
+                Path outputDirBug = Paths.get("changes_tmp", "buggy", buggyEntity.getUniqueIdentifier());
+                Path outputDirFix = Paths.get("changes_tmp", "fixed", buggyEntity.getUniqueIdentifier());
+                try {
+                	outputDirBug.toFile().mkdirs();
+                	outputDirFix.toFile().mkdirs();
+                	FileUtils.copyFileOrDir(bugFile, outputDirBug.resolve(bugFile.getName()).toFile(), 
+                			StandardCopyOption.REPLACE_EXISTING);
+                	FileUtils.copyFileOrDir(fixFile, outputDirFix.resolve(fixFile.getName()).toFile(), 
+                			StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                	// TODO Auto-generated catch block
+                	e.printStackTrace();
+                }
                 
                 String filename = buggyEntity.getBuggyVersion().getWorkDir(true)
                 		.resolve(buggyEntity.getProject() + "_patch_bug_" + buggyEntity.getBugID() + ".txt").toString();

@@ -76,22 +76,22 @@ public abstract class AbstractBuggyFixedEntity<T extends Entity> implements Bugg
                         if (modifications.isEmpty()) {
                             Log.warn(this, "No Changes found: '%s'.", bug);
                         } else {
-							// for extracting the changes, copy the changed files for easier access...
-                        	File bugFile = getFilePath(path, bug, executionModeBug);
-                        	File fixFile = getFilePath(path, fix, executionModeFix);
-                        	Path outputDirBug = Paths.get("changes_tmp", "buggy", getUniqueIdentifier());
-                        	Path outputDirFix = Paths.get("changes_tmp", "fixed", getUniqueIdentifier());
-                        	try {
-                        		outputDirBug.toFile().mkdirs();
-                        		outputDirFix.toFile().mkdirs();
-								FileUtils.copyFileOrDir(bugFile, outputDirBug.resolve(bugFile.getName()).toFile(), 
-										StandardCopyOption.REPLACE_EXISTING);
-								FileUtils.copyFileOrDir(fixFile, outputDirFix.resolve(fixFile.getName()).toFile(), 
-										StandardCopyOption.REPLACE_EXISTING);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+//							// for extracting the changes, copy the changed files for easier access...
+//                        	File bugFile = getFilePath(path, bug, executionModeBug);
+//                        	File fixFile = getFilePath(path, fix, executionModeFix);
+//                        	Path outputDirBug = Paths.get("changes_tmp", "buggy", getUniqueIdentifier());
+//                        	Path outputDirFix = Paths.get("changes_tmp", "fixed", getUniqueIdentifier());
+//                        	try {
+//                        		outputDirBug.toFile().mkdirs();
+//                        		outputDirFix.toFile().mkdirs();
+//								FileUtils.copyFileOrDir(bugFile, outputDirBug.resolve(bugFile.getName()).toFile(), 
+//										StandardCopyOption.REPLACE_EXISTING);
+//								FileUtils.copyFileOrDir(fixFile, outputDirFix.resolve(fixFile.getName()).toFile(), 
+//										StandardCopyOption.REPLACE_EXISTING);
+//							} catch (IOException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
 						}
                         map.put(classPath, modifications);
                         return null;
