@@ -117,6 +117,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
 			builder.directory(buggyEntity.getBuggyVersion().getWorkDir(true).toFile());
 			
 			process = builder.start();
+			waitForProcessToFinish(process);
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
@@ -215,9 +216,10 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                             	// create empty file for diff
                             	bugFile = buggyEntity.getBuggyVersion().getWorkDir(true).toAbsolutePath()
                         				.resolve(filePath + "." + extension).toFile();
-                            	new ProcessBuilder("touch", bugFile.toString())
+                            	Process process = new ProcessBuilder("touch", bugFile.toString())
                             	.directory(buggyEntity.getBuggyVersion().getWorkDir(true).toFile())
                             	.start();
+                            	waitForProcessToFinish(process);
         					}
                 			info.put("fixlocations"+j, filePath + "." + extension);
 						}
@@ -225,9 +227,10 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 		if (!bugFile.exists()) {
                         	// create empty file for diff
                 			bugFile = dir_bug.resolve(searchedfile.replace(".","/").concat(".java")).toFile();
-                        	new ProcessBuilder("touch", bugFile.toString())
+                        	Process process = new ProcessBuilder("touch", bugFile.toString())
                         	.directory(buggyEntity.getBuggyVersion().getWorkDir(true).toFile())
                         	.start();
+                        	waitForProcessToFinish(process);
     					}
 						info.put("fixlocations"+j, searchedfile.replace(".","/").concat(".java"));
 					}
@@ -239,9 +242,10 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                     	// create empty file for diff
                     	fixFile = buggyEntity.getFixedVersion().getWorkDir(true).toAbsolutePath()
                     			.resolve(buggyEntity.getBuggyVersion().getWorkDir(true).toAbsolutePath().relativize(bugFile.toPath())).toFile();
-                    	new ProcessBuilder("touch", fixFile.toString())
+                    	Process process = new ProcessBuilder("touch", fixFile.toString())
                     	.directory(buggyEntity.getFixedVersion().getWorkDir(true).toFile())
                     	.start();
+                    	waitForProcessToFinish(process);
 					}
                 	
                 	outputDirBug.toFile().mkdirs();
@@ -271,6 +275,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
 					builder.directory(buggyEntity.getBuggyVersion().getWorkDir(true).toFile());
 					
 					process = builder.start();
+					waitForProcessToFinish(process);
 				} catch (IOException e) {
 					throw new IllegalStateException(e);
 				}
@@ -310,6 +315,18 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
         dbg("--------------------------");
         return locations;
     }
+
+
+	public static void waitForProcessToFinish(Process process) {
+		boolean isFirst = true;
+		while (process.isAlive() || isFirst) {
+			isFirst = false;
+			try {
+				process.waitFor();
+			} catch (InterruptedException e) {
+			}
+		}
+	}
     /***
     Function readfile reads lines to split file into reasonable chunks and put them in a list for searching
     ***/
