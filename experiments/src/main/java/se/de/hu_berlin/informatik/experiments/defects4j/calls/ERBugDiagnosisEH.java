@@ -211,22 +211,34 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 		if (!fixFile.exists()) {
                 			Log.warn(ERBugDiagnosisEH.class, "Could not find fixed modified source: %s", searchedfile);
                 		} else {
+                			if (!bugFile.exists()) {
+                            	// create empty file for diff
+                            	bugFile = buggyEntity.getBuggyVersion().getWorkDir(true).toAbsolutePath()
+                        				.resolve(filePath + "." + extension).toFile();
+                            	new ProcessBuilder("touch", bugFile.toString())
+                            	.directory(buggyEntity.getBuggyVersion().getWorkDir(true).toFile())
+                            	.start();
+        					}
                 			info.put("fixlocations"+j, filePath + "." + extension);
 						}
                 	} else {
+                		if (!bugFile.exists()) {
+                        	// create empty file for diff
+                			bugFile = dir_bug.resolve(searchedfile.replace(".","/").concat(".java")).toFile();
+                        	new ProcessBuilder("touch", bugFile.toString())
+                        	.directory(buggyEntity.getBuggyVersion().getWorkDir(true).toFile())
+                        	.start();
+    					}
 						info.put("fixlocations"+j, searchedfile.replace(".","/").concat(".java"));
 					}
                     
                     if (!bugFile.exists() && !fixFile.exists()) {
                     	Log.err(ERBugDiagnosisEH.class, "Could not find modified source: %s", searchedfile);
                     	continue;
-                    } else if (!bugFile.exists()) {
+                    } else if (!fixFile.exists()) {
                     	// create empty file for diff
-                    	new ProcessBuilder("touch", bugFile.toString())
-                    	.directory(buggyEntity.getBuggyVersion().getWorkDir(true).toFile())
-                    	.start();
-					} else if (!fixFile.exists()) {
-                    	// create empty file for diff
+                    	fixFile = buggyEntity.getFixedVersion().getWorkDir(true).toAbsolutePath()
+                    			.resolve(buggyEntity.getBuggyVersion().getWorkDir(true).toAbsolutePath().relativize(bugFile.toPath())).toFile();
                     	new ProcessBuilder("touch", fixFile.toString())
                     	.directory(buggyEntity.getFixedVersion().getWorkDir(true).toFile())
                     	.start();
@@ -651,21 +663,23 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 			buglocfiles.appendChild(bugexception);
 
                 			for(int y = 1; y <= 40; y++) {
-                				if(info.get("fixlocations"+y) != null && patches.get("fixlocations"+y).get("range") != null) {
-                					dbg("Buglocation = "+info.get("buglocations"+l));
-                					dbg("Fixlocation = "+info.get("fixlocations"+y));
+                				if (patches.get("fixlocations"+y) != null) {
+                					if(info.get("fixlocations"+y) != null && patches.get("fixlocations"+y).get("range") != null) {
+                						dbg("Buglocation = "+info.get("buglocations"+l));
+                						dbg("Fixlocation = "+info.get("fixlocations"+y));
 
-                					if(info.get("fixlocations"+y).equals(info.get("buglocations"+l))) {
-                						Element range = doc.createElement("range");
-                						range.appendChild(doc.createTextNode(patches.get("fixlocations"+y).get("range")));
-                						buglocfiles.appendChild(range);
+                						if(info.get("fixlocations"+y).equals(info.get("buglocations"+l))) {
+                							Element range = doc.createElement("range");
+                							range.appendChild(doc.createTextNode(patches.get("fixlocations"+y).get("range")));
+                							buglocfiles.appendChild(range);
+                							break;
+                						} 
+//                						else {
+//                							break;
+//                						}
+                					} else {
                 						break;
-                					} 
-//                					else {
-//                						break;
-//                					}
-                				} else {
-                					break;
+                					}
                 				}
                 			}
                 			//                     
