@@ -189,24 +189,29 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 		// could be a resource file? (see Codec 14, for example)
                 		String extension = FileUtils.getFileExtension(searchedfile);
                 		String filePath = FileUtils.getFileWithoutExtension(searchedfile).replace(".","/");
-                		bugFile = dir_bug.resolve(filePath + "." + extension).toFile();
+                		bugFile = buggyEntity.getBuggyVersion().getWorkDir(true).toAbsolutePath()
+                				.resolve(filePath + "." + extension).toFile();
                 		if (!bugFile.exists()) {
                 			Log.err(ERBugDiagnosisEH.class, "Could not find buggy modified source: %s", searchedfile);
                 			continue;
-                		}
-                	}
+                		} else {
+                			info.put("fixlocations"+j, filePath + "." + extension);
+						}
+                	} else {
+						info.put("fixlocations"+j, searchedfile.replace(".","/").concat(".java"));
+					}
                     File fixFile = dir_fix.resolve(searchedfile.replace(".","/").concat(".java")).toFile();
                     if (!fixFile.exists()) {
                 		// could be a resource file? (see Codec 14, for example)
                 		String extension = FileUtils.getFileExtension(searchedfile);
                 		String filePath = FileUtils.getFileWithoutExtension(searchedfile).replace(".","/");
-                		fixFile = dir_fix.resolve(filePath + "." + extension).toFile();
+                		fixFile = buggyEntity.getFixedVersion().getWorkDir(true).toAbsolutePath()
+                				.resolve(filePath + "." + extension).toFile();
                 		if (!fixFile.exists()) {
                 			Log.err(ERBugDiagnosisEH.class, "Could not find fixed modified source: %s", searchedfile);
                 			continue;
                 		}
                 	}
-                	
                 	
                 	outputDirBug.toFile().mkdirs();
                 	outputDirFix.toFile().mkdirs();
@@ -677,49 +682,51 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                             Attr fixpath = doc.createAttribute("path");
                             fixpath.setValue(info.get("fixlocations"+z));
                             fixlocfiles.setAttributeNode(fixpath);
-            
-                            List<Pair<Integer, Element>> nodes = new ArrayList<>();
-                            for(int ch = 1; ; ch++) {
-                                if(patches.get("fixlocations"+z).get("change"+ch) != null) {
-                                    Element change = doc.createElement("change");
-                                    Attr parentStatements = doc.createAttribute("parent");
-                                    parentStatements.setValue(patches.get("fixlocations"+z).get("change"+ch));
-                                    change.setAttributeNode(parentStatements);
-                                    change.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("change"+ch)));
-                                    nodes.add(new Pair<>(Integer.valueOf(patches.get("fixlocations"+z).get("change"+ch).split("-",0)[0]), change));
-                                } else {
-                                    break;
-                                }
-                            }
-                            for(int de = 1; ; de++) {
-                                if(patches.get("fixlocations"+z).get("delete"+de) != null) {
-                                    Element delete = doc.createElement("delete");
-                                    delete.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("delete"+de)));
-                                    nodes.add(new Pair<>(Integer.valueOf(patches.get("fixlocations"+z).get("delete"+de).split("-",0)[0]), delete));
-                                } else {
-                                    break;
-                                }
-                            }
-                            for(int in = 1; ; in++) {
-                                if(patches.get("fixlocations"+z).get("insert"+in) != null) {   
-                                    Element insert = doc.createElement("insert");
-                                    String[] split = patches.get("fixlocations"+z).get("insert"+in).split(":", 0);
-                                    insert.appendChild(doc.createTextNode(split[0]));
 
-                                    Attr lines = doc.createAttribute("numberlines");
-                                    lines.setValue(split[1]);
-                                    insert.setAttributeNode(lines);
-                                    
-                                    nodes.add(new Pair<>(Integer.valueOf(split[0]), insert));
-                                } else {
-                                    break;
-                                }
-                            }
-                            
-                            nodes.sort((k,l) -> Integer.compare(k.first(), l.first()));
-                            
-                            for (Pair<Integer, Element> node : nodes) {
-                            	fixlocfiles.appendChild(node.second());
+                            if (patches.get("fixlocations"+z) != null) {
+                            	List<Pair<Integer, Element>> nodes = new ArrayList<>();
+                            	for(int ch = 1; ; ch++) {
+                            		if(patches.get("fixlocations"+z).get("change"+ch) != null) {
+                            			Element change = doc.createElement("change");
+                            			Attr parentStatements = doc.createAttribute("parent");
+                            			parentStatements.setValue(patches.get("fixlocations"+z).get("change"+ch));
+                            			change.setAttributeNode(parentStatements);
+                            			change.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("change"+ch)));
+                            			nodes.add(new Pair<>(Integer.valueOf(patches.get("fixlocations"+z).get("change"+ch).split("-",0)[0]), change));
+                            		} else {
+                            			break;
+                            		}
+                            	}
+                            	for(int de = 1; ; de++) {
+                            		if(patches.get("fixlocations"+z).get("delete"+de) != null) {
+                            			Element delete = doc.createElement("delete");
+                            			delete.appendChild(doc.createTextNode(patches.get("fixlocations"+z).get("delete"+de)));
+                            			nodes.add(new Pair<>(Integer.valueOf(patches.get("fixlocations"+z).get("delete"+de).split("-",0)[0]), delete));
+                            		} else {
+                            			break;
+                            		}
+                            	}
+                            	for(int in = 1; ; in++) {
+                            		if(patches.get("fixlocations"+z).get("insert"+in) != null) {   
+                            			Element insert = doc.createElement("insert");
+                            			String[] split = patches.get("fixlocations"+z).get("insert"+in).split(":", 0);
+                            			insert.appendChild(doc.createTextNode(split[0]));
+
+                            			Attr lines = doc.createAttribute("numberlines");
+                            			lines.setValue(split[1]);
+                            			insert.setAttributeNode(lines);
+
+                            			nodes.add(new Pair<>(Integer.valueOf(split[0]), insert));
+                            		} else {
+                            			break;
+                            		}
+                            	}
+
+                            	nodes.sort((k,l) -> Integer.compare(k.first(), l.first()));
+
+                            	for (Pair<Integer, Element> node : nodes) {
+                            		fixlocfiles.appendChild(node.second());
+                            	}
                             }
                             
                             Element bugtypes = doc.createElement("bugtypes");
