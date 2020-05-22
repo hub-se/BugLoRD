@@ -194,8 +194,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 		bugFile = buggyEntity.getBuggyVersion().getWorkDir(true).toAbsolutePath()
                 				.resolve(filePath + "." + extension).toFile();
                 		if (!bugFile.exists()) {
-                			Log.err(ERBugDiagnosisEH.class, "Could not find buggy modified source: %s", searchedfile);
-                			continue;
+                			Log.warn(ERBugDiagnosisEH.class, "Could not find buggy modified source: %s", searchedfile);
                 		} else {
                 			info.put("fixlocations"+j, filePath + "." + extension);
 						}
@@ -210,10 +209,28 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
                 		fixFile = buggyEntity.getFixedVersion().getWorkDir(true).toAbsolutePath()
                 				.resolve(filePath + "." + extension).toFile();
                 		if (!fixFile.exists()) {
-                			Log.err(ERBugDiagnosisEH.class, "Could not find fixed modified source: %s", searchedfile);
-                			continue;
-                		}
-                	}
+                			Log.warn(ERBugDiagnosisEH.class, "Could not find fixed modified source: %s", searchedfile);
+                		} else {
+                			info.put("fixlocations"+j, filePath + "." + extension);
+						}
+                	} else {
+						info.put("fixlocations"+j, searchedfile.replace(".","/").concat(".java"));
+					}
+                    
+                    if (!bugFile.exists() && !fixFile.exists()) {
+                    	Log.err(ERBugDiagnosisEH.class, "Could not find modified source: %s", searchedfile);
+                    	continue;
+                    } else if (!bugFile.exists()) {
+                    	// create empty file for diff
+                    	new ProcessBuilder("touch", bugFile.toString())
+                    	.directory(buggyEntity.getBuggyVersion().getWorkDir(true).toFile())
+                    	.start();
+					} else if (!fixFile.exists()) {
+                    	// create empty file for diff
+                    	new ProcessBuilder("touch", fixFile.toString())
+                    	.directory(buggyEntity.getFixedVersion().getWorkDir(true).toFile())
+                    	.start();
+					}
                 	
                 	outputDirBug.toFile().mkdirs();
                 	outputDirFix.toFile().mkdirs();
