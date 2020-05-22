@@ -181,11 +181,33 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
 //                List<File> fi_fix = search(dir_fix, filey);
                 
                 // for extracting the changes, copy the changed files for easier access...
-                File bugFile = dir_bug.resolve(searchedfile).toFile();
-                File fixFile = dir_fix.resolve(searchedfile).toFile();
                 Path outputDirBug = Paths.get("bugDiagnosis", "diffFiles", "buggy", buggyEntity.getUniqueIdentifier());
                 Path outputDirFix = Paths.get("bugDiagnosis", "diffFiles", "fixed", buggyEntity.getUniqueIdentifier());
                 try {
+                	File bugFile = dir_bug.resolve(searchedfile.replace(".","/").concat(".java")).toFile();
+                	if (!bugFile.exists()) {
+                		// could be a resource file? (see Codec 14, for example)
+                		String extension = FileUtils.getFileExtension(searchedfile);
+                		String filePath = FileUtils.getFileWithoutExtension(searchedfile).replace(".","/");
+                		bugFile = dir_bug.resolve(filePath + "." + extension).toFile();
+                		if (!bugFile.exists()) {
+                			Log.err(ERBugDiagnosisEH.class, "Could not find buggy modified source: %s", searchedfile);
+                			continue;
+                		}
+                	}
+                    File fixFile = dir_fix.resolve(searchedfile.replace(".","/").concat(".java")).toFile();
+                    if (!fixFile.exists()) {
+                		// could be a resource file? (see Codec 14, for example)
+                		String extension = FileUtils.getFileExtension(searchedfile);
+                		String filePath = FileUtils.getFileWithoutExtension(searchedfile).replace(".","/");
+                		fixFile = dir_fix.resolve(filePath + "." + extension).toFile();
+                		if (!fixFile.exists()) {
+                			Log.err(ERBugDiagnosisEH.class, "Could not find fixed modified source: %s", searchedfile);
+                			continue;
+                		}
+                	}
+                	
+                	
                 	outputDirBug.toFile().mkdirs();
                 	outputDirFix.toFile().mkdirs();
                 	FileUtils.copyFileOrDir(bugFile, outputDirBug.resolve(bugFile.getName()).toFile(), 
@@ -423,7 +445,9 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
         					if(sub.equals("- "))
         					{
 
-        						items.put("fixlocations"+cnt2, temp[w].substring(2).replace(".","/").concat(".java"));
+        						items.put("fixlocations"+cnt2, temp[w].substring(2)
+//        								.replace(".","/").concat(".java")
+        								);
         						dbg("fixlocations"+cnt2+" = " +items.get("fixlocations"+w));
         						cnt2++;
         					}
