@@ -192,7 +192,7 @@ public class Defects4JBase {
     }
 
     private static BuggyFixedEntity<?> parseIdentifier(String k) {
-        String[] items = k.split(Defects4JBuggyFixedEntity.SEPARATOR_CHAR);
+        String[] items = k.split(Defects4JBuggyFixedEntity.SEPARATOR_CHAR, 0);
         if (items.length != 2) {
             Log.err(Defects4JBase.class, "'%s' is not a parseable identifier for a Defects4J entity.", k);
             return null;

@@ -24,7 +24,7 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
     final private String project;
     final private String bugID;
 
-    public static final String SEPARATOR_CHAR = ":";
+    public static final String SEPARATOR_CHAR = "--";
 
     public Defects4JBuggyFixedEntity(String project, String bugId) {
         super(Defects4JEntity.getBuggyDefects4JEntity(project, bugId),
@@ -50,7 +50,7 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
 
 	@Override
     public String getUniqueIdentifier() {
-        return project + SEPARATOR_CHAR + bugID;
+        return String.format("%s%s%03d", project, SEPARATOR_CHAR, Integer.valueOf(bugID));
     }
 
     @Override
@@ -189,13 +189,13 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
 
                 switch (name) {
                     case "change":
-                        // can be numbers, divided by ',' and ':', and may also contain ranges marked by '-'
+                        // can be numbers, divided by ',', and may also contain ranges marked by '-'
                         // ranges have to be unfolded, since they have other meaning than in the case of an insert
                         List<Integer> changeContent = unfoldRanges(element.getText());
                         parseInsertElementContents(changesList, Misc.listToString(changeContent, ",", "", ""));
                         break;
                     case "delete":
-                        // can be numbers, divided by ',' and ':', and may also contain ranges marked by '-'
+                        // can be numbers, divided by ',', and may also contain ranges marked by '-'
                         // ranges have to be unfolded, since they have other meaning than in the case of an insert
                         List<Integer> deleteContent = unfoldRanges(element.getText());
                         parseInsertElementContents(deletesList, Misc.listToString(deleteContent, ",", "", ""));
