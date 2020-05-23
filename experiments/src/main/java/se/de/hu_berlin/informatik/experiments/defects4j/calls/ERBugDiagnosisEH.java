@@ -236,7 +236,7 @@ public class ERBugDiagnosisEH extends AbstractProcessor<BuggyFixedEntity<?>, Bug
 					}
                     
                     if (!bugFile.exists() && !fixFile.exists()) {
-                    	Log.err(ERBugDiagnosisEH.class, "Could not find modified source: %s", searchedfile);
+                    	Log.abort(ERBugDiagnosisEH.class, "Could not find modified source: %s", searchedfile);
                     	continue;
                     } else if (!fixFile.exists()) {
                     	// create empty file for diff
