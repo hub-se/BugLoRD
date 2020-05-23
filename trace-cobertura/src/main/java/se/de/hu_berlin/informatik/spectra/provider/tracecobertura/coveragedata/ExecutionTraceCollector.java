@@ -28,7 +28,7 @@ public class ExecutionTraceCollector {
     private static Map<Long, OutputSequence> executionTraces = new ConcurrentHashMap<>();
 //    private static SharedOutputGrammar grammar = new SharedOutputGrammar();
 
-    private static int[][] classesToCounterArrayMap = new int[2048][];
+    private static int[][] classesToCounterArrayMap = new int[(int)Math.pow(2, CoberturaStatementEncoding.CLASS_ID_BITS)][];
 
 //    private static Set<Thread> currentThreads = new HashSet<>();
 
