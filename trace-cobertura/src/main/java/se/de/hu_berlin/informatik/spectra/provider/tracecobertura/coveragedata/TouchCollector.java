@@ -202,6 +202,8 @@ public class TouchCollector {
             } catch (Exception e) {
                 // if there is no such method...
                 throw new IllegalStateException("Can not get counter array from " + c.getCanonicalName() + "!", e);
+            } catch (NoClassDefFoundError e) {
+            	throw new IllegalStateException("Can not get counter array from " + c.getCanonicalName() + "!", e);
             }
         }
 
@@ -218,6 +220,8 @@ public class TouchCollector {
             m.invoke(null, lightClassmap);
         } catch (Exception e) {
             logger.error("Cannot apply touches", e);
+        } catch (NoClassDefFoundError e) {
+        	logger.error("Cannot apply touches", e);
         }
     }
 
