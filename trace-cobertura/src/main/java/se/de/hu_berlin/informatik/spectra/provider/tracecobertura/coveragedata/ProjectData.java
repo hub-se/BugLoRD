@@ -103,7 +103,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
     /**
      * This collection is used for quicker access to the list of classes.
      */
-    private final Map<String, ClassData> classes = new HashMap<>();
+//    private final Map<String, ClassData> classes = new HashMap<>();
 
     /**
      * This collection is used for quicker access to the list of classes.
@@ -122,16 +122,16 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
                 this.children.put(packageName, packageData);
             }
             packageData.addClassData(classData);
-            this.classes.put(classData.getName(), classData);
+//            this.classes.put(classData.getName(), classData);
             this.classes2.put(classData.getClassId(), classData);
         } finally {
             lock.unlock();
         }
     }
 
-    public ClassData getClassData(String name) {
-        return this.classes.get(name);
-    }
+//    public ClassData getClassData(String name) {
+//        return this.classes.get(name);
+//    }
 
     public ClassData getClassData(int classId) {
         return this.classes2.get(classId);
@@ -143,7 +143,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
     public ClassData getOrCreateClassData(String name, int classId) {
         lock.lock();
         try {
-            ClassData classData = this.classes.get(name);
+            ClassData classData = this.classes2.get(classId);
             if (classData == null) {
                 classData = new ClassData(name, classId);
                 addClassData(classData);
@@ -157,7 +157,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
     public Collection<ClassData> getClasses() {
         lock.lock();
         try {
-            return this.classes.values();
+            return this.classes2.values();
         } finally {
             lock.unlock();
         }
@@ -166,7 +166,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
     public int getNumberOfClasses() {
         lock.lock();
         try {
-            return this.classes.size();
+            return this.classes2.size();
         } finally {
             lock.unlock();
         }
@@ -181,7 +181,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
         lock.lock();
         try {
             int maxId = -1;
-            for (ClassData classData : this.classes.values()) {
+            for (ClassData classData : this.classes2.values()) {
 //				logger.debug(classData.getName() + ": " + classData.getClassId());
                 maxId = Math.max(maxId, classData.getClassId());
             }
@@ -322,11 +322,11 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 //				}
 //			}
 
-            for (String key : projectData.classes.keySet()) {
-                if (!this.classes.containsKey(key)) {
-                    ClassData data = projectData.classes.get(key);
-                    this.classes.put(key, data);
-                    this.classes2.put(data.getClassId(), data);
+            for (Integer key : projectData.classes2.keySet()) {
+                if (!this.classes2.containsKey(key)) {
+                    ClassData data = projectData.classes2.get(key);
+                    this.classes2.put(key, data);
+//                    this.classes2.put(data.getClassId(), data);
                 }
             }
         } finally {

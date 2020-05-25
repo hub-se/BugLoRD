@@ -79,7 +79,7 @@ public class SubTracePool {
         if (classSourceFileName == null) {
             throw new IllegalStateException("No class name found for class ID: " + classId);
         }
-        ClassData classData = projectData.getClassData(classSourceFileName);
+        ClassData classData = projectData.getClassData(classId);
 
         if (classData != null) {
             if (classData.getCounterId2LineNumbers() == null) {

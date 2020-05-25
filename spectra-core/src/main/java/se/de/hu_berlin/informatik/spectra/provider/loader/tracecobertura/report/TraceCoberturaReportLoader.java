@@ -315,16 +315,17 @@ public abstract class TraceCoberturaReportLoader<K extends ITrace<SourceCodeBloc
 //							}
 //							Log.out(true, this, "statement: " + Arrays.toString(statement));
                                 // TODO store the class names with '.' from the beginning, or use the '/' version?
-                                String classSourceFileName = idToClassNameMap[CoberturaStatementEncoding.getClassId(statement)];
+                                int classId = CoberturaStatementEncoding.getClassId(statement);
+								String classSourceFileName = idToClassNameMap[classId];
                                 if (classSourceFileName == null) {
                                     //						throw new IllegalStateException("No class name found for class ID: " + statement[0]);
-                                    Log.err(this, "No class name found for class ID: " + CoberturaStatementEncoding.getClassId(statement));
+                                    Log.err(this, "No class name found for class ID: " + classId);
                                     return false;
                                 }
 //							if (!classSourceFileName.contains("FastDateParser")) {
 //								continue;
 //							}
-                                ClassData classData = projectData.getClassData(classSourceFileName);
+                                ClassData classData = projectData.getClassData(classId);
 
                                 if (classData != null) {
                                     if (classData.getCounterId2LineNumbers() == null) {

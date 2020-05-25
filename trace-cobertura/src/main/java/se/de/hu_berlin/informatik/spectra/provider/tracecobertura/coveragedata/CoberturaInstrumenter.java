@@ -251,6 +251,10 @@ public class CoberturaInstrumenter {
                                 + ".class");
 //				logger.debug("Writing instrumented class into:"
 //						+ outputFile.getAbsolutePath());
+                if (destinationDirectory != null && outputFile.exists()) {
+                	logger.warn("Instrumented class does already exist: " 
+                			+ outputFile.getAbsolutePath());
+                }
 
                 File parentFile = outputFile.getParentFile();
                 if (parentFile != null) {
