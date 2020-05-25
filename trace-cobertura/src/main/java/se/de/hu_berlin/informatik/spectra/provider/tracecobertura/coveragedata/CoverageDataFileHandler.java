@@ -114,7 +114,7 @@ public abstract class CoverageDataFileHandler {
             objects = new ObjectOutputStream(dataFile);
             objects.writeObject(projectData);
             logger.info("Cobertura: Saved information on "
-                    + projectData.getNumberOfClasses() + " classes.");
+                    + projectData.getNumberOfClasses() + " classes. Max ID: " + projectData.getMaxClassId());
 //			if (projectData.getExecutionTraces() == null) {
 //				logger.info("Cobertura: Execution traces are null.");
 //			}

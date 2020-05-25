@@ -8,6 +8,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.AbstractFindTouchPointsClassInstrumenter;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FindTouchPointsMethodAdapter;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
 
 import java.util.Collection;
@@ -162,6 +163,12 @@ public class InjectCodeClassInstrumenter
             wasStaticInitMethodVisited = true;
         }
 
+        if (classMap.getClassId() > Math.pow(2, CoberturaStatementEncoding.CLASS_ID_BITS) - 1) {
+            throw new IllegalStateException(classMap.getClassName() + " -> Class ID too high! Encoding error: " + classMap.getClassId());
+        }
+        if (classMap.getMaxCounterId() + 1 > Math.pow(2, CoberturaStatementEncoding.COUNTER_ID_BITS) - 1) {
+            throw new IllegalStateException(classMap.getClassName() + " -> Counter ID too high! Encoding error: " + classMap.getMaxCounterId());
+        }
         codeProvider.generateCoberturaInitMethod(cv, classMap.getClassName(),
                 classMap.getClassId(), classMap.getMaxCounterId() + 1);
         codeProvider.generateCoberturaClassMapMethod(cv, classMap);

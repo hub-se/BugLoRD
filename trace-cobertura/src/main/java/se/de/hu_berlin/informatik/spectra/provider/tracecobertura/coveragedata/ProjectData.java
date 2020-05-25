@@ -171,8 +171,13 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
             lock.unlock();
         }
     }
+    
+    private Integer maxClassId = null;
 
     public int getMaxClassId() {
+    	if (maxClassId != null) {
+    		return maxClassId;
+    	}
         lock.lock();
         try {
             int maxId = -1;
@@ -180,6 +185,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 //				logger.debug(classData.getName() + ": " + classData.getClassId());
                 maxId = Math.max(maxId, classData.getClassId());
             }
+            maxClassId = maxId;
             return maxId;
         } finally {
             lock.unlock();
@@ -253,6 +259,10 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
 
             if (this.idToClassName == null) {
                 this.idToClassName = projectData.idToClassName;
+            }
+            
+            if (this.maxClassId == null) {
+            	this.maxClassId = projectData.maxClassId;
             }
 
             if (executionTraces == null || executionTraces.isEmpty()) {
