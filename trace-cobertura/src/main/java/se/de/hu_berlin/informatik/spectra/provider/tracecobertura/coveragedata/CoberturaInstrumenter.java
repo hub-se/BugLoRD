@@ -11,6 +11,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.Cobertura
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.DetectDuplicatedCodeClassVisitor;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.DetectIgnoredCodeClassVisitor;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.IOUtil;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 
 import java.io.*;
 import java.util.Collection;
@@ -147,11 +148,15 @@ public class CoberturaInstrumenter {
 
         ClassReader cr = new ClassReader(cw0.toByteArray());
         ClassWriter cw = new ClassWriter(0);
-        BuildClassMapClassVisitor cv = new BuildClassMapClassVisitor(cw,
+        int classId = ++currentClassIndex;
+        if (classId > Math.pow(2, CoberturaStatementEncoding.CLASS_ID_BITS) - 1) {
+            throw new IllegalStateException("Class ID too high! Encoding error: " + classId);
+        }
+		BuildClassMapClassVisitor cv = new BuildClassMapClassVisitor(cw,
                 ignoreRegexes, ignoreClassAnnotations,
                 cv0.getDuplicatesLinesCollector(),
                 detectIgnoredCv.getIgnoredMethodNamesAndSignatures(),
-                ++currentClassIndex);
+                classId);
 
         cr.accept(cv, ClassReader.EXPAND_FRAMES);
 

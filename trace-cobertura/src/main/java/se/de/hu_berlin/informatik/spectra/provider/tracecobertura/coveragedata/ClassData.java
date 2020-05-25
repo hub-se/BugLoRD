@@ -92,6 +92,9 @@ public class ClassData extends CoverageDataContainer
      */
     public ClassData(String name, int classId) {
         this.classId = classId;
+        if (classId > Math.pow(2, CoberturaStatementEncoding.CLASS_ID_BITS) - 1) {
+            throw new IllegalStateException("Class ID too high! Encoding error: " + classId);
+        }
         if (name == null)
             throw new IllegalArgumentException("Class name must be specified.");
         this.name = name;

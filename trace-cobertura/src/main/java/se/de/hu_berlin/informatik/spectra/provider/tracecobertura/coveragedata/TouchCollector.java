@@ -191,21 +191,26 @@ public class TouchCollector {
 //		logger.debug("----------- " + maybeCanonicalName(c)
 //		+ " ---------------- ");
 
-        // first, try to get the counter array from the execution trace collector
-        int[] res = ExecutionTraceCollector.getAndResetCounterArrayForClass(classData.getClassId());
-        if (res == null) {
-            try {
-                Method m0 = c
-                        .getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
-                m0.setAccessible(true);
-                res = (int[]) m0.invoke(null, new Object[]{});
-            } catch (Exception e) {
-                // if there is no such method...
-                throw new IllegalStateException("Can not get counter array from " + c.getCanonicalName() + "!", e);
-            } catch (NoClassDefFoundError e) {
-            	throw new IllegalStateException("Can not get counter array from " + c.getCanonicalName() + "!", e);
-            }
-        }
+        // try to get the counter array from the execution trace collector
+    	int[] res = null;
+    	try {
+        	res = ExecutionTraceCollector.getAndResetCounterArrayForClass(classData.getClassId());
+    	} catch (Exception e) {
+    		throw new IllegalStateException("Can not get counter array for " + c.getCanonicalName() + "!", e);
+		}
+//        if (res == null) {
+//            try {
+//                Method m0 = c
+//                        .getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
+//                m0.setAccessible(true);
+//                res = (int[]) m0.invoke(null, new Object[]{});
+//            } catch (Exception e) {
+//                // if there is no such method...
+//                throw new IllegalStateException("Can not get counter array from " + c.getCanonicalName() + "!", e);
+//            } catch (NoClassDefFoundError e) {
+//            	throw new IllegalStateException("Can not get counter array from " + c.getCanonicalName() + "!", e);
+//            }
+//        }
 
         try {
             LightClassmapListener lightClassmap = new ApplyToClassDataLightClassmapListener(
