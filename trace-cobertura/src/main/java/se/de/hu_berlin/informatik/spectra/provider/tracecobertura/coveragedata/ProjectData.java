@@ -144,11 +144,6 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
     public ClassData getOrCreateClassData(String name, int classId) {
         lock.lock();
         try {
-        	if (classes.contains(name)) {
-        		return null;
-        	} else {
-				classes.add(name);
-			}
             ClassData classData = this.classes2.get(classId);
             if (classData == null) {
                 classData = new ClassData(name, classId);
@@ -166,6 +161,11 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
     public ClassData createClassData(String name, int classId) {
         lock.lock();
         try {
+        	if (classes.contains(name)) {
+        		return null;
+        	} else {
+				classes.add(name);
+			}
             ClassData classData = this.classes2.get(classId);
             if (classData == null) {
                 classData = new ClassData(name, classId);
