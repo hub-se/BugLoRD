@@ -7,6 +7,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.FileFinde
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /*
@@ -59,7 +60,7 @@ public class Arguments {
     private final double totalLineThreshold;
     private final double totalBranchThreshold;
 
-    private final Set<CoberturaFile> filesToInstrument;
+    private final List<CoberturaFile> filesToInstrument;
     private final Set<File> filesToMerge;
     private final Set<String> ignoreMethodAnnotations;
     private final Set<String> ignoreClassAnnotations;
@@ -76,7 +77,7 @@ public class Arguments {
               double classLineThreshold, double classBranchThreshold,
               double packageLineThreshold, double packageBranchThreshold,
               double totalLineThreshold, double totalBranchThreshold,
-              Set<CoberturaFile> filesToInstrument, Set<File> filesToMerge,
+              List<CoberturaFile> filesToInstrument, Set<File> filesToMerge,
               Set<String> ignoreMethodAnnotations,
               Set<String> ignoreClassAnnotations, FileFinder sources) {
         this.baseDirectory = baseDirectory;
@@ -105,7 +106,7 @@ public class Arguments {
         this.packageBranchThreshold = packageBranchThreshold;
         this.totalLineThreshold = totalLineThreshold;
         this.totalBranchThreshold = totalBranchThreshold;
-        this.filesToInstrument = Collections.unmodifiableSet(filesToInstrument);
+        this.filesToInstrument = Collections.unmodifiableList(filesToInstrument);
         this.filesToMerge = Collections.unmodifiableSet(filesToMerge);
         this.ignoreMethodAnnotations = Collections
                 .unmodifiableSet(ignoreMethodAnnotations);
@@ -197,7 +198,7 @@ public class Arguments {
         return totalBranchThreshold;
     }
 
-    public Set<CoberturaFile> getFilesToInstrument() {
+    public List<CoberturaFile> getFilesToInstrument() {
         return filesToInstrument;
     }
 

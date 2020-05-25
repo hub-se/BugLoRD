@@ -104,6 +104,7 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
      * This collection is used for quicker access to the list of classes.
      */
 //    private final Map<String, ClassData> classes = new HashMap<>();
+    private final Set<String> classes = new HashSet<>();
 
     /**
      * This collection is used for quicker access to the list of classes.
@@ -141,6 +142,28 @@ public class ProjectData extends CoverageDataContainer implements Serializable {
      * This is called by instrumented bytecode.
      */
     public ClassData getOrCreateClassData(String name, int classId) {
+        lock.lock();
+        try {
+        	if (classes.contains(name)) {
+        		return null;
+        	} else {
+				classes.add(name);
+			}
+            ClassData classData = this.classes2.get(classId);
+            if (classData == null) {
+                classData = new ClassData(name, classId);
+                addClassData(classData);
+            }
+            return classData;
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    /*
+     * This is called during instrumentation
+     */
+    public ClassData createClassData(String name, int classId) {
         lock.lock();
         try {
             ClassData classData = this.classes2.get(classId);

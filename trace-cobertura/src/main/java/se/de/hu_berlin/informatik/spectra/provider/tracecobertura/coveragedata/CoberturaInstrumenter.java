@@ -186,6 +186,13 @@ public class CoberturaInstrumenter {
 
         ClassData classData = cv.getClassMap().applyOnProjectData(projectData,
                 cv.shouldBeInstrumented());
+        
+        if (classData == null) {
+			logger.warn("Class already instrumented: " + cv.getClassMap().getClassName());
+			// we can reuse the index for the next class!
+			--currentClassIndex;
+        	return null;
+        }
 
         if (cv.shouldBeInstrumented()) {
             /*
@@ -251,10 +258,10 @@ public class CoberturaInstrumenter {
                                 + ".class");
 //				logger.debug("Writing instrumented class into:"
 //						+ outputFile.getAbsolutePath());
-                if (destinationDirectory != null && outputFile.exists()) {
-                	logger.warn("Instrumented class does already exist: " 
-                			+ outputFile.getAbsolutePath());
-                }
+//                if (destinationDirectory != null && outputFile.exists()) {
+//                	logger.warn("Instrumented class does already exist: " 
+//                			+ outputFile.getAbsolutePath());
+//                }
 
                 File parentFile = outputFile.getParentFile();
                 if (parentFile != null) {

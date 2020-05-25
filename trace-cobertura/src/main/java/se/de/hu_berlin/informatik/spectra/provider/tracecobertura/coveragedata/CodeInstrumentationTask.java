@@ -6,6 +6,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.ArchiveUt
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.IOUtil;
 
 import java.io.*;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -58,7 +59,7 @@ public class CodeInstrumentationTask {
         coberturaInstrumenter = new CoberturaInstrumenter(collectExecutionTrace);
         coberturaInstrumenter.setIgnoreRegexes(arguments.getIgnoreRegexes());
         // Parse our parameters
-        Set<CoberturaFile> filePaths = arguments.getFilesToInstrument();
+        List<CoberturaFile> filePaths = arguments.getFilesToInstrument();
 
         File dataFile = arguments.getDataFile();
         destinationDirectory = arguments.getDestinationDirectory();

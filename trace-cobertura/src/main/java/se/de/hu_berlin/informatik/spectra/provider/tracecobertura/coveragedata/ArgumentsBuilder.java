@@ -69,7 +69,7 @@ public class ArgumentsBuilder {
     private double totalLineThreshold;
     private double totalBranchThreshold;
 
-    private Set<CoberturaFile> filesToInstrument;
+    private List<CoberturaFile> filesToInstrument;
     private Set<File> filesToMerge;
     private Set<String> ignoreMethodAnnotations;
     private Set<String> ignoreClassAnnotations;
@@ -289,7 +289,7 @@ public class ArgumentsBuilder {
         ignoreClassAnnotations = new HashSet<>();
         classPatternExcludeClassesRegexes = new HashSet<>();
         classPatternIncludeClassesRegexes = new HashSet<>();
-        filesToInstrument = new HashSet<>();
+        filesToInstrument = new ArrayList<>();
         filesToMerge = new HashSet<>();
         minimumCoverageThresholds = new HashSet<>();
 

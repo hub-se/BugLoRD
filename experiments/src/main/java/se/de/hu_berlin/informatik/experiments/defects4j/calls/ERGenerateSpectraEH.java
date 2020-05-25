@@ -383,7 +383,11 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
 //        } else {
         	builder
         	// include the test class binaries in instrumentation, because why not?...
-        	.setPathsToBinaries(bug.getWorkDir(true).resolve(buggyMainBinDir).toString(), buggyTestBinDir);
+        	// for instrumentation, there are cases (i.e. Closure 154) where classes in the test class directory
+        	// have the same name as classes in the main class directory. Originally, Cobertura would silently
+        	// overwrite already instrumented classes with instrumented classes with the same name...
+        	// We will instead keep the first found class. This is why we put the test class directory first.
+        	.setPathsToBinaries(buggyTestBinDir, bug.getWorkDir(true).resolve(buggyMainBinDir).toString());
 //        }
         builder
                 .setOutputDir(rankingDir.toString())

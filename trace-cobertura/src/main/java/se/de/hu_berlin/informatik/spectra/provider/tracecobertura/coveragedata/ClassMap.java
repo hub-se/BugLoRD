@@ -442,8 +442,12 @@ public class ClassMap {
      */
     public ClassData applyOnProjectData(ProjectData projectData,
                                         boolean instrumented) {
-        ClassData classData = projectData.getOrCreateClassData(className
+        ClassData classData = projectData.createClassData(className
                 .replace('/', '.'), classId);
+        if (classData == null) {
+        	// we already instrumented a class with the same name!
+        	return null;
+        }
         if (source != null) {
             classData.setSourceFileName(source);
         }
