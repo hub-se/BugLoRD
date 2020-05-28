@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JxPath">
+    <bug bugid="JxPath-15">
+      <tests>
+        <testfile path="org/apache/commons/jxpath/ri/model/jdom/JDOMModelTest.java">
+          <exception>junit.framework.AssertionFailedError:Evaluating &lt;/vendor[1]/contact[4] | /vendor[1]/contact[1]&gt; expected:&lt;John&gt; but was:&lt;Jack Black&gt;:- org.apache.commons.jxpath.ri.model.jdom.JDOMModelTest::testUnion:--&gt; junit.framework.AssertionFailedError:Evaluating &lt;/vendor[1]/contact[4] | /vendor[1]/contact[1]&gt; expected:&lt;John&gt; but was:&lt;Jack Black&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/jxpath/ri/axes/UnionContext.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <delete>56</delete>
+          <insert numberlines="5">62</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-161">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/PeepholeFoldConstantsTest.java">
+          <exception>junit.framework.AssertionFailedError:Unexpected error(s):JSC_INDEX_OUT_OF_BOUNDS_ERROR. Array index out of bounds:NUMBER 1.0 1 [source_file:testcode] at testcode line 1:3 expected:&lt;0&gt; but was:&lt;1&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/PeepholeFoldConstants.java">
+          <insert numberlines="3">1284</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

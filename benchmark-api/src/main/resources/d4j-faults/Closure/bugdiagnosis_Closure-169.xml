@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-169">
+      <tests>
+        <testfile path="com/google/javascript/rhino/jstype/RecordTypeTest.java">
+          <exception>junit.framework.AssertionFailedError:unexpected warnings(s):- com.google.javascript.rhino.jstype.RecordTypeTest::testSubtypeWithUnknowns2:--&gt; junit.framework.AssertionFailedError</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/rhino/jstype/ArrowType.java">
+          <change parent="177,186-187">177,187</change>
+          <change parent="203-204,206,209">204,206,209</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/rhino/jstype/EquivalenceMethod.java">
+          <insert numberlines="83"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/rhino/jstype/FunctionType.java">
+          <change parent="792">792</change>
+          <change parent="889-890">890</change>
+          <change parent="908-909">908-909</change>
+          <change parent="918">918</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/rhino/jstype/JSType.java">
+          <change parent="492">492</change>
+          <change parent="500">500</change>
+          <change parent="514">514</change>
+          <change parent="520">520</change>
+          <insert numberlines="2">528</insert>
+          <change parent="528">528</change>
+          <change parent="544-545">545</change>
+          <change parent="549-550">550</change>
+          <change parent="554-555">555</change>
+          <change parent="564-565">565</change>
+          <change parent="566-573">566,570-573</change>
+          <change parent="579-580">580</change>
+          <change parent="590-592">592</change>
+          <change parent="596-598">598</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/rhino/jstype/RecordType.java">
+          <change parent="117-118">118</change>
+          <change parent="125-126">126</change>
+          <change parent="202-205">204-205</change>
+          <delete>268,282</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/rhino/jstype/UnionType.java">
+          <change parent="333-334,335-336,340">334,335,340</change>
+          <change parent="347,349">347,349</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

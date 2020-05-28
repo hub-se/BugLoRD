@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-92">
+      <tests>
+        <testfile path="org/jsoup/parser/XmlTreeBuilderTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;&lt;p One="[One" one="Three" two="Four]" Two="Six"&gt;Text&lt;/p&gt;&gt; but was:&lt;&lt;p One="[Two" one="Three" two="Five]" Two="Six"&gt;Text&lt;/p&gt;&gt;:- org.jsoup.parser.HtmlParserTest::dropsDuplicateAttributes:--&gt; junit.framework.AssertionFailedError:expected:&lt;&lt;p one="[One" two="two]"&gt;Text&lt;/p&gt;&gt; but was:&lt;&lt;p one="[Four" one="Two" two="two" one="Three" two="Five]"&gt;Text&lt;/p&gt;&gt;:- org.jsoup.parser.XmlTreeBuilderTest::dropsDuplicateAttributes:--&gt; junit.framework.AssertionFailedError:expected:&lt;&lt;p One="[One" ONE="Two" one="Three" two="Six]" Two="Eight"&gt;Text&lt;/...&gt; but was:&lt;&lt;p One="[Four" ONE="Five" one="Three" two="Seven]" Two="Eight"&gt;Text&lt;/...&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Attributes.java">
+          <insert numberlines="1"></insert>
+          <change parent="118">118</change>
+          <insert numberlines="1">123</insert>
+          <insert numberlines="3"></insert>
+          <insert numberlines="18"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/HtmlTreeBuilder.java">
+          <insert numberlines="6">202</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/ParseSettings.java">
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/Token.java">
+          <change parent="116">116</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/XmlTreeBuilder.java">
+          <insert numberlines="1">79</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

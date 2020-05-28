@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-10">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/sym/TestSymbolTables.java">
+          <exception>java.lang.ArrayIndexOutOfBoundsException:256:- com.fasterxml.jackson.core.sym.TestSymbolTables::testCollisionsWithBytesNew187b:--&gt; junit.framework.AssertionFailedError:expected:&lt;16384&gt; but was:&lt;32768&gt;:- com.fasterxml.jackson.core.sym.TestSymbolTables::testSyntheticWithBytesNew:--&gt; junit.framework.AssertionFailedError:expected:&lt;8534&gt; but was:&lt;8524&gt;:- com.fasterxml.jackson.core.sym.TestSymbolTables::testShortNameCollisionsDirectNew:--&gt; junit.framework.AssertionFailedError:expected:&lt;1024&gt; but was:&lt;2048&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/sym/ByteQuadsCanonicalizer.java">
+          <change parent="925">925</change>
+          <change parent="984">984</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-21">
+      <tests>
+        <testfile path="org/apache/commons/compress/archivers/sevenz/SevenZOutputFileTest.java">
+          <exception>java.io.IOException:Unknown property 128:- org.apache.commons.compress.archivers.sevenz.SevenZOutputFileTest::testEightFilesSomeNotEmpty:--&gt; java.io.IOException:Badly terminated header:- org.apache.commons.compress.archivers.sevenz.SevenZOutputFileTest::testSixEmptyFiles:--&gt; java.io.IOException:Badly terminated header:- org.apache.commons.compress.archivers.sevenz.SevenZOutputFileTest::testEightEmptyFiles:--&gt; java.io.IOException:Unknown property 192:- org.apache.commons.compress.archivers.sevenz.SevenZOutputFileTest::testNineEmptyFiles:--&gt; java.lang.ArrayIndexOutOfBoundsException:0:- org.apache.commons.compress.archivers.sevenz.SevenZOutputFileTest::testSixFilesSomeNotEmpty:--&gt; java.io.IOException:Badly terminated header:- org.apache.commons.compress.archivers.sevenz.SevenZOutputFileTest::testNineFilesSomeNotEmpty:--&gt; java.io.IOException:Unknown property 128:- org.apache.commons.compress.archivers.sevenz.SevenZOutputFileTest::testSevenFilesSomeNotEmpty:--&gt; java.io.IOException</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/archivers/sevenz/SevenZOutputFile.java">
+          <change parent="639-640">639-640</change>
+          <change parent="646">646</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

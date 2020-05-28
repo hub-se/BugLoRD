@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-23">
+      <tests>
+        <testfile path="org/apache/commons/cli/bug/BugCLI162Test.java">
+          <exception>java.lang.RuntimeException:Text too long for line - throwing exception to avoid infinite loop [CLI-162]:looooong description:- org.apache.commons.cli.bug.BugCLI162Test::testPrintHelpLongLines:--&gt; java.lang.RuntimeException:Text too long for line - throwing exception to avoid infinite loop [CLI-162]:used if omited. Example:-e "Runs such and such"</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli/HelpFormatter.java">
+          <delete>824,833-837</delete>
+          <insert numberlines="4">839</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

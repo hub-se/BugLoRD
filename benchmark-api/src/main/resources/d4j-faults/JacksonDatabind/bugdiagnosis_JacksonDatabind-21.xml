@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-21">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/deser/TestEnumDeserialization.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;["[b","a]"]&gt; but was:&lt;["[B","A]"]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/introspect/JacksonAnnotationIntrospector.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="16"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

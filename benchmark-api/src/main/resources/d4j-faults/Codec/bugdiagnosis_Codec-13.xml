@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Codec">
+    <bug bugid="Codec-13">
+      <tests>
+        <testfile path="org/apache/commons/codec/language/DoubleMetaphoneTest.java">
+          <exception>java.lang.NullPointerException:- org.apache.commons.codec.language.DoubleMetaphoneTest::testCodec184:--&gt; java.lang.NullPointerException</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/codec/binary/CharSequenceUtils.java">
+          <insert numberlines="63"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/codec/binary/StringUtils.java">
+          <insert numberlines="12"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/codec/language/DoubleMetaphone.java">
+          <insert numberlines="1"></insert>
+          <change parent="244">244</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

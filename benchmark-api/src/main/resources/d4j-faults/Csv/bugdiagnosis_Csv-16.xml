@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Csv">
+    <bug bugid="Csv-16">
+      <tests>
+        <testfile path="org/apache/commons/csv/CSVParserTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;[3]&gt; but was:&lt;[4]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/csv/CSVParser.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">355-360</insert>
+          <change parent="523-570">523-570</change>
+          <insert numberlines="47"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

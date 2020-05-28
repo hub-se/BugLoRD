@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-75">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/struct/EnumFormatShapeTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;{"color":[2]}&gt; but was:&lt;{"color":["GREEN"]}&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/ser/std/EnumSerializer.java">
+          <change parent="86">86</change>
+          <change parent="103-104">104</change>
+          <change parent="216-217">217</change>
+          <change parent="221">221</change>
+          <change parent="225">225</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-164">
+      <tests>
+        <testfile path="com/google/javascript/rhino/jstype/FunctionTypeTest.java">
+          <exception>junit.framework.AssertionFailedError:expected a warning:- com.google.javascript.jscomp.TypeCheckTest::testMethodInference7:--&gt; junit.framework.AssertionFailedError:expected a warning:- com.google.javascript.rhino.jstype.FunctionTypeTest::testSupAndInfOfReturnTypesWithNumOfParams:--&gt; junit.framework.ComparisonFailure:expected:&lt;[function (number, number):boolea]n&gt; but was:&lt;[Functio]n&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/rhino/jstype/ArrowType.java">
+          <insert numberlines="12">137</insert>
+          <insert numberlines="5">153</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

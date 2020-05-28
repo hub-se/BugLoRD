@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-6">
+      <tests>
+        <testfile path="org/jsoup/nodes/EntitiesTest.java">
+          <exception>java.lang.IllegalArgumentException:Illegal group reference:group index is missing:- org.jsoup.nodes.EntitiesTest::quoteReplacements:--&gt; java.lang.IllegalArgumentException:character to be escaped is missing</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Entities.java">
+          <change parent="70">70</change>
+          <change parent="72">72</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

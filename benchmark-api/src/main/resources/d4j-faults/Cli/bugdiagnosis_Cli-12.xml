@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-12">
+      <tests>
+        <testfile path="org/apache/commons/cli/GnuParserTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;[]bar&gt; but was:&lt;[=]bar&gt;:- org.apache.commons.cli.GnuParserTest::testLongWithEqualSingleDash:--&gt; junit.framework.ComparisonFailure:expected:&lt;[]bar&gt; but was:&lt;[oo=]bar&gt;:- org.apache.commons.cli.GnuParserTest::testLongWithEqual:--&gt; org.apache.commons.cli.UnrecognizedOptionException:Unrecognized option:--foo=bar</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli/GnuParser.java">
+          <insert numberlines="5">81</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

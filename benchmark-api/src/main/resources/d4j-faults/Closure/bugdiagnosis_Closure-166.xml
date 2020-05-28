@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-166">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/TypeInferenceTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;{[a:(boolean|undefined), b:(string|undefined)]}&gt; but was:&lt;{[]}&gt;:- com.google.javascript.jscomp.TypeInferenceTest::testIssue785:--&gt; junit.framework.ComparisonFailure:expected:&lt;{[prop:(string|undefined)]}&gt; but was:&lt;{[]}&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/rhino/jstype/PrototypeObjectType.java">
+          <insert numberlines="6">574</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

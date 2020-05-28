@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-3">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/json/TestLocation.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;0&gt; but was:&lt;3&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java">
+          <insert numberlines="2">119-127</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

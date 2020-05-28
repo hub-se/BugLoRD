@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-73">
+      <tests>
+        <testfile path="org/jsoup/helper/W3CDomTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;http://[www.w3.org/1999/xhtml]&gt; but was:&lt;http://[example.com/clip]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/helper/W3CDom.java">
+          <insert numberlines="1"></insert>
+          <change parent="73">73</change>
+          <insert numberlines="1">77:78</insert>
+          <insert numberlines="1">81</insert>
+          <change parent="85">85</change>
+          <insert numberlines="1">116</insert>
+          <change parent="144">144</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

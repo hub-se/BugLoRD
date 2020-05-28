@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-3">
+      <tests>
+        <testfile path="org/jsoup/parser/ParserTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;...tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;t[r&gt;&lt;td&gt;2&lt;/td&gt;&lt;/tr]&gt;&lt;/table&gt;&gt; but was:&lt;...tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;&lt;t[able&gt;&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;&lt;/tr&gt;&lt;/table]&gt;&lt;/table&gt;&gt;:- org.jsoup.nodes.ElementTest::testPrependRowToTable:--&gt; junit.framework.AssertionFailedError:expected:&lt;&lt;table&gt;&lt;t[r&gt;&lt;td&gt;2&lt;/td&gt;&lt;/tr]&gt;&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;...&gt; but was:&lt;&lt;table&gt;&lt;t[able&gt;&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;&lt;/tr&gt;&lt;/table]&gt;&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;/tr&gt;...&gt;:- org.jsoup.parser.ParserTest::handlesNestedImplicitTable:--&gt; junit.framework.AssertionFailedError:expected:&lt;...&gt; &lt;tr&gt;&lt;td&gt; &lt;table&gt;&lt;t[r&gt;&lt;td&gt;3&lt;/td&gt; &lt;td&gt;4&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt; &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;5]&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&gt; but was:&lt;...&gt; &lt;tr&gt;&lt;td&gt; &lt;table&gt;&lt;t[d&gt;3&lt;/td&gt; &lt;td&gt;4&lt;/td&gt;&lt;/table&gt; &lt;tr&gt;&lt;td&gt;5&lt;/td&gt;&lt;/tr&gt;]&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Element.java">
+          <change parent="270">270</change>
+          <change parent="287">287</change>
+          <change parent="314">314</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/Parser.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="5"></insert>
+          <change parent="224">224</change>
+          <insert numberlines="2">255</insert>
+          <change parent="258">258</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/Tag.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="2">100</insert>
+          <insert numberlines="3"></insert>
+          <change parent="156-166">156-166</change>
+          <change parent="224-225">224-225</change>
+          <change parent="288-289">288-289</change>
+          <change parent="295">295</change>
+          <change parent="300-301">300-301</change>
+          <change parent="307-315">307-315</change>
+          <insert numberlines="5"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

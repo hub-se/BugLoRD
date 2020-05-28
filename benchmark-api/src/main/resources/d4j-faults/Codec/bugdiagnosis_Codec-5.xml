@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Codec">
+    <bug bugid="Codec-5">
+      <tests>
+        <testfile path="org/apache/commons/codec/binary/Base64OutputStreamTest.java">
+          <exception>java.lang.NullPointerException:- org.apache.commons.codec.binary.Base64OutputStreamTest::testCodec98NPE:--&gt; java.lang.NullPointerException</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/codec/binary/Base64.java">
+          <insert numberlines="3">587</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

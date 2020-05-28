@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-144">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/CodePrinterTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;/**:- com.google.javascript.jscomp.CodePrinterTest::testTypeAnnotationsMember:--&gt; junit.framework.ComparisonFailure:expected:&lt;var a = {};:- com.google.javascript.jscomp.CodePrinterTest::testOptionalTypesAnnotation:--&gt; junit.framework.ComparisonFailure:expected:&lt;...param {string=} x:- com.google.javascript.jscomp.CodePrinterTest::testTempConstructor:--&gt; junit.framework.ComparisonFailure:expected:&lt;/**:- com.google.javascript.jscomp.CodePrinterTest::testTypeAnnotationsDispatcher1:--&gt; junit.framework.ComparisonFailure:expected:&lt;var a = {};:- com.google.javascript.jscomp.CodePrinterTest::testTypeAnnotationsDispatcher2:--&gt; junit.framework.ComparisonFailure:expected:&lt;var a = {};:- com.google.javascript.jscomp.CodePrinterTest::testTypeAnnotationsImplements</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/FunctionTypeBuilder.java">
+          <insert numberlines="1"></insert>
+          <change parent="199-201">200-201</change>
+          <change parent="202-205">202-203</change>
+          <insert numberlines="30"></insert>
+          <change parent="496">496</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/TypedScopeCreator.java">
+          <insert numberlines="1">578</insert>
+          <insert numberlines="1">617</insert>
+          <insert numberlines="1">634</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/rhino/jstype/FunctionBuilder.java">
+          <insert numberlines="5"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/rhino/jstype/FunctionType.java">
+          <change parent="516-520">517</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

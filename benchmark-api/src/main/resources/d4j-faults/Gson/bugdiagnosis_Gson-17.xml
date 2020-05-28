@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Gson">
+    <bug bugid="Gson-17">
+      <tests>
+        <testfile path="com/google/gson/DefaultDateTypeAdapterTest.java">
+          <exception>com.google.gson.JsonParseException:The date should be a string value:- com.google.gson.DefaultDateTypeAdapterTest::testNullValue:--&gt; com.google.gson.JsonParseException:The date should be a string value</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/gson/DefaultDateTypeAdapter.java">
+          <change parent="99-101">99-100</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

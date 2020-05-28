@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-52">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/jsontype/ext/ExternalTypeId999Test.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;foo&gt; but was:&lt;null&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/BeanDeserializerBase.java">
+          <change parent="612">612</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/impl/ExternalTypeHandler.java">
+          <insert numberlines="14"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

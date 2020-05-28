@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-158">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/CommandLineRunnerTest.java">
+          <exception>junit.framework.AssertionFailedError:Expected exactly one warning or error Errors::- com.google.javascript.jscomp.CommandLineRunnerTest::testWarningGuardOrdering4:--&gt; junit.framework.AssertionFailedError:Expected exactly one warning or error Errors:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/AbstractCommandLineRunner.java">
+          <change parent="197-202">197-202</change>
+          <delete>1497</delete>
+          <change parent="1502-1518">1502-1518</change>
+          <change parent="1628">1628</change>
+          <insert numberlines="8"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/CommandLineRunner.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="2"></insert>
+          <insert numberlines="1">231</insert>
+          <insert numberlines="1">236</insert>
+          <insert numberlines="1">241</insert>
+          <insert numberlines="8"></insert>
+          <insert numberlines="9"></insert>
+          <insert numberlines="8"></insert>
+          <insert numberlines="14"></insert>
+          <insert numberlines="1">485</insert>
+          <insert numberlines="1">500</insert>
+          <change parent="552-554">552-554</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/DiagnosticGroups.java">
+          <change parent="186-187">186-187</change>
+          <delete>188,192</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

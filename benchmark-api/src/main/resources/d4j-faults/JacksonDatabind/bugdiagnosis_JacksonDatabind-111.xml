@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-111">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/deser/jdk/JDKAtomicTypesDeserTest.java">
+          <exception>junit.framework.AssertionFailedError</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/CreatorProperty.java">
+          <change parent="135">135</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/impl/FieldProperty.java">
+          <change parent="93">93</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/impl/MethodProperty.java">
+          <change parent="84">84</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/impl/ObjectIdReferenceProperty.java">
+          <change parent="54">54</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/impl/ObjectIdValueProperty.java">
+          <change parent="55">55</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/impl/SetterlessProperty.java">
+          <change parent="68">68</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/std/AtomicReferenceDeserializer.java">
+          <change parent="43">43</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

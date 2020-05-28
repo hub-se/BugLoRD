@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Csv">
+    <bug bugid="Csv-3">
+      <tests>
+        <testfile path="org/apache/commons/csv/CSVParserTest.java">
+          <exception>junit.framework.AssertionFailedError::- org.apache.commons.csv.CSVLexerTest::testEscapedCharacter:--&gt; junit.framework.AssertionFailedError::- org.apache.commons.csv.CSVParserTest::testBackslashEscaping:--&gt; junit.framework.AssertionFailedError:Records do not match expected result (entry 8):arrays first differed at element [1]; expected:&lt;   "quoted "" [/]" / string"   &gt; but was:&lt;   "quoted "" []" / string"   &gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/csv/Lexer.java">
+          <insert numberlines="1,2">111,113</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

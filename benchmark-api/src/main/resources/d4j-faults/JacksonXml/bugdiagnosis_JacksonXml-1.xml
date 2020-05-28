@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonXml">
+    <bug bugid="JacksonXml-1">
+      <tests>
+        <testfile path="com/fasterxml/jackson/dataformat/xml/lists/NestedUnwrappedListsTest.java">
+          <exception>junit.framework.AssertionFailedError:- com.fasterxml.jackson.dataformat.xml.lists.NestedUnwrappedListsTest::testNestedWithEmpty2:--&gt; junit.framework.AssertionFailedError:expected:&lt;1&gt; but was:&lt;0&gt;:- com.fasterxml.jackson.dataformat.xml.lists.NestedUnwrappedListsTest::testNestedWithEmpty:--&gt; junit.framework.AssertionFailedError:expected:&lt;1&gt; but was:&lt;0&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/dataformat/xml/deser/FromXmlParser.java">
+          <insert numberlines="5">514</insert>
+          <change parent="550-553">550-553</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

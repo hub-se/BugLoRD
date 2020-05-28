@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-8">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/deser/TestJdkTypes.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Conflicting String creators:already had explicitly marked [constructor for java.lang.StringBuilder, annotations:[null]], encountered [constructor for java.lang.StringBuilder, annotations:[null]]</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/impl/CreatorCollector.java">
+          <insert numberlines="1,1,3">283,291,294</insert>
+          <change parent="294">294</change>
+          <insert numberlines="3,4">297,302</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

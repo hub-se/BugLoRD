@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-47">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/ser/TestJsonSerializeAs.java">
+          <exception>junit.framework.AssertionFailedError:Expected an exception with one of substrings ([types not related]):got one with message "Failed to widen type [simple type, class java.lang.Long] with annotation (value java.lang.String), from 'getValue':Class java.lang.String not a super-type of [simple type, class java.lang.Long]":- com.fasterxml.jackson.databind.ser.TestJsonSerializeAs::testSpecializedAsIntermediate:--&gt; com.fasterxml.jackson.databind.JsonMappingException:Failed to widen type [simple type, class com.fasterxml.jackson.databind.ser.TestJsonSerializeAs$Bean1178Base] with annotation (value com.fasterxml.jackson.databind.ser.TestJsonSerializeAs$Bean1178Abstract), from 'value':Class com.fasterxml.jackson.databind.ser.TestJsonSerializeAs$Bean1178Abstract not a super-type of [simple type, class com.fasterxml.jackson.databind.ser.TestJsonSerializeAs$Bean1178Base]</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/AnnotationIntrospector.java">
+          <insert numberlines="1">816</insert>
+          <insert numberlines="1,7">819,820</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

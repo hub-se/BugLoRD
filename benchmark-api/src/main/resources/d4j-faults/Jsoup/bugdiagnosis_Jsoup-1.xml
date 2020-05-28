@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-1">
+      <tests>
+        <testfile path="org/jsoup/parser/ParserTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;[foo bar baz]&gt; but was:&lt;[bar baz foo]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Document.java">
+          <change parent="125-126">125-126</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

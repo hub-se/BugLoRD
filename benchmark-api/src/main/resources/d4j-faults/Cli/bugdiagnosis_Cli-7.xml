@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-7">
+      <tests>
+        <testfile path="org/apache/commons/cli2/bug/Bug27575Test.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;[[-h]]&gt; but was:&lt;[-c &lt;arg&gt;]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli2/builder/PatternBuilder.java">
+          <insert numberlines="1"></insert>
+          <change parent="67">67</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

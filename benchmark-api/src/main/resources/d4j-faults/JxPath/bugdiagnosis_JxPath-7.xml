@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JxPath">
+    <bug bugid="JxPath-7">
+      <tests>
+        <testfile path="org/apache/commons/jxpath/ri/compiler/CoreOperationTest.java">
+          <exception>junit.framework.AssertionFailedError:Evaluating &lt;$array &gt; 0&gt; expected:&lt;true&gt; but was:&lt;false&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/jxpath/ri/compiler/CoreOperationGreaterThan.java">
+          <delete>19-20</delete>
+          <change parent="33-37">33-36</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/jxpath/ri/compiler/CoreOperationGreaterThanOrEqual.java">
+          <delete>19-20</delete>
+          <change parent="34-38">34-37</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/jxpath/ri/compiler/CoreOperationLessThan.java">
+          <delete>19-20</delete>
+          <change parent="33-37">33-36</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/jxpath/ri/compiler/CoreOperationLessThanOrEqual.java">
+          <delete>19-20</delete>
+          <change parent="34-38">34-37</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/jxpath/ri/compiler/CoreOperationRelationalExpression.java">
+          <insert numberlines="9"></insert>
+          <insert numberlines="5"></insert>
+          <insert numberlines="63"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

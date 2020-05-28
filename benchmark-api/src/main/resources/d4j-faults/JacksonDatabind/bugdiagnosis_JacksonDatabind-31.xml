@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-31">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/util/TestTokenBuffer.java">
+          <exception>junit.framework.AssertionFailedError:Expected name 'b' (JsonParser), TokenBuffer had 'a'</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/util/TokenBuffer.java">
+          <change parent="672">672</change>
+          <change parent="686">686</change>
+          <change parent="731">731</change>
+          <change parent="739">739</change>
+          <change parent="744">744</change>
+          <change parent="755">755</change>
+          <change parent="760">760</change>
+          <change parent="765">765</change>
+          <change parent="770">770</change>
+          <change parent="775">775</change>
+          <change parent="783">783</change>
+          <change parent="792">792</change>
+          <change parent="801">801</change>
+          <change parent="806">806</change>
+          <change parent="811">811</change>
+          <change parent="829">829</change>
+          <change parent="837">837</change>
+          <change parent="853">853</change>
+          <insert numberlines="13"></insert>
+          <insert numberlines="13"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

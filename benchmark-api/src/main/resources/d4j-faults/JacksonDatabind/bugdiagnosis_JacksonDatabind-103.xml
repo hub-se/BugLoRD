@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-103">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/exc/BasicExceptionTest.java">
+          <exception>junit.framework.AssertionFailedError:Should only get one 'at [' marker, got 2, source:Cannot deserialize Map key of type `com.fasterxml.jackson.databind.BaseMapTest$ABC` from String "value":not a valid representation, problem:(com.fasterxml.jackson.databind.exc.InvalidFormatException) Cannot deserialize Map key of type `com.fasterxml.jackson.databind.BaseMapTest$ABC` from String "value":not one of values excepted for Enum class:[A, B, C]</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/DatabindContext.java">
+          <change parent="192-195">195</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/DeserializationContext.java">
+          <change parent="712-714">714</change>
+          <change parent="1603">1603</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/JsonMappingException.java">
+          <insert numberlines="1"></insert>
+          <change parent="337-339">339</change>
+          <change parent="380">380</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/SerializerProvider.java">
+          <change parent="1341">1341</change>
+          <change parent="1361">1361</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/BasicDeserializerFactory.java">
+          <change parent="1588-1589">1589</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/BeanDeserializerFactory.java">
+          <change parent="221-223">222</change>
+          <change parent="280-282">281</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/DeserializerCache.java">
+          <change parent="268">268</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/SettableAnyProperty.java">
+          <change parent="202">202</change>
+          <change parent="214">214</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/SettableBeanProperty.java">
+          <change parent="590">590</change>
+          <change parent="611">611</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/std/StdDeserializer.java">
+          <change parent="524-526">526</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/std/StdKeyDeserializer.java">
+          <change parent="133-135">135</change>
+          <change parent="261-262">262</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/std/StdValueInstantiator.java">
+          <change parent="455-456">456</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/introspect/BasicBeanDescription.java">
+          <change parent="362-364">364</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/ser/DefaultSerializerProvider.java">
+          <change parent="169-171">171</change>
+          <change parent="505">505</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/ser/PropertyBuilder.java">
+          <change parent="103">103</change>
+          <change parent="105">105</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/util/ClassUtil.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="6"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

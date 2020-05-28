@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-50">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/objectid/ObjectWithCreator1261Test.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Can not deserialize instance of com.fasterxml.jackson.databind.objectid.ObjectWithCreator1261Test$Child out of START_ARRAY token</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/BeanDeserializer.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">382:384:386:387</insert>
+          <insert numberlines="1,7">429,433</insert>
+          <insert numberlines="5">465</insert>
+          <insert numberlines="10"></insert>
+          <insert numberlines="17"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

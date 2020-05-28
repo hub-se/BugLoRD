@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-68">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/struct/SingleValueAsArrayTest.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Can not construct instance of com.fasterxml.jackson.databind.struct.SingleValueAsArrayTest$Messages:no suitable constructor found, can not deserialize from Object value (missing default constructor or creator, or perhaps need to add/enable type information?):- com.fasterxml.jackson.databind.struct.SingleValueAsArrayTest::testWithSingleString:--&gt; com.fasterxml.jackson.databind.JsonMappingException:Can not construct instance of com.fasterxml.jackson.databind.struct.SingleValueAsArrayTest$Bean1421B:no String-argument constructor/factory method to deserialize from String value ('test2')</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/BeanDeserializerBase.java">
+          <change parent="1192">1192</change>
+          <change parent="1193-1194">1194</change>
+          <insert numberlines="1">1220</insert>
+          <change parent="1222">1222</change>
+          <change parent="1224-1225">1225</change>
+          <change parent="1234">1234</change>
+          <change parent="1236-1237">1237</change>
+          <change parent="1247">1247</change>
+          <change parent="1248-1249">1249</change>
+          <change parent="1269">1269</change>
+          <change parent="1271-1272">1272</change>
+          <change parent="1291">1291</change>
+          <change parent="1293-1294">1294</change>
+          <change parent="1304">1304</change>
+          <change parent="1305-1306">1306</change>
+          <change parent="1318">1318</change>
+          <change parent="1320-1321">1321</change>
+          <change parent="1335-1345">1335-1345</change>
+          <change parent="1347">1347</change>
+          <delete>1348</delete>
+          <change parent="1349-1350">1350</change>
+          <delete>1355-1358</delete>
+          <insert numberlines="7"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

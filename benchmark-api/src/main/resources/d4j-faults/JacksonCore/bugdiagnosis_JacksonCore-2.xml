@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-2">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/json/TestParserErrorHandling.java">
+          <exception>junit.framework.AssertionFailedError:Should have gotten an exception; instead got token:VALUE_NUMBER_INT:- com.fasterxml.jackson.core.json.TestParserErrorHandling::testMangledNumbersChars:--&gt; junit.framework.AssertionFailedError:Should have gotten an exception; instead got token:VALUE_NUMBER_INT</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java">
+          <insert numberlines="3">952</insert>
+          <insert numberlines="3">1081</insert>
+          <insert numberlines="17"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java">
+          <insert numberlines="3">1246</insert>
+          <insert numberlines="3">1282</insert>
+          <insert numberlines="3">1407</insert>
+          <insert numberlines="17"></insert>
+          <delete>2575-2577</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

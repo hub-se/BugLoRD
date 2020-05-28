@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-7">
+      <tests>
+        <testfile path="org/jsoup/nodes/DocumentTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;...&lt;/script&gt;&lt;noscript&gt;&lt;[/noscript&gt;&lt;/head&gt;&lt;body&gt;&lt;p&gt;two&lt;/p&gt;&lt;p&gt;three&lt;/p&gt;&lt;/body]&gt;&lt;/html&gt;&gt; but was:&lt;...&lt;/script&gt;&lt;noscript&gt;&lt;[body&gt;&lt;p&gt;two&lt;/p&gt;&lt;body&gt;&lt;p&gt;three&lt;/p&gt;&lt;/body&gt;&lt;/body&gt;&lt;/noscript&gt;&lt;/head]&gt;&lt;/html&gt;&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Document.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="2">114</insert>
+          <insert numberlines="19"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

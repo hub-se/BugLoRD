@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-60">
+      <tests>
+        <testfile path="org/jsoup/select/QueryParserTest.java">
+          <exception>junit.framework.AssertionFailedError:Expected exception:org.jsoup.select.Selector$SelectorParseException:- org.jsoup.select.QueryParserTest::exceptionOnUncloseAttribute:--&gt; java.lang.Exception:Unexpected exception, expected&lt;org.jsoup.select.Selector$SelectorParseException&gt; but was&lt;java.lang.IllegalArgumentException&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/parser/TokenQueue.java">
+          <insert numberlines="3">289</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/select/QueryParser.java">
+          <insert numberlines="1,3">38,40</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

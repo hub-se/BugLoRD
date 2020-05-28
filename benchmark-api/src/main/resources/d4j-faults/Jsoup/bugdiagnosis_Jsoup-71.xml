@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-71">
+      <tests>
+        <testfile path="org/jsoup/select/SelectorTest.java">
+          <exception>org.jsoup.select.Selector$SelectorParseException:Could not parse query 'p:matchText':unexpected token at ':matchText':- org.jsoup.select.SelectorTest::textAsElements:--&gt; org.jsoup.select.Selector$SelectorParseException:Could not parse query 'p:matchText:first-child':unexpected token at ':matchText:first-child'</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/PseudoTextElement.java">
+          <insert numberlines="24"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/select/Evaluator.java">
+          <insert numberlines="2"></insert>
+          <insert numberlines="20"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/select/QueryParser.java">
+          <insert numberlines="2,1">204,206</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

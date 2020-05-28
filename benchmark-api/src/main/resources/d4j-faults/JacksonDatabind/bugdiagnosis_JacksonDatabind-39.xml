@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-39">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/jsontype/TestPolymorphicWithDefaultImpl.java">
+          <exception>com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException:Unrecognized field "location" (class com.fasterxml.jackson.databind.jsontype.TestPolymorphicWithDefaultImpl$CallRecord), not marked as ignorable (4 known properties:"version", "item", "item2", "application"])</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/std/NullifyingDeserializer.java">
+          <insert numberlines="9">35</insert>
+          <insert numberlines="1">36</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-3">
+      <tests>
+        <testfile path="org/apache/commons/compress/archivers/ArchiveOutputStreamTest.java">
+          <exception>junit.framework.AssertionFailedError:After putArchive should follow closeArchive</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/archivers/tar/TarArchiveOutputStream.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="3">112</insert>
+          <insert numberlines="1">179:181:186:187</insert>
+          <insert numberlines="1">217</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

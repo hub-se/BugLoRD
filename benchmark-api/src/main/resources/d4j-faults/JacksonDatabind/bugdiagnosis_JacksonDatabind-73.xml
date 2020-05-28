@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-73">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/deser/ReadOrWriteOnlyTest.java">
+          <exception>com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException:Unrecognized field "x" (class com.fasterxml.jackson.databind.deser.ReadOrWriteOnlyTest$ReadXWriteY), not marked as ignorable (one known property:"y"]):- com.fasterxml.jackson.databind.deser.ReadOrWriteOnlyTest::testReadOnly935:--&gt; com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException:Unrecognized field "fullName" (class com.fasterxml.jackson.databind.deser.ReadOrWriteOnlyTest$Pojo935), not marked as ignorable (2 known properties:"lastName", "firstName"])</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/introspect/POJOPropertiesCollector.java">
+          <insert numberlines="1"></insert>
+          <change parent="731">731</change>
+          <insert numberlines="3">732</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/introspect/POJOPropertyBuilder.java">
+          <change parent="644">644</change>
+          <insert numberlines="1">683</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

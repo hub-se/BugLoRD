@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-58">
+      <tests>
+        <testfile path="org/jsoup/safety/CleanerTest.java">
+          <exception>junit.framework.AssertionFailedError:- org.jsoup.safety.CleanerTest::testIsValidDocument:--&gt; junit.framework.AssertionFailedError</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/Jsoup.java">
+          <change parent="250">250</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/Parser.java">
+          <insert numberlines="4"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/safety/Cleaner.java">
+          <insert numberlines="1"></insert>
+          <change parent="78">78</change>
+          <insert numberlines="9"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

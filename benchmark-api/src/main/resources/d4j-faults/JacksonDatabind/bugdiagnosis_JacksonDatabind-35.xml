@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-35">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/jsontype/WrapperObjectWithObjectIdTest.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Unexpected token (FIELD_NAME), expected START_OBJECT:need JSON Object to contain As.WRAPPER_OBJECT type information for class com.fasterxml.jackson.databind.jsontype.WrapperObjectWithObjectIdTest$Computer</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/jsontype/impl/AsWrapperTypeDeserializer.java">
+          <delete>89-92</delete>
+          <insert numberlines="2,4">94,98</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

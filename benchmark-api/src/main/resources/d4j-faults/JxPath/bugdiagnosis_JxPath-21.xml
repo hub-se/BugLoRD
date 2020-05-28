@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JxPath">
+    <bug bugid="JxPath-21">
+      <tests>
+        <testfile path="org/apache/commons/jxpath/ri/model/MixedModelTest.java">
+          <exception>junit.framework.AssertionFailedError:Evaluating &lt;map/b != map/a&gt; expected:&lt;true&gt; but was:&lt;false&gt;:- org.apache.commons.jxpath.ri.model.MixedModelTest::testNull:--&gt; junit.framework.AssertionFailedError:Evaluating value iterator &lt;$testnull/nothing[1]&gt; expected:&lt;[null]&gt; but was:&lt;[]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/jxpath/ri/model/beans/PropertyPointer.java">
+          <change parent="152">152</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

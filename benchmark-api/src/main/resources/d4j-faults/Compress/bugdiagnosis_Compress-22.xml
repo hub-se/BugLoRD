@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-22">
+      <tests>
+        <testfile path="org/apache/commons/compress/compressors/bzip2/PythonTruncatedBzip2Test.java">
+          <exception>java.io.IOException:unexpected end of stream</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/compressors/bzip2/BZip2CompressorInputStream.java">
+          <delete>67</delete>
+          <delete>135</delete>
+          <delete>199</delete>
+          <change parent="205">205</change>
+          <change parent="211-212">211-212</change>
+          <change parent="215-216">215-216</change>
+          <change parent="222-223">222-223</change>
+          <change parent="226-227">226-227</change>
+          <delete>232</delete>
+          <delete>853</delete>
+          <delete>871</delete>
+          <delete>913</delete>
+          <delete>942</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

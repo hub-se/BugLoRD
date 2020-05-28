@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-33">
+      <tests>
+        <testfile path="org/jsoup/parser/HtmlParserTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;...src="/foo"&gt;&lt;/script&gt;[&lt;div id="2"&gt;&lt;img /&gt;&lt;img /&gt;&lt;/div&gt;&lt;a id="3"&gt;&lt;/a&gt;&lt;i&gt;&lt;/i&gt;&lt;foo /&gt;&lt;foo&gt;One&lt;/foo&gt; &lt;hr /&gt; hr text &lt;hr /&gt;] hr text two&gt; but was:&lt;...src="/foo"&gt;&lt;/script&gt;[&amp;lt;div id=2&amp;gt;&amp;lt;img /&amp;gt;&amp;lt;img&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;a id=3 /&amp;gt;&amp;lt;i /&amp;gt;&amp;lt;foo /&amp;gt;&amp;lt;foo&amp;gt;One&amp;lt;/foo&amp;gt; &amp;lt;hr /&amp;gt; hr text &amp;lt;hr&amp;gt;] hr text two&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/parser/HtmlTreeBuilder.java">
+          <insert numberlines="1">162</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

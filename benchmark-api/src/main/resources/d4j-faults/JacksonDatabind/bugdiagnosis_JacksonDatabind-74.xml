@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-74">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/jsontype/TestPolymorphicWithDefaultImpl.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Unexpected token (VALUE_STRING), expected FIELD_NAME:missing property 'type' that is to contain type id  (for class com.fasterxml.jackson.databind.jsontype.TestPolymorphicWithDefaultImpl$AsProperty)</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/jsontype/impl/AsPropertyTypeDeserializer.java">
+          <insert numberlines="7">157</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

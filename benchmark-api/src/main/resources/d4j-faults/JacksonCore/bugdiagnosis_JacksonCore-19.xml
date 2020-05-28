@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-19">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/json/TestNumericValues.java">
+          <exception>java.lang.ArrayIndexOutOfBoundsException:200</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java">
+          <insert numberlines="4">1418</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java">
+          <insert numberlines="4">1544</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

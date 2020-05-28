@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-30">
+      <tests>
+        <testfile path="org/apache/commons/cli/PosixParserTest.java">
+          <exception>org.apache.commons.cli.AlreadySelectedException:The option 'b' was specified but an option from this group has already been selected:'a':- org.apache.commons.cli.BasicParserTest::testPropertyOptionUnexpected:--&gt; java.lang.NullPointerException:- org.apache.commons.cli.DefaultParserTest::testPropertyOptionGroup:--&gt; org.apache.commons.cli.AlreadySelectedException:The option 'b' was specified but an option from this group has already been selected:'a':- org.apache.commons.cli.DefaultParserTest::testPropertyOptionUnexpected:--&gt; java.lang.NullPointerException:- org.apache.commons.cli.GnuParserTest::testPropertyOptionGroup:--&gt; org.apache.commons.cli.AlreadySelectedException:The option 'b' was specified but an option from this group has already been selected:'a':- org.apache.commons.cli.GnuParserTest::testPropertyOptionUnexpected:--&gt; java.lang.NullPointerException:- org.apache.commons.cli.OptionGroupTest::testTwoOptionsFromGroupWithProperties:--&gt; org.apache.commons.cli.AlreadySelectedException:The option 'd' was specified but an option from this group has already been selected:'f':- org.apache.commons.cli.PosixParserTest::testPropertyOptionGroup</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli/DefaultParser.java">
+          <insert numberlines="7">150</insert>
+          <change parent="150-176">150,152</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/cli/Parser.java">
+          <insert numberlines="7">263</insert>
+          <change parent="263-298">263,265</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

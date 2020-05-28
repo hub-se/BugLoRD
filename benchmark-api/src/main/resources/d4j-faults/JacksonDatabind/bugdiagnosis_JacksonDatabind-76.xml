@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-76">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/deser/builder/BuilderWithUnwrappedTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;John&gt; but was:&lt;null&gt;:- com.fasterxml.jackson.databind.deser.builder.BuilderWithUnwrappedTest::testWithUnwrappedAndCreatorMultipleParametersAtBeginning:--&gt; junit.framework.ComparisonFailure:expected:&lt;John&gt; but was:&lt;null&gt;:- com.fasterxml.jackson.databind.deser.builder.BuilderWithUnwrappedTest::testWithUnwrappedAndCreatorSingleParameterInMiddle:--&gt; junit.framework.AssertionFailedError:expected:&lt;30&gt; but was:&lt;0&gt;:- com.fasterxml.jackson.databind.deser.builder.BuilderWithUnwrappedTest::testWithUnwrappedAndCreatorMultipleParametersInMiddle:--&gt; junit.framework.AssertionFailedError:expected:&lt;30&gt; but was:&lt;0&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/BuilderBasedDeserializer.java">
+          <change parent="583-603">583-603</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

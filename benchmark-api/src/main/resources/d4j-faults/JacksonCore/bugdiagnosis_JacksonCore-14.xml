@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-14">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/io/TestIOContext.java">
+          <exception>junit.framework.AssertionFailedError:Expected an exception with one of substrings ([smaller than original]):got one with message "Trying to release buffer not owned by the context"</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/io/IOContext.java">
+          <change parent="274">274</change>
+          <change parent="279">279</change>
+          <change parent="284">284</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

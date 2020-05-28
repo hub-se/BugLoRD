@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-22">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/ser/TestJsonValue.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;[42]&gt; but was:&lt;["value"]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/ser/BasicSerializerFactory.java">
+          <change parent="580">580</change>
+          <insert numberlines="1">585</insert>
+          <delete>586</delete>
+          <change parent="590-595">590-595</change>
+          <insert numberlines="10">598</insert>
+          <change parent="598">598</change>
+          <change parent="603">603</change>
+          <change parent="613-618">613-618</change>
+          <insert numberlines="10">621</insert>
+          <change parent="621">621</change>
+          <change parent="624-625">624</change>
+          <change parent="636-639">636</change>
+          <insert numberlines="1">641:646</insert>
+          <insert numberlines="2,1">657,693</insert>
+          <change parent="737-741">737</change>
+          <insert numberlines="1">743:750</insert>
+          <insert numberlines="2,1">772,783</insert>
+          <change parent="831-835">831</change>
+          <insert numberlines="1">841:843</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/ser/BeanSerializerFactory.java">
+          <change parent="174-177">174-177</change>
+          <insert numberlines="3">212</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

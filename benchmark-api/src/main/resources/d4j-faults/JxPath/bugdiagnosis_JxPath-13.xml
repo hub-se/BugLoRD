@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JxPath">
+    <bug bugid="JxPath-13">
+      <tests>
+        <testfile path="org/apache/commons/jxpath/ri/model/ExternalXMLNamespaceTest.java">
+          <exception>org.apache.commons.jxpath.JXPathException:Unknown namespace prefix:A</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/jxpath/ri/NamespaceResolver.java">
+          <insert numberlines="18"></insert>
+          <change parent="117-123">117-123</change>
+          <insert numberlines="6"></insert>
+          <change parent="117-123">117-123</change>
+          <delete>141-151</delete>
+          <change parent="159-162">159-162</change>
+          <insert numberlines="13"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <insert numberlines="7"></insert>
+          <change parent="415">415</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

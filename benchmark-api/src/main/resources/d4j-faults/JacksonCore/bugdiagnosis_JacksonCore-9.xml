@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-9">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/json/TestJsonParser.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;a&gt; but was:&lt;null&gt;:- com.fasterxml.jackson.core.json.TestJsonParser::testGetValueAsTextChars:--&gt; junit.framework.ComparisonFailure:expected:&lt;a&gt; but was:&lt;null&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/base/ParserMinimalBase.java">
+          <insert numberlines="3">392</insert>
+          <insert numberlines="3">400</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java">
+          <insert numberlines="3">253</insert>
+          <insert numberlines="3">266</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java">
+          <insert numberlines="3">305</insert>
+          <insert numberlines="3">319</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

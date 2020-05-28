@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-36">
+      <tests>
+        <testfile path="org/jsoup/integration/ParseTest.java">
+          <exception>java.nio.charset.IllegalCharsetNameException:charset=iso-8859-1:- org.jsoup.helper.DataUtilTest::shouldNotThrowExceptionOnEmptyCharset:--&gt; java.nio.charset.IllegalCharsetNameException::- org.jsoup.helper.DataUtilTest::testQuotedCharset:--&gt; java.nio.charset.IllegalCharsetNameException:'UTF-8':- org.jsoup.helper.DataUtilTest::shouldSelectFirstCharsetOnWeirdMultileCharsetsInMetaTags:--&gt; java.nio.charset.IllegalCharsetNameException:ISO-8859-1,:- org.jsoup.helper.DataUtilTest::shouldReturnNullForIllegalCharsetNames:--&gt; java.nio.charset.IllegalCharsetNameException:$HJKDF§$/(:- org.jsoup.integration.ParseTest::testBrokenHtml5CharsetWithASingleDoubleQuote:--&gt; java.nio.charset.IllegalCharsetNameException:UTF-8"</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/helper/DataUtil.java">
+          <insert numberlines="1"></insert>
+          <change parent="19">19</change>
+          <insert numberlines="9">87</insert>
+          <insert numberlines="1">92</insert>
+          <insert numberlines="3,3">161,165</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

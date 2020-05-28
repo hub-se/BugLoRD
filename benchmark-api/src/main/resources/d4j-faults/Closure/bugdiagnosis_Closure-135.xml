@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-135">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/TypeCheckTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;[FUNCTION a = function (this:a):?, NAME JSCompiler_StaticMethods_foo$self = a, FUNCTION JSCompiler_StaticMethods_foo = function (a):number, NAME JSCompiler_StaticMethods_bar$self = a, FUNCTION JSCompiler_StaticMethods_bar = function (a, number):number, FUNCTION JSCompiler_StaticMethods_baz = function (a):?, NEW a = a, CALL JSCompiler_StaticMethods_foo = number, CALL JSCompiler_StaticMethods_bar = number, CALL JSCompiler_StaticMethods_baz = ?]&gt; but was:&lt;[FUNCTION a = function (this:a):?, NAME JSCompiler_StaticMethods_foo$self = null, FUNCTION JSCompiler_StaticMethods_foo = function (a):number, NAME JSCompiler_StaticMethods_bar$self = null, FUNCTION JSCompiler_StaticMethods_bar = function (a, number):number, FUNCTION JSCompiler_StaticMethods_baz = function (a):?, NEW a = a, CALL JSCompiler_StaticMethods_foo = number, CALL JSCompiler_StaticMethods_bar = number, CALL JSCompiler_StaticMethods_baz = ?]&gt;:- com.google.javascript.jscomp.TypeCheckTest::testGoodExtends9:--&gt; junit.framework.AssertionFailedError:unexpected warnings(s)</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/DevirtualizePrototypeMethods.java">
+          <insert numberlines="1">362</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/rhino/jstype/FunctionType.java">
+          <insert numberlines="4"></insert>
+          <insert numberlines="3">472</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

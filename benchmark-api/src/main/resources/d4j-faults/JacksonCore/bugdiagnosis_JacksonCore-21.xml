@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-21">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/filter/TokenVerifyingParserFiltering330Test.java">
+          <exception>junit.framework.AssertionFailedError:Expected token END_OBJECT, current token null:- com.fasterxml.jackson.core.filter.TokenVerifyingParserFiltering330Test::testBasicSingleMatchFilteringWithPath:--&gt; junit.framework.ComparisonFailure:expected:&lt;{"ob":{"value":3}[}]&gt; but was:&lt;{"ob":{"value":3}[]&gt;:- com.fasterxml.jackson.core.filter.TokenVerifyingParserFiltering330Test::testSkippingForSingleWithPath:--&gt; junit.framework.AssertionFailedError:expected:&lt;END_OBJECT&gt; but was:&lt;null&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/filter/FilteringParserDelegate.java">
+          <insert numberlines="1,1">238,249</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

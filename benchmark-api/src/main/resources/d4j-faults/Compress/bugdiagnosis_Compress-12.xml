@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-12">
+      <tests>
+        <testfile path="org/apache/commons/compress/archivers/TarTestCase.java">
+          <exception>java.lang.IllegalArgumentException:Invalid byte 0 at offset 2 in '00{NUL}0765{NUL}' len=8</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/archivers/tar/TarArchiveInputStream.java">
+          <insert numberlines="1,5">198,199</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

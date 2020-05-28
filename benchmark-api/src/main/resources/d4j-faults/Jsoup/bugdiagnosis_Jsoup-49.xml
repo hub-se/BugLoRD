@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-49">
+      <tests>
+        <testfile path="org/jsoup/nodes/ElementTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;...&gt;&lt;div3&gt;Check&lt;/div3&gt;&lt;[div4&gt;&lt;/div4&gt;&lt;div1&gt;&lt;/div1&gt;&lt;div2&gt;&lt;/div2&gt;&lt;]/body&gt;&gt; but was:&lt;...&gt;&lt;div3&gt;Check&lt;/div3&gt;&lt;[]/body&gt;&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Node.java">
+          <insert numberlines="1">445</insert>
+          <delete>446</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

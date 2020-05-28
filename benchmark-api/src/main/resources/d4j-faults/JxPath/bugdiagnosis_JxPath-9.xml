@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JxPath">
+    <bug bugid="JxPath-9">
+      <tests>
+        <testfile path="org/apache/commons/jxpath/ri/compiler/CoreOperationTest.java">
+          <exception>junit.framework.AssertionFailedError:Evaluating &lt;$nan = $nan&gt; expected:&lt;false&gt; but was:&lt;true&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/jxpath/ri/compiler/CoreOperationCompare.java">
+          <insert numberlines="1"></insert>
+          <change parent="39">39</change>
+          <insert numberlines="4"></insert>
+          <insert numberlines="3"></insert>
+          <insert numberlines="5">40</insert>
+          <delete>121-125</delete>
+          <change parent="134-148">134-148</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/jxpath/ri/compiler/CoreOperationEqual.java">
+          <delete>19</delete>
+          <delete>32-34</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/jxpath/ri/compiler/CoreOperationNotEqual.java">
+          <delete>19</delete>
+          <change parent="29">29</change>
+          <delete>32-34</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

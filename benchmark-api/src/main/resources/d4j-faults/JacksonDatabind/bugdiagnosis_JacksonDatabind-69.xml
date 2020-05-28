@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-69">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/creators/Creator1476Test.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Could not find creator property with name 'intField' (in class com.fasterxml.jackson.databind.creators.Creator1476Test$SimplePojo)</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/impl/CreatorCollector.java">
+          <change parent="165">165</change>
+          <insert numberlines="1,1">166,167</insert>
+          <change parent="168">168</change>
+          <insert numberlines="1,1">169,170</insert>
+          <change parent="176">176</change>
+          <insert numberlines="1,1">178,195</insert>
+          <change parent="299">299</change>
+          <change parent="310">310</change>
+          <change parent="332">332</change>
+          <insert numberlines="1">341</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

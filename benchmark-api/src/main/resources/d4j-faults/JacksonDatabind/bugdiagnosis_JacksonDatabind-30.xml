@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-30">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/jsontype/TestExternalId.java">
+          <exception>junit.framework.AssertionFailedError:Expected BigDecimal = -10000000000.0000000001; got back BigDecimal = -1.0E+10</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/ObjectMapper.java">
+          <insert numberlines="3">2510:2511</insert>
+          <insert numberlines="3">3426</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/util/TokenBuffer.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="2">188</insert>
+          <insert numberlines="4"></insert>
+          <insert numberlines="3,1">964,974</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

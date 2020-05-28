@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-34">
+      <tests>
+        <testfile path="org/apache/commons/cli/OptionBuilderTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;foo&gt; but was:&lt;null&gt;:- org.apache.commons.cli.OptionBuilderTest::testTwoCompleteOptions:--&gt; junit.framework.AssertionFailedError:expected:&lt;class java.lang.String&gt; but was:&lt;null&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli/Option.java">
+          <!--<change parent="72">72</change>-->
+          <insert numberlines="1">124:126:127:130:135:136</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/cli/OptionBuilder.java">
+          <change parent="84">84</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

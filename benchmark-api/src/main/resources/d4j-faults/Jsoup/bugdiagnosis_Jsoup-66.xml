@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-66">
+      <tests>
+        <testfile path="org/jsoup/nodes/ElementTest.java">
+          <exception>java.lang.NullPointerException</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Element.java">
+          <change parent="89">89</change>
+          <change parent="1402">1402</change>
+          <change parent="1408">1408</change>
+          <insert numberlines="1"></insert>
+          <change parent="1409">1409</change>
+          <insert numberlines="1">1411</insert>
+          <change parent="1414">1414</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

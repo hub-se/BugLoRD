@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-32">
+      <tests>
+        <testfile path="org/apache/commons/cli/HelpFormatterTest.java">
+          <exception>java.lang.StringIndexOutOfBoundsException:String index out of range:12:- org.apache.commons.cli.HelpFormatterTest::testFindWrapPos:--&gt; junit.framework.AssertionFailedError:wrap position 3 expected:&lt;3&gt; but was:&lt;4&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli/HelpFormatter.java">
+          <delete>937-941</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

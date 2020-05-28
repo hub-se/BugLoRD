@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-61">
+      <tests>
+        <testfile path="org/jsoup/select/SelectorTest.java">
+          <exception>junit.framework.AssertionFailedError:- org.jsoup.select.SelectorTest::testByClassCaseInsensitive:--&gt; junit.framework.AssertionFailedError:expected:&lt;3&gt; but was:&lt;1&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Element.java">
+          <change parent="1092">1092</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

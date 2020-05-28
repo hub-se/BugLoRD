@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-41">
+      <tests>
+        <testfile path="org/apache/commons/compress/archivers/zip/ZipArchiveInputStreamTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;1&gt; but was:&lt;0&gt;:- org.apache.commons.compress.archivers.zip.ZipArchiveInputStreamTest::testThrowOnInvalidEntry:--&gt; junit.framework.AssertionFailedError:IOException expected</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java">
+          <insert numberlines="1">247</insert>
+          <change parent="249">249</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

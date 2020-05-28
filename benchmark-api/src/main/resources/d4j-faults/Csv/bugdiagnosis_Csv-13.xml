@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Csv">
+    <bug bugid="Csv-13">
+      <tests>
+        <testfile path="org/apache/commons/csv/CSVPrinterTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;"NULL"	[NULL]:- org.apache.commons.csv.CSVPrinterTest::testMySqlNullStringDefault:--&gt; junit.framework.AssertionFailedError:expected:&lt;\N&gt; but was:&lt;null&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/csv/CSVFormat.java">
+          <change parent="318-319">319</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/csv/CSVPrinter.java">
+          <insert numberlines="33,1">139,147</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

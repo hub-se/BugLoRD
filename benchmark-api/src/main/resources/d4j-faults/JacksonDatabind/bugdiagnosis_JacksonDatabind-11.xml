@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-11">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/type/TestLocalType609.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;interface java.lang.CharSequence&gt; but was:&lt;class java.lang.Object&gt;:- com.fasterxml.jackson.databind.type.TestLocalType609::testLocalPartialType609:--&gt; com.fasterxml.jackson.databind.JsonMappingException:Type variable 'T' can not be resolved (with context of class com.fasterxml.jackson.databind.type.TestLocalType609$EntityContainer)</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/type/TypeFactory.java">
+          <change parent="895">895</change>
+          <change parent="902">902</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

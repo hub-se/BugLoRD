@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-85">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/ser/DateSerializationTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;{"date":"1970-01-01[X01:00:]00"}&gt; but was:&lt;{"date":"1970-01-01[T01:00:00.000+01]00"}&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/ser/std/DateTimeSerializerBase.java">
+          <change parent="67-68">67-68</change>
+          <delete>69-72</delete>
+          <change parent="76-79">76-79</change>
+          <insert numberlines="33">94</insert>
+          <change parent="94">94</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

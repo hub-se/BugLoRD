@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-137">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/NormalizeTest.java">
+          <exception>junit.framework.AssertionFailedError::- com.google.javascript.jscomp.MakeDeclaredNamesUniqueTest::testOnlyInversion4:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.MakeDeclaredNamesUniqueTest::testArguments:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.MakeDeclaredNamesUniqueTest::testMakeLocalNamesUniqueWithContext1:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.NormalizeTest::testRemoveDuplicateVarDeclarations2:--&gt; junit.framework.AssertionFailedError:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/MakeDeclaredNamesUnique.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <change parent="235-236">235-236</change>
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <change parent="244">244</change>
+          <delete>266-268</delete>
+          <insert numberlines="4"></insert>
+          <delete>274-278</delete>
+          <delete>284-344</delete>
+          <insert numberlines="14"></insert>
+          <insert numberlines="20"></insert>
+          <insert numberlines="4"></insert>
+          <insert numberlines="13"></insert>
+          <insert numberlines="8"></insert>
+
+          <insert numberlines="1,1">392,405</insert>
+          <insert numberlines="1">462</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/NodeUtil.java">
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/Normalize.java">
+          <delete>82</delete>
+          <insert numberlines="1">102</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

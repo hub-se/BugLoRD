@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Gson">
+    <bug bugid="Gson-14">
+      <tests>
+        <testfile path="com/google/gson/internal/bind/RecursiveTypesResolveTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;? super java.lang.Number&gt; but was:&lt;? super ? super java.lang.Number&gt;:- com.google.gson.internal.bind.RecursiveTypesResolveTest::testIssue440WeakReference:--&gt; java.lang.StackOverflowError:- com.google.gson.internal.bind.RecursiveTypesResolveTest::testSubSupertype:--&gt; junit.framework.AssertionFailedError:expected:&lt;?&gt; but was:&lt;? extends ? super java.lang.Number&gt;:- com.google.gson.internal.bind.RecursiveTypesResolveTest::testDoubleSubtype:--&gt; junit.framework.AssertionFailedError:expected:&lt;? extends java.lang.Number&gt; but was:&lt;? extends ? extends java.lang.Number&gt;:- com.google.gson.internal.bind.RecursiveTypesResolveTest::testIssue603PrintStream:--&gt; java.lang.StackOverflowError:- com.google.gson.internal.bind.RecursiveTypesResolveTest::testSuperSubtype:--&gt; junit.framework.AssertionFailedError:expected:&lt;?&gt; but was:&lt;? super ? extends java.lang.Number&gt;:- com.google.gson.internal.bind.RecursiveTypesResolveTest::testRecursiveResolveSimple</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/gson/internal/$Gson$Types.java">
+          <insert numberlines="3,1">79,80</insert>
+          <insert numberlines="3,1">90,91</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-12">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/json/LocationInObjectTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;6&gt; but was:&lt;1&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java">
+          <delete>622</delete>
+          <insert numberlines="1">630</insert>
+          <insert numberlines="1">638:640</insert>
+          <delete>773</delete>
+          <insert numberlines="1">776</insert>
+          <insert numberlines="1">780</insert>
+          <delete>851</delete>
+          <insert numberlines="1">853</insert>
+          <insert numberlines="1">857</insert>
+          <insert numberlines="1">862</insert>
+          <insert numberlines="1">918</insert>
+          <insert numberlines="1">967</insert>
+          <insert numberlines="4">2671</insert>
+          <change parent="2671-2674">2672-2673</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java">
+          <change parent="3621-3623">3622</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Gson">
+    <bug bugid="Gson-8">
+      <tests>
+        <testfile path="com/google/gson/internal/UnsafeAllocatorInstantiationTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;class java.lang.reflect.InvocationTargetException&gt; but was:&lt;class java.lang.UnsupportedOperationException&gt;:- com.google.gson.internal.UnsafeAllocatorInstantiationTest::testAbstractClassInstantiation:--&gt; junit.framework.AssertionFailedError:expected:&lt;class java.lang.reflect.InvocationTargetException&gt; but was:&lt;class java.lang.UnsupportedOperationException&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/gson/internal/UnsafeAllocator.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">48</insert>
+          <insert numberlines="1">71</insert>
+          <insert numberlines="1">90</insert>
+          <insert numberlines="9"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

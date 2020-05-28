@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-53">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/jsontype/TypeRefinementForMap1215Test.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Can not construct instance of com.fasterxml.jackson.databind.jsontype.TypeRefinementForMap1215Test$HasUniqueId, problem:abstract types either need to be mapped to concrete types, have custom deserializer, or be instantiated with additional type information</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/type/TypeBindings.java">
+          <insert numberlines="3">304</insert>
+          <insert numberlines="40">430</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/type/TypeFactory.java">
+          <change parent="117">117</change>
+          <insert numberlines="1">385</insert>
+          <change parent="386">386</change>
+          <change parent="388">388</change>
+          <change parent="392-402">392-402</change>
+          <insert numberlines="19">459</insert>
+          <change parent="1160-1166">1160-1166</change>
+          <change parent="1225-1227">1225-1227</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

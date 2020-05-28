@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-13">
+      <tests>
+        <testfile path="org/jsoup/select/ElementsTest.java">
+          <exception>junit.framework.AssertionFailedError:- org.jsoup.nodes.NodeTest::handlesAbsPrefix:--&gt; junit.framework.AssertionFailedError:- org.jsoup.select.ElementsTest::absAttr:--&gt; junit.framework.AssertionFailedError:expected:&lt;[http://jsoup.org]&gt; but was:&lt;[]&gt;:- org.jsoup.select.ElementsTest::hasAbsAttr:--&gt; junit.framework.AssertionFailedError</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Node.java">
+          <insert numberlines="5">107</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

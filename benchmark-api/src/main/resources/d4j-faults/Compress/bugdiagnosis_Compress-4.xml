@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-4">
+      <tests>
+        <testfile path="org/apache/commons/compress/archivers/zip/UTF8ZipFilesTest.java">
+          <exception>java.io.IOException:central directory is empty, can't expand corrupt archive.:- org.apache.commons.compress.archivers.zip.UTF8ZipFilesTest::testCP437FileRoundtripImplicitUnicodeExtra:--&gt; java.io.IOException:central directory is empty, can't expand corrupt archive.:- org.apache.commons.compress.archivers.zip.UTF8ZipFilesTest::testUtf8FileRoundtripImplicitUnicodeExtra:--&gt; java.io.IOException:central directory is empty, can't expand corrupt archive.:- org.apache.commons.compress.archivers.zip.UTF8ZipFilesTest::testCP437FileRoundtripExplicitUnicodeExtra:--&gt; java.io.IOException:central directory is empty, can't expand corrupt archive.:- org.apache.commons.compress.archivers.zip.UTF8ZipFilesTest::testUtf8FileRoundtripExplicitUnicodeExtra:--&gt; java.io.IOException:central directory is empty, can't expand corrupt archive.:- org.apache.commons.compress.archivers.zip.UTF8ZipFilesTest::testASCIIFileRoundtripImplicitUnicodeExtra:--&gt; java.io.IOException:central directory is empty, can't expand corrupt archive.:- org.apache.commons.compress.archivers.zip.UTF8ZipFilesTest::testUtf8FileRoundtripNoEFSImplicitUnicodeExtra:--&gt; java.io.IOException:central directory is empty, can't expand corrupt archive.:- org.apache.commons.compress.archivers.zip.UTF8ZipFilesTest::testZipArchiveInputStreamReadsUnicodeFields:--&gt; java.io.IOException</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/archivers/cpio/CpioArchiveOutputStream.java">
+          <delete>336</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/compress/archivers/tar/TarArchiveOutputStream.java">
+          <delete>126</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/compress/archivers/zip/ZipArchiveOutputStream.java">
+          <delete>530</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/compress/changes/ChangeSetPerformer.java">
+          <insert numberlines="1">128</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

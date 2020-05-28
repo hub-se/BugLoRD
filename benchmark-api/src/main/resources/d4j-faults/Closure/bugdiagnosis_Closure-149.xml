@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-149">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/CommandLineRunnerTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;US-ASCII&gt; but was:&lt;null&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/AbstractCommandLineRunner.java">
+          <insert numberlines="1">143:144:145:146:147:148:149:150:151:152:153:154:155:156:157:158:159:160:161</insert>
+          <delete>518-522</delete>
+          <insert numberlines="10"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/CommandLineRunner.java">
+          <delete>471</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/Compiler.java">
+          <change parent="1362">1362</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/CompilerOptions.java">
+          <change parent="588">588</change>
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

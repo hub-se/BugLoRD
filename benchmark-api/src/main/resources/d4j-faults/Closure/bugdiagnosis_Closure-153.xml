@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-153">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/NormalizeTest.java">
+          <exception>junit.framework.AssertionFailedError::- com.google.javascript.jscomp.NormalizeTest::testMakeLocalNamesUnique:--&gt; junit.framework.AssertionFailedError:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/Normalize.java">
+          <insert numberlines="1"></insert>
+          <change parent="637-639">638-639</change>
+          <insert numberlines="1">641:649</insert>
+          <insert numberlines="7">649</insert>
+          <change parent="668-670">669</change>
+          <change parent="681">681</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/SyntacticScopeCreator.java">
+          <change parent="95">95</change>
+          <change parent="103">103</change>
+          <change parent="125-127">125-127</change>
+          <change parent="142">142</change>
+          <change parent="154">154</change>
+          <change parent="179-181">180-181</change>
+          <change parent="188-190">189-190</change>
+          <change parent="235-237">235-237</change>
+          <insert numberlines="2">239</insert>
+          <change parent="242">242</change>
+          <change parent="244">244</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

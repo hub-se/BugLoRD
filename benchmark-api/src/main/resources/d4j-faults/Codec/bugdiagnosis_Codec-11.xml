@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Codec">
+    <bug bugid="Codec-11">
+      <tests>
+        <testfile path="org/apache/commons/codec/net/QuotedPrintableCodecTest.java">
+          <exception>org.apache.commons.codec.DecoderException:Invalid URL encoding:not a valid digit (radix 16):13:- org.apache.commons.codec.net.QuotedPrintableCodecTest::testSoftLineBreakDecode:--&gt; org.apache.commons.codec.DecoderException:Invalid URL encoding:not a valid digit (radix 16):13:- org.apache.commons.codec.net.QuotedPrintableCodecTest::testSoftLineBreakEncode:--&gt; junit.framework.AssertionFailedError:expected:&lt;...matics is the most b[=:- org.apache.commons.codec.net.QuotedPrintableCodecTest::testUltimateSoftBreak:--&gt; junit.framework.AssertionFailedError:expected:&lt;...There is no end to i[=:- org.apache.commons.codec.net.QuotedPrintableCodecTest::testTrailingSpecial:--&gt; junit.framework.AssertionFailedError:expected:&lt;... might contain sp=3D[=</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/codec/net/QuotedPrintableCodec.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <change parent="114">114</change>
+          <insert numberlines="1">120</insert>
+          <insert numberlines="7"></insert>
+          <insert numberlines="9"></insert>
+          <insert numberlines="3"></insert>
+          <change parent="178-191">178-191</change>
+          <insert numberlines="13">201</insert>
+          <insert numberlines="3">229</insert>
+          <change parent="229">229</change>
+          <insert numberlines="1,1">237,238</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

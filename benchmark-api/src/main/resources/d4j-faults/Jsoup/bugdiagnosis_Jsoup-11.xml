@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-11">
+      <tests>
+        <testfile path="org/jsoup/select/SelectorTest.java">
+          <exception>org.jsoup.select.Selector$SelectorParseException:Could not parse query ':not(p)':unexpected token at ':not(p)':- org.jsoup.select.SelectorTest::testPseudoHas:--&gt; junit.framework.AssertionFailedError:expected:&lt;3&gt; but was:&lt;0&gt;:- org.jsoup.select.SelectorTest::notClass:--&gt; org.jsoup.select.Selector$SelectorParseException:Could not parse query 'div:not(.left)':unexpected token at ':not(.left)':- org.jsoup.select.SelectorTest::notParas:--&gt; org.jsoup.select.Selector$SelectorParseException:Could not parse query 'p:not([id=1])':unexpected token at ':not([id=1])'</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/select/Selector.java">
+          <insert numberlines="3,1">111,112</insert>
+          <insert numberlines="3,1">182,183</insert>
+          <insert numberlines="6"></insert>
+          <insert numberlines="15"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

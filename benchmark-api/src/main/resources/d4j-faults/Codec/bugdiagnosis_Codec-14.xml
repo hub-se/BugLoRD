@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Codec">
+    <bug bugid="Codec-14">
+      <tests>
+        <testfile path="org/apache/commons/codec/language/bm/PhoneticEngineRegressionTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;...dzn|bntsn|bnzn|vndzn[]&gt; but was:&lt;...dzn|bntsn|bnzn|vndzn[|vntsn]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/codec/language/bm/Lang.java">
+          <change parent="98">98</change>
+          <change parent="102">102</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/codec/language/bm/PhoneticEngine.java">
+          <insert numberlines="1"></insert>
+          <change parent="338">338</change>
+          <change parent="361">361</change>
+          <change parent="364">364</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/codec/language/bm/Rule.java">
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="src/main/resources/org/apache/commons/codec/language/bm/ash_lang.txt">
+          <insert numberlines="206"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="src/main/resources/org/apache/commons/codec/language/bm/gen_lang.txt">
+          <insert numberlines="295"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="src/main/resources/org/apache/commons/codec/language/bm/sep_lang.txt">
+          <insert numberlines="105"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

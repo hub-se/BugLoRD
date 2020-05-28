@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-143">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/RemoveConstantExpressionsTest.java">
+          <exception>java.lang.RuntimeException:--define flag syntax invalid:FOO="x'":- com.google.javascript.jscomp.RemoveConstantExpressionsTest::testCall1:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.RemoveConstantExpressionsTest::testNew1:--&gt; junit.framework.AssertionFailedError:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/AbstractCommandLineRunner.java">
+          <change parent="868-880">871</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/RemoveConstantExpressions.java">
+          <change parent="90-93">91</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

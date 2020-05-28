@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Codec">
+    <bug bugid="Codec-12">
+      <tests>
+        <testfile path="org/apache/commons/codec/binary/Base32InputStreamTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;-1&gt; but was:&lt;183&gt;:- org.apache.commons.codec.binary.Base32InputStreamTest::testCodec130:--&gt; junit.framework.AssertionFailedError:expected:&lt;[ello World]&gt; but was:&lt;[&#12;����:- org.apache.commons.codec.binary.Base32InputStreamTest::testSkipWrongArgument:--&gt; junit.framework.AssertionFailedError:Expected exception:java.lang.IllegalArgumentException:- org.apache.commons.codec.binary.Base32InputStreamTest::testAvailable:--&gt; junit.framework.AssertionFailedError:expected:&lt;1&gt; but was:&lt;8&gt;:- org.apache.commons.codec.binary.Base32InputStreamTest::testSkipPastEnd:--&gt; junit.framework.AssertionFailedError:expected:&lt;3&gt; but was:&lt;8&gt;:- org.apache.commons.codec.binary.Base32InputStreamTest::testSkipBig:--&gt; junit.framework.AssertionFailedError:expected</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/codec/binary/BaseNCodecInputStream.java">
+          <insert numberlines="21"></insert>
+          <insert numberlines="7"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

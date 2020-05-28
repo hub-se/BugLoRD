@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-40">
+      <tests>
+        <testfile path="org/jsoup/parser/HtmlParserTest.java">
+          <exception>java.lang.IllegalArgumentException:String must not be empty:- org.jsoup.parser.HtmlParserTest::handlesInvalidDoctypes:--&gt; java.lang.IllegalArgumentException:String must not be empty</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/DocumentType.java">
+          <delete>22</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

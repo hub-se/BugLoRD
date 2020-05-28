@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-148">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/SourceMapTest.java">
+          <exception>junit.framework.AssertionFailedError::- com.google.javascript.jscomp.SourceMapTest::testGoldenOutput0:--&gt; junit.framework.ComparisonFailure:expected:&lt;...ng definitions. **/:- com.google.javascript.jscomp.SourceMapTest::testGoldenOutput1:--&gt; junit.framework.ComparisonFailure:expected:&lt;...ode", "count":1 }:- com.google.javascript.jscomp.SourceMapTest::testGoldenOutput2:--&gt; junit.framework.ComparisonFailure:expected:&lt;...ode", "count":1 }:- com.google.javascript.jscomp.SourceMapTest::testGoldenOutput3:--&gt; junit.framework.ComparisonFailure:expected:&lt;...ode", "count":1 }:- com.google.javascript.jscomp.SourceMapTest::testGoldenOutput4:--&gt; junit.framework.ComparisonFailure:expected:&lt;...ode", "count":1 }</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/PeepholeFoldConstants.java">
+          <insert numberlines="3">167:170:173:177:182:189</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/SourceMap.java">
+          <insert numberlines="1"></insert>
+          <change parent="50">50</change>
+          <insert numberlines="2"></insert>
+          <insert numberlines="1"></insert>
+          <insert numberlines="4"></insert>
+          <delete>93-113</delete>
+          <insert numberlines="27"></insert>
+          <insert numberlines="8"></insert>
+          <delete>143-144</delete>
+          <delete>163-168</delete>
+          <delete>171</delete>
+          <change parent="172">172</change>
+          <change parent="177">177</change>
+          <insert numberlines="5,1">184,204</insert>
+          <delete>257-264</delete>
+          <change parent="304">304</change>
+          <change parent="326-329">326-329</change>
+          <insert numberlines="13"></insert>
+          <change parent="341">341</change>
+          <delete>344-345</delete>
+          <delete>351</delete>
+          <insert numberlines="2"></insert>
+          <insert numberlines="19"></insert>
+          <change parent="376-444">418-444</change>
+          <delete>445-448</delete>
+          <delete>449-451</delete>
+          <delete>452-459</delete>
+          <change parent="496">496</change>
+          <change parent="502">502</change>
+          <change parent="509">509</change>
+          <change parent="514-515">514-515</change>
+          <change parent="522-523">522-523</change>
+          <change parent="525-526">525-526</change>
+          <insert numberlines="1">530</insert>
+          <change parent="533-543">533-543</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-24">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/read/NumberParsingTest.java">
+          <exception>com.fasterxml.jackson.core.JsonParseException:Numeric value (9223372036854775817) out of range of long (-9223372036854775808 - 9223372036854775807):- com.fasterxml.jackson.core.json.async.AsyncNumberCoercionTest::testToIntFailing:--&gt; com.fasterxml.jackson.core.JsonParseException:Numeric value (2147483648) out of range of int:- com.fasterxml.jackson.core.read.NumberCoercionTest::testToLongFailing:--&gt; com.fasterxml.jackson.core.JsonParseException:Numeric value (9223372036854775817) out of range of long (-9223372036854775808 - 9223372036854775807):- com.fasterxml.jackson.core.read.NumberCoercionTest::testToIntFailing:--&gt; com.fasterxml.jackson.core.JsonParseException:Numeric value (2147483648) out of range of int:- com.fasterxml.jackson.core.read.NumberOverflowTest::testMaliciousLongOverflow:--&gt; com.fasterxml.jackson.core.JsonParseException:Numeric value ([Integer with 199999 digits]) out of range of long:- com.fasterxml.jackson.core.read.NumberOverflowTest::testSimpleLongOverflow:--&gt; com.fasterxml.jackson.core.JsonParseException:Numeric value (-9223372036854775809) out of range of long:- com.fasterxml.jackson.core.read.NumberOverflowTest::testMaliciousIntOverflow:--&gt; com.fasterxml.jackson.core.JsonParseException:Numeric value ([Integer with 199999 digits]) out of range of int:- com.fasterxml.jackson.core.read.NumberParsingTest::testSimpleLong:--&gt; com.fasterxml.jackson.core.JsonParseException</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/base/ParserBase.java">
+          <change parent="869-871">869-871</change>
+          <change parent="887">887</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/core/base/ParserMinimalBase.java">
+          <change parent="565-566">565-566</change>
+          <insert numberlines="5"></insert>
+          <change parent="582-583">582-583</change>
+          <insert numberlines="5"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

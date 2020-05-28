@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-9">
+      <tests>
+        <testfile path="org/apache/commons/cli/ParseRequiredTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;... required options:f[, ]x&gt; but was:&lt;... required options:f[]x&gt;:- org.apache.commons.cli.ParseRequiredTest::testMissingRequiredOptions:--&gt; junit.framework.ComparisonFailure:Incorrect exception message expected:&lt;... required options:b[, ]c&gt; but was:&lt;... required options:b[]c&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli/Parser.java">
+          <insert numberlines="1">320</insert>
+          <change parent="322">322</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-160">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/CommandLineRunnerTest.java">
+          <exception>junit.framework.AssertionFailedError:Expected exactly one warning or error Errors:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/Compiler.java">
+          <insert numberlines="1">274</insert>
+          <change parent="274-276">275-276</change>
+          <change parent="277-278">277</change>
+          <change parent="281">281</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

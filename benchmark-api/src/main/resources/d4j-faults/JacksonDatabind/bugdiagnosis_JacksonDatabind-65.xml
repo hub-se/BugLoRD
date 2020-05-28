@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-65">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/deser/KeyDeser1429Test.java">
+          <exception>com.fasterxml.jackson.databind.exc.InvalidFormatException:Can not deserialize Map key of type com.fasterxml.jackson.databind.deser.KeyDeser1429Test$FullName from String "first.last":not a valid representation, problem:wrong number of arguments</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/std/StdKeyDeserializer.java">
+          <change parent="128">128</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/introspect/BasicBeanDescription.java">
+          <change parent="525">525</change>
+          <insert numberlines="1,1">558,559</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

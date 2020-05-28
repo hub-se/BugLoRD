@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-55">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/ser/TestEnumSerialization.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;{"[aleph]":"b"}&gt; but was:&lt;{"[A]":"b"}&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/ser/std/StdKeySerializers.java">
+          <insert numberlines="1"></insert>
+          <change parent="82">82</change>
+          <insert numberlines="24"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

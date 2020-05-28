@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JxPath">
+    <bug bugid="JxPath-6">
+      <tests>
+        <testfile path="org/apache/commons/jxpath/ri/compiler/VariableTest.java">
+          <exception>junit.framework.AssertionFailedError:Evaluating &lt;$d = 'a'&gt; expected:&lt;true&gt; but was:&lt;false&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/jxpath/ri/compiler/CoreOperationCompare.java">
+          <insert numberlines="3">57</insert>
+          <change parent="57">57</change>
+          <insert numberlines="3">61</insert>
+          <change parent="61">61</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

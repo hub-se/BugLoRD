@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-138">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/TypeCheckTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;Array&gt; but was:&lt;null&gt;:- com.google.javascript.jscomp.ClosureReverseAbstractInterpreterTest::testGoogIsFunctionOnNull:--&gt; junit.framework.AssertionFailedError:expected:&lt;Function&gt; but was:&lt;null&gt;:- com.google.javascript.jscomp.ClosureReverseAbstractInterpreterTest::testGoogIsObjectOnNull:--&gt; junit.framework.AssertionFailedError:expected:&lt;Object&gt; but was:&lt;null&gt;:- com.google.javascript.jscomp.TypeCheckTest::testIssue124b:--&gt; junit.framework.ComparisonFailure:expected:&lt;...tes to false:- com.google.javascript.jscomp.TypeCheckTest::testIssue124:--&gt; junit.framework.AssertionFailedError:unexpected warnings(s)</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/ClosureReverseAbstractInterpreter.java">
+          <delete>208,220</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/TypeInference.java">
+          <change parent="632-648">632-633</change>
+          <insert numberlines="8,1">644,648</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

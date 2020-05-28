@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-18">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/seq/ReadRecoveryTest.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Can not instantiate value of type [simple type, class com.fasterxml.jackson.databind.seq.ReadRecoveryTest$Bean] from Integral number (1); no single-int-arg constructor/factory method:- com.fasterxml.jackson.databind.seq.ReadRecoveryTest::testRootBeans:--&gt; junit.framework.AssertionFailedError:- com.fasterxml.jackson.databind.seq.ReadRecoveryTest::testSimpleArrayRecovery:--&gt; com.fasterxml.jackson.databind.JsonMappingException:Can not instantiate value of type [simple type, class com.fasterxml.jackson.databind.seq.ReadRecoveryTest$Bean] from Integral number (1); no single-int-arg constructor/factory method</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/MappingIterator.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <change parent="98">98</change>
+          <change parent="138">138</change>
+          <insert numberlines="5,8">138,145</insert>
+          <insert numberlines="2,1">189,192</insert>
+          <change parent="210-230">210-230</change>
+          <change parent="236">236</change>
+          <insert numberlines="3">240</insert>
+          <delete>241-244</delete>
+          <insert numberlines="1">246</insert>
+          <insert numberlines="1">254</insert>
+          <insert numberlines="1">260</insert>
+          <insert numberlines="20"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

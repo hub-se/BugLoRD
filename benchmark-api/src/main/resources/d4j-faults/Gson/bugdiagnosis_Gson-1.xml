@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Gson">
+    <bug bugid="Gson-1">
+      <tests>
+        <testfile path="com/google/gson/functional/TypeVariableTest.java">
+          <exception>java.lang.UnsupportedOperationException:Expecting parameterized type, got class com.google.gson.functional.TypeVariableTest$Bar.</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/gson/TypeInfoFactory.java">
+          <insert numberlines="9">97</insert>
+          <insert numberlines="33"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

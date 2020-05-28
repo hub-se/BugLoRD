@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-15">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/convert/TestConvertingSerializer.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:No serializer found for class com.fasterxml.jackson.databind.convert.TestConvertingSerializer$DummyBean and no properties discovered to create BeanSerializer (to avoid exception, disable SerializationFeature.FAIL_ON_EMPTY_BEANS) )</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/JavaType.java">
+          <insert numberlines="1"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/ser/BeanSerializerFactory.java">
+          <change parent="163">163</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/ser/std/BeanSerializerBase.java">
+          <change parent="370">370</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/ser/std/StdDelegatingSerializer.java">
+          <insert numberlines="1,1">121,122</insert>
+          <change parent="126-127">126-127</change>
+          <change parent="161">161</change>
+          <change parent="172">172</change>
+          <insert numberlines="3">180</insert>
+          <insert numberlines="3">187</insert>
+          <insert numberlines="1,1">224,225</insert>
+          <insert numberlines="5"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/ser/std/StdSerializer.java">
+          <change parent="262">262</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

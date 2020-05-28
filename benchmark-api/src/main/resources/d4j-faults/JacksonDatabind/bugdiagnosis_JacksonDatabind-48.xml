@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-48">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/ser/TestFeatures.java">
+          <exception>junit.framework.AssertionFailedError:Should find 1 property, not 2; properties = [[Property 'name'; ctors:null, field(s):null, getter(s):null, setter(s):[method com.fasterxml.jackson.databind.ser.TestFeatures$TCls#setName(1 params)][visible=true,ignore=false,explicitName=false]], [Property 'groupname'; ctors:null, field(s):[field com.fasterxml.jackson.databind.ser.TestFeatures$TCls#groupname][visible=true,ignore=false,explicitName=true], getter(s):null, setter(s):null]]</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/DeserializationConfig.java">
+          <insert numberlines="6">780</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/SerializationConfig.java">
+          <insert numberlines="6">865</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

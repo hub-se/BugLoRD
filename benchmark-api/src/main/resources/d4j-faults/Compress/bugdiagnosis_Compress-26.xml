@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-26">
+      <tests>
+        <testfile path="org/apache/commons/compress/utils/IOUtilsTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;10&gt; but was:&lt;0&gt;:- org.apache.commons.compress.utils.IOUtilsTest::skipUsingSkipAndRead:--&gt; junit.framework.AssertionFailedError:expected:&lt;10&gt; but was:&lt;5&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/utils/IOUtils.java">
+          <insert numberlines="11">104</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

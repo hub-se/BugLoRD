@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Gson">
+    <bug bugid="Gson-7">
+      <tests>
+        <testfile path="com/google/gson/stream/JsonReaderTest.java">
+          <exception>com.google.gson.JsonSyntaxException:java.lang.IllegalStateException:Expected a long but was STRING at line 1 column 2 path $.:- com.google.gson.functional.MapTest::testMapDeserializationWithUnquotedIntegerKeys:--&gt; com.google.gson.JsonSyntaxException:java.lang.IllegalStateException:Expected an int but was STRING at line 1 column 2 path $.:- com.google.gson.stream.JsonReaderTest::testPeekingUnquotedStringsPrefixedWithIntegers:--&gt; java.lang.IllegalStateException:Expected an int but was STRING at line 1 column 2 path $[0]</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/gson/stream/JsonReader.java">
+          <change parent="954">954</change>
+          <insert numberlines="3,1">955,956</insert>
+          <change parent="1182">1182</change>
+          <insert numberlines="3,1">1183,1184</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-62">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/creators/ArrayDelegatorCreatorForCollectionTest.java">
+          <exception>java.lang.IllegalStateException:No default constructor for [collection type; class java.util.Collections$UnmodifiableSet, contains [simple type, class java.lang.Object]]</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/std/CollectionDeserializer.java">
+          <insert numberlines="8">185</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

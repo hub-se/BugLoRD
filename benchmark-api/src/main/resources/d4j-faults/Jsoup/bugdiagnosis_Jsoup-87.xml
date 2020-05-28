@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-87">
+      <tests>
+        <testfile path="org/jsoup/parser/HtmlParserTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;&lt;A&gt; ONE &lt;[/A&gt; &lt;A&gt; Two] &lt;/A&gt;&gt; but was:&lt;&lt;A&gt; ONE &lt;[A&gt; Two &lt;/A&gt;] &lt;/A&gt;&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Element.java">
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/HtmlTreeBuilder.java">
+          <change parent="315">315</change>
+          <change parent="337">337</change>
+          <change parent="347">347</change>
+          <change parent="355">355</change>
+          <change parent="378">378</change>
+          <change parent="420">420</change>
+          <change parent="476">476</change>
+          <change parent="517">517</change>
+          <change parent="569-570">569-570</change>
+          <change parent="581">581</change>
+          <change parent="618-620">618</change>
+          <change parent="649">649</change>
+          <change parent="689">689</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/HtmlTreeBuilderState.java">
+          <change parent="315">315</change>
+          <change parent="319">319</change>
+          <change parent="339">339</change>
+          <change parent="353">353</change>
+          <change parent="372">372</change>
+          <change parent="398-399">398-399</change>
+          <change parent="402">402</change>
+          <change parent="531">531</change>
+          <change parent="538">538</change>
+          <change parent="574">574</change>
+          <change parent="598">598</change>
+          <change parent="633">633</change>
+          <change parent="662">662</change>
+          <change parent="675">675</change>
+          <change parent="699">699</change>
+          <change parent="711">711</change>
+          <change parent="721">721</change>
+          <change parent="731">731</change>
+          <change parent="745">745</change>
+          <change parent="768">768</change>
+          <change parent="772">772</change>
+          <change parent="774">774</change>
+          <change parent="887">887</change>
+          <change parent="897">897</change>
+          <change parent="926">926</change>
+          <change parent="954">954</change>
+          <change parent="1007">1007</change>
+          <change parent="1018">1018</change>
+          <change parent="1089">1089</change>
+          <change parent="1173">1173</change>
+          <change parent="1240">1240</change>
+          <change parent="1244">1244</change>
+          <change parent="1246">1246</change>
+          <change parent="1269">1269</change>
+          <change parent="1271">1271</change>
+          <change parent="1277">1277</change>
+          <change parent="1296">1296</change>
+          <change parent="1383">1383</change>
+          <change parent="1388">1388</change>
+          <change parent="1393">1393</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/Tag.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">27:28</insert>
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

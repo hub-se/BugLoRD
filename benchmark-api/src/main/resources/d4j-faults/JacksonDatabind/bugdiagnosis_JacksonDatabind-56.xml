@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-56">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/deser/TestJdkTypes.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;en_US&gt; but was:&lt;en-us&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/std/FromStringDeserializer.java">
+          <change parent="231">231</change>
+          <change parent="237">237</change>
+          <insert numberlines="10"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JxPath">
+    <bug bugid="JxPath-18">
+      <tests>
+        <testfile path="org/apache/commons/jxpath/ri/model/jdom/JDOMModelTest.java">
+          <exception>junit.framework.AssertionFailedError:Evaluating value iterator &lt;vendor/product/price:amount/attribute::node()&gt; expected:&lt;[10%, 20%]&gt; but was:&lt;[]&gt;:- org.apache.commons.jxpath.ri.model.jdom.JDOMModelTest::testAxisAttribute:--&gt; junit.framework.AssertionFailedError:Evaluating value iterator &lt;vendor/product/price:amount/attribute::node()&gt; expected:&lt;[10%, 20%]&gt; but was:&lt;[]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/jxpath/ri/axes/AttributeContext.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <change parent="75">75</change>
+          <change parent="78-80">78-80</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

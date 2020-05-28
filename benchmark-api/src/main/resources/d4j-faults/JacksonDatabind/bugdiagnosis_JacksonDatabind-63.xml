@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-63">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/deser/exc/TestExceptionHandlingWithJsonCreatorDeserialization.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;....databind.deser.exc.[ExceptionPathTest$]Outer["inner"]&gt; but was:&lt;....databind.deser.exc.[]Outer["inner"]&gt;:- com.fasterxml.jackson.databind.deser.exc.TestExceptionHandlingWithDefaultDeserialization::testShouldThrowJsonMappingExceptionWithPathReference:--&gt; junit.framework.ComparisonFailure:expected:&lt;....databind.deser.exc.[TestExceptionHandlingWithDefaultDeserialization$Foo["bar"]-&gt;com.fasterxml.jackson.databind.deser.exc.TestExceptionHandlingWithDefaultDeserialization$]Bar["baz"]&gt; but was:&lt;....databind.deser.exc.[Foo["bar"]-&gt;com.fasterxml.jackson.databind.deser.exc.]Bar["baz"]&gt;:- com.fasterxml.jackson.databind.deser.exc.TestExceptionHandlingWithJsonCreatorDeserialization::testShouldThrowJsonMappingExceptionWithPathReference:--&gt; junit.framework.ComparisonFailure:expected:&lt;....databind.deser.exc.[TestExceptionHandlingWithJsonCreatorDeserialization$Foo["bar"]-&gt;com.fasterxml.jackson.databind.deser.exc.TestExceptionHandlingWithJsonCreatorDeserialization$]Bar["baz"]&gt; but was:&lt;....databind.deser.exc.[Foo["bar"]-&gt;com.fasterxml.jackson.databind.deser.exc.]Bar["baz"]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/JsonMappingException.java">
+          <change parent="131-136">131-136</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

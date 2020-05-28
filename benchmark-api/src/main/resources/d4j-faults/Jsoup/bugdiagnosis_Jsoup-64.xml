@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-64">
+      <tests>
+        <testfile path="org/jsoup/parser/HtmlParserTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;...ead&gt;&lt;style&gt;&lt;/style&gt;&lt;[meta name="foo"&gt;&lt;/head&gt;&lt;body&gt;One]&lt;/body&gt;&lt;/html&gt;&gt; but was:&lt;...ead&gt;&lt;style&gt;&lt;/style&gt;&lt;[/head&gt;&lt;body&gt;&amp;lt;meta name=foo&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body&amp;gt;One&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;]&lt;/body&gt;&lt;/html&gt;&gt;:- org.jsoup.parser.HtmlParserTest::handlesKnownEmptyNoFrames:--&gt; junit.framework.AssertionFailedError:expected:&lt;...oframes&gt;&lt;/noframes&gt;&lt;[meta name="foo"&gt;&lt;/head&gt;&lt;body&gt;One]&lt;/body&gt;&lt;/html&gt;&gt; but was:&lt;...oframes&gt;&lt;/noframes&gt;&lt;[/head&gt;&lt;body&gt;&amp;lt;meta name=foo&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body&amp;gt;One&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;]&lt;/body&gt;&lt;/html&gt;&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/parser/HtmlTreeBuilderState.java">
+          <delete>1489</delete>
+          <insert numberlines="1">1493</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

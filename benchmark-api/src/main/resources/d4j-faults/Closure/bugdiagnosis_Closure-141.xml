@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-141">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/PureFunctionIdentifierTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;MOVABLE&gt; but was:&lt;DECOMPOSABLE&gt;:- com.google.javascript.jscomp.ExpresssionDecomposerTest::testCanExposeExpression7:--&gt; junit.framework.AssertionFailedError:expected:&lt;MOVABLE&gt; but was:&lt;DECOMPOSABLE&gt;:- com.google.javascript.jscomp.InlineFunctionsTest::testDecomposeAnonymousInCall:--&gt; java.lang.IllegalStateException:Call site missed.:- com.google.javascript.jscomp.PureFunctionIdentifierTest::testCallFunctionFOrGViaHookWithSideEffects:--&gt; junit.framework.AssertionFailedError:expected:&lt;[(g:g), k]&gt; but was:&lt;[]&gt;:- com.google.javascript.jscomp.PureFunctionIdentifierTest::testCallFunctionForGorH:--&gt; junit.framework.AssertionFailedError:expected:&lt;[(f:(g || h)), i]&gt; but was:&lt;[]&gt;:- com.google.javascript.jscomp.PureFunctionIdentifierTest::testCallFunctionFOrG:--&gt; junit.framework.AssertionFailedError</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/NodeUtil.java">
+          <insert numberlines="3">586:592:598:604</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/PureFunctionIdentifier.java">
+          <insert numberlines="1,21">177,198</insert>
+          <delete>179-181</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

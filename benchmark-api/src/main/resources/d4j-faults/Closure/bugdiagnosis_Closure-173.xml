@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-173">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntaxTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;var a,b,c;a||[(b||c);a*(b*c);a|(b|c)]&gt; but was:&lt;var a,b,c;a||[b||c;a*b*c;a|b|c]&gt;:- com.google.javascript.jscomp.CodePrinterTest::testIssue1062:--&gt; junit.framework.ComparisonFailure:expected:&lt;3*[(4%3*5)]&gt; but was:&lt;3*[4%3*5]&gt;:- com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntaxTest::testAssocitivity:--&gt; junit.framework.AssertionFailedError:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/CodeGenerator.java">
+          <delete>130-134</delete>
+          <change parent="130-135">135</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java">
+          <insert numberlines="7">69:73:90:93:96:99:103</insert>
+          <insert numberlines="21"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

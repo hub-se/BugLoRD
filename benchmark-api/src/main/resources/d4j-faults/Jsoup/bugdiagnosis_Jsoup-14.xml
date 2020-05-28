@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-14">
+      <tests>
+        <testfile path="org/jsoup/parser/ParserTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;one[]&gt; but was:&lt;one[&lt;p&gt;two]&gt;:- org.jsoup.parser.ParserTest::handlesUnclosedTitle:--&gt; junit.framework.AssertionFailedError:expected:&lt;One[]&gt; but was:&lt;One[&lt;b&gt;Two &lt;p&gt;Test&lt;/p]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/parser/Tokeniser.java">
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/TokeniserState.java">
+          <insert numberlines="5,1">221,223</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

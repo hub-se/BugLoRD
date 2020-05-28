@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Gson">
+    <bug bugid="Gson-3">
+      <tests>
+        <testfile path="com/google/gson/functional/MapTest.java">
+          <exception>java.lang.ClassCastException:java.util.LinkedHashMap cannot be cast to java.util.concurrent.ConcurrentMap:- com.google.gson.functional.MapTest::testConcurrentNavigableMap:--&gt; java.lang.ClassCastException:java.util.TreeMap cannot be cast to java.util.concurrent.ConcurrentNavigableMap</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/gson/internal/ConstructorConstructor.java">
+          <insert numberlines="4"></insert>
+          <insert numberlines="13,1">175,195</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

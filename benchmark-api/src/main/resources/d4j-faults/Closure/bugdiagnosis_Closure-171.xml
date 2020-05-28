@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-171">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/TypedScopeCreatorTest.java">
+          <exception>junit.framework.AssertionFailedError:expected a warning:- com.google.javascript.jscomp.TypedScopeCreatorTest::testMethodBeforeFunction2:--&gt; junit.framework.ComparisonFailure:expected:&lt;[function (this:Window, ?):undefined]&gt; but was:&lt;[?]&gt;:- com.google.javascript.jscomp.TypedScopeCreatorTest::testPropertiesOnInterface2:--&gt; java.lang.NullPointerException</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/TypeInference.java">
+          <change parent="731-733,734-735,736-738">731-733,734-735,736-738</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/TypedScopeCreator.java">
+          <insert numberlines="3">1670</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

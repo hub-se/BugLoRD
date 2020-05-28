@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-84">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/type/TestTypeFactoryWithRecursiveTypes.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;{"[base":1,"]sub":2}&gt; but was:&lt;{"[]sub":2}&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/type/ResolvedRecursiveType.java">
+          <insert numberlines="7"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

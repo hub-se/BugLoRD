@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-88">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/jsontype/GenericTypeId1735Test.java">
+          <exception>junit.framework.AssertionFailedError:Expected an exception with one of substrings ([not subtype of]):got one (of type com.fasterxml.jackson.databind.JsonMappingException) with message "Problem deserializing property 'w' (expected type:[simple type, class com.fasterxml.jackson.databind.jsontype.GenericTypeId1735Test$Payload1735]; actual type:java.util.HashMap), problem:Can not set com.fasterxml.jackson.databind.jsontype.GenericTypeId1735Test$Payload1735 field com.fasterxml.jackson.databind.jsontype.GenericTypeId1735Test$Wrapper1735.w to java.util.HashMap</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/jsontype/impl/ClassNameIdResolver.java">
+          <insert numberlines="4">59</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

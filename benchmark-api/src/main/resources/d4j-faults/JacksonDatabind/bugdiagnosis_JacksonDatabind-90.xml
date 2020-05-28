@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-90">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/creators/DelegatingArrayCreator1804Test.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Can not construct instance of com.fasterxml.jackson.databind.creators.DelegatingArrayCreator1804Test$MyType:abstract types either need to be mapped to concrete types, have custom deserializer, or contain additional type information</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/ValueInstantiator.java">
+          <change parent="71-75">72</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/deser/std/StdValueInstantiator.java">
+          <insert numberlines="8"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-15">
+      <tests>
+        <testfile path="org/apache/commons/cli2/bug/BugCLI158Test.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;[1[, 1000]]&gt; but was:&lt;[1[]]&gt;:- org.apache.commons.cli2.bug.BugCLI158Test::testSingleOptionMaximumNumberOfArgument:--&gt; junit.framework.ComparisonFailure:expected:&lt;[1, 2[, 10000]]&gt; but was:&lt;[1, 2[]]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli2/commandline/WriteableCommandLineImpl.java">
+          <change parent="117-119">117-118</change>
+          <change parent="122-124">122-124</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

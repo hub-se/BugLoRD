@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-18">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/json/TestJsonGeneratorFeatures.java">
+          <exception>junit.framework.AssertionFailedError:Should not have written without exception:1E+10000</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/base/GeneratorBase.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="9">435</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/core/json/UTF8JsonGenerator.java">
+          <change parent="910-911">910-911</change>
+          <delete>912-913</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/core/json/WriterBasedJsonGenerator.java">
+          <change parent="687-688">687-688</change>
+          <delete>689-690</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

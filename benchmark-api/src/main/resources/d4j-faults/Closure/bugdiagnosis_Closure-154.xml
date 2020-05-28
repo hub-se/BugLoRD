@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-154">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/TypeCheckTest.java">
+          <exception>junit.framework.AssertionFailedError:expected a warning</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/TypeCheck.java">
+          <delete>185-191</delete>
+          <delete>242</delete>
+          <delete>1049-1058</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/TypeValidator.java">
+          <insert numberlines="7"></insert>
+          <change parent="111-117">117</change>
+          <insert numberlines="18">590</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

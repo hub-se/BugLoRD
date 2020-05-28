@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-9">
+      <tests>
+        <testfile path="org/apache/commons/compress/archivers/tar/TarArchiveOutputStreamTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;10240&gt; but was:&lt;76&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/archivers/tar/TarArchiveOutputStream.java">
+          <insert numberlines="5"></insert>
+          <insert numberlines="4"></insert>
+          <delete>330</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

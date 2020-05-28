@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-21">
+      <tests>
+        <testfile path="org/jsoup/select/SelectorTest.java">
+          <exception>java.util.regex.PatternSyntaxException:Unclosed character class near index 3:- org.jsoup.select.SelectorTest::mixCombinatorGroup:--&gt; junit.framework.AssertionFailedError:expected:&lt;2&gt; but was:&lt;3&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/select/CombiningEvaluator.java">
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/select/QueryParser.java">
+          <change parent="58-66">58-66</change>
+          <insert numberlines="12,1">102,103</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

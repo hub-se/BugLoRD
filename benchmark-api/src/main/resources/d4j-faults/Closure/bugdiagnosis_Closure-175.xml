@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-175">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/InlineFunctionsTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;NO&gt; but was:&lt;YES&gt;:- com.google.javascript.jscomp.FunctionInjectorTest::testIssue1101b:--&gt; junit.framework.AssertionFailedError:expected:&lt;NO&gt; but was:&lt;YES&gt;:- com.google.javascript.jscomp.InlineFunctionsTest::testCostBasedInlining10:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.InlineFunctionsTest::testIssue1101:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.InlineFunctionsTest::testInlineMutableArgsReferencedOnce:--&gt; junit.framework.AssertionFailedError:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/FunctionInjector.java">
+          <insert numberlines="8"></insert>
+          <change parent="208">208</change>
+          <change parent="689-690">690</change>
+          <delete>695</delete>
+          <change parent="715-734">715-726,728-729,731-734</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

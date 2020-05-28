@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-155">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/InlineVariablesTest.java">
+          <exception>junit.framework.AssertionFailedError::- com.google.javascript.jscomp.InlineVariablesTest::testArgumentsModifiedInOuterFunction:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.InlineVariablesTest::testIssue378ModifiedArguments1:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.InlineVariablesTest::testIssue378ModifiedArguments2:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.InlineVariablesTest::testIssue378EscapedArguments1:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.InlineVariablesTest::testIssue378EscapedArguments2:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.InlineVariablesTest::testIssue378EscapedArguments4:--&gt; junit.framework.AssertionFailedError:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/InlineVariables.java">
+          <insert numberlines="2">199</insert>
+          <change parent="220">220</change>
+          <insert numberlines="19"></insert>
+          <insert numberlines="7"></insert>
+          <change parent="229-230">230</change>
+          <change parent="275-277">275</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/ReferenceCollectingCallback.java">
+          <change parent="123">123</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/Scope.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="25"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

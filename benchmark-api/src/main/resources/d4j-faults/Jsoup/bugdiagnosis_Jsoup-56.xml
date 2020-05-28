@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-56">
+      <tests>
+        <testfile path="org/jsoup/nodes/DocumentTypeTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;&lt;!DOCTYPE html [SYSTEM ]"exampledtdfile.dtd"...&gt; but was:&lt;&lt;!DOCTYPE html []"exampledtdfile.dtd"...&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/DocumentType.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="3">31</insert>
+          <insert numberlines="9">42</insert>
+          <insert numberlines="2">58</insert>
+          <change parent="59">59</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/HtmlTreeBuilderState.java">
+          <change parent="23">23</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/Token.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">45-49</insert>
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/TokeniserState.java">
+          <insert numberlines="1">1195</insert>
+          <insert numberlines="1">1197</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/XmlTreeBuilder.java">
+          <change parent="100">100</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

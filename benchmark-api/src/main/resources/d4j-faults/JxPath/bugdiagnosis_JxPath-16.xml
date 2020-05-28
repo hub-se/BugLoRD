@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JxPath">
+    <bug bugid="JxPath-16">
+      <tests>
+        <testfile path="org/apache/commons/jxpath/ri/model/jdom/JDOMModelTest.java">
+          <exception>junit.framework.ComparisonFailure:Evaluating pointer &lt;//location[2]/following::node()[2]&gt; expected:&lt;...vendor[1]/product[1][]&gt; but was:&lt;...vendor[1]/product[1][/product:name[1]]&gt;:- org.apache.commons.jxpath.ri.model.dom.DOMModelTest::testAxisPreceding:--&gt; junit.framework.ComparisonFailure:Evaluating pointer &lt;//location[2]/preceding::node()[3]&gt; expected:&lt;...ndor[1]/location[1]/[employeeCount[1]/text()][1]&gt; but was:&lt;...ndor[1]/location[1]/[address][1]&gt;:- org.apache.commons.jxpath.ri.model.jdom.JDOMModelTest::testAxisFollowing:--&gt; junit.framework.ComparisonFailure:Evaluating pointer &lt;//location[2]/following::node()[2]&gt; expected:&lt;...vendor[1]/product[1][]&gt; but was:&lt;...vendor[1]/product[1][/product:name[1]]&gt;:- org.apache.commons.jxpath.ri.model.jdom.JDOMModelTest::testAxisPreceding:--&gt; junit.framework.ComparisonFailure:Evaluating pointer &lt;//location[2]/preceding::node()[3]&gt; expected:&lt;...ndor[1]/location[1]/[employeeCount[1]/text()][1]&gt; but was:&lt;...ndor[1]/location[1]/[address][1]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java">
+          <change parent="147-148">147-148</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/jxpath/ri/model/jdom/JDOMNodePointer.java">
+          <change parent="391">391</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-38">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/interop/DeprecatedTypeHandling1102Test.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;class com.fasterxml.jackson.databind.interop.DeprecatedTypeHandling1102Test$Point&gt; but was:&lt;class java.util.LinkedHashMap&gt;:- com.fasterxml.jackson.databind.interop.DeprecatedTypeHandling1102Test::testExplicitCollectionType:--&gt; junit.framework.AssertionFailedError:expected:&lt;class com.fasterxml.jackson.databind.interop.DeprecatedTypeHandling1102Test$Point&gt; but was:&lt;class java.util.LinkedHashMap&gt;:- com.fasterxml.jackson.databind.interop.DeprecatedTypeHandling1102Test::testPOJOSubType:--&gt; com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException:Unrecognized field "x" (class com.fasterxml.jackson.databind.interop.DeprecatedTypeHandling1102Test$Point3D), not marked as ignorable (one known property:"z"])</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/type/CollectionType.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="7">50</insert>
+          <change parent="50-53">50</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/type/MapType.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="7">48</insert>
+          <change parent="48">48</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/type/SimpleType.java">
+          <change parent="116-117">116-117</change>
+          <insert numberlines="12"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

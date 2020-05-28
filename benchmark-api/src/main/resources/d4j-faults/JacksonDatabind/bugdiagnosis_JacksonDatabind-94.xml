@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-94">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/interop/IllegalTypesCheckTest.java">
+          <exception>junit.framework.AssertionFailedError:Expected an exception with one of substrings ([Illegal type]):got one with message "Can not instantiate value of type [simple type, class com.mchange.v2.c3p0.jacksontest.ComboPooledDataSource] from String value ('/tmp/foobar.txt'); no single-String constructor/factory method</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/jsontype/impl/SubTypeValidator.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="5">106</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

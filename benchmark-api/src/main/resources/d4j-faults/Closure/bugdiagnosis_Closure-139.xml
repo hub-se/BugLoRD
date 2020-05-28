@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-139">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/NormalizeTest.java">
+          <exception>junit.framework.AssertionFailedError::- com.google.javascript.jscomp.NormalizeTest::testRemoveDuplicateVarDeclarations3:--&gt; junit.framework.AssertionFailedError:Unexpected error(s):JSC_VAR_MULTIPLY_DECLARED_ERROR. Variable f first declared in testcode at testcode line 1 expected:&lt;0&gt; but was:&lt;1&gt;:- com.google.javascript.jscomp.NormalizeTest::testMoveFunctions2:--&gt; junit.framework.AssertionFailedError:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/Normalize.java">
+          <insert numberlines="3">271:281</insert>
+          <insert numberlines="7"></insert>
+          <insert numberlines="11"></insert>
+          <change parent="521-526">521-526</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

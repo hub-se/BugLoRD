@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-58">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/misc/AccessFixTest.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Can not access private java.lang.Throwable java.lang.Throwable.cause (from class java.lang.Throwable; failed to set access:Can not force permission:("java.lang.reflect.ReflectPermission" "suppressAccessChecks")</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/BeanDeserializerFactory.java">
+          <insert numberlines="4,1">715,716</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-62">
+      <tests>
+        <testfile path="org/jsoup/parser/HtmlParserTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;&lt;r&gt; &lt;X&gt; A &lt;[/X&gt; &lt;y&gt; B &lt;/y]&gt; &lt;/r&gt;&gt; but was:&lt;&lt;r&gt; &lt;X&gt; A &lt;[y&gt; B &lt;/y&gt; &lt;/X]&gt; &lt;/r&gt;&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/parser/HtmlTreeBuilderState.java">
+          <change parent="764">764</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

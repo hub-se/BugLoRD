@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-110">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/deser/jdk/UtilCollectionsTypesTest.java">
+          <exception>com.fasterxml.jackson.databind.exc.InvalidDefinitionException:Cannot construct instance of `java.util.Collections$UnmodifiableList` (no Creators, like default construct, exist):no default no-arguments constructor found</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/deser/impl/JavaUtilCollectionsDeserializers.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">50-62</insert>
+          <change parent="78">78</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

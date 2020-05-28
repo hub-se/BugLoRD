@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-21">
+      <tests>
+        <testfile path="org/apache/commons/cli2/bug/BugCLI150Test.java">
+          <exception>org.apache.commons.cli2.OptionException:Unexpected -42 while processing --num</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli2/WriteableCommandLine.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/cli2/commandline/WriteableCommandLineImpl.java">
+          <insert numberlines="2"></insert>
+          <insert numberlines="1">63</insert>
+          <insert numberlines="3"></insert>
+          <insert numberlines="3"></insert>
+          <insert numberlines="7,5">236,246</insert>
+          <insert numberlines="3,1">242,243</insert>
+
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/cli2/option/GroupImpl.java">
+          <insert numberlines="3,3">513,514</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

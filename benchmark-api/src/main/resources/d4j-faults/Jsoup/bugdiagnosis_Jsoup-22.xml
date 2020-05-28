@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-22">
+      <tests>
+        <testfile path="org/jsoup/nodes/NodeTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;2&gt; but was:&lt;3&gt;:- org.jsoup.nodes.NodeTest::nodeIsNotASiblingOfItself:--&gt; junit.framework.AssertionFailedError:expected:&lt;2&gt; but was:&lt;3&gt;:- org.jsoup.nodes.NodeTest::orphanNodeReturnsNullForSiblingElements:--&gt; java.lang.NullPointerException</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Element.java">
+          <insert numberlines="7">435</insert>
+          <change parent="435">435</change>
+          <insert numberlines="1">447</insert>
+          <insert numberlines="1">462</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/nodes/Node.java">
+          <insert numberlines="7">445</insert>
+          <change parent="445">445</change>
+          <insert numberlines="2">471</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/select/Elements.java">
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

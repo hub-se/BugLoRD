@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Codec">
+    <bug bugid="Codec-2">
+      <tests>
+        <testfile path="org/apache/commons/codec/binary/Base64OutputStreamTest.java">
+          <exception>junit.framework.AssertionFailedError:EOF expected:&lt;-1&gt; but was:&lt;13&gt;:- org.apache.commons.codec.binary.Base64OutputStreamTest::testBase64EmptyOutputStream:--&gt; junit.framework.AssertionFailedError:Streaming base64 encode</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/codec/binary/Base64.java">
+          <change parent="446">446</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

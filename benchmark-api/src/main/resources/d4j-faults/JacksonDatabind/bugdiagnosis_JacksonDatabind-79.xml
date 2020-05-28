@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-79">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/objectid/AlwaysAsReferenceFirstTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;{"alwaysClass":[1],"alwaysProp":2}&gt; but was:&lt;{"alwaysClass":[{"id":1,"value":13}],"alwaysProp":2}&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/introspect/JacksonAnnotationIntrospector.java">
+          <change parent="579-581">579-580</change>
+          <insert numberlines="3">582</insert>
+          <change parent="582">582</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/introspect/ObjectIdInfo.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/fasterxml/jackson/databind/ser/std/BeanSerializerBase.java">
+          <change parent="432-433">432-433</change>
+          <insert numberlines="1,1">434,435</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

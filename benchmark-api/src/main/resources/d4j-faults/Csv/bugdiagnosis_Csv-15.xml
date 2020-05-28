@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Csv">
+    <bug bugid="Csv-15">
+      <tests>
+        <testfile path="org/apache/commons/csv/CSVPrinterTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;[€],Deux</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/csv/CSVFormat.java">
+          <delete>1189-1190</delete>
+          <change parent="1191">1191</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

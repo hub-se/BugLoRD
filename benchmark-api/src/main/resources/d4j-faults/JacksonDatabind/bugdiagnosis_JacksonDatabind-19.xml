@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-19">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/type/TestTypeFactory.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;129&gt; but was:&lt;null&gt;:- com.fasterxml.jackson.databind.deser.TestMapDeserialization::testReadProperties:--&gt; junit.framework.ComparisonFailure:expected:&lt;123&gt; but was:&lt;null&gt;:- com.fasterxml.jackson.databind.type.TestTypeFactory::testProperties:--&gt; junit.framework.AssertionFailedError:expected same:&lt;class java.lang.String&gt; was not:&lt;class java.lang.Object&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/type/TypeFactory.java">
+          <insert numberlines="3">1021</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

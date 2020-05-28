@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonXml">
+    <bug bugid="JacksonXml-2">
+      <tests>
+        <testfile path="com/fasterxml/jackson/dataformat/xml/misc/XmlTextTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;27&gt; but was:&lt;0&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/dataformat/xml/deser/XmlTokenStream.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">325</insert>
+          <change parent="325">325</change>
+          <insert numberlines="2,4">326,327</insert>
+          <insert numberlines="1">330:331</insert>
+          <insert numberlines="1">333</insert>
+          <insert numberlines="4">341</insert>
+          <insert numberlines="12"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

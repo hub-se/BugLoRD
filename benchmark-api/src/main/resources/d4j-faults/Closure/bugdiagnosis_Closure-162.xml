@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-162">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/ScopedAliasesTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;[STRING foo.Foo.Bar 4 [source_file:testcode]</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/Scope.java">
+          <insert numberlines="3"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/ScopedAliases.java">
+          <insert numberlines="1">226</insert>
+          <insert numberlines="20"></insert>
+          <insert numberlines="12">306</insert>
+          <change parent="307-313">307-313</change>
+          <delete>315-317</delete>
+          <change parent="322">322</change>
+          <delete>325-328</delete>
+          <change parent="342">342</change>
+          <delete>343-346,355</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

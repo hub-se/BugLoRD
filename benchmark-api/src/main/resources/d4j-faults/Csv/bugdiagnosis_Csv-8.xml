@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Csv">
+    <bug bugid="Csv-8">
+      <tests>
+        <testfile path="org/apache/commons/csv/CSVFormatTest.java">
+          <exception>java.lang.Exception:Unexpected exception, expected&lt;java.lang.IllegalArgumentException&gt; but was&lt;java.lang.IllegalStateException&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/csv/CSVFormat.java">
+          <insert numberlines="6">316</insert>
+          <delete>665-671</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

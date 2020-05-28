@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-147">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/RuntimeTypeCheckTest.java">
+          <exception>junit.framework.AssertionFailedError:There should be one error.  expected:&lt;1&gt; but was:&lt;0&gt;:- com.google.javascript.jscomp.CheckGlobalThisTest::testIssue182b:--&gt; junit.framework.AssertionFailedError:There should be one error.  expected:&lt;1&gt; but was:&lt;0&gt;:- com.google.javascript.jscomp.RuntimeTypeCheckTest::testValueWithInnerFn:--&gt; junit.framework.AssertionFailedError:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/CheckGlobalThis.java">
+          <change parent="105-110">108</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/RuntimeTypeCheck.java">
+          <insert numberlines="5">248</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

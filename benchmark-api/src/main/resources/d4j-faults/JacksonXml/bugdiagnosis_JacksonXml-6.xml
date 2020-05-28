@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonXml">
+    <bug bugid="JacksonXml-6">
+      <tests>
+        <testfile path="com/fasterxml/jackson/dataformat/xml/ser/TestBinaryStreamToXMLSerialization.java">
+          <exception>com.fasterxml.jackson.databind.JsonMappingException:Operation not supported by generator of type com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator (through reference chain:com.fasterxml.jackson.dataformat.xml.ser.TestBinaryStreamToXMLSerialization$TestPojo["field"]):- com.fasterxml.jackson.dataformat.xml.ser.TestBinaryStreamToXMLSerialization::testWith2Bytes:--&gt; com.fasterxml.jackson.databind.JsonMappingException:Operation not supported by generator of type com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator (through reference chain:com.fasterxml.jackson.dataformat.xml.ser.TestBinaryStreamToXMLSerialization$TestPojo["field"]):- com.fasterxml.jackson.dataformat.xml.ser.TestBinaryStreamToXMLSerialization::testWith3Bytes:--&gt; com.fasterxml.jackson.databind.JsonMappingException:Operation not supported by generator of type com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator (through reference chain:com.fasterxml.jackson.dataformat.xml.ser.TestBinaryStreamToXMLSerialization$TestPojo["field"]):- com.fasterxml.jackson.dataformat.xml.ser.TestBinaryStreamToXMLSerialization::testWith4Bytes:--&gt; com.fasterxml.jackson.databind.JsonMappingException:Operation not supported by generator of type com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator (through reference chain:com.fasterxml.jackson.dataformat.xml.ser.TestBinaryStreamToXMLSerialization$TestPojo["field"]):- com.fasterxml.jackson.dataformat.xml.ser.TestBinaryStreamToXMLSerialization::testWith1Byte:--&gt; com.fasterxml.jackson.databind.JsonMappingException:Operation not supported by generator of type com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator (through reference chain:com.fasterxml.jackson.dataformat.xml.ser.TestBinaryStreamToXMLSerialization$TestPojo["field"])</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/dataformat/xml/ser/ToXmlGenerator.java">
+          <insert numberlines="53"></insert>
+          <insert numberlines="13"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

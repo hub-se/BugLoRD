@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-43">
+      <tests>
+        <testfile path="org/apache/commons/compress/archivers/zip/DataDescriptorTest.java">
+          <exception>junit.framework.AssertionFailedError:arrays first differed at element [0]; expected:&lt;0&gt; but was:&lt;8&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/archivers/zip/ZipArchiveOutputStream.java">
+          <change parent="1034">1034</change>
+          <change parent="1075">1075</change>
+          <change parent="1171">1171</change>
+          <change parent="1492-1494">1492-1493</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

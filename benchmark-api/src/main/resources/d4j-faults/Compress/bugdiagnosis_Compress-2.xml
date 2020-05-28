@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-2">
+      <tests>
+        <testfile path="org/apache/commons/compress/archivers/ArTestCase.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;1&gt; but was:&lt;0&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/archivers/ar/ArArchiveInputStream.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <insert numberlines="10">63</insert>
+          <insert numberlines="5">79</insert>
+          <delete>83-85</delete>
+          <insert numberlines="1">114</insert>
+          <change parent="114-116">114</change>
+          <insert numberlines="1">117</insert>
+          <insert numberlines="1">129</insert>
+          <change parent="132-134">132-134</change>
+          <insert numberlines="8">143</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

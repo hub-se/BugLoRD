@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-23">
+      <tests>
+        <testfile path="org/jsoup/nodes/EntitiesTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;[&amp;sup1;&amp;sup2;&amp;sup3;&amp;frac14;&amp;frac12;&amp;]frac34;&gt; but was:&lt;[⊃1;⊃2;⊃3;&amp;amp;frac14;&amp;amp;frac12;&amp;amp;]frac34;&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/parser/CharacterReader.java">
+          <insert numberlines="182"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/Tokeniser.java">
+          <change parent="135">135</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

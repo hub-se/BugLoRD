@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-163">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/CrossModuleMethodMotionTest.java">
+          <exception>junit.framework.AssertionFailedError::- com.google.javascript.jscomp.CrossModuleMethodMotionTest::testIssue600e:--&gt; junit.framework.AssertionFailedError::- com.google.javascript.jscomp.CrossModuleMethodMotionTest::testIssue600:--&gt; junit.framework.AssertionFailedError:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/AnalyzePrototypeProperties.java">
+          <delete>201-203</delete>
+          <change parent="206">206</change>
+          <insert numberlines="1">217</insert>
+          <change parent="222-232">222-232</change>
+          <insert numberlines="1,2">241,250</insert>
+          <change parent="242">242</change>
+          <insert numberlines="1">245</insert>
+          <change parent="247">247</change>
+          <change parent="250-257">250,254-257</change>
+          <insert numberlines="5">261</insert>
+          <change parent="278-279">278-279</change>
+          <change parent="304-306">304-306</change>
+          <insert numberlines="6"></insert>
+          <insert numberlines="5">339</insert>
+          <change parent="339-342">339-342</change>
+          <delete>348-375</delete>
+          <insert numberlines="3"></insert>
+          <insert numberlines="24"></insert>
+          <change parent="381-382">382</change>
+          <insert numberlines="1">383:385</insert>
+          <change parent="392">392</change>
+          <change parent="412">412</change>
+          <insert numberlines="2">414</insert>
+          <change parent="425-427">426,427</change>
+          <insert numberlines="1">429</insert>
+          <change parent="440-442">441,442</change>
+          <insert numberlines="1">445</insert>
+          <insert numberlines="1">448</insert>
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <change parent="518">518</change>
+          <insert numberlines="1">519</insert>
+          <insert numberlines="1">522:523:524</insert>
+          <insert numberlines="4"></insert>
+          <insert numberlines="1"></insert>
+          <change parent="581">581</change>
+          <insert numberlines="1">582:583:584</insert>
+          <insert numberlines="4"></insert>
+          <insert numberlines="1"></insert>
+          <change parent="626">626</change>
+          <insert numberlines="1">627:628:629:630:631:632</insert>
+          <insert numberlines="4"></insert>
+          <change parent="667">667</change>
+          <insert numberlines="1">668:669</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/CrossModuleMethodMotion.java">
+          <insert numberlines="3">142</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

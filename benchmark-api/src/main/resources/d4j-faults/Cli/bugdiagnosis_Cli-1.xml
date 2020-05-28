@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-1">
+      <tests>
+        <testfile path="org/apache/commons/cli/bug/BugCLI13Test.java">
+          <exception>junit.framework.AssertionFailedError</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli/CommandLine.java">
+          <insert numberlines="2"></insert>
+          <change parent="46-47">46-47</change>
+          <delete>51</delete>
+          <change parent="69">69</change>
+          <change parent="93-96,98">93,98</change>
+          <change parent="149-161">149-161</change>
+          <insert numberlines="17"></insert>
+          <change parent="278-288">278-288</change>
+          <change parent="299">299</change>
+          <change parent="309">309</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-63">
+      <tests>
+        <testfile path="org/jsoup/parser/HtmlParserTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;18:[Tag cannot be self closing; not a void tag]&gt; but was:&lt;18:[Self closing flag not acknowledged]&gt;:- org.jsoup.parser.HtmlParserTest::selfClosingVoidIsNotAnError:--&gt; junit.framework.AssertionFailedError:expected:&lt;0&gt; but was:&lt;2&gt;:- org.jsoup.parser.HtmlParserTest::tracksErrorsWhenRequested:--&gt; junit.framework.AssertionFailedError:expected:&lt;50:[Tag cannot be self closing; not a void tag]&gt; but was:&lt;50:[Self closing flag not acknowledged]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/parser/HtmlTreeBuilder.java">
+          <change parent="227">227</change>
+          <delete>231</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/Tokeniser.java">
+          <delete>36</delete>
+          <delete>44-47</delete>
+          <delete>76-77</delete>
+          <delete>124-126</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

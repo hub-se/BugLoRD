@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-29">
+      <tests>
+        <testfile path="org/apache/commons/compress/archivers/ArchiveStreamFactoryTest.java">
+          <exception>junit.framework.AssertionFailedError:Tests failed:20:- org.apache.commons.compress.archivers.ArchiveStreamFactoryTest::testEncodingInputStreamAutodetect:--&gt; junit.framework.AssertionFailedError:Tests failed:24:- org.apache.commons.compress.archivers.ArchiveStreamFactoryTest::testEncodingOutputStream:--&gt; junit.framework.AssertionFailedError:Tests failed:14</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/archivers/ArchiveStreamFactory.java">
+          <insert numberlines="3,1">297,298</insert>
+          <insert numberlines="3,1">360,361</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/compress/archivers/cpio/CpioArchiveInputStream.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">153-156</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/compress/archivers/cpio/CpioArchiveOutputStream.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">149-150:160-163</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/compress/archivers/dump/DumpArchiveInputStream.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">102-106</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/compress/archivers/tar/TarArchiveInputStream.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">140-145</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/compress/archivers/tar/TarArchiveOutputStream.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">154-162</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/compress/archivers/zip/ZipArchiveInputStream.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1">184-191</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Codec">
+    <bug bugid="Codec-1">
+      <tests>
+        <testfile path="org/apache/commons/codec/language/SoundexTest.java">
+          <exception>junit.framework.ComparisonFailure:tr:expected:&lt;[A]111111111&gt; but was:&lt;[1]111111111&gt;:- org.apache.commons.codec.language.DoubleMetaphoneTest::testLocaleIndependence:--&gt; junit.framework.ComparisonFailure:tr:expected:&lt;[I]&gt; but was:&lt;[İ]&gt;:- org.apache.commons.codec.language.MetaphoneTest::testLocaleIndependence:--&gt; junit.framework.ComparisonFailure:tr:expected:&lt;[I]&gt; but was:&lt;[İ]&gt;:- org.apache.commons.codec.language.RefinedSoundexTest::testLocaleIndependence:--&gt; junit.framework.AssertionFailedError:tr:239:- org.apache.commons.codec.language.SoundexTest::testLocaleIndependence:--&gt; junit.framework.AssertionFailedError:tr:The character is not mapped:İ</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/codec/language/Caverphone.java">
+          <change parent="59">59</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/codec/language/Metaphone.java">
+          <change parent="88">88</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/codec/language/SoundexUtils.java">
+          <change parent="53">53</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-167">
+      <tests>
+        <testfile path="com/google/javascript/rhino/jstype/JSTypeTest.java">
+          <exception>junit.framework.AssertionFailedError:expected a warning:- com.google.javascript.jscomp.TypeCheckTest::testMissingProperty20:--&gt; junit.framework.AssertionFailedError:expected a warning:- com.google.javascript.rhino.jstype.JSTypeTest::testRestrictedTypeGivenToBoolean:--&gt; junit.framework.AssertionFailedError:Expected:??</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/type/SemanticReverseAbstractInterpreter.java">
+          <change parent="299-302">301-302</change>
+          <change parent="346-349">348-349</change>
+          <change parent="394">394</change>
+          <change parent="405-408">407-408</change>
+          <change parent="409-410">410</change>
+          <change parent="411-412">412</change>
+          <change parent="430-434">430-434</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/rhino/jstype/JSType.java">
+          <insert numberlines="3">884</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

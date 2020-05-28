@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-28">
+      <tests>
+        <testfile path="org/jsoup/parser/HtmlParserTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;Hello &amp;&lt;&gt; ® Å [&amp;angst] π π 新 there &amp;! ¾ © ...&gt; but was:&lt;Hello &amp;&lt;&gt; ® Å [Å] π π 新 there &amp;! ¾ © ...&gt;:- org.jsoup.nodes.EntitiesTest::noSpuriousDecodes:--&gt; junit.framework.AssertionFailedError:expected:&lt;...tp://www.foo.com?a=1[&amp;num_rooms=1&amp;children=0&amp;int]=VA&amp;b=2&gt; but was:&lt;...tp://www.foo.com?a=1[#_rooms=1&amp;children=0∫]=VA&amp;b=2&gt;:- org.jsoup.parser.AttributeParseTest::moreAttributeUnescapes:--&gt; junit.framework.AssertionFailedError:expected:&lt;...23&amp;mid-size=true&amp;ok=[&amp;wr]&gt; but was:&lt;...23&amp;mid-size=true&amp;ok=[≀]&gt;:- org.jsoup.parser.AttributeParseTest::strictAttributeUnescapes:--&gt; junit.framework.AssertionFailedError:expected:&lt;?foo=bar[&amp;mid]&amp;lt=true&gt; but was:&lt;?foo=bar[∣]&amp;lt=true&gt;:- org.jsoup.parser.HtmlParserTest::doesNotFindShortestMatchingEntity:--&gt; junit.framework.AssertionFailedError:expected:&lt;One [&amp;amp;clubsuit]e; ♣&gt; but was:&lt;One [♣]e; ♣&gt;:- org.jsoup.parser.HtmlParserTest:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/nodes/Entities.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="3"></insert>
+          <change parent="103-129">103-129</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/Parser.java">
+          <insert numberlines="4"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/Tokeniser.java">
+          <delete>136</delete>
+          <change parent="139-147">139-147</change>
+          <change parent="152">152</change>
+          <insert numberlines="15"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-134">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/TypeCheckTest.java">
+          <exception>junit.framework.AssertionFailedError::- com.google.javascript.jscomp.TypeCheckTest::testIssue86:--&gt; junit.framework.AssertionFailedError:expected a warning</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/AmbiguateProperties.java">
+          <delete>210</delete>
+          <change parent="356">356</change>
+          <change parent="366">366</change>
+          <delete>553</delete>
+          <insert numberlines="1">552-559:569:588:601</insert>
+          <change parent="594-598,599">594-598,599</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/TypedScopeCreator.java">
+          <insert numberlines="7">564</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JxPath">
+    <bug bugid="JxPath-19">
+      <tests>
+        <testfile path="org/apache/commons/jxpath/ri/model/AliasedNamespaceIterationTest.java">
+          <exception>junit.framework.AssertionFailedError:Evaluating pointer iterator &lt;/a:doc/a:elem&gt; expected:&lt;[/a:doc[1]/a:elem[1], /a:doc[1]/a:elem[2]]&gt; but was:&lt;[/a:doc[1]/a:elem[1], /a:doc[1]/a:elem[1]]&gt;:- org.apache.commons.jxpath.ri.model.AliasedNamespaceIterationTest::testIterateDOM:--&gt; junit.framework.AssertionFailedError:Evaluating pointer iterator &lt;/a:doc/a:elem&gt; expected:&lt;[/a:doc[1]/a:elem[1], /a:doc[1]/a:elem[2]]&gt; but was:&lt;[/a:doc[1]/a:elem[1], /a:doc[1]/a:elem[1]]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java">
+          <change parent="560">560</change>
+          <delete>561,162,564</delete>
+          <insert numberlines="7"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/apache/commons/jxpath/ri/model/jdom/JDOMNodePointer.java">
+          <change parent="696-697">696-697</change>
+          <insert numberlines="9"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

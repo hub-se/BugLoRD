@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-39">
+      <tests>
+        <testfile path="org/apache/commons/cli/PatternOptionBuilderTest.java">
+          <exception>junit.framework.AssertionFailedError:option g not FileInputStream:- org.apache.commons.cli.PatternOptionBuilderTest::testExistingFilePatternFileNotExist:--&gt; junit.framework.AssertionFailedError:option f parsed expected null, but was:&lt;non-existing.file&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli/TypeHandler.java">
+          <change parent="92">92</change>
+          <insert numberlines="11"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

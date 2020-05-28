@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Closure">
+    <bug bugid="Closure-157">
+      <tests>
+        <testfile path="com/google/javascript/jscomp/FunctionNamesTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;var x={[1]:1}&gt; but was:&lt;var x={["1"]:1}&gt;:- com.google.javascript.jscomp.CodePrinterTest::testObjectLit3:--&gt; junit.framework.ComparisonFailure:expected:&lt;var x={[3E9]:1}&gt; but was:&lt;var x={["3000000000"]:1}&gt;:- com.google.javascript.jscomp.CodePrinterTest::testGetter:--&gt; junit.framework.ComparisonFailure:expected:&lt;var x={get ["a"](){return 1}}&gt; but was:&lt;var x={get [a](){return 1}}&gt;:- com.google.javascript.jscomp.CodePrinterTest::testSetter:--&gt; junit.framework.ComparisonFailure:expected:&lt;var x={get ["a"](){return 1}}&gt; but was:&lt;var x={get [a](){return 1}}&gt;:- com.google.javascript.jscomp.FunctionNamesTest::testFunctionsNamesAndIds:--&gt; junit.framework.AssertionFailedError:Function id/name mismatch expected:&lt;{0=goog.widget.member_fn, 1=goog.widget:</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/google/javascript/jscomp/CodeGenerator.java">
+          <change parent="343">343</change>
+          <insert numberlines="4,1">350,351</insert>
+          <insert numberlines="2">656</insert>
+          <change parent="656-667">656-667</change>
+          <insert numberlines="10"></insert>
+          <insert numberlines="9"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/parsing/IRFactory.java">
+          <insert numberlines="9"></insert>
+          <insert numberlines="8"></insert>
+          <insert numberlines="3">347</insert>
+          <delete>349-351,353</delete>
+          <insert numberlines="1">355</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="com/google/javascript/jscomp/RenamePrototypes.java">
+          <change parent="336">336</change>
+          <change parent="377">377</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

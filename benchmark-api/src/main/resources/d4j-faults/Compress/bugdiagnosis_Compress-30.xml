@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Compress">
+    <bug bugid="Compress-30">
+      <tests>
+        <testfile path="org/apache/commons/compress/compressors/bzip2/BZip2CompressorInputStreamTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;0&gt; but was:&lt;-1&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/compress/compressors/bzip2/BZip2CompressorInputStream.java">
+          <insert numberlines="3">169</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

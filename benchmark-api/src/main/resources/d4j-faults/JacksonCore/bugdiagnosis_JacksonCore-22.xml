@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonCore">
+    <bug bugid="JacksonCore-22">
+      <tests>
+        <testfile path="com/fasterxml/jackson/core/filter/BasicParserFilteringTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;1&gt; but was:&lt;0&gt;:- com.fasterxml.jackson.core.filter.BasicParserFilteringTest::testAllowMultipleMatchesWithPath1:--&gt; junit.framework.AssertionFailedError:expected:&lt;3&gt; but was:&lt;0&gt;:- com.fasterxml.jackson.core.filter.BasicParserFilteringTest::testAllowMultipleMatchesWithPath2:--&gt; junit.framework.AssertionFailedError:expected:&lt;2&gt; but was:&lt;0&gt;:- com.fasterxml.jackson.core.filter.BasicParserFilteringTest::testMultipleMatchFilteringWithPath1:--&gt; junit.framework.AssertionFailedError:expected:&lt;2&gt; but was:&lt;0&gt;:- com.fasterxml.jackson.core.filter.BasicParserFilteringTest::testMultipleMatchFilteringWithPath2:--&gt; junit.framework.AssertionFailedError:expected:&lt;2&gt; but was:&lt;0&gt;:- com.fasterxml.jackson.core.filter.BasicParserFilteringTest::testMultipleMatchFilteringWithPath3:--&gt; junit.framework.AssertionFailedError</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/core/filter/FilteringParserDelegate.java">
+          <change parent="417">417</change>
+          <insert numberlines="1,1">440,441</insert>
+          <change parent="575">575</change>
+          <insert numberlines="1,1">600,601</insert>
+          <change parent="717">717</change>
+          <insert numberlines="1,1">732,733</insert>
+          <insert numberlines="7"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

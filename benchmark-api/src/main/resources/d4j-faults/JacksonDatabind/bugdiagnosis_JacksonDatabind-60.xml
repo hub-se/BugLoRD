@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-60">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/jsontype/ext/ExternalTypeIdTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;class com.fasterxml.jackson.databind.jsontype.TestDefaultWithCreators$Bean1385&gt; but was:&lt;class [B&gt;:- com.fasterxml.jackson.databind.jsontype.ext.ExternalTypeIdTest::testWithAsValue:--&gt; junit.framework.ComparisonFailure:expected:&lt;...alue":12345,"type":"[thingy]"}&gt; but was:&lt;...alue":12345,"type":"[date]"}&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/ser/std/JsonValueSerializer.java">
+          <insert numberlines="1"></insert>
+          <insert numberlines="1"></insert>
+          <change parent="226">226</change>
+          <insert numberlines="100"></insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

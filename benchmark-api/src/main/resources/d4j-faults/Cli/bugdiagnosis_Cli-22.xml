@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-22">
+      <tests>
+        <testfile path="org/apache/commons/cli/PosixParserTest.java">
+          <exception>junit.framework.ComparisonFailure:expected:&lt;[println 'hello']&gt; but was:&lt;[--]&gt;:- org.apache.commons.cli.PosixParserTest::testStopAtExpectedArg:--&gt; junit.framework.ComparisonFailure:Confirm -b is set expected:&lt;[foo]&gt; but was:&lt;[--]&gt;</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli/PosixParser.java">
+          <insert numberlines="1"></insert>
+          <change parent="116">116</change>
+          <insert numberlines="1">121:122:126</insert>
+          <delete>146-149</delete>
+          <change parent="152">152</change>
+          <change parent="184">184</change>
+          <insert numberlines="2,1">186,189</insert>
+          <insert numberlines="4">206:212</insert>
+          <delete>243</delete>
+          <change parent="262">262</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

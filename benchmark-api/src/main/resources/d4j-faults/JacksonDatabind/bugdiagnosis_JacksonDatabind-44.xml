@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="JacksonDatabind">
+    <bug bugid="JacksonDatabind-44">
+      <tests>
+        <testfile path="com/fasterxml/jackson/databind/jsontype/TestSubtypes.java">
+          <exception>com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException:Unrecognized field "b" (class com.fasterxml.jackson.databind.jsontype.TestSubtypes$Default1125), not marked as ignorable (2 known properties:"a", "def"])</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="com/fasterxml/jackson/databind/type/SimpleType.java">
+          <insert numberlines="1,">136,141</insert>
+          <insert numberlines="25">141</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Jsoup">
+    <bug bugid="Jsoup-52">
+      <tests>
+        <testfile path="org/jsoup/parser/XmlTreeBuilderTest.java">
+          <exception>junit.framework.AssertionFailedError:expected:&lt;....0" encoding="UTF-8"[?]&gt;:- org.jsoup.nodes.DocumentTest::testMetaCharsetUpdateXmlIso8859:--&gt; junit.framework.AssertionFailedError:expected:&lt;...ncoding="ISO-8859-1"[?]&gt;:- org.jsoup.nodes.DocumentTest::testMetaCharsetUpdateXmlUtf8:--&gt; junit.framework.AssertionFailedError:expected:&lt;....0" encoding="UTF-8"[?]&gt;:- org.jsoup.nodes.DocumentTest::testMetaCharsetUpdateXmlDisabledNoChanges:--&gt; junit.framework.AssertionFailedError:expected:&lt;...encoding="dontTouch"[?]&gt;:- org.jsoup.parser.XmlTreeBuilderTest::handlesXmlDeclarationAsDeclaration:--&gt; junit.framework.AssertionFailedError:expected:&lt;&lt;?xml encoding=["UTF-8"]?&gt; &lt;body&gt; One &lt;/body...&gt; but was:&lt;&lt;?xml encoding=['UTF-8' ]?&gt; &lt;body&gt; One &lt;/body...&gt;:- org.jsoup.parser.XmlTreeBuilderTest::testDetectCharsetEncodingDeclaration:--&gt; junit.framework.AssertionFailedError:expected:&lt;[ISO-8859-1]&gt; but was:&lt;[UTF-8]&gt;:- org.jsoup.parser.XmlTreeBuilderTest</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/jsoup/helper/DataUtil.java">
+          <delete>112-113,115-118</delete>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/nodes/XmlDeclaration.java">
+          <change parent="46-61">46-61</change>
+          <change parent="68">68</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+        <file path="org/jsoup/parser/XmlTreeBuilder.java">
+          <insert numberlines="1"></insert>
+          <change parent="76-77">76-77</change>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>

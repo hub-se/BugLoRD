@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<defects4j>
+  <project projectid="Cli">
+    <bug bugid="Cli-14">
+      <tests>
+        <testfile path="org/apache/commons/cli2/bug/BugCLI144Test.java">
+          <exception>java.lang.ClassCastException:java.io.File cannot be cast to java.lang.String</exception>
+        </testfile>
+      </tests>
+      <fixlocations>
+        <!--Modifications can be changes, deletes or inserts. Each separate code element should get its own entry. If multiple lines belong to the same modification, they should be put in the same entry, divided by commas.-->
+        <file path="org/apache/commons/cli2/option/GroupImpl.java">
+          <delete>250-252</delete>
+          <change parent="262">262</change>
+          <insert numberlines="3">264</insert>
+          <bugtypes>
+            <id id="" lines="">
+              <description> </description>
+            </id>
+          </bugtypes>
+        </file>
+      </fixlocations>
+      <numberfixedlines> </numberfixedlines>
+    </bug>
+  </project>
+</defects4j>
