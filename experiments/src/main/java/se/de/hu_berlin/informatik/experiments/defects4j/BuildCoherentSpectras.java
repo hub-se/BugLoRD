@@ -5,7 +5,6 @@ import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBase.Defects4JProject;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
@@ -36,7 +35,17 @@ public class BuildCoherentSpectras {
     public enum CmdOptions implements OptionWrapperInterface {
         /* add options here according to your needs */
 //		OUTPUT("o", "output", true, "Path to output csv statistics file (e.g. '~/outputDir/project/bugID/data.csv').", true)
-        FILTER_SPECTRA("f", "filter", false, "Whether the altered spectra should be filtered.", false);;
+        PROJECTS(Option.builder("p").longOpt("projects").hasArgs().desc(
+                "A list of projects to consider of the Defects4J benchmark. "
+                        + "Should be either 'Lang', 'Chart', 'Time', 'Closure', 'Mockito' or 'Math'. Set this to 'all' to "
+                        + "iterate over all projects.")
+                .build()),
+        BUG_IDS(Option.builder("b").longOpt("bugIDs").hasArgs().desc(
+                "A list of numbers indicating the ids of buggy project versions to consider. "
+                        + "Value ranges differ based on the project. Set this to 'all' to "
+                        + "iterate over all bugs in a project.")
+                .build()),
+        FILTER_SPECTRA("f", "filter", false, "Whether the altered spectra should be filtered.", false);
 
         /* the following code blocks should not need to be changed */
         final private OptionWrapper option;
@@ -113,13 +122,24 @@ public class BuildCoherentSpectras {
                 new ThreadedProcessor<>(numberOfThreads, limit,
                         new CoherentProcessor(BugLoRDConstants.DIR_NAME_TRACE_COBERTURA, options.hasOption(CmdOptions.FILTER_SPECTRA)))
         );
+        
+        String[] projects = options.getOptionValues(CmdOptions.PROJECTS);
+        String[] ids = options.getOptionValues(CmdOptions.BUG_IDS);
 
-        //iterate over all projects
-        for (Defects4JProject project : Defects4J.getAllProjects()) {
-            String[] ids = Defects4J.getAllActiveBugIDs(project);
-            for (String id : ids) {
-                linker.submit(new Defects4JBuggyFixedEntity(project, id));
-            }
+        boolean all = ids == null || ids[0].equals("all");
+
+        if (projects == null || projects[0].equals("all")) {
+            projects = Defects4J.getAllProjectIDs();
+        }
+
+        // iterate over all projects
+        for (String project : projects) {
+        	if (all) {
+        		ids = Defects4J.getAllBugIDs(project);
+        	}
+        	for (String id : ids) {
+        		linker.submit(new Defects4JBuggyFixedEntity(project, id));
+        	}
         }
         linker.shutdown();
 
