@@ -49,7 +49,7 @@ public interface ISpectra<T, K extends ITrace<T>> {
      * @return the spectra node object for the identifier
      */
     public INode<T> getOrCreateNode(T identifier);
-
+    
     /**
      * Returns the node for the given identifier.
      * <p>

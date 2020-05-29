@@ -1,0 +1,2 @@
+org/apache/commons/compress/compressors/bzip2/BZip2CompressorInputStream.java:205,211,212,215,216,222,223,226,227:CHANGE
+org/apache/commons/compress/compressors/bzip2/BZip2CompressorInputStream.java:67,135,199,232,853,871,913,942:DELETE

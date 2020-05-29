@@ -1,0 +1,2 @@
+org/apache/commons/compress/utils/BitInputStream.java:85:CHANGE
+org/apache/commons/compress/utils/BitInputStream.java:100+101,101,108:INSERT

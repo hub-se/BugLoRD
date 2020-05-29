@@ -1,0 +1,2 @@
+com/fasterxml/jackson/core/json/UTF8JsonGenerator.java:534,536,1887:CHANGE
+com/fasterxml/jackson/core/json/UTF8JsonGenerator.java:533,-1:INSERT

@@ -1,0 +1,3 @@
+org/apache/commons/cli/PosixParser.java:116,152,184,262:CHANGE
+org/apache/commons/cli/PosixParser.java:146,147,148,149,243:DELETE
+org/apache/commons/cli/PosixParser.java:-1,121+122+126,186,189,206+212:INSERT

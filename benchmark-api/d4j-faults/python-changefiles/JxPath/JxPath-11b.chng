@@ -1,0 +1,3 @@
+org/apache/commons/jxpath/ri/model/dom/DOMAttributeIterator.java:111:CHANGE
+org/apache/commons/jxpath/ri/model/dom/DOMAttributeIterator.java:-1:INSERT
+org/apache/commons/jxpath/ri/model/jdom/JDOMAttributeIterator.java:-1,52,58:INSERT

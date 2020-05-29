@@ -1,0 +1,3 @@
+org/jsoup/parser/HtmlTreeBuilder.java:227:CHANGE
+org/jsoup/parser/HtmlTreeBuilder.java:231:DELETE
+org/jsoup/parser/Tokeniser.java:36,44,45,46,47,76,77,124,125,126:DELETE

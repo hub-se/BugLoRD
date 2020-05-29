@@ -1,0 +1,7 @@
+com/fasterxml/jackson/databind/deser/impl/MethodProperty.java:84:CHANGE
+com/fasterxml/jackson/databind/deser/impl/FieldProperty.java:93:CHANGE
+com/fasterxml/jackson/databind/deser/CreatorProperty.java:135:CHANGE
+com/fasterxml/jackson/databind/deser/impl/ObjectIdValueProperty.java:55:CHANGE
+com/fasterxml/jackson/databind/deser/impl/ObjectIdReferenceProperty.java:54:CHANGE
+com/fasterxml/jackson/databind/deser/impl/SetterlessProperty.java:68:CHANGE
+com/fasterxml/jackson/databind/deser/std/AtomicReferenceDeserializer.java:43:CHANGE

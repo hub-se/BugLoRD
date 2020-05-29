@@ -1,0 +1,2 @@
+com/fasterxml/jackson/core/io/NumberInput.java:295,296,305,306,-1:INSERT
+com/fasterxml/jackson/core/util/TextBuffer.java:390,394:CHANGE

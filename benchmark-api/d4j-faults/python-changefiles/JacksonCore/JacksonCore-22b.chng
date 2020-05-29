@@ -1,0 +1,2 @@
+com/fasterxml/jackson/core/filter/FilteringParserDelegate.java:417,575,717:CHANGE
+com/fasterxml/jackson/core/filter/FilteringParserDelegate.java:440,441,600,601,732,733,-1:INSERT

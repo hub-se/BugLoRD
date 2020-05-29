@@ -1,0 +1,3 @@
+com/google/javascript/jscomp/TypeInference.java:632,633:CHANGE
+com/google/javascript/jscomp/TypeInference.java:644,648:INSERT
+com/google/javascript/jscomp/ClosureReverseAbstractInterpreter.java:208,220:DELETE

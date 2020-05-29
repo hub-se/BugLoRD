@@ -1,0 +1,6 @@
+com/fasterxml/jackson/databind/type/CollectionType.java:50:CHANGE
+com/fasterxml/jackson/databind/type/CollectionType.java:-1,50:INSERT
+com/fasterxml/jackson/databind/type/MapType.java:48:CHANGE
+com/fasterxml/jackson/databind/type/MapType.java:-1,48:INSERT
+com/fasterxml/jackson/databind/type/SimpleType.java:116,117:CHANGE
+com/fasterxml/jackson/databind/type/SimpleType.java:-1:INSERT

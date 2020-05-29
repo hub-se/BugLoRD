@@ -1,0 +1,4 @@
+com/google/javascript/jscomp/CrossModuleMethodMotion.java:142:INSERT
+com/google/javascript/jscomp/AnalyzePrototypeProperties.java:206,222,223,224,225,226,227,228,229,230,231,232,242,247,250,254,255,256,257,278,279,304,305,306,339,340,341,342,382,392,412,426,427,441,442,518,581,626,667:CHANGE
+com/google/javascript/jscomp/AnalyzePrototypeProperties.java:201,202,203,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375:DELETE
+com/google/javascript/jscomp/AnalyzePrototypeProperties.java:217,241,250,245,261,-1,339,-1,-1,383+385,414,429,445,448,-1,-1,519,522+523+524,-1,-1,582+583+584,-1,-1,627+628+629+630+631+632,-1,668+669:INSERT

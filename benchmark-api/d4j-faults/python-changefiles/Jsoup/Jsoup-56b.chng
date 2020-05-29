@@ -1,0 +1,6 @@
+org/jsoup/parser/Token.java:-1,45+46+47+48+49,-1:INSERT
+org/jsoup/parser/XmlTreeBuilder.java:100:CHANGE
+org/jsoup/parser/HtmlTreeBuilderState.java:23:CHANGE
+org/jsoup/parser/TokeniserState.java:1195,1197:INSERT
+org/jsoup/nodes/DocumentType.java:59:CHANGE
+org/jsoup/nodes/DocumentType.java:-1,31,42,58:INSERT

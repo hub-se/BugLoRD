@@ -148,10 +148,10 @@ public class Defects4JBuggyFixedEntity extends AbstractBuggyFixedEntity<Defects4
         try {
             doc = new SAXBuilder().build(xmlPath);
         } catch (JDOMException e) {
-            Log.err(ConvertChangesToPythonFormat.class, e, "JDOMException in xml file '%s'.", xmlPath);
+            Log.err(ConvertChangesToPythonFormat.class, e, "JDOMException in xml file for '%s-%s'.", d4jProject, id);
             return null;
         } catch (IOException e) {
-            Log.err(ConvertChangesToPythonFormat.class, e, "Could not parse xml file '%s'.", xmlPath);
+            Log.err(ConvertChangesToPythonFormat.class, e, "Could not parse xml file for '%s-%s'.", d4jProject, id);
             return null;
         }
 

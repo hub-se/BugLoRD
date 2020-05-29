@@ -1,0 +1,3 @@
+com/google/javascript/jscomp/TypeCheck.java:185,186,187,188,189,190,191,242,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058:DELETE
+com/google/javascript/jscomp/TypeValidator.java:117:CHANGE
+com/google/javascript/jscomp/TypeValidator.java:-1,590:INSERT

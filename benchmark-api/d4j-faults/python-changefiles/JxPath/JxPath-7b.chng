@@ -1,0 +1,9 @@
+org/apache/commons/jxpath/ri/compiler/CoreOperationLessThan.java:33,34,35,36:CHANGE
+org/apache/commons/jxpath/ri/compiler/CoreOperationLessThan.java:19,20:DELETE
+org/apache/commons/jxpath/ri/compiler/CoreOperationRelationalExpression.java:-1,-1,-1:INSERT
+org/apache/commons/jxpath/ri/compiler/CoreOperationGreaterThanOrEqual.java:34,35,36,37:CHANGE
+org/apache/commons/jxpath/ri/compiler/CoreOperationGreaterThanOrEqual.java:19,20:DELETE
+org/apache/commons/jxpath/ri/compiler/CoreOperationLessThanOrEqual.java:34,35,36,37:CHANGE
+org/apache/commons/jxpath/ri/compiler/CoreOperationLessThanOrEqual.java:19,20:DELETE
+org/apache/commons/jxpath/ri/compiler/CoreOperationGreaterThan.java:33,34,35,36:CHANGE
+org/apache/commons/jxpath/ri/compiler/CoreOperationGreaterThan.java:19,20:DELETE

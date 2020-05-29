@@ -1,0 +1,6 @@
+com/google/javascript/jscomp/Compiler.java:1362:CHANGE
+com/google/javascript/jscomp/CommandLineRunner.java:471:DELETE
+com/google/javascript/jscomp/AbstractCommandLineRunner.java:518,519,520,521,522:DELETE
+com/google/javascript/jscomp/AbstractCommandLineRunner.java:143+144+145+146+147+148+149+150+151+152+153+154+155+156+157+158+159+160+161,-1:INSERT
+com/google/javascript/jscomp/CompilerOptions.java:588:CHANGE
+com/google/javascript/jscomp/CompilerOptions.java:-1:INSERT

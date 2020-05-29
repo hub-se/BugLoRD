@@ -1,0 +1,6 @@
+org/apache/commons/jxpath/ri/compiler/CoreOperationEqual.java:19,32,33,34:DELETE
+org/apache/commons/jxpath/ri/compiler/CoreOperationNotEqual.java:29:CHANGE
+org/apache/commons/jxpath/ri/compiler/CoreOperationNotEqual.java:19,32,33,34:DELETE
+org/apache/commons/jxpath/ri/compiler/CoreOperationCompare.java:39,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148:CHANGE
+org/apache/commons/jxpath/ri/compiler/CoreOperationCompare.java:121,122,123,124,125:DELETE
+org/apache/commons/jxpath/ri/compiler/CoreOperationCompare.java:-1,-1,-1,40:INSERT

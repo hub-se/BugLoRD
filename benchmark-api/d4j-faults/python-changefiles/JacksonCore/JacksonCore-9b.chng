@@ -1,0 +1,3 @@
+com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java:253,266:INSERT
+com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java:305,319:INSERT
+com/fasterxml/jackson/core/base/ParserMinimalBase.java:392,400:INSERT

@@ -1,0 +1,2 @@
+com/google/javascript/jscomp/TypeInference.java:731,732,733,734,735,736,737,738:CHANGE
+com/google/javascript/jscomp/TypedScopeCreator.java:1670:INSERT

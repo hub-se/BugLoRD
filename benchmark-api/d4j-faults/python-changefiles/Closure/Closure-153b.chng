@@ -1,0 +1,4 @@
+com/google/javascript/jscomp/SyntacticScopeCreator.java:95,103,125,126,127,142,154,180,181,189,190,235,236,237,242,244:CHANGE
+com/google/javascript/jscomp/SyntacticScopeCreator.java:239:INSERT
+com/google/javascript/jscomp/Normalize.java:638,639,669,681:CHANGE
+com/google/javascript/jscomp/Normalize.java:-1,641+649,649:INSERT

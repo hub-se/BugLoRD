@@ -1,0 +1,5 @@
+com/google/javascript/jscomp/NodeUtil.java:2368,2369,2370:INSERT
+com/google/javascript/jscomp/JsAst.java:95:CHANGE
+com/google/javascript/jscomp/JsAst.java:82:INSERT
+com/google/javascript/jscomp/ScopedAliases.java:356,357,365,366:CHANGE
+com/google/javascript/jscomp/ScopedAliases.java:377,388:INSERT

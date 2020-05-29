@@ -1,0 +1,2 @@
+org/jsoup/helper/W3CDom.java:73,85,144:CHANGE
+org/jsoup/helper/W3CDom.java:-1,77+78,81,116:INSERT

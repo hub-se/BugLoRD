@@ -1,0 +1,3 @@
+org/apache/commons/cli2/commandline/WriteableCommandLineImpl.java:-1:INSERT
+org/apache/commons/cli2/option/ArgumentImpl.java:144:CHANGE
+org/apache/commons/cli2/WriteableCommandLine.java:-1:INSERT

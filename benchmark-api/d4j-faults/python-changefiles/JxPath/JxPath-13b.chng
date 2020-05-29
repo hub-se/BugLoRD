@@ -1,0 +1,5 @@
+org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java:415:CHANGE
+org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java:-1,-1,-1:INSERT
+org/apache/commons/jxpath/ri/NamespaceResolver.java:117,118,119,120,121,122,123,117,118,119,120,121,122,123,159,160,161,162:CHANGE
+org/apache/commons/jxpath/ri/NamespaceResolver.java:141,142,143,144,145,146,147,148,149,150,151:DELETE
+org/apache/commons/jxpath/ri/NamespaceResolver.java:-1,-1,-1:INSERT

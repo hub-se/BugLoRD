@@ -1,0 +1,2 @@
+com/fasterxml/jackson/databind/deser/BeanDeserializerBase.java:612:CHANGE
+com/fasterxml/jackson/databind/deser/impl/ExternalTypeHandler.java:-1:INSERT

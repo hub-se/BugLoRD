@@ -1,0 +1,6 @@
+com/fasterxml/jackson/databind/JavaType.java:-1:INSERT
+com/fasterxml/jackson/databind/ser/BeanSerializerFactory.java:163:CHANGE
+com/fasterxml/jackson/databind/ser/std/StdDelegatingSerializer.java:126,127,161,172:CHANGE
+com/fasterxml/jackson/databind/ser/std/StdDelegatingSerializer.java:121,122,180,187,224,225,-1:INSERT
+com/fasterxml/jackson/databind/ser/std/BeanSerializerBase.java:370:CHANGE
+com/fasterxml/jackson/databind/ser/std/StdSerializer.java:262:CHANGE

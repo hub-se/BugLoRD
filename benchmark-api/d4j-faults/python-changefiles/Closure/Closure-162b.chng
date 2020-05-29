@@ -1,0 +1,4 @@
+com/google/javascript/jscomp/Scope.java:-1:INSERT
+com/google/javascript/jscomp/ScopedAliases.java:307,308,309,310,311,312,313,322,342:CHANGE
+com/google/javascript/jscomp/ScopedAliases.java:315,316,317,325,326,327,328,343,344,345,346,355:DELETE
+com/google/javascript/jscomp/ScopedAliases.java:226,-1,306:INSERT

@@ -1,0 +1,6 @@
+org/jsoup/nodes/Attributes.java:118:CHANGE
+org/jsoup/nodes/Attributes.java:-1,123,-1,-1:INSERT
+org/jsoup/parser/Token.java:116:CHANGE
+org/jsoup/parser/XmlTreeBuilder.java:79:INSERT
+org/jsoup/parser/HtmlTreeBuilder.java:202:INSERT
+org/jsoup/parser/ParseSettings.java:-1:INSERT

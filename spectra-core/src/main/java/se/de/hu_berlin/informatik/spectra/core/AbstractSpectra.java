@@ -119,15 +119,19 @@ public abstract class AbstractSpectra<T, K extends ITrace<T>> implements Cloneab
     @Override
     public INode<T> getOrCreateNode(final T identifier) {
         if (!nodesByIdentifier.containsKey(identifier)) {
-            int index = currentIndex.incrementAndGet();
-            Node<T> node = new Node<>(index, identifier, this);
-            nodesByIndex.put(index, node);
-            nodesByIdentifier.put(identifier, node);
-            return node;
+            return getNewNode(identifier);
         } else {
             return nodesByIdentifier.get(identifier);
         }
     }
+
+	private INode<T> getNewNode(final T identifier) {
+		int index = currentIndex.incrementAndGet();
+		Node<T> node = new Node<>(index, identifier, this);
+		nodesByIndex.put(index, node);
+		nodesByIdentifier.put(identifier, node);
+		return node;
+	}
 
     /**
      * {@inheritDoc}

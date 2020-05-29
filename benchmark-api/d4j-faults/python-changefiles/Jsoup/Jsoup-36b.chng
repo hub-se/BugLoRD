@@ -1,0 +1,2 @@
+org/jsoup/helper/DataUtil.java:19:CHANGE
+org/jsoup/helper/DataUtil.java:-1,87,92,161,165:INSERT

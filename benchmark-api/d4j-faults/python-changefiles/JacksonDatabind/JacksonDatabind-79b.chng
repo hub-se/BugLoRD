@@ -1,0 +1,5 @@
+com/fasterxml/jackson/databind/introspect/ObjectIdInfo.java:-1,-1:INSERT
+com/fasterxml/jackson/databind/ser/std/BeanSerializerBase.java:432,433:CHANGE
+com/fasterxml/jackson/databind/ser/std/BeanSerializerBase.java:434,435:INSERT
+com/fasterxml/jackson/databind/introspect/JacksonAnnotationIntrospector.java:579,580,582:CHANGE
+com/fasterxml/jackson/databind/introspect/JacksonAnnotationIntrospector.java:582:INSERT

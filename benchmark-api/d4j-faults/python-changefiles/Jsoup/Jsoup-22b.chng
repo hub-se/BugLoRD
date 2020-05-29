@@ -1,0 +1,5 @@
+org/jsoup/nodes/Node.java:445:CHANGE
+org/jsoup/nodes/Node.java:445,471:INSERT
+org/jsoup/nodes/Element.java:435:CHANGE
+org/jsoup/nodes/Element.java:435,447,462:INSERT
+org/jsoup/select/Elements.java:-1:INSERT

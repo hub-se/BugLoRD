@@ -1,0 +1,8 @@
+com/google/javascript/rhino/jstype/FunctionType.java:792,890,908,909,918:CHANGE
+com/google/javascript/rhino/jstype/RecordType.java:118,126,204,205:CHANGE
+com/google/javascript/rhino/jstype/RecordType.java:268,282:DELETE
+com/google/javascript/rhino/jstype/JSType.java:492,500,514,520,528,545,550,555,565,566,570,571,572,573,580,592,598:CHANGE
+com/google/javascript/rhino/jstype/JSType.java:528:INSERT
+com/google/javascript/rhino/jstype/ArrowType.java:177,187,204,206,209:CHANGE
+com/google/javascript/rhino/jstype/EquivalenceMethod.java:-1:INSERT
+com/google/javascript/rhino/jstype/UnionType.java:334,335,340,347,349:CHANGE

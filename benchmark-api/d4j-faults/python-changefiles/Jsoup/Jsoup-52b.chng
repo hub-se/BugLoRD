@@ -1,0 +1,4 @@
+org/jsoup/parser/XmlTreeBuilder.java:76,77:CHANGE
+org/jsoup/parser/XmlTreeBuilder.java:-1:INSERT
+org/jsoup/nodes/XmlDeclaration.java:46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,68:CHANGE
+org/jsoup/helper/DataUtil.java:112,113,115,116,117,118:DELETE

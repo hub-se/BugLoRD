@@ -1,0 +1,5 @@
+com/google/javascript/jscomp/RenamePrototypes.java:336,377:CHANGE
+com/google/javascript/jscomp/CodeGenerator.java:343,656,657,658,659,660,661,662,663,664,665,666,667:CHANGE
+com/google/javascript/jscomp/CodeGenerator.java:350,351,656,-1,-1:INSERT
+com/google/javascript/jscomp/parsing/IRFactory.java:349,350,351,353:DELETE
+com/google/javascript/jscomp/parsing/IRFactory.java:-1,-1,347,355:INSERT

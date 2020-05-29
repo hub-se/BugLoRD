@@ -1,7 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.core.branch;
 
 
-import org.junit.Test;
 import se.de.hu_berlin.informatik.spectra.core.*;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
@@ -11,9 +10,9 @@ import se.de.hu_berlin.informatik.spectra.util.CachedIntArrayMap;
 import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.tracking.ProgressTracker;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -26,35 +25,35 @@ import java.util.*;
  */
 public class StatementSpectraToBranchSpectra {
 
-    /*====================================================================================
-     * TEST
-     *====================================================================================*/
-
-    @Test
-    public void foo() {
-
-        //assert(false); //uncomment to check if asserts are enabled
-
-        final String traceLocations = "../../resources/spectraTraces";
-        Path path = Paths.get(traceLocations, "Lang-10b.zip");
-        ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>>
-                statementSpectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, path);
-
-        @SuppressWarnings("unused")
-        ProgramBranchSpectra branchingSpectra = generateBranchingSpectraFromStatementSpectra(statementSpectra, "");
-
-        HashSet<Integer> executionBranchIds = new HashSet<Integer>();
-        Collection<Integer> branchIds = new ArrayList<>();
-
-        for (ITrace<SourceCodeBlock> testCaseTrace : statementSpectra.getTraces()) {
-            for (ExecutionTrace executionTrace : testCaseTrace.getExecutionTraces()) {
-                collectExecutionBranchIds(executionBranchIds, executionTrace, statementSpectra);
-            }
-            assert (branchesAreExactlyCoveredByThisTestCase(testCaseTrace, branchIds, statementSpectra));
-            branchIds.clear();
-        }
-
-    }
+//    /*====================================================================================
+//     * TEST
+//     *====================================================================================*/
+//
+//    @Test
+//    public void foo() {
+//
+//        //assert(false); //uncomment to check if asserts are enabled
+//
+//        final String traceLocations = "../../resources/spectraTraces";
+//        Path path = Paths.get(traceLocations, "Lang-10b.zip");
+//        ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>>
+//                statementSpectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, path);
+//
+//        @SuppressWarnings("unused")
+//        ProgramBranchSpectra branchingSpectra = generateBranchingSpectraFromStatementSpectra(statementSpectra, "");
+//
+//        HashSet<Integer> executionBranchIds = new HashSet<Integer>();
+//        Collection<Integer> branchIds = new ArrayList<>();
+//
+//        for (ITrace<SourceCodeBlock> testCaseTrace : statementSpectra.getTraces()) {
+//            for (ExecutionTrace executionTrace : testCaseTrace.getExecutionTraces()) {
+//                collectExecutionBranchIds(executionBranchIds, executionTrace, statementSpectra);
+//            }
+//            assert (branchesAreExactlyCoveredByThisTestCase(testCaseTrace, branchIds, statementSpectra));
+//            branchIds.clear();
+//        }
+//
+//    }
 
     /*====================================================================================
      * MAIN FUNCTIONALITY
@@ -72,7 +71,7 @@ public class StatementSpectraToBranchSpectra {
 
         // spectra file path should actually be null here, since it's a new spectra that isn't loaded from a zip file
         ProgramBranchSpectra programBranchSpectra = new ProgramBranchSpectra(pathToSpectraZipFile == null ? null : Paths.get(pathToSpectraZipFile));
-        Map<Integer, INode<ProgramBranch>> branchIdMap = new HashMap<>();
+//        Map<Integer, INode<ProgramBranch>> branchIdMap = new HashMap<>();
         INode<ProgramBranch> branchNode;
         ProgramBranch programBranch;
 
@@ -104,9 +103,9 @@ public class StatementSpectraToBranchSpectra {
          *  id 0 is reserved for the empty branch (which should not exist)
          */
         for (int executionBranchId = 0; executionBranchId < subTraceIdSequences.size(); ++executionBranchId) {
-            programBranch = new ProgramBranch(getExecutedStatementsFromBranch(executionBranchId, statementSpectra));
+            programBranch = new ProgramBranch(executionBranchId, getExecutedStatementsFromBranch(executionBranchId, statementSpectra));
             branchNode = programBranchSpectra.getOrCreateNode(programBranch);
-            branchIdMap.put(executionBranchId, branchNode);
+//            branchIdMap.put(executionBranchId, branchNode);
 
             // indices should match here!
             assert (executionBranchId == branchNode.getIndex());
@@ -121,12 +120,12 @@ public class StatementSpectraToBranchSpectra {
         // add statements to the new spectra that have not been executed by any test case...
         for (INode<SourceCodeBlock> node : statementSpectra.getNodes()) {
             if (!executedStatements.contains(node.getIdentifier())) {
-                branchNode = programBranchSpectra.getOrCreateNode(new ProgramBranch(node.getIdentifier()));
-                branchIdMap.put(++maxID, branchNode);
+                branchNode = programBranchSpectra.getOrCreateNode(new ProgramBranch(++maxID, node.getIdentifier()));
+//                branchIdMap.put(maxID, branchNode);
             }
         }
 
-        programBranchSpectra.setBranchIdMap(branchIdMap);
+//        programBranchSpectra.setBranchIdMap(branchIdMap);
 
         // in the statement level spectra, branch IDs were mapped to the sequence of node IDs in the respective branch;
         // now we can map the branch IDs to the IDs of the branch...
@@ -146,26 +145,29 @@ public class StatementSpectraToBranchSpectra {
 
         ProgressTracker tracker = new ProgressTracker(false);
 
-        /* the branchingSpectra has the same traces as the statementSpectra
-         *  --> copy every trace, but set the involvement for each trace according to which branches
+        /* the branchingSpectra has the same tests as the statementSpectra
+         *  --> copy every test, but set the involvement for each test according to which branches
          *  they cover
-         *  (in the statement spectra the traces only know which statements they cover)
+         *  (in the statement spectra, the tests only know which statements they cover)
          */
         for (ITrace<SourceCodeBlock> testCase : statementSpectra.getTraces()) {
-
+        	// give some visual progress information
+            tracker.track(String.format("test: %s", testCase.getIdentifier()));
             ITrace<ProgramBranch> newTrace = programBranchSpectra.
                     addTrace(testCase.getIdentifier(), testCase.getIndex(), testCase.isSuccessful());
 
             for (ExecutionTrace executionTrace : testCase.getExecutionTraces()) {
-                // give some visual progress information
-                tracker.track(String.format("size: %,20d", executionTrace.getTraceByteArray().length / 4));
+                
                 HashSet<Integer> executionBranchIds = new HashSet<>();
                 collectExecutionBranchIds(executionBranchIds, executionTrace, statementSpectra);
                 for (Integer executionBranchId : executionBranchIds) {
 
-                    branchNode = programBranchSpectra.getBranchNode(executionBranchId);
+                    branchNode = programBranchSpectra.getNode(executionBranchId);
                     if (branchNode != null) {
                         newTrace.setInvolvement(branchNode, true);
+                    } else {
+                    	// this should not happen!
+                    	throw new IllegalStateException("Node not found! id: " + executionBranchId);
                     }
                 }
 
@@ -302,7 +304,9 @@ public class StatementSpectraToBranchSpectra {
         Iterator<Integer> sequenceIterator = statementSpectra.getIndexer().getSubTraceIdSequenceIterator(branchId);
         while (sequenceIterator.hasNext()) {
             // iterate over all statements in the sub trace
-            Iterator<Integer> statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(sequenceIterator.next());
+            Integer subTraceId = sequenceIterator.next();
+//            statementIndices.add(subTraceId);
+			Iterator<Integer> statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
             while (statementIndicesIterator.hasNext()) {
                 statementIndices.add(statementIndicesIterator.next());
             }
@@ -313,6 +317,7 @@ public class StatementSpectraToBranchSpectra {
         assert (isExecutedListOfStatementIndicesForThisBranch(branchId, statementIndices, statementSpectra));
         /*====================================================================================*/
 
+//        Log.err(null, branchId + ": " + Misc.listToString(statementIndices));
         return statementIndices;
 
     }
@@ -321,61 +326,61 @@ public class StatementSpectraToBranchSpectra {
      * CHECKS
      *====================================================================================*/
 
-    private static boolean isBranchingSpectraOfStatementSpectra(ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra, ISpectra<Integer, ? extends ITrace<Integer>> branchingSpectra) {
-        return true;
-    }
+//    private static boolean isBranchingSpectraOfStatementSpectra(ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra, ISpectra<Integer, ? extends ITrace<Integer>> branchingSpectra) {
+//        return true;
+//    }
 
-    /**
-     * Exactly means not less and not more statements are covered
-     *
-     * @param testCase
-     * @param statementIndices
-     * @return
-     */
-    private static boolean statementsAreExactlyCoveredByThisTestCase(ITrace<SourceCodeBlock> testCase, Collection<Integer> statementIndices) {
+//    /**
+//     * Exactly means not less and not more statements are covered
+//     *
+//     * @param testCase
+//     * @param statementIndices
+//     * @return
+//     */
+//    private static boolean statementsAreExactlyCoveredByThisTestCase(ITrace<SourceCodeBlock> testCase, Collection<Integer> statementIndices) {
+//
+//        boolean result = false;
+//
+//        Collection<Integer> testCaseInvolvedStatementIndices = testCase.getInvolvedNodes();
+//
+//        boolean isSubset = testCaseInvolvedStatementIndices.containsAll(statementIndices);
+//        boolean isSuperset = statementIndices.containsAll(testCaseInvolvedStatementIndices);
+//
+//        System.out.println("---------------------");
+//        System.out.println(testCaseInvolvedStatementIndices);
+//        System.out.println(statementIndices);
+//        System.out.println(testCaseInvolvedStatementIndices.size() - statementIndices.size());
+//        System.out.println("---------------------");
+//
+//        result = isSubset && isSuperset;
+//
+//        return result;
+//
+//    }
 
-        boolean result = false;
-
-        Collection<Integer> testCaseInvolvedStatementIndices = testCase.getInvolvedNodes();
-
-        boolean isSubset = testCaseInvolvedStatementIndices.containsAll(statementIndices);
-        boolean isSuperset = statementIndices.containsAll(testCaseInvolvedStatementIndices);
-
-        System.out.println("---------------------");
-        System.out.println(testCaseInvolvedStatementIndices);
-        System.out.println(statementIndices);
-        System.out.println(testCaseInvolvedStatementIndices.size() - statementIndices.size());
-        System.out.println("---------------------");
-
-        result = isSubset && isSuperset;
-
-        return result;
-
-    }
-
-    /**
-     * Exactly means not less and not more is covered
-     *
-     * @param testCase
-     * @param branchIds
-     * @param spectra
-     * @return
-     */
-    private static boolean branchesAreExactlyCoveredByThisTestCase(ITrace<SourceCodeBlock> testCase, Collection<Integer> branchIds, ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> spectra) {
-
-        boolean result = false;
-
-        HashSet<Integer> statementIndicesFromBranches = new HashSet<>();
-
-        for (Integer branchId : branchIds) {
-            statementIndicesFromBranches.addAll(getStatementIndicesFromBranch(branchId, spectra));
-        }
-
-        result = statementsAreExactlyCoveredByThisTestCase(testCase, statementIndicesFromBranches);
-
-        return result;
-
-    }
+//    /**
+//     * Exactly means not less and not more is covered
+//     *
+//     * @param testCase
+//     * @param branchIds
+//     * @param spectra
+//     * @return
+//     */
+//    private static boolean branchesAreExactlyCoveredByThisTestCase(ITrace<SourceCodeBlock> testCase, Collection<Integer> branchIds, ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> spectra) {
+//
+//        boolean result = false;
+//
+//        HashSet<Integer> statementIndicesFromBranches = new HashSet<>();
+//
+//        for (Integer branchId : branchIds) {
+//            statementIndicesFromBranches.addAll(getStatementIndicesFromBranch(branchId, spectra));
+//        }
+//
+//        result = statementsAreExactlyCoveredByThisTestCase(testCase, statementIndicesFromBranches);
+//
+//        return result;
+//
+//    }
 
     /**
      * Check if the branchId yields a list of executed statements equal to the list of statements we get from the provided statement indices.
@@ -389,16 +394,24 @@ public class StatementSpectraToBranchSpectra {
 
         boolean result = false;
 
-        Iterator<Integer> _statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(branchId);
+        Iterator<Integer> _branchIndicesIterator = statementSpectra.getIndexer().getSubTraceIdSequenceIterator(branchId);
 
         List<Integer> _statementIndices = new ArrayList<Integer>();
 
-        while (_statementIndicesIterator.hasNext()) {
-            _statementIndices.add(_statementIndicesIterator.next());
+        while (_branchIndicesIterator.hasNext()) {
+        	Integer subTraceId = _branchIndicesIterator.next();
+//        	_statementIndices.add(subTraceId);
+        	Iterator<Integer> _statementIndicesIterator = statementSpectra.getIndexer().getNodeIdSequenceIterator(subTraceId);
+        	while (_statementIndicesIterator.hasNext()) {
+        		_statementIndices.add(_statementIndicesIterator.next());
+        	}
         }
 
         result = _statementIndices.equals(statementIndices);
 
+        if (!result) {
+        	Log.err(null, Misc.listToString(_statementIndices) + Misc.listToString(statementIndices));
+        }
         return result;
 
     }

@@ -1,0 +1,4 @@
+com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java:2672,2673:CHANGE
+com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java:622,773,851:DELETE
+com/fasterxml/jackson/core/json/ReaderBasedJsonParser.java:630,638+640,776,780,853,857,862,918,967,2671:INSERT
+com/fasterxml/jackson/core/json/UTF8StreamJsonParser.java:3622:CHANGE

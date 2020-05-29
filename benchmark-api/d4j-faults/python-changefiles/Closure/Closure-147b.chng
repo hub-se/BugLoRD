@@ -1,0 +1,2 @@
+com/google/javascript/jscomp/CheckGlobalThis.java:108:CHANGE
+com/google/javascript/jscomp/RuntimeTypeCheck.java:248:INSERT

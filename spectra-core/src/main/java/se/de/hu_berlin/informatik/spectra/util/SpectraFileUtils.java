@@ -465,12 +465,12 @@ public class SpectraFileUtils {
 //							}
 //						}
 
-                        Log.out(SpectraFileUtils.class, "Storing %s indexed node ID sequences...", indexer.getNodeIdSequences().size() - 1);
+                        Log.out(SpectraFileUtils.class, "Storing %s sub traces...", indexer.getNodeIdSequences().size() - 1);
                         // store the referenced sequence parts
                         indexer.getNodeIdSequences().moveMapContentsTo(outputFile);
 
                         if (indexer.getSubTraceIdSequences() != null) {
-                            Log.out(SpectraFileUtils.class, "Storing %s indexed sub trace ID sequences...", indexer.getSubTraceIdSequences().size() - 1);
+                            Log.out(SpectraFileUtils.class, "Storing %s sub trace ID sequences...", indexer.getSubTraceIdSequences().size() - 1);
                             // store the referenced sequence parts
                             indexer.getSubTraceIdSequences().moveMapContentsTo(outputFile);
                         }
@@ -1055,7 +1055,7 @@ public class SpectraFileUtils {
         if (map.isEmpty()) {
             return null;
         }
-        Log.out(SpectraFileUtils.class, "Loaded %d sub trace sequences from zip file!", map.size() - 1);
+        Log.out(SpectraFileUtils.class, "Loaded %d sub trace ID sequences from zip file!", map.size() - 1);
         return map;
     }
 

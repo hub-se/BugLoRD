@@ -1,0 +1,2 @@
+com/fasterxml/jackson/databind/introspect/JacksonAnnotationIntrospector.java:1119,1135,1151:CHANGE
+com/fasterxml/jackson/databind/introspect/JacksonAnnotationIntrospector.java:766,769,799,802,833,836,-1,-1:INSERT

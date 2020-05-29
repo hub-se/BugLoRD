@@ -1,0 +1,4 @@
+org/jsoup/safety/Cleaner.java:78:CHANGE
+org/jsoup/safety/Cleaner.java:-1,-1:INSERT
+org/jsoup/Jsoup.java:250:CHANGE
+org/jsoup/parser/Parser.java:-1:INSERT

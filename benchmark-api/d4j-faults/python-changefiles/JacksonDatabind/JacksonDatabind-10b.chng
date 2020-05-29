@@ -1,0 +1,4 @@
+com/fasterxml/jackson/databind/ser/AnyGetterWriter.java:29,82:CHANGE
+com/fasterxml/jackson/databind/ser/AnyGetterWriter.java:-1,33,34,52,75:INSERT
+com/fasterxml/jackson/databind/ser/BeanSerializerFactory.java:395:CHANGE
+com/fasterxml/jackson/databind/ser/BeanSerializerFactory.java:398:INSERT

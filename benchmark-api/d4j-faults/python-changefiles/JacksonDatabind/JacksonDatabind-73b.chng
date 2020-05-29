@@ -1,0 +1,4 @@
+com/fasterxml/jackson/databind/introspect/POJOPropertiesCollector.java:731:CHANGE
+com/fasterxml/jackson/databind/introspect/POJOPropertiesCollector.java:-1,732:INSERT
+com/fasterxml/jackson/databind/introspect/POJOPropertyBuilder.java:644:CHANGE
+com/fasterxml/jackson/databind/introspect/POJOPropertyBuilder.java:683:INSERT

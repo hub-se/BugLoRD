@@ -1,0 +1,2 @@
+com/fasterxml/jackson/core/util/JsonParserSequence.java:104,107,108,109,110,112:CHANGE
+com/fasterxml/jackson/core/util/JsonParserSequence.java:-1,45+46+47,106:INSERT

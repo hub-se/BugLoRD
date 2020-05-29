@@ -1,0 +1,3 @@
+org/jsoup/nodes/PseudoTextElement.java:-1:INSERT
+org/jsoup/select/Evaluator.java:-1,-1:INSERT
+org/jsoup/select/QueryParser.java:204,206:INSERT

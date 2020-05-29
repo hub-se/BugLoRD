@@ -1,0 +1,7 @@
+org/apache/commons/codec/language/bm/Lang.java:98,102:CHANGE
+src/main/resources/org/apache/commons/codec/language/bm/gen_lang.txt:-1:INSERT
+org/apache/commons/codec/language/bm/PhoneticEngine.java:338,361,364:CHANGE
+org/apache/commons/codec/language/bm/PhoneticEngine.java:-1:INSERT
+org/apache/commons/codec/language/bm/Rule.java:-1:INSERT
+src/main/resources/org/apache/commons/codec/language/bm/ash_lang.txt:-1:INSERT
+src/main/resources/org/apache/commons/codec/language/bm/sep_lang.txt:-1:INSERT

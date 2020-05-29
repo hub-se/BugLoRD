@@ -1,0 +1,5 @@
+com/google/javascript/jscomp/FunctionTypeBuilder.java:200,201,202,203,496:CHANGE
+com/google/javascript/jscomp/FunctionTypeBuilder.java:-1,-1:INSERT
+com/google/javascript/rhino/jstype/FunctionType.java:517:CHANGE
+com/google/javascript/jscomp/TypedScopeCreator.java:578,617,634:INSERT
+com/google/javascript/rhino/jstype/FunctionBuilder.java:-1:INSERT

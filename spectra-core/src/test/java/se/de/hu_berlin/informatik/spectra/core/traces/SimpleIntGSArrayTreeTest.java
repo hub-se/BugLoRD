@@ -78,8 +78,11 @@ public class SimpleIntGSArrayTreeTest {
         Assert.assertEquals(startIndex+10, tree.addSequence(idGen, new int[]{s(1), s(2), s(11), s(33)}));
         Assert.assertEquals(startIndex+5, tree.addSequence(idGen, new int[]{s(1), s(2), s(11), s(7)}));
         Assert.assertEquals(startIndex+6, tree.addSequence(idGen, new int[]{s(1), s(2), s(10), s(7)}));
+        
+        Assert.assertEquals(startIndex+11, tree.addSequence(idGen, new int[]{s(1), s(1)}));
+        Assert.assertEquals(startIndex+11, tree.addSequence(idGen, new int[]{s(1), s(1)}));
 
-        Assert.assertEquals(11, tree.getNumberOfSequences());
+        Assert.assertEquals(12, tree.getNumberOfSequences());
         
         System.out.print(tree);
         System.out.println();

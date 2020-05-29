@@ -1,0 +1,2 @@
+com/fasterxml/jackson/dataformat/xml/deser/XmlTokenStream.java:325:CHANGE
+com/fasterxml/jackson/dataformat/xml/deser/XmlTokenStream.java:-1,325,326,327,330+331,333,341,-1:INSERT

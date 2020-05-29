@@ -1,0 +1,6 @@
+org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java:296,297,301,638,639,643,647,660:CHANGE
+org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java:653,654,655,656,658:DELETE
+org/apache/commons/jxpath/ri/model/dom/DOMNodePointer.java:-1,632,641:INSERT
+org/apache/commons/jxpath/ri/model/jdom/JDOMNodePointer.java:240,250,256,257,258,259,260,262:CHANGE
+org/apache/commons/jxpath/ri/model/jdom/JDOMNodePointer.java:252,253,254:DELETE
+org/apache/commons/jxpath/ri/model/jdom/JDOMNodePointer.java:249:INSERT

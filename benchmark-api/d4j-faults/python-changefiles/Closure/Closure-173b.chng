@@ -1,0 +1,3 @@
+com/google/javascript/jscomp/PeepholeSubstituteAlternateSyntax.java:69+73+90+93+96+99+103,-1:INSERT
+com/google/javascript/jscomp/CodeGenerator.java:135:CHANGE
+com/google/javascript/jscomp/CodeGenerator.java:130,131,132,133,134:DELETE

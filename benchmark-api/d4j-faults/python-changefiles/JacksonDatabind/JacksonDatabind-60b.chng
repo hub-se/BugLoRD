@@ -1,0 +1,2 @@
+com/fasterxml/jackson/databind/ser/std/JsonValueSerializer.java:226:CHANGE
+com/fasterxml/jackson/databind/ser/std/JsonValueSerializer.java:-1,-1,-1:INSERT

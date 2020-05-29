@@ -1,0 +1,17 @@
+com/fasterxml/jackson/databind/deser/BasicDeserializerFactory.java:1589:CHANGE
+com/fasterxml/jackson/databind/deser/DeserializerCache.java:268:CHANGE
+com/fasterxml/jackson/databind/util/ClassUtil.java:-1,-1:INSERT
+com/fasterxml/jackson/databind/JsonMappingException.java:339,380:CHANGE
+com/fasterxml/jackson/databind/JsonMappingException.java:-1:INSERT
+com/fasterxml/jackson/databind/ser/PropertyBuilder.java:103,105:CHANGE
+com/fasterxml/jackson/databind/deser/SettableBeanProperty.java:590,611:CHANGE
+com/fasterxml/jackson/databind/deser/BeanDeserializerFactory.java:222,281:CHANGE
+com/fasterxml/jackson/databind/introspect/BasicBeanDescription.java:364:CHANGE
+com/fasterxml/jackson/databind/SerializerProvider.java:1341,1361:CHANGE
+com/fasterxml/jackson/databind/deser/std/StdValueInstantiator.java:456:CHANGE
+com/fasterxml/jackson/databind/deser/std/StdKeyDeserializer.java:135,262:CHANGE
+com/fasterxml/jackson/databind/DatabindContext.java:195:CHANGE
+com/fasterxml/jackson/databind/deser/std/StdDeserializer.java:526:CHANGE
+com/fasterxml/jackson/databind/DeserializationContext.java:714,1603:CHANGE
+com/fasterxml/jackson/databind/deser/SettableAnyProperty.java:202,214:CHANGE
+com/fasterxml/jackson/databind/ser/DefaultSerializerProvider.java:171,505:CHANGE

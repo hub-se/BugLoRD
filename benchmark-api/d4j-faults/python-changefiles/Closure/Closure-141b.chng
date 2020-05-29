@@ -1,0 +1,3 @@
+com/google/javascript/jscomp/NodeUtil.java:586+592+598+604:INSERT
+com/google/javascript/jscomp/PureFunctionIdentifier.java:179,180,181:DELETE
+com/google/javascript/jscomp/PureFunctionIdentifier.java:177,198:INSERT

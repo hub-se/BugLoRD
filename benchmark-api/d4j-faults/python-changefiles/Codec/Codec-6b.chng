@@ -1,0 +1,2 @@
+org/apache/commons/codec/binary/Base64InputStream.java:178:CHANGE
+org/apache/commons/codec/binary/Base64InputStream.java:164,178:INSERT

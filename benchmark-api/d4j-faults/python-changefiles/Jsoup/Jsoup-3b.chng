@@ -1,0 +1,5 @@
+org/jsoup/parser/Tag.java:156,157,158,159,160,161,162,163,164,165,166,224,225,288,289,295,300,301,307,308,309,310,311,312,313,314,315:CHANGE
+org/jsoup/parser/Tag.java:-1,100,-1,-1:INSERT
+org/jsoup/nodes/Element.java:270,287,314:CHANGE
+org/jsoup/parser/Parser.java:224,258:CHANGE
+org/jsoup/parser/Parser.java:-1,-1,255:INSERT

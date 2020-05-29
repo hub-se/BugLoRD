@@ -1,0 +1,5 @@
+com/fasterxml/jackson/core/json/UTF8JsonGenerator.java:910,911:CHANGE
+com/fasterxml/jackson/core/json/UTF8JsonGenerator.java:912,913:DELETE
+com/fasterxml/jackson/core/base/GeneratorBase.java:-1,435:INSERT
+com/fasterxml/jackson/core/json/WriterBasedJsonGenerator.java:687,688:CHANGE
+com/fasterxml/jackson/core/json/WriterBasedJsonGenerator.java:689,690:DELETE

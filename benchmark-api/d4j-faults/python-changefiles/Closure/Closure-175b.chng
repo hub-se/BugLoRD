@@ -1,0 +1,3 @@
+com/google/javascript/jscomp/FunctionInjector.java:208,690,715,716,717,718,719,720,721,722,723,724,725,726,728,729,731,732,733,734:CHANGE
+com/google/javascript/jscomp/FunctionInjector.java:695:DELETE
+com/google/javascript/jscomp/FunctionInjector.java:-1:INSERT
