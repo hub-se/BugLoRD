@@ -12,12 +12,8 @@ package se.de.hu_berlin.informatik.spectra.core.count;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
-import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.BufferedMap;
-import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents a single execution trace and its success state.
@@ -29,16 +25,16 @@ public class CountTrace<T> extends HitTrace<T> {
     /**
      * a map that contains the hit counts of the different nodes
      */
-    private final BufferedMap<Integer> hitCountMap;
+    private final Map<Integer,Integer> hitCountMap;
 
-    private static File tmpOutputDir = null;
-
-    private static File getTmpDir(Path alternatePath) {
-        if (tmpOutputDir == null) {
-            tmpOutputDir = SpectraFileUtils.getTemporaryOutputDir("hitCount_tmp", alternatePath);
-        }
-        return tmpOutputDir;
-    }
+//    private static File tmpOutputDir = null;
+//
+//    private static File getTmpDir(Path alternatePath) {
+//        if (tmpOutputDir == null) {
+//            tmpOutputDir = SpectraFileUtils.getTemporaryOutputDir("hitCount_tmp", alternatePath);
+//        }
+//        return tmpOutputDir;
+//    }
 
     /**
      * Create a trace for a spectra.
@@ -51,11 +47,12 @@ public class CountTrace<T> extends HitTrace<T> {
     protected CountTrace(final ISpectra<T, ?> spectra, final String identifier,
                          final int traceIndex, final boolean successful) {
         super(spectra, identifier, traceIndex, successful);
-        File outputDir = getTmpDir(spectra.getPathToSpectraZipFile() == null ? null :
-                spectra.getPathToSpectraZipFile().getParent().resolve("execTraceTemp").toAbsolutePath());
-
-        this.hitCountMap = new BufferedMap<>(outputDir,
-                "hitCount-" + UUID.randomUUID().toString(), 500000, true);
+//        File outputDir = getTmpDir(spectra.getPathToSpectraZipFile() == null ? null :
+//                spectra.getPathToSpectraZipFile().getParent().resolve("execTraceTemp").toAbsolutePath());
+//
+//        this.hitCountMap = new BufferedMap<>(outputDir,
+//                "hitCount-" + UUID.randomUUID().toString(), 500000, true);
+        this.hitCountMap = new HashMap<>();
     }
 
     public void setHits(T identifier, long numberOfHits) {
@@ -142,7 +139,7 @@ public class CountTrace<T> extends HitTrace<T> {
     @Override
     public void sleep() {
         super.sleep();
-        hitCountMap.sleep();
+//        hitCountMap.sleep();
     }
 
 }

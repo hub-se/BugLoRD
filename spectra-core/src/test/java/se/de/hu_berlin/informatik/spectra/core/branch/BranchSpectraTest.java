@@ -95,11 +95,7 @@ public class BranchSpectraTest extends TestSettings {
         assertTrue(output3.toFile().length() > output2.toFile().length());
     }
     
-    /**
-     * Test method for {@link se.de.hu_berlin.informatik.spectra.core.traces.GSTree#addSequence(int[])}.
-     * @throws IOException 
-     */
-    @Test
+//    @Test
     public void testBranchSpectraGeneration() throws IOException {
     	//assert(false); //uncomment to check if asserts are enabled
 
