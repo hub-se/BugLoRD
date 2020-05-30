@@ -6,6 +6,8 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
@@ -99,6 +101,10 @@ public class SpectraFileUtils {
     public static final String SUB_TRACE_ID_SEQUENCES_DIR = "subTraceSeqs";
     public static final String SUB_TRACE_ID_SEQUENCE_TREES_DIR = "subTraceTreeSeqs";
 
+	public static final String STATEMENT_MAP_DIR = "statements";
+	public static final String BRANCH_NODE_ID_SEQUENCES_DIR = "branchNodeSeqs";
+	public static final String BRANCH_SUB_TRACE_ID_SEQUENCES_DIR = "branchSubTraceSeqs";
+
     // suppress default constructor (class should not be instantiated)
     private SpectraFileUtils() {
         throw new AssertionError();
@@ -181,6 +187,11 @@ public class SpectraFileUtils {
     public static <T> void saveSpectraToZipFile(ISpectra<T, ?> spectra, Path output,
                                                 boolean compress, boolean sparse, boolean index) {
 
+    	if (output.toFile().exists()) {
+    		Log.abort(SpectraFileUtils.class, "File '%s' already exists.", output);
+    		
+    	}
+    	
         // check if identifier can be indexed
         T identifier = null;
         Iterator<INode<T>> iterator = spectra.getNodes().iterator();
@@ -243,7 +254,7 @@ public class SpectraFileUtils {
     private static <T, K extends ITrace<T>> void saveSpectraToZipFile(ISpectra<T, K> spectra, Path output,
                                                                       boolean compress, boolean sparse, boolean index, Collection<INode<T>> nodes, Map<String, Integer> map,
                                                                       String nodeIdentifiers, String traceIdentifiers) {
-
+    	// should not exist, anyway...
         FileUtils.delete(output);
 
         // create a map that maps node IDs to storing IDs 
@@ -288,7 +299,35 @@ public class SpectraFileUtils {
 
             module.submit(new Pair<>(INDEX_FILE_NAME, identifierBuilder.toString().getBytes()));
         }
+        
+        saveExecutionTraces(spectra, nodeIndexToStoreIdMap, output);
+        
+        if (spectra instanceof ProgramBranchSpectra) {
+        	saveAdditionalDataForBranchSpectra(output, (ProgramBranchSpectra<?>) spectra);
+        }
     }
+
+	private static void saveAdditionalDataForBranchSpectra(Path output, ProgramBranchSpectra<?> branchSpectra) {
+		try {
+			Log.out(SpectraFileUtils.class, "Branch spectra: Storing %s statement identifiers...", branchSpectra.getStatementMap().size() - 1);
+			// store the referenced sequence parts
+			branchSpectra.getStatementMap().moveMapContentsTo(output);
+
+			Log.out(SpectraFileUtils.class, "Branch spectra: Storing %s sub traces...", branchSpectra.getNodeSequenceMap().size() - 1);
+			// store the referenced sequence parts
+			branchSpectra.getNodeSequenceMap().moveMapContentsTo(output);
+
+			if (branchSpectra.getSubTraceSequenceMap() != null) {
+				Log.out(SpectraFileUtils.class, "Branch spectra: Storing %s sub trace ID sequences...", branchSpectra.getSubTraceSequenceMap().size() - 1);
+				// store the referenced sequence parts
+				branchSpectra.getSubTraceSequenceMap().moveMapContentsTo(output);
+			}
+		} catch (Throwable e) {
+			// anything bad happened?
+			FileUtils.delete(output);
+			throw e;
+		}
+	}
 
     private static <T> void saveInvolvementArray(ISpectra<T, ?> spectra, Collection<INode<T>> nodes, boolean sparse,
                                                  boolean compress, boolean index, byte[] status,
@@ -376,7 +415,6 @@ public class SpectraFileUtils {
             }
         }
 
-        saveExecutionTraces(spectra, nodeIndexToStoreIdMap, outputFile);
     }
 
     private static class TraceFileNameSupplier implements Supplier<String> {
@@ -544,7 +582,7 @@ public class SpectraFileUtils {
             status[0] = STATUS_COMPRESSED_COUNT;
         }
 
-        saveExecutionTraces(spectra, nodeIndexToStoreIdMap, outputFile);
+        
     }
 
 
@@ -567,9 +605,7 @@ public class SpectraFileUtils {
 
         byte[] status = getStatusByte(zip);
 
-        List<T> lineArray = getNodeIdentifiersFromZipFile(dummy, zip, status);
-
-        return loadSpectraFromZipFile(zip, status, lineArray);
+        return loadSpectraFromZipFile(zip, status, dummy);
     }
 
     public static CountSpectra<SourceCodeBlock> loadBlockCountSpectraFromZipFile(Path zipFilePath) {
@@ -591,9 +627,7 @@ public class SpectraFileUtils {
 
         byte[] status = getStatusByte(zip);
 
-        List<T> lineArray = getNodeIdentifiersFromZipFile(dummy, zip, status);
-
-        return loadCountSpectraFromZipFile(zip, status, lineArray);
+        return loadCountSpectraFromZipFile(zip, status, dummy);
     }
 
     private static byte[] getStatusByte(ZipFileWrapper zip) {
@@ -609,22 +643,22 @@ public class SpectraFileUtils {
         return status;
     }
 
-    private static <T> ISpectra<T, ?> loadSpectraFromZipFile(ZipFileWrapper zip, byte[] status, List<T> lineArray) {
-        return loadWithSpectraTypes(zip, status, lineArray,
-                () -> new HitSpectra<>(zip.getzipFilePath()),
+    private static <T extends Indexable<T>> ISpectra<T, ?> loadSpectraFromZipFile(ZipFileWrapper zip, byte[] status, T dummy) {
+        return loadWithSpectraTypes(zip, status, dummy,
+                dummy instanceof ProgramBranch ?  () -> new ProgramBranchSpectra<>(zip.getzipFilePath()) : () -> new HitSpectra<>(zip.getzipFilePath()),
                 () -> new CountSpectra<>(zip.getzipFilePath()));
     }
 
-    private static <T> CountSpectra<T> loadCountSpectraFromZipFile(ZipFileWrapper zip, byte[] status,
-                                                                   List<T> lineArray) {
+    private static <T extends Indexable<T>> CountSpectra<T> loadCountSpectraFromZipFile(ZipFileWrapper zip, byte[] status,
+    		T dummy) {
         Supplier<CountSpectra<T>> countSpectraSupplier = () -> new CountSpectra<>(zip.getzipFilePath());
-        return loadWithSpectraTypes(zip, status, lineArray,
+        return loadWithSpectraTypes(zip, status, dummy,
                 countSpectraSupplier,
                 countSpectraSupplier);
     }
 
-    private static <T, D extends ISpectra<T, ?>> D loadWithSpectraTypes(ZipFileWrapper zip, byte[] status,
-                                                                        List<T> lineArray, Supplier<D> hitSpectraSupplier,
+    private static <T extends Indexable<T>, D extends ISpectra<T, ?>> D loadWithSpectraTypes(ZipFileWrapper zip, byte[] status,
+                                                                        T dummy, Supplier<D> hitSpectraSupplier,
                                                                         Supplier<? extends CountSpectra<T>> countSpectraSupplier) {
         // create a new spectra
         D result = null;
@@ -633,10 +667,10 @@ public class SpectraFileUtils {
         byte[] involvementTable = zip.get(INVOLVEMENT_TABLE_FILE_INDEX, false);
         if (involvementTable != null) {
             result = loadFromOldSpectraFileFormat(
-                    zip, involvementTable, status, lineArray, hitSpectraSupplier, countSpectraSupplier);
+                    zip, involvementTable, status, dummy, hitSpectraSupplier, countSpectraSupplier);
         } else {
             try {
-                result = loadFromNewSpectraFileFormat(zip, status, lineArray, hitSpectraSupplier, countSpectraSupplier);
+                result = loadFromNewSpectraFileFormat(zip, status, dummy, hitSpectraSupplier, countSpectraSupplier);
             } catch (ZipException e) {
                 Log.abort(SpectraFileUtils.class, e, "Could not load spectra.");
             }
@@ -646,8 +680,8 @@ public class SpectraFileUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T, D extends ISpectra<T, ?>> D loadFromOldSpectraFileFormat(ZipFileWrapper zip,
-                                                                                byte[] involvementTable, byte[] status, List<T> lineArray, Supplier<D> hitSpectraSupplier,
+    private static <T extends Indexable<T>, D extends ISpectra<T, ?>> D loadFromOldSpectraFileFormat(ZipFileWrapper zip,
+                                                                                byte[] involvementTable, byte[] status, T dummy, Supplier<D> hitSpectraSupplier,
                                                                                 Supplier<? extends CountSpectra<T>> countSpectraSupplier) {
         D result;
 
@@ -658,6 +692,8 @@ public class SpectraFileUtils {
             D spectra = hitSpectraSupplier.get();
             List<List<Integer>> involvementLists = new CompressedByteArrayToIntSequencesProcessor()
                     .submit(involvementTable).getResult();
+            
+            List<T> lineArray = getNodeIdentifiersFromZipFile(dummy, zip, status, spectra);
 
             int traceCounter = -1;
             // iterate over the lists and fill the spectra object with traces
@@ -691,6 +727,8 @@ public class SpectraFileUtils {
             CountSpectra<T> spectra = countSpectraSupplier.get();
             List<List<Integer>> spectraData = new CompressedByteArrayToIntSequencesProcessor().submit(involvementTable)
                     .getResult();
+            
+            List<T> lineArray = getNodeIdentifiersFromZipFile(dummy, zip, status, spectra);
 
             int traceCounter = -1;
             // iterate over the lists and fill the spectra object with traces
@@ -712,6 +750,8 @@ public class SpectraFileUtils {
             if (isCompressed(status)) {
                 involvementTable = new CompressedByteArraysToByteArraysProcessor().submit(involvementTable).getResult();
             }
+            
+            List<T> lineArray = getNodeIdentifiersFromZipFile(dummy, zip, status, spectra);
 
             int tablePosition = -1;
             int traceCounter = -1;
@@ -733,8 +773,8 @@ public class SpectraFileUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T, D extends ISpectra<T, ?>> D loadFromNewSpectraFileFormat(ZipFileWrapper zip, byte[] status,
-                                                                                List<T> lineArray, Supplier<D> hitSpectraSupplier,
+    private static <T extends Indexable<T>, D extends ISpectra<T, ?>> D loadFromNewSpectraFileFormat(ZipFileWrapper zip, byte[] status,
+                                                                                T dummy, Supplier<D> hitSpectraSupplier,
                                                                                 Supplier<? extends CountSpectra<T>> countSpectraSupplier) throws ZipException {
         D result;
 
@@ -744,6 +784,8 @@ public class SpectraFileUtils {
         if (isSparse(status)) {
             D spectra = hitSpectraSupplier.get();
 
+            List<T> lineArray = getNodeIdentifiersFromZipFile(dummy, zip, status, spectra);
+            
             // add the nodes in the correct order
             for (T t : lineArray) {
                 spectra.getOrCreateNode(t);
@@ -788,6 +830,8 @@ public class SpectraFileUtils {
         } else if (isCountSpectra(status)) {
             CountSpectra<T> spectra = countSpectraSupplier.get();
 
+            List<T> lineArray = getNodeIdentifiersFromZipFile(dummy, zip, status, spectra);
+            
             // add the nodes in the correct order
             for (T t : lineArray) {
                 spectra.getOrCreateNode(t);
@@ -818,6 +862,8 @@ public class SpectraFileUtils {
         } else {
             D spectra = hitSpectraSupplier.get();
 
+            List<T> lineArray = getNodeIdentifiersFromZipFile(dummy, zip, status, spectra);
+            
             // add the nodes in the correct order
             for (T t : lineArray) {
                 spectra.getOrCreateNode(t);
@@ -854,10 +900,57 @@ public class SpectraFileUtils {
         } catch (ClassNotFoundException | IOException e) {
             Log.abort(SpectraFileUtils.class, e, "Error loading the sequence indexer!");
         }
+        
+        if (result instanceof ProgramBranchSpectra) {
+        	loadAdditionalDataForBranchSpectra((ProgramBranchSpectra<?>) result, zip);
+        }
         return result;
     }
 
-    public static <T> Collection<ExecutionTrace> loadExecutionTraces(ZipFileWrapper zip, int traceCounter, ISpectra<?, ?> spectra) throws ZipException {
+    private static void loadAdditionalDataForBranchSpectra(ProgramBranchSpectra<?> branchSpectra, ZipFileWrapper zip) {
+    	try {
+    		branchSpectra.setStatementMap(loadBranchStatementIdentifierMap(zip));
+            
+			branchSpectra.setNodeSequenceMap(loadBranchNodeIdSequences(zip));
+			
+			branchSpectra.setSubTraceSequenceMap(loadBranchSubTraceIdSequences(zip));
+		} catch (Throwable e) {
+			Log.abort(SpectraFileUtils.class, e, "Error loading the sequence indexer!");
+		}
+	}
+
+	private static CachedMap<SourceCodeBlock> loadBranchStatementIdentifierMap(ZipFileWrapper zip) {
+		// TODO what is a good cache size here?
+		CachedSourceCodeBlockMap map = new CachedSourceCodeBlockMap(zip.getzipFilePath(), 10000, STATEMENT_MAP_DIR, false);
+
+		Log.out(SpectraFileUtils.class, "Branch spectra: Loaded %d statement identifiers from zip file!", map.size() - 1);
+		return map;
+	}
+	
+	private static CachedMap<int[]> loadBranchNodeIdSequences(ZipFileWrapper zip) throws ZipException {
+
+        // TODO what is a good cache size here?
+        CachedMap<int[]> map = new CachedIntArrayMap(zip.getzipFilePath(), 500,
+                BRANCH_NODE_ID_SEQUENCES_DIR, false);
+
+        Log.out(SpectraFileUtils.class, "Branch spectra: Loaded %d sub traces from zip file!", map.size() - 1);
+        return map;
+    }
+
+    private static CachedMap<int[]> loadBranchSubTraceIdSequences(ZipFileWrapper zip) throws ZipException {
+
+        // TODO what is a good cache size here?
+        CachedMap<int[]> map = new CachedIntArrayMap(zip.getzipFilePath(), 500,
+                BRANCH_SUB_TRACE_ID_SEQUENCES_DIR, false);
+
+        if (map.isEmpty()) {
+            return null;
+        }
+        Log.out(SpectraFileUtils.class, "Branch spectra: Loaded %d sub trace ID sequences from zip file!", map.size() - 1);
+        return map;
+    }
+
+	public static <T> Collection<ExecutionTrace> loadExecutionTraces(ZipFileWrapper zip, int traceCounter, ISpectra<?, ?> spectra) throws ZipException {
         List<ExecutionTrace> traces = new ArrayList<>(1);
         // we assume a file name like 1-2.flw, where 1 is the trace id and 2 is a thread id
         // the stored IDs have to match the IDs of the node identifiers in the line array
@@ -1103,24 +1196,24 @@ public class SpectraFileUtils {
                 || status[0] == STATUS_SPARSE_INDEXED || status[0] == STATUS_COMPRESSED_INDEXED_COUNT;
     }
 
-    /**
-     * Gets a list of the identifiers from a zip file.
-     *
-     * @param dummy       a dummy object of type T that is used for obtaining indexed identifiers
-     * @param zipFilePath the path to the zip file containing the Spectra object
-     * @param <T>         the type of nodes in the spectra
-     * @return array of node identifiers
-     */
-    public static <T extends Indexable<T>> List<T> getNodeIdentifiersFromSpectraFile(T dummy, Path zipFilePath) {
-        ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
+//    /**
+//     * Gets a list of the identifiers from a zip file.
+//     *
+//     * @param dummy       a dummy object of type T that is used for obtaining indexed identifiers
+//     * @param zipFilePath the path to the zip file containing the Spectra object
+//     * @param <T>         the type of nodes in the spectra
+//     * @return array of node identifiers
+//     */
+//    public static <T extends Indexable<T>> List<T> getNodeIdentifiersFromSpectraFile(T dummy, Path zipFilePath) {
+//        ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
+//
+//        byte[] status = getStatusByte(zip);
+//
+//        return getNodeIdentifiersFromZipFile(dummy, zip, status);
+//    }
 
-        byte[] status = getStatusByte(zip);
-
-        return getNodeIdentifiersFromZipFile(dummy, zip, status);
-    }
-
-    private static <T extends Indexable<T>> List<T> getNodeIdentifiersFromZipFile(T dummy, ZipFileWrapper zip,
-                                                                                  byte[] status) throws NullPointerException {
+    private static <T extends Indexable<T>, D extends ISpectra<T, ?>> List<T> getNodeIdentifiersFromZipFile(T dummy, ZipFileWrapper zip,
+                                                                                  byte[] status, D spectra) throws NullPointerException {
         Objects.requireNonNull(dummy);
         String[] rawIdentifiers = getRawNodeIdentifiersFromZipFile(zip);
 
@@ -1136,45 +1229,68 @@ public class SpectraFileUtils {
                 map.put(index++, identifier);
             }
 
-            for (String rawIdentifier : rawIdentifiers) {
-                identifiers.add(dummy.getOriginalFromIndexedIdentifier(rawIdentifier, map));
-                // Log.out(SpectraUtils.class, lineArray[i].toString());
-            }
+            if (dummy instanceof ProgramBranch) {
+            	getBranchNodeIdentifiers(spectra, rawIdentifiers, identifiers);
+            } else {
+            	for (String rawIdentifier : rawIdentifiers) {
+            		identifiers.add(dummy.getOriginalFromIndexedIdentifier(rawIdentifier, map));
+            		// Log.out(SpectraUtils.class, lineArray[i].toString());
+            	}
+			}
         } else {
-            for (String rawIdentifier : rawIdentifiers) {
-                identifiers.add(dummy.getFromString(rawIdentifier));
-                // Log.out(SpectraUtils.class, lineArray[i].toString());
+        	if (dummy instanceof ProgramBranch) {
+            	getBranchNodeIdentifiers(spectra, rawIdentifiers, identifiers);
+            } else {
+            	for (String rawIdentifier : rawIdentifiers) {
+            		identifiers.add(dummy.getFromString(rawIdentifier));
+            		// Log.out(SpectraUtils.class, lineArray[i].toString());
+            	}
             }
         }
 
         return identifiers;
     }
 
-    /**
-     * Loads a Spectra object from a zip file.
-     *
-     * @param zipFilePath the path to the zip file containing the Spectra object
-     * @return the loaded Spectra object
-     */
-    public static ISpectra<String, ?> loadStringSpectraFromZipFile(Path zipFilePath) {
-        ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
+	private static <D extends ISpectra<T, ?>, T extends Indexable<T>> void getBranchNodeIdentifiers(D spectra, String[] rawIdentifiers,
+			List<T> identifiers) {
+		if (spectra instanceof ProgramBranchSpectra) {
+			@SuppressWarnings("unchecked")
+			List<ProgramBranch> castedList = (List<ProgramBranch>) identifiers;
+			ProgramBranchSpectra<?> branchSpectra = (ProgramBranchSpectra<?>) spectra;
+			for (String rawIdentifier : rawIdentifiers) {
+				castedList.add(new ProgramBranch(Integer.valueOf(rawIdentifier), branchSpectra));
+				// Log.out(SpectraUtils.class, lineArray[i].toString());
+			}
+		} else {
+			Log.abort(SpectraFileUtils.class, "Need branch spectra...");
+		}
+	}
 
-        byte[] status = getStatusByte(zip);
+//    /**
+//     * Loads a Spectra object from a zip file.
+//     *
+//     * @param zipFilePath the path to the zip file containing the Spectra object
+//     * @return the loaded Spectra object
+//     */
+//    public static ISpectra<String, ?> loadStringSpectraFromZipFile(Path zipFilePath) {
+//        ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
+//
+//        byte[] status = getStatusByte(zip);
+//
+//        List<String> identifiers = getIdentifiersFromZipFile(zip);
+//
+//        return loadSpectraFromZipFile(zip, status, identifiers);
+//    }
 
-        List<String> identifiers = getIdentifiersFromZipFile(zip);
-
-        return loadSpectraFromZipFile(zip, status, identifiers);
-    }
-
-    private static List<String> getIdentifiersFromZipFile(ZipFileWrapper zip) {
-        // parse the file containing the (possibly indexed) identifiers
-        String[] rawIdentifiers = getRawNodeIdentifiersFromZipFile(zip);
-
-        List<String> lineArray = new ArrayList<>(rawIdentifiers.length);
-        Collections.addAll(lineArray, rawIdentifiers);
-
-        return lineArray;
-    }
+//    private static List<String> getIdentifiersFromZipFile(ZipFileWrapper zip) {
+//        // parse the file containing the (possibly indexed) identifiers
+//        String[] rawIdentifiers = getRawNodeIdentifiersFromZipFile(zip);
+//
+//        List<String> lineArray = new ArrayList<>(rawIdentifiers.length);
+//        Collections.addAll(lineArray, rawIdentifiers);
+//
+//        return lineArray;
+//    }
 
     private static String[] getRawNodeIdentifiersFromZipFile(ZipFileWrapper zip) {
         byte[] bytes = Objects.requireNonNull(
@@ -1200,17 +1316,17 @@ public class SpectraFileUtils {
         }
     }
 
-    /**
-     * Gets a list of the raw identifiers from a zip file.
-     *
-     * @param zipFilePath the path to the zip file containing the Spectra object
-     * @return a list of identifiers as Strings
-     */
-    public static List<String> getIdentifiersFromSpectraFile(Path zipFilePath) {
-        ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
-
-        return getIdentifiersFromZipFile(zip);
-    }
+//    /**
+//     * Gets a list of the raw identifiers from a zip file.
+//     *
+//     * @param zipFilePath the path to the zip file containing the Spectra object
+//     * @return a list of identifiers as Strings
+//     */
+//    public static List<String> getIdentifiersFromSpectraFile(Path zipFilePath) {
+//        ZipFileWrapper zip = ZipFileWrapper.getZipFileWrapper(zipFilePath);
+//
+//        return getIdentifiersFromZipFile(zip);
+//    }
 
     public static void saveBlockSpectraToCsvFile(ISpectra<SourceCodeBlock, ?> spectra, Path output,
                                                  boolean biclusterFormat, boolean shortened) {

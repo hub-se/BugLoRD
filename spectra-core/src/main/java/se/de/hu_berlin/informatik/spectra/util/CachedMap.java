@@ -88,6 +88,10 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     private String getFileName(int key) {
         return directory + key + MAP_EXTENSION;
     }
+    
+    private String getFileName(int key, String directory) {
+        return directory + key + MAP_EXTENSION;
+    }
 
     public boolean moveMapContentsTo(Path otherZipFile) {
         MoveNamedByteArraysBetweenZipFilesProcessor mover =
@@ -95,8 +99,23 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 
         boolean result = true;
         for (int key : keys) {
-            String fileName = getFileName(key);
+            String fileName = getFileName(key, directory);
             result &= mover.submit(new Pair<>(fileName, fileName)).getResult();
+        }
+
+        return result;
+    }
+    
+    public boolean moveMapContentsTo(Path otherZipFile, String directory) {
+        MoveNamedByteArraysBetweenZipFilesProcessor mover =
+                new MoveNamedByteArraysBetweenZipFilesProcessor(zipFile.getzipFilePath(), otherZipFile);
+
+        directory +=  "/.";
+        boolean result = true;
+        for (int key : keys) {
+            String fileName = getFileName(key);
+            String targetFileName = getFileName(key, directory);
+            result &= mover.submit(new Pair<>(fileName, targetFileName)).getResult();
         }
 
         return result;

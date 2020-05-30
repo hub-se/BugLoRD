@@ -40,6 +40,7 @@ public class SaveSpectraModule<T extends Indexable<T>> extends AbstractProcessor
         if (output.toFile().exists()) {
             // we might be overwriting a spectra file that we are still loading stuff from...
             Path tempOut = output.getParent().resolve("tmp_spectra.zip");
+            FileUtils.delete(tempOut);
             SpectraFileUtils.saveSpectraToZipFile(input, tempOut, true, true, true);
             try {
                 output.toFile().delete();

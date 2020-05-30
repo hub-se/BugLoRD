@@ -64,9 +64,10 @@ public class BranchSpectraTest extends TestSettings {
 
         ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b.zip");
         
-        ProgramBranchSpectra branchingSpectra = StatementSpectraToBranchSpectra.generateBranchingSpectraFromStatementSpectra(statementSpectra, null);
+        ProgramBranchSpectra<ProgramBranch> branchingSpectra = StatementSpectraToBranchSpectra.generateBranchingSpectraFromStatementSpectra(statementSpectra);
  
         Path output1 = Paths.get(getStdTestDir(), "spectra_trace.zip");
+        FileUtils.delete(output1);
         SpectraFileUtils.saveSpectraToZipFile(branchingSpectra, output1, true, false, true);
         Log.out(this, "saved...");
 
@@ -75,6 +76,7 @@ public class BranchSpectraTest extends TestSettings {
         assertNotNull(spectra2.getIndexer());
         
         Path output2 = Paths.get(getStdTestDir(), "spectra2_trace.zip");
+        FileUtils.delete(output2);
         SpectraFileUtils.saveSpectraToZipFile(spectra2, output2, true, false, true);
         Log.out(this, "saved indexed...");
         ISpectra<ProgramBranch, ?> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(ProgramBranch.DUMMY, output2);
@@ -82,6 +84,7 @@ public class BranchSpectraTest extends TestSettings {
         assertEquals(spectra2, spectra3);
 
         Path output3 = Paths.get(getStdTestDir(), "spectra3_trace.zip");
+        FileUtils.delete(output3);
         SpectraFileUtils.saveSpectraToZipFile(spectra2, output3, true, false, false);
         Log.out(this, "saved non-indexed...");
         ISpectra<ProgramBranch, ?> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(ProgramBranch.DUMMY, output3);
@@ -92,16 +95,16 @@ public class BranchSpectraTest extends TestSettings {
         assertTrue(output2.toFile().exists());
         assertEquals(output1.toFile().length(), output2.toFile().length());
         assertTrue(output3.toFile().exists());
-        assertTrue(output3.toFile().length() > output2.toFile().length());
+        assertTrue(output2.toFile().length() > output3.toFile().length());
     }
     
-//    @Test
+    @Test
     public void testBranchSpectraGeneration() throws IOException {
     	//assert(false); //uncomment to check if asserts are enabled
 
         ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b.zip");
 
-        ProgramBranchSpectra branchingSpectra = StatementSpectraToBranchSpectra.generateBranchingSpectraFromStatementSpectra(statementSpectra, null);
+        ProgramBranchSpectra<ProgramBranch> branchingSpectra = StatementSpectraToBranchSpectra.generateBranchingSpectraFromStatementSpectra(statementSpectra);
   
         Collection<? extends ITrace<SourceCodeBlock>> statementTests = statementSpectra.getTraces();
         Collection<? extends ITrace<ProgramBranch>> branchTests = branchingSpectra.getTraces();

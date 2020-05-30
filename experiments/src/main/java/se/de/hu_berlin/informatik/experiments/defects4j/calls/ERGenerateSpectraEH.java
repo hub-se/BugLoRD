@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.gen.spectra.main.TraceCoberturaSpectraGenerato
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
 import se.de.hu_berlin.informatik.spectra.core.branch.StatementSpectraToBranchSpectra;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.BuildCoherentSpectraModule;
@@ -174,15 +175,8 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
 
                 Path destination = bug.getWorkDataDir().resolve(subDirName)
                         .resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
-                ProgramBranchSpectra programBranchSpectra = StatementSpectraToBranchSpectra
-                        .generateBranchingSpectraFromStatementSpectra(spectra, null
-                                // giving a path here lets the methods assume that the spectra
-                                // has been loaded from a file which triggers procedures to,
-                                // e.g., copy existing execution traces from the existing file and
-                                // to load existing node sequence indexers, etc.
-                                // ... this is not what we want here. :/
-                                // destination.toAbsolutePath().toString()
-                        );
+                ProgramBranchSpectra<ProgramBranch> programBranchSpectra = StatementSpectraToBranchSpectra
+                        .generateBranchingSpectraFromStatementSpectra(spectra);
 
 
                 SpectraFileUtils.saveSpectraToZipFile(programBranchSpectra, destination,

@@ -1,14 +1,15 @@
 package se.de.hu_berlin.informatik.spectra.core.branch;
 
-import com.google.common.collect.ImmutableList;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedArrayQueue;
+import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 import se.de.hu_berlin.informatik.spectra.util.Indexable;
 import se.de.hu_berlin.informatik.spectra.util.Shortened;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A program branch is a list of program elements.
@@ -16,79 +17,32 @@ import java.util.Map;
  */
 public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Indexable<ProgramBranch>, Cloneable {
 
-    private int id;
+    private final int id;
+	private final ProgramBranchSpectra<?> programBranchSpectra;
 
 	/*====================================================================================
      * CONSTRUCTORS
      *====================================================================================*/
 
-    public ProgramBranch(int id, SourceCodeBlock... programBlocks) {
-
-        this(id, Arrays.asList(programBlocks));
-
-        /*====================================================================================*/
-        //probably check if branch is gapless, but need better data structures probably
-        /*====================================================================================*/
-
-
-
-        /*====================================================================================*/
-        assert (Arrays.asList(programBlocks).equals(this.getElements()));
-        /*====================================================================================*/
-
-    }
- 
-    public ProgramBranch(int id, List<SourceCodeBlock> programBlocks) {
-
-    	
-        /*====================================================================================*/
-        //probably check if branch is gapless, but need better data structures probably
-        /*====================================================================================*/
-
-    	this.id = id;
-		// immutable lists prohibit the removal of nodes which we need to, for example, remove statements in test classes
-//        this.branchElements = ImmutableList.copyOf(programBlocks);
-        this.branchElements = programBlocks;
-
-        //store the hashCode now
-        int immutableHashCode = 31 * (527 + branchElements.size());
-        for (SourceCodeBlock block : branchElements) {
-            immutableHashCode = immutableHashCode * 31 + block.hashCode();
-        }
-        this.immutableHashCode = immutableHashCode;
-
-        /*====================================================================================*/
-        assert (programBlocks.equals(this.getElements()));
-        /*====================================================================================*/
-
-    }
-
-    public ProgramBranch(int id, SourceCodeBlock programBlock) {
-
-        /*====================================================================================*/
-        //probably check if branch is gapless, but need better data structures probably
-        /*====================================================================================*/
-
-    	this.id = id;
-        this.branchElements = ImmutableList.of(programBlock);
-
-        //store the hashCode now
-        int immutableHashCode = 31 * (527 + branchElements.size());
-        for (SourceCodeBlock block : branchElements) {
-            immutableHashCode = immutableHashCode * 31 + block.hashCode();
-        }
-        this.immutableHashCode = immutableHashCode;
-    }
+    public ProgramBranch(int id, ProgramBranchSpectra<?> programBranchSpectra) {
+		this.id = id;
+		this.programBranchSpectra = programBranchSpectra;
+  	}
 
     /*====================================================================================
      * OVERRIDE OBJECT
      *====================================================================================*/
 
-    @Override
+	@Override
     public String toString() {
+        return String.valueOf(id);
+    }
+    
+    public String toReadableString() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.id);
-        for (SourceCodeBlock block : branchElements) {
+        Collection<SourceCodeBlock> branchElements = getElements();
+		for (SourceCodeBlock block : branchElements) {
             builder.append(IDENTIFIER_SEPARATOR_CHAR)
             .append(block.toString());
         }
@@ -97,26 +51,14 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
 
     @Override
     public int hashCode() {
-        return immutableHashCode;
+        return 31 * (527 + this.id);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ProgramBranch) {
             ProgramBranch o = (ProgramBranch) obj;
-            if (this.id != o.id) {
-            	// this is a workaround for generating branch spectra from equal sub trace sequences...
-            	return false;
-            }
-            if (this.getLength() != o.getLength()) {
-                return false;
-            }
-            for (int i = 0; i < this.getLength(); ++i) {
-                if (!this.getElement(i).equals(o.getElement(i))) {
-                    return false;
-                }
-            }
-            return true;
+            return this.id == o.id;
         } else {
             return false;
         }
@@ -128,17 +70,7 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
 
     @Override
     public int compareTo(ProgramBranch o) {
-        if (this.getLength() == 0 && o.getLength() == 0) {
-            return 0;
-        }
-        if (this.getLength() == 0 && o.getLength() != 0) {
-            return -1;
-        }
-        if (this.getLength() != 0 && o.getLength() == 0) {
-            return 1;
-        }
-        // first element in the trace decides the order...
-        return this.getElement(0).compareTo(o.getElement(0));
+        return Integer.compare(this.id, o.id);
     }
 
     /*====================================================================================
@@ -147,28 +79,19 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
 
     @Override
     public ProgramBranch getOriginalFromIndexedIdentifier(String identifier, Map<Integer, String> map) throws IllegalArgumentException {
-        String[] elements = identifier.split(ProgramBranch.IDENTIFIER_SEPARATOR_CHAR);
-        SourceCodeBlock[] trace = new SourceCodeBlock[elements.length-1];
-        for (int i = 0; i < trace.length; i++) {
-            try {
-                trace[i] = SourceCodeBlock.DUMMY.getOriginalFromIndexedIdentifier(elements[i+1], map);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new IllegalArgumentException("Wrong input format: '" + identifier + "'.");
-            }
-        }
-        return new ProgramBranch(Integer.valueOf(elements[0]), trace);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getIndexedIdentifier(ProgramBranch original, Map<String, Integer> map) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(original.id);
-        for (SourceCodeBlock block : original.getElements()) {
-            builder.append(IDENTIFIER_SEPARATOR_CHAR)
-            .append(SourceCodeBlock.DUMMY.getIndexedIdentifier(block, map));
-        }
-        return builder.toString();
+//        StringBuilder builder = new StringBuilder();
+//        builder.append(original.id);
+//        for (SourceCodeBlock block : original.getElements()) {
+//            builder.append(IDENTIFIER_SEPARATOR_CHAR)
+//            .append(SourceCodeBlock.DUMMY.getIndexedIdentifier(block, map));
+//        }
+//        return builder.toString();
+    	return String.valueOf(original.id);
     }
 
     /*====================================================================================
@@ -181,13 +104,9 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
     }
 
     public static ProgramBranch getNewProgramBranchFromString(String identifier) throws IllegalArgumentException {
-        String[] elements = identifier.split(IDENTIFIER_SEPARATOR_CHAR);
-        SourceCodeBlock[] trace = new SourceCodeBlock[elements.length-1];
-        for (int i = 0; i < trace.length; i++) {
-            trace[i] = SourceCodeBlock.getNewBlockFromString(elements[i+1]);
-        }
-        return new ProgramBranch(Integer.valueOf(elements[0]), trace);
+    	throw new UnsupportedOperationException();
     }
+
 
     /*====================================================================================
      * OVERRIDE SHORTENED
@@ -195,12 +114,13 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
 
     @Override
     public String getShortIdentifier() throws IllegalArgumentException {
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.id);
-        for (SourceCodeBlock block : getElements()) {
-            builder.append(IDENTIFIER_SEPARATOR_CHAR).append(block.getShortIdentifier());
-        }
-        return builder.toString();
+//        StringBuilder builder = new StringBuilder();
+//        builder.append(this.id);
+//        for (SourceCodeBlock block : getElements()) {
+//            builder.append(IDENTIFIER_SEPARATOR_CHAR).append(block.getShortIdentifier());
+//        }
+//        return builder.toString();
+    	throw new UnsupportedOperationException();
     }
 
     /*====================================================================================
@@ -210,18 +130,7 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
     @Override
     public ProgramBranch clone() {
 
-        /*====================================================================================*/
-        //
-        /*====================================================================================*/
-
-        ProgramBranch clonedBranch;
-
-        SourceCodeBlock[] clonedBranchElements = new SourceCodeBlock[this.getLength()];
-        for (int i = 0; i < this.getLength(); i++) {
-            clonedBranchElements[i] = this.getElement(i).clone();
-        }
-
-        clonedBranch = new ProgramBranch(this.id, clonedBranchElements);
+        ProgramBranch clonedBranch = new ProgramBranch(this.id, programBranchSpectra);
 
         /*====================================================================================*/
         assert (this.equals(clonedBranch));
@@ -235,52 +144,63 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
      * GETTER
      *====================================================================================*/
 
-    
+    Integer size = null;
     public int getLength() {
-        return this.branchElements.size();
+    	if (size == null) {
+    		size = getElements().size();
+    	}
+        return size;
     }
 
     public int getId() {
 		return id;
 	}
 
-	public SourceCodeBlock getElement(int index) {
-        return this.branchElements.get(index);
-    }
+//	public SourceCodeBlock getElement(int index) {
+//        return this.branchElements.get(index);
+//    }
 
-    public List<SourceCodeBlock> getElements() {
-        return this.branchElements;
+    /**
+     * Generates list of executed statements. Avoid calling this multiple times!
+     * @return list of executed statements
+     */
+    public Collection<SourceCodeBlock> getElements() {
+    	int[] subTraceSequence = programBranchSpectra.getSubTraceSequenceMap().get(id);
+    	if (subTraceSequence == null) {
+//    		throw new IllegalStateException("No branch found for id " + this.id);
+    		return Collections.emptyList();
+    	}
+    	CachedMap<int[]> nodeSequenceMap = programBranchSpectra.getNodeSequenceMap();
+    	
+    	CachedMap<SourceCodeBlock> statementMap = programBranchSpectra.getStatementMap();
+    	Collection<SourceCodeBlock> result = new SingleLinkedArrayQueue<SourceCodeBlock>(20);
+    	for (int index : subTraceSequence) {
+			int[] nodeIds = nodeSequenceMap.get(index);
+			for (int i : nodeIds) {
+				result.add(statementMap.get(i));
+			}
+		}
+    	
+        return result;
     }
-
-    //DANGER : temporary stuff here to make things "work", this should really be made better by e.g. making an abstract class called ProgramElement or something
-    public String getFilePath() {
-        return this.getElement(0).getFilePath();
-    }
-
-    public List<String> getFilePaths() {
-        List<String> filePaths = new ArrayList<>();
-        for (SourceCodeBlock element : this.getElements()) {
-            filePaths.add(element.getFilePath());
-        }
-        return filePaths;
-    }
-
-    public List<String> getMethodNames() {
-        List<String> methodNames = new ArrayList<>();
-        for (SourceCodeBlock element : this.getElements()) {
-            methodNames.add(element.getFilePath() + element.getMethodName());
-        }
-        return methodNames;
-    }
-
-    public int getStartLineNumber() {
-        return this.getElement(0).getStartLineNumber();
-    }
-
-    public int getEndLineNumber() {
-        return this.getElement(this.getLength() - 1).getEndLineNumber();
-    }
-    //DANGER over
+    
+    public Collection<? extends Integer> getExecutedNodeIDs() {
+    	int[] subTraceSequence = programBranchSpectra.getSubTraceSequenceMap().get(id);
+    	if (subTraceSequence == null) {
+    		throw new IllegalStateException("No branch found for id " + this.id);
+    	}
+    	CachedMap<int[]> nodeSequenceMap = programBranchSpectra.getNodeSequenceMap();
+    	
+    	Set<Integer> result = new HashSet<>();
+    	for (int index : subTraceSequence) {
+			int[] nodeIds = nodeSequenceMap.get(index);
+			for (int i : nodeIds) {
+				result.add(i);
+			}
+		}
+    	
+        return result;
+	}
 
     /*====================================================================================
      * CHECKS
@@ -290,14 +210,12 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
      * FIELDS
      *====================================================================================*/
 
-    private List<SourceCodeBlock> branchElements;
-
     public final static String IDENTIFIER_SEPARATOR_CHAR = "#";
 
     public final static String UNKNOWN_ELEMENT = "_";
 
-    public static final ProgramBranch DUMMY = new ProgramBranch(-1, SourceCodeBlock.DUMMY);
+    public static final ProgramBranch DUMMY = new ProgramBranch(-1, null);
 
-    private final int immutableHashCode;
+	
 
 }

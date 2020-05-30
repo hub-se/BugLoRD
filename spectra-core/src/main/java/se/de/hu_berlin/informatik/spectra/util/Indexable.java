@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.util;
 
+import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.FromString;
 
 import java.util.Map;
