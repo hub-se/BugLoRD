@@ -64,7 +64,8 @@ public class BranchSpectraTest extends TestSettings {
 
         ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b.zip");
         
-        ProgramBranchSpectra<ProgramBranch> branchingSpectra = StatementSpectraToBranchSpectra.generateBranchingSpectraFromStatementSpectra(statementSpectra);
+        ProgramBranchSpectra<ProgramBranch> branchingSpectra = StatementSpectraToBranchSpectra
+        		.generateBranchingSpectraFromStatementSpectra(statementSpectra, null);
  
         Path output1 = Paths.get(getStdTestDir(), "spectra_trace.zip");
         FileUtils.delete(output1);
@@ -104,7 +105,8 @@ public class BranchSpectraTest extends TestSettings {
 
         ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b.zip");
 
-        ProgramBranchSpectra<ProgramBranch> branchingSpectra = StatementSpectraToBranchSpectra.generateBranchingSpectraFromStatementSpectra(statementSpectra);
+        ProgramBranchSpectra<ProgramBranch> branchingSpectra = StatementSpectraToBranchSpectra
+        		.generateBranchingSpectraFromStatementSpectra(statementSpectra, null);
   
         Collection<? extends ITrace<SourceCodeBlock>> statementTests = statementSpectra.getTraces();
         Collection<? extends ITrace<ProgramBranch>> branchTests = branchingSpectra.getTraces();

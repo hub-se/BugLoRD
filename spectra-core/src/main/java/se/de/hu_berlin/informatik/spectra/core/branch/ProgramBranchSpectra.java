@@ -27,8 +27,10 @@ public class ProgramBranchSpectra<T> extends HitSpectra<T> {
     CachedMap<int[]> nodeSequenceMap;
     CachedMap<int[]> subTraceSequenceMap;
     
-    public void addFromStatementSpectra(ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> spectra) {
-    	Path targetPath = spectra.getPathToSpectraZipFile().getParent().resolve("branchMap.zip");
+    public void addFromStatementSpectra(ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> spectra, Path temporaryOutputDir) {
+    	Path targetPath = temporaryOutputDir == null ? 
+    			spectra.getPathToSpectraZipFile().getParent().resolve("branchMap.zip") :
+    				temporaryOutputDir.resolve("branchMap.zip");
     	FileUtils.delete(targetPath);
     	
 		statementMap = new CachedSourceCodeBlockMap(targetPath, 10000, SpectraFileUtils.STATEMENT_MAP_DIR, true);

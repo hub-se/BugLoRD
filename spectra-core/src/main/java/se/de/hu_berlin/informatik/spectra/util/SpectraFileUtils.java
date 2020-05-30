@@ -309,16 +309,16 @@ public class SpectraFileUtils {
 
 	private static void saveAdditionalDataForBranchSpectra(Path output, ProgramBranchSpectra<?> branchSpectra) {
 		try {
-			Log.out(SpectraFileUtils.class, "Branch spectra: Storing %s statement identifiers...", branchSpectra.getStatementMap().size() - 1);
+			Log.out(SpectraFileUtils.class, "Branch spectra: Storing %,d statement identifiers...", branchSpectra.getStatementMap().size());
 			// store the referenced sequence parts
 			branchSpectra.getStatementMap().moveMapContentsTo(output);
 
-			Log.out(SpectraFileUtils.class, "Branch spectra: Storing %s sub traces...", branchSpectra.getNodeSequenceMap().size() - 1);
+			Log.out(SpectraFileUtils.class, "Branch spectra: Storing %,d sub traces...", branchSpectra.getNodeSequenceMap().size() - 1);
 			// store the referenced sequence parts
 			branchSpectra.getNodeSequenceMap().moveMapContentsTo(output);
 
 			if (branchSpectra.getSubTraceSequenceMap() != null) {
-				Log.out(SpectraFileUtils.class, "Branch spectra: Storing %s sub trace ID sequences...", branchSpectra.getSubTraceSequenceMap().size() - 1);
+				Log.out(SpectraFileUtils.class, "Branch spectra: Storing %,d sub trace ID sequences...", branchSpectra.getSubTraceSequenceMap().size() - 1);
 				// store the referenced sequence parts
 				branchSpectra.getSubTraceSequenceMap().moveMapContentsTo(output);
 			}
@@ -790,6 +790,8 @@ public class SpectraFileUtils {
             for (T t : lineArray) {
                 spectra.getOrCreateNode(t);
             }
+            
+            Log.out(SpectraFileUtils.class, "Loaded %,d nodes...", lineArray.size());
 
             CompressedByteArrayToIntSequenceProcessor processor = new CompressedByteArrayToIntSequenceProcessor();
 
@@ -826,6 +828,7 @@ public class SpectraFileUtils {
                 loadExecutionTraces(zip, traceCounter, trace);
                 trace.sleep();
             }
+            Log.out(SpectraFileUtils.class, "Loaded %,d test cases...", traceCounter-1);
             result = spectra;
         } else if (isCountSpectra(status)) {
             CountSpectra<T> spectra = countSpectraSupplier.get();
@@ -836,6 +839,8 @@ public class SpectraFileUtils {
             for (T t : lineArray) {
                 spectra.getOrCreateNode(t);
             }
+            
+            Log.out(SpectraFileUtils.class, "Loaded %,d nodes...", lineArray.size());
 
             CompressedByteArrayToIntSequenceProcessor processor = new CompressedByteArrayToIntSequenceProcessor();
 
@@ -858,6 +863,7 @@ public class SpectraFileUtils {
                 loadExecutionTraces(zip, traceCounter, trace);
                 trace.sleep();
             }
+            Log.out(SpectraFileUtils.class, "Loaded %,d test cases...", traceCounter-1);
             result = (D) spectra;
         } else {
             D spectra = hitSpectraSupplier.get();
@@ -868,6 +874,8 @@ public class SpectraFileUtils {
             for (T t : lineArray) {
                 spectra.getOrCreateNode(t);
             }
+            
+            Log.out(SpectraFileUtils.class, "Loaded %,d nodes...", lineArray.size());
 
             CompressedByteArrayToByteArrayProcessor processor = new CompressedByteArrayToByteArrayProcessor();
 
@@ -892,6 +900,7 @@ public class SpectraFileUtils {
                 loadExecutionTraces(zip, traceCounter, trace);
                 trace.sleep();
             }
+            Log.out(SpectraFileUtils.class, "Loaded %,d test cases...", traceCounter-1);
             result = spectra;
         }
 
@@ -923,7 +932,7 @@ public class SpectraFileUtils {
 		// TODO what is a good cache size here?
 		CachedSourceCodeBlockMap map = new CachedSourceCodeBlockMap(zip.getzipFilePath(), 10000, STATEMENT_MAP_DIR, false);
 
-		Log.out(SpectraFileUtils.class, "Branch spectra: Loaded %d statement identifiers from zip file!", map.size() - 1);
+		Log.out(SpectraFileUtils.class, "Branch spectra: Loaded %,d statement identifiers from zip file!", map.size());
 		return map;
 	}
 	
@@ -933,7 +942,7 @@ public class SpectraFileUtils {
         CachedMap<int[]> map = new CachedIntArrayMap(zip.getzipFilePath(), 500,
                 BRANCH_NODE_ID_SEQUENCES_DIR, false);
 
-        Log.out(SpectraFileUtils.class, "Branch spectra: Loaded %d sub traces from zip file!", map.size() - 1);
+        Log.out(SpectraFileUtils.class, "Branch spectra: Loaded %,d sub traces from zip file!", map.size() - 1);
         return map;
     }
 
@@ -946,7 +955,7 @@ public class SpectraFileUtils {
         if (map.isEmpty()) {
             return null;
         }
-        Log.out(SpectraFileUtils.class, "Branch spectra: Loaded %d sub trace ID sequences from zip file!", map.size() - 1);
+        Log.out(SpectraFileUtils.class, "Branch spectra: Loaded %,d sub trace ID sequences from zip file!", map.size() - 1);
         return map;
     }
 
@@ -1135,7 +1144,7 @@ public class SpectraFileUtils {
         CachedMap<int[]> map = new CachedIntArrayMap(zip.getzipFilePath(), 500,
                 NODE_ID_SEQUENCES_DIR, false);
 
-        Log.out(SpectraFileUtils.class, "Loaded %d sub traces from zip file!", map.size() - 1);
+        Log.out(SpectraFileUtils.class, "Loaded %,d sub traces from zip file!", map.size() - 1);
         return map;
     }
 
@@ -1148,7 +1157,7 @@ public class SpectraFileUtils {
         if (map.isEmpty()) {
             return null;
         }
-        Log.out(SpectraFileUtils.class, "Loaded %d sub trace ID sequences from zip file!", map.size() - 1);
+        Log.out(SpectraFileUtils.class, "Loaded %,d sub trace ID sequences from zip file!", map.size() - 1);
         return map;
     }
 

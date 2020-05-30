@@ -173,15 +173,30 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
                     new BuildCoherentSpectraModule().submit(spectra);
                 }
 
-                Path destination = bug.getWorkDataDir().resolve(subDirName)
-                        .resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+                Path rankingDir = bug.getWorkDir(true).resolve(suffix == null ?
+                        BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
+                Path branchSpectraDir = rankingDir.resolve(subDirName);
+
                 ProgramBranchSpectra<ProgramBranch> programBranchSpectra = StatementSpectraToBranchSpectra
-                        .generateBranchingSpectraFromStatementSpectra(spectra);
+                        .generateBranchingSpectraFromStatementSpectra(spectra, branchSpectraDir);
 
 
-                SpectraFileUtils.saveSpectraToZipFile(programBranchSpectra, destination,
+                Path branchSpectraFile = rankingDir.resolve(subDirName)
+                		.resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
+                SpectraFileUtils.saveSpectraToZipFile(programBranchSpectra, branchSpectraFile,
                         true, true, true);
-
+                
+                try {
+                    FileUtils.copyFileOrDir(
+                    		branchSpectraFile.toFile(),
+                    		bug.getWorkDataDir().resolve(subDirName)
+                    			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(),
+                            StandardCopyOption.REPLACE_EXISTING);
+                    FileUtils.delete(spectraFile);
+                } catch (IOException e) {
+                    Log.err(this, e, "Could not copy the spectra to the data directory.");
+                }
+                
                 return buggyEntity;
             }
 

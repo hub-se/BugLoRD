@@ -60,7 +60,7 @@ public class StatementSpectraToBranchSpectra {
      *====================================================================================*/
 
     public static ProgramBranchSpectra<ProgramBranch> generateBranchingSpectraFromStatementSpectra
-            (ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra) {
+            (ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra, Path temporaryOutputDir) {
         Log.out(StatementSpectraToBranchSpectra.class, "Generating branch spectra...");
 
         /*====================================================================================*/
@@ -73,7 +73,7 @@ public class StatementSpectraToBranchSpectra {
         ProgramBranchSpectra<ProgramBranch> programBranchSpectra = new ProgramBranchSpectra<>(null);
         
         // sets up all statements and the node ID sequences from the indexer
-        programBranchSpectra.addFromStatementSpectra(statementSpectra);
+        programBranchSpectra.addFromStatementSpectra(statementSpectra, temporaryOutputDir);
         
 //        Map<Integer, INode<ProgramBranch>> branchIdMap = new HashMap<>();
         INode<ProgramBranch> branchNode;
@@ -114,7 +114,9 @@ public class StatementSpectraToBranchSpectra {
         // in the statement level spectra, branch IDs were mapped to the sequence of node IDs in the respective branch;
         // now we can map the branch IDs to the IDs of the branch...
         // no need to include the single node branches that have not been executed in here!
-        Path sequenceZipFile = statementSpectra.getPathToSpectraZipFile().getParent().resolve("branchNodeMap.zip");
+        Path sequenceZipFile = temporaryOutputDir == null ? 
+        		statementSpectra.getPathToSpectraZipFile().getParent().resolve("branchNodeMap.zip") :
+        			temporaryOutputDir.resolve("branchNodeMap.zip");
         FileUtils.delete(sequenceZipFile);
 		CachedMap<int[]> branchNodeIdSequences = new CachedIntArrayMap(
                 sequenceZipFile,
