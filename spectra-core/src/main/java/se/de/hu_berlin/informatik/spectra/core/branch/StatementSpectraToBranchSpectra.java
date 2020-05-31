@@ -79,11 +79,10 @@ public class StatementSpectraToBranchSpectra {
         INode<ProgramBranch> branchNode;
         ProgramBranch programBranch;
 
-        int maxID = -1;
         Set<Integer> executedStatements = new HashSet<>();
 
         // collect all existing branch IDs
-        CachedMap<int[]> subTraceIdSequences = statementSpectra.getIndexer().getSubTraceIdSequences();
+        CachedMap<int[]> subTraceIdSequences = programBranchSpectra.getSubTraceSequenceMap();
 
         /* extract all branches from the statement spectra, i.e.
          *  branches that are covered in a test case
@@ -97,19 +96,28 @@ public class StatementSpectraToBranchSpectra {
 //            branchIdMap.put(executionBranchId, branchNode);
 
             executedStatements.addAll(programBranch.getExecutedNodeIDs());
-
-            maxID = Math.max(maxID, executionBranchId);
         }
 
+        Set<Integer> notExecutedStatements = new HashSet<>();
         // add statements to the new spectra that have not been executed by any test case...
         for (INode<SourceCodeBlock> node : statementSpectra.getNodes()) {
             if (!executedStatements.contains(node.getIndex())) {
-                branchNode = programBranchSpectra.getOrCreateNode(new ProgramBranch(++maxID, programBranchSpectra));
-//                branchIdMap.put(maxID, branchNode);
+            	notExecutedStatements.add(node.getIndex());
             }
         }
-
-//        programBranchSpectra.setBranchIdMap(branchIdMap);
+        
+        if (!notExecutedStatements.isEmpty()) {
+        	CachedMap<int[]> nodeSequenceMap = programBranchSpectra.getNodeSequenceMap();
+        	int[] nodeSequence = new int[notExecutedStatements.size()];
+        	int i = 0;
+        	for (int nodeId : notExecutedStatements) {
+        		nodeSequence[i++] = nodeId;
+        	}
+        	// create a placeholder branch that holds all statements that have not been executed
+        	branchNode = programBranchSpectra.getOrCreateNode(new ProgramBranch(subTraceIdSequences.size(), programBranchSpectra));
+        	subTraceIdSequences.put(subTraceIdSequences.size(), new int[] {nodeSequenceMap.size()});
+        	nodeSequenceMap.put(nodeSequenceMap.size(), nodeSequence);
+        }
 
         // in the statement level spectra, branch IDs were mapped to the sequence of node IDs in the respective branch;
         // now we can map the branch IDs to the IDs of the branch...
@@ -441,7 +449,11 @@ public class StatementSpectraToBranchSpectra {
 
         ProgramBranch branch;
 
-        for (INode<ProgramBranch> branchNode : programBranchSpectra.getNodes()) {
+        Collection<INode<ProgramBranch>> nodes = programBranchSpectra.getNodes();
+        for (INode<ProgramBranch> branchNode : nodes) {
+        	if (branchNode.getIndex() >= nodes.size() - 1) {
+        		continue;
+        	}
             branch = branchNode.getIdentifier();
             result = branchHasAtMostKDecisionPoints(branch, k);
             if (result == false) break;

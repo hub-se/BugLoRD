@@ -58,28 +58,28 @@ public class CachedMapTest extends TestSettings {
         FileUtils.delete(output1);
         FileUtils.delete(output2);
 
-        CachedMap<int[]> map = new CachedIntArrayMap(output1, 5, "test", true);
+        CachedMap<int[]> map = new CachedIntArrayMap(output1, 5, "test", false);
         Map<Integer, int[]> checkMap = new HashMap<>();
 
         Random rand = new Random(12315415);
 
-        map.put(17, new int[]{1, 2, 3});
+//        map.put(17, new int[]{1, 2, 3});
 
         map.get(17);
 
         for (int i = 0; i < 1000; ++i) {
-            int length = rand.nextInt(100);
+            int length = rand.nextInt(100)+1;
             int[] array = new int[length];
             for (int j = 0; j < length; ++j) {
-                array[j] = rand.nextInt();
+                array[j] = rand.nextInt(1000)+1;
             }
-            int key = rand.nextInt();
+            int key = i;//rand.nextInt();
             map.put(key, array);
             checkMap.put(key, array);
         }
 
-        map.put(17, new int[]{1, 2, 3});
-        map.remove(17);
+//        map.put(17, new int[]{1, 2, 3});
+//        map.remove(17);
 
         checkIfEqual(map, checkMap);
 
@@ -87,7 +87,7 @@ public class CachedMapTest extends TestSettings {
 
         assertTrue(output2.toFile().exists());
 
-        CachedMap<int[]> map2 = new CachedIntArrayMap(output2, 5, "test", true);
+        CachedMap<int[]> map2 = new CachedIntArrayMap(output2, 5, "test", false);
 
         checkIfEqual(map2, checkMap);
     }

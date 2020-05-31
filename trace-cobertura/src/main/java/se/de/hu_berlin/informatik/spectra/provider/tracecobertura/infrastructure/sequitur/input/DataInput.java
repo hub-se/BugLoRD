@@ -32,7 +32,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 
 // package-private
 @CoverageIgnore
-class DataInput {
+public class DataInput {
 
     private static final byte MAGIC_1BYTE = (byte) 255;
     private static final byte MAGIC_2BYTES = (byte) 254;

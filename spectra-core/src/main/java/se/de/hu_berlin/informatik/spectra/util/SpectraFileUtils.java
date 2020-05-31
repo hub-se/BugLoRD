@@ -503,12 +503,12 @@ public class SpectraFileUtils {
 //							}
 //						}
 
-                        Log.out(SpectraFileUtils.class, "Storing %s sub traces...", indexer.getNodeIdSequences().size() - 1);
+                        Log.out(SpectraFileUtils.class, "Storing %,d sub traces...", indexer.getNodeIdSequences().size() - 1);
                         // store the referenced sequence parts
                         indexer.getNodeIdSequences().moveMapContentsTo(outputFile);
 
                         if (indexer.getSubTraceIdSequences() != null) {
-                            Log.out(SpectraFileUtils.class, "Storing %s sub trace ID sequences...", indexer.getSubTraceIdSequences().size() - 1);
+                            Log.out(SpectraFileUtils.class, "Storing %,d sub trace ID sequences...", indexer.getSubTraceIdSequences().size() - 1);
                             // store the referenced sequence parts
                             indexer.getSubTraceIdSequences().moveMapContentsTo(outputFile);
                         }
@@ -820,8 +820,6 @@ public class SpectraFileUtils {
                         } else {
                             node = -1;
                         }
-                    } else {
-                        trace.setInvolvement(i, false);
                     }
                 }
 
@@ -857,7 +855,12 @@ public class SpectraFileUtils {
 
                 int i = -1;
                 while (iterator.hasNext()) {
-                    trace.setHits(++i, iterator.next());
+                    Integer next = iterator.next();
+                    if (next > 0) {
+                    	trace.setHits(++i, next);
+                    } else {
+						++i;
+					}
                 }
 
                 loadExecutionTraces(zip, traceCounter, trace);
@@ -894,7 +897,9 @@ public class SpectraFileUtils {
                         traceIdentifiers[traceCounter - 1], traceCounter, traceInvolvement[0] == 1);
 
                 for (int i = 0; i < lineArray.size(); ++i) {
-                    trace.setInvolvement(i, traceInvolvement[i + 1] == 1);
+                	if (traceInvolvement[i + 1] == 1) {
+                		trace.setInvolvement(i, true);
+                	}
                 }
 
                 loadExecutionTraces(zip, traceCounter, trace);

@@ -1,31 +1,44 @@
 package se.de.hu_berlin.informatik.spectra.util;
 
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.SingleLinkedIntArrayQueue;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.input.DataInput;
+import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.DataOutput;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.MoveNamedByteArraysBetweenZipFilesProcessor;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipException;
 
 public abstract class CachedMap<T> implements Map<Integer, T> {
 
-    private static final String MAP_EXTENSION = ".map";
+    private static final String INDEX_DIRECTORY = "index";
+	private static final String MAP_EXTENSION = ".map";
+    private static final String INDEX_EXTENSION = ".idx";
 
-    private Set<Integer> keys = new HashSet<>();
+    private Map<Integer, CachemapFileEntry> storedEntries = new HashMap<>();
+    private Map<Integer, T> newEntries = new HashMap<>();
+    
     private Map<Integer, T> cache = new HashMap<>();
-    private Queue<Integer> cacheOrder = new LinkedList<>();
+    private Queue<Integer> cacheOrder = new SingleLinkedIntArrayQueue(50);
     private int cacheSize;
 
-    private int size = 0;
+    private AtomicInteger idGen = new AtomicInteger(0);
     private final ZipFileWrapper zipFile;
     private String directory;
+	private int zipEntryFileSize = 5000;
+	
+	boolean oldFormat = false;
 
     public CachedMap(Path zipFilePath, int cacheSize, String id, boolean deleteAtShutdown) {
         this.cacheSize = cacheSize;
-        this.directory = id + "/.";
+        this.directory = id;
         this.zipFile = ZipFileWrapper.getZipFileWrapper(zipFilePath);
 
         if (zipFilePath.toFile().exists()) {
@@ -52,16 +65,49 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 
     private void tryToLoadMapContents() {
         try {
-            List<String> list = zipFile.getFileHeadersContainingString(directory);
-            for (String fileName : list) {
-                String[] split = fileName.split("\\.");
-                if (split.length < 3) {
-                    throw new IllegalStateException("Illegal file name: " + fileName);
-                }
-                keys.add(Integer.valueOf(split[split.length - 2]));
-                ++size;
-            }
-
+        	int highestUsedIndex = -1;
+        	String pattern = directory + "/" + INDEX_DIRECTORY;
+//        	System.err.println("searching for: " + pattern);
+			List<String> list = zipFile.getFileHeadersContainingString(pattern);
+        	if (!list.isEmpty()) {
+        		// new format
+        		for (String fileName : list) {
+        			// ...directory/.index/.xy.idx
+        			String[] split = fileName.split("\\.");
+        			if (split.length < 3) {
+        				throw new IllegalStateException("Illegal file name: " + fileName);
+        			}
+        			Integer fileIndex = Integer.valueOf(split[split.length - 2]);
+        			highestUsedIndex = Math.max(highestUsedIndex, fileIndex);
+        			byte[] indexFile = zipFile.uncheckedGet(fileName);
+            		// index should contain a list of keys and where to find the values (key, offset, length)
+            		ByteArrayInputStream byteIn = new ByteArrayInputStream(indexFile);
+            		
+//            		System.err.println(fileName);
+            		while (byteIn.available() > 0) {
+            			int key = DataInput.readInt(byteIn);
+            			long offset = DataInput.readLong(byteIn);
+            			int length = DataInput.readInt(byteIn);
+            			storedEntries.put(key, new CachemapFileEntry(fileIndex, offset, length));
+            		}
+        		}
+        	} else {
+//        		System.err.println("old format map");
+        		oldFormat = true;
+        		// old format (one entry per file)
+        		list = zipFile.getFileHeadersContainingString(directory);
+        		for (String fileName : list) {
+        			String[] split = fileName.split("\\.");
+        			if (split.length < 3) {
+        				throw new IllegalStateException("Illegal file name: " + fileName);
+        			}
+        			Integer fileIndex = Integer.valueOf(split[split.length - 2]);
+        			highestUsedIndex = Math.max(highestUsedIndex, fileIndex);
+        			storedEntries.put(fileIndex, new CachemapFileEntry(fileIndex, 0, (int) zipFile.getEntrySize(fileName)));
+        		}
+        	}
+        	
+        	idGen.set(highestUsedIndex+1);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -71,69 +117,121 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 
     abstract public T fromByteArray(byte[] value);
 
-
-    private void store(int key, T value) {
-        zipFile.addArray(toByteArray(value), getFileName(key));
-    }
-
-    private T load(int key) {
-        try {
-            return fromByteArray(zipFile.uncheckedGet(getFileName(key)));
-        } catch (ZipException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("Could not get zip entry: " + getFileName(key));
-        }
-    }
-
-    private String getFileName(int key) {
-        return directory + key + MAP_EXTENSION;
-    }
+//    private String getFileName(int key) {
+//        return directory + "/." + key + MAP_EXTENSION;
+//    }
     
     private String getFileName(int key, String directory) {
-        return directory + key + MAP_EXTENSION;
-    }
-
-    public boolean moveMapContentsTo(Path otherZipFile) {
-        MoveNamedByteArraysBetweenZipFilesProcessor mover =
-                new MoveNamedByteArraysBetweenZipFilesProcessor(zipFile.getzipFilePath(), otherZipFile);
-
-        boolean result = true;
-        for (int key : keys) {
-            String fileName = getFileName(key, directory);
-            result &= mover.submit(new Pair<>(fileName, fileName)).getResult();
-        }
-
-        return result;
+        return directory + "/." + key + MAP_EXTENSION;
     }
     
+//    private String getIndexFileName(int key) {
+//        return directory + "/" + INDEX_DIRECTORY + "/." + key + INDEX_EXTENSION;
+//    }
+    
+    private String getIndexFileName(int key, String directory) {
+        return directory + "/" + INDEX_DIRECTORY + "/." + key + INDEX_EXTENSION;
+    }
+
+	public boolean moveMapContentsTo(Path otherZipFile) {
+    	return moveMapContentsTo(otherZipFile, directory);
+    }
+
     public boolean moveMapContentsTo(Path otherZipFile, String directory) {
-        MoveNamedByteArraysBetweenZipFilesProcessor mover =
-                new MoveNamedByteArraysBetweenZipFilesProcessor(zipFile.getzipFilePath(), otherZipFile);
+    	storeNewEntries(zipFile, this.directory, idGen);
+    	if (oldFormat) {
+    		AtomicInteger idGen = new AtomicInteger(0);
+    		// store in new format in target zip file
+    		ZipFileWrapper zipFile = ZipFileWrapper.getZipFileWrapper(otherZipFile);
+    		for (Integer key : keySet()) {
+				T element = get(key);
+				addNewEntry(key, element, zipFile, directory, idGen);
+			}
+    		storeNewEntries(zipFile, directory, idGen);
+    		return true;
+    	} else {
+    		MoveNamedByteArraysBetweenZipFilesProcessor mover =
+    				new MoveNamedByteArraysBetweenZipFilesProcessor(zipFile.getzipFilePath(), otherZipFile);
 
-        directory +=  "/.";
-        boolean result = true;
-        for (int key : keys) {
-            String fileName = getFileName(key);
-            String targetFileName = getFileName(key, directory);
-            result &= mover.submit(new Pair<>(fileName, targetFileName)).getResult();
+    		boolean result = true;
+    		for (int i = 0; i < idGen.get(); ++i) {
+    			String indexFileName = getIndexFileName(i, directory);
+    			result &= mover.submit(new Pair<>(indexFileName, indexFileName)).getResult();
+
+    			String fileName = getFileName(i, directory);
+    			result &= mover.submit(new Pair<>(fileName, fileName)).getResult();
+    		}
+
+    		return result;
+    	}
+    }
+    
+    private void storeNewEntries(ZipFileWrapper zipFile, String directory, AtomicInteger idGen) {
+    	if (!newEntries.isEmpty()) {
+    		int nextIndex = idGen.getAndIncrement();
+    		
+    		try {
+    			ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+    			ByteArrayOutputStream byteOutIndex = new ByteArrayOutputStream();
+
+    			long offset = 0;
+    			for (Entry<Integer, T> entry : newEntries.entrySet()) {
+    				byte[] array = toByteArray(entry.getValue());
+    				// index file contains list of entries: (key, offset, length)
+    				DataOutput.writeInt(byteOutIndex, entry.getKey());
+    				DataOutput.writeLong(byteOutIndex, offset);
+    				DataOutput.writeInt(byteOutIndex, array.length);
+//    				System.err.println(entry.getKey() + ", " + offset + ", " + array.length);
+
+    				storedEntries.put(entry.getKey(), new CachemapFileEntry(nextIndex, offset, array.length));
+    				offset += array.length;
+
+    				// contents file contains list of entries (byte[])
+    				byteOut.write(array);
+    			}
+
+    			byteOut.flush();
+    			byteOutIndex.flush();
+
+    			// store in zip file
+				byte[] byteArray = byteOutIndex.toByteArray();
+//				System.err.println("byteArray length: " + byteArray.length);
+				zipFile.addArray(byteArray, getIndexFileName(nextIndex, directory));
+				byte[] byteArray2 = byteOut.toByteArray();
+//				System.err.println("byteArray2 length: " + byteArray2.length);
+				zipFile.addArray(byteArray2, getFileName(nextIndex, directory));
+    		}catch (Exception e) {
+				throw new IllegalStateException(e);
+			}
+            
+    		newEntries.clear();
+    	}
+	}
+    
+    private T load(int key) {
+        try {
+        	CachemapFileEntry fileEntry = storedEntries.get(key);
+//        	System.err.println("loading zip entry: " + getFileName(key, directory) + ", " + fileEntry.offset + ", " + fileEntry.length);
+            return fromByteArray(zipFile.uncheckedGet(getFileName(fileEntry.fileIndex, directory), fileEntry.offset, fileEntry.length));
+        } catch (ZipException e) {
+            e.printStackTrace();
+            throw new IllegalStateException("Could not get zip entry: " + getFileName(key, directory));
         }
-
-        return result;
     }
 
     @Override
     public int size() {
-        return size;
+        return storedEntries.size() + newEntries.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return size <= 0;
+        return size() <= 0;
     }
 
     @Override
     public boolean containsKey(Object key) {
-        return keys.contains(key);
+        return storedEntries.containsKey(key) || newEntries.containsKey(key);
     }
 
     @Override
@@ -143,12 +241,15 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 
     @Override
     public T get(Object key) {
-        if (keys.contains(key)) {
+        if (containsKey(key)) {
             if (cache.containsKey(key)) {
                 return cache.get(key);
             }
+            if (newEntries.containsKey(key)) {
+                return newEntries.get(key);
+            }
 
-            // load from zip file, if not in cache
+            // load from zip file, if not cached
             T value = load((Integer) key);
             // put in cache
             if (cacheSize > 0) {
@@ -171,22 +272,22 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 
     @Override
     public T put(Integer key, T value) {
-        if (!keys.contains(key)) {
-            ++size;
-            // add the key
-            keys.add(key);
+        if (storedEntries.containsKey(key)) {
+        	throw new IllegalStateException("Cannot store another entry for key: " + key);
         } else {
-            // retrieving values from the zip file closes the input stream
-//			throw new IllegalStateException("Cannot store another entry for key: " + key);
+            return addNewEntry(key, value, zipFile, directory, idGen);
         }
-
-        // store the value in the zip file
-        store(key, value);
-
-        return null;
     }
 
-    @Override
+    private T addNewEntry(Integer key, T value, ZipFileWrapper zipFile, String directory, AtomicInteger idGen) {
+		T previous = newEntries.put(key, value);
+		if (newEntries.size() > zipEntryFileSize) {
+			storeNewEntries(zipFile, directory, idGen);
+		}
+		return previous;
+	}
+
+	@Override
     public void putAll(Map<? extends Integer, ? extends T> m) {
         for (Entry<? extends Integer, ? extends T> entry : m.entrySet()) {
             put(entry.getKey(), entry.getValue());
@@ -196,36 +297,40 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     @Override
     public void clear() {
         Set<String> toRemove = new HashSet<>();
-        for (int key : keys) {
-            toRemove.add(getFileName(key));
+        for (Entry<Integer, CachemapFileEntry> entry : storedEntries.entrySet()) {
+            toRemove.add(getFileName(entry.getValue().fileIndex, directory));
+            toRemove.add(getIndexFileName(entry.getValue().fileIndex, directory));
         }
         zipFile.removeEntries(toRemove);
-        keys.clear();
+        newEntries.clear();
+        storedEntries.clear();
         cache.clear();
         cacheOrder.clear();
-        size = 0;
     }
 
     @Override
     public Set<Integer> keySet() {
-        return Collections.unmodifiableSet(keys);
+    	// TODO this should not be used extensively while building the map...
+    	storeNewEntries(zipFile, directory, idGen);
+        return storedEntries.keySet();
     }
 
 
     @Override
     public T remove(Object key) {
-        T item = get(key);
-        if (keys.contains(key)) {
-            --size;
-            // remove the key
-            keys.remove(key);
-            // remove from cache
-            cache.remove(key);
-            cacheOrder.remove(key);
-            // remove from zip file (rewrites the zip file...)
-            zipFile.removeEntries(Collections.singletonList(getFileName((Integer) key)));
-        }
-        return item;
+    	throw new UnsupportedOperationException();
+//        T item = get(key);
+//        if (storedEntries.containsKey(key)) {
+//            --size;
+//            // remove the key
+//            storedEntries.remove(key);
+//            // remove from cache
+//            cache.remove(key);
+//            cacheOrder.remove(key);
+//            // remove from zip file (rewrites the zip file...)
+//            zipFile.removeEntries(Collections.singletonList(getFileName((Integer) key)));
+//        }
+//        return item;
     }
 
     @Override
@@ -238,4 +343,18 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
         throw new UnsupportedOperationException();
     }
 
+    private static class CachemapFileEntry {
+    	final int fileIndex;
+    	final long offset;
+    	final int length;
+    	
+		public CachemapFileEntry(int fileIndex, long offset, int length) {
+			super();
+			this.fileIndex = fileIndex;
+			this.offset = offset;
+			this.length = length;
+		}
+    	
+    	
+    }
 }
