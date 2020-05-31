@@ -134,12 +134,12 @@ public class BranchSpectraTest extends TestSettings {
         		tracker.track(String.format("size: %,8d, test: %s ", executionTrace2.size(), testCaseTrace.getIdentifier()));
 				Iterator<Integer> branchTraceIterator = executionTrace2.mappedIterator(branchingSpectra.getIndexer());
         		
-        		long counter = 0;
+//        		long counter = 0;
         		while (branchTraceIterator.hasNext()) {
-        			if (++counter % 20000 == 0) {
-    					tracker.track(String.format("cancelling after %,d branches.", counter));
-    					break;
-    				}
+//        			if (++counter % 20000 == 0) {
+//    					tracker.track(String.format("cancelling after %,d branches.", counter));
+//    					break;
+//    				}
         			INode<ProgramBranch> branch = branchingSpectra.getNode(branchTraceIterator.next());
 //        			tracker.track(String.format("branch: %s", branch.getIdentifier()));
         			Iterator<SourceCodeBlock> branchIterator = branch.getIdentifier().getElements().iterator();
@@ -149,7 +149,7 @@ public class BranchSpectraTest extends TestSettings {
         			}
         		}
         		
-        		assertTrue(counter % 20000 == 0 || !statementTraceIterator.hasNext());
+        		assertTrue(!statementTraceIterator.hasNext());
         	}
         }
     }

@@ -138,16 +138,16 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     }
 
     public boolean moveMapContentsTo(Path otherZipFile, String directory) {
-    	storeNewEntries(zipFile, this.directory, idGen);
+    	storeNewEntries(zipFile, this.directory, idGen, storedEntries);
     	if (oldFormat) {
     		AtomicInteger idGen = new AtomicInteger(0);
     		// store in new format in target zip file
     		ZipFileWrapper zipFile = ZipFileWrapper.getZipFileWrapper(otherZipFile);
     		for (Integer key : keySet()) {
 				T element = get(key);
-				addNewEntry(key, element, zipFile, directory, idGen);
+				addNewEntry(key, element, zipFile, directory, idGen, null);
 			}
-    		storeNewEntries(zipFile, directory, idGen);
+    		storeNewEntries(zipFile, directory, idGen, null);
     		return true;
     	} else {
     		MoveNamedByteArraysBetweenZipFilesProcessor mover =
@@ -166,7 +166,8 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     	}
     }
     
-    private void storeNewEntries(ZipFileWrapper zipFile, String directory, AtomicInteger idGen) {
+    private void storeNewEntries(ZipFileWrapper zipFile, String directory, 
+    		AtomicInteger idGen, Map<Integer, CachemapFileEntry> storedEntries) {
     	if (!newEntries.isEmpty()) {
     		int nextIndex = idGen.getAndIncrement();
     		
@@ -183,7 +184,9 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     				DataOutput.writeInt(byteOutIndex, array.length);
 //    				System.err.println(entry.getKey() + ", " + offset + ", " + array.length);
 
-    				storedEntries.put(entry.getKey(), new CachemapFileEntry(nextIndex, offset, array.length));
+    				if (storedEntries != null) {
+    					storedEntries.put(entry.getKey(), new CachemapFileEntry(nextIndex, offset, array.length));
+    				}
     				offset += array.length;
 
     				// contents file contains list of entries (byte[])
@@ -209,14 +212,18 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 	}
     
     private T load(int key) {
+    	CachemapFileEntry fileEntry = storedEntries.get(key);
         try {
-        	CachemapFileEntry fileEntry = storedEntries.get(key);
 //        	System.err.println("loading zip entry: " + getFileName(key, directory) + ", " + fileEntry.offset + ", " + fileEntry.length);
             return fromByteArray(zipFile.uncheckedGet(getFileName(fileEntry.fileIndex, directory), fileEntry.offset, fileEntry.length));
         } catch (ZipException e) {
             e.printStackTrace();
-            throw new IllegalStateException("Could not get zip entry: " + getFileName(key, directory));
-        }
+            throw new IllegalStateException("Could not get zip entry: " + zipFile.getzipFilePath() + "/" + getFileName(key, directory));
+        } catch (Exception e) {
+        	System.err.println("loading zip entry: " + getFileName(key, directory) + ", " + fileEntry.offset + ", " + fileEntry.length);
+        	e.printStackTrace();
+            throw new IllegalStateException("Could not get zip entry: " + zipFile.getzipFilePath() + "/" + getFileName(key, directory));
+		}
     }
 
     @Override
@@ -275,14 +282,15 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
         if (storedEntries.containsKey(key)) {
         	throw new IllegalStateException("Cannot store another entry for key: " + key);
         } else {
-            return addNewEntry(key, value, zipFile, directory, idGen);
+            return addNewEntry(key, value, zipFile, directory, idGen, storedEntries);
         }
     }
 
-    private T addNewEntry(Integer key, T value, ZipFileWrapper zipFile, String directory, AtomicInteger idGen) {
+    private T addNewEntry(Integer key, T value, ZipFileWrapper zipFile, String directory, 
+    		AtomicInteger idGen, Map<Integer, CachemapFileEntry> storedEntries) {
 		T previous = newEntries.put(key, value);
 		if (newEntries.size() > zipEntryFileSize) {
-			storeNewEntries(zipFile, directory, idGen);
+			storeNewEntries(zipFile, directory, idGen, storedEntries);
 		}
 		return previous;
 	}
@@ -311,7 +319,7 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     @Override
     public Set<Integer> keySet() {
     	// TODO this should not be used extensively while building the map...
-    	storeNewEntries(zipFile, directory, idGen);
+    	storeNewEntries(zipFile, directory, idGen, storedEntries);
         return storedEntries.keySet();
     }
 
