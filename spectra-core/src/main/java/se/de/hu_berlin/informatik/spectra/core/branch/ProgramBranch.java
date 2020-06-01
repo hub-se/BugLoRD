@@ -8,6 +8,7 @@ import se.de.hu_berlin.informatik.spectra.util.Shortened;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
 
     private final int id;
 	private final ProgramBranchSpectra<?> programBranchSpectra;
+	private final List<SourceCodeBlock> elements;
 
 	/*====================================================================================
      * CONSTRUCTORS
@@ -27,6 +29,13 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
     public ProgramBranch(int id, ProgramBranchSpectra<?> programBranchSpectra) {
 		this.id = id;
 		this.programBranchSpectra = programBranchSpectra;
+		this.elements = null;
+  	}
+    
+    private ProgramBranch(int id, List<SourceCodeBlock> elements) {
+		this.id = id;
+		this.elements = elements;
+		this.programBranchSpectra = null;
   	}
 
     /*====================================================================================
@@ -35,7 +44,14 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
 
 	@Override
     public String toString() {
-        return String.valueOf(id);
+		StringBuilder builder = new StringBuilder();
+        builder.append(this.id);
+        Collection<SourceCodeBlock> branchElements = getElements();
+		for (SourceCodeBlock block : branchElements) {
+            builder.append(IDENTIFIER_SEPARATOR_CHAR)
+            .append(block.toString());
+        }
+        return builder.toString();
     }
     
     public String toReadableString() {
@@ -165,6 +181,11 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
      * @return list of executed statements
      */
     public Collection<SourceCodeBlock> getElements() {
+    	if (elements != null) {
+    		// usually, this is not the case; may happen when a branch was read from a ranking file
+    		return elements;
+    	}
+    	
     	int[] subTraceSequence = programBranchSpectra.getSubTraceSequenceMap().get(id);
     	if (subTraceSequence == null) {
 //    		throw new IllegalStateException("No branch found for id " + this.id);
@@ -214,7 +235,7 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
 
     public final static String UNKNOWN_ELEMENT = "_";
 
-    public static final ProgramBranch DUMMY = new ProgramBranch(-1, null);
+    public static final ProgramBranch DUMMY = new ProgramBranch(-1, Collections.emptyList());
 
 	
 

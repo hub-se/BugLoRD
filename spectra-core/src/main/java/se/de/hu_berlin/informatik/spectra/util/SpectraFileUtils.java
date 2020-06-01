@@ -143,15 +143,25 @@ public class SpectraFileUtils {
     }
 
     private static <T> String getNodeIdentifierListString(Collection<INode<T>> nodes) {
-        StringBuilder buffer = new StringBuilder();
-        // store the identifiers (order is important)
-        for (INode<T> node : nodes) {
-            buffer.append(node.getIdentifier()).append(IDENTIFIER_DELIMITER);
-        }
-        if (buffer.length() > 0) {
-            buffer.deleteCharAt(buffer.length() - 1);
-        }
-        return buffer.toString();
+    	if (!nodes.isEmpty()) {
+    		StringBuilder buffer = new StringBuilder();
+    		if (nodes.iterator().next().getIdentifier() instanceof ProgramBranch) {
+    			// store the identifiers (order is important)
+    	        for (INode<T> node : nodes) {
+    	            buffer.append(((ProgramBranch)node.getIdentifier()).getId()).append(IDENTIFIER_DELIMITER);
+    	        }
+    		} else {
+    			// store the identifiers (order is important)
+    	        for (INode<T> node : nodes) {
+    	            buffer.append(node.getIdentifier()).append(IDENTIFIER_DELIMITER);
+    	        }
+			}
+    		if (buffer.length() > 0) {
+	            buffer.deleteCharAt(buffer.length() - 1);
+	        }
+	        return buffer.toString();
+    	}
+        return "";
     }
 
     private static <T> String getTraceIdentifierListString(Collection<? extends ITrace<T>> traces) {
@@ -231,23 +241,51 @@ public class SpectraFileUtils {
 
     private static <T> String getIdentifierString(Indexable<T> identifier, boolean index,
                                                   List<INode<T>> nodes, Map<String, Integer> map) {
-        StringBuilder buffer = new StringBuilder();
-        if (index) {
-            // store the identifiers in indexed (shorter) format (order is
-            // important)
-            for (INode<T> node : nodes) {
-                buffer.append(identifier.getIndexedIdentifier(node.getIdentifier(), map)).append(IDENTIFIER_DELIMITER);
-            }
-        } else {
-            // store the identifiers (order is important)
-            for (INode<T> node : nodes) {
-                buffer.append(node.getIdentifier()).append(IDENTIFIER_DELIMITER);
-            }
-        }
-        if (buffer.length() > 0) {
-            buffer.deleteCharAt(buffer.length() - 1);
-        }
-        return buffer.toString();
+    	if (!nodes.isEmpty()) {
+    		StringBuilder buffer = new StringBuilder();
+    		if (nodes.iterator().next().getIdentifier() instanceof ProgramBranch) {
+    			// store the identifiers (order is important)
+    	        for (INode<T> node : nodes) {
+    	            buffer.append(((ProgramBranch)node.getIdentifier()).getId()).append(IDENTIFIER_DELIMITER);
+    	        }
+    		} else {
+    			// store the identifiers (order is important)
+    	        for (INode<T> node : nodes) {
+    	            buffer.append(node.getIdentifier()).append(IDENTIFIER_DELIMITER);
+    	        }
+			}
+    		if (buffer.length() > 0) {
+	            buffer.deleteCharAt(buffer.length() - 1);
+	        }
+	        return buffer.toString();
+    	}
+    	if (!nodes.isEmpty()) {
+    		StringBuilder buffer = new StringBuilder();
+    		if (nodes.iterator().next().getIdentifier() instanceof ProgramBranch) {
+    			// store the identifiers (order is important)
+    	        for (INode<T> node : nodes) {
+    	            buffer.append(((ProgramBranch)node.getIdentifier()).getId()).append(IDENTIFIER_DELIMITER);
+    	        }
+    		} else {
+    			if (index) {
+    				// store the identifiers in indexed (shorter) format (order is
+    				// important)
+    				for (INode<T> node : nodes) {
+    					buffer.append(identifier.getIndexedIdentifier(node.getIdentifier(), map)).append(IDENTIFIER_DELIMITER);
+    				}
+    			} else {
+    				// store the identifiers (order is important)
+    				for (INode<T> node : nodes) {
+    					buffer.append(node.getIdentifier()).append(IDENTIFIER_DELIMITER);
+    				}
+    			}
+    		}
+    		if (buffer.length() > 0) {
+    			buffer.deleteCharAt(buffer.length() - 1);
+    		}
+    		return buffer.toString();
+    	}
+    	return "";
     }
 
     @SuppressWarnings("unchecked")

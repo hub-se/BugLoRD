@@ -156,7 +156,7 @@ public class ExperimentRunner {
 
         ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL,
                 ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, true);
-
+        
         if (toDoContains(toDo, "genSpectra") || toDoContains(toDo, "all")) {
             // every thread needs its own port for the JaCoCo Java agent, sadly...
             EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>> firstEH =
@@ -173,6 +173,21 @@ public class ExperimentRunner {
                     new ThreadedProcessor<>(limit, handlers));
         }
 
+        if (toDoContains(toDo, "reSave")) {
+            EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>> firstEH =
+                    new ERLoadAndSaveSpectraEH(toolSpecific, options.hasOption(CmdOptions.FILL_EMPTY_LINES)).asEH();
+            @SuppressWarnings("unchecked") final Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>>) firstEH.getClass();
+            final EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>[] handlers = Misc.createGenericArray(clazz, threadCount);
+
+            handlers[0] = firstEH;
+            for (int i = 1; i < handlers.length; ++i) {
+                // create modules with different port numbers
+                handlers[i] = new ERLoadAndSaveSpectraEH(toolSpecific, options.hasOption(CmdOptions.FILL_EMPTY_LINES)).asEH();
+            }
+            linker.append(
+                    new ThreadedProcessor<>(limit, handlers));
+        }
+        
         if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {
             linker.append(
                     new ThreadedProcessor<>(threadCount, limit,
