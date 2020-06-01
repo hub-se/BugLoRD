@@ -20,7 +20,7 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 
     private static final String INDEX_DIRECTORY = "index";
 	private static final String MAP_EXTENSION = ".map";
-    private static final String INDEX_EXTENSION = ".idx";
+//    private static final String INDEX_EXTENSION = ".idx";
 
     private Map<Integer, CachemapFileEntry> storedEntries = new HashMap<>();
     private Map<Integer, T> newEntries = new HashMap<>();
@@ -68,16 +68,16 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
         	int highestUsedIndex = -1;
         	String pattern = directory + "/" + INDEX_DIRECTORY;
 //        	System.err.println("searching for: " + pattern);
-			List<String> list = zipFile.getFileHeadersContainingString(pattern);
+			List<String> list = zipFile.getFileHeadersStartingWithString(pattern);
         	if (!list.isEmpty()) {
         		// new format
         		for (String fileName : list) {
-        			// ...directory/.index/.xy.idx
-        			String[] split = fileName.split("\\.");
-        			if (split.length < 3) {
+        			// ...directory/.index/.xy
+        			int dotIndex = fileName.lastIndexOf('.');
+        			if (dotIndex < 0) {
         				throw new IllegalStateException("Illegal file name: " + fileName);
         			}
-        			Integer fileIndex = Integer.valueOf(split[split.length - 2]);
+        			Integer fileIndex = Integer.valueOf(fileName.substring(dotIndex + 1));
         			highestUsedIndex = Math.max(highestUsedIndex, fileIndex);
         			byte[] indexFile = zipFile.uncheckedGet(fileName);
             		// index should contain a list of keys and where to find the values (key, offset, length)
@@ -95,13 +95,15 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 //        		System.err.println("old format map");
         		oldFormat = true;
         		// old format (one entry per file)
-        		list = zipFile.getFileHeadersContainingString(directory);
+        		list = zipFile.getFileHeadersStartingWithString(directory + "/");
         		for (String fileName : list) {
-        			String[] split = fileName.split("\\.");
-        			if (split.length < 3) {
+        			// old format files have an extension
+        			String temp = fileName.substring(0, fileName.length()-4);
+        			int dotIndex = temp.lastIndexOf('.');
+        			if (dotIndex < 0) {
         				throw new IllegalStateException("Illegal file name: " + fileName);
         			}
-        			Integer fileIndex = Integer.valueOf(split[split.length - 2]);
+        			Integer fileIndex = Integer.valueOf(temp.substring(dotIndex + 1));
         			highestUsedIndex = Math.max(highestUsedIndex, fileIndex);
         			storedEntries.put(fileIndex, new CachemapFileEntry(fileIndex, 0, (int) zipFile.getEntrySize(fileName)));
         		}
@@ -122,7 +124,7 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 //    }
     
     private String getFileName(int key, String directory) {
-        return directory + "/." + key + MAP_EXTENSION;
+        return directory + "/." + key;
     }
     
 //    private String getIndexFileName(int key) {
@@ -130,7 +132,7 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 //    }
     
     private String getIndexFileName(int key, String directory) {
-        return directory + "/" + INDEX_DIRECTORY + "/." + key + INDEX_EXTENSION;
+        return directory + "/" + INDEX_DIRECTORY + "/." + key;
     }
 
 	public boolean moveMapContentsTo(Path otherZipFile) {
@@ -213,16 +215,20 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     
     private T load(int key) {
     	CachemapFileEntry fileEntry = storedEntries.get(key);
-        try {
+        String fileName = getFileName(fileEntry.fileIndex, directory);
+        if (oldFormat) {
+        	fileName += MAP_EXTENSION;
+        }
+		try {
 //        	System.err.println("loading zip entry: " + getFileName(key, directory) + ", " + fileEntry.offset + ", " + fileEntry.length);
-            return fromByteArray(zipFile.uncheckedGet(getFileName(fileEntry.fileIndex, directory), fileEntry.offset, fileEntry.length));
+            return fromByteArray(zipFile.uncheckedGet(fileName, fileEntry.offset, fileEntry.length));
         } catch (ZipException e) {
             e.printStackTrace();
-            throw new IllegalStateException("Could not get zip entry: " + zipFile.getzipFilePath() + "/" + getFileName(key, directory));
+            throw new IllegalStateException("Could not get zip entry: " + zipFile.getzipFilePath() + "/" + fileName);
         } catch (Exception e) {
-        	System.err.println("loading zip entry: " + getFileName(key, directory) + ", " + fileEntry.offset + ", " + fileEntry.length);
+        	System.err.println("loading zip entry: " + fileName + ", " + fileEntry.offset + ", " + fileEntry.length);
         	e.printStackTrace();
-            throw new IllegalStateException("Could not get zip entry: " + zipFile.getzipFilePath() + "/" + getFileName(key, directory));
+            throw new IllegalStateException("Could not get zip entry: " + zipFile.getzipFilePath() + "/" + fileName);
 		}
     }
 
