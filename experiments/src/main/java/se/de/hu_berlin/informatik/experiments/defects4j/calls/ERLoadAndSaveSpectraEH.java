@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.BuildCoherentSpectraModule;
+import se.de.hu_berlin.informatik.spectra.core.manipulation.SaveSpectraModule;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
@@ -141,8 +142,7 @@ public class ERLoadAndSaveSpectraEH extends AbstractProcessor<BuggyFixedEntity<?
         		new BuildCoherentSpectraModule().submit(spectra);
         	}
 
-        	SpectraFileUtils.saveSpectraToZipFile(spectra, spectraFile.toPath().toAbsolutePath(),
-        			true, true, true);
+        	new SaveSpectraModule<>(spectraFile.toPath().toAbsolutePath()).submit(spectra);
 
         	return buggyEntity;
         } else {
