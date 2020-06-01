@@ -92,7 +92,7 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
             		}
         		}
         	} else {
-//        		System.err.println("old format map");
+//        		System.err.println("old format map: " + zipFile.getzipFilePath() + "/" + directory);
         		oldFormat = true;
         		// old format (one entry per file)
         		list = zipFile.getFileHeadersStartingWithString(directory + "/");
@@ -157,11 +157,9 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 
     		boolean result = true;
     		for (int i = 0; i < idGen.get(); ++i) {
-    			String indexFileName = getIndexFileName(i, directory);
-    			result &= mover.submit(new Pair<>(indexFileName, indexFileName)).getResult();
-
-    			String fileName = getFileName(i, directory);
-    			result &= mover.submit(new Pair<>(fileName, fileName)).getResult();
+//    			System.err.println("moving: " + getFileName(i, directory));
+    			result &= mover.submit(new Pair<>(getIndexFileName(i, this.directory), getIndexFileName(i, directory))).getResult();
+    			result &= mover.submit(new Pair<>(getFileName(i, this.directory), getFileName(i, directory))).getResult();
     		}
 
     		return result;

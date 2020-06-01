@@ -100,6 +100,47 @@ public class BranchSpectraTest extends TestSettings {
     }
     
     @Test
+    public void testBranchSpectraSaveAndLoad_new() throws IOException {
+    	//assert(false); //uncomment to check if asserts are enabled
+
+        ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b_new.zip");
+        
+        ProgramBranchSpectra<ProgramBranch> branchingSpectra = StatementSpectraToBranchSpectra
+        		.generateBranchingSpectraFromStatementSpectra(statementSpectra, null);
+ 
+        Path output1 = Paths.get(getStdTestDir(), "spectra_trace_new.zip");
+        FileUtils.delete(output1);
+        SpectraFileUtils.saveSpectraToZipFile(branchingSpectra, output1, true, false, true);
+        Log.out(this, "saved...");
+
+        ISpectra<ProgramBranch, ?> spectra2 = SpectraFileUtils.loadSpectraFromZipFile(ProgramBranch.DUMMY, output1);
+        Log.out(this, "loaded...");
+        assertNotNull(spectra2.getIndexer());
+        
+        Path output2 = Paths.get(getStdTestDir(), "spectra2_trace_new.zip");
+        FileUtils.delete(output2);
+        SpectraFileUtils.saveSpectraToZipFile(spectra2, output2, true, false, true);
+        Log.out(this, "saved indexed...");
+        ISpectra<ProgramBranch, ?> spectra3 = SpectraFileUtils.loadSpectraFromZipFile(ProgramBranch.DUMMY, output2);
+        Log.out(this, "loaded...");
+        assertEquals(spectra2, spectra3);
+
+        Path output3 = Paths.get(getStdTestDir(), "spectra3_trace_new.zip");
+        FileUtils.delete(output3);
+        SpectraFileUtils.saveSpectraToZipFile(spectra2, output3, true, false, false);
+        Log.out(this, "saved non-indexed...");
+        ISpectra<ProgramBranch, ?> spectra4 = SpectraFileUtils.loadSpectraFromZipFile(ProgramBranch.DUMMY, output3);
+        Log.out(this, "loaded...");
+        assertEquals(spectra2, spectra4);
+
+        assertTrue(output1.toFile().exists());
+        assertTrue(output2.toFile().exists());
+        assertEquals(output1.toFile().length(), output2.toFile().length());
+        assertTrue(output3.toFile().exists());
+        assertTrue(output2.toFile().length() > output3.toFile().length());
+    }
+    
+    @Test
     public void testBranchSpectraGeneration() throws IOException {
     	//assert(false); //uncomment to check if asserts are enabled
 

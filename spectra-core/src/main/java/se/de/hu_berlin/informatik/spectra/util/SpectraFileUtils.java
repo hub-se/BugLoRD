@@ -272,7 +272,8 @@ public class SpectraFileUtils {
 
     @SuppressWarnings("unchecked")
     private static <T, K extends ITrace<T>> void saveSpectraToZipFile(ISpectra<T, K> spectra, Path output,
-                                                                      boolean compress, boolean sparse, boolean index, Collection<INode<T>> nodes, Map<String, Integer> map,
+                                                                      boolean compress, boolean sparse, boolean index, 
+                                                                      Collection<INode<T>> nodes, Map<String, Integer> map,
                                                                       String nodeIdentifiers, String traceIdentifiers) {
     	// should not exist, anyway...
         FileUtils.delete(output);
