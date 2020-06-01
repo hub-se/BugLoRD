@@ -249,24 +249,6 @@ public class SpectraFileUtils {
     	            buffer.append(((ProgramBranch)node.getIdentifier()).getId()).append(IDENTIFIER_DELIMITER);
     	        }
     		} else {
-    			// store the identifiers (order is important)
-    	        for (INode<T> node : nodes) {
-    	            buffer.append(node.getIdentifier()).append(IDENTIFIER_DELIMITER);
-    	        }
-			}
-    		if (buffer.length() > 0) {
-	            buffer.deleteCharAt(buffer.length() - 1);
-	        }
-	        return buffer.toString();
-    	}
-    	if (!nodes.isEmpty()) {
-    		StringBuilder buffer = new StringBuilder();
-    		if (nodes.iterator().next().getIdentifier() instanceof ProgramBranch) {
-    			// store the identifiers (order is important)
-    	        for (INode<T> node : nodes) {
-    	            buffer.append(((ProgramBranch)node.getIdentifier()).getId()).append(IDENTIFIER_DELIMITER);
-    	        }
-    		} else {
     			if (index) {
     				// store the identifiers in indexed (shorter) format (order is
     				// important)
@@ -279,11 +261,11 @@ public class SpectraFileUtils {
     					buffer.append(node.getIdentifier()).append(IDENTIFIER_DELIMITER);
     				}
     			}
-    		}
+			}
     		if (buffer.length() > 0) {
-    			buffer.deleteCharAt(buffer.length() - 1);
-    		}
-    		return buffer.toString();
+	            buffer.deleteCharAt(buffer.length() - 1);
+	        }
+	        return buffer.toString();
     	}
     	return "";
     }
