@@ -61,7 +61,7 @@ public class RankingFromTraceFileModule<T extends Indexable<T> & Comparable<T>> 
     public List<IFaultLocalizer<T>> processItem(final List<IFaultLocalizer<T>> localizers) {
         final ProgressBarTracker tracker = new ProgressBarTracker(1, localizers.size());
 
-        ILocalizerCache<T> localizer = new LocalizerCacheFromFile(dummy,
+        ILocalizerCache<T> localizer = new LocalizerCacheFromFile<>(dummy,
                 traceFilePath.toString(), metricsFilePath.toString());
 
         //calculate the SBFL rankings, if any localizers are given

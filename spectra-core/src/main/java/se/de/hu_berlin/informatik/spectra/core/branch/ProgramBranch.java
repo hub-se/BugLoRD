@@ -5,6 +5,8 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 import se.de.hu_berlin.informatik.spectra.util.Indexable;
 import se.de.hu_berlin.informatik.spectra.util.Shortened;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -120,7 +122,13 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
     }
 
     public static ProgramBranch getNewProgramBranchFromString(String identifier) throws IllegalArgumentException {
-    	throw new UnsupportedOperationException();
+    	 String[] elements = identifier.split(IDENTIFIER_SEPARATOR_CHAR);
+    	 int id = Integer.valueOf(elements[0]);
+         List<SourceCodeBlock> trace = new ArrayList<>(elements.length-1);
+         for (int i = 1; i < elements.length; i++) {
+             trace.add(SourceCodeBlock.getNewBlockFromString(elements[i]));
+         }
+         return new ProgramBranch(id, trace);
     }
 
 
