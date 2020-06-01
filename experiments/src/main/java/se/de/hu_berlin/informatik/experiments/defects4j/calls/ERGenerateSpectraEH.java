@@ -192,7 +192,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
                     		bug.getWorkDataDir().resolve(subDirName)
                     			.resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile(),
                             StandardCopyOption.REPLACE_EXISTING);
-                    FileUtils.delete(spectraFile);
+                    FileUtils.delete(branchSpectraFile);
                 } catch (IOException e) {
                     Log.err(this, e, "Could not copy the spectra to the data directory.");
                 }
