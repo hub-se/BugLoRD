@@ -396,7 +396,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
         	// have the same name as classes in the main class directory. Originally, Cobertura would silently
         	// overwrite already instrumented classes with instrumented classes with the same name...
         	// We will instead keep the first found class. This is why we put the test class directory first.
-        	.setPathsToBinaries(buggyTestBinDir, bug.getWorkDir(true).resolve(buggyMainBinDir).toString());
+        	.setPathsToBinaries(
+        			bug.getWorkDir(true).resolve(buggyTestBinDir).toString(), 
+        			bug.getWorkDir(true).resolve(buggyMainBinDir).toString());
 //        }
         builder
                 .setOutputDir(rankingDir.toString())

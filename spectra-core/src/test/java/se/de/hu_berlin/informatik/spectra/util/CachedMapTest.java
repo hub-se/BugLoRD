@@ -63,7 +63,7 @@ public class CachedMapTest extends TestSettings {
 
         Random rand = new Random(12315415);
 
-//        map.put(17, new int[]{1, 2, 3});
+        map.put(17, new int[]{1, 2, 3});
 
         map.get(17);
 
@@ -71,15 +71,29 @@ public class CachedMapTest extends TestSettings {
             int length = rand.nextInt(100)+1;
             int[] array = new int[length];
             for (int j = 0; j < length; ++j) {
-                array[j] = rand.nextInt(1000)+1;
+                array[j] = rand.nextInt();
             }
             int key = i;//rand.nextInt();
             map.put(key, array);
             checkMap.put(key, array);
         }
 
-//        map.put(17, new int[]{1, 2, 3});
-//        map.remove(17);
+        map.put(17, new int[]{1, 2, 3});
+        checkMap.put(17, new int[]{1, 2, 3});
+        
+        for (int i = 1001; i < 2000; ++i) {
+            int length = rand.nextInt(100)+1;
+            int[] array = new int[length];
+            for (int j = 0; j < length; ++j) {
+                array[j] = rand.nextInt();
+            }
+            int key = i;//rand.nextInt();
+            map.put(key, array);
+            checkMap.put(key, array);
+        }
+        
+        map.remove(17);
+        checkMap.remove(17);
 
         checkIfEqual(map, checkMap);
 
