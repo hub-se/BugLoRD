@@ -965,7 +965,7 @@ public class SpectraFileUtils {
 	private static CachedMap<int[]> loadBranchNodeIdSequences(ZipFileWrapper zip) throws ZipException {
 
         // TODO what is a good cache size here?
-        CachedMap<int[]> map = new CachedIntArrayMap(zip.getzipFilePath(), 500,
+        CachedMap<int[]> map = new CachedIntArrayMap(zip.getzipFilePath(), 5000,
                 BRANCH_NODE_ID_SEQUENCES_DIR, false);
 
         Log.out(SpectraFileUtils.class, "Branch spectra: Loaded %,d sub traces from zip file!", map.size() - 1);
@@ -975,7 +975,7 @@ public class SpectraFileUtils {
     private static CachedMap<int[]> loadBranchSubTraceIdSequences(ZipFileWrapper zip) throws ZipException {
 
         // TODO what is a good cache size here?
-        CachedMap<int[]> map = new CachedIntArrayMap(zip.getzipFilePath(), 500,
+        CachedMap<int[]> map = new CachedIntArrayMap(zip.getzipFilePath(), 5000,
                 BRANCH_SUB_TRACE_ID_SEQUENCES_DIR, false);
 
         if (map.isEmpty()) {

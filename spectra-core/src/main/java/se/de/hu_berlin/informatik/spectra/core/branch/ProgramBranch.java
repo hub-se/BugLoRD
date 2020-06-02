@@ -55,17 +55,6 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
         }
         return builder.toString();
     }
-    
-    public String toReadableString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.id);
-        Collection<SourceCodeBlock> branchElements = getElements();
-		for (SourceCodeBlock block : branchElements) {
-            builder.append(IDENTIFIER_SEPARATOR_CHAR)
-            .append(block.toString());
-        }
-        return builder.toString();
-    }
 
     @Override
     public int hashCode() {
