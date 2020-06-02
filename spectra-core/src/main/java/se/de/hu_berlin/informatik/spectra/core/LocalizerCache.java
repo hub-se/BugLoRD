@@ -31,19 +31,19 @@ public class LocalizerCache<T> implements ILocalizerCache<T> {
     /**
      * cache EF
      */
-    private Map<T, Double> __cacheEF;
+    private Map<Integer, Double> __cacheEF;
     /**
      * cache EP
      */
-    private Map<T, Double> __cacheEP;
+    private Map<Integer, Double> __cacheEP;
     /**
      * cache NF
      */
-    private Map<T, Double> __cacheNF;
+    private Map<Integer, Double> __cacheNF;
     /**
      * cache NP
      */
-    private Map<T, Double> __cacheNP;
+    private Map<Integer, Double> __cacheNP;
 
     /**
      * Constructs the localizer
@@ -102,10 +102,10 @@ public class LocalizerCache<T> implements ILocalizerCache<T> {
         if (this.cacheOutdated()) {
             resetCache();
         }
-        Double np = this.__cacheNP.get(node.getIdentifier());
+        Double np = this.__cacheNP.get(node.getIndex());
         if (np == null) {
             np = computeValue(strategy, trace -> (trace.isSuccessful() && !trace.isInvolved(node)));
-            this.__cacheNP.put(node.getIdentifier(), np);
+            this.__cacheNP.put(node.getIndex(), np);
         }
         return np;
     }
@@ -115,10 +115,10 @@ public class LocalizerCache<T> implements ILocalizerCache<T> {
         if (this.cacheOutdated()) {
             resetCache();
         }
-        Double nf = this.__cacheNF.get(node.getIdentifier());
+        Double nf = this.__cacheNF.get(node.getIndex());
         if (nf == null) {
             nf = computeValue(strategy, trace -> (!trace.isSuccessful() && !trace.isInvolved(node)));
-            this.__cacheNF.put(node.getIdentifier(), nf);
+            this.__cacheNF.put(node.getIndex(), nf);
         }
         return nf;
     }
@@ -128,10 +128,10 @@ public class LocalizerCache<T> implements ILocalizerCache<T> {
         if (this.cacheOutdated()) {
             resetCache();
         }
-        Double ep = this.__cacheEP.get(node.getIdentifier());
+        Double ep = this.__cacheEP.get(node.getIndex());
         if (ep == null) {
             ep = computeValue(strategy, trace -> (trace.isSuccessful() && trace.isInvolved(node)));
-            this.__cacheEP.put(node.getIdentifier(), ep);
+            this.__cacheEP.put(node.getIndex(), ep);
         }
         return ep;
     }
@@ -141,10 +141,10 @@ public class LocalizerCache<T> implements ILocalizerCache<T> {
         if (this.cacheOutdated()) {
             resetCache();
         }
-        Double ef = this.__cacheEF.get(node.getIdentifier());
+        Double ef = this.__cacheEF.get(node.getIndex());
         if (ef == null) {
             ef = computeValue(strategy, trace -> (!trace.isSuccessful() && trace.isInvolved(node)));
-            this.__cacheEF.put(node.getIdentifier(), ef);
+            this.__cacheEF.put(node.getIndex(), ef);
         }
         return ef;
     }
