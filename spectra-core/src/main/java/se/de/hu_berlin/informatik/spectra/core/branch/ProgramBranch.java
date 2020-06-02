@@ -19,7 +19,7 @@ import java.util.Set;
  * A program branch is a list of program elements.
  * In this case modeled as a list of Source Code Blocks.
  */
-public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Indexable<ProgramBranch>, Cloneable {
+public class ProgramBranch implements Iterable<SourceCodeBlock>, Shortened, Comparable<ProgramBranch>, Indexable<ProgramBranch>, Cloneable {
 
     private final int id;
 	private final ProgramBranchSpectra<?> programBranchSpectra;
@@ -49,7 +49,7 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
     public String toString() {
 		StringBuilder builder = new StringBuilder();
         builder.append(this.id);
-        Iterator<SourceCodeBlock> branchElements = Iterator();
+        Iterator<SourceCodeBlock> branchElements = iterator();
         while (branchElements.hasNext()) {
             builder.append(IDENTIFIER_SEPARATOR_CHAR)
             .append(branchElements.next().toString());
@@ -57,7 +57,8 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
         return builder.toString();
     }
 
-    private Iterator<SourceCodeBlock> Iterator() {
+	@Override
+    public Iterator<SourceCodeBlock> iterator() {
     	int[] subTraceSequence = programBranchSpectra.getSubTraceSequenceMap().get(id);
     	if (subTraceSequence == null) {
     		return null;
@@ -74,6 +75,13 @@ public class ProgramBranch implements Shortened, Comparable<ProgramBranch>, Inde
             public boolean hasNext() {
             	// need new sub trace? look for the next valid sub trace
             	if (currentNodeIdSequence == null || subTraceIndex >= currentNodeIdSequence.length) {
+                	// check if we're at the end of the sequence
+                	if (subTraceSequenceIndex >= subTraceSequence.length) {
+                		return false;
+                	}
+                	
+            		// we're at the end of the current sub trace sequence! (or there is none)
+            		currentNodeIdSequence = null;
             		// try to get the next valid sub trace!
             		while (subTraceSequenceIndex < subTraceSequence.length) {
             			// get the next sub trace from the current sub trace sequence

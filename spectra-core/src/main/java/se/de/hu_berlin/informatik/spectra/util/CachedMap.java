@@ -32,7 +32,7 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     private AtomicInteger idGen = new AtomicInteger(0);
     private final ZipFileWrapper zipFile;
     private String directory;
-	private int zipEntryFileSize = 100;
+	private int zipEntryFileSize = 50000;
 	
 	boolean oldFormat = false;
 

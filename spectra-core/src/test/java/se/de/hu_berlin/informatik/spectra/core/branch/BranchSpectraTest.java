@@ -183,7 +183,7 @@ public class BranchSpectraTest extends TestSettings {
 //    				}
         			INode<ProgramBranch> branch = branchingSpectra.getNode(branchTraceIterator.next());
 //        			tracker.track(String.format("branch: %s", branch.getIdentifier()));
-        			Iterator<SourceCodeBlock> branchIterator = branch.getIdentifier().getElements().iterator();
+        			Iterator<SourceCodeBlock> branchIterator = branch.getIdentifier().iterator();
         			while (branchIterator.hasNext()) {
         				assertTrue(statementTraceIterator.hasNext());
         				assertEquals(statementSpectra.getNode(statementTraceIterator.next()).getIdentifier(), branchIterator.next());
