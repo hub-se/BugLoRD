@@ -156,12 +156,13 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
                     return null;
                 }
 
-                Path traceSpectraDestination = bug.getWorkDataDir().resolve(BugLoRDConstants.DIR_NAME_TRACE_COBERTURA)
+                Path traceSpectraDestination = bug.getWorkDir(true).resolve(BugLoRDConstants.DIR_NAME_TRACE_COBERTURA)
                         .resolve(BugLoRDConstants.SPECTRA_FILE_NAME);
                 try {
                     FileUtils.copyFileOrDir(spectraFile, traceSpectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
+                    Log.out(this, "Copied spectra '%s' from archive to '%s'.", spectraFile, traceSpectraDestination);
                 } catch (IOException e) {
-                    Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectraFile, traceSpectraDestination);
+                    Log.err(this, "Found spectra '%s' in archive, but could not copy to '%s'.", spectraFile, traceSpectraDestination);
                     return null;
                 }
 
