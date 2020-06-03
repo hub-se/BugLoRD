@@ -56,7 +56,7 @@ public class SubTraceSequencePool {
     public CachedMap<int[]> getExistingSubTraceSequences() {
     	if (this.existingSubTraceSequences == null) {
     		this.existingSubTraceSequences = new CachedIntArrayMap(
-    				tempOutputDir.resolve("subTraceIdSequences.zip"), 0, 
+    				tempOutputDir.resolve("subTraceIdSequences.zip"),
     				SpectraFileUtils.SUB_TRACE_ID_SEQUENCES_DIR, true);
     		System.err.println("stsPool stats: " + subTraceStartToSequenceTreeMap.getStats());
     		

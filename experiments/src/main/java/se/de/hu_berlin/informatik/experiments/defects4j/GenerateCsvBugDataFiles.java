@@ -252,7 +252,7 @@ public class GenerateCsvBugDataFiles {
                 while (iterator.hasNext()) {
                     ProgramBranch branch = iterator.next();
                     double rankingValue = branchRanking.getRankingValue(branch);
-                    for (SourceCodeBlock block : branch.getElements()) {
+                    for (SourceCodeBlock block : branch) {
                         if (!ranking.hasRanking(block)) {
                             ranking.add(block, rankingValue);
                         }

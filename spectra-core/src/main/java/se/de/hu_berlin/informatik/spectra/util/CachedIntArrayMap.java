@@ -8,8 +8,16 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 
 public class CachedIntArrayMap extends CachedMap<int[]> {
 
+    public CachedIntArrayMap(Path outputZipFile, int cacheSize, int entryFileSize, String id, boolean deleteAtShutdown) {
+        super(outputZipFile, cacheSize, entryFileSize, id, deleteAtShutdown);
+    }
+    
     public CachedIntArrayMap(Path outputZipFile, int cacheSize, String id, boolean deleteAtShutdown) {
         super(outputZipFile, cacheSize, id, deleteAtShutdown);
+    }
+    
+    public CachedIntArrayMap(Path outputZipFile, String id, boolean deleteAtShutdown) {
+        super(outputZipFile, id, deleteAtShutdown);
     }
 
     @Override

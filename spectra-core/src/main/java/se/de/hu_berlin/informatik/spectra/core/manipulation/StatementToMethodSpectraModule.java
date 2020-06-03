@@ -73,7 +73,7 @@ public class StatementToMethodSpectraModule extends AbstractProcessor<ISpectra<S
         if (currentMethodNodeIndex >= 0) {
             CachedMap<int[]> nodeIdSequences = new CachedIntArrayMap(
                     input.getPathToSpectraZipFile().getParent().resolve("methodMap.zip"),
-                    0, SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
+                    SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
             for (int i = 0; i < currentMethodNodeIndex + 1; ++i) {
                 // one to one mapping... (still ok for easy future removal of nodes from traces)
                 nodeIdSequences.put(i, new int[]{i});

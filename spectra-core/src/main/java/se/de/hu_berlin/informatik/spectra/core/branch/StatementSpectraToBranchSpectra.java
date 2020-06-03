@@ -25,36 +25,6 @@ import java.util.*;
  */
 public class StatementSpectraToBranchSpectra {
 
-//    /*====================================================================================
-//     * TEST
-//     *====================================================================================*/
-//
-//    @Test
-//    public void foo() {
-//
-//        //assert(false); //uncomment to check if asserts are enabled
-//
-//        final String traceLocations = "../../resources/spectraTraces";
-//        Path path = Paths.get(traceLocations, "Lang-10b.zip");
-//        ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>>
-//                statementSpectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, path);
-//
-//        @SuppressWarnings("unused")
-//        ProgramBranchSpectra branchingSpectra = generateBranchingSpectraFromStatementSpectra(statementSpectra, "");
-//
-//        HashSet<Integer> executionBranchIds = new HashSet<Integer>();
-//        Collection<Integer> branchIds = new ArrayList<>();
-//
-//        for (ITrace<SourceCodeBlock> testCaseTrace : statementSpectra.getTraces()) {
-//            for (ExecutionTrace executionTrace : testCaseTrace.getExecutionTraces()) {
-//                collectExecutionBranchIds(executionBranchIds, executionTrace, statementSpectra);
-//            }
-//            assert (branchesAreExactlyCoveredByThisTestCase(testCaseTrace, branchIds, statementSpectra));
-//            branchIds.clear();
-//        }
-//
-//    }
-
     /*====================================================================================
      * MAIN FUNCTIONALITY
      *====================================================================================*/
@@ -117,6 +87,7 @@ public class StatementSpectraToBranchSpectra {
         	branchNode = programBranchSpectra.getOrCreateNode(new ProgramBranch(subTraceIdSequences.size(), programBranchSpectra));
         	subTraceIdSequences.put(subTraceIdSequences.size(), new int[] {nodeSequenceMap.size()});
         	nodeSequenceMap.put(nodeSequenceMap.size(), nodeSequence);
+        	nodeSequenceMap.close();
         }
 
         // in the statement level spectra, branch IDs were mapped to the sequence of node IDs in the respective branch;
@@ -127,8 +98,7 @@ public class StatementSpectraToBranchSpectra {
         			temporaryOutputDir.resolve("branchNodeMap.zip");
         FileUtils.delete(sequenceZipFile);
 		CachedMap<int[]> branchNodeIdSequences = new CachedIntArrayMap(
-                sequenceZipFile,
-                0, SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
+                sequenceZipFile, SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
         for (int i = 0; i < subTraceIdSequences.size(); ++i) {
             // one to one mapping... (still ok for easy future removal of nodes from traces)
             branchNodeIdSequences.put(i, new int[]{i});
@@ -188,6 +158,7 @@ public class StatementSpectraToBranchSpectra {
         assert (branchesHaveAtMostKDecisionPoints(programBranchSpectra, 2)); // k=1 --> number of decisions in a branch is at most 1 for now ; next plan is to merge multiple branches therefore they can have multiple decision points
         /*====================================================================================*/
 
+        branchNodeIdSequences.close();
         return programBranchSpectra;
 
     }
@@ -478,7 +449,7 @@ public class StatementSpectraToBranchSpectra {
         int nrOfDecisionPoints = 0;
         Node.NodeType type;
 
-        for (SourceCodeBlock statement : branch.getElements()) {
+        for (SourceCodeBlock statement : branch) {
             type = statement.getNodeType();
             if (type == Node.NodeType.TRUE_BRANCH || type == Node.NodeType.FALSE_BRANCH) {
                 nrOfDecisionPoints++;

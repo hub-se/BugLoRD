@@ -59,6 +59,7 @@ public class ProgramBranch implements Iterable<SourceCodeBlock>, Shortened, Comp
 
 	@Override
     public Iterator<SourceCodeBlock> iterator() {
+//		System.err.println(Thread.currentThread().getStackTrace()[4].toString());
     	int[] subTraceSequence = programBranchSpectra.getSubTraceSequenceMap().get(id);
     	if (subTraceSequence == null) {
     		return null;
@@ -211,7 +212,11 @@ public class ProgramBranch implements Iterable<SourceCodeBlock>, Shortened, Comp
     Integer size = null;
     public int getLength() {
     	if (size == null) {
-    		size = getElements().size();
+    		int i = 0;
+    		for (@SuppressWarnings("unused") SourceCodeBlock element : this) {
+    			++i;
+    		}
+    		size = i;
     	}
         return size;
     }

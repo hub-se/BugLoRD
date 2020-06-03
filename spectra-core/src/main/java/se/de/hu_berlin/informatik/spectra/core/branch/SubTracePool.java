@@ -19,7 +19,7 @@ public class SubTracePool {
 
     public SubTracePool(Path tempOutputDir) {
         this.existingSubTraces = new CachedIntArrayMap(tempOutputDir.resolve("nodeIdSequences.zip"),
-                0, SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
+                SpectraFileUtils.NODE_ID_SEQUENCES_DIR, true);
     }
 
     // maps encoded sub trace representations (long) to unique integer IDs

@@ -5,11 +5,15 @@ package se.de.hu_berlin.informatik.spectra.util;
 
 import org.junit.*;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -58,7 +62,7 @@ public class CachedMapTest extends TestSettings {
         FileUtils.delete(output1);
         FileUtils.delete(output2);
 
-        CachedMap<int[]> map = new CachedIntArrayMap(output1, 5, "test", false);
+        CachedMap<int[]> map = new CachedIntArrayMap(output1, 50, 2000, "test", false);
         Map<Integer, int[]> checkMap = new HashMap<>();
 
         Random rand = new Random(12315415);
@@ -77,9 +81,13 @@ public class CachedMapTest extends TestSettings {
             map.put(key, array);
             checkMap.put(key, array);
         }
+        
+        checkIfEqual(map, checkMap);
 
         map.put(17, new int[]{1, 2, 3});
         checkMap.put(17, new int[]{1, 2, 3});
+        
+        checkIfEqual(map, checkMap);
         
         for (int i = 1001; i < 2000; ++i) {
             int length = rand.nextInt(100)+1;
@@ -96,12 +104,40 @@ public class CachedMapTest extends TestSettings {
         checkMap.remove(17);
 
         checkIfEqual(map, checkMap);
+        
+        for (int i = 2001; i < 10000; ++i) {
+            int length = rand.nextInt(100)+1;
+            int[] array = new int[length];
+            for (int j = 0; j < length; ++j) {
+                array[j] = rand.nextInt();
+            }
+            int key = i;//rand.nextInt();
+            map.put(key, array);
+            checkMap.put(key, array);
+        }
+        
+        checkIfEqual(map, checkMap);
+        
+        Collection<Pair<Integer, int[]>> entriesToReplace = new HashSet<>();
+        for (int i = 0; i < 100; ++i) {
+            int length = rand.nextInt(100)+1;
+            int[] array = new int[length];
+            for (int j = 0; j < length; ++j) {
+                array[j] = rand.nextInt();
+            }
+            int key = rand.nextInt(10000);
+            entriesToReplace.add(new Pair<>(key, array));
+            checkMap.put(key, array);
+        }
+		map.replaceEntries(entriesToReplace);
 
+		checkIfEqual(map, checkMap);
+		
         map.moveMapContentsTo(output2);
 
         assertTrue(output2.toFile().exists());
 
-        CachedMap<int[]> map2 = new CachedIntArrayMap(output2, 5, "test", false);
+        CachedMap<int[]> map2 = new CachedIntArrayMap(output2, 100, 500, "test", false);
 
         checkIfEqual(map2, checkMap);
     }

@@ -595,7 +595,7 @@ public class SpectraUtils {
 			for (INode<T> node : spectra.getNodes()) {
 				// iterate over the branch
 				ProgramBranch branch = (ProgramBranch) node.getIdentifier();
-				for (Iterator<SourceCodeBlock> iterator = branch.getElements().iterator(); iterator.hasNext();) {
+				for (Iterator<SourceCodeBlock> iterator = branch.iterator(); iterator.hasNext();) {
 					SourceCodeBlock sourceCodeBlock = iterator.next();
 					// is the node part of a test class?
 					if (testClassNames.contains(getClassName(sourceCodeBlock))) {

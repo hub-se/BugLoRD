@@ -33,7 +33,7 @@ public class ProgramBranchSpectra<T> extends HitSpectra<T> {
     				temporaryOutputDir.resolve("branchMap.zip");
     	FileUtils.delete(targetPath);
     	
-		statementMap = new CachedSourceCodeBlockMap(targetPath, 10000, SpectraFileUtils.STATEMENT_MAP_DIR, true);
+		statementMap = new CachedSourceCodeBlockMap(targetPath, SpectraFileUtils.STATEMENT_MAP_DIR, true);
     	for (INode<SourceCodeBlock> node : spectra.getNodes()) {
 			statementMap.put(node.getIndex(), node.getIdentifier());
 		}
@@ -41,8 +41,8 @@ public class ProgramBranchSpectra<T> extends HitSpectra<T> {
     	spectra.getIndexer().getSubTraceIdSequences().moveMapContentsTo(targetPath, SpectraFileUtils.BRANCH_SUB_TRACE_ID_SEQUENCES_DIR);
     	spectra.getIndexer().getNodeIdSequences().moveMapContentsTo(targetPath, SpectraFileUtils.BRANCH_NODE_ID_SEQUENCES_DIR);
     	
-    	subTraceSequenceMap = new CachedIntArrayMap(targetPath, 10000, SpectraFileUtils.BRANCH_SUB_TRACE_ID_SEQUENCES_DIR, false);
-		nodeSequenceMap = new CachedIntArrayMap(targetPath, 10000, SpectraFileUtils.BRANCH_NODE_ID_SEQUENCES_DIR, false);
+    	subTraceSequenceMap = new CachedIntArrayMap(targetPath, SpectraFileUtils.BRANCH_SUB_TRACE_ID_SEQUENCES_DIR, false);
+		nodeSequenceMap = new CachedIntArrayMap(targetPath, SpectraFileUtils.BRANCH_NODE_ID_SEQUENCES_DIR, false);
 		
 //    	CachedMap<int[]> subTraceSequenceIdSequences = spectra.getIndexer().getSubTraceIdSequences();
 //    	if (subTraceSequenceIdSequences != null) {
