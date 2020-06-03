@@ -6,6 +6,8 @@ import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch.BranchIterator;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
@@ -592,17 +594,22 @@ public class SpectraUtils {
 			}
 			spectra.removeNodesByIndex(nodesToRemove);
 		} else if (dummy instanceof ProgramBranch) {
+			Collection<Integer> nodesToRemove = new HashSet<>();
 			for (INode<T> node : spectra.getNodes()) {
 				// iterate over the branch
 				ProgramBranch branch = (ProgramBranch) node.getIdentifier();
-				for (Iterator<SourceCodeBlock> iterator = branch.iterator(); iterator.hasNext();) {
+				for (BranchIterator iterator = branch.iterator2(); iterator.hasNext();) {
 					SourceCodeBlock sourceCodeBlock = iterator.next();
-					// is the node part of a test class?
+					// is the statement part of a test class?
 					if (testClassNames.contains(getClassName(sourceCodeBlock))) {
-						iterator.remove();
+						nodesToRemove.add(iterator.getCurrentStatementId());
 					}
 				}
 			}
+			@SuppressWarnings("unchecked")
+			ProgramBranchSpectra<ProgramBranch> programBranchSpectra = (ProgramBranchSpectra<ProgramBranch>) spectra;
+			
+			programBranchSpectra.removeNodesFromNodeIdSequencesByIndex(nodesToRemove);
 		} else {
 			throw new UnsupportedOperationException("Spectra node type not supported.");
 		}

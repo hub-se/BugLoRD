@@ -10,8 +10,11 @@ import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 import se.de.hu_berlin.informatik.spectra.util.CachedSourceCodeBlockMap;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ProgramBranchSpectra<T> extends HitSpectra<T> {
 
@@ -85,6 +88,41 @@ public class ProgramBranchSpectra<T> extends HitSpectra<T> {
 	public void setSubTraceSequenceMap(CachedMap<int[]> subTraceSequenceMap) {
 		this.subTraceSequenceMap = subTraceSequenceMap;
 	}
+
+	public boolean removeNodesFromNodeIdSequencesByIndex(final Collection<Integer> indices) {
+		removeStatementIDsFromNodeSequences(indices);
+        invalidateCachedValues();
+        return true;
+	}
+	
+	private void removeStatementIDsFromNodeSequences(Collection<Integer> nodeIndicesToRemove) {
+    	Collection<Pair<Integer, int[]>> sequencesToReplace = new ArrayList<>();
+        // iterate over all sub traces
+        // TODO: sub trace with id 0 is the empty sub trace. Should not exist, regularly
+        for (int i = 1; i < nodeSequenceMap.size(); i++) {
+            int[] sequence = nodeSequenceMap.get(i);
+            int foundCounter = 0;
+            for (int id : sequence) {
+                if (nodeIndicesToRemove.contains(id)) {
+                    ++foundCounter;
+                }
+            }
+            if (foundCounter > 0) {
+                // sequence contains the node, so generate a new sequence and replace the old
+                int[] newSequence = new int[sequence.length - foundCounter];
+                int j = 0;
+                for (int id : sequence) {
+                    if (!nodeIndicesToRemove.contains(id)) {
+                        newSequence[j++] = id;
+                    }
+                }
+                // this needs to rewrite the entire zip archive!
+                sequencesToReplace.add(new Pair<>(i, newSequence));
+            }
+        }
+        
+        nodeSequenceMap.replaceEntries(sequencesToReplace);
+    }
     
     
 //    /*====================================================================================
