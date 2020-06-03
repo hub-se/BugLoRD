@@ -60,7 +60,11 @@ public class ProgramBranch implements Iterable<SourceCodeBlock>, Shortened, Comp
 	@Override
     public Iterator<SourceCodeBlock> iterator() {
 //		System.err.println(Thread.currentThread().getStackTrace()[4].toString());
-    	return new BranchIterator(programBranchSpectra, id);
+		if (elements == null) {
+			return new BranchIterator(programBranchSpectra, id);
+		} else {
+			return elements.iterator();
+		}
 	}
 
 	public BranchIterator iterator2() {
