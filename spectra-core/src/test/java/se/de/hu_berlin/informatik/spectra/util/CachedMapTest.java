@@ -62,12 +62,12 @@ public class CachedMapTest extends TestSettings {
         FileUtils.delete(output1);
         FileUtils.delete(output2);
 
-        CachedMap<int[]> map = new CachedIntArrayMap(output1, 50, 2000, "test", false);
+        CachedMap<int[]> map = new CachedIntArrayMap(output1, 50, 500, "test", false);
         Map<Integer, int[]> checkMap = new HashMap<>();
 
         Random rand = new Random(12315415);
 
-        map.put(17, new int[]{1, 2, 3});
+        map.put(17, new int[]{});
 
         map.get(17);
 
@@ -84,8 +84,8 @@ public class CachedMapTest extends TestSettings {
         
         checkIfEqual(map, checkMap);
 
-        map.put(17, new int[]{1, 2, 3});
-        checkMap.put(17, new int[]{1, 2, 3});
+        map.put(17, new int[]{});
+        checkMap.put(17, new int[]{});
         
         checkIfEqual(map, checkMap);
         

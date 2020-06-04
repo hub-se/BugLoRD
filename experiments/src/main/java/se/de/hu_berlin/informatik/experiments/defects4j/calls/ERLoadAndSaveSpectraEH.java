@@ -19,6 +19,7 @@ import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
@@ -127,14 +128,25 @@ public class ERLoadAndSaveSpectraEH extends AbstractProcessor<BuggyFixedEntity<?
         		Log.err(this, "Error while loading spectra. Skipping '" + buggyEntity + "'.");
         		return null;
         	}
+        	
+        	// copy spectra file to execution directory for faster loading/saving...
+        	Path spectraDestination = bug.getWorkDir(true).resolve(subDirName)
+                    .resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toAbsolutePath();
+            try {
+                FileUtils.copyFileOrDir(spectraFile, spectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
+                Log.out(this, "Copied spectra '%s' to '%s'.", spectraFile, spectraDestination);
+            } catch (IOException e) {
+                Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectraFile, spectraDestination);
+                return null;
+            }
 
         	ISpectra<?, ?> spectra;
         	if (toolSpecific.equals(ToolSpecific.BRANCH_SPECTRA)) {
         		spectra = SpectraFileUtils.loadSpectraFromZipFile(ProgramBranch.DUMMY,
-            			spectraFile.toPath().toAbsolutePath());
+        				spectraDestination.toAbsolutePath());
         	} else {
         		spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY,
-            			spectraFile.toPath().toAbsolutePath());	
+        				spectraDestination.toAbsolutePath());	
 			}
 
         	// fill up empty lines in between statements?
@@ -142,8 +154,16 @@ public class ERLoadAndSaveSpectraEH extends AbstractProcessor<BuggyFixedEntity<?
         		new BuildCoherentSpectraModule().submit(spectra);
         	}
 
-        	new SaveSpectraModule<>(spectraFile.toPath().toAbsolutePath()).submit(spectra);
+        	new SaveSpectraModule<>(spectraDestination.toAbsolutePath()).submit(spectra);
 
+        	try {
+                FileUtils.copyFileOrDir(spectraDestination.toFile(), spectraFile, StandardCopyOption.REPLACE_EXISTING);
+                Log.out(this, "Copied spectra '%s' to '%s'.", spectraDestination, spectraFile);
+            } catch (IOException e) {
+                Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectraDestination, spectraFile);
+                return null;
+            }
+        	
         	return buggyEntity;
         } else {
         	Log.warn(this, "Spectra file does not exist.");
