@@ -54,6 +54,7 @@ public class BuildCoherentSpectraModule extends AbstractProcessor<ISpectra<Sourc
                         block.setLineNumberEnd(line.getStartLineNumber() - 1);
                     }
                     nodesOnSameLine.clear();
+                    nodesOnSameLine.add(line);
                 }
             } else {
                 nodesOnSameLine.clear();
