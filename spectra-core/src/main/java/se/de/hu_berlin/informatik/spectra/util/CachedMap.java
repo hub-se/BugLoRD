@@ -28,7 +28,7 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 
     private static final String INDEX_DIRECTORY = "index";
 	private static final String MAP_EXTENSION = ".map";
-	private static final int DEFAULT_ENTRY_FILE_SIZE = 50000;
+	private static final int DEFAULT_ENTRY_FILE_SIZE = 10000;
 	private static final int DEFAULT_CACHE_SIZE = 10000;
 //    private static final String INDEX_EXTENSION = ".idx";
 
@@ -333,11 +333,13 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     private T replaceStoredEntry(Integer key, T value) {
 		// removes the files associated with the entry from the zip file and stores new entries
     	CachemapFileEntry fileEntry = storedEntries.get(key);
-    	System.err.println("replacing key " + key + " in zip entry " + getFileName(fileEntry.fileIndex, directory));
+//    	System.err.println("replacing key " + key + " in zip entry " + getFileName(fileEntry.fileIndex, directory));
     	int fileIndex = fileEntry.fileIndex;
     	
     	// load old entries
-    	Map<Integer, T> newEntries = loadFileEntries(fileIndex);
+    	Map<Integer, T> newEntries = new HashMap<>();
+    	loadFileEntries(fileIndex, newEntries);
+    	
     	// add actual new entry
     	T previous = value == null ? newEntries.remove(key) : newEntries.put(key, value);
     	// remove files from zip file
@@ -374,35 +376,37 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     	zipFile.removeEntries(toDelete);
 	}
 
-	private Map<Integer, T> loadFileEntries(int fileIndex) {
+	private void loadFileEntries(int fileIndex, Map<Integer, T> map) {
 		// retrieve all entries in the same file
-    	Map<Integer, T> newEntries = new HashMap<>();
     	if (oldFormat) {
     		for (Entry<Integer, CachemapFileEntry> entry : storedEntries.entrySet()) {
     			if (entry.getValue().fileIndex == fileIndex) {
-    				newEntries.put(entry.getKey(), load(entry.getKey()));
+    				map.put(entry.getKey(), load(entry.getKey()));
     			}
     			break; // only one entry per file!
     		}
     	} else {
-    		Map<Integer, CachemapFileEntry> entryInfo = new HashMap<>();
     		try {
+    			if (!zipFile.exists(getIndexFileName(fileIndex, directory))) {
+    				return;
+    			}
+    			Map<Integer, CachemapFileEntry> entryInfo = new HashMap<>();
     			loadEntryInfoFromIndexFile(fileIndex, entryInfo);
+    			
+    			for (Entry<Integer, CachemapFileEntry> entry : entryInfo.entrySet()) {
+    				map.put(entry.getKey(), load(entry.getKey()));
+        		}
+
+        		loadAllEntriesFromFile(fileIndex, entryInfo, map);
     		} catch (IOException e) {
     			throw new IllegalStateException();
     		}
-    		for (Entry<Integer, CachemapFileEntry> entry : entryInfo.entrySet()) {
-    			newEntries.put(entry.getKey(), load(entry.getKey()));
-    		}
-
-    		loadAllEntriesFromFile(fileIndex, entryInfo, newEntries);
     	}
-		return newEntries;
 	}
 	
 	private void loadAllEntriesFromFile(int fileIndex, Map<Integer, CachemapFileEntry> entryInfo, Map<Integer, T> newEntries) {
 		if (oldFormat) {
-        	throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("Can not bulk load all entries in old format cached map: " + zipFile.getzipFilePath() + "/" + directory);
         }
     	String fileName = getFileName(fileIndex, directory);
     	// sort info by offset
@@ -428,33 +432,41 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
     }
     
     // this rewrites the entire zip archive... avoid, if possible!
-    public void replaceEntries(Collection<Pair<Integer, T>> entriesToReplace) {
+    public void replaceEntries(Map<? extends Integer, ? extends T> entriesToReplace) {
+    	if (oldFormat) {
+    		throw new UnsupportedOperationException("Can not replace entries in old format cached map: " + zipFile.getzipFilePath() + "/" + directory);
+    	}
 		Map<Integer, Map<Integer, T>> seenFiles = new HashMap<>();
 		
-		for (Pair<Integer, T> entry : entriesToReplace) {
-			if (storedEntries.containsKey(entry.first())) {
-				CachemapFileEntry fileEntry = storedEntries.get(entry.first());
+		for (Entry<? extends Integer, ? extends T> entry : entriesToReplace.entrySet()) {
+			if (storedEntries.containsKey(entry.getKey())) {
+				CachemapFileEntry fileEntry = storedEntries.get(entry.getKey());
 				Map<Integer, T> map;
 				if (seenFiles.containsKey(fileEntry.fileIndex)) {
 					// already seen an entry of this file and loaded its contents
 					map = seenFiles.get(fileEntry.fileIndex);
 				} else {
 					// first time seeing an entry of this file, so load its contents
-					map = loadFileEntries(fileEntry.fileIndex);
+					map = new HashMap<>();
+					loadFileEntries(fileEntry.fileIndex, map);
 					seenFiles.put(fileEntry.fileIndex, map);
 				}
 				// replace entry
-				if (entry.second() == null) {
-					map.remove(entry.first());
+				if (entry.getValue() == null) {
+					map.remove(entry.getKey());
 				} else {
-					map.put(entry.first(), entry.second());
+					map.put(entry.getKey(), entry.getValue());
 				}
 	        } else {
-	            addNewEntry(entry.first(), entry.second(), zipFile, directory, idGen, storedEntries);
+	            addNewEntry(entry.getKey(), entry.getValue(), zipFile, directory, idGen, storedEntries);
 	        }
 		}
 		
 		if (!seenFiles.isEmpty()) {
+			// invalidate cached values
+			cache.clear();
+			cacheOrder.clear();
+			
 			// remove old entries for all changed files
 			removeFileEntriesFromZipFile(seenFiles.keySet());
 			
@@ -465,9 +477,9 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 			}
 			
 			// remove deleted entries from stored entries map
-			for (Pair<Integer, T> entry : entriesToReplace) {
-				if (entry.second() == null) {
-					storedEntries.remove(entry.first());
+			for (Entry<? extends Integer, ? extends T> entry : entriesToReplace.entrySet()) {
+				if (entry.getValue() == null) {
+					storedEntries.remove(entry.getKey());
 				}
 			}
 		}
@@ -492,9 +504,7 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 
 	@Override
     public void putAll(Map<? extends Integer, ? extends T> m) {
-        for (Entry<? extends Integer, ? extends T> entry : m.entrySet()) {
-            put(entry.getKey(), entry.getValue());
-        }
+		replaceEntries(m);
     }
 
     @Override
@@ -520,12 +530,24 @@ public abstract class CachedMap<T> implements Map<Integer, T> {
 
     @Override
     public Collection<T> values() {
-        throw new UnsupportedOperationException();
+    	// this loads all entries, temporarily
+    	Map<Integer, T> map = new HashMap<>();
+    	map.putAll(newEntries);
+    	for (int i = 0; i < idGen.get(); ++i) {
+    		loadFileEntries(i, map);
+    	}
+    	return map.values();
     }
 
     @Override
     public Set<Entry<Integer, T>> entrySet() {
-        throw new UnsupportedOperationException();
+    	// this loads all entries, temporarily
+    	Map<Integer, T> map = new HashMap<>();
+    	map.putAll(newEntries);
+    	for (int i = 0; i < idGen.get(); ++i) {
+    		loadFileEntries(i, map);
+    	}
+    	return map.entrySet();
     }
 
     private static class CachemapFileEntry implements Comparable<CachemapFileEntry> {

@@ -7,8 +7,6 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.SharedOutputGrammar;
 import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -206,7 +204,7 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
 
     @Override
     public void removeFromSequences(Collection<Integer> nodeIndicesToRemove) {
-    	Collection<Pair<Integer, int[]>> sequencesToReplace = new ArrayList<>();
+    	Map<Integer, int[]> sequencesToReplace = new HashMap<>();
         // iterate over all sub traces
         // TODO: sub trace with id 0 is the empty sub trace. Should not exist, regularly
         for (int i = 1; i < nodeIdSequences.size(); i++) {
@@ -226,11 +224,11 @@ public class SimpleIntIndexerCompressed implements SequenceIndexerCompressed {
                         newSequence[j++] = id;
                     }
                 }
-                // this needs to rewrite the entire zip archive!
-                sequencesToReplace.add(new Pair<>(i, newSequence));
+                sequencesToReplace.put(i, newSequence);
             }
         }
         
+        // this needs to rewrite the entire zip archive!
         nodeIdSequences.replaceEntries(sequencesToReplace);
     }
 

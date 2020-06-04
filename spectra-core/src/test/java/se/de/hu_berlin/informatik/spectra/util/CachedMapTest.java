@@ -5,15 +5,11 @@ package se.de.hu_berlin.informatik.spectra.util;
 
 import org.junit.*;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -105,7 +101,7 @@ public class CachedMapTest extends TestSettings {
 
         checkIfEqual(map, checkMap);
         
-        for (int i = 2001; i < 10000; ++i) {
+        for (int i = 2001; i < 3000; ++i) {
             int length = rand.nextInt(100)+1;
             int[] array = new int[length];
             for (int j = 0; j < length; ++j) {
@@ -118,18 +114,18 @@ public class CachedMapTest extends TestSettings {
         
         checkIfEqual(map, checkMap);
         
-        Collection<Pair<Integer, int[]>> entriesToReplace = new HashSet<>();
-        for (int i = 0; i < 100; ++i) {
+        Map<Integer, int[]> entriesToReplace = new HashMap<>();
+        for (int i = 2000; i < 4000; i += 10) {
             int length = rand.nextInt(100)+1;
             int[] array = new int[length];
             for (int j = 0; j < length; ++j) {
                 array[j] = rand.nextInt();
             }
             int key = rand.nextInt(10000);
-            entriesToReplace.add(new Pair<>(key, array));
+            entriesToReplace.put(key, array);
             checkMap.put(key, array);
         }
-		map.replaceEntries(entriesToReplace);
+		map.putAll(entriesToReplace);
 
 		checkIfEqual(map, checkMap);
 		

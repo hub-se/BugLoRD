@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.spectra.core.manipulation.BuildCoherentSpectra
 import se.de.hu_berlin.informatik.spectra.core.manipulation.FilterSpectraModule;
 import se.de.hu_berlin.informatik.spectra.core.manipulation.SaveSpectraModule;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionWrapper;
@@ -23,7 +24,9 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 import se.de.hu_berlin.informatik.utils.threaded.SemaphoreThreadLimit;
 import se.de.hu_berlin.informatik.utils.threaded.ThreadLimit;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 /**
  * Stores the generated spectra for future usage.
@@ -169,15 +172,26 @@ public class BuildCoherentSpectras {
                         input, subDirName == null ? "<none>" : subDirName);
                 return input;
             }
+            
+         // copy spectra file to execution directory for faster loading/saving...
+        	Path spectraDestination = bug.getWorkDir(true).resolve(subDirName)
+                    .resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toAbsolutePath();
+            try {
+                FileUtils.copyFileOrDir(spectraFile.toFile(), spectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
+                Log.out(this, "Copied spectra '%s' to '%s'.", spectraFile.toFile(), spectraDestination);
+            } catch (IOException e) {
+                Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectraFile.toFile(), spectraDestination);
+                return null;
+            }
 
             //load the full spectra
-            ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraFile);
+            ISpectra<SourceCodeBlock, ?> spectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, spectraDestination);
 
             //generate the coherent version
             spectra = new BuildCoherentSpectraModule().submit(spectra).getResult();
 
             //save the coherent full spectra
-            new SaveSpectraModule<>(spectraFile).submit(spectra);
+            new SaveSpectraModule<>(spectraDestination).submit(spectra);
 
             if (filterSpectra) {
                 Path spectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName);
@@ -190,6 +204,16 @@ public class BuildCoherentSpectras {
                 //save the filtered spectra
                 new SaveSpectraModule<>(spectraFileFiltered).submit(spectra);
             }
+            
+            try {
+                FileUtils.copyFileOrDir(spectraDestination.toFile(), spectraFile.toFile(), StandardCopyOption.REPLACE_EXISTING);
+                Log.out(this, "Copied spectra '%s' to '%s'.", spectraDestination, spectraFile);
+            } catch (IOException e) {
+                Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectraDestination, spectraFile);
+                return null;
+            }
+        	
+        	FileUtils.delete(spectraDestination);
 
             return input;
         }

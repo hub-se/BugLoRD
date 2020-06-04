@@ -10,11 +10,10 @@ import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 import se.de.hu_berlin.informatik.spectra.util.CachedSourceCodeBlockMap;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
-import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
-
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProgramBranchSpectra<T> extends HitSpectra<T> {
 
@@ -96,7 +95,7 @@ public class ProgramBranchSpectra<T> extends HitSpectra<T> {
 	}
 	
 	private void removeStatementIDsFromNodeSequences(Collection<Integer> nodeIndicesToRemove) {
-    	Collection<Pair<Integer, int[]>> sequencesToReplace = new ArrayList<>();
+    	Map<Integer, int[]> sequencesToReplace = new HashMap<>();
         // iterate over all sub traces
         // TODO: sub trace with id 0 is the empty sub trace. Should not exist, regularly
         for (int i = 1; i < nodeSequenceMap.size(); i++) {
@@ -117,7 +116,7 @@ public class ProgramBranchSpectra<T> extends HitSpectra<T> {
                     }
                 }
                 // this needs to rewrite the entire zip archive!
-                sequencesToReplace.add(new Pair<>(i, newSequence));
+                sequencesToReplace.put(i, newSequence);
             }
         }
         

@@ -164,6 +164,8 @@ public class ERLoadAndSaveSpectraEH extends AbstractProcessor<BuggyFixedEntity<?
                 return null;
             }
         	
+        	FileUtils.delete(spectraDestination);
+        	
         	return buggyEntity;
         } else {
         	Log.warn(this, "Spectra file does not exist.");
