@@ -6,7 +6,6 @@ import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 import se.de.hu_berlin.informatik.spectra.util.Indexable;
 import se.de.hu_berlin.informatik.spectra.util.Shortened;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * A program branch is a list of program elements.
@@ -186,13 +187,27 @@ public class ProgramBranch implements Iterable<SourceCodeBlock>, Shortened, Comp
     }
 
     public static ProgramBranch getNewProgramBranchFromString(String identifier) throws IllegalArgumentException {
-    	 String[] elements = identifier.split(IDENTIFIER_SEPARATOR_CHAR);
-    	 int id = Integer.valueOf(elements[0]);
-         List<SourceCodeBlock> trace = new ArrayList<>(elements.length-1);
-         for (int i = 1; i < elements.length; i++) {
-             trace.add(SourceCodeBlock.getNewBlockFromString(elements[i]));
-         }
-         return new ProgramBranch(id, trace);
+    	int index = identifier.indexOf(IDENTIFIER_SEPARATOR_CHAR);
+    	if (index < 0) {
+    		// should be only the id...
+    		return new ProgramBranch(Integer.valueOf(identifier), Collections.emptyList());
+    	} else {
+    		int id = Integer.valueOf(identifier.substring(0, index));
+    		// avoid intermediate array construction
+    		List<SourceCodeBlock> trace =  Pattern.compile(IDENTIFIER_SEPARATOR_CHAR)
+    				.splitAsStream(identifier)
+    				.skip(1) // skip the id
+    				.map(elem -> SourceCodeBlock.getNewBlockFromString(elem))
+    				.collect(Collectors.toList());
+    		return new ProgramBranch(id, trace);
+    	}
+//    	String[] elements = identifier.split(IDENTIFIER_SEPARATOR_CHAR);
+//    	 int id = Integer.valueOf(elements[0]);
+//         List<SourceCodeBlock> trace = new ArrayList<>(elements.length-1);
+//         for (int i = 1; i < elements.length; i++) {
+//             trace.add(SourceCodeBlock.getNewBlockFromString(elements[i]));
+//         }
+//         return new ProgramBranch(id, trace);
     }
 
 
