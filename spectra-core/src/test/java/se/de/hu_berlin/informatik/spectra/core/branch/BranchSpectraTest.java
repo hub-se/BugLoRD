@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import org.junit.*;
 
-import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
@@ -173,24 +172,30 @@ public class BranchSpectraTest extends TestSettings {
         		// iterates over branch IDs in the execution trace
         		ExecutionTrace executionTrace2 = branchExecutionTraces.iterator().next();
         		tracker.track(String.format("size: %,8d, test: %s ", executionTrace2.size(), testCaseTrace.getIdentifier()));
-				Iterator<Integer> branchTraceIterator = executionTrace2.mappedIterator(branchingSpectra.getIndexer());
+				
+        		Iterator<SourceCodeBlock> branchIterator = branchingSpectra.getExecutionTraceIterator(executionTrace2);
         		
-//        		long counter = 0;
-        		while (branchTraceIterator.hasNext()) {
-//        			if (++counter % 20000 == 0) {
-//    					tracker.track(String.format("cancelling after %,d branches.", counter));
-//    					break;
-//    				}
-        			INode<ProgramBranch> branch = branchingSpectra.getNode(branchTraceIterator.next());
-//        			tracker.track(String.format("branch: %s", branch.getIdentifier()));
-        			Iterator<SourceCodeBlock> branchIterator = branch.getIdentifier().iterator();
-        			while (branchIterator.hasNext()) {
-        				assertTrue(statementTraceIterator.hasNext());
-        				assertEquals(statementSpectra.getNode(statementTraceIterator.next()).getIdentifier(), branchIterator.next());
-        			}
+        		while (branchIterator.hasNext()) {
+        			assertTrue(statementTraceIterator.hasNext());
+        			assertEquals(statementSpectra.getNode(statementTraceIterator.next()).getIdentifier(), branchIterator.next());
         		}
-        		
+
         		assertTrue(!statementTraceIterator.hasNext());
+        		
+        		
+        		
+        		// reverse iteration
+        		// iterates over node IDs in the execution trace
+        		Iterator<Integer> statementReverseTraceIterator = executionTrace.mappedReverseIterator(statementSpectra.getIndexer());
+        		// iterates over branch IDs in the execution trace
+        		Iterator<SourceCodeBlock> branchReverseIterator = branchingSpectra.getExecutionTraceReverseIterator(executionTrace2);
+        		
+        		while (branchReverseIterator.hasNext()) {
+        			assertTrue(statementReverseTraceIterator.hasNext());
+        			assertEquals(statementSpectra.getNode(statementReverseTraceIterator.next()).getIdentifier(), branchReverseIterator.next());
+        		}
+
+        		assertTrue(!statementReverseTraceIterator.hasNext());
         	}
         }
     }

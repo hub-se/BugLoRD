@@ -68,9 +68,14 @@ public class ProgramBranch implements Iterable<SourceCodeBlock>, Shortened, Comp
 		}
 	}
 
-	public BranchIterator iterator2() {
+	public BranchIterator branchIterator() {
 //		System.err.println(Thread.currentThread().getStackTrace()[4].toString());
     	return new BranchIterator(programBranchSpectra, id);
+	}
+	
+	public BranchReverseIterator branchReverseIterator() {
+//		System.err.println(Thread.currentThread().getStackTrace()[4].toString());
+    	return new BranchReverseIterator(programBranchSpectra, id);
 	}
 	
 	public static class BranchIterator implements Iterator<SourceCodeBlock> {
@@ -128,6 +133,66 @@ public class ProgramBranch implements Iterable<SourceCodeBlock>, Shortened, Comp
         
         public int getCurrentStatementId() {
         	return currentNodeIdSequence[subTraceIndex-1];
+        }
+		
+	}
+	
+	public static class BranchReverseIterator implements Iterator<SourceCodeBlock> {
+
+		public BranchReverseIterator(ProgramBranchSpectra<?> programBranchSpectra, int branchId) {
+			subTraceSequence = programBranchSpectra.getSubTraceSequenceMap().get(branchId);
+	    	if (subTraceSequence == null) {
+	    		throw new IllegalStateException();
+	    	}
+	    	subTraceSequenceIndex = subTraceSequence.length-1;
+	    	nodeSequenceMap = programBranchSpectra.getNodeSequenceMap();
+	    	statementMap = programBranchSpectra.getStatementMap();
+		}
+		
+		final int[] subTraceSequence;
+		final CachedMap<int[]> nodeSequenceMap;
+		final CachedMap<SourceCodeBlock> statementMap;
+
+		int subTraceIndex = 0; // inner index
+		int subTraceSequenceIndex; // outer index
+        int[] currentNodeIdSequence;
+
+        @Override
+        public boolean hasNext() {
+        	// need new sub trace? look for the next valid sub trace
+        	if (currentNodeIdSequence == null || subTraceIndex < 0) {
+            	// check if we're at the end of the sequence
+            	if (subTraceSequenceIndex < 0) {
+            		return false;
+            	}
+            	
+        		// we're at the end of the current sub trace sequence! (or there is none)
+        		currentNodeIdSequence = null;
+        		// try to get the next valid sub trace!
+        		while (subTraceSequenceIndex >= 0) {
+        			// get the next sub trace from the current sub trace sequence
+        			currentNodeIdSequence = nodeSequenceMap.get(subTraceSequence[subTraceSequenceIndex--]);
+        			if (currentNodeIdSequence.length > 0) {
+        				// found a "good" sequence
+        				//                        	System.out.println("sub seq start");
+        				subTraceIndex = currentNodeIdSequence.length-1;
+        				break;
+        			}
+        			currentNodeIdSequence = null;
+        		}
+        	}
+
+        	// if we found a valid sub trace, it should be non-null
+        	return currentNodeIdSequence != null;
+        }
+
+        @Override
+        public SourceCodeBlock next() {
+            return statementMap.get(currentNodeIdSequence[subTraceIndex--]);
+        }
+        
+        public int getCurrentStatementId() {
+        	return currentNodeIdSequence[subTraceIndex+1];
         }
 		
 	}

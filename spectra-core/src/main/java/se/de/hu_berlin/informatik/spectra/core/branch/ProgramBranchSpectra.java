@@ -4,15 +4,20 @@ import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch.BranchIterator;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch.BranchReverseIterator;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
+import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
 import se.de.hu_berlin.informatik.spectra.util.CachedIntArrayMap;
 import se.de.hu_berlin.informatik.spectra.util.CachedMap;
 import se.de.hu_berlin.informatik.spectra.util.CachedSourceCodeBlockMap;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
+
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class ProgramBranchSpectra<T> extends HitSpectra<T> {
@@ -123,6 +128,77 @@ public class ProgramBranchSpectra<T> extends HitSpectra<T> {
         nodeSequenceMap.replaceEntries(sequencesToReplace);
     }
     
+	public Iterator<SourceCodeBlock> getExecutionTraceIterator(ExecutionTrace executionTrace) {
+		return new Iterator<SourceCodeBlock>() {
+			Iterator<Integer> branchTraceIterator = executionTrace.mappedIterator(getIndexer());
+			BranchIterator branchIterator;
+			
+			@Override
+			public boolean hasNext() {
+				while (branchIterator == null || !branchIterator.hasNext()) {
+					branchIterator = null;
+					while (branchTraceIterator.hasNext()) {
+						T identifier = getNode(branchTraceIterator.next()).getIdentifier();
+						if (identifier instanceof ProgramBranch) {
+							branchIterator = ((ProgramBranch) identifier).branchIterator();
+						} else {
+							throw new UnsupportedOperationException();
+						}
+						if (branchIterator.hasNext()) {
+							return true;
+						}
+					}
+					
+					if (branchIterator == null) {
+						return false;
+					}
+				}
+				
+				return branchIterator.hasNext();
+			}
+
+			@Override
+			public SourceCodeBlock next() {
+				return branchIterator.next();
+			}
+		};
+	}
+	
+	public Iterator<SourceCodeBlock> getExecutionTraceReverseIterator(ExecutionTrace executionTrace) {
+		return new Iterator<SourceCodeBlock>() {
+			Iterator<Integer> branchTraceIterator = executionTrace.mappedReverseIterator(getIndexer());
+			BranchReverseIterator branchIterator;
+			
+			@Override
+			public boolean hasNext() {
+				while (branchIterator == null || !branchIterator.hasNext()) {
+					branchIterator = null;
+					while (branchTraceIterator.hasNext()) {
+						T identifier = getNode(branchTraceIterator.next()).getIdentifier();
+						if (identifier instanceof ProgramBranch) {
+							branchIterator = ((ProgramBranch) identifier).branchReverseIterator();
+						} else {
+							throw new UnsupportedOperationException();
+						}
+						if (branchIterator.hasNext()) {
+							return true;
+						}
+					}
+					
+					if (branchIterator == null) {
+						return false;
+					}
+				}
+				
+				return branchIterator.hasNext();
+			}
+
+			@Override
+			public SourceCodeBlock next() {
+				return branchIterator.next();
+			}
+		};
+	}
     
 //    /*====================================================================================
 //     * PUBLIC
