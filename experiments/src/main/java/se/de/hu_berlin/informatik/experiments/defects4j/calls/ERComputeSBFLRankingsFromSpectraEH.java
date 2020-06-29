@@ -61,14 +61,22 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
         Log.out(this, "Processing %s.", buggyEntity);
 
         Entity bug = buggyEntity.getBuggyVersion();
-
+        
         /* #====================================================================================
          * # compute SBFL rankings for the given localizers
          * #==================================================================================== */
+        
         if (!(bug.getWorkDataDir().toFile()).exists()) {
-            Log.err(this, "Work data directory doesn't exist: '" + bug.getWorkDataDir() + "'.");
-            Log.err(this, "Error while computing SBFL rankings. Skipping '" + buggyEntity + "'.");
-            return null;
+        	/* #====================================================================================
+             * # try to get spectra from archive, if existing
+             * #==================================================================================== */
+            boolean foundSpectra = ERGenerateSpectraEH.tryToGetSpectraFromArchive(bug, toolSpecific);
+            
+            if (!foundSpectra) {
+            	Log.err(this, "Work data directory doesn't exist: '" + bug.getWorkDataDir() + "'.");
+            	Log.err(this, "Error while computing SBFL rankings. Skipping '" + buggyEntity + "'.");
+            	return null;
+            }
         }
 
         /* #====================================================================================

@@ -55,29 +55,30 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
     public ERGenerateSpectraEH(ToolSpecific toolSpecific, String suffix, int port, boolean fillEmptyLines) {
         this.toolSpecific = toolSpecific;
         this.fillEmptyLines = fillEmptyLines;
-        switch (toolSpecific) {
-            case COBERTURA:
-                subDirName = BugLoRDConstants.DIR_NAME_COBERTURA;
-                break;
-            case JACOCO:
-                subDirName = BugLoRDConstants.DIR_NAME_JACOCO;
-                break;
-            case TRACE_COBERTURA:
-                subDirName = BugLoRDConstants.DIR_NAME_TRACE_COBERTURA;
-                break;
-
-            case BRANCH_SPECTRA:
-                subDirName = BugLoRDConstants.DIR_NAME_BRANCH_SPECTRA;
-                break;
-
-            default:
-                throw new IllegalStateException("Spectra Generation Tool unknown.");
-        }
+        this.subDirName = getSubDirName(toolSpecific);
         this.suffix = suffix;
         this.port = port;
     }
 
-    private boolean tryToGetSpectraFromArchive(Entity entity) {
+	private static String getSubDirName(ToolSpecific toolSpecific) {
+		switch (toolSpecific) {
+            case COBERTURA:
+                return BugLoRDConstants.DIR_NAME_COBERTURA;
+            case JACOCO:
+            	return BugLoRDConstants.DIR_NAME_JACOCO;
+            case TRACE_COBERTURA:
+            	return BugLoRDConstants.DIR_NAME_TRACE_COBERTURA;
+
+            case BRANCH_SPECTRA:
+            	return BugLoRDConstants.DIR_NAME_BRANCH_SPECTRA;
+
+            default:
+                throw new IllegalStateException("Spectra Generation Tool unknown.");
+        }
+	}
+
+    public static boolean tryToGetSpectraFromArchive(Entity entity, ToolSpecific toolSpecific) {
+    	String subDirName = getSubDirName(toolSpecific);
         File spectra;
         File destination;
 
@@ -92,7 +93,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
         try {
             FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            Log.err(this, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
+            Log.err(ERGenerateSpectraEH.class, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
             return false;
         }
 
@@ -140,7 +141,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
         /* #====================================================================================
          * # try to get spectra from archive, if existing
          * #==================================================================================== */
-        boolean foundSpectra = tryToGetSpectraFromArchive(bug);
+        boolean foundSpectra = tryToGetSpectraFromArchive(bug, toolSpecific);
         boolean foundFilteredSpectra = tryToGetFilteredSpectraFromArchive(bug);
 
         /* #====================================================================================
