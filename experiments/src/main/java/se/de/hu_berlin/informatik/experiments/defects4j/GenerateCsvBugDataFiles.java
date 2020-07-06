@@ -291,6 +291,7 @@ public class GenerateCsvBugDataFiles {
                 		} else {
                 			processCollectedBranches(rankingIdentifier, ranking, statementRanking, currentHighestCore,
 									branchesWithSameScore);
+                			branchesWithSameScore.add(branch);
                 			lastScore = rankingValue;
                 		}
                 	}
