@@ -335,7 +335,8 @@ public class GenerateCsvBugDataFiles {
 			if (!Double.isNaN(value)) {
 				statementRankingPart.add(sourceCodeBlock, value);
 			} else {
-				Log.abort(GenerateCsvBugDataFiles.class, "Found no entry for block '%s' in statement level ranking with identifier '%s'.", 
+				statementRankingPart.add(sourceCodeBlock, Double.NEGATIVE_INFINITY);
+				Log.warn(GenerateCsvBugDataFiles.class, "Found no entry for block '%s' in statement level ranking with identifier '%s'.", 
 						sourceCodeBlock.getShortIdentifier(), rankingIdentifier);
 			}
 		}
