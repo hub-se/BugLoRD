@@ -33,6 +33,7 @@ import se.de.hu_berlin.informatik.utils.processors.sockets.pipe.PipeLinker;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Generates csv files that store information about SBFL bug data.
@@ -44,6 +45,7 @@ public class GenerateCsvBugDataFiles {
     public enum CmdOptions implements OptionWrapperInterface {
         /* add options here according to your needs */
         SUFFIX("s", "suffix", true, "A ranking directory suffix, if existing.", false),
+        SUFFIX2("s2", "suffix2", true, "A ranking directory suffix for a statement level ranking, if existing.", false),
 
         LOCALIZERS(Option.builder("l").longOpt("localizers").required(false).hasArgs().desc(
                 "A list of localizers (e.g. 'Tarantula', 'Jaccard', ...). If not set, "
@@ -52,7 +54,8 @@ public class GenerateCsvBugDataFiles {
         SPECTRA_TOOL("st", "spectraTool", ToolSpecific.class, ToolSpecific.TRACE_COBERTURA,
                 "What tool has been used to compute the rankings?.", false),
         OUTPUT("o", "output", true, "Path to output directory in which csv files will be stored.", true),
-        FILL_EMPTY_LINES("f", "fill", false, "Whether empty lines between statements in the same method should be filled up.", false);
+        FILL_EMPTY_LINES("f", "fill", false, "Whether empty lines between statements in the same method should be filled up.", false),
+        LOC("loc", "loc", false, "Whether to generate LOC for each ranking/bug.", false);
 
         /* the following code blocks should not need to be changed */
         final private OptionWrapper option;
@@ -136,6 +139,7 @@ public class GenerateCsvBugDataFiles {
         Path output = options.isDirectory(CmdOptions.OUTPUT, false);
 
         String suffix = options.getOptionValue(CmdOptions.SUFFIX, null);
+        String suffix2 = options.getOptionValue(CmdOptions.SUFFIX2, null);
 
         String[] localizers = options.getOptionValues(CmdOptions.LOCALIZERS);
         if (localizers == null) {
@@ -149,41 +153,43 @@ public class GenerateCsvBugDataFiles {
         ToolSpecific toolSpecific = options.getOptionValue(CmdOptions.SPECTRA_TOOL,
                 ToolSpecific.class, ToolSpecific.TRACE_COBERTURA, true);
 
-        // bug size data
-        {
-            PipeLinker linker = new PipeLinker().append(
-                    new ThreadedProcessor<>(options.getNumberOfThreads(),
-                            new RankingLOCProcessor(suffix, localizers[0], toolSpecific)),
-                    new AbstractProcessor<String, List<String>>() {
+        if (options.hasOption(CmdOptions.LOC)) {
+        	// bug size data
+        	{
+        		PipeLinker linker = new PipeLinker().append(
+        				new ThreadedProcessor<>(options.getNumberOfThreads(),
+        						new RankingLOCProcessor(suffix, suffix2, localizers[0], toolSpecific)),
+        				new AbstractProcessor<String, List<String>>() {
 
-                        final Map<String, String> map = new HashMap<>();
+        					final Map<String, String> map = new HashMap<>();
 
-                        @Override
-                        public List<String> processItem(String item) {
-                            map.put(item.split(",")[0], item);
-                            return null;
-                        }
+        					@Override
+        					public List<String> processItem(String item) {
+        						map.put(item.split(",")[0], item);
+        						return null;
+        					}
 
-                        @Override
-                        public List<String> getResultFromCollectedItems() {
+        					@Override
+        					public List<String> getResultFromCollectedItems() {
 
-                            // BugID, Line, EF, EP, NF, NP, BestRanking,
-                            // WorstRanking, MinWastedEffort, MaxWastedEffort,
-                            // Suspiciousness
+        						// BugID, Line, EF, EP, NF, NP, BestRanking,
+        						// WorstRanking, MinWastedEffort, MaxWastedEffort,
+        						// Suspiciousness
 
-                            map.put("", "BugID,LOC");
-                            return Misc.sortByKeyToValueList(map);
-                        }
-                    }, new ListToFileWriter<List<String>>(output.resolve("bugsize").resolve("bugsize.csv"), true));
+        						map.put("", "BugID,LOC");
+        						return Misc.sortByKeyToValueList(map);
+        					}
+        				}, new ListToFileWriter<List<String>>(output.resolve("bugsize").resolve("bugsize.csv"), true));
 
-            // iterate over all projects
-            for (Defects4JProject project : Defects4J.getAllProjects()) {
-                String[] ids = Defects4J.getAllActiveBugIDs(project);
-                for (String id : ids) {
-                    linker.submit(new Defects4JBuggyFixedEntity(project, id));
-                }
-            }
-            linker.shutdown();
+        		// iterate over all projects
+        		for (Defects4JProject project : Defects4J.getAllProjects()) {
+        			String[] ids = Defects4J.getAllActiveBugIDs(project);
+        			for (String id : ids) {
+        				linker.submit(new Defects4JBuggyFixedEntity(project, id));
+        			}
+        		}
+        		linker.shutdown();
+        	}
         }
 
         // bug data
@@ -191,7 +197,7 @@ public class GenerateCsvBugDataFiles {
             Log.out(GenerateCsvBugDataFiles.class, "Processing %s.", localizer);
             PipeLinker linker2 = new PipeLinker().append(
                     new ThreadedProcessor<>(options.getNumberOfThreads(),
-                            new GenStatisticsProcessor(suffix, localizer, toolSpecific, options.hasOption(CmdOptions.FILL_EMPTY_LINES))),
+                            new GenStatisticsProcessor(suffix, suffix2, localizer, toolSpecific, options.hasOption(CmdOptions.FILL_EMPTY_LINES))),
                     new AbstractProcessor<Pair<String, String[]>, List<String>>() {
 
                         final Map<String, String> map = new HashMap<>();
@@ -234,7 +240,8 @@ public class GenerateCsvBugDataFiles {
 
     }
 
-    protected static Ranking<SourceCodeBlock> generateStatementLevelRanking(Entity bug, ToolSpecific spectraTool, String suffix, String rankingIdentifier) {
+    protected static Ranking<SourceCodeBlock> generateStatementLevelRanking(Entity bug, ToolSpecific spectraTool, 
+    		String suffix, String suffixStatement, String rankingIdentifier) {
         // generate a statement level ranking!
         Ranking<SourceCodeBlock> ranking = null;
 
@@ -243,20 +250,53 @@ public class GenerateCsvBugDataFiles {
                 // convert the given branch level ranking to a statement level ranking
                 Ranking<ProgramBranch> branchRanking = RankingUtils.getRanking(ProgramBranch.DUMMY, bug, suffix, rankingIdentifier);
                 if (branchRanking == null) {
-                    Log.abort(GenerateCsvBugDataFiles.class, "Found no ranking with identifier '%s'.", rankingIdentifier);
+                    Log.abort(GenerateCsvBugDataFiles.class, "Found no branch level ranking with identifier '%s'.", rankingIdentifier);
                 }
+                
+                // use statement level ranking (if any) for ranking within branches
+                Ranking<SourceCodeBlock> statementRanking = null;
+                if (suffixStatement != null) {
+                	statementRanking = RankingUtils.getRanking(SourceCodeBlock.DUMMY, bug, suffixStatement, rankingIdentifier);
+                	if (statementRanking == null) {
+                        Log.abort(GenerateCsvBugDataFiles.class, "Found no statement level ranking with identifier '%s'.", rankingIdentifier);
+                    }
+                }
+                
                 ranking = new SimpleRanking<>(false);
 
-                // add new statements to the statement level ranking, using the scores of the branches
-                Iterator<ProgramBranch> iterator = branchRanking.iterator();
-                while (iterator.hasNext()) {
-                    ProgramBranch branch = iterator.next();
-                    double rankingValue = branchRanking.getRankingValue(branch);
-                    for (SourceCodeBlock block : branch) {
-                        if (!ranking.hasRanking(block)) {
-                            ranking.add(block, rankingValue);
+                if (statementRanking == null) {
+                	// add new statements to the statement level ranking, using the scores of the branches
+                    Iterator<ProgramBranch> iterator = branchRanking.iterator();
+                    while (iterator.hasNext()) {
+                        ProgramBranch branch = iterator.next();
+                        double rankingValue = branchRanking.getRankingValue(branch);
+                        for (SourceCodeBlock block : branch) {
+                            if (!ranking.hasRanking(block)) {
+                                ranking.add(block, rankingValue);
+                            }
                         }
                     }
+                } else {
+                	AtomicInteger currentHighestCore = new AtomicInteger(1000000);
+
+                	// add new statements to the statement level ranking, using the scores of the branches
+                	Iterator<ProgramBranch> iterator = branchRanking.iterator();
+                	List<ProgramBranch> branchesWithSameScore = new ArrayList<>();
+                	double lastScore = Double.NaN;
+                	while (iterator.hasNext()) {
+                		ProgramBranch branch = iterator.next();
+                		double rankingValue = branchRanking.getRankingValue(branch);
+                		if (rankingValue == lastScore) {
+                			branchesWithSameScore.add(branch);
+                		} else {
+                			processCollectedBranches(rankingIdentifier, ranking, statementRanking, currentHighestCore,
+									branchesWithSameScore);
+                			lastScore = rankingValue;
+                		}
+                	}
+                	// process any unprocessed branches, if existing
+                	processCollectedBranches(rankingIdentifier, ranking, statementRanking, currentHighestCore,
+							branchesWithSameScore);
                 }
                 break;
             case COBERTURA:
@@ -275,22 +315,68 @@ public class GenerateCsvBugDataFiles {
         return ranking;
     }
 
+	private static void processCollectedBranches(String rankingIdentifier, Ranking<SourceCodeBlock> ranking,
+			Ranking<SourceCodeBlock> statementRanking, AtomicInteger currentHighestCore,
+			List<ProgramBranch> branchesWithSameScore) {
+		Set<SourceCodeBlock> containedBlocks = new HashSet<>();
+		// process any previously collected branches
+		for (ProgramBranch programBranch : branchesWithSameScore) {
+			for (SourceCodeBlock block : programBranch) {
+				if (!ranking.hasRanking(block)) {
+					// collect new blocks to add to the ranking
+					containedBlocks.add(block);
+				}
+			}
+		}
+		Ranking<SourceCodeBlock> statementRankingPart = new SimpleRanking<>(false);
+		for (SourceCodeBlock sourceCodeBlock : containedBlocks) {
+			// fetch statement level ranking score
+			double value = statementRanking.getRankingValue(sourceCodeBlock);
+			if (!Double.isNaN(value)) {
+				statementRankingPart.add(sourceCodeBlock, value);
+			} else {
+				Log.abort(GenerateCsvBugDataFiles.class, "Found no entry for block '%s' in statement level ranking with identifier '%s'.", 
+						sourceCodeBlock.getShortIdentifier(), rankingIdentifier);
+			}
+		}
+		// iterate over the part of the statement level ranking and add to main ranking with the respective scores
+		Iterator<SourceCodeBlock> rankingPartIterator = statementRankingPart.iterator();
+		double lastPartRankingScore = Double.NaN;
+		while (rankingPartIterator.hasNext()) {
+			SourceCodeBlock next = rankingPartIterator.next();
+			double nextValue = statementRankingPart.getRankingValue(next);
+			// assign scores based on statement level ranking placements
+			if (lastPartRankingScore == nextValue) {
+				ranking.add(next, currentHighestCore.get());
+			} else {
+				ranking.add(next, currentHighestCore.decrementAndGet());
+				lastPartRankingScore = nextValue;
+			}
+		}
+		
+		// reset for next time
+		branchesWithSameScore.clear();
+	}
+
     private static class GenStatisticsProcessor extends AbstractProcessor<BuggyFixedEntity<?>, Pair<String, String[]>> {
 
         final private String rankingIdentifier;
         private final String suffix;
+        private final String suffix2;
         private ToolSpecific spectraTool;
         private boolean fillEmptyLines;
 
         /**
          * @param suffix            a suffix to append to the ranking directory (may be null)
+         * @param suffix2           a suffix to append to the ranking directory (may be null, statement level ranking)
          * @param rankingIdentifier a fault localizer identifier or an lm ranking file name
          * @param spectraTool       the tool used to generate the rankings (statement-/ branch-level ...)
          * @param fillEmptyLines    whether to fill empty lines between statements within the same method
          */
-        private GenStatisticsProcessor(String suffix, String rankingIdentifier,
+        private GenStatisticsProcessor(String suffix, String suffix2, String rankingIdentifier,
                                        ToolSpecific spectraTool, boolean fillEmptyLines) {
             this.suffix = suffix;
+            this.suffix2 = suffix2;
             this.rankingIdentifier = rankingIdentifier;
             this.spectraTool = spectraTool;
             this.fillEmptyLines = fillEmptyLines;
@@ -303,7 +389,7 @@ public class GenerateCsvBugDataFiles {
 
             Map<String, List<Modification>> changeInformation = entity.loadChangesFromFile();
 
-            Ranking<SourceCodeBlock> ranking = generateStatementLevelRanking(bug, spectraTool, suffix, rankingIdentifier);
+            Ranking<SourceCodeBlock> ranking = generateStatementLevelRanking(bug, spectraTool, suffix, suffix2, rankingIdentifier);
 
             if (fillEmptyLines) {
                 // fill up empty lines between statements within the same method;
@@ -371,15 +457,18 @@ public class GenerateCsvBugDataFiles {
 
         final private String rankingIdentifier;
         private final String suffix;
+        private final String suffix2;
         private ToolSpecific spectraTool;
 
         /**
          * @param suffix            a suffix to append to the ranking directory (may be null)
+         * @param suffix2            a suffix to append to the ranking directory (may be null, statement level ranking)
          * @param rankingIdentifier a fault localizer identifier or an lm ranking file name
          * @param spectraTool       the tool used to generate the rankings (statement-/ branch-level ...)
          */
-        private RankingLOCProcessor(String suffix, String rankingIdentifier, ToolSpecific spectraTool) {
+        private RankingLOCProcessor(String suffix, String suffix2, String rankingIdentifier, ToolSpecific spectraTool) {
             this.suffix = suffix;
+            this.suffix2 = suffix2;
             this.rankingIdentifier = rankingIdentifier;
             this.spectraTool = spectraTool;
         }
@@ -389,7 +478,7 @@ public class GenerateCsvBugDataFiles {
             Log.out(GenerateCsvBugDataFiles.class, "Processing %s for general data.", entity);
             Entity bug = entity.getBuggyVersion();
 
-            Ranking<SourceCodeBlock> ranking = generateStatementLevelRanking(bug, spectraTool, suffix, rankingIdentifier);
+            Ranking<SourceCodeBlock> ranking = generateStatementLevelRanking(bug, spectraTool, suffix, suffix2, rankingIdentifier);
 
             ranking = removeDuplicateLines(ranking);
 
