@@ -17,9 +17,6 @@ public class IntGSArrayTree {
     public static final int SUCC_END = -1;
     private static final Integer END_NODE = -2;
 
-    private static final int EXECUTION_TRACE_CHUNK_SIZE = 500000;
-    private static final int MAP_CHUNK_SIZE = 500000;
-
     int[] newArray(int size) {
         return new int[size];
     }
