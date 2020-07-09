@@ -77,5 +77,10 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
 	public double suspiciousness(INode<T> node, ComputationStrategies strategy) {
 		throw new IllegalStateException();
 	}
+	
+	@Override
+	public String getName() {
+		return this.getClass().getSimpleName() + "+" + localizer.getName() + "_d" + dampingFactor;
+	}
 
 }

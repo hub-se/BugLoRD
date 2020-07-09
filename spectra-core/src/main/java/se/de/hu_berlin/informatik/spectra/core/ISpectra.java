@@ -169,6 +169,7 @@ public interface ISpectra<T, K extends ITrace<T>> {
     /**
      * Removes all nodes from this spectra that belong to test classes.
      *
+     * @param dummy dummy object to determine the type of nodes in the spectra
      * @return this spectra (modified)
      */
     default public ISpectra<T, K> removeTestClassNodes(T dummy) {
