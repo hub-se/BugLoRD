@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.faultlocalizer.cfg;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -9,7 +10,7 @@ import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
-import se.de.hu_berlin.informatik.spectra.core.INode.CoverageType;
+import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.cfg.Node;
 import se.de.hu_berlin.informatik.spectra.core.cfg.ScoredDynamicCFG;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
@@ -30,7 +31,7 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
 	}
 
 	@Override
-    public Ranking<INode<T>> localize(final ISpectra<T, ?> spectra, ComputationStrategies strategy) {		
+    public Ranking<INode<T>> localize(final ISpectra<T, ? extends ITrace<T>> spectra, ComputationStrategies strategy) {		
 		// generate CFG
 		final ScoredDynamicCFG<T> cfg = new ScoredDynamicCFG<>(SpectraUtils.generateCFGFromTraces(spectra));
 		// merge linear node sequences
@@ -50,22 +51,27 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
         // calculate scores with PageRank algorithm
         Map<Integer, Double> pageRank = new PageRank<>(cfg, dampingFactor).calculate();
         
-        // remove nodes from spectra that were only executed by successful test cases;
+        // ignore nodes from spectra that were only executed by successful test cases;
         // this will lead to the scores for the removed nodes not being added to the ranking;
         // filtering is necessary, due to how the algorithm works... :/
-        SpectraUtils.removeNodesWithCoverageType(spectra, CoverageType.EF_EQUALS_ZERO);
-        
+        Collection<? extends ITrace<T>> failingTraces = spectra.getFailingTraces();
+
         // generate ranking based on base ranking and PageRank algorithm
         final Ranking<INode<T>> ranking = new NodeRanking<>();
         for (Entry<Integer, Node> entry : cfg.getNodes().entrySet()) {
         	Node node = entry.getValue();
-			Double score = pageRank.get(node.getIndex());
+			int index = node.getIndex();
+			Double score = pageRank.get(index);
 
-			ranking.add(spectra.getNode(node.getIndex()), score);
+			if (SpectraUtils.isNodeInvolvedInATrace(failingTraces, index)) {
+				ranking.add(spectra.getNode(index), score);
+			}
 			
 			if (node.isMerged()) {
 				for (int i : node.getMergedIndices()) {
-					ranking.add(spectra.getNode(i), score);
+					if (SpectraUtils.isNodeInvolvedInATrace(failingTraces, i)) {
+						ranking.add(spectra.getNode(i), score);
+					}
 				}
 			}
 		}

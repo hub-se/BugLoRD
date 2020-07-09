@@ -197,7 +197,7 @@ public class SpectraUtils {
     private static <T> void removeNodesInvolvedInATrace(ISpectra<T, ?> spectra, Collection<? extends ITrace<T>> traces) {
         Collection<Integer> nodesToRemove = new HashSet<>();
         for (INode<T> node : spectra.getNodes()) {
-            boolean isInvolvedInTrace = isNodeInvolvedInATrace(traces, node);
+            boolean isInvolvedInTrace = isNodeInvolvedInATrace(traces, node.getIndex());
             if (isInvolvedInTrace) {
                 nodesToRemove.add(node.getIndex());
             }
@@ -208,7 +208,7 @@ public class SpectraUtils {
     private static <T> void removeNodesInvolvedInAllTraces(ISpectra<T, ?> spectra, Collection<? extends ITrace<T>> traces) {
         Collection<Integer> nodesToRemove = new HashSet<>();
         for (INode<T> node : spectra.getNodes()) {
-            boolean isNotInvolvedInTrace = isNodeNotInvolvedInATrace(traces, node);
+            boolean isNotInvolvedInTrace = isNodeNotInvolvedInATrace(traces, node.getIndex());
             if (!isNotInvolvedInTrace) {
                 nodesToRemove.add(node.getIndex());
             }
@@ -219,7 +219,7 @@ public class SpectraUtils {
     private static <T> void removeNodesNotInvolvedInATrace(ISpectra<T, ?> spectra, Collection<? extends ITrace<T>> traces) {
         Collection<Integer> nodesToRemove = new HashSet<>();
         for (INode<T> node : spectra.getNodes()) {
-            boolean isNotInvolvedInTrace = isNodeNotInvolvedInATrace(traces, node);
+            boolean isNotInvolvedInTrace = isNodeNotInvolvedInATrace(traces, node.getIndex());
             if (isNotInvolvedInTrace) {
                 nodesToRemove.add(node.getIndex());
             }
@@ -230,7 +230,7 @@ public class SpectraUtils {
     private static <T> void removeNodesNotInvolvedInAllTraces(ISpectra<T, ?> spectra, Collection<? extends ITrace<T>> traces) {
         Collection<Integer> nodesToRemove = new HashSet<>();
         for (INode<T> node : spectra.getNodes()) {
-            boolean isInvolvedInTrace = isNodeInvolvedInATrace(traces, node);
+            boolean isInvolvedInTrace = isNodeInvolvedInATrace(traces, node.getIndex());
             if (!isInvolvedInTrace) {
                 nodesToRemove.add(node.getIndex());
             }
@@ -239,9 +239,9 @@ public class SpectraUtils {
     }
 
 
-    private static <T> boolean isNodeInvolvedInATrace(Collection<? extends ITrace<T>> traces, INode<T> node) {
+    public static <T> boolean isNodeInvolvedInATrace(Collection<? extends ITrace<T>> traces, int nodeIndex) {
         for (ITrace<T> trace : traces) {
-            if (trace.isInvolved(node)) {
+            if (trace.isInvolved(nodeIndex)) {
                 trace.sleep();
                 return true;
             }
@@ -250,9 +250,9 @@ public class SpectraUtils {
         return false;
     }
 
-    private static <T> boolean isNodeNotInvolvedInATrace(Collection<? extends ITrace<T>> traces, INode<T> node) {
+    public static <T> boolean isNodeNotInvolvedInATrace(Collection<? extends ITrace<T>> traces, int nodeIndex) {
         for (ITrace<T> trace : traces) {
-            if (!trace.isInvolved(node)) {
+            if (!trace.isInvolved(nodeIndex)) {
                 trace.sleep();
                 return true;
             }

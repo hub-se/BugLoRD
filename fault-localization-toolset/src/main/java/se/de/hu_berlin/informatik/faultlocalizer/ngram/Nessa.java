@@ -35,7 +35,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     }
 
     @Override
-    public Ranking<INode<T>> localize(final ISpectra<T, ?> spectra, ComputationStrategies strategy) {
+    public Ranking<INode<T>> localize(final ISpectra<T, ? extends ITrace<T>> spectra, ComputationStrategies strategy) {
         final Ranking<INode<T>> ranking = new NodeRanking<>();
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace((ISpectra<SourceCodeBlock, ?>) spectra);
         NGramSet nGrams = dynSup ?

@@ -10,6 +10,7 @@ import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.spectra.core.ILocalizerCache;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 /**
@@ -32,7 +33,7 @@ public interface IFaultLocalizer<T> {
      * @param spectra the spectra to perform the fault localization on
      * @return nodes ranked by suspiciousness of actually causing the failure
      */
-    default Ranking<INode<T>> localize(ISpectra<T, ?> spectra) {
+    default Ranking<INode<T>> localize(ISpectra<T, ? extends ITrace<T>> spectra) {
         return localize(spectra, ComputationStrategies.STANDARD_SBFL);
     }
 
@@ -43,7 +44,7 @@ public interface IFaultLocalizer<T> {
      * @param strategy the strategy to use for computation
      * @return nodes ranked by suspiciousness of actually causing the failure
      */
-    default Ranking<INode<T>> localize(ISpectra<T, ?> spectra, ComputationStrategies strategy) {
+    default Ranking<INode<T>> localize(ISpectra<T, ? extends ITrace<T>> spectra, ComputationStrategies strategy) {
         return localize(spectra.getLocalizer(), strategy);
     }
 

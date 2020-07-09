@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
 import se.de.hu_berlin.informatik.spectra.core.ILocalizerCache;
 import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
+import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking.RankingValueReplacementStrategy;
 
@@ -26,7 +27,7 @@ public abstract class AbstractFaultLocalizer<T> implements IFaultLocalizer<T> {
      * {@inheritDoc}
      */
     @Override
-    public Ranking<INode<T>> localize(final ISpectra<T, ?> spectra, ComputationStrategies strategy) {
+    public Ranking<INode<T>> localize(final ISpectra<T, ? extends ITrace<T>> spectra, ComputationStrategies strategy) {
         final Ranking<INode<T>> ranking = new NodeRanking<>();
         for (final INode<T> node : spectra.getNodes()) {
             final double suspiciousness = this.suspiciousness(node, strategy);
