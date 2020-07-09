@@ -9,9 +9,12 @@
 
 package se.de.hu_berlin.informatik.spectra.core;
 
+import se.de.hu_berlin.informatik.spectra.core.cfg.CFG;
+import se.de.hu_berlin.informatik.spectra.core.cfg.DynamicCFG;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.util.SpectraFileUtils;
+import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
@@ -71,6 +74,7 @@ public abstract class AbstractSpectra<T, K extends ITrace<T>> implements Cloneab
     private SequenceIndexerCompressed indexer;
     private Path spectraZipFile;
     private RawIntTraceCollector rawTraceCollector;
+	private DynamicCFG<T> cfg;
 
 //    /**
 //     * Creates a new spectra.
@@ -448,4 +452,14 @@ public abstract class AbstractSpectra<T, K extends ITrace<T>> implements Cloneab
         this.rawTraceCollector = rawTraceCollector;
     }
 
+	@Override
+	public CFG<T> getCFG() {
+		if (cfg == null) {
+			cfg = SpectraUtils.generateCFGFromTraces(this);
+			// merge linear node sequences
+	        cfg.mergeLinearSequeces();
+		}
+		return cfg;
+	}
+	
 }

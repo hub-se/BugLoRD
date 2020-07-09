@@ -20,22 +20,24 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
 	
 	private IFaultLocalizer<T> localizer;
 	private double dampingFactor;
+	private int iterations;
+	private boolean reverse;
 
-	public CfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer, double dampingFactor) {
+	public CfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer, double dampingFactor, int iterations, boolean reverse) {
 		this.localizer = localizer;
 		this.dampingFactor = dampingFactor;
+		this.iterations = iterations;
+		this.reverse = reverse;
 	}
 	
 	public CfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer) {
-		this(localizer, 0.5);
+		this(localizer, 0.5, 2, true);
 	}
 
 	@Override
     public Ranking<INode<T>> localize(final ISpectra<T, ? extends ITrace<T>> spectra, ComputationStrategies strategy) {		
 		// generate CFG
-		final ScoredDynamicCFG<T> cfg = new ScoredDynamicCFG<>(SpectraUtils.generateCFGFromTraces(spectra));
-		// merge linear node sequences
-        cfg.mergeLinearSequeces();
+		final ScoredDynamicCFG<T> cfg = new ScoredDynamicCFG<>(spectra.getCFG());
         
         // compute a base ranking (usually some sort of SBFL ranking)
         final Ranking<INode<T>> baseRanking = Ranking.getRankingWithStrategies(localizer.localize(spectra), 
@@ -49,7 +51,7 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
 		}
         
         // calculate scores with PageRank algorithm
-        Map<Integer, Double> pageRank = new PageRank<>(cfg, dampingFactor).calculate();
+        Map<Integer, Double> pageRank = new PageRank<>(cfg, dampingFactor, iterations, reverse).calculate();
         
         // ignore nodes from spectra that were only executed by successful test cases;
         // this will lead to the scores for the removed nodes not being added to the ranking;
@@ -86,7 +88,7 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
 	
 	@Override
 	public String getName() {
-		return this.getClass().getSimpleName() + "+" + localizer.getName() + "_d" + dampingFactor;
+		return this.getClass().getSimpleName() +"_" + dampingFactor + "_" + iterations + "_" + (reverse ? "r" : "f") + "_" + localizer.getName();
 	}
 
 }

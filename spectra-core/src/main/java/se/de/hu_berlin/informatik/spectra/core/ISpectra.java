@@ -9,6 +9,7 @@
 
 package se.de.hu_berlin.informatik.spectra.core;
 
+import se.de.hu_berlin.informatik.spectra.core.cfg.CFG;
 import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
@@ -205,6 +206,11 @@ public interface ISpectra<T, K extends ITrace<T>> {
      * @param traceCollector a raw execution trace collector, used to generate execution traces
      */
     public void setRawTraceCollector(RawIntTraceCollector traceCollector);
+
+	/**
+	 * @return a dynamic CFG, based on the existing execution traces
+	 */
+	public CFG<T> getCFG();
 
 
 }

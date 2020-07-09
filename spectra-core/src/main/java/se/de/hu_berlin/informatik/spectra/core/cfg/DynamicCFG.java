@@ -136,11 +136,22 @@ public class DynamicCFG<T> implements CFG<T> {
 			startNode.setSuccessors(lastNode.getSuccessors());
 			startNode.setMergedIndices(nodeIndices.stream().mapToInt(k -> k).toArray());
 			nodeIndices.forEach(k -> {
-//				// link spectra node indices to merged node 
-//				nodes.put(k, startNode);
 				// remove merged nodes
 				nodes.remove(k);
 			});
+			
+			if (startNode.hasSuccessors()) {
+				// adjust predecessor nodes of successor nodes
+				for (Node successor : startNode.getSuccessors()) {
+					for (int i = 0; i < successor.getPredecessors().length; i++) {
+						Node predecessor = successor.getPredecessors()[i];
+						if (predecessor.getIndex() == lastNode.getIndex()) {
+							successor.getPredecessors()[i] = startNode;
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 	

@@ -18,10 +18,16 @@ public class PageRank<T> {
 	private Map<Integer, Double> pageRank = new HashMap<>();
 	private Map<Integer, Double> old_pageRank;
 
-	public PageRank(ScoredDynamicCFG<T> cfg, double dampingFactor) {
+	private int iterations;
+
+	private boolean reverse;
+
+	public PageRank(ScoredDynamicCFG<T> cfg, double dampingFactor, int iterations, boolean reverse) {
 
 		this.cfg = cfg;
 		this.dampingFactor = dampingFactor;
+		this.iterations = iterations;
+		this.reverse = reverse;
 
 		// initialize the values
 		this.offset = (1 - dampingFactor) / cfg.getNodes().size();
@@ -35,11 +41,13 @@ public class PageRank<T> {
 	}
 	
 	public Map<Integer, Double> calculate() {
-		//Loop until the values converge
+		// loop until values converge or max iterations reached
+		int count = 0;
 		do {
 			//Calculate the page rank
 			calculatePageRank();
-		} while (!didConverge());
+			++count;
+		} while (!didConverge() && (iterations <= 0 || count < iterations));
 
 		return pageRank;
 	}
@@ -53,9 +61,17 @@ public class PageRank<T> {
 		for (Entry<Integer, Node> entry : cfg.getNodes().entrySet()) {
 			Node node = entry.getValue();
 			double sum = 0;
-			if (node.hasSuccessors()) {
-				for (Node successor : node.getSuccessors()) {
-					sum += pageRank.get(successor.getIndex()) / successor.getPredecessorCount();
+			if (reverse) {
+				if (node.hasSuccessors()) {
+					for (Node successor : node.getSuccessors()) {
+						sum += pageRank.get(successor.getIndex()) / successor.getPredecessorCount();
+					}
+				}
+			} else {
+				if (node.hasPredecessors()) {
+					for (Node predecessor : node.getPredecessors()) {
+						sum += pageRank.get(predecessor.getIndex()) / predecessor.getSuccessorCount();
+					}
 				}
 			}
 			newPageRankArray.put(node.getIndex(), offset + dampingFactor * sum);
