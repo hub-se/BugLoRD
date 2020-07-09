@@ -146,11 +146,7 @@ public abstract class AbstractSpectra<T, K extends ITrace<T>> implements Cloneab
      */
     @Override
     public INode<T> getNode(final int index) {
-        if (index < 0 || index >= nodesByIndex.size()) {
-            return null;
-        } else {
-            return nodesByIndex.get(index);
-        }
+        return nodesByIndex.get(index);
     }
 
     /**

@@ -8,6 +8,7 @@ import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch.BranchIterator;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
+import se.de.hu_berlin.informatik.spectra.core.cfg.DynamicCFG;
 import se.de.hu_berlin.informatik.spectra.core.count.CountSpectra;
 import se.de.hu_berlin.informatik.spectra.core.count.CountTrace;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
@@ -628,6 +629,12 @@ public class SpectraUtils {
 		} else {
 			return testIdentifier.substring(0, index);
 		}
+	}
+	
+	public static <T> DynamicCFG<T> generateCFGFromTraces(ISpectra<T, ?> spectra) {
+		DynamicCFG<T> cfg = new DynamicCFG<>(spectra);
+		cfg.generateCompleteCFG();
+		return cfg;
 	}
 }
 

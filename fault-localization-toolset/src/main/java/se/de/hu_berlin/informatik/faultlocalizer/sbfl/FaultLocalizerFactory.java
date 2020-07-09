@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.faultlocalizer.sbfl;
 
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgPageRankFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.ngram.Nessa;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.*;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.*;
@@ -24,6 +25,12 @@ public class FaultLocalizerFactory {
     public static <T> IFaultLocalizer<T> newInstance(String localizer) {
         localizer = localizer.toLowerCase(Locale.getDefault());
         switch (localizer) {
+	        case "pr_dstar":
+	        	return new CfgPageRankFaultLocalizer<>(new DStar<>());
+	        case "pr_jaccard":
+	        	return new CfgPageRankFaultLocalizer<>(new Jaccard<>());
+	        case "pr_barinel":
+	        	return new CfgPageRankFaultLocalizer<>(new Barinel<>());
             case "dstar":
                 return new DStar<>();
             case "barinel":

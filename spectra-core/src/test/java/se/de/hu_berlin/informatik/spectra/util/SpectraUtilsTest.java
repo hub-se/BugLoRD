@@ -1,17 +1,27 @@
 package se.de.hu_berlin.informatik.spectra.util;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import org.junit.*;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 import se.de.hu_berlin.informatik.spectra.core.INode.CoverageType;
+import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
+import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
+import se.de.hu_berlin.informatik.spectra.core.branch.StatementSpectraToBranchSpectra;
+import se.de.hu_berlin.informatik.spectra.core.cfg.DynamicCFG;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitTrace;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.CoberturaSpectraProviderFactory;
 import se.de.hu_berlin.informatik.spectra.provider.cobertura.xml.CoberturaXMLProvider;
 import se.de.hu_berlin.informatik.spectra.test.data.SimpleSpectraProvider2;
+import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 
 /**
@@ -177,5 +187,44 @@ public class SpectraUtilsTest extends TestSettings {
         Assert.assertEquals(s.getTraces().size(), 6);
         return s;
     }
+    
+    @Test
+    public void testCFGGeneration() throws IOException {
+    	//assert(false); //uncomment to check if asserts are enabled
+
+        ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b.zip");
+
+        DynamicCFG<SourceCodeBlock> cfg = SpectraUtils.generateCFGFromTraces(statementSpectra);
+        
+        cfg.mergeLinearSequeces();
+        
+//        System.out.print(cfg);
+        
+        ProgramBranchSpectra<ProgramBranch> branchingSpectra = StatementSpectraToBranchSpectra
+        		.generateBranchingSpectraFromStatementSpectra(statementSpectra, null);
+        
+        DynamicCFG<ProgramBranch> cfg2 = SpectraUtils.generateCFGFromTraces(branchingSpectra);
+        
+        cfg2.mergeLinearSequeces();
+        
+//        System.out.print(cfg2);
+        
+    }
+
+	private ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> loadStatementSpectra(String fileName) throws IOException {
+		Path directory = Paths.get(getStdResourcesDir(), "traceSpectra").toAbsolutePath();
+        Path path = directory.resolve(fileName);
+        Path target = Paths.get(getStdTestDir(), fileName).toAbsolutePath();
+        Path parent = target.getParent();
+        
+        FileUtils.copyFileOrDir(path.toFile(), target.toFile(), StandardCopyOption.REPLACE_EXISTING);
+        
+		FileUtils.delete(parent.resolve("execTraceTemp"));
+        FileUtils.delete(parent.resolve("branchMap.zip"));
+        
+        ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>>
+                statementSpectra = SpectraFileUtils.loadSpectraFromZipFile(SourceCodeBlock.DUMMY, target);
+		return statementSpectra;
+	}
 
 }

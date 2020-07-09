@@ -142,11 +142,10 @@ public class LinearExecutionHitTrace {
                         int nodeIndex = nodeIdIterator.next();
                         // nodeIndex is seen for the first time
                         // check for repetition
-                        getNodeSeq().computeIfAbsent(
+                        current = getNodeSeq().computeIfAbsent(
                                 nodeIndex,
                                 k -> new ExecutionGraphNode(nodeIndex, spectra));
-                        current = getNodeSeq().get(nodeIndex);
-
+                        
                         if (last != null) {
                             last.addOutNode(nodeIndex);
                         }
