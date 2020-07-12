@@ -113,7 +113,14 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
         	// copy spectra file to execution directory for faster loading...
         	Path spectraDestination = bug.getWorkDir(true).resolve(subDirName)
                     .resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toAbsolutePath();
+        	File cfgFile = new File(compressedSpectraFile.getAbsoluteFile().toString() + ".cfg");
+            File cfgFileDest = new File(spectraDestination.toAbsolutePath().toString() + ".cfg");
             try {
+            	// copy stored cfg file, too, if existing (TODO: add CFG to spectra zip file, maybe...)
+                if (cfgFile.exists()) {
+                	FileUtils.copyFileOrDir(cfgFile, cfgFileDest, StandardCopyOption.REPLACE_EXISTING);
+                }
+                		
                 FileUtils.copyFileOrDir(compressedSpectraFile, spectraDestination.toFile(), StandardCopyOption.REPLACE_EXISTING);
                 Log.out(this, "Copied spectra '%s' to '%s'.", compressedSpectraFile, spectraDestination);
             } catch (IOException e) {
@@ -123,7 +130,7 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
             
             // use spectra file in execution directory
             compressedSpectraFile = spectraDestination.toFile();
-            
+
             if (toolSpecific.equals(ToolSpecific.BRANCH_SPECTRA)) {
                 if (removeIrrelevantNodes) {
 //                    String compressedSpectraFileFiltered = BugLoRD.getFilteredSpectraFilePath(bug, subDirName).toString();
@@ -154,6 +161,16 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
                     Spectra2Ranking.generateRanking(compressedSpectraFile.toString(), rankingDir.toString(),
                             localizers, false, removeTestClassNodes, condenseNodes, ComputationStrategies.STANDARD_SBFL, null);
                 }
+            }
+
+            try {
+            	// copy generated cfg file, too, if not existing (TODO: add CFG to spectra zip file, maybe...)
+            	if (!cfgFile.exists() && cfgFileDest.exists()) {
+            		FileUtils.copyFileOrDir(cfgFileDest, cfgFile, StandardCopyOption.REPLACE_EXISTING);
+            	}
+            } catch (IOException e) {
+            	Log.err(this, "Found cfg file '%s', but could not copy to '%s'.", cfgFileDest, cfgFile);
+            	return null;
             }
         }
 
