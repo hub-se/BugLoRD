@@ -88,6 +88,54 @@ public class PageRankSBFLTest extends TestSettings {
         ranking = localizer.localize(statementSpectra);
         ranking.save(Paths.get(getStdTestDir(), localizer.getName() + ".rnk").toAbsolutePath().toString());
      
+        localizer = FaultLocalizerFactory.newInstance("pr_0.5_0_r_dstar");
+        ranking = localizer.localize(statementSpectra);
+        ranking.save(Paths.get(getStdTestDir(), localizer.getName() + ".rnk").toAbsolutePath().toString());
+      
+        localizer = FaultLocalizerFactory.newInstance("pr_0.5_0_f_dstar");
+        ranking = localizer.localize(statementSpectra);
+        ranking.save(Paths.get(getStdTestDir(), localizer.getName() + ".rnk").toAbsolutePath().toString());
+    }
+    
+    @Test
+    public void testBiasedPageRankSBFL() throws IOException {
+    	//assert(false); //uncomment to check if asserts are enabled
+
+        ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b_new.zip");
+
+        Ranking<INode<SourceCodeBlock>> sbflRanking = new DStar<SourceCodeBlock>().localize(statementSpectra);
+        sbflRanking.save(Paths.get(getStdTestDir(), "dstar.rnk").toAbsolutePath().toString());
+        
+        Ranking<INode<SourceCodeBlock>> sbflRanking2 = new Barinel<SourceCodeBlock>().localize(statementSpectra);
+        sbflRanking2.save(Paths.get(getStdTestDir(), "barinel.rnk").toAbsolutePath().toString());
+        
+        Ranking<INode<SourceCodeBlock>> sbflRanking3 = new Overlap<SourceCodeBlock>().localize(statementSpectra);
+        sbflRanking3.save(Paths.get(getStdTestDir(), "overlap.rnk").toAbsolutePath().toString());
+     
+        IFaultLocalizer<SourceCodeBlock> localizer = FaultLocalizerFactory.newInstance("bpr_0.5_2_r_dstar");
+        Ranking<INode<SourceCodeBlock>> ranking = localizer.localize(statementSpectra);
+        ranking.save(Paths.get(getStdTestDir(), localizer.getName() + ".rnk").toAbsolutePath().toString());
+        
+        localizer = FaultLocalizerFactory.newInstance("bpr_0.5_2_f_dstar");
+        ranking = localizer.localize(statementSpectra);
+        ranking.save(Paths.get(getStdTestDir(), localizer.getName() + ".rnk").toAbsolutePath().toString());
+     
+        localizer = FaultLocalizerFactory.newInstance("bpr_0.5_2_r_overlap");
+        ranking = localizer.localize(statementSpectra);
+        ranking.save(Paths.get(getStdTestDir(), localizer.getName() + ".rnk").toAbsolutePath().toString());
+      
+        localizer = FaultLocalizerFactory.newInstance("bpr_0.5_2_f_overlap");
+        ranking = localizer.localize(statementSpectra);
+        ranking.save(Paths.get(getStdTestDir(), localizer.getName() + ".rnk").toAbsolutePath().toString());
+        
+        localizer = FaultLocalizerFactory.newInstance("bpr_0.5_0_r_dstar");
+        ranking = localizer.localize(statementSpectra);
+        ranking.save(Paths.get(getStdTestDir(), localizer.getName() + ".rnk").toAbsolutePath().toString());
+      
+        localizer = FaultLocalizerFactory.newInstance("bpr_0.5_0_f_dstar");
+        ranking = localizer.localize(statementSpectra);
+        ranking.save(Paths.get(getStdTestDir(), localizer.getName() + ".rnk").toAbsolutePath().toString());
+     
     }
     
     @Test

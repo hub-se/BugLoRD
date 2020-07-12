@@ -25,6 +25,7 @@
 package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
@@ -133,5 +134,27 @@ public class DataOutput {
             str.write((int) value);
         }
     }
+
+	public static void writeIntArray(ObjectOutputStream objOut, int[] array) throws IOException {
+		if (array == null) {
+			writeInt(objOut, 0);
+		} else {
+			writeInt(objOut, array.length);
+			for (int value : array) {
+				writeInt(objOut, value);
+			}
+		}
+	}
+	
+	public static void writeLongArray(ObjectOutputStream objOut, long[] array) throws IOException {
+		if (array == null) {
+			writeInt(objOut, 0);
+		} else {
+			writeInt(objOut, array.length);
+			for (long value : array) {
+				writeLong(objOut, value);
+			}
+		}
+	}
 
 }

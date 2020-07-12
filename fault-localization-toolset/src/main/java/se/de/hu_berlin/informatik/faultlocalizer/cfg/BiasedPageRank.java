@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import se.de.hu_berlin.informatik.spectra.core.cfg.Node;
 import se.de.hu_berlin.informatik.spectra.core.cfg.ScoredDynamicCFG;
 
-public class PageRank<T> {
+public class BiasedPageRank<T> {
 	
 	private static final int CONVERGENCE_MULTIPLICATOR = 1000000;
 
@@ -15,6 +15,7 @@ public class PageRank<T> {
 	private final double dampingFactor;
 	private final double offset;
 
+	final private Map<Integer, Double> originalPageRank = new HashMap<>();
 	private Map<Integer, Double> pageRank = new HashMap<>();
 	private Map<Integer, Double> old_pageRank;
 
@@ -22,7 +23,7 @@ public class PageRank<T> {
 
 	private boolean reverse;
 
-	public PageRank(ScoredDynamicCFG<T> cfg, double dampingFactor, int iterations, boolean reverse) {
+	public BiasedPageRank(ScoredDynamicCFG<T> cfg, double dampingFactor, int iterations, boolean reverse) {
 
 		this.cfg = cfg;
 		this.dampingFactor = dampingFactor;
@@ -30,12 +31,14 @@ public class PageRank<T> {
 		this.reverse = reverse;
 
 		// initialize the values
-		this.offset = (1 - dampingFactor) / cfg.getNodes().size();
+		int nodeCount = cfg.getNodes().size();
+		this.offset = (1 - dampingFactor) / nodeCount;
 		
 		for (Entry<Integer, Node> entry : cfg.getNodes().entrySet()) {
 			Node node = entry.getValue();
 			Double score = cfg.getScore(node.getIndex());
 			this.pageRank.put(node.getIndex(), score);
+			this.originalPageRank.put(node.getIndex(), score / nodeCount);
 		}
 
 	}
@@ -70,11 +73,11 @@ public class PageRank<T> {
 			} else {
 				if (node.hasPredecessors()) {
 					for (int predecessor : node.getPredecessors()) {
-						sum += pageRank.get(predecessor) /  cfg.getNode(predecessor).getSuccessorCount();
+						sum += pageRank.get(predecessor) / cfg.getNode(predecessor).getSuccessorCount();
 					}
 				}
 			}
-			newPageRankArray.put(node.getIndex(), offset + dampingFactor * sum);
+			newPageRankArray.put(node.getIndex(), originalPageRank.get(node.getIndex()) + offset + dampingFactor * sum);
 		}
 		
 		old_pageRank = pageRank;

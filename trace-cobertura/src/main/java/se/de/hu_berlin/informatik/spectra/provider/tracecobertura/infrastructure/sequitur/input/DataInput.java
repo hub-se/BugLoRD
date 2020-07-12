@@ -27,6 +27,7 @@ package se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructur
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageIgnore;
 
@@ -165,5 +166,35 @@ public class DataInput {
                 return b7;
         }
     }
+
+	public static int[] readIntArray(ObjectInputStream objIn, boolean nullifyZeroLengthArrays) throws IOException {
+		int length = readInt(objIn);
+		if (length == 0 && nullifyZeroLengthArrays) {
+			return null;
+		}
+		
+        int[] result = new int[length];
+
+        for (int i = 0; i < length; ++i) {
+            result[i] = readInt(objIn);
+        }
+
+        return result;
+	}
+	
+	public static long[] readLongArray(ObjectInputStream objIn, boolean nullifyZeroLengthArrays) throws IOException {
+		int length = readInt(objIn);
+		if (length == 0 && nullifyZeroLengthArrays) {
+			return null;
+		}
+		
+        long[] result = new long[length];
+
+        for (int i = 0; i < length; ++i) {
+            result[i] = readLong(objIn);
+        }
+
+        return result;
+	}
 
 }

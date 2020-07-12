@@ -14,6 +14,7 @@ import se.de.hu_berlin.informatik.spectra.core.traces.RawIntTraceCollector;
 import se.de.hu_berlin.informatik.spectra.core.traces.SequenceIndexerCompressed;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
@@ -208,9 +209,10 @@ public interface ISpectra<T, K extends ITrace<T>> {
     public void setRawTraceCollector(RawIntTraceCollector traceCollector);
 
 	/**
+	 * @param storedCFG a file to store or load the cfg; set to null if no save/load should occur
 	 * @return a dynamic CFG, based on the existing execution traces
 	 */
-	public CFG<T> getCFG();
+	public CFG<T> getCFG(File storedCFG);
 
 
 }

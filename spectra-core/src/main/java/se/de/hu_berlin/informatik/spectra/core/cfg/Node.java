@@ -2,17 +2,28 @@ package se.de.hu_berlin.informatik.spectra.core.cfg;
 
 import java.util.Arrays;
 
-import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
-
 public class Node {
 
 	private final int index;
 	private int[] mergedIndices;
-	private Node[] prevNodes;
-	private Node[] succNodes;
+	private int[] prevNodes;
+	private long[] prevNodeHits;
+	private int[] succNodes;
+	private long[] succNodeHits;
 	
 	public Node(int index) {
 		this.index = index;
+	}
+
+	public Node(int index, int[] mergedNodes, 
+			int[] predecessors, long[] predecessorHits, 
+			int[] successors, long[] successorHits) {
+		this.index = index;
+		this.mergedIndices = mergedNodes;
+		this.prevNodes = predecessors;
+		this.prevNodeHits = predecessorHits;
+		this.succNodes = successors;
+		this.succNodeHits = successorHits;
 	}
 
 	public Node connectTo(int index, DynamicCFG<?> cfg) {
@@ -26,28 +37,59 @@ public class Node {
 		return successorNode;
 	}
 
+	private int hasNode(int[] nodes, Node node) {
+		for (int i = 0; i < nodes.length; i++) {
+			if (nodes[i] == node.index) {
+				return i;
+			}
+			
+		}
+		return -1;
+	}
+	
 	private void addToPrevNodes(Node node) {
 		if (prevNodes == null) {
-			prevNodes = new Node[] {node};
-		} else if (!hasNode(prevNodes, node)) {
-			prevNodes = Misc.addToArrayAndReturnResult(prevNodes, node);
-		}
-	}
-
-	private boolean hasNode(Node[] nodes, Node node) {
-		for (Node node2 : nodes) {
-			if (node2.index == node.index) {
-				return true;
+			prevNodes = new int[] {node.getIndex()};
+			prevNodeHits = new long[] {1};
+		} else {
+			int index = hasNode(prevNodes, node);
+			if (index < 0) {
+				// new predecessor node
+				int[] newPrevNodes = new int[prevNodes.length + 1];
+				System.arraycopy(prevNodes, 0, newPrevNodes, 0, prevNodes.length);
+				newPrevNodes[prevNodes.length] = node.getIndex();
+				prevNodes = newPrevNodes;
+						
+				long[] newHits = new long[prevNodeHits.length + 1];
+				System.arraycopy(prevNodeHits, 0, newHits, 0, prevNodeHits.length);
+				newHits[prevNodeHits.length] = 1;
+				prevNodeHits = newHits;
+			} else {
+				++prevNodeHits[index];
 			}
 		}
-		return false;
 	}
 
 	private void addToSuccNodes(Node node) {
 		if (succNodes == null) {
-			succNodes = new Node[] {node};
-		} else if (!hasNode(succNodes, node)) {
-			succNodes = Misc.addToArrayAndReturnResult(succNodes, node);
+			succNodes = new int[] {node.getIndex()};
+			succNodeHits = new long[] {1};
+		} else {
+			int index = hasNode(succNodes, node);
+			if (index < 0) {
+				// new successor node
+				int[] newSuccNodes = new int[succNodes.length + 1];
+				System.arraycopy(succNodes, 0, newSuccNodes, 0, succNodes.length);
+				newSuccNodes[succNodes.length] = node.getIndex();
+				succNodes = newSuccNodes;
+				
+				long[] newHits = new long[succNodeHits.length + 1];
+				System.arraycopy(succNodeHits, 0, newHits, 0, succNodeHits.length);
+				newHits[succNodeHits.length] = 1;
+				succNodeHits = newHits;
+			} else {
+				++succNodeHits[index];
+			}
 		}
 	}
 
@@ -71,18 +113,31 @@ public class Node {
 		return succNodes.length;
 	}
 	
-	public Node[] getPredecessors() {
+	public int[] getPredecessors() {
 		return prevNodes;
 	}
 	
-	public Node[] getSuccessors() {
+	public int[] getSuccessors() {
 		return succNodes;
 	}
 
-	public void setSuccessors(Node[] successors) {
-		succNodes = successors;
+	public long[] getPredecessorHits() {
+		return prevNodeHits;
+	}
+
+	public long[] getSuccessorHits() {
+		return succNodeHits;
 	}
 	
+	public void setSuccessors(int[] successors) {
+		succNodes = successors;
+	}
+
+	public void setSuccessorHits(long[] succNodeHits) {
+		this.succNodeHits = succNodeHits;
+	}
+
+
 	public boolean isMerged() {
 		return mergedIndices != null;
 	}
@@ -104,12 +159,31 @@ public class Node {
 		}
 		sb.append(System.lineSeparator());
 		if (hasPredecessors()) {
-			sb.append("\tpred: ").append(Arrays.toString(Arrays.stream(getPredecessors()).mapToInt(k -> k.getIndex()).toArray())).append(System.lineSeparator());
+			sb.append("\tpred: ").append(Arrays.toString(getPredecessors())).append(System.lineSeparator());
+			sb.append("\thits: ").append(Arrays.toString(getPredecessorHits())).append(System.lineSeparator());
 		}
 		if (hasSuccessors()) {
-			sb.append("\tsucc: ").append(Arrays.toString(Arrays.stream(getSuccessors()).mapToInt(k -> k.getIndex()).toArray())).append(System.lineSeparator());
+			sb.append("\tsucc: ").append(Arrays.toString(getSuccessors())).append(System.lineSeparator());
+			sb.append("\thits: ").append(Arrays.toString(getSuccessorHits())).append(System.lineSeparator());
 		}
 		return sb.toString();
+	}
+	
+	@Override
+	public int hashCode() {
+		return 17 + 31 * index;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Node) {
+			Node o = (Node) obj;
+			if (o.index != this.index) {
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 	
 }

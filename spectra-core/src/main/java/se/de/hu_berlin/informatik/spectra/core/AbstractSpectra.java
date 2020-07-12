@@ -18,6 +18,7 @@ import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.compression.ziputils.ZipFileWrapper;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -453,11 +454,26 @@ public abstract class AbstractSpectra<T, K extends ITrace<T>> implements Cloneab
     }
 
 	@Override
-	public CFG<T> getCFG() {
+	public CFG<T> getCFG(File storedCFG) {
 		if (cfg == null) {
+			if (storedCFG != null && storedCFG.exists()) {
+				try {
+					// try to load cfg from file
+					cfg = new DynamicCFG<>(this, storedCFG);
+					return cfg;
+				} catch (Exception e) {
+					Log.err(this, e, "Could not load CFG from file: ", storedCFG);
+				}
+			}
+			// need to generate the CFG
 			cfg = SpectraUtils.generateCFGFromTraces(this);
 			// merge linear node sequences
-	        cfg.mergeLinearSequeces();
+			cfg.mergeLinearSequeces();
+			
+			// store the cfg in a file, if given
+			if (storedCFG != null) {
+				cfg.save(storedCFG);
+			}
 		}
 		return cfg;
 	}

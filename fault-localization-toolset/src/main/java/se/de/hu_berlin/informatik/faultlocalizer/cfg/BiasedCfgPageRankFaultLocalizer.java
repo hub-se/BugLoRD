@@ -17,26 +17,26 @@ import se.de.hu_berlin.informatik.spectra.core.cfg.ScoredDynamicCFG;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
-public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
+public class BiasedCfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
 	
 	private IFaultLocalizer<T> localizer;
 	private double dampingFactor;
 	private int iterations;
 	private boolean reverse;
 
-	public CfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer, double dampingFactor, int iterations, boolean reverse) {
+	public BiasedCfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer, double dampingFactor, int iterations, boolean reverse) {
 		this.localizer = localizer;
 		this.dampingFactor = dampingFactor;
 		this.iterations = iterations;
 		this.reverse = reverse;
 	}
 	
-	public CfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer) {
+	public BiasedCfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer) {
 		this(localizer, 0.5, 2, true);
 	}
 
 	@Override
-    public Ranking<INode<T>> localize(final ISpectra<T, ? extends ITrace<T>> spectra, ComputationStrategies strategy) {		
+    public Ranking<INode<T>> localize(final ISpectra<T, ? extends ITrace<T>> spectra, ComputationStrategies strategy) {
 		File cfgOutput = null;
 		if (spectra.getPathToSpectraZipFile() != null) {
 			cfgOutput = new File(spectra.getPathToSpectraZipFile().toAbsolutePath().toString() + ".cfg");
@@ -56,7 +56,7 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
 		}
         
         // calculate scores with PageRank algorithm
-        Map<Integer, Double> pageRank = new PageRank<>(cfg, dampingFactor, iterations, reverse).calculate();
+        Map<Integer, Double> pageRank = new BiasedPageRank<>(cfg, dampingFactor, iterations, reverse).calculate();
         
         // ignore nodes from spectra that were only executed by successful test cases;
         // this will lead to the scores for the removed nodes not being added to the ranking;
@@ -93,7 +93,7 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
 	
 	@Override
 	public String getName() {
-		return "pr_" + dampingFactor + "_" + iterations + "_" + (reverse ? "r" : "f") + "_" + localizer.getName();
+		return "bpr_" + dampingFactor + "_" + iterations + "_" + (reverse ? "r" : "f") + "_" + localizer.getName();
 	}
 
 }

@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,6 +15,7 @@ import se.de.hu_berlin.informatik.spectra.core.Node.NodeType;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranch;
 import se.de.hu_berlin.informatik.spectra.core.branch.ProgramBranchSpectra;
 import se.de.hu_berlin.informatik.spectra.core.branch.StatementSpectraToBranchSpectra;
+import se.de.hu_berlin.informatik.spectra.core.cfg.CFG;
 import se.de.hu_berlin.informatik.spectra.core.cfg.DynamicCFG;
 import se.de.hu_berlin.informatik.spectra.core.SourceCodeBlock;
 import se.de.hu_berlin.informatik.spectra.core.hit.HitSpectra;
@@ -41,7 +43,7 @@ public class SpectraUtilsTest extends TestSettings {
      */
     @AfterClass
     public static void tearDownAfterClass() {
-        deleteTestOutputs();
+//        deleteTestOutputs();
     }
 
     /**
@@ -57,7 +59,7 @@ public class SpectraUtilsTest extends TestSettings {
      */
     @After
     public void tearDown() {
-        deleteTestOutputs();
+//        deleteTestOutputs();
     }
 
     @Rule
@@ -194,21 +196,36 @@ public class SpectraUtilsTest extends TestSettings {
 
         ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b.zip");
 
-        DynamicCFG<SourceCodeBlock> cfg = SpectraUtils.generateCFGFromTraces(statementSpectra);
-        
-        cfg.mergeLinearSequeces();
+        File file = Paths.get(getStdTestDir(), "Lang-56b_statement.cfg").toFile();
+        FileUtils.delete(file);
+		CFG<SourceCodeBlock> cfg = statementSpectra.getCFG(file);
         
 //        System.out.print(cfg);
         
         ProgramBranchSpectra<ProgramBranch> branchingSpectra = StatementSpectraToBranchSpectra
         		.generateBranchingSpectraFromStatementSpectra(statementSpectra, null);
         
-        DynamicCFG<ProgramBranch> cfg2 = SpectraUtils.generateCFGFromTraces(branchingSpectra);
-        
-        cfg2.mergeLinearSequeces();
+        File file2 = Paths.get(getStdTestDir(), "Lang-56b_branch.cfg").toFile();
+        FileUtils.delete(file2);
+        CFG<ProgramBranch> cfg2 = branchingSpectra.getCFG(file2);
         
 //        System.out.print(cfg2);
         
+    }
+    
+    @Test
+    public void testCFGSaveAndLoad() throws IOException {
+    	//assert(false); //uncomment to check if asserts are enabled
+
+        ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b.zip");
+
+        File file = Paths.get(getStdTestDir(), "Lang-56b_statement.cfg").toFile();
+        FileUtils.delete(file);
+		CFG<SourceCodeBlock> cfg = statementSpectra.getCFG(file);
+		
+		CFG<SourceCodeBlock> cfg2 = new DynamicCFG<SourceCodeBlock>(statementSpectra, file);
+		
+		Assert.assertEquals(cfg, cfg2);
     }
 
 	private ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> loadStatementSpectra(String fileName) throws IOException {

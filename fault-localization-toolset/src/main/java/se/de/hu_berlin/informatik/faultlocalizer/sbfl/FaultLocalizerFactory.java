@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.faultlocalizer.sbfl;
 
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.BiasedCfgPageRankFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgPageRankFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.ngram.Nessa;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.*;
@@ -64,6 +65,48 @@ public class FaultLocalizerFactory {
         	
         	return new CfgPageRankFaultLocalizer<>(parseRawLocalizer(temp), dampingFactor, iterations, reverse);
         }
+        
+        if (localizer.startsWith("bpr_")) {
+        	// assume PageRank localizer (format: pr_<dampingFactor>_<iterations>_[r|f]_<localizer>
+        	String temp = localizer.substring(4);
+        	int underscoreIndex = temp.indexOf('_');
+        	if (underscoreIndex < 0) {
+        		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
+			}
+        	
+        	double dampingFactor;
+        	try {
+        		dampingFactor = Double.valueOf(temp.substring(0, underscoreIndex));
+        	} catch (NumberFormatException e) {
+        		throw new IllegalArgumentException(temp.substring(0, underscoreIndex) + " is not a valid damping factor.");
+			}
+        	
+        	temp = temp.substring(underscoreIndex + 1);
+        	underscoreIndex = temp.indexOf('_');
+        	if (underscoreIndex < 0) {
+        		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
+			}
+        	
+        	int iterations;
+        	try {
+        		iterations = Integer.valueOf(temp.substring(0, underscoreIndex));
+        	} catch (NumberFormatException e) {
+        		throw new IllegalArgumentException(temp.substring(0, underscoreIndex) + " is not a valid max iterations count.");
+			}
+        	
+        	temp = temp.substring(underscoreIndex + 1);
+        	underscoreIndex = temp.indexOf('_');
+        	if (underscoreIndex < 0) {
+        		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
+			}
+        	
+        	boolean reverse = temp.charAt(0) == 'r';
+        	
+        	temp = temp.substring(underscoreIndex + 1);
+        	
+        	return new BiasedCfgPageRankFaultLocalizer<>(parseRawLocalizer(temp), dampingFactor, iterations, reverse);
+        }
+        
         return parseRawLocalizer(localizer);
     }
 

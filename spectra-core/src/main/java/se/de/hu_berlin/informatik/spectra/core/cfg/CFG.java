@@ -1,5 +1,6 @@
 package se.de.hu_berlin.informatik.spectra.core.cfg;
 
+import java.io.File;
 import java.util.Map;
 
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
@@ -19,5 +20,7 @@ public interface CFG<T> {
 	public void generateCompleteCFG();
 	
 	public void mergeLinearSequeces();
+	
+	public void save(File outputFile);
 	
 }
