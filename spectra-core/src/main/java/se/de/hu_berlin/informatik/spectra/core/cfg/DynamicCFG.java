@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import se.de.hu_berlin.informatik.spectra.core.INode;
 import se.de.hu_berlin.informatik.spectra.core.ISpectra;
 import se.de.hu_berlin.informatik.spectra.core.ITrace;
 import se.de.hu_berlin.informatik.spectra.core.traces.ExecutionTrace;
@@ -42,6 +43,35 @@ public class DynamicCFG<T> implements CFG<T> {
 	public DynamicCFG(ISpectra<T, ?> spectra, File inputFile) {
 		this.spectra = spectra;
 		parseFromFile(inputFile);
+	}
+	
+	@Override
+	public Collection<T> getIdentifiersForNode(int index) {
+		Node node = getNode(index);
+		if (node != null) {
+			INode<T> spectraNode = spectra.getNode(index);
+			if (spectraNode == null) {
+				return null;
+			}
+			
+			int count = 1;
+			if (node.isMerged()) {
+				count += node.getMergedIndices().length;
+			}
+			Collection<T> result = new ArrayList<>(count);
+			result.add(spectraNode.getIdentifier());
+			if (node.isMerged()) {
+				for (int i : node.getMergedIndices()) {
+					INode<T> spectraNode2 = spectra.getNode(i);
+					if (spectraNode2 == null) {
+						return null;
+					}
+					result.add(spectraNode2.getIdentifier());
+				}
+			}
+			return result;
+		}
+		return null;
 	}
 
 	@Override

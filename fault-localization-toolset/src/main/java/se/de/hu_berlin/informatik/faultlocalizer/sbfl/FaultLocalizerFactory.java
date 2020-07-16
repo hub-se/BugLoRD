@@ -1,8 +1,15 @@
 package se.de.hu_berlin.informatik.faultlocalizer.sbfl;
 
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
-import se.de.hu_berlin.informatik.faultlocalizer.cfg.BiasedCfgPageRankFaultLocalizer;
-import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgPageRankFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgASCOSFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgASCOSFaultLocalizer.ASCOSRankingAlgorithm;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgRankFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgRankFaultLocalizer.RankingAlgorithm;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgSimRankFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgSimRankFaultLocalizer.SimRankingAlgorithm;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgSimRankStarFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.CfgSimRankStarFaultLocalizer.SimRankStarAlgorithm;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.SimilarityUtils;
 import se.de.hu_berlin.informatik.faultlocalizer.ngram.Nessa;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.*;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.localizers.simfl.*;
@@ -25,10 +32,12 @@ public class FaultLocalizerFactory {
      */
     public static <T> IFaultLocalizer<T> newInstance(String localizer) {
         localizer = localizer.toLowerCase(Locale.getDefault());
-        if (localizer.startsWith("pr_")) {
-        	// assume PageRank localizer (format: pr_<dampingFactor>_<iterations>_[r|f]_<localizer>
-        	String temp = localizer.substring(3);
-        	int underscoreIndex = temp.indexOf('_');
+        if (localizer.startsWith("pr_") || localizer.startsWith("cr_") || localizer.startsWith("pcr_") ||
+        		localizer.startsWith("hpr_") || localizer.startsWith("hcr_") || localizer.startsWith("hpcr_")) {
+        	// assume PageRank localizer (format: <id>_<dampingFactor>_<iterations>_<localizer>
+        	int underscoreIndex = localizer.indexOf('_');
+        	String temp = localizer.substring(underscoreIndex + 1);
+        	underscoreIndex = temp.indexOf('_');
         	if (underscoreIndex < 0) {
         		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 			}
@@ -54,22 +63,58 @@ public class FaultLocalizerFactory {
 			}
         	
         	temp = temp.substring(underscoreIndex + 1);
+        	
+        	RankingAlgorithm algorithm = null;
+        	switch (localizer.substring(0, 3)) {
+			case "pr_":
+				algorithm = RankingAlgorithm.PAGE_RANK;
+				break;
+			case "cr_":
+				algorithm = RankingAlgorithm.CHEI_RANK;
+				break;
+			case "pcr":
+				algorithm = RankingAlgorithm.PAGE_CHEI_RANK;
+				break;
+			case "hpr":
+				algorithm = RankingAlgorithm.HA_PAGE_RANK;
+				break;
+			case "hcr":
+				algorithm = RankingAlgorithm.HA_CHEI_RANK;
+				break;
+			case "hpc":
+				algorithm = RankingAlgorithm.HA_PAGE_CHEI_RANK;
+				break;
+			default:
+				throw new IllegalStateException();
+			}
+        	
+        	return new CfgRankFaultLocalizer<>(parseRawLocalizer(temp), dampingFactor, iterations, algorithm);
+        }
+        
+        if (localizer.startsWith("sr_") || localizer.startsWith("isr_") || localizer.startsWith("vsr_") ||
+        		localizer.startsWith("hsr_") || localizer.startsWith("hisr_") || localizer.startsWith("hvsr_")) {
+        	// assume PageRank localizer (format: <id>_<calcId>_<dampingFactor>_<iterations>_<localizer>
+        	int underscoreIndex = localizer.indexOf('_');
+        	String temp = localizer.substring(underscoreIndex + 1);
         	underscoreIndex = temp.indexOf('_');
         	if (underscoreIndex < 0) {
         		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 			}
         	
-        	boolean reverse = temp.charAt(0) == 'r';
+        	SimilarityUtils.CalculationStrategy strategy = null;
+        	switch (temp.substring(0, underscoreIndex)) {
+			case "max":
+				strategy = SimilarityUtils.CalculationStrategy.MAX_SIMILARITY;
+				break;
+			case "avg":
+				strategy = SimilarityUtils.CalculationStrategy.AVERAGE_SIMILARITY;
+				break;
+			default:
+				throw new IllegalStateException(temp.substring(0, underscoreIndex));
+			}
         	
         	temp = temp.substring(underscoreIndex + 1);
-        	
-        	return new CfgPageRankFaultLocalizer<>(parseRawLocalizer(temp), dampingFactor, iterations, reverse);
-        }
-        
-        if (localizer.startsWith("bpr_")) {
-        	// assume PageRank localizer (format: pr_<dampingFactor>_<iterations>_[r|f]_<localizer>
-        	String temp = localizer.substring(4);
-        	int underscoreIndex = temp.indexOf('_');
+        	underscoreIndex = temp.indexOf('_');
         	if (underscoreIndex < 0) {
         		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 			}
@@ -95,18 +140,190 @@ public class FaultLocalizerFactory {
 			}
         	
         	temp = temp.substring(underscoreIndex + 1);
+        	
+        	SimRankingAlgorithm algorithm = null;
+        	switch (localizer.substring(0, 3)) {
+			case "sr_":
+				algorithm = SimRankingAlgorithm.SIM_RANK;
+				break;
+			case "isr":
+				algorithm = SimRankingAlgorithm.INV_SIM_RANK;
+				break;
+			case "vsr":
+				algorithm = SimRankingAlgorithm.VECTOR_SIM_RANK;
+				break;
+			case "hsr":
+				algorithm = SimRankingAlgorithm.HA_SIM_RANK;
+				break;
+			case "his":
+				algorithm = SimRankingAlgorithm.HA_INV_SIM_RANK;
+				break;
+			case "hvs":
+				algorithm = SimRankingAlgorithm.HA_VECTOR_SIM_RANK;
+				break;
+			default:
+				throw new IllegalStateException();
+			}
+        	
+        	return new CfgSimRankFaultLocalizer<>(parseRawLocalizer(temp), dampingFactor, iterations, algorithm, strategy);
+        }
+        
+        if (localizer.startsWith("ssr_") || localizer.startsWith("issr_") || localizer.startsWith("vssr_") ||
+        		localizer.startsWith("hssr_") || localizer.startsWith("hissr_") || localizer.startsWith("hvssr_")) {
+        	// assume PageRank localizer (format: <id>_<calcId>_<dampingFactor>_<iterations>_<localizer>
+        	int underscoreIndex = localizer.indexOf('_');
+        	String temp = localizer.substring(underscoreIndex + 1);
         	underscoreIndex = temp.indexOf('_');
         	if (underscoreIndex < 0) {
         		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
 			}
         	
-        	boolean reverse = temp.charAt(0) == 'r';
+        	SimilarityUtils.CalculationStrategy strategy = null;
+        	switch (temp.substring(0, underscoreIndex)) {
+			case "max":
+				strategy = SimilarityUtils.CalculationStrategy.MAX_SIMILARITY;
+				break;
+			case "avg":
+				strategy = SimilarityUtils.CalculationStrategy.AVERAGE_SIMILARITY;
+				break;
+			default:
+				throw new IllegalStateException(temp.substring(0, underscoreIndex));
+			}
+        	
+        	temp = temp.substring(underscoreIndex + 1);
+        	underscoreIndex = temp.indexOf('_');
+        	if (underscoreIndex < 0) {
+        		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
+			}
+        	
+        	double dampingFactor;
+        	try {
+        		dampingFactor = Double.valueOf(temp.substring(0, underscoreIndex));
+        	} catch (NumberFormatException e) {
+        		throw new IllegalArgumentException(temp.substring(0, underscoreIndex) + " is not a valid damping factor.");
+			}
+        	
+        	temp = temp.substring(underscoreIndex + 1);
+        	underscoreIndex = temp.indexOf('_');
+        	if (underscoreIndex < 0) {
+        		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
+			}
+        	
+        	int iterations;
+        	try {
+        		iterations = Integer.valueOf(temp.substring(0, underscoreIndex));
+        	} catch (NumberFormatException e) {
+        		throw new IllegalArgumentException(temp.substring(0, underscoreIndex) + " is not a valid max iterations count.");
+			}
         	
         	temp = temp.substring(underscoreIndex + 1);
         	
-        	return new BiasedCfgPageRankFaultLocalizer<>(parseRawLocalizer(temp), dampingFactor, iterations, reverse);
+        	SimRankStarAlgorithm algorithm = null;
+        	switch (localizer.substring(0, 3)) {
+			case "ssr":
+				algorithm = SimRankStarAlgorithm.SIM_RANK_STAR;
+				break;
+			case "iss":
+				algorithm = SimRankStarAlgorithm.INV_SIM_RANK_STAR;
+				break;
+			case "vss":
+				algorithm = SimRankStarAlgorithm.VECTOR_SIM_RANK_STAR;
+				break;
+			case "hss":
+				algorithm = SimRankStarAlgorithm.HA_SIM_RANK_STAR;
+				break;
+			case "his":
+				algorithm = SimRankStarAlgorithm.HA_INV_SIM_RANK_STAR;
+				break;
+			case "hvs":
+				algorithm = SimRankStarAlgorithm.HA_VECTOR_SIM_RANK_STAR;
+				break;
+			default:
+				throw new IllegalStateException();
+			}
+        	
+        	return new CfgSimRankStarFaultLocalizer<>(parseRawLocalizer(temp), dampingFactor, iterations, algorithm, strategy);
         }
         
+        if (localizer.startsWith("ar_") || localizer.startsWith("iar_") || localizer.startsWith("var_") ||
+        		localizer.startsWith("har_") || localizer.startsWith("hiar_") || localizer.startsWith("hvar_") ||
+        		localizer.startsWith("war_") || localizer.startsWith("wiar_") || localizer.startsWith("wvar_") ||
+        		localizer.startsWith("whar_") || localizer.startsWith("whiar_") || localizer.startsWith("whvar_")) {
+        	// assume PageRank localizer (format: <id>_<dampingFactor>_<iterations>_<localizer>
+        	int underscoreIndex = localizer.indexOf('_');
+        	String temp = localizer.substring(underscoreIndex + 1);
+        	underscoreIndex = temp.indexOf('_');
+        	if (underscoreIndex < 0) {
+        		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
+			}
+        	
+        	double dampingFactor;
+        	try {
+        		dampingFactor = Double.valueOf(temp.substring(0, underscoreIndex));
+        	} catch (NumberFormatException e) {
+        		throw new IllegalArgumentException(temp.substring(0, underscoreIndex) + " is not a valid damping factor.");
+			}
+        	
+        	temp = temp.substring(underscoreIndex + 1);
+        	underscoreIndex = temp.indexOf('_');
+        	if (underscoreIndex < 0) {
+        		throw new IllegalArgumentException(localizer + " is not a valid localizer.");
+			}
+        	
+        	int iterations;
+        	try {
+        		iterations = Integer.valueOf(temp.substring(0, underscoreIndex));
+        	} catch (NumberFormatException e) {
+        		throw new IllegalArgumentException(temp.substring(0, underscoreIndex) + " is not a valid max iterations count.");
+			}
+        	
+        	temp = temp.substring(underscoreIndex + 1);
+        	
+        	ASCOSRankingAlgorithm algorithm = null;
+        	switch (localizer.substring(0, 3)) {
+			case "ar_":
+				algorithm = ASCOSRankingAlgorithm.ASCOS_RANK;
+				break;
+			case "iar":
+				algorithm = ASCOSRankingAlgorithm.INV_ASCOS_RANK;
+				break;
+			case "var":
+				algorithm = ASCOSRankingAlgorithm.VECTOR_ASCOS_RANK;
+				break;
+			case "har":
+				algorithm = ASCOSRankingAlgorithm.HA_ASCOS_RANK;
+				break;
+			case "hia":
+				algorithm = ASCOSRankingAlgorithm.HA_INV_ASCOS_RANK;
+				break;
+			case "hva":
+				algorithm = ASCOSRankingAlgorithm.HA_VECTOR_ASCOS_RANK;
+				break;
+			case "war":
+				algorithm = ASCOSRankingAlgorithm.WEIGHTED_ASCOS_RANK;
+				break;
+			case "wia":
+				algorithm = ASCOSRankingAlgorithm.WEIGHTED_INV_ASCOS_RANK;
+				break;
+			case "wva":
+				algorithm = ASCOSRankingAlgorithm.WEIGHTED_VECTOR_ASCOS_RANK;
+				break;
+			case "wha":
+				algorithm = ASCOSRankingAlgorithm.WEIGHTED_HA_ASCOS_RANK;
+				break;
+			case "whi":
+				algorithm = ASCOSRankingAlgorithm.WEIGHTED_HA_INV_ASCOS_RANK;
+				break;
+			case "whv":
+				algorithm = ASCOSRankingAlgorithm.WEIGHTED_HA_VECTOR_ASCOS_RANK;
+				break;
+			default:
+				throw new IllegalStateException();
+			}
+        	
+        	return new CfgASCOSFaultLocalizer<>(parseRawLocalizer(temp), dampingFactor, iterations, algorithm);
+        }
+
         return parseRawLocalizer(localizer);
     }
 

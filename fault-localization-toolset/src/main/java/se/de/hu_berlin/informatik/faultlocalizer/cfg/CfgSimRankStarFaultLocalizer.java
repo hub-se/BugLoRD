@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import se.de.hu_berlin.informatik.faultlocalizer.IFaultLocalizer;
+import se.de.hu_berlin.informatik.faultlocalizer.cfg.SimilarityUtils.CalculationStrategy;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.AbstractFaultLocalizer;
 import se.de.hu_berlin.informatik.faultlocalizer.sbfl.ranking.NodeRanking;
 import se.de.hu_berlin.informatik.spectra.core.ComputationStrategies;
@@ -17,26 +18,44 @@ import se.de.hu_berlin.informatik.spectra.core.cfg.ScoredDynamicCFG;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
-public class BiasedCfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
+public class CfgSimRankStarFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
+	
+	public static enum SimRankStarAlgorithm {
+		SIM_RANK_STAR("ssr"),
+		INV_SIM_RANK_STAR("issr"),
+		VECTOR_SIM_RANK_STAR("vssr"),
+		HA_SIM_RANK_STAR("hssr"),
+		HA_INV_SIM_RANK_STAR("hissr"),
+		HA_VECTOR_SIM_RANK_STAR("hvssr");
+		
+		private String id;
+
+		private SimRankStarAlgorithm(String id) {
+			this.id = id;
+		}
+	}
 	
 	private IFaultLocalizer<T> localizer;
 	private double dampingFactor;
 	private int iterations;
-	private boolean reverse;
+	private SimRankStarAlgorithm algorithm;
+	private CalculationStrategy calcStrategy;
 
-	public BiasedCfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer, double dampingFactor, int iterations, boolean reverse) {
+	public CfgSimRankStarFaultLocalizer(IFaultLocalizer<T> localizer, double dampingFactor, int iterations, 
+			SimRankStarAlgorithm algorithm, SimilarityUtils.CalculationStrategy calcStrategy) {
 		this.localizer = localizer;
 		this.dampingFactor = dampingFactor;
 		this.iterations = iterations;
-		this.reverse = reverse;
+		this.algorithm = algorithm;
+		this.calcStrategy = calcStrategy;
 	}
 	
-	public BiasedCfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer) {
-		this(localizer, 0.5, 2, true);
+	public CfgSimRankStarFaultLocalizer(IFaultLocalizer<T> localizer) {
+		this(localizer, 0.7, 0, SimRankStarAlgorithm.SIM_RANK_STAR, SimilarityUtils.CalculationStrategy.AVERAGE_SIMILARITY);
 	}
 
 	@Override
-    public Ranking<INode<T>> localize(final ISpectra<T, ? extends ITrace<T>> spectra, ComputationStrategies strategy) {
+    public Ranking<INode<T>> localize(final ISpectra<T, ? extends ITrace<T>> spectra, ComputationStrategies strategy) {		
 		File cfgOutput = null;
 		if (spectra.getPathToSpectraZipFile() != null) {
 			cfgOutput = new File(spectra.getPathToSpectraZipFile().toAbsolutePath().toString() + ".cfg");
@@ -56,7 +75,28 @@ public class BiasedCfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T
 		}
         
         // calculate scores with PageRank algorithm
-        Map<Integer, Double> pageRank = new BiasedPageRank<>(cfg, dampingFactor, iterations, reverse).calculate();
+        Map<Integer, double[]> simRank = null;
+        switch (algorithm) {
+		case SIM_RANK_STAR:
+			simRank = SimRankStar.calculateSimRankStar(cfg, dampingFactor, iterations);
+			break;
+		case INV_SIM_RANK_STAR:
+			simRank = SimRankStar.calculateInvertedSimRankStar(cfg, dampingFactor, iterations);
+			break;
+		case VECTOR_SIM_RANK_STAR:
+			simRank = SimRankStar.calculateSimVectorRankStar(cfg, dampingFactor, iterations);
+			break;
+		case HA_SIM_RANK_STAR:
+			simRank = SimRankStar.calculateHitAwareSimRankStar(cfg, dampingFactor, iterations);
+			break;
+		case HA_INV_SIM_RANK_STAR:
+			simRank = SimRankStar.calculateHitAwareInvertedSimRankStar(cfg, dampingFactor, iterations);
+			break;
+		case HA_VECTOR_SIM_RANK_STAR:
+			simRank = SimRankStar.calculateHitAwareSimVectorRankStar(cfg, dampingFactor, iterations);
+			break;
+		}
+        
         
         // ignore nodes from spectra that were only executed by successful test cases;
         // this will lead to the scores for the removed nodes not being added to the ranking;
@@ -68,9 +108,11 @@ public class BiasedCfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T
         for (Entry<Integer, Node> entry : cfg.getNodes().entrySet()) {
         	Node node = entry.getValue();
 			int index = node.getIndex();
-			Double score = pageRank.get(index);
 
+			double score = 0;
 			if (SpectraUtils.isNodeInvolvedInATrace(failingTraces, index)) {
+				
+				score = SimilarityUtils.calculateScore(cfg, simRank, index, calcStrategy);
 				ranking.add(spectra.getNode(index), score);
 			}
 			
@@ -93,7 +135,7 @@ public class BiasedCfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T
 	
 	@Override
 	public String getName() {
-		return "bpr_" + dampingFactor + "_" + iterations + "_" + (reverse ? "r" : "f") + "_" + localizer.getName();
+		return algorithm.id + "_" + calcStrategy.id + "_" + dampingFactor + "_" + iterations + "_" + localizer.getName();
 	}
 
 }

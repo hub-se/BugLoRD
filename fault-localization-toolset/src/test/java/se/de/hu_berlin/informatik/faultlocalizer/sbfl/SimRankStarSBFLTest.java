@@ -23,7 +23,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 /**
  * @author Simon
  */
-public class PageRankSBFLTest extends TestSettings {
+public class SimRankStarSBFLTest extends TestSettings {
 
     /**
      *
@@ -54,12 +54,12 @@ public class PageRankSBFLTest extends TestSettings {
     }
     
     @Test
-    public void testPageRankSBFL() throws IOException {
+    public void testSimRankStarSBFL() throws IOException {
     	//assert(false); //uncomment to check if asserts are enabled
 
         ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b_new.zip");
 
-        generateRankings(statementSpectra, "stmtPR");
+        generateRankings(statementSpectra, "stmtSSR");
     }
 
 	private static <T> void generateRankings(ISpectra<T, ? extends ITrace<T>> statementSpectra, String subDir)
@@ -70,35 +70,35 @@ public class PageRankSBFLTest extends TestSettings {
         generateRanking(statementSpectra, subDir, "barinel");
         generateRanking(statementSpectra, subDir, "overlap");
      
-        generateRanking(statementSpectra, subDir, "cr_0.5_2_dstar");
-        generateRanking(statementSpectra, subDir, "cr_0.5_2_overlap");
-        generateRanking(statementSpectra, subDir, "cr_0.5_0_dstar");
-        generateRanking(statementSpectra, subDir, "cr_0.5_0_overlap");
+        generateRanking(statementSpectra, subDir, "ssr_avg_0.5_2_dstar");
+        generateRanking(statementSpectra, subDir, "ssr_avg_0.5_2_overlap");
+        generateRanking(statementSpectra, subDir, "ssr_avg_0.5_0_dstar");
+        generateRanking(statementSpectra, subDir, "ssr_avg_0.5_0_overlap");
         
-        generateRanking(statementSpectra, subDir, "pr_0.5_2_dstar");
-        generateRanking(statementSpectra, subDir, "pr_0.5_2_overlap");
-        generateRanking(statementSpectra, subDir, "pr_0.5_0_dstar");
-        generateRanking(statementSpectra, subDir, "pr_0.5_0_overlap");
+        generateRanking(statementSpectra, subDir, "issr_avg_0.5_2_dstar");
+        generateRanking(statementSpectra, subDir, "issr_avg_0.5_2_overlap");
+        generateRanking(statementSpectra, subDir, "issr_avg_0.5_0_dstar");
+        generateRanking(statementSpectra, subDir, "issr_avg_0.5_0_overlap");
         
-        generateRanking(statementSpectra, subDir, "pcr_0.5_2_dstar");
-        generateRanking(statementSpectra, subDir, "pcr_0.5_2_overlap");
-        generateRanking(statementSpectra, subDir, "pcr_0.5_0_dstar");
-        generateRanking(statementSpectra, subDir, "pcr_0.5_0_overlap");
+        generateRanking(statementSpectra, subDir, "vssr_avg_0.5_2_dstar");
+        generateRanking(statementSpectra, subDir, "vssr_avg_0.5_2_overlap");
+        generateRanking(statementSpectra, subDir, "vssr_avg_0.5_0_dstar");
+        generateRanking(statementSpectra, subDir, "vssr_avg_0.5_0_overlap");
         
-        generateRanking(statementSpectra, subDir, "hcr_0.5_2_dstar");
-        generateRanking(statementSpectra, subDir, "hcr_0.5_2_overlap");
-        generateRanking(statementSpectra, subDir, "hcr_0.5_0_dstar");
-        generateRanking(statementSpectra, subDir, "hcr_0.5_0_overlap");
+        generateRanking(statementSpectra, subDir, "hssr_avg_0.5_2_dstar");
+        generateRanking(statementSpectra, subDir, "hssr_avg_0.5_2_overlap");
+        generateRanking(statementSpectra, subDir, "hssr_avg_0.5_0_dstar");
+        generateRanking(statementSpectra, subDir, "hssr_avg_0.5_0_overlap");
         
-        generateRanking(statementSpectra, subDir, "hpr_0.5_2_dstar");
-        generateRanking(statementSpectra, subDir, "hpr_0.5_2_overlap");
-        generateRanking(statementSpectra, subDir, "hpr_0.5_0_dstar");
-        generateRanking(statementSpectra, subDir, "hpr_0.5_0_overlap");
+        generateRanking(statementSpectra, subDir, "hissr_avg_0.5_2_dstar");
+        generateRanking(statementSpectra, subDir, "hissr_avg_0.5_2_overlap");
+        generateRanking(statementSpectra, subDir, "hissr_avg_0.5_0_dstar");
+        generateRanking(statementSpectra, subDir, "hissr_avg_0.5_0_overlap");
         
-        generateRanking(statementSpectra, subDir, "hpcr_0.5_2_dstar");
-        generateRanking(statementSpectra, subDir, "hpcr_0.5_2_overlap");
-        generateRanking(statementSpectra, subDir, "hpcr_0.5_0_dstar");
-        generateRanking(statementSpectra, subDir, "hpcr_0.5_0_overlap");
+        generateRanking(statementSpectra, subDir, "hvssr_avg_0.5_2_dstar");
+        generateRanking(statementSpectra, subDir, "hvssr_avg_0.5_2_overlap");
+        generateRanking(statementSpectra, subDir, "hvssr_avg_0.5_0_dstar");
+        generateRanking(statementSpectra, subDir, "hvssr_avg_0.5_0_overlap");
 	}
 
 	private static <T> void generateRanking(ISpectra<T, ? extends ITrace<T>> statementSpectra, String subDir,
@@ -111,7 +111,7 @@ public class PageRankSBFLTest extends TestSettings {
 
     
     @Test
-    public void testPageRankBranchSBFL() throws IOException {
+    public void testSimRankStarBranchSBFL() throws IOException {
     	//assert(false); //uncomment to check if asserts are enabled
 
         ISpectra<SourceCodeBlock, ? extends ITrace<SourceCodeBlock>> statementSpectra = loadStatementSpectra("Lang-56b_new.zip");
@@ -119,7 +119,7 @@ public class PageRankSBFLTest extends TestSettings {
         ProgramBranchSpectra<ProgramBranch> branchingSpectra = StatementSpectraToBranchSpectra
         		.generateBranchingSpectraFromStatementSpectra(statementSpectra, null);
 
-        generateRankings(branchingSpectra, "branchPR");
+        generateRankings(branchingSpectra, "branchSSR");
         
     }
     

@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.spectra.core.cfg;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -83,6 +84,11 @@ public class ScoredDynamicCFG<T> implements CFG<T> {
 	@Override
 	public void save(File outputFile) {
 		cfg.save(outputFile); // doesn't save scores
+	}
+
+	@Override
+	public Collection<T> getIdentifiersForNode(int index) {
+		return cfg.getIdentifiersForNode(index);
 	}
 	
 }

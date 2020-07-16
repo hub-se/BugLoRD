@@ -17,22 +17,43 @@ import se.de.hu_berlin.informatik.spectra.core.cfg.ScoredDynamicCFG;
 import se.de.hu_berlin.informatik.spectra.util.SpectraUtils;
 import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
-public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
+public class CfgASCOSFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
+	
+	public static enum ASCOSRankingAlgorithm {
+		ASCOS_RANK("ar"),
+		INV_ASCOS_RANK("iar"),
+		VECTOR_ASCOS_RANK("var"),
+		HA_ASCOS_RANK("har"),
+		HA_INV_ASCOS_RANK("hiar"),
+		HA_VECTOR_ASCOS_RANK("hvar"),
+		WEIGHTED_ASCOS_RANK("war"),
+		WEIGHTED_INV_ASCOS_RANK("wiar"),
+		WEIGHTED_VECTOR_ASCOS_RANK("wvar"),
+		WEIGHTED_HA_ASCOS_RANK("whar"),
+		WEIGHTED_HA_INV_ASCOS_RANK("whiar"),
+		WEIGHTED_HA_VECTOR_ASCOS_RANK("whvar");
+		
+		private String id;
+
+		private ASCOSRankingAlgorithm(String id) {
+			this.id = id;
+		}
+	}
 	
 	private IFaultLocalizer<T> localizer;
 	private double dampingFactor;
 	private int iterations;
-	private boolean reverse;
+	private ASCOSRankingAlgorithm algorithm;
 
-	public CfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer, double dampingFactor, int iterations, boolean reverse) {
+	public CfgASCOSFaultLocalizer(IFaultLocalizer<T> localizer, double dampingFactor, int iterations, ASCOSRankingAlgorithm algorithm) {
 		this.localizer = localizer;
 		this.dampingFactor = dampingFactor;
 		this.iterations = iterations;
-		this.reverse = reverse;
+		this.algorithm = algorithm;
 	}
 	
-	public CfgPageRankFaultLocalizer(IFaultLocalizer<T> localizer) {
-		this(localizer, 0.5, 2, true);
+	public CfgASCOSFaultLocalizer(IFaultLocalizer<T> localizer) {
+		this(localizer, 0.7, 0, ASCOSRankingAlgorithm.ASCOS_RANK);
 	}
 
 	@Override
@@ -56,7 +77,46 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
 		}
         
         // calculate scores with PageRank algorithm
-        Map<Integer, Double> pageRank = new PageRank<>(cfg, dampingFactor, iterations, reverse).calculate();
+        Map<Integer, double[]> simRank = null;
+        switch (algorithm) {
+		case ASCOS_RANK:
+			simRank = ASCOS.calculateASCOS(cfg, dampingFactor, iterations);
+			break;
+		case INV_ASCOS_RANK:
+			simRank = ASCOS.calculateInvertedASCOS(cfg, dampingFactor, iterations);
+			break;
+		case VECTOR_ASCOS_RANK:
+			simRank = ASCOS.calculateSimVectorRank(cfg, dampingFactor, iterations);
+			break;
+		case HA_ASCOS_RANK:
+			simRank = ASCOS.calculateASCOS(cfg, dampingFactor, iterations);
+			break;
+		case HA_INV_ASCOS_RANK:
+			simRank = ASCOS.calculateInvertedASCOS(cfg, dampingFactor, iterations);
+			break;
+		case HA_VECTOR_ASCOS_RANK:
+			simRank = ASCOS.calculateSimVectorRank(cfg, dampingFactor, iterations);
+			break;
+		case WEIGHTED_ASCOS_RANK:
+			simRank = ASCOS.calculateASCOSPlusPlus(cfg, dampingFactor, iterations);
+			break;
+		case WEIGHTED_INV_ASCOS_RANK:
+			simRank = ASCOS.calculateInvertedASCOSPlusPlus(cfg, dampingFactor, iterations);
+			break;
+		case WEIGHTED_VECTOR_ASCOS_RANK:
+			simRank = ASCOS.calculateSimVectorRankPlusPlus(cfg, dampingFactor, iterations);
+			break;
+		case WEIGHTED_HA_ASCOS_RANK:
+			simRank = ASCOS.calculateASCOSPlusPlus(cfg, dampingFactor, iterations);
+			break;
+		case WEIGHTED_HA_INV_ASCOS_RANK:
+			simRank = ASCOS.calculateInvertedASCOSPlusPlus(cfg, dampingFactor, iterations);
+			break;
+		case WEIGHTED_HA_VECTOR_ASCOS_RANK:
+			simRank = ASCOS.calculateSimVectorRankPlusPlus(cfg, dampingFactor, iterations);
+			break;
+		}
+        
         
         // ignore nodes from spectra that were only executed by successful test cases;
         // this will lead to the scores for the removed nodes not being added to the ranking;
@@ -68,9 +128,11 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
         for (Entry<Integer, Node> entry : cfg.getNodes().entrySet()) {
         	Node node = entry.getValue();
 			int index = node.getIndex();
-			Double score = pageRank.get(index);
 
+			double score = 0;
 			if (SpectraUtils.isNodeInvolvedInATrace(failingTraces, index)) {
+				
+				score = calculateScore(cfg, simRank, index);
 				ranking.add(spectra.getNode(index), score);
 			}
 			
@@ -86,6 +148,18 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
         return ranking;
     }
 	
+	private double calculateScore(ScoredDynamicCFG<T> cfg, Map<Integer, double[]> simRank, int index) {
+		double baseScore = cfg.getScore(index);
+		double[] simRankScores = simRank.get(index);
+		double score = baseScore;
+		for (Entry<Integer, Node> entry : cfg.getNodes().entrySet()) {
+			int oNodeIndex = entry.getValue().getIndex();
+			// if there exists a very similar node with a high suspiciousness score, then increase this node's score...
+			score = Math.max(score, simRankScores[oNodeIndex] * cfg.getScore(oNodeIndex));
+		}
+		return score;
+	}
+
 	@Override
 	public double suspiciousness(INode<T> node, ComputationStrategies strategy) {
 		throw new IllegalStateException();
@@ -93,7 +167,7 @@ public class CfgPageRankFaultLocalizer<T> extends AbstractFaultLocalizer<T> {
 	
 	@Override
 	public String getName() {
-		return "pr_" + dampingFactor + "_" + iterations + "_" + (reverse ? "r" : "f") + "_" + localizer.getName();
+		return algorithm.id + "_" + dampingFactor + "_" + iterations + "_" + localizer.getName();
 	}
 
 }
