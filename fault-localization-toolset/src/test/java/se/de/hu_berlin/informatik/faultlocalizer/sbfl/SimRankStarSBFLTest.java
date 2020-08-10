@@ -73,7 +73,12 @@ public class SimRankStarSBFLTest extends TestSettings {
         generateRanking(statementSpectra, subDir, "ssr_avg_0.5_2_dstar");
         generateRanking(statementSpectra, subDir, "ssr_avg_0.5_2_overlap");
         generateRanking(statementSpectra, subDir, "ssr_avg_0.5_0_dstar");
+        generateRanking(statementSpectra, subDir, "ssr_avg_0.8_0_dstar");
+        generateRanking(statementSpectra, subDir, "ssr_avg_0.3_0_dstar");
         generateRanking(statementSpectra, subDir, "ssr_avg_0.5_0_overlap");
+        generateRanking(statementSpectra, subDir, "ssr_avg_0.5_8_dstar");
+        generateRanking(statementSpectra, subDir, "ssr_avg_0.5_4_dstar");
+        generateRanking(statementSpectra, subDir, "ssr_avg_0.5_6_dstar");
         
         generateRanking(statementSpectra, subDir, "issr_avg_0.5_2_dstar");
         generateRanking(statementSpectra, subDir, "issr_avg_0.5_2_overlap");
