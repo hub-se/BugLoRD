@@ -66,14 +66,17 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
          * # compute SBFL rankings for the given localizers
          * #==================================================================================== */
         
-        if (!(bug.getWorkDataDir().toFile()).exists()) {
+        String subDirName = BugLoRD.getSubDirName(toolSpecific);
+        File compressedSpectraFile = BugLoRD.getSpectraFilePath(bug, subDirName).toAbsolutePath().toFile();
+        
+        if (!(bug.getWorkDataDir().toFile()).exists() || !compressedSpectraFile.exists()) {
         	/* #====================================================================================
              * # try to get spectra from archive, if existing
              * #==================================================================================== */
             boolean foundSpectra = ERGenerateSpectraEH.tryToGetSpectraFromArchive(bug, toolSpecific);
             
             if (!foundSpectra) {
-            	Log.err(this, "Work data directory doesn't exist: '" + bug.getWorkDataDir() + "'.");
+            	Log.err(this, "Could not find or copy spectra from spectra archive.");
             	Log.err(this, "Error while computing SBFL rankings. Skipping '" + buggyEntity + "'.");
             	return null;
             }
@@ -82,9 +85,7 @@ public class ERComputeSBFLRankingsFromSpectraEH extends AbstractProcessor<BuggyF
         /* #====================================================================================
          * # calculate rankings from existing spectra file
          * #==================================================================================== */
-        String subDirName = BugLoRD.getSubDirName(toolSpecific);
-        File compressedSpectraFile = BugLoRD.getSpectraFilePath(bug, subDirName).toAbsolutePath().toFile();
-
+        
         if (!compressedSpectraFile.exists()) {
             Log.err(this, "Spectra file doesn't exist: '" + compressedSpectraFile + "'.");
             Log.err(this, "Error while computing SBFL rankings. Skipping '" + buggyEntity + "'.");
