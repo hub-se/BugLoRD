@@ -90,7 +90,9 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
 
         destination = new File(entity.getWorkDataDir() + Defects4J.SEP +
                 subDirName + Defects4J.SEP + BugLoRDConstants.SPECTRA_FILE_NAME);
+        
         try {
+        	new File(entity.getWorkDataDir() + Defects4J.SEP + subDirName).mkdirs();
             FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             Log.err(ERGenerateSpectraEH.class, "Found spectra '%s', but could not copy to '%s'.", spectra, destination);
@@ -113,6 +115,7 @@ public class ERGenerateSpectraEH extends AbstractProcessor<BuggyFixedEntity<?>, 
         destination = new File(entity.getWorkDataDir() + Defects4J.SEP +
                 subDirName + Defects4J.SEP + BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME);
         try {
+        	new File(entity.getWorkDataDir() + Defects4J.SEP + subDirName).mkdirs();
             FileUtils.copyFileOrDir(spectra, destination, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             Log.err(this, "Found filtered spectra '%s', but could not copy to '%s'.", spectra, destination);
