@@ -14,8 +14,8 @@ public class NGram implements Comparable<NGram> {
         this.blockIDs = blockIDs;
         this.EF = EF;
         this.ET = ET;
-       // confidence = (ET > 0) ? EF / ET : 0.0;
-        confidence = 0.0;
+        confidence = (ET > 0) ? EF / ET : 0.0;
+        //confidence = 0.0;
 
     }
 
