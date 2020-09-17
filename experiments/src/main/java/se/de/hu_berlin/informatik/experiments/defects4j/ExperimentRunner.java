@@ -172,6 +172,20 @@ public class ExperimentRunner {
             linker.append(
                     new ThreadedProcessor<>(limit, handlers));
         }
+        if (toDoContains(toDo, "predicates")) {
+            EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>> firstEH =
+                    new ERProducePredicates(toolSpecific, options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT, options.hasOption(CmdOptions.FILL_EMPTY_LINES)).asEH();
+            @SuppressWarnings("unchecked") final Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>>) firstEH.getClass();
+            final EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>[] handlers = Misc.createGenericArray(clazz, threadCount);
+
+            handlers[0] = firstEH;
+            for (int i = 1; i < handlers.length; ++i) {
+                // create modules with different port numbers
+                handlers[i] = new ERProducePredicates(toolSpecific, options.getOptionValue(CmdOptions.SUFFIX, null), AgentOptions.DEFAULT_PORT + (i * 3), options.hasOption(CmdOptions.FILL_EMPTY_LINES)).asEH();
+            }
+            linker.append(
+                    new ThreadedProcessor<>(limit, handlers));
+        }
 
         if (toDoContains(toDo, "reSave")) {
             EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>> firstEH =

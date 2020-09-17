@@ -38,6 +38,7 @@
         <cobertura.version>2.1.1</cobertura.version>
         <!-- current version: 3.5.14 -->
         <javaparser.version>3.3.1</javaparser.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
         <dependency>
@@ -52,6 +53,16 @@
         </dependency>
         <!-- <dependency> <groupId>org.mockito</groupId> <artifactId>mockito-core</artifactId>
             <version>2.7.14</version> </dependency> -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.13.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.13.3</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
