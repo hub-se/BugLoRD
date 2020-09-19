@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.faultlocalizer.ngram;
 
 import java.util.ArrayList;
+import java.lang.Math; //for the log function
 
 public class NGram implements Comparable<NGram> {
     final private int length;
@@ -14,10 +15,33 @@ public class NGram implements Comparable<NGram> {
         this.blockIDs = blockIDs;
         this.EF = EF;
         this.ET = ET;
-        //confidence = (ET > 0) ? EF / ET : 0.0;
-        confidence = 0.5;
+        confidence = (ET > 0) ? EF / ET : 0.0;
 
     }
+    
+    // If useEntropy is set to 1 (or any other number other than 0) this constructor uses Cross-Entropy
+    // to calculate the confidence-score. EFT and ETT are the number of all tests, EF and ET are the number of tests
+    // that execute this NGram and EFR and ETR are the tests that do not execute this NGram.
+    public NGram(int length, double EF, double ET, double EFT, double ETT, ArrayList<Integer> blockIDs, int useEntropy) {
+        this.length = length;
+        this.blockIDs = blockIDs;
+        this.EF = EF;
+        this.ET = ET;
+        if (useEntropy == 0) {
+        	confidence = (ET > 0) ? EF / ET : 0.0;
+        }
+        else {
+        	double EFR = EFT - EF;
+        	double ETR = ETT - ET;
+        	confidence = (ET > 0) ? (- ( (EFT/ETT) * (log2(EFT/ETT)) ) - ( (EF/ET) * (log2(EF/ET)) ) - ( (EFR/ETR) * (log2(EFR/ETR)) ) ) : 0.0;
+        }
+
+    }
+    
+    // Calculates the logarithm to the basis 2.
+    public static double log2(final double to_log) {
+        return (double)(Math.log(to_log)/Math.log(2.0));
+   }
 
     public int getLength() {
         return length;

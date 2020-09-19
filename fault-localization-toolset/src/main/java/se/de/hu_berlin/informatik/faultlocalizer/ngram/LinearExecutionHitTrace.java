@@ -117,6 +117,11 @@ public class LinearExecutionHitTrace {
     public int getFailedTestCount() {
         return spectra.getFailingTraces().size();
     }
+    
+    //by Philipp Thamm to calculate the Cross-Entropy
+    public int getSuccessfulTestCount() {
+        return spectra.getSuccessfulTraces().size();
+    }
 
     public ConcurrentHashMap.KeySetView<Integer, LinkedHashSet<Integer>> getAllBlocks() {
         return block2NodeMap.keySet();
