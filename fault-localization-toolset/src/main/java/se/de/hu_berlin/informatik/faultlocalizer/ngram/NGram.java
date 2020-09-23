@@ -33,7 +33,11 @@ public class NGram implements Comparable<NGram> {
         else {
         	double EFR = EFT - EF;
         	double ETR = ETT - ET;
-        	confidence = (ET > 0) ? (- ( (EFT/ETT) * (log2(EFT/ETT)) ) - ( (EF/ET) * (log2(EF/ET)) ) - ( (EFR/ETR) * (log2(EFR/ETR)) ) ) : 0.0;
+        	double H = (ETT > 0) ? (- ( (EFT/ETT) * (log2(EFT/ETT)) )) : 0.0;
+        	double HNGram = (ET > 0) ? (- ( (EFT/ETT) * (log2(EFT/ETT)) )) : 0.0;
+        	double HRest = (ETR > 0) ? (- ( (EFT/ETT) * (log2(EFT/ETT)) )) : 0.0;
+        	confidence = H + HNGram + HRest;
+        	//confidence = (ET > 0) ? (- ( (EFT/ETT) * (log2(EFT/ETT)) ) - ( (EF/ET) * (log2(EF/ET)) ) - ( (EFR/ETR) * (log2(EFR/ETR)) ) ) : 0.0;
         }
 
     }
