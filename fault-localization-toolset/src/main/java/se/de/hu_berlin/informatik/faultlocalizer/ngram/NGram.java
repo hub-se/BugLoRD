@@ -37,7 +37,7 @@ public class NGram implements Comparable<NGram> {
         	double HNGram = (ET > 0) ? (- ( (EFT/ETT) * (log2(EFT/ETT)) )) : 0.0;
         	double HRest = (ETR > 0) ? (- ( (EFT/ETT) * (log2(EFT/ETT)) )) : 0.0;
         	confidence = H + HNGram + HRest;
-        	confidence = Math.pow(2,confidence); //Perplexity
+        	//confidence = Math.pow(2,confidence); //Perplexity
         	//confidence = (ET > 0) ? (- ( (EFT/ETT) * (log2(EFT/ETT)) ) - ( (EF/ET) * (log2(EF/ET)) ) - ( (EFR/ETR) * (log2(EFR/ETR)) ) ) : 0.0;
         }
 
