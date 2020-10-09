@@ -250,9 +250,9 @@ public class NGramSet {
                                     ET = hitTrace.getEP(b) + EF;
                                     ArrayList<Integer> tmp = new ArrayList<>(1);
                                     tmp.add(b);
-                                    double successfulTestCount = hitTrace.getSuccessfulTestCount(); //Philipp Thamm
-                                    //nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, tmp));
-                                    nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, failedTestCount, successfulTestCount, tmp, 1));
+                                    //double successfulTestCount = hitTrace.getSuccessfulTestCount(); //Philipp Thamm
+                                    nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, tmp));
+                                    //nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, failedTestCount, successfulTestCount, tmp, 1));
                                 }
                             });
                 });
