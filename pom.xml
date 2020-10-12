@@ -25,7 +25,7 @@
         <module>experiments</module>
     </modules>
     <properties>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <compiler.version>3.6.2</compiler.version>
         <jar.version>3.0.2</jar.version>
         <shade.version>3.1.0</shade.version>
