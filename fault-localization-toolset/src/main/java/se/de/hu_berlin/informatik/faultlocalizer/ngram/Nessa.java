@@ -43,7 +43,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
                 new NGramSet(hitTrace, maxN, minSup, true) : new NGramSet(hitTrace, maxN, minSup);
         System.out.println(nGrams.getResultAsText()); //PT
         System.out.println(hitTrace.successfulToString()); //PT
-        System.out.println(hitTrace.successfulToString()); //PT
+        System.out.println(hitTrace.failedToString()); //PT
         confidence = nGrams.getConfidence();
         confidence.forEach((key, value) -> {
                     ranking.add(spectra.getNode(key), value);

@@ -255,15 +255,19 @@ public class LinearExecutionHitTrace {
     }
     
     public String successfulToString() {
-    	if (TestTrace.isSuccessful()) {
-    		return "LEBHitTrace{" + "SuccessfulTestTrace=" + TestTrace + '}';
-    	}
+    	TestTrace.forEach(t -> {
+    		if (t.isSuccessful()) {
+        		return "LEBHitTrace{" + "SuccessfulTestTrace=" + t + '}';
+        	}
+        });
     }
     
     public String failedToString() {
-    	if (!(TestTrace.isSuccessful())) {
-    		return "LEBHitTrace{" + "FailedTestTrace=" + TestTrace + '}';
-    	}
+    	TestTrace.forEach(t -> {
+    		if (!(t.isSuccessful())) {
+        		return "LEBHitTrace{" + "SuccessfulTestTrace=" + t + '}';
+        	}
+        });
     }
 
 
