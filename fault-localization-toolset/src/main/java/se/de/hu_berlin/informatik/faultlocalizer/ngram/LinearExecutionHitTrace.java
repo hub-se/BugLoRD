@@ -258,19 +258,23 @@ public class LinearExecutionHitTrace {
     }
     
     public String successfulToString() {
+    	ArrayList<LinearExecutionTestTrace> successfulTestTrace;
     	TestTrace.forEach(t -> {
     		if (t.isSuccessful()) {
-        		return "LEBHitTrace{" + "SuccessfulTestTrace=" + t + '}';
+    			successfulTestTrace.add(t);
         	}
         });
+    	return "LEBHitTrace{" + "SuccessfulTestTrace=" + successfulTestTrace + '}';
     }
     
     public String failedToString() {
+    	ArrayList<LinearExecutionTestTrace> failedTestTrace;
     	TestTrace.forEach(t -> {
     		if (!(t.isSuccessful())) {
-        		return "LEBHitTrace{" + "SuccessfulTestTrace=" + t + '}';
+        		failedTestTrace.add(t);
         	}
         });
+    	return "LEBHitTrace{" + "SuccessfulTestTrace=" + failedTestTrace + '}';
     }
 
 
