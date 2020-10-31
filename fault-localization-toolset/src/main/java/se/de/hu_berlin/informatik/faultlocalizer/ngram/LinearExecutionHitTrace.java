@@ -258,7 +258,7 @@ public class LinearExecutionHitTrace {
     }
     
     public String successfulToString() {
-    	ArrayList<LinearExecutionTestTrace> successfulTestTrace;
+    	private ArrayList<LinearExecutionTestTrace> successfulTestTrace;
     	TestTrace.forEach(t -> {
     		if (t.isSuccessful()) {
     			successfulTestTrace.add(t);
@@ -268,7 +268,7 @@ public class LinearExecutionHitTrace {
     }
     
     public String failedToString() {
-    	ArrayList<LinearExecutionTestTrace> failedTestTrace;
+    	private ArrayList<LinearExecutionTestTrace> failedTestTrace;
     	TestTrace.forEach(t -> {
     		if (!(t.isSuccessful())) {
         		failedTestTrace.add(t);
