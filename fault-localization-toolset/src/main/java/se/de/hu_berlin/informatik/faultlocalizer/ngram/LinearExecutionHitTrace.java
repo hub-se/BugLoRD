@@ -253,6 +253,18 @@ public class LinearExecutionHitTrace {
             testTrace.getTraces().add(innerTrace);
         }
     }
+    
+    public String successfulToString() {
+    	if (TestTrace.isSuccessful()) {
+    		return "LEBHitTrace{" + "SuccessfulTestTrace=" + TestTrace + '}';
+    	}
+    }
+    
+    public String failedToString() {
+    	if (!(TestTrace.isSuccessful())) {
+    		return "LEBHitTrace{" + "FailedTestTrace=" + TestTrace + '}';
+    	}
+    }
 
 
 }
