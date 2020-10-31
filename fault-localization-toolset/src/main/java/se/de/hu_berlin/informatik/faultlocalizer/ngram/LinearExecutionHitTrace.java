@@ -13,6 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import java.util.ArrayList; //PT
+import java.util.List; //PT
+
 public class LinearExecutionHitTrace {
     final private int numOfCores = Runtime.getRuntime().availableProcessors();
     private ArrayList<LinearExecutionTestTrace> TestTrace;
