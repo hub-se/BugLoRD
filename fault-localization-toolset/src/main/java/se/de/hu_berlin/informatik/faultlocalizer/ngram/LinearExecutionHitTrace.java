@@ -274,7 +274,7 @@ public class LinearExecutionHitTrace {
         		failedTestTrace.add(t);
         	}
         });
-    	return "LEBHitTrace{" + "SuccessfulTestTrace=" + failedTestTrace + '}';
+    	return "LEBHitTrace{" + "FailedTestTrace=" + failedTestTrace + '}';
     }
 
 
