@@ -257,6 +257,8 @@ public class LinearExecutionHitTrace {
         }
     }
     
+    //Philipp Thamm ->
+    
     public String successfulToString() {
     	ArrayList<LinearExecutionTestTrace> successfulTestTrace = new ArrayList<LinearExecutionTestTrace>();
     	TestTrace.forEach(t -> {

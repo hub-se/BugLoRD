@@ -38,15 +38,20 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     public Ranking<INode<T>> localize(final ISpectra<T, ? extends ITrace<T>> spectra, ComputationStrategies strategy) {
         final Ranking<INode<T>> ranking = new NodeRanking<>();
         LinearExecutionHitTrace hitTrace = new LinearExecutionHitTrace((ISpectra<SourceCodeBlock, ?>) spectra);
-        System.out.println(hitTrace.toString()); //PT
+        //System.out.println(hitTrace.toString()); //PT
         NGramSet nGrams = dynSup ?
                 new NGramSet(hitTrace, maxN, minSup, true) : new NGramSet(hitTrace, maxN, minSup);
+       //PT ->
         System.out.println(nGrams.getResultAsText()); //PT
         System.out.println("_________________"); //PT
         System.out.println(hitTrace.successfulToString()); //PT
         System.out.println("_________________"); //PT
         System.out.println(hitTrace.failedToString()); //PT
         System.out.println("_________________"); //PT
+        ArrayList<LinearExecutionTestTrace> failedTestTraces = new ArrayList<LinearExecutionTestTrace>();
+        failedTestTraces = hitTrace.getFailedTest();
+        System.out.println("Failed tests: {" + failedTestTraces + "}");
+        // <- PT
         confidence = nGrams.getConfidence();
         confidence.forEach((key, value) -> {
                     ranking.add(spectra.getNode(key), value);
