@@ -8,6 +8,9 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import java.util.ArrayList; //PT
+import java.util.List; //PT
+
 public class Nessa<T> extends AbstractFaultLocalizer<T> {
     private HashMap<Integer, Double> confidence;
     private double minSup = 0.9;
