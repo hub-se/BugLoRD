@@ -51,7 +51,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         System.out.println("_________________"); //PT
         System.out.println(hitTrace.failedToString()); //PT
         System.out.println("_________________"); //PT
-        ArrayList<LinearExecutionTestTrace> failedTestTraces = new ArrayList<LinearExecutionTestTrace>();
+        List<LinearExecutionTestTrace> failedTestTraces = new List<LinearExecutionTestTrace>();
         failedTestTraces = hitTrace.getFailedTest();
         System.out.println("Failed tests: {" + failedTestTraces + "}");
         // <- PT
