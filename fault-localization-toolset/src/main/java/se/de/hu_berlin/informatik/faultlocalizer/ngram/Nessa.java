@@ -49,6 +49,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         System.out.println(hitTrace.failedToString()); //PT
         System.out.println("_________________"); //PT
         System.out.println("Failed tests: {" + hitTrace.getFailedTest() + "}");
+        System.out.println("_________________"); //PT
+        System.out.println("Failed tests (PT method): {" + hitTrace.getFailedTestTraces() + "}");
         // <- PT
         confidence = nGrams.getConfidence();
         confidence.forEach((key, value) -> {

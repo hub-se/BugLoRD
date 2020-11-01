@@ -278,6 +278,16 @@ public class LinearExecutionHitTrace {
         });
     	return "LEBHitTrace{" + "FailedTestTrace=" + failedTestTrace + '}';
     }
+    
+    public ArrayList<LinearExecutionTestTrace> getFailedTestTraces() {
+    	ArrayList<LinearExecutionTestTrace> failedTestTrace = new ArrayList<LinearExecutionTestTrace>();
+    	TestTrace.forEach(t -> {
+    		if (!(t.isSuccessful())) {
+        		failedTestTrace.add(t);
+        	}
+        });
+    	return failedTestTrace;
+    }
 
 
 }
