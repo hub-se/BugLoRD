@@ -45,16 +45,17 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         System.out.println(nGrams.getResultAsText()); //PT
         	//System.out.println("_________________"); //PT
         	//System.out.println(hitTrace.successfulToString()); //PT
-        System.out.println("_________________"); //PT
-        System.out.println("Successful tests (PT method): {" + hitTrace.getSuccessfulTestTraces() + "}");
+        	//System.out.println("_________________"); //PT
+        	//System.out.println("Successful tests (PT method): {" + hitTrace.getSuccessfulTestTraces() + "}");
         	//System.out.println("_________________"); //PT
         	//System.out.println(hitTrace.failedToString()); //PT
         	//System.out.println("_________________"); //PT
         	//System.out.println("Failed tests: {" + hitTrace.getFailedTest() + "}");
         System.out.println("_________________"); //PT
-        System.out.println("Failed tests (PT method): {" + hitTrace.getFailedTestTraces() + "}");
-        System.out.println("_________________"); //PT
-        System.out.println("All tests: {" + hitTrace.getTestTrace() + "}");
+        	//System.out.println("Failed tests (PT method): {" + hitTrace.getFailedTestTraces() + "}");
+        	//System.out.println("_________________"); //PT
+        	//System.out.println("All tests: {" + hitTrace.getTestTrace() + "}");
+        System.out.println("Confidence: " + nGrams.getConfidence();); //PT
         // <- PT
         confidence = nGrams.getConfidence();
         confidence.forEach((key, value) -> {
