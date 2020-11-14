@@ -61,11 +61,11 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		System.out.println("BlockIDs: " + nGram.getBlockIDs());
     		ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
     		BlockIDs = nGram.getBlockIDs();
-    		nGram.setConfidence(1.0);
+    		nGram.setConfidence(0.0);
     		BlockIDs.forEach(ID -> {
     			hitTrace.getFailedTestTraces().forEach(blockNumber -> {
     				if (ID == blockNumber) {
-    					nGram.setConfidence(0.0);
+    					nGram.setConfidence(1.0);
     				}
     			});
     		});

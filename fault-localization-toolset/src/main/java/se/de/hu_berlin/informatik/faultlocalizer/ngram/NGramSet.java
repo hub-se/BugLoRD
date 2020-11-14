@@ -321,8 +321,8 @@ public class NGramSet {
     }
     
     //PT ->
-    public ArrayList<nGram> getnGrams() {
-    	ArrayList<nGram> nGramList = new ArrayList<nGram>(nGramHashSet.values());
+    public ArrayList<NGram> getnGrams() {
+    	ArrayList<NGram> nGramList = new ArrayList<NGram>(nGramHashSet.values());
     	return nGramList;
     }
     //<- PT
