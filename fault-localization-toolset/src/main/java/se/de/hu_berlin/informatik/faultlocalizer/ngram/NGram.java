@@ -127,4 +127,10 @@ public class NGram implements Comparable<NGram> {
                 ", confidence=" + confidence +
                 '}';
     }
+    
+    //PT ->
+    public void setConfidence(double conf) {
+        confidence = conf;
+        return;
+    }
 }

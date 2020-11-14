@@ -319,6 +319,13 @@ public class NGramSet {
         }
         return count;
     }
+    
+    //PT ->
+    public ArrayList<nGram> getnGrams() {
+    	ArrayList<nGram> nGramList = new ArrayList<nGram>(nGramHashSet.values());
+    	return nGramList;
+    }
+    //<- PT
 
 
     class SizeComparator implements Comparator<HashSet<?>> {
