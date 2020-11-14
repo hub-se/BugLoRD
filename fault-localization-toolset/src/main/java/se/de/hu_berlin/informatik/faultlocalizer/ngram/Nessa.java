@@ -8,6 +8,8 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import java.util.ArrayList; //PT
+
 public class Nessa<T> extends AbstractFaultLocalizer<T> {
     private HashMap<Integer, Double> confidence;
     private double minSup = 0.9;
@@ -57,7 +59,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         	//System.out.println("All tests: {" + hitTrace.getTestTrace() + "}");
         System.out.println("Confidence: " + nGrams.getConfidence()); //PT
         nGrams.getnGrams().forEach(nGram -> {
-    		nGram.toSring();
+    		nGram.toString();
     		System.out.println("BlockIDs: " + nGram.getBlockIDs());
     		ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
     		BlockIDs = nGram.getBlockIDs();
