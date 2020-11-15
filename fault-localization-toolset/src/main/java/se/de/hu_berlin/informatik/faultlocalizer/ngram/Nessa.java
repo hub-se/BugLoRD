@@ -70,7 +70,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     					if (ID == blockID) {
     						nGram.setConfidence(1.0);
     					}
-    				}
+    				});
     			});
     		});
         });
