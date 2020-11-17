@@ -130,7 +130,7 @@ public class NGram implements Comparable<NGram> {
     
     //PT ->
     public void setConfidence(double conf) {
-        confidence = conf;
+        this.confidence = conf;
         return;
     }
 }
