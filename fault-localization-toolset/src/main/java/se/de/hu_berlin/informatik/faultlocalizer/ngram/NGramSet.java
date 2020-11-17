@@ -327,7 +327,7 @@ public class NGramSet {
     }
     
     public void updateConfidence() {
-    	newConfidence = new LinkedHashMap<>(result.size());
+    	LinkedHashMap<> newConfidence = new LinkedHashMap<>(result.size());
     	ConcurrentHashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlock2NodeMap();
     	result.forEach(entry -> {
     		int blockCount = entry.getLength();
