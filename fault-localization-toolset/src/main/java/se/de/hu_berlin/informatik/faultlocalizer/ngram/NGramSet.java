@@ -325,6 +325,24 @@ public class NGramSet {
     	ArrayList<NGram> nGramList = new ArrayList<NGram>(nGramHashSet.values());
     	return nGramList;
     }
+    
+    public void updateConfidence() {
+    	newConfidence = new LinkedHashMap<>(result.size());
+    	ConcurrentHashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlock2NodeMap();
+    	result.forEach(entry -> {
+    		int blockCount = entry.getLength();
+            ArrayList<Integer> blockIDs = entry.getBlockIDs();
+    		for (int i = 0; i < blockCount; i++) {
+    			int tmp = blockIDs.get(i);
+    			LinkedHashSet<Integer> nodes = blockMap.get(tmp);
+    			nodes.forEach(n -> {
+    				newConfidence.put(n, entry.getConfidence);
+    			});	
+    		}	
+    	});
+    	confidence = newConfidence;
+    	return;
+    }
     //<- PT
 
 
