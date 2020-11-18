@@ -339,7 +339,7 @@ public class NGramSet {
                 visitedNode.add(tmp);
     			LinkedHashSet<Integer> nodes = blockMap.get(tmp);
     			nodes.forEach(n -> {
-    				newConfidence.put(n, entry.getConfidence);
+    				newConfidence.put(n, entry.getConfidence());
     			});	
     		}	
     	});
