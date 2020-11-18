@@ -329,11 +329,14 @@ public class NGramSet {
     public void updateConfidence() {
     	LinkedHashMap<Integer, Double> newConfidence = new LinkedHashMap<>(result.size());
     	ConcurrentHashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlock2NodeMap();
+    	HashSet<Integer> visitedNode = new HashSet<>(blockMap.size());
     	result.forEach(entry -> {
     		int blockCount = entry.getLength();
             ArrayList<Integer> blockIDs = entry.getBlockIDs();
     		for (int i = 0; i < blockCount; i++) {
     			int tmp = blockIDs.get(i);
+    			if (visitedNode.contains(tmp)) continue;
+                visitedNode.add(tmp);
     			LinkedHashSet<Integer> nodes = blockMap.get(tmp);
     			nodes.forEach(n -> {
     				newConfidence.put(n, entry.getConfidence);
