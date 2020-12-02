@@ -60,6 +60,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         System.out.println("Confidence: " + nGrams.getConfidence()); //PT
         System.out.println("_________________");
         nGrams.getnGrams().forEach(nGram -> {
+        	//Idee: für jedes nGram mit EF > 0 den kleinsten Abstand (Cross-Entropy) zu nGrams mit EF = 0 berechnen
+        	//und den Cross-Entropy-Wert als Suspiciousness zuordnen.
     		System.out.println(nGram.toString());
     		//System.out.println("_________________");
     		//System.out.println("BlockIDs: " + nGram.getBlockIDs());
@@ -77,6 +79,13 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     				});
     			});
     		});
+    		if (nGram.getEF() > 0.0) {
+    			System.out.println("EF > 0:" + nGram.toString());
+    		}
+    		System.out.println("_________________");
+    		if (nGram.getEF()  <= 0.0) {
+    			System.out.println("EF <= 0:" + nGram.toString());
+    		}
         });
         nGrams.updateConfidence();
         System.out.println("New Confidence: " + nGrams.getConfidence());
