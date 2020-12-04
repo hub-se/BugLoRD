@@ -15,7 +15,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     private double minSup = 0.9;
     private int maxN = 3;
     private boolean dynSup;
-
+    
     public Nessa() {
         super();
         confidence = new LinkedHashMap<>();
@@ -68,17 +68,18 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//System.out.println("_________________");
     		ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
     		BlockIDs = nGram.getBlockIDs();
-    		nGram.setConfidence(0.5);
-    		System.out.println(nGram.toString());
+    		//nGram.setConfidence(0.0);
+    		//System.out.println(nGram.toString());
     		BlockIDs.forEach(ID -> {
     			hitTrace.getFailedTestTraces().forEach(failedTestTrace -> {
     				failedTestTrace.getInvolvedBlocks().forEach(blockID -> {
     					if (ID == blockID) {
-    						nGram.setConfidence(1.0);
+    						setNewConfidence(nGram);
+    						/*nGram.setConfidence(1.0);
     						System.out.println("------->");
     						System.out.println(nGram.toString());
     						System.out.println(nGram.getConfidence());
-    						System.out.println("<-------");
+    						System.out.println("<-------");*/
     					}
     				});
     			});
@@ -126,4 +127,11 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     public double suspiciousness(INode<T> node, ComputationStrategies strategy) {
         return 0;
     }
+    
+    //PT ->
+    public void setNewConfidence(NGram nGram) {
+    	nGram.setConfidence(1.0);
+    	return;
+    }
+    //<- PT
 }
