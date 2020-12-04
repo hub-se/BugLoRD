@@ -54,7 +54,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         	//System.out.println("_________________"); //PT
         	//System.out.println("Failed tests: {" + hitTrace.getFailedTest() + "}");
         System.out.println("_________________"); //PT
-        	//System.out.println("Failed tests (PT method): {" + hitTrace.getFailedTestTraces() + "}");
+        System.out.println("Failed tests (PT method): {" + hitTrace.getFailedTestTraces() + "}");
         	//System.out.println("_________________"); //PT
         	//System.out.println("All tests: {" + hitTrace.getTestTrace() + "}");
         System.out.println("Confidence: " + nGrams.getConfidence()); //PT
@@ -78,14 +78,21 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     					}
     				});
     			});
+    			hitTrace.getSuccessfulTestTraces().forEach(successfulTestTrace -> {
+    				successfulTestTrace.getInvolvedBlocks().forEach(blockID -> {
+    					if (ID == blockID) {
+    						nGram.setConfidence(nGram.getConfidence() - 0.1);
+    					}
+    				});
+    			});
     		});
-    		if (nGram.getEF() > 0.0) {
+    		/*if (nGram.getEF() > 0.0) {
     			System.out.println("EF > 0:" + nGram.toString());
     		}
     		System.out.println("_________________");
-    		if (nGram.getEF()  <= 0.0) {
+    		if (nGram.getEF()  <= 0.0) { //kein Ergebnis, es existieren nur nGrams mit EF > 0.0
     			System.out.println("EF <= 0:" + nGram.toString());
-    		}
+    		}*/
         });
         nGrams.updateConfidence();
         System.out.println("New Confidence: " + nGrams.getConfidence());
