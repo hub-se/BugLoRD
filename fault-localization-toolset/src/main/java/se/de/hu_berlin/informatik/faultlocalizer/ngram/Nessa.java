@@ -74,17 +74,17 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     			hitTrace.getFailedTestTraces().forEach(failedTestTrace -> {
     				failedTestTrace.getInvolvedBlocks().forEach(blockID -> {
     					if (ID == blockID) {
-    						nGram.setConfidence(1.0);
+    						nGram.setConfidence(nGram.getConfidence() + 0.01);
     					}
     				});
     			});
-    			hitTrace.getSuccessfulTestTraces().forEach(successfulTestTrace -> {
+    			/*hitTrace.getSuccessfulTestTraces().forEach(successfulTestTrace -> {
     				successfulTestTrace.getInvolvedBlocks().forEach(blockID -> {
     					if (ID == blockID) {
     						nGram.setConfidence(nGram.getConfidence() - 0.0000000001);
     					}
     				});
-    			});
+    			});*/
     		});
     		/*if (nGram.getEF() > 0.0) {
     			System.out.println("EF > 0:" + nGram.toString());
