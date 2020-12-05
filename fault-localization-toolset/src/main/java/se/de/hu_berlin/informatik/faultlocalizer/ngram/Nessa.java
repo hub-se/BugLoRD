@@ -75,11 +75,11 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     				failedTestTrace.getInvolvedBlocks().forEach(blockID -> {
     					if (ID == blockID) {
     						setNewConfidence(nGram, 1.0);
-    						/*nGram.setConfidence(1.0);
+    						//nGram.setConfidence(1.0);
     						System.out.println("------->");
     						System.out.println(nGram.toString());
     						System.out.println(nGram.getConfidence());
-    						System.out.println("<-------");*/
+    						System.out.println("<-------");
     					}
     				});
     			});
