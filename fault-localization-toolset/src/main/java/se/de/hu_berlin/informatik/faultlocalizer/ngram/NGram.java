@@ -15,7 +15,7 @@ public class NGram implements Comparable<NGram> {
         this.blockIDs = blockIDs;
         this.EF = EF;
         this.ET = ET;
-        //confidence = (ET > 0) ? EF / ET : 0.0;
+        confidence = (ET > 0) ? EF / ET : 0.0;
     }
     
 /*    // If useEntropy is set to 1 (or any other number other than 0) this constructor uses Cross-Entropy
