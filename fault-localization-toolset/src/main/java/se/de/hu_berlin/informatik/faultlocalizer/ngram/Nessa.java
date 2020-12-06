@@ -66,13 +66,13 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//System.out.println("_________________");
     		//System.out.println("BlockIDs: " + nGram.getBlockIDs());
     		//System.out.println("_________________");
-    		ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
-    		BlockIDs = nGram.getBlockIDs();
-    		setNewConfidence(nGram, 0.0);
+    		//ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
+    		//BlockIDs = nGram.getBlockIDs();
+    		setNewConfidence(nGram, calculateConfidence(nGram, hitTrace));
     		System.out.println(nGram.toString());
     		BlockIDs.forEach(ID -> {
-    			setNewConfidence(nGram, 1.0);
-    			hitTrace.getFailedTestTraces().forEach(failedTestTrace -> {
+    			//setNewConfidence(nGram, 1.0); //funktioniert auch nicht -> scheinbar keine Zuweisungen auf nGrams
+    			hitTrace.getFailedTestTraces().forEach(failedTestTrace -> { //in inneren foreach Schleifen moeglich
     				failedTestTrace.getInvolvedBlocks().forEach(blockID -> {
     					if (ID == blockID) {
     						setNewConfidence(nGram, 1.0);
@@ -133,6 +133,27 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     public void setNewConfidence(NGram nGram, double conf) {
     	nGram.setConfidence(conf);
     	return;
+    }
+    
+    public double calculateConfidence(NGram nGram, LinearExecutionHitTrace hitTrace) {
+    	ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
+    	boolean found = false;
+		BlockIDs = nGram.getBlockIDs();
+		BlockIDs.forEach(ID -> {
+			hitTrace.getFailedTestTraces().forEach(failedTestTrace -> {
+				failedTestTrace.getInvolvedBlocks().forEach(blockID -> {
+					if (ID == blockID) {
+						found = true;
+					}
+				});
+			});
+		});
+		if (found) {
+			return 1.0;
+		}
+		else {
+			return 0.5;
+		}
     }
     //<- PT
 }
