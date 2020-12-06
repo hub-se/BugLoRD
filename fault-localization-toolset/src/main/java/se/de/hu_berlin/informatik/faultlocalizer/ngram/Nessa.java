@@ -16,6 +16,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     private int maxN = 3;
     private boolean dynSup;
     
+    boolean found; //PT
+    
     public Nessa() {
         super();
         confidence = new LinkedHashMap<>();
@@ -137,7 +139,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     
     public double calculateConfidence(NGram nGram, LinearExecutionHitTrace hitTrace) {
     	ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
-    	boolean found = false;
+    	found = false;
 		BlockIDs = nGram.getBlockIDs();
 		BlockIDs.forEach(ID -> {
 			hitTrace.getFailedTestTraces().forEach(failedTestTrace -> {
