@@ -70,20 +70,20 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//BlockIDs = nGram.getBlockIDs();
     		setNewConfidence(nGram, calculateConfidence(nGram, hitTrace));
     		System.out.println(nGram.toString());
-    		BlockIDs.forEach(ID -> {
+    		//BlockIDs.forEach(ID -> {
     			//setNewConfidence(nGram, 1.0); //funktioniert auch nicht -> scheinbar keine Zuweisungen auf nGrams
-    			hitTrace.getFailedTestTraces().forEach(failedTestTrace -> { //in inneren foreach Schleifen moeglich
-    				failedTestTrace.getInvolvedBlocks().forEach(blockID -> {
-    					if (ID == blockID) {
-    						setNewConfidence(nGram, 1.0);
+    			//hitTrace.getFailedTestTraces().forEach(failedTestTrace -> { //in inneren foreach Schleifen moeglich
+    				//failedTestTrace.getInvolvedBlocks().forEach(blockID -> {
+    					//if (ID == blockID) {
+    						//setNewConfidence(nGram, 1.0);
     						//nGram.setConfidence(1.0);
-    						System.out.println("------->");
-    						System.out.println(nGram.toString());
-    						System.out.println(nGram.getConfidence());
-    						System.out.println("<-------");
-    					}
-    				});
-    			});
+    						//System.out.println("------->");
+    						//System.out.println(nGram.toString());
+    						//System.out.println(nGram.getConfidence());
+    						//System.out.println("<-------");
+    					//}
+    				//});
+    			//});
     			/*hitTrace.getSuccessfulTestTraces().forEach(successfulTestTrace -> {
     				successfulTestTrace.getInvolvedBlocks().forEach(blockID -> {
     					if (ID == blockID) {
@@ -91,7 +91,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     					}
     				});
     			});*/
-    		});
+    		//});
     		/*if (nGram.getEF() > 0.0) {
     			System.out.println("EF > 0:" + nGram.toString());
     		}
