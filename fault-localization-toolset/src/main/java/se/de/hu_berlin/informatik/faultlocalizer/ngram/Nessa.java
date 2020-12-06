@@ -146,6 +146,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
 				failedTestTrace.getInvolvedBlocks().forEach(blockID -> {
 					if (ID == blockID) {
 						found = true;
+						System.out.println("found = true");
 					}
 				});
 			});
