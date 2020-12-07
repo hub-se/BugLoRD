@@ -7,7 +7,7 @@ import se.de.hu_berlin.informatik.utils.experiments.ranking.Ranking;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-
+import java.util.List;
 import java.util.ArrayList; //PT
 
 public class Nessa<T> extends AbstractFaultLocalizer<T> {
@@ -139,20 +139,30 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     
     public double calculateConfidence(NGram nGram, LinearExecutionHitTrace hitTrace) {
     	ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
+    	//ArrayList<LinearExecutionTestTrace> FailedTestTraces = new ArrayList<LinearExecutionTestTrace>();
+    	//List<Integer> InvolvedBlocks;
     	found = false;
 		BlockIDs = nGram.getBlockIDs();
+		//FailedTestTraces = hitTrace.getFailedTestTraces();
 		BlockIDs.forEach(ID -> {
-			/*hitTrace.getFailedTestTraces().forEach(failedTestTrace -> {
-				failedTestTrace.getInvolvedBlocks().forEach(blockID -> {
+			ArrayList<LinearExecutionTestTrace> FailedTestTraces = new ArrayList<LinearExecutionTestTrace>();
+			FailedTestTraces = hitTrace.getFailedTestTraces();
+			idInFailedTestTraces(ID, FailedTestTraces);
+		    //found = true;			
+			/*FailedTestTraces.forEach(failedTestTrace -> {
+				List<Integer> InvolvedBlocks;
+				InvolvedBlocks = failedTestTrace.getInvolvedBlocks();
+				
+				InvolvedBlocks.forEach(blockID -> {
 					if (ID == blockID) {
 						found = true;
 						System.out.println("found = true");
 					}
 				});
 			});*/
-			if (ID > 10000) {
+			/*if (ID > 10000) {
 				found = true;
-			}
+			}*/
 		});
 		if (found) {
 			return 1.0;
@@ -160,6 +170,26 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
 		else {
 			return 0.5;
 		}
+    }
+    
+    public void idInFailedTestTraces(int ID, ArrayList<LinearExecutionTestTrace> FailedTestTraces) {
+    	//boolean IDinFailedTestTrace = false;
+    	FailedTestTraces.forEach(failedTestTrace -> {
+			List<Integer> InvolvedBlocks;
+			InvolvedBlocks = failedTestTrace.getInvolvedBlocks();
+			compareIDs(ID, InvolvedBlocks);
+		    //IDinFailedTestTrace = true;
+    	});	
+    	//return IDinFailedTestTrace;
+    }
+    
+    public void compareIDs(int ID, List<Integer> InvolvedBlocks) {
+    	//boolean sameID = false;
+    	InvolvedBlocks.forEach(blockID -> {
+			if (ID == blockID) {
+				found = true;
+			}
+		});
     }
     //<- PT
 }
