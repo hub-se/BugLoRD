@@ -15,9 +15,9 @@ public class PredicateProcessor extends AbstractProcessor<PredicateReportWrapper
 
     @Override
     public Profile processItem(final PredicateReportWrapper reportWrapper) {
-        if (reportWrapper.getProfile().predicates.isEmpty()) {
-            Log.err(this,reportWrapper.getIdentifier() + " had zero Triggers?!");
-        }
+//        if (reportWrapper.getProfile().predicates.isEmpty()) {
+//            Log.err(this,reportWrapper.getIdentifier() + " had zero Triggers?!");
+//        }
      return reportWrapper.getProfile();
     }
 

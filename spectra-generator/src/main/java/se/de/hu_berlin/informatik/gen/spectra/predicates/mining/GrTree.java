@@ -27,7 +27,7 @@ public class GrTree {
         root.addNodes(this,profile.predicates,profile.positiveSupport);
     }
 
-    TreeNode createNode(int id, boolean positiveSupport){
+    TreeNode createNode(int id, boolean positiveSupport) {
         TreeNode Node = new TreeNode(id);
         Item headTableItem = headTable.get(id);
         if (headTableItem == null) {
@@ -48,7 +48,7 @@ public class GrTree {
         return this.headTable.isEmpty();
     }
 
-    boolean isSinglePath(){
+    boolean isSinglePath() {
         int count = root.children.size();
         TreeNode currentNode = root;
         while (count > 0) {
@@ -69,12 +69,55 @@ public class GrTree {
             if (path.size() <= 1)
                 return;
 //            path.remove(path.size()-1);//item
-            al.add(
-                    new Profile(path.stream().map(tN -> tN.id).collect(Collectors.toList()),treeNode.positiveSupport > 0));
+            int posSupport = treeNode.positiveSupport;
+            int negSupport = treeNode.negativeSupport;
+            while (posSupport > 0) {
+                List<Integer> list = path.stream().map(tN -> tN.id).collect(Collectors.toList());
+                al.add(new Profile(list,true));
+                posSupport--;
+            }
+            while (negSupport > 0) {
+                al.add(new Profile(path.stream().map(tN -> tN.id).collect(Collectors.toList()),false));
+                negSupport--;
+            }
         });
         ArrayList<Integer> newPrefix = new ArrayList<>(this.prefix);
         newPrefix.addAll(item.id);
         return new Database(al,newPrefix);
+    }
+
+    public int GetUnavoidableTransactionsPositiveLeafSupport() {
+        TreeNode currentNode = this.root;
+        List<Integer> currentPath = new ArrayList<>();
+
+        List<Integer> list = RecFindLeafPathWithUnavoidableTransactions(this.root,currentPath);
+
+        if (list != null) {
+            return this.headTable.get(list.get(list.size() - 1)).positiveSupport;
+        }
+        return -1;
+
+    }
+
+    private List<Integer> RecFindLeafPathWithUnavoidableTransactions(TreeNode node, List<Integer> currentPath) {
+        currentPath.add(node.id);
+
+        if (currentPath.containsAll(this.headTable.keySet())) {
+            return currentPath;
+        }
+
+        if (node.children.isEmpty()) {
+            return null;
+        }
+
+        for (TreeNode child : node.children) {
+
+            List<Integer> list = RecFindLeafPathWithUnavoidableTransactions(child,currentPath);
+            if (list != null) {
+                return list;
+            }
+        }
+        return null;
     }
 
 
@@ -123,9 +166,9 @@ public class GrTree {
         }
     }
 
-    public class Item{
+    public class Item {
         TreeSet<Integer> id = new TreeSet<>();
-        TreeSet<Integer> prefixedId = new TreeSet<>();
+        public TreeSet<Integer> prefixedId = new TreeSet<>();
         int positiveSupport;
         int negativeSupport;
         List<TreeNode> nodes = new ArrayList<>();

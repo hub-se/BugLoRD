@@ -154,7 +154,7 @@ public class RunAllTestsAndGenSpectra {
                 factory = new JaCoCoSpectraGenerationFactory(agentPort);
                 break;
             case PREDICATES:
-                factory = new PredicatesSpectraGeneratorFactory();
+                factory = new PredicatesSpectraGeneratorFactory(null);
                 break;
             default:
                 Log.abort(RunAllTestsAndGenSpectra.class, "Unimplemented strategy: '%s'", strategy);

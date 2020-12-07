@@ -26,6 +26,12 @@ import java.util.Objects;
 
 public class PredicatesSpectraGeneratorFactory  extends AbstractSpectraGenerationFactory<ProjectData, PredicateReportWrapper, Profile> {
 
+    private final String joinStrategy;
+
+    public PredicatesSpectraGeneratorFactory(String joinStrategy) {
+        this.joinStrategy = joinStrategy;
+    }
+
     @Override
     public Strategy getStrategy() {
         return Strategy.PREDICATES;
@@ -34,7 +40,7 @@ public class PredicatesSpectraGeneratorFactory  extends AbstractSpectraGeneratio
     @Override
     public AbstractInstrumenter getInstrumenter(Path projectDir, String outputDir, String testClassPath,
                                                 String... pathsToBinaries) {
-        return new PredicateInstrumenter(projectDir, outputDir, testClassPath, pathsToBinaries);
+        return new PredicateInstrumenter(projectDir, outputDir, testClassPath, this.joinStrategy, pathsToBinaries);
     }
 
     @Override

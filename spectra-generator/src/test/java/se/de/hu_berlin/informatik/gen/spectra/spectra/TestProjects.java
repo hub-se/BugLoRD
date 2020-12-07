@@ -97,13 +97,13 @@ public class TestProjects extends TestSettings {
 
     public static class Lang10b extends AbstractTestProject {
 
-        private static final String testCP = getStdResourcesDir() + File.separator + "Lang10b/target/classes" + File.pathSeparator
-                + getStdResourcesDir() + File.separator + "Lang10b/target/tests" + File.pathSeparator
-                + getStdResourcesDir() + File.separator + "Lang10b/lib/junit-4.11.jar" + File.pathSeparator
-                + getStdResourcesDir() + File.separator + "Lang10b/lib/easymock.jar" + File.pathSeparator
-                + getStdResourcesDir() + File.separator + "Lang10b/lib/commons-io.jar" + File.pathSeparator
-                + getStdResourcesDir() + File.separator + "Lang10b/lib/cglib.jar" + File.pathSeparator
-                + getStdResourcesDir() + File.separator + "Lang10b/lib/asm.jar";
+        private static final String testCP = getStdResourcesDir() + File.separator + "Lang10b\\target\\classes" + File.pathSeparator
+                + getStdResourcesDir() + File.separator + "Lang10b\\target\\tests" + File.pathSeparator
+                + getStdResourcesDir() + File.separator + "Lang10b\\lib\\junit-4.11.jar" + File.pathSeparator
+                + getStdResourcesDir() + File.separator + "Lang10b\\lib\\easymock.jar" + File.pathSeparator
+                + getStdResourcesDir() + File.separator + "Lang10b\\lib\\commons-io.jar" + File.pathSeparator
+                + getStdResourcesDir() + File.separator + "Lang10b\\lib\\cglib.jar" + File.pathSeparator
+                + getStdResourcesDir() + File.separator + "Lang10b\\lib\\asm.jar";
 
         private final ArrayList<String> failingTests = new ArrayList<>();
 

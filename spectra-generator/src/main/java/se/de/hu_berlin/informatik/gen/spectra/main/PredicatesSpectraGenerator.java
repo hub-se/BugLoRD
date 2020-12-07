@@ -34,7 +34,8 @@ public class PredicatesSpectraGenerator extends AbstractSpectraGenerator {
         PROJECT_DIR("pd", "projectDir", true, "Path to the directory of the project under test.", true),
         SOURCE_DIR("sd", "sourceDir", true, "Relative path to the main directory containing the sources from the project directory.", true),
         TEST_CLASS_DIR("td", "testClassDir", true, "Relative path to the main directory containing the needed test classes from the project directory.", true),
-        OUTPUT("o", "output", true, "Path to output directory.", true);
+        OUTPUT("o", "output", true, "Path to output directory.", true),
+        JOINSTRATEGY("j", "joinStrategy", true, "Strategy used to construct joint Predicates.", false);
 
         /* the following code blocks should not need to be changed */
         final private OptionWrapper option;
@@ -112,6 +113,8 @@ public class PredicatesSpectraGenerator extends AbstractSpectraGenerator {
 
         Integer agentPort = options.getOptionValueAsInt(PredicatesSpectraGenerator.CmdOptions.AGENT_PORT);
 
+        String joinStrategy = options.getOptionValue(CmdOptions.JOINSTRATEGY);
+
 //		AbstractSpectraGenerationFactory<?, ?> factory = new JaCoCoSpectraGenerationFactory(agentPort);
 //		new JaCoCoSpectraGenerator().generateSpectra(
 //				factory, projectDir, sourceDir, testClassDir, outputDir,
@@ -120,6 +123,7 @@ public class PredicatesSpectraGenerator extends AbstractSpectraGenerator {
 //				maxErrors, agentPort, null, classesToInstrument);
 
         new PredicatesSpectraGenerator.Builder()
+                .setJoinStrategy(joinStrategy)
                 .setProjectDir(projectDir)
                 .setSourceDir(sourceDir)
                 .setTestClassDir(testClassDir)
@@ -141,12 +145,17 @@ public class PredicatesSpectraGenerator extends AbstractSpectraGenerator {
 
 
     public static class Builder extends AbstractBuilder {
+        private String joinStrategy;
 
         @Override
         public void run() {
-            AbstractSpectraGenerationFactory<?, ?, ?> factory = new PredicatesSpectraGeneratorFactory();
+            AbstractSpectraGenerationFactory<?, ?, ?> factory = new PredicatesSpectraGeneratorFactory(joinStrategy);
             super.run(factory,null);
         }
 
+        public Builder setJoinStrategy(String joinStrategy) {
+            this.joinStrategy = joinStrategy;
+            return this;
+        }
     }
 }

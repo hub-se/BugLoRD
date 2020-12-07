@@ -3,8 +3,8 @@ package se.de.hu_berlin.informatik.gen.spectra.predicates.mining;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.extras.Profile;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Database implements Serializable {
 
@@ -25,10 +25,10 @@ public class Database implements Serializable {
 
     public void PurgeFullSupport() {
         //get all ids
-        ArrayList<Integer> allIds = new ArrayList<>();
+        Set<Integer> allIds = new HashSet<>();
         this.transactions.forEach(profile -> allIds.addAll(profile.predicates));
 
-        allIds.stream().distinct().forEach((value) -> {
+        allIds.forEach((value) -> {
             if (this.transactions.stream().allMatch(profile -> profile.predicates.stream().anyMatch(integer -> integer.equals(value)))) { //if ALL transactions contain a Id
                 this.transactions.forEach(profile -> {
                     profile.predicates.removeIf(predicate -> predicate.equals(value)); //remove it from all
@@ -40,7 +40,7 @@ public class Database implements Serializable {
 
     public void RemoveItemsBelowSupport(Integer neg_sup) {
         //get all ids
-        ArrayList<Integer> allIds = new ArrayList<>();
+        Set<Integer> allIds = new HashSet<>();
         this.transactions.forEach(profile -> allIds.addAll(profile.predicates));
 
         for (Integer id : allIds) {
@@ -94,7 +94,15 @@ public class Database implements Serializable {
     }
 
     public int getNegativeSupport(Integer id) {
-        return (int) this.transactions.stream().filter(profile -> profile.predicates.contains(id) && !profile.positiveSupport).count();
+        return (int) this.transactions.parallelStream().filter(profile -> !profile.positiveSupport && profile.predicates.contains(id)).count();
+    }
+
+    public int getNegativeSupport(Collection<Integer> ids) {
+        return (int) this.transactions.parallelStream().filter(profile -> !profile.positiveSupport && profile.predicates.containsAll(ids)).count();
+    }
+
+    public List<Profile> getTransactions(Collection<Integer> ids) {
+        return this.transactions.stream().filter(profile -> profile.predicates.containsAll(ids)).collect(Collectors.toList());
     }
 
 

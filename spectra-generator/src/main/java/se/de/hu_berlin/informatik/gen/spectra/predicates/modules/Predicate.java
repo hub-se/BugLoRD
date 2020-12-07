@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.gen.spectra.predicates.modules;
 import org.objectweb.asm.Opcodes;
 
 import java.io.Serializable;
+import java.util.HashSet;
 
 public class Predicate implements Serializable
 {
@@ -14,6 +15,9 @@ public class Predicate implements Serializable
     int firstVariableId;
     int secondVariableId;
     String comparisonType;
+    boolean joined;
+    Integer firstId;
+    Integer secondId;
 
 
 
@@ -23,6 +27,15 @@ public class Predicate implements Serializable
         this.description = description;
         this.linenumber = linenumber;
         this.file = File;
+    }
+
+    public Predicate(int firstId, int secondId)
+    {
+        this.id = Output.nextPredicateNumber++;
+        this.joined = true;
+        this.firstId = firstId;
+        this.secondId = secondId;
+        this.description = "Joined Pred between " + firstId + " and " + secondId + " .";
     }
 
     public Predicate(int linenumber, String File, int firstVariableId, int secondVariableId, int comparisonType) //compare two vars
@@ -49,7 +62,7 @@ public class Predicate implements Serializable
         this.id = Output.nextPredicateNumber++;
         this.linenumber = linenumber;
         this.file = File;
-        this.comparisonType =comparisonType;
+        this.comparisonType = comparisonType;
         //description is set in the adapter after we know the variable names
     }
 
@@ -61,9 +74,29 @@ public class Predicate implements Serializable
 
     @Override
     public String toString() {
+        if (this.file != null) {
+            return "(" + id + "," +
+                    this.description + "," +
+                    this.file + ":" + this.linenumber + ")";
+        }
         return "(" + id + "," +
-                this.description + "," +
-                this.file + ":" + this.linenumber + ")";
+                this.description + ")";
+    }
+
+    public HashSet<String> getLocation() {
+        HashSet<String> locations = new HashSet<>();
+        if (this.joined) { //so much info lost we need a better method...
+            Predicate firstPred = Output.Predicates.get(this.firstId);
+            Predicate secondPred = Output.Predicates.get(this.secondId);
+            if (firstPred != null)
+                locations.addAll(firstPred.getLocation());
+            if (secondPred != null)
+                locations.addAll(secondPred.getLocation());
+        }
+        else {
+            locations.add(this.file + ":" + this.linenumber);
+        }
+        return locations;
     }
 
     public boolean neverTriggered() {

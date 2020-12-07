@@ -7,6 +7,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.P
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.coveragedata.TouchCollector;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Pair;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ public class PredicatesRunTestLocallyModule extends AbstractRunTestLocallyModule
     public Pair<TestStatistics, ProjectData> getResultAfterTest(TestWrapper testWrapper, TestStatistics testResult) {
         ProjectData projectData = new ProjectData();
         TouchCollector.applyTouchesOnProjectData(projectData);
+        Output.writeToFile(new File(testOutput),"jointPredicates.db", false);
 
         if (testResult.couldBeFinished()) {
             return new Pair<>(testResult, projectData);
@@ -36,16 +38,17 @@ public class PredicatesRunTestLocallyModule extends AbstractRunTestLocallyModule
     @Override
     public boolean prepareBeforeRunningTest() {
         //sadly, we have to check if the coverage data has properly been reset...
-        boolean isResetted = false;
+        boolean isReset = false;
         int maxTryCount = 3;
         int tryCount = 0;
-        while (!isResetted && tryCount < maxTryCount) {
+        while (!isReset && tryCount < maxTryCount) {
             ++tryCount;
-            isResetted = TouchCollector.resetTouchesOnRegisteredClasses();
+            isReset = TouchCollector.resetTouchesOnRegisteredClasses();
         }
 
         Output.resetTriggers();
-        return isResetted;
+        Output.readFromFile(testOutput);
+        return isReset;
     }
 
 }

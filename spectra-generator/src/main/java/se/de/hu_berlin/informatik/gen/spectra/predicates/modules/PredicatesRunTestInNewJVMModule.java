@@ -159,6 +159,8 @@ public class PredicatesRunTestInNewJVMModule extends AbstractRunTestInNewJVMModu
 //            // reset hits, if any class was already registered (should not be the case, actually)
 //            TouchCollector.resetTouchesOnRegisteredClasses();
 
+            Output.readFromFile(outputFile.getParent().toString());
+
             //Runtime.getRuntime().addShutdownHook(new Thread(() -> writeTriggersToFile(new File(outputFile.getParent().toString()))));
 
             ProjectData projectData = null;
@@ -180,6 +182,7 @@ public class PredicatesRunTestInNewJVMModule extends AbstractRunTestInNewJVMModu
                 }
                 projectData = new ProjectData();
 
+                Output.writeToFile(outputFile.getParent().toFile(),"jointPredicates.db", false);
                 TouchCollector.applyTouchesOnProjectData(projectData);
             }
 
