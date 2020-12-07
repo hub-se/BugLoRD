@@ -186,12 +186,9 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     public void compareIDs(int ID, List<Integer> InvolvedBlocks) {
     	//boolean sameID = false;
     	InvolvedBlocks.forEach(blockID -> {
-			/*if (ID == blockID) {
+			if (ID == blockID) {
 				found = true;
-			}*/
-    		if (ID > 10000) {
-    			found = true;
-    		}
+			}
 		});
     }
     //<- PT
