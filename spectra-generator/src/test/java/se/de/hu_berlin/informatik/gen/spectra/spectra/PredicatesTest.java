@@ -12,6 +12,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 import soot.SootMethod;
+import soot.Unit;
 import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.graph.pdg.HashMutablePDG;
 import soot.toolkits.graph.pdg.PDGRegion;
@@ -184,7 +185,7 @@ public class PredicatesTest extends TestSettings {
         endTime = new Date().getTime();
         Log.out(this, "Output time: %s",  Misc.getFormattedTimerString(endTime - startTime));
 
-        Map<String, PDGRegion> regionMap = new HashMap<>();
+        Map<String, Unit> regionMap = new HashMap<>();
         Defects4J.getProperties();
 
 
@@ -200,27 +201,19 @@ public class PredicatesTest extends TestSettings {
                     SootConnector sc = SootConnector.getInstance(pck, className, project.getTestCP(), false);
                     List<SootMethod> methods = sc.getAllMethods();
                     methods.forEach(sootMethod -> {
-                        UnitGraph ug = sc.getCFGForMethod(sootMethod);
-                        if (ug != null) {
-                            HashMutablePDG pdg = new HashMutablePDG(ug);
-                            //System.out.println(pdg.toString());
-                            List<PDGRegion> regions = pdg.getPDGRegions();
-                            regions.forEach(pdgNodes -> {
-                                pdgNodes.getUnits().forEach(unit -> {
+                        sootMethod.getActiveBody().getUnits().forEach(unit -> {
                                     if (unit.hasTag("LineNumberTag")) {
                                         if (unit.getTag("LineNumberTag").toString().equals(line))
-                                            regionMap.put(s, pdgNodes);
+                                            regionMap.put(s, unit);
                                         //System.out.println(unit.getTag("LineNumberTag").toString());
                                         //System.out.println(unit.getJavaSourceStartLineNumber());
                                     }
 
                                 });
                             });
-                        }
+                        });
                     });
                 });
-            });
-        });
         regionMap.keySet().forEach(s1 -> {
 
         });

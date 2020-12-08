@@ -268,20 +268,14 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         String classPaths = buggyEntity.getBuggyVersion().getClassPath(true) + ":" + buggyEntity.getBuggyVersion().getTestClassPath(true);
         SootConnector sc = SootConnector.getInstance(pck, className, classPaths, false);
         List<SootMethod> methods = sc.getAllMethods();
-        Log.out(this, "Calculating score with %s methods", methods.size());
+        //Log.out(this, "Calculating score with %s methods", methods.size());
         methods.forEach(sootMethod -> {
-            UnitGraph ug = sc.getCFGForMethod(sootMethod);
-            if (ug != null) {
-                HashMutablePDG pdg = new HashMutablePDG(ug);
-                List<PDGRegion> regions = pdg.getPDGRegions();
-                regions.forEach(pdgNodes -> {
-                    pdgNodes.getUnits().forEach(unit -> {
+            sootMethod.getActiveBody().getUnits().forEach(unit -> {
                     if (unit.getJavaSourceStartLineNumber() == predicateLine)
                         predicateLocations.add(new CodeLocation(unit, className, sootMethod));
-                    });
-                });
-            }
+            });
         });
+
         Log.out(this, "Calculating score with %s predicateLocations", predicateLocations.size());
         if (predicateLocations.isEmpty())
             return Double.NaN;
@@ -340,25 +334,18 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                 String classPaths = buggyEntity.getBuggyVersion().getClassPath(true) + ":" + buggyEntity.getBuggyVersion().getTestClassPath(true);
                 SootConnector sc = SootConnector.getInstance(pck, className, classPaths);
                 List<SootMethod> methods = sc.getAllMethods();
-                Log.out(this, "Calculating score with %s methods", methods.size());
+                //Log.out(this, "Calculating score with %s methods", methods.size());
                 methods.forEach(sootMethod -> {
-                    UnitGraph ug = sc.getCFGForMethod(sootMethod);
-                    if (ug != null) {
-                        HashMutablePDG pdg = new HashMutablePDG(ug);
-                        List<PDGRegion> regions = pdg.getPDGRegions();
-                        regions.forEach(pdgNodes -> {
-                            pdgNodes.getUnits().forEach(unit -> {
-                                if (unit.hasTag("LineNumberTag")) {
-                                    Log.out(this, "Line %s ", unit.getJavaSourceStartLineNumber());
-                                    for (int possibleLine : modification.getPossibleLines()) {
-                                        Log.out(this, "possibleLine %s ", possibleLine);
-                                        if (unit.getJavaSourceStartLineNumber() == possibleLine)
-                                            targets.add(new CodeLocation(unit, className, sootMethod));
-                                    }
-                                }
-                            });
-                        });
-                    }
+                   sootMethod.getActiveBody().getUnits().forEach(unit -> {
+                        if (unit.hasTag("LineNumberTag")) {
+                            //Log.out(this, "Line %s ", unit.getJavaSourceStartLineNumber());
+                            for (int possibleLine : modification.getPossibleLines()) {
+                                //Log.out(this, "possibleLine %s ", possibleLine);
+                                if (unit.getJavaSourceStartLineNumber() == possibleLine)
+                                    targets.add(new CodeLocation(unit, className, sootMethod));
+                            }
+                        }
+                   });
                 });
             });
         });
