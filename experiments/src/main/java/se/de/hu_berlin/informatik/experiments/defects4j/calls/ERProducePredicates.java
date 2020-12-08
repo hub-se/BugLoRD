@@ -239,11 +239,11 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         signatures.forEach((key, signature) -> {
             signature.predicates.forEach(predicate -> {
                 predicate.getLocation().forEach(predicateLocation -> {
-                    targets.forEach(target -> {
+                    for (CodeLocation target : targets) {
                         if (scores.contains(0.0)) //skip calculating if we got a full hit
-                            return;
+                            continue;
                         scores.add(calculateScore(predicateLocation, target, buggyEntity));
-                    });
+                    }
                 });
             });
         });
@@ -266,6 +266,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         String classPaths = buggyEntity.getBuggyVersion().getClassPath(true) + ":" + buggyEntity.getBuggyVersion().getTestClassPath(true);
         SootConnector sc = SootConnector.getInstance(pck, className, classPaths, false);
         List<SootMethod> methods = sc.getAllMethods();
+        Log.out(this, "Calculating score with %s methods", methods.size());
         methods.forEach(sootMethod -> {
             UnitGraph ug = sc.getCFGForMethod(sootMethod);
             if (ug != null) {
@@ -279,6 +280,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                 });
             }
         });
+        Log.out(this, "Calculating score with %s predicateLocations", predicateLocations.size());
         if (predicateLocations.isEmpty())
             return Double.NaN;
 
