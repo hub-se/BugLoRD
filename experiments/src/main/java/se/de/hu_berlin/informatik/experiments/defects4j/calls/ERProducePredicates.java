@@ -340,6 +340,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                 String classPaths = buggyEntity.getBuggyVersion().getClassPath(true) + ":" + buggyEntity.getBuggyVersion().getTestClassPath(true);
                 SootConnector sc = SootConnector.getInstance(pck, className, classPaths);
                 List<SootMethod> methods = sc.getAllMethods();
+                Log.out(this, "Calculating score with %s methods", methods.size());
                 methods.forEach(sootMethod -> {
                     UnitGraph ug = sc.getCFGForMethod(sootMethod);
                     if (ug != null) {
@@ -348,7 +349,9 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                         regions.forEach(pdgNodes -> {
                             pdgNodes.getUnits().forEach(unit -> {
                                 if (unit.hasTag("LineNumberTag")) {
+                                    Log.out(this, "Line %s ", unit.getJavaSourceStartLineNumber());
                                     for (int possibleLine : modification.getPossibleLines()) {
+                                        Log.out(this, "possibleLine %s ", possibleLine);
                                         if (unit.getJavaSourceStartLineNumber() == possibleLine)
                                             targets.add(new CodeLocation(unit, className, sootMethod));
                                     }
