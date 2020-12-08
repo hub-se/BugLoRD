@@ -111,7 +111,6 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         //Clean last run
         FileUtils.delete(rankingDir.resolve(subDirName));
         FileUtils.delete(rankingDir.resolve(statsDirData));
-        FileUtils.delete(new File(Defects4J.Defects4JProperties.ARCHIVE_DIR.getValue() + "/result.csv"));
 
         String[] args = {Paths.get(rankingDir.resolve(subDirName).toString()).toString()};
         String folder = Paths.get(rankingDir.resolve(subDirName).toString()).toString();
