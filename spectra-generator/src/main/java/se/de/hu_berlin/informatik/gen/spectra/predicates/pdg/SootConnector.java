@@ -100,13 +100,10 @@ public class SootConnector {
     }
 
     public UnitGraph getCFGForMethod(SootMethod method) { //newly added
-//        SootClass c = Scene.v().getSootClass(packageName + "." + className);
-//        c.setApplicationClass();
-//        Scene.v().loadNecessaryClasses();
-        UnitGraph unitGraph = null;
-        if (method.getSource() != null)
-            unitGraph = new ExceptionalUnitGraph(method.retrieveActiveBody());
-        return unitGraph;
+        SootClass c = Scene.v().getSootClass(packageName + "." + className);
+        c.setApplicationClass();
+        Scene.v().loadNecessaryClasses();
+        return new ExceptionalUnitGraph(method.retrieveActiveBody());
     }
 
     public Iterator<Edge> getIteratorOnCallersForMethodName(String methodName) {
