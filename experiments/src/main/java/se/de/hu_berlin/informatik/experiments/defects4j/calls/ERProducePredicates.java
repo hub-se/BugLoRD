@@ -7,6 +7,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JPro
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerator.AbstractBuilder;
 import se.de.hu_berlin.informatik.gen.spectra.main.PredicatesSpectraGenerator;
+import se.de.hu_berlin.informatik.gen.spectra.predicates.extras.ScoringFileWriter;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.mining.Miner;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.mining.Signature;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.modules.Output;
@@ -20,6 +21,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import soot.SootMethod;
 import soot.Unit;
+import soot.jimple.toolkits.callgraph.Edge;
 import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.graph.pdg.HashMutablePDG;
 import soot.toolkits.graph.pdg.PDGRegion;
@@ -121,7 +123,6 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         Miner miner = new Miner();
         HashMap<Signature.Identifier, Signature> signatures = miner.mine(folder);
 
-
         //resolve Code locations
         Output.readFromFile(folder);
         Output.writeToHumanFile(folder);
@@ -132,15 +133,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                 signature.locations.addAll(predicate.getLocation());
             }
         });
-        //scoring stuff
 
-//        Map<String, List<Modification>> changes = buggyEntity.getAllChanges(true, true, true, true, true, true);
-//        changes.forEach((s, modifications) -> {
-//            modifications.forEach(modification -> {
-//                String[] packageAndClassPath = modification.getClassPath().split("/");
-//            });
-//        });
-        //Defects4J.getProperties();
         Log.out(this, "getTargets %s.", folder);
         List<CodeLocation> targets =  getTargets(buggyEntity);
 
@@ -151,6 +144,9 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
 
 
         //Output
+        String line = buggyEntity.getUniqueIdentifier() + ";" + score;
+        ScoringFileWriter.getInstance().write(line);
+
         System.out.println();
         signatures.forEach((identifier, signature) -> System.out.println("DS: " + identifier.DS
                 + "; "
@@ -289,18 +285,40 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
             if (target.equals(goal) || target.unit.equals(goal.unit))
                 return 0.0;
             else if ((target.className + target.methodName).equals(goal.className + goal.methodName)) {
-                UnitGraph unitGraph =  sc.getCFGForMethod(target.method);
-                List<Unit> unitPath = unitGraph.getExtendedBasicBlockPathBetween(target.unit, goal.unit);
-                if (unitPath == null)
-                    unitPath = unitGraph.getExtendedBasicBlockPathBetween(goal.unit, target.unit);
-                if (unitPath != null) {
-                    Log.out(this,"Path found between %s and %s", predicateLocation, target.getLocationString());
-                    return unitPath.size();
+                Integer unitPathDistance = this.getDistanceInUnits(sc, goal.method, goal.unit, target.unit);
+                if (unitPathDistance != null)
+                    return unitPathDistance;
+            }
+            else if (target.className.equals(goal.className)) {
+                Iterator<Edge> iteratorOnCallsOutOfMethod = sc.getIteratorOnCallsOutOfMethod(goal.method);
+                while (iteratorOnCallsOutOfMethod.hasNext()) {
+                    Edge edge = iteratorOnCallsOutOfMethod.next();
+                    if (edge.tgt() == target.method) {
+                        Integer internDistanceInGoal = this.getDistanceInUnits(sc, goal.method, goal.unit, edge.srcUnit());
+                        if (internDistanceInGoal == null)
+                            return Double.NaN; //we wont get a result that is fair to compare
+                        Integer internDistanceInTarget = this.getDistanceInUnits(sc, target.method, target.unit, edge.tgt().getActiveBody().getUnits().getFirst());
+                        if (internDistanceInTarget == null)
+                            return Double.NaN; //we wont get a result that is fair to compare
+                        Log.out(this, "Found a edge connection!");
+                        return internDistanceInGoal + internDistanceInTarget + 10; //TODO EdgeCost
+                    }
                 }
             }
         }
 
         return Double.NaN;
+    }
+
+    private Integer getDistanceInUnits(SootConnector sc, SootMethod method, Unit unit1, Unit unit2) {
+        UnitGraph unitGraph =  sc.getCFGForMethod(method);
+        List<Unit> unitPath = unitGraph.getExtendedBasicBlockPathBetween(unit1,unit2);
+        if (unitPath == null)
+            unitPath = unitGraph.getExtendedBasicBlockPathBetween(unit2, unit1);
+        if (unitPath != null) {
+            return unitPath.size();
+        }
+        return null;
     }
 
     private  List<CodeLocation> getTargets(BuggyFixedEntity<?> buggyEntity) {

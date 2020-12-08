@@ -132,8 +132,12 @@ public class SootConnector {
         SootClass c = Scene.v().getSootClass(packageName + "." + className);
         c.setApplicationClass();
         Scene.v().loadNecessaryClasses();
-        Iterator<Edge> i = callGraph.edgesOutOf(c.getMethodByName(methodName));
-        return i;
+        return callGraph.edgesOutOf(c.getMethodByName(methodName));
+    }
+
+    public Iterator<Edge> getIteratorOnCallsOutOfMethod(SootMethod method) {
+        CallGraph callGraph = Scene.v().getCallGraph();
+        return callGraph.edgesOutOf(method);
     }
 
     public SootMethod loadMethod(String methodName) {  //newly added
