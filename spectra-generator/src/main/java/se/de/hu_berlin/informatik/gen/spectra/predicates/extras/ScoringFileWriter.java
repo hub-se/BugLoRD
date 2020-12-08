@@ -15,6 +15,7 @@ public class ScoringFileWriter {
         try {
             FileOutputStream fos = new FileOutputStream(Defects4J.Defects4JProperties.ARCHIVE_DIR.getValue() + "/result.csv", true);
             fos.write(line.getBytes());
+            fos.write(System.lineSeparator().getBytes());
             fos.flush();
             fos.close();
         }

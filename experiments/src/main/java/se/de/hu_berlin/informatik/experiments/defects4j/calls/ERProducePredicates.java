@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
+import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
 import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerator.AbstractBuilder;
@@ -27,6 +28,7 @@ import soot.toolkits.graph.pdg.HashMutablePDG;
 import soot.toolkits.graph.pdg.PDGRegion;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -109,6 +111,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         //Clean last run
         FileUtils.delete(rankingDir.resolve(subDirName));
         FileUtils.delete(rankingDir.resolve(statsDirData));
+        FileUtils.delete(new File(Defects4J.Defects4JProperties.ARCHIVE_DIR.getValue() + "/result.csv"));
 
         String[] args = {Paths.get(rankingDir.resolve(subDirName).toString()).toString()};
         String folder = Paths.get(rankingDir.resolve(subDirName).toString()).toString();
@@ -307,7 +310,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
             }
         }
 
-        return Double.NaN;
+        return Double.POSITIVE_INFINITY;
     }
 
     private Integer getDistanceInUnits(SootConnector sc, SootMethod method, Unit unit1, Unit unit2) {
