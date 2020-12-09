@@ -319,6 +319,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         if (unitPath == null)
             unitPath = unitGraph.getExtendedBasicBlockPathBetween(unit2, unit1);
         if (unitPath != null) {
+            Log.out(this, "Found a path with length %s!", unitPath.size());
             return unitPath.size();
         }
         return null;
