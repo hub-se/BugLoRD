@@ -237,8 +237,10 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
 
     private double getScore(HashMap<Signature.Identifier, Signature> signatures, List<CodeLocation> targets, BuggyFixedEntity<?> buggyEntity) {
         List<Double> scores = new ArrayList<>();
-        //Log.out(this, "Calculating score with %s signatures", signatures.size());
-        //Log.out(this, "Calculating score with %s targets", targets.size());
+        if (signatures.size() == 0)
+            Log.out(this, "score with %s signatures in %s", signatures.size() , buggyEntity.getUniqueIdentifier());
+        if (targets.size() == 0)
+            Log.out(this, "score with %s targets in %s", targets.size(), buggyEntity.getUniqueIdentifier());
         signatures.forEach((key, signature) -> {
             signature.predicates.forEach(predicate -> {
                 predicate.getLocation().forEach(predicateLocation -> {
