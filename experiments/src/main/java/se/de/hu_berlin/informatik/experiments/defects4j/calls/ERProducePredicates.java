@@ -281,7 +281,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
 
         //Log.out(this, "Calculating score with %s predicateLocations", predicateLocations.size());
         if (predicateLocations.isEmpty())
-            return Double.NEGATIVE_INFINITY;
+            return Double.POSITIVE_INFINITY;
 
         //Log.out(this, MessageFormat.format("calculating Score between : {0} in Method: {1} and: {2} with method: {3} and class {4}", target.getLocationString(), target.MethodName, predicateLocation, predicateLocations.getFirst().MethodName, className));
         for (CodeLocation goal : predicateLocations) {
@@ -311,7 +311,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                 return edgeDistances.stream().min(Double::compareTo).orElse(Double.NaN);
             }
         }
-        return Double.POSITIVE_INFINITY;
+        return Double.MAX_VALUE;
     }
 
     private Integer getDistanceInUnits(SootConnector sc, SootMethod method, Unit unit1, Unit unit2) {

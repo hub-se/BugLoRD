@@ -10,6 +10,7 @@ import soot.options.Options;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -58,12 +59,12 @@ public class SootConnector {
         long startTime = System.nanoTime();
         //System.out.println("classpath is: " + classPathExtension);
         //soot.G.v().reset();
-        String classpath =  Defects4J.Defects4JProperties.JAVA8_JRE.getValue() + "/lib/rt.jar" + ":"
-                + Defects4J.Defects4JProperties.JAVA8_JRE.getValue() + "/lib/jce.jar" + ":"
-                + classPathExtension + ":";
+        String classpath =  Defects4J.Defects4JProperties.JAVA8_JRE.getValue() + "/lib/rt.jar" + File.pathSeparator
+                + Defects4J.Defects4JProperties.JAVA8_JRE.getValue() + "/lib/jce.jar" + File.pathSeparator
+                + classPathExtension + File.pathSeparator;
         Options.v().set_prepend_classpath(true);
         Options.v().set_soot_classpath(classpath);
-        Options.v().set_src_prec(Options.src_prec_only_class);
+        Options.v().set_src_prec(Options.src_prec_java);
         Options.v().set_keep_line_number(true);
         //Options.v().set_whole_shimple(true);
         Options.v().set_whole_program(true); // important for interprocedural analysis
