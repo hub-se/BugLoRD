@@ -138,7 +138,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     }
     
     public double calculateConfidence(NGram nGram, LinearExecutionHitTrace hitTrace) {
-    	if (nGram.getLength() >= 2) {    		
+    	if (nGram.getLength() >= 3) {   		
 	    	ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
 	    	//ArrayList<LinearExecutionTestTrace> FailedTestTraces = new ArrayList<LinearExecutionTestTrace>();
 	    	//List<Integer> InvolvedBlocks;
@@ -171,6 +171,9 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
 			else {
 				return 0.5;
 			}
+    	}
+    	else if (nGram.getLength() == 2) {
+    		return 0.25;
     	}
     	return 0.0;
     }
