@@ -299,10 +299,10 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                     if (edge.tgt() == target.method) {
                         Integer internDistanceInGoal = this.getDistanceInUnits(sc, goal.method, goal.unit, edge.srcUnit());
                         if (internDistanceInGoal == null)
-                            return Double.NaN; //we wont get a result that is fair to compare
+                            continue; //we wont get a result that is fair to compare
                         Integer internDistanceInTarget = this.getDistanceInUnits(sc, target.method, target.unit, edge.tgt().getActiveBody().getUnits().getFirst());
                         if (internDistanceInTarget == null)
-                            return Double.NaN; //we wont get a result that is fair to compare
+                            continue; //we wont get a result that is fair to compare
                         Log.out(this, "Found a edge connection!");
                         return internDistanceInGoal + internDistanceInTarget + 10; //TODO EdgeCost
                     }
