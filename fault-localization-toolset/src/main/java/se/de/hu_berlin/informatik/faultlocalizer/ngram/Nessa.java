@@ -138,38 +138,41 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     }
     
     public double calculateConfidence(NGram nGram, LinearExecutionHitTrace hitTrace) {
-    	ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
-    	//ArrayList<LinearExecutionTestTrace> FailedTestTraces = new ArrayList<LinearExecutionTestTrace>();
-    	//List<Integer> InvolvedBlocks;
-    	found = false;
-		BlockIDs = nGram.getBlockIDs();
-		//FailedTestTraces = hitTrace.getFailedTestTraces();
-		BlockIDs.forEach(ID -> {
-			ArrayList<LinearExecutionTestTrace> FailedTestTraces = new ArrayList<LinearExecutionTestTrace>();
-			FailedTestTraces = hitTrace.getFailedTestTraces();
-			idInFailedTestTraces(ID, FailedTestTraces);
-		    //found = true;			
-			/*FailedTestTraces.forEach(failedTestTrace -> {
-				List<Integer> InvolvedBlocks;
-				InvolvedBlocks = failedTestTrace.getInvolvedBlocks();
-				
-				InvolvedBlocks.forEach(blockID -> {
-					if (ID == blockID) {
-						found = true;
-						System.out.println("found = true");
-					}
-				});
-			});*/
-			/*if (ID > 10000) {
-				found = true;
-			}*/
-		});
-		if (found) {
-			return 1.0;
-		}
-		else {
-			return 0.5;
-		}
+    	if (nGram.getLength() >= 2) {    		
+	    	ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
+	    	//ArrayList<LinearExecutionTestTrace> FailedTestTraces = new ArrayList<LinearExecutionTestTrace>();
+	    	//List<Integer> InvolvedBlocks;
+	    	found = false;
+			BlockIDs = nGram.getBlockIDs();
+			//FailedTestTraces = hitTrace.getFailedTestTraces();
+			BlockIDs.forEach(ID -> {
+				ArrayList<LinearExecutionTestTrace> FailedTestTraces = new ArrayList<LinearExecutionTestTrace>();
+				FailedTestTraces = hitTrace.getFailedTestTraces();
+				idInFailedTestTraces(ID, FailedTestTraces);
+			    //found = true;			
+				/*FailedTestTraces.forEach(failedTestTrace -> {
+					List<Integer> InvolvedBlocks;
+					InvolvedBlocks = failedTestTrace.getInvolvedBlocks();
+					
+					InvolvedBlocks.forEach(blockID -> {
+						if (ID == blockID) {
+							found = true;
+							System.out.println("found = true");
+						}
+					});
+				});*/
+				/*if (ID > 10000) {
+					found = true;
+				}*/
+			});
+			if (found) {
+				return 1.0;
+			}
+			else {
+				return 0.5;
+			}
+    	}
+    	return 0.0;
     }
     
     public void idInFailedTestTraces(int ID, ArrayList<LinearExecutionTestTrace> FailedTestTraces) {
