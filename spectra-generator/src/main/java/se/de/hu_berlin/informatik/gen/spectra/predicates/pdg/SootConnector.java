@@ -3,6 +3,7 @@ package se.de.hu_berlin.informatik.gen.spectra.predicates.pdg;
 import jdk.nashorn.internal.runtime.regexp.joni.encoding.ObjPtr;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import soot.*;
+import soot.jimple.JimpleBody;
 import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.options.Options;
@@ -53,11 +54,10 @@ public class SootConnector {
         init(classPathExtension, packageName, className);
     }
 
-    @SuppressWarnings("static-access")
     private static synchronized void init(String classPathExtension, String packageName, String className) {
         long startTime = System.nanoTime();
         //System.out.println("classpath is: " + classPathExtension);
-        //soot.G.v().reset(); // TODO really necessary? think about performance
+        //soot.G.v().reset();
         String classpath =  Defects4J.Defects4JProperties.JAVA8_JRE.getValue() + "/lib/rt.jar" + ":"
                 + Defects4J.Defects4JProperties.JAVA8_JRE.getValue() + "/lib/jce.jar" + ":"
                 + classPathExtension + ":";
@@ -100,9 +100,13 @@ public class SootConnector {
     }
 
     public UnitGraph getCFGForMethod(SootMethod method) { //newly added
-        SootClass c = Scene.v().getSootClass(packageName + "." + className);
-        c.setApplicationClass();
-        Scene.v().loadNecessaryClasses();
+        //SootClass c = method.getDeclaringClass();
+        //Scene.v().loadClass(c.getPackageName(), SootClass.BODIES);
+        //SootClass c = Scene.v().getSootClass(packageName + "." + className);
+        //c.setApplicationClass();
+        //Scene.v().loadNecessaryClasses();
+        if (!method.hasActiveBody())
+            return new ExceptionalUnitGraph(new JimpleBody());
         return new ExceptionalUnitGraph(method.retrieveActiveBody());
     }
 

@@ -22,6 +22,7 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import soot.SootMethod;
 import soot.Unit;
+import soot.UnitPatchingChain;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.graph.pdg.HashMutablePDG;
@@ -269,16 +270,18 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         SootConnector sc = SootConnector.getInstance(pck, className, classPaths, false);
         List<SootMethod> methods = sc.getAllMethods();
         //Log.out(this, "Calculating score with %s methods", methods.size());
-        methods.forEach(sootMethod -> {
+        for (SootMethod sootMethod : methods) {
+            if (!sootMethod.hasActiveBody())
+                continue;
             sootMethod.getActiveBody().getUnits().forEach(unit -> {
-                    if (unit.getJavaSourceStartLineNumber() == predicateLine)
-                        predicateLocations.add(new CodeLocation(unit, className, sootMethod));
+                if (unit.getJavaSourceStartLineNumber() == predicateLine)
+                    predicateLocations.add(new CodeLocation(unit, className, sootMethod));
             });
-        });
+        }
 
         //Log.out(this, "Calculating score with %s predicateLocations", predicateLocations.size());
         if (predicateLocations.isEmpty())
-            return Double.NaN;
+            return Double.NEGATIVE_INFINITY;
 
         //Log.out(this, MessageFormat.format("calculating Score between : {0} in Method: {1} and: {2} with method: {3} and class {4}", target.getLocationString(), target.MethodName, predicateLocation, predicateLocations.getFirst().MethodName, className));
         for (CodeLocation goal : predicateLocations) {
@@ -335,21 +338,39 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                 SootConnector sc = SootConnector.getInstance(pck, className, classPaths);
                 List<SootMethod> methods = sc.getAllMethods();
                 //Log.out(this, "Calculating score with %s methods", methods.size());
-                methods.forEach(sootMethod -> {
-                   sootMethod.getActiveBody().getUnits().forEach(unit -> {
-                        if (unit.hasTag("LineNumberTag")) {
-                            //Log.out(this, "Line %s ", unit.getJavaSourceStartLineNumber());
-                            for (int possibleLine : modification.getPossibleLines()) {
-                                //Log.out(this, "possibleLine %s ", possibleLine);
-                                if (unit.getJavaSourceStartLineNumber() == possibleLine)
-                                    targets.add(new CodeLocation(unit, className, sootMethod));
-                            }
+                for (SootMethod sootMethod : methods) {
+                    if (!sootMethod.hasActiveBody())
+                        continue;
+                    UnitPatchingChain unitPatchingChain = sootMethod.getActiveBody().getUnits();
+                    for (Unit unit : unitPatchingChain) {
+                        int start = unit.getJavaSourceStartLineNumber();
+                        int end = unitPatchingChain.getSuccOf(unit).getJavaSourceStartLineNumber();
+
+                        List<Integer> lines = this.getLinesBetween(start, end);
+
+                        for (int possibleLine : modification.getPossibleLines()) {
+                            //Log.out(this, "possibleLine %s ", possibleLine);
+                            if (lines.contains(possibleLine))
+                                targets.add(new CodeLocation(unit, className, sootMethod));
                         }
-                   });
-                });
+                    }
+                }
             });
         });
         return targets;
+    }
+
+    private List<Integer> getLinesBetween(int start, int end) {
+        List<Integer> lines = new ArrayList<>();
+        if (start == -1)
+            return lines;
+        lines.add(start);
+        if (end == -1)
+            return lines;
+        for (int i = start + 1; i < end; i++) {
+            lines.add(i);
+        }
+        return lines;
     }
 
     private void copyFile(Entity bug, File signaturesFile, String s, String s2) {
