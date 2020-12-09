@@ -294,6 +294,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
             }
             else if (target.className.equals(goal.className)) {
                 Iterator<Edge> iteratorOnCallsOutOfMethod = sc.getIteratorOnCallsOutOfMethod(goal.method);
+                List<Double> edgeDistances = new ArrayList<>();
                 while (iteratorOnCallsOutOfMethod.hasNext()) {
                     Edge edge = iteratorOnCallsOutOfMethod.next();
                     if (edge.tgt() == target.method) {
@@ -304,12 +305,12 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                         if (internDistanceInTarget == null)
                             continue; //we wont get a result that is fair to compare
                         Log.out(this, "Found a edge connection!");
-                        return internDistanceInGoal + internDistanceInTarget + 10; //TODO EdgeCost
+                        edgeDistances.add((double) (internDistanceInGoal + internDistanceInTarget + 10)); //TODO EdgeCost
                     }
                 }
+                return edgeDistances.stream().min(Double::compareTo).orElse(Double.NaN);
             }
         }
-
         return Double.POSITIVE_INFINITY;
     }
 
