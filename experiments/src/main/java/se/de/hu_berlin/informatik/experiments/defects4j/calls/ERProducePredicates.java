@@ -345,7 +345,10 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                     UnitPatchingChain unitPatchingChain = sootMethod.getActiveBody().getUnits();
                     for (Unit unit : unitPatchingChain) {
                         int start = unit.getJavaSourceStartLineNumber();
-                        int end = unitPatchingChain.getSuccOf(unit).getJavaSourceStartLineNumber();
+                        int end = -1;
+                        Unit succ = unitPatchingChain.getSuccOf(unit);
+                        if (succ != null)
+                            end = succ.getJavaSourceStartLineNumber();
 
                         List<Integer> lines = this.getLinesBetween(start, end);
 
