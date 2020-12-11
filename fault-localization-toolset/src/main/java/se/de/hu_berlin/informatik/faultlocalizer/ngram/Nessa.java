@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList; //PT
+import java.lang.Math; // PT
 
 public class Nessa<T> extends AbstractFaultLocalizer<T> {
     private HashMap<Integer, Double> confidence;
@@ -70,7 +71,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//System.out.println("_________________");
     		//ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
     		//BlockIDs = nGram.getBlockIDs();
-    		setNewConfidence(nGram, calculateConfidence(nGram, hitTrace));
+    		//setNewConfidence(nGram, calculateConfidence(nGram, hitTrace)); //ohne Cross-Entropy
+    		setNewConfidence(nGram, calculateCrossEntropy(nGram));
     		System.out.println(nGram.toString());
     		//BlockIDs.forEach(ID -> {
     			//setNewConfidence(nGram, 1.0); //funktioniert auch nicht -> scheinbar keine Zuweisungen auf nGrams
@@ -196,6 +198,29 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
 				found = true;
 			}
 		});
+    }
+    
+    //Berechnet die Cross-Entropy fuer ein nGram
+    public double calculateCrossEntropy(NGram nGram) {
+    	double crossEntropy =0.0;
+    	int length = nGram.getLength();
+    	int m = length -1;
+    	int N = length - m;
+    	double nGramProbability = 0.0;
+    	double logProbability = 0.0;
+    	nGramProbability = calculateNGramProbability(nGram);
+    	logProbability = Math.log(nGramProbability)/Math.log(2);
+    	crossEntropy = -(1/N)*logProbability; //eigentlich *sum(...) aber da N = 1 wird sowieso nur ein Element berechnet
+    	return crossEntropy;
+    }
+    
+    //Berechnet q(nGram) (die Wahrscheinlichkeit des Auftretens des letzten Tokens nach diesem Kontext
+    public double calculateNGramProbability(NGram nGram) {
+    	double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
+    	double EC = 10.0; //Anzahl der Ausfuehrungen dieses Kontexts mit anderem letzten Wert im nGram
+    						//(noch keine Implementierung -> zusaetzliche Funktion)
+    	double q = (ET/EC);
+    	return q;
     }
     //<- PT
 }
