@@ -225,7 +225,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     
     public double calculateEC(NGram nGram) {
     	double EC = 0.0;
-    	EC = nGram.getET() * 1.5; //Test um richtiges Uebergeben von nGram zu pruefen und unterschiedliche Werte 
+    	EC = nGram.getET() * 2.0; //Test um richtiges Uebergeben von nGram zu pruefen und unterschiedliche Werte 
     							//fuer EC zu erhalten
     	return EC;
     }
