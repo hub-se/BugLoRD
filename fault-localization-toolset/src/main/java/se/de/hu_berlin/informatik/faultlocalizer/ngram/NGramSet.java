@@ -343,8 +343,8 @@ public class NGramSet {
     			});	
     		}	
     	});
-    	/*confidence = newConfidence;
-    	System.out.println("newConfidence->");
+    	confidence = newConfidence;
+    	/*System.out.println("newConfidence->");
     	System.out.println(newConfidence);
     	System.out.println("__________");
     	System.out.println(confidence);
