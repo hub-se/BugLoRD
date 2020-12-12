@@ -56,12 +56,12 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         	//System.out.println(hitTrace.failedToString()); //PT
         	//System.out.println("_________________"); //PT
         	//System.out.println("Failed tests: {" + hitTrace.getFailedTest() + "}");
-        System.out.println("_________________"); //PT
+        //System.out.println("_________________"); //PT
         	//System.out.println("Failed tests (PT method): {" + hitTrace.getFailedTestTraces() + "}");
         	//System.out.println("_________________"); //PT
         	//System.out.println("All tests: {" + hitTrace.getTestTrace() + "}");
-        System.out.println("Confidence: " + nGrams.getConfidence()); //PT
-        System.out.println("_________________");
+        //System.out.println("Confidence: " + nGrams.getConfidence()); //PT
+        //System.out.println("_________________");
         nGrams.getnGrams().forEach(nGram -> {
         	//Idee: für jedes nGram mit EF > 0 den kleinsten Abstand (Cross-Entropy) zu nGrams mit EF = 0 berechnen
         	//und den Cross-Entropy-Wert als Suspiciousness zuordnen.
@@ -225,7 +225,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     
     public double calculateEC(NGram nGram) {
     	double EC = 0.0;
-    	EC = nGram.getET() * 20; //Test um richtiges Uebergeben von nGram zu pruefen und unterschiedliche Werte 
+    	EC = nGram.getET() * 1.5; //Test um richtiges Uebergeben von nGram zu pruefen und unterschiedliche Werte 
     							//fuer EC zu erhalten
     	return EC;
     }
