@@ -217,7 +217,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     //Berechnet q(nGram) (die Wahrscheinlichkeit des Auftretens des letzten Tokens nach diesem Kontext
     public double calculateNGramProbability(NGram nGram) {
     	double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
-    	double EC = 10.0; //Anzahl der Ausfuehrungen dieses Kontexts mit anderem letzten Wert im nGram
+    	double EC = 5.0; //Anzahl der Ausfuehrungen dieses Kontexts mit anderem letzten Wert im nGram
     						//(noch keine Implementierung -> zusaetzliche Funktion)
     	double q = (ET/EC);
     	return q;
