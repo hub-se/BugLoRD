@@ -72,7 +72,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
     		//BlockIDs = nGram.getBlockIDs();
     		//setNewConfidence(nGram, calculateConfidence(nGram, hitTrace)); //ohne Cross-Entropy
-    		setNewConfidence(nGram, calculateCrossEntropy(nGram));
+    		setNewConfidence(nGram, calculateCrossEntropy(nGram, nGrams));
     		System.out.println(nGram.toString());
     		//BlockIDs.forEach(ID -> {
     			//setNewConfidence(nGram, 1.0); //funktioniert auch nicht -> scheinbar keine Zuweisungen auf nGrams
@@ -201,24 +201,28 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     }
     
     //Berechnet die Cross-Entropy fuer ein nGram
-    public double calculateCrossEntropy(NGram nGram) {
+    public double calculateCrossEntropy(NGram nGram, NGramSet nGrams) {
     	double crossEntropy =0.0;
     	int length = nGram.getLength();
     	int m = length -1;
     	int N = length - m;
     	double nGramProbability = 0.0;
     	double logProbability = 0.0;
-    	nGramProbability = calculateNGramProbability(nGram);
+    	nGramProbability = calculateNGramProbability(nGram, nGrams);
     	logProbability = Math.log(nGramProbability)/Math.log(2);
     	crossEntropy = -(1/N)*logProbability; //eigentlich *sum(...) aber da N = 1 wird sowieso nur ein Element berechnet
     	return crossEntropy;
     }
     
     //Berechnet q(nGram) (die Wahrscheinlichkeit des Auftretens des letzten Tokens nach diesem Kontext
-    public double calculateNGramProbability(NGram nGram) {
+    public double calculateNGramProbability(NGram nGram, NGramSet nGrams) {
     	double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
     	double EC = calculateEC(nGram); //Anzahl der Ausfuehrungen dieses Kontexts mit anderem letzten Wert im nGram
     						//(noch keine Implementierung -> zusaetzliche Funktion)
+    	/*double EC = 0.0;
+    	nGrams.getnGrams().forEach(nGram2 -> {
+    		EC = EC + compareNGrams(nGram, nGram2);
+    	});*/
     	double q = (ET/EC);
     	return q;
     }
@@ -229,5 +233,13 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     							//fuer EC zu erhalten
     	return EC;
     }
+    
+   /* public double compareNGrams(NGram nGram, NGram nGram2) {
+    	InvolvedBlocks.forEach(blockID -> {
+			if (ID == blockID) {
+				found = true;
+			}
+		});
+    }*/
     //<- PT
 }
