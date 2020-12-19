@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class ScoringFileWriter {
 
-    private static boolean fileIsReset;
+    private static boolean fileIsReset = true;
     private static final ScoringFileWriter instance = new ScoringFileWriter();
 
     public synchronized void write(String line) {

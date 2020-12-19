@@ -4,12 +4,13 @@ import se.de.hu_berlin.informatik.gen.spectra.predicates.extras.Profile;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.modules.Output;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.modules.Predicate;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-public class Signature {
+public class Signature implements Serializable {
 
     public Identifier identifier;
 
@@ -32,7 +33,7 @@ public class Signature {
 
 
 
-    public static class Identifier {
+    public static class Identifier implements Serializable {
 
         public int positiveSupport;
         public int negativeSupport;

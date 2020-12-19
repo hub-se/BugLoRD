@@ -184,6 +184,18 @@ public class ExperimentRunner {
             }
             linker.append(new ThreadedProcessor<>(limit, handlers));
         }
+        if (toDoContains(toDo, "genCodeLocationRanking")) {
+            EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>> firstEH =
+                    new GenCodeLocationBasedRankings(options.getOptionValue(CmdOptions.SUFFIX, null)).asEH();
+            @SuppressWarnings("unchecked") final Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>>) firstEH.getClass();
+            final EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>[] handlers = Misc.createGenericArray(clazz, threadCount);
+
+            handlers[0] = firstEH;
+            for (int i = 1; i < handlers.length; ++i) {
+                handlers[i] = new GenCodeLocationBasedRankings(options.getOptionValue(CmdOptions.SUFFIX, null)).asEH();
+            }
+            linker.append(new ThreadedProcessor<>(limit, handlers));
+        }
 
         if (toDoContains(toDo, "reSave")) {
             EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>> firstEH =

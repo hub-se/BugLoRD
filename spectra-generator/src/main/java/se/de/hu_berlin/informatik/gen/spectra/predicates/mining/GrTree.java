@@ -2,6 +2,7 @@ package se.de.hu_berlin.informatik.gen.spectra.predicates.mining;
 
 import se.de.hu_berlin.informatik.gen.spectra.predicates.extras.Profile;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -166,7 +167,7 @@ public class GrTree {
         }
     }
 
-    public class Item {
+    public class Item implements Serializable {
         TreeSet<Integer> id = new TreeSet<>();
         public TreeSet<Integer> prefixedId = new TreeSet<>();
         int positiveSupport;

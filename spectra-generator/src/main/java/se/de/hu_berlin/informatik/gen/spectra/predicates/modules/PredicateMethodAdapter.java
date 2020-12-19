@@ -64,59 +64,6 @@ class PredicateMethodAdapter extends MethodVisitor implements Opcodes {
         }
     }
 
-    private void CreateNullPredicates(int var) {
-
-        mv.visitVarInsn(ALOAD, var);
-
-        Predicate truePredicate = new Predicate(this.currentLine, this.fileName, " was null.", var);
-
-        this.predicates.add(truePredicate);
-
-        Label label1 = ga.newLabel();
-        Label label2 = ga.newLabel();
-
-        ga.ifNonNull(label1);
-
-        ga.visitLabel(label2);
-        ga.push(truePredicate.id);
-        mv.visitMethodInsn(INVOKESTATIC, OutputClass, "triggerPredicate", "(I)V", false);
-        ga.visitJumpInsn(GOTO, label1);
-
-        ga.visitLabel(label1);
-    }
-
-    private void createTrueFalseTrigger(Predicate truePredicate, Predicate falsePredicate, int jumpType) {
-        this.predicates.add(truePredicate);
-        this.predicates.add(falsePredicate);
-
-        Label label1 = ga.newLabel();
-        Label label2 = ga.newLabel();
-        Label label3 = ga.newLabel();
-        mv.visitJumpInsn(jumpType, label1);
-
-        ga.visitLabel(label2);
-        ga.push(truePredicate.id);
-        mv.visitMethodInsn(INVOKESTATIC, OutputClass, "triggerPredicate", "(I)V", false);
-        ga.visitJumpInsn(GOTO, label3);
-
-        ga.visitLabel(label1);
-        ga.push(falsePredicate.id);
-        mv.visitMethodInsn(INVOKESTATIC, OutputClass, "triggerPredicate", "(I)V", false);
-
-        ga.visitLabel(label3);
-    }
-
-    private void CreateComparePredicates(int var, int type) {
-        List<?> locals = aa.locals;
-        if (locals == null)
-            return;
-        for (int i = 0; i < locals.size(); i++) {
-            Object local = locals.get(i);
-            if (local == INTEGER || local == FLOAT || local == DOUBLE || local == LONG)
-                CreatePredicate(var, i, type, (Integer) local);
-        }
-    }
-
     @Override
     public void visitJumpInsn(int opcode, Label label) {
 
@@ -176,6 +123,75 @@ class PredicateMethodAdapter extends MethodVisitor implements Opcodes {
 
     }
 
+    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+        mv.visitLocalVariable(name, desc, signature, start, end, index);
+        this.variableNames.put(index, name);
+    }
+
+    @Override
+    public void visitEnd() {
+        mv.visitEnd();
+        this.predicates.forEach((predicate) -> {
+            if (predicate.description == null) {
+                predicate.description = this.variableNames.get(predicate.firstVariableId) + predicate.comparisonType + this.variableNames.get(predicate.secondVariableId);
+            }
+            Output.addPredicate(predicate);
+        });
+    }
+
+    private void CreateNullPredicates(int var) {
+
+        mv.visitVarInsn(ALOAD, var);
+
+        Predicate truePredicate = new Predicate(this.currentLine, this.fileName, " was null.", var);
+
+        this.predicates.add(truePredicate);
+
+        Label label1 = ga.newLabel();
+        Label label2 = ga.newLabel();
+
+        ga.ifNonNull(label1);
+
+        ga.visitLabel(label2);
+        ga.push(truePredicate.id);
+        mv.visitMethodInsn(INVOKESTATIC, OutputClass, "triggerPredicate", "(I)V", false);
+        ga.visitJumpInsn(GOTO, label1);
+
+        ga.visitLabel(label1);
+    }
+
+    private void createTrueFalseTrigger(Predicate truePredicate, Predicate falsePredicate, int jumpType) {
+        this.predicates.add(truePredicate);
+        this.predicates.add(falsePredicate);
+
+        Label label1 = ga.newLabel();
+        Label label2 = ga.newLabel();
+        Label label3 = ga.newLabel();
+        mv.visitJumpInsn(jumpType, label1);
+
+        ga.visitLabel(label2);
+        ga.push(truePredicate.id);
+        mv.visitMethodInsn(INVOKESTATIC, OutputClass, "triggerPredicate", "(I)V", false);
+        ga.visitJumpInsn(GOTO, label3);
+
+        ga.visitLabel(label1);
+        ga.push(falsePredicate.id);
+        mv.visitMethodInsn(INVOKESTATIC, OutputClass, "triggerPredicate", "(I)V", false);
+
+        ga.visitLabel(label3);
+    }
+
+    private void CreateComparePredicates(int var, int type) {
+        List<?> locals = aa.locals;
+        if (locals == null)
+            return;
+        for (int i = 0; i < locals.size(); i++) {
+            Object local = locals.get(i);
+            if (local == INTEGER || local == FLOAT || local == DOUBLE || local == LONG)
+                CreatePredicate(var, i, type, (Integer) local);
+        }
+    }
+
     private void insertZeroComparePredicates(String name, Type typeOnStack) {
         COMPARISONS.forEach((comparison) -> {
             Predicate predicate = new Predicate(this.currentLine, this.fileName, comparison, name);
@@ -204,25 +220,6 @@ class PredicateMethodAdapter extends MethodVisitor implements Opcodes {
         });
 
     }
-
-
-    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        mv.visitLocalVariable(name, desc, signature, start, end, index);
-        this.variableNames.put(index, name);
-    }
-
-
-    @Override
-    public void visitEnd() {
-        mv.visitEnd();
-        this.predicates.forEach((predicate) -> {
-            if (predicate.description == null) {
-                predicate.description = this.variableNames.get(predicate.firstVariableId) + predicate.comparisonType + this.variableNames.get(predicate.secondVariableId);
-            }
-            Output.addPredicate(predicate);
-        });
-    }
-
 
     private void CreatePredicate(int firstVariableId, int secondVariableId, int firstVariableType, int secondVariableType) {
         COMPARISONS.forEach((comparison) -> {
