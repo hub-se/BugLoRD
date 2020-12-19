@@ -65,13 +65,6 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         Output.readFromFile(folder);
         Output.writeToHumanFile(folder);
 
-        signatures.values().forEach(signature -> {
-            signature.setPredicates();
-            for (Predicate predicate : signature.predicates) {
-                signature.locations.addAll(predicate.getLocation());
-            }
-        });
-
         Log.out(this, "getTargets %s.", folder);
         List<CodeLocation> targets =  getTargets(buggyEntity);
 

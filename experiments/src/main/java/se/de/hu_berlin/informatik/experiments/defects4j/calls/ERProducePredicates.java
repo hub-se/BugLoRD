@@ -121,6 +121,13 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         Miner miner = new Miner();
         HashMap<Signature.Identifier, Signature> signatures = miner.mine(folder);
 
+        signatures.values().forEach(signature -> {
+            signature.setPredicates();
+            for (Predicate predicate : signature.predicates) {
+                signature.locations.addAll(predicate.getLocation());
+            }
+        });
+
         this.writeToFile(folder, "signatures.dat", signatures);
 
         //resolve Code locations

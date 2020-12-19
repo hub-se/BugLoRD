@@ -122,7 +122,7 @@ public class GrTree {
     }
 
 
-    private class TreeNode {
+    private class TreeNode implements Serializable {
         int id;
         int positiveSupport;
         int negativeSupport;
