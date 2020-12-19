@@ -133,8 +133,8 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
             }
         });
 
-        Log.out(this, "Writing signature to: " + statsDirData.resolve(subDirName).toString());
-        this.writeToFile(statsDirData.resolve(subDirName).toString(), "signatures.dat", signatures);
+        Log.out(this, "Writing signature to: " + bug.getWorkDataDir().toString());
+        this.writeToFile(bug.getWorkDataDir().toString(), "signatures.dat", signatures);
 
 
 
@@ -189,8 +189,6 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
             for (Path dir : result3) {
                 FileUtils.delete(dir);
             }
-
-            //delete old stats data directory
             FileUtils.copyFileOrDir(
                     rankingDir.toFile(),
                     statsDirData.toFile());
@@ -222,7 +220,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
             oos.writeObject(object);
             oos.flush();
             oos.close();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             Log.err(Output.class, ex);
         }
     }
