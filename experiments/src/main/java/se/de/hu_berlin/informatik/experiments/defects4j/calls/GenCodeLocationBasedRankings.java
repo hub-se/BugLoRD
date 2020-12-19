@@ -163,7 +163,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
 
         //Log.out(this, "Calculating score with %s predicateLocations", predicateLocations.size());
         if (predicateLocations.isEmpty())
-            return Double.POSITIVE_INFINITY;
+            return Double.NaN;
 
         //Log.out(this, MessageFormat.format("calculating Score between : {0} in Method: {1} and: {2} with method: {3} and class {4}", target.getLocationString(), target.MethodName, predicateLocation, predicateLocations.getFirst().MethodName, className));
         for (CodeLocation goal : predicateLocations) {
@@ -193,7 +193,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                 return edgeDistances.stream().min(Double::compareTo).orElse(Double.NaN);
             }
         }
-        return Double.MAX_VALUE;
+        return Double.POSITIVE_INFINITY;
     }
 
     private Integer getDistanceInUnits(SootConnector sc, SootMethod method, Unit unit1, Unit unit2) {
