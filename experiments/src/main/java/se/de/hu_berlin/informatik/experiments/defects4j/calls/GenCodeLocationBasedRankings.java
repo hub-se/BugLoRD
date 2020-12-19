@@ -10,15 +10,14 @@ import se.de.hu_berlin.informatik.gen.spectra.predicates.modules.Output;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.modules.Predicate;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.pdg.CodeLocation;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.pdg.SootConnector;
-import se.de.hu_berlin.informatik.utils.experiments.ranking.NormalizedRanking.NormalizationStrategy;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
-import se.de.hu_berlin.informatik.utils.processors.AbstractConsumingProcessor;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import soot.SootMethod;
 import soot.Unit;
 import soot.UnitPatchingChain;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.toolkits.graph.UnitGraph;
+import sun.security.krb5.SCDynamicStoreConfig;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -72,16 +71,22 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         List<CodeLocation> targets =  getTargets(buggyEntity);
 
         Log.out(this, "Scoring %s.", folder);
-        double score = getScore(signatures, targets, buggyEntity);
+        Score score = getScore(signatures, targets, buggyEntity);
 
         Log.out(this, "Finish scoring %s.", folder);
 
 
         //Output
-        String line = buggyEntity.getUniqueIdentifier() + ";" + score;
+        String line;
+        if (score.Failed) {
+            line = buggyEntity.getUniqueIdentifier() + ";" + Double.NaN + ";" + Double.NaN + ";" + Double.NaN + ";" + Double.NaN + ";" + Double.NaN;
+        }
+        else {
+            line = buggyEntity.getUniqueIdentifier() + ";" + score.getBestScore() + ";" + score.getWorstScore() + ";" + score.getAverageScore() + ";" + score.PathCost + ";" + score.DS;
+        }
         ScoringFileWriter.getInstance().write(line);
 
-        Log.out(this, "Score for %s is %f.", folder, score);
+        Log.out(this, "Score for %s is %f.", folder, score.getBestScore());
 
         return buggyEntity;
     }
@@ -96,26 +101,40 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         return null;
     }
 
-    private double getScore(HashMap<Signature.Identifier, Signature> signatures, List<CodeLocation> targets, BuggyFixedEntity<?> buggyEntity) {
-        List<Double> scores = new ArrayList<>();
+    private Score getScore(HashMap<Signature.Identifier, Signature> signatures, List<CodeLocation> targets, BuggyFixedEntity<?> buggyEntity) {
+        List<Score> scores = new ArrayList<>();
+        double currentDS = 1;
+        int codeLocationCounterBestCase = 0;
+        int codeLocationCounterWorstCase = 0;
         if (signatures.size() == 0)
             Log.out(this, "score with %s signatures in %s", signatures.size() , buggyEntity.getUniqueIdentifier());
         if (targets.size() == 0)
             Log.out(this, "score with %s targets in %s", targets.size(), buggyEntity.getUniqueIdentifier());
-        signatures.forEach((key, signature) -> {
-            signature.predicates.forEach(predicate -> {
-                predicate.getLocation().forEach(predicateLocation -> {
+        for (Map.Entry<Signature.Identifier, Signature> entry : signatures.entrySet()) {
+            Signature.Identifier key = entry.getKey();
+            Signature signature = entry.getValue();
+            if (key.DS == currentDS) {
+                codeLocationCounterWorstCase += signature.locations.size();
+            }
+            else if (key.DS < currentDS) {
+                codeLocationCounterBestCase += codeLocationCounterWorstCase + 1;
+                codeLocationCounterWorstCase += signature.locations.size();
+                currentDS = key.DS;
+            }
+            else {
+                throw new RuntimeException("signatures need to be sorted");
+            }
+            for (Predicate predicate : signature.predicates) {
+                for (String predicateLocation : predicate.getLocation()) {
                     for (CodeLocation target : targets) {
-                        if (scores.contains(0.0)) //skip calculating if we got a full hit
-                            continue;
-                        scores.add(calculateScore(predicateLocation, target, buggyEntity));
+                        Score score = new Score(calculateScore(predicateLocation, target, buggyEntity), codeLocationCounterBestCase, codeLocationCounterWorstCase, currentDS);
+                        scores.add(score);
                     }
-                });
-            });
-        });
-        Optional<Double> aDouble = scores.stream().min(Double::compareTo);
-
-        return aDouble.orElse(Double.NaN);
+                }
+            }
+        }
+        Optional<Score> best = scores.stream().min(Comparator.comparingDouble(Score::getBestScore));
+        return best.orElse(new Score());
     }
 
     private double calculateScore(String predicateLocation, CodeLocation target, BuggyFixedEntity<?> buggyEntity) {
@@ -241,5 +260,35 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         return lines;
     }
 
+    private static class Score {
+        double PathCost;
+        int CodeLocationsBeforeBestCase;
+        int CodeLocationsBeforeWorstCase;
+        double DS;
+        boolean Failed;
+
+        public Score(double pathCost, int codeLocationCounterBestCase, int codeLocationCounterWorstCase, double currentDS) {
+            this.PathCost = pathCost;
+            this.CodeLocationsBeforeBestCase = codeLocationCounterBestCase;
+            this.CodeLocationsBeforeWorstCase = codeLocationCounterWorstCase;
+            this.DS = currentDS;
+        }
+
+        public Score() {
+            this.Failed = true;
+        }
+
+        public double getBestScore() {
+            return this.CodeLocationsBeforeBestCase + (this.PathCost / this.CodeLocationsBeforeBestCase);
+        }
+
+        public double getWorstScore() {
+            return this.CodeLocationsBeforeWorstCase + (this.PathCost / this.CodeLocationsBeforeWorstCase);
+        }
+
+        public double getAverageScore() {
+            return 0.5 * (this.getBestScore() + this.getWorstScore());
+        }
+    }
 }
 
