@@ -118,6 +118,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
                 rankingDir.resolve(subDirName), failingTests);
 
         // mine Signatures
+
         Miner miner = new Miner();
         HashMap<Signature.Identifier, Signature> signatures = miner.mine(folder);
 

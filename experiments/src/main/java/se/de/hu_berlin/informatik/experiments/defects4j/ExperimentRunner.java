@@ -209,7 +209,7 @@ public class ExperimentRunner {
                 handlers[i] = new ERLoadAndSaveSpectraEH(toolSpecific, options.hasOption(CmdOptions.FILL_EMPTY_LINES)).asEH();
             }
             linker.append(
-                    new ThreadedProcessor<>(limit, handlers));
+                    new ThreadedProcessor<>(new SemaphoreThreadLimit(1), handlers));
         }
         
         if (toDoContains(toDo, "computeSBFL") || toDoContains(toDo, "all")) {

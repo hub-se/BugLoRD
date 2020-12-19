@@ -47,8 +47,6 @@ public class SootConnector {
     private final String packageName;
     private final String className;
 
-
-
     private SootConnector(String packageName, String className, String classPathExtension) {
         this.packageName = packageName;
         this.className = className;
