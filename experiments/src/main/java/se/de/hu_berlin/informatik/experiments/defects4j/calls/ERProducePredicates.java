@@ -121,6 +121,11 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         Miner miner = new Miner();
         HashMap<Signature.Identifier, Signature> signatures = miner.mine(folder);
 
+        //resolve Code locations
+        Output.readFromFile(folder);
+        Output.writeToHumanFile(folder);
+
+        Log.out(this, "fill signatures");
         signatures.values().forEach(signature -> {
             signature.setPredicates();
             for (Predicate predicate : signature.predicates) {
@@ -128,11 +133,10 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
             }
         });
 
-        this.writeToFile(folder, "signatures.dat", signatures);
+        Log.out(this, "write signatures to file");
+        this.writeToFile(bug.getWorkDataDir().toString(), "signatures.dat", signatures);
 
-        //resolve Code locations
-        Output.readFromFile(folder);
-        Output.writeToHumanFile(folder);
+
 
         System.out.println();
         signatures.forEach((identifier, signature) -> System.out.println("DS: " + identifier.DS
