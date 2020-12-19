@@ -56,11 +56,13 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
 
         Path rankingDir = bug.getWorkDir(true).resolve(suffix == null ?
                 BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix);
+        Path statsDirData = bug.getWorkDataDir().resolve(suffix == null ?
+                BugLoRDConstants.DIR_NAME_STATS : BugLoRDConstants.DIR_NAME_STATS + "_" + suffix);
 
         String folder = Paths.get(rankingDir.resolve(subDirName).toString()).toString();
 
 
-        HashMap<Signature.Identifier, Signature> signatures = this.readFromFile(bug.getWorkDataDir().toString(), "signatures.dat");
+        HashMap<Signature.Identifier, Signature> signatures = this.readFromFile(statsDirData.resolve(subDirName).toString(), "signatures.dat");
 
         //resolve Code locations
         Output.readFromFile(folder);

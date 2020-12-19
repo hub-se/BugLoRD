@@ -133,8 +133,8 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
             }
         });
 
-        Log.out(this, "Writing signature to: " + bug.getWorkDataDir().toString());
-        this.writeToFile(bug.getWorkDataDir().toString(), "signatures.dat", signatures);
+        Log.out(this, "Writing signature to: " + statsDirData.resolve(subDirName).toString());
+        this.writeToFile(statsDirData.resolve(subDirName).toString(), "signatures.dat", signatures);
 
 
 
@@ -167,11 +167,6 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
          * # cleanup
          * #==================================================================================== */
 
-        File spectraFile = rankingDir.resolve(subDirName)
-                .resolve(BugLoRDConstants.SPECTRA_FILE_NAME).toFile();
-        File spectraFileFiltered = rankingDir.resolve(subDirName)
-                .resolve(BugLoRDConstants.FILTERED_SPECTRA_FILE_NAME).toFile();
-
         File signaturesFile = rankingDir.resolve(subDirName)
                 .resolve("Signatures.csv").toFile();
         File predicatesFile = rankingDir.resolve(subDirName)
@@ -196,7 +191,6 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
             }
 
             //delete old stats data directory
-            FileUtils.delete(statsDirData);
             FileUtils.copyFileOrDir(
                     rankingDir.toFile(),
                     statsDirData.toFile());
