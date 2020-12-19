@@ -56,7 +56,7 @@ public class SootConnector {
     private static synchronized void init(String classPathExtension, String packageName, String className) {
         long startTime = System.nanoTime();
         //System.out.println("classpath is: " + classPathExtension);
-        //soot.G.v().reset();
+        soot.G.v().reset();
         String classpath =  Defects4J.Defects4JProperties.JAVA8_JRE.getValue() + "/lib/rt.jar" + File.pathSeparator
                 + Defects4J.Defects4JProperties.JAVA8_JRE.getValue() + "/lib/jce.jar" + File.pathSeparator
                 + classPathExtension + File.pathSeparator;
