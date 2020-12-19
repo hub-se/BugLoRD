@@ -133,7 +133,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
             }
         });
 
-        Log.out(this, "write signatures to file");
+        Log.out(this, "Writing signature to: " + bug.getWorkDataDir().toString());
         this.writeToFile(bug.getWorkDataDir().toString(), "signatures.dat", signatures);
 
 

@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class GrTree {
+public class GrTree implements Serializable {
     public final HeadTable headTable;
     private final TreeNode root;
     public ArrayList<Integer> prefix;
