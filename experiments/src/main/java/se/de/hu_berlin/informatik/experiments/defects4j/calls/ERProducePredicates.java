@@ -217,7 +217,10 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
 
     private void writeToFile(String outputDir, String filename, Object object){
         try {
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outputDir + "/" + filename));
+            File outputFile = new File(outputDir + "/" + filename);
+            outputFile.getParentFile().mkdirs();
+            outputFile.createNewFile();
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(outputFile));
             oos.writeObject(object);
             oos.flush();
             oos.close();
