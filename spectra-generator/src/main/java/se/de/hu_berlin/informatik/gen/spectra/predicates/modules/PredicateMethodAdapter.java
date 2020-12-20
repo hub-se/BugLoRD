@@ -8,10 +8,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AnalyzerAdapter;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 class PredicateMethodAdapter extends MethodVisitor implements Opcodes {
 
@@ -199,9 +196,10 @@ class PredicateMethodAdapter extends MethodVisitor implements Opcodes {
             this.predicates.add(predicate);
 
             int numSlots = this.aa.stack != null ? this.aa.stack.size() + typeOnStack.getSize() : typeOnStack.getSize();
-            Object[] newStack = new Integer[numSlots + 100];
-            //Arrays.fill(newStack,Opcodes.INTEGER);
-            ga.visitFrame(F_NEW, 0, new Integer[0], numSlots + 100, newStack);
+            Object[] newStack = new Object[numSlots + 10];
+//            Arrays.fill(newStack,Opcodes.INTEGER);
+            if (aa.stack != null && aa.stack.size() < 2)
+                ga.visitFrame(F_NEW, 0, new Object[0], numSlots + 10, newStack);
 
             if (typeOnStack.getSize() == 2) {
                 ga.dup2();
