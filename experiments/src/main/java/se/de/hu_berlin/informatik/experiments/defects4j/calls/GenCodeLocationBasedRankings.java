@@ -41,7 +41,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         Log.out(this, "Processing %s.", buggyEntity);
 
         Entity bug = buggyEntity.getBuggyVersion();
-
+        buggyEntity.requireBug(true);
         bug.compile(true);
 
         File buggyVersionDir = bug.getWorkDir(true).toFile();
