@@ -16,7 +16,7 @@ import java.util.*;
 
 public class Miner {
 
-    public HashMap<Signature.Identifier, Signature> mine(String folder) {
+    public LinkedHashMap<Signature.Identifier, Signature> mine(String folder) {
 
         String row;
         Database db = new Database();
@@ -71,7 +71,7 @@ public class Miner {
         sorted.sort(Comparator.comparingDouble(entry -> miner.DiscriminativeSignificance(entry.getKey().getLeft(), entry.getKey().getRight())));
         Collections.reverse(sorted);
         Log.out(this, "Creating Signatures.");
-        HashMap<Signature.Identifier, Signature> signatures = new LinkedHashMap<>();
+        LinkedHashMap<Signature.Identifier, Signature> signatures = new LinkedHashMap<>();
         try {
             sorted.forEach(entry -> {
                 entry.getValue().forEach(item -> {

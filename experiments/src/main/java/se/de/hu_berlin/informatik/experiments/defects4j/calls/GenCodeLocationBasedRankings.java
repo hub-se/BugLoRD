@@ -61,7 +61,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         String folder = Paths.get(rankingDir.resolve(subDirName).toString()).toString();
 
 
-        HashMap<Signature.Identifier, Signature> signatures = this.readFromFile(bug.getWorkDataDir().toString(), "signatures.dat");
+        LinkedHashMap<Signature.Identifier, Signature> signatures = this.readFromFile(bug.getWorkDataDir().toString(), "signatures.dat");
 
         //resolve Code locations
         Output.readFromFile(folder);
@@ -91,10 +91,10 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         return buggyEntity;
     }
 
-    private HashMap<Signature.Identifier, Signature> readFromFile(String folder , String filename){
+    private LinkedHashMap<Signature.Identifier, Signature> readFromFile(String folder , String filename){
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(folder + "/" + filename))) {
 
-            return ((HashMap<Signature.Identifier, Signature>) ois.readObject());
+            return ((LinkedHashMap<Signature.Identifier, Signature>) ois.readObject());
         } catch (Exception ex) {
             Log.err(Output.class, ex);
         }
@@ -110,6 +110,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
             Log.out(this, "score with %s signatures in %s", signatures.size() , buggyEntity.getUniqueIdentifier());
         if (targets.size() == 0)
             Log.out(this, "score with %s targets in %s", targets.size(), buggyEntity.getUniqueIdentifier());
+        currentDS = signatures.keySet().iterator().next().DS;
         for (Map.Entry<Signature.Identifier, Signature> entry : signatures.entrySet()) {
             Signature.Identifier key = entry.getKey();
             Signature signature = entry.getValue();

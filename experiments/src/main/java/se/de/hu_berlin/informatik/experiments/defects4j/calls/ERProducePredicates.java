@@ -120,7 +120,7 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         // mine Signatures
 
         Miner miner = new Miner();
-        HashMap<Signature.Identifier, Signature> signatures = miner.mine(folder);
+        LinkedHashMap<Signature.Identifier, Signature> signatures = miner.mine(folder);
 
         //resolve Code locations
         Output.readFromFile(folder);
