@@ -280,11 +280,11 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         }
 
         public double getBestScore() {
-            return this.CodeLocationsBeforeBestCase + (this.PathCost / this.CodeLocationsBeforeBestCase);
+            return this.CodeLocationsBeforeBestCase + (this.PathCost * Math.sqrt(this.CodeLocationsBeforeBestCase));
         }
 
         public double getWorstScore() {
-            return this.CodeLocationsBeforeWorstCase + (this.PathCost / this.CodeLocationsBeforeWorstCase);
+            return this.CodeLocationsBeforeWorstCase + (this.PathCost * Math.sqrt(this.CodeLocationsBeforeWorstCase));
         }
 
         public double getAverageScore() {
