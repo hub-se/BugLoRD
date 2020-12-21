@@ -151,7 +151,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                 codeLocationCounterWorstCase += signature.locations.size();
             }
             else if (key.DS < currentDS) {
-                codeLocationCounterBestCase += codeLocationCounterWorstCase + 1;
+                codeLocationCounterBestCase += codeLocationCounterWorstCase;
                 codeLocationCounterWorstCase += signature.locations.size();
                 currentDS = key.DS;
             }
@@ -173,32 +173,24 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
 
     private Score getScore(LinkedList<Op2Line> signatures, List<CodeLocation> targets, BuggyFixedEntity<?> buggyEntity) {
         List<Score> scores = new ArrayList<>();
-        double currentDS = 1;
-        int codeLocationCounterBestCase = 0;
-        int codeLocationCounterWorstCase = 0;
         if (signatures.size() == 0)
             Log.out(this, "score with 0 signatures in %s",  buggyEntity.getUniqueIdentifier());
         if (targets.size() == 0)
             Log.out(this, "score with 0 targets in %s",  buggyEntity.getUniqueIdentifier());
-        currentDS = signatures.iterator().next().suspicion;
         for (Op2Line entry : signatures) {
-            if (entry.suspicion == currentDS) {
-                codeLocationCounterWorstCase += 1;
+            for (Op2Line sig : signatures) {
+                if (entry.suspicion <= sig.suspicion)
+                    entry.codeLocationCounterWorstCase++;
+                if (entry.suspicion < sig.suspicion)
+                    entry.codeLocationCounterBestCase++;
             }
-            else if (entry.suspicion < currentDS) {
-                codeLocationCounterBestCase += codeLocationCounterWorstCase + 1;
-                codeLocationCounterWorstCase += 1;
-                currentDS = entry.suspicion;
+        }
+
+        for (Op2Line line : signatures) {
+            for (CodeLocation target : targets) {
+                Score score = new Score(calculateScore(line.location, target, buggyEntity), line.codeLocationCounterBestCase, line.codeLocationCounterWorstCase, line.suspicion);
+                scores.add(score);
             }
-            else {
-                throw new RuntimeException("signatures need to be sorted");
-            }
-            for (Op2Line line : signatures) {
-                    for (CodeLocation target : targets) {
-                        Score score = new Score(calculateScore(line.location, target, buggyEntity), codeLocationCounterBestCase, codeLocationCounterWorstCase, currentDS);
-                        scores.add(score);
-                    }
-                }
         }
         Optional<Score> best = scores.stream().min(Comparator.comparingDouble(Score::getBestScore));
         return best.orElse(new Score());
@@ -359,6 +351,8 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
     }
 
     private static class Op2Line {
+        public int codeLocationCounterWorstCase;
+        public int codeLocationCounterBestCase;
         String location;  // target: org/apache/commons/math3/exception/util/ExceptionContext:174
         double suspicion;
 
