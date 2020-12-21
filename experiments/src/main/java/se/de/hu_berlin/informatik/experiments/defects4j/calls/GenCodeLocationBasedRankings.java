@@ -90,6 +90,8 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
             String row;
             while ((row = csvReader.readLine()) != null) {
                 String[] data = row.split(":");
+                if (Double.parseDouble(data[6]) == 0.0)
+                    break;
                 lines.add(new Op2Line(data));
             }
             csvReader.close();
