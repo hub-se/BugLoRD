@@ -41,6 +41,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
     @Override
     public BuggyFixedEntity<?> processItem(BuggyFixedEntity<?> buggyEntity) {
         Log.out(this, "Processing %s.", buggyEntity);
+        Log.out(this, "%s mode", this.type);
 
         Entity bug = buggyEntity.getBuggyVersion();
         buggyEntity.requireBug(true);
@@ -81,6 +82,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
             Log.out(this, "Finish scoring %s.", buggyEntity.getUniqueIdentifier());
         }
         else if (this.type.equals("sbfl")) {
+
             LinkedList<Op2Line> lines = new LinkedList<>();
             BufferedReader csvReader = null;
             try {
@@ -94,9 +96,12 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Log.out(this, "found %s lines", lines.size());
+            Log.out(this, "getTargets %s.", buggyEntity.getUniqueIdentifier());
             List<CodeLocation> targets = getTargets(buggyEntity);
-
+            Log.out(this, "Scoring %s.", buggyEntity.getUniqueIdentifier());
             score = getScore(lines, targets, buggyEntity);
+            Log.out(this, "Finish scoring %s.", buggyEntity.getUniqueIdentifier());
         }
         else {
             Log.err(this, "Wrong type argument!");
@@ -170,9 +175,9 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         int codeLocationCounterBestCase = 0;
         int codeLocationCounterWorstCase = 0;
         if (signatures.size() == 0)
-            Log.out(this, "score with %s signatures in %s", signatures.size() , buggyEntity.getUniqueIdentifier());
+            Log.out(this, "score with 0 signatures in %s",  buggyEntity.getUniqueIdentifier());
         if (targets.size() == 0)
-            Log.out(this, "score with %s targets in %s", targets.size(), buggyEntity.getUniqueIdentifier());
+            Log.out(this, "score with 0 targets in %s",  buggyEntity.getUniqueIdentifier());
         currentDS = signatures.iterator().next().suspicion;
         for (Op2Line entry : signatures) {
             if (entry.suspicion == currentDS) {
