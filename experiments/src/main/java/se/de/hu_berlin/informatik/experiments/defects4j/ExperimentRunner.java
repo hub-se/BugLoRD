@@ -57,7 +57,8 @@ public class ExperimentRunner {
         FORCE_LOAD_SPECTRA_FOR_FL("frc", "forceload", false, "Whether the spectra should always be loaded, regardless if a "
                 + "trace file has previously been created that would usually be sufficient to compute SBFL rankings.",
                 false),
-        LM("lm", "globalLM", true, "Path to a language model binary (kenLM).", false);
+        LM("lm", "globalLM", true, "Path to a language model binary (kenLM).", false),
+        RANKING_TYPE("rt", "rankingType", true, "Rank predicates or sbfl", false);
 
         /* the following code blocks should not need to be changed */
         final private OptionWrapper option;
@@ -186,13 +187,13 @@ public class ExperimentRunner {
         }
         if (toDoContains(toDo, "genCodeLocationRanking")) {
             EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>> firstEH =
-                    new GenCodeLocationBasedRankings(options.getOptionValue(CmdOptions.SUFFIX, null)).asEH();
+                    new GenCodeLocationBasedRankings(options.getOptionValue(CmdOptions.SUFFIX, null), options.getOptionValue(CmdOptions.RANKING_TYPE)).asEH();
             @SuppressWarnings("unchecked") final Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>>) firstEH.getClass();
             final EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>[] handlers = Misc.createGenericArray(clazz, threadCount);
 
             handlers[0] = firstEH;
             for (int i = 1; i < handlers.length; ++i) {
-                handlers[i] = new GenCodeLocationBasedRankings(options.getOptionValue(CmdOptions.SUFFIX, null)).asEH();
+                handlers[i] = new GenCodeLocationBasedRankings(options.getOptionValue(CmdOptions.SUFFIX, null), options.getOptionValue(CmdOptions.RANKING_TYPE)).asEH();
             }
             linker.append(new ThreadedProcessor<>(limit, handlers));
         }

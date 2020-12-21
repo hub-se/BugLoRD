@@ -28,12 +28,14 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
 
     private final String suffix;
     private final String subDirName;
+    private final String type;
 
 
-    public GenCodeLocationBasedRankings(String suffix) {
+    public GenCodeLocationBasedRankings(String suffix, String type) {
         super();
         this.suffix = suffix;
         this.subDirName = "predicates";
+        this.type = type;
     }
 
     @Override
@@ -58,23 +60,47 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         Path statsDirData = bug.getWorkDataDir().resolve(suffix == null ?
                 BugLoRDConstants.DIR_NAME_STATS : BugLoRDConstants.DIR_NAME_STATS + "_" + suffix);
 
-        String folder = Paths.get(rankingDir.resolve(subDirName).toString()).toString();
+        Score score = new Score();
+        if (this.type.equals("predicates")) {
+
+            LinkedHashMap<Signature.Identifier, Signature> signatures = this.readFromFile(bug.getWorkDataDir().toString(), "signatures.dat");
 
 
-        LinkedHashMap<Signature.Identifier, Signature> signatures = this.readFromFile(bug.getWorkDataDir().toString(), "signatures.dat");
+            //resolve Code locations
+            String folder = Paths.get(rankingDir.resolve(subDirName).toString()).toString();
+            Output.readFromFile(folder);
+            Output.writeToHumanFile(folder);
 
-        //resolve Code locations
-        Output.readFromFile(folder);
-        Output.writeToHumanFile(folder);
 
-        Log.out(this, "getTargets %s.", folder);
-        List<CodeLocation> targets =  getTargets(buggyEntity);
+            Log.out(this, "getTargets %s.", buggyEntity.getUniqueIdentifier());
+            List<CodeLocation> targets = getTargets(buggyEntity);
 
-        Log.out(this, "Scoring %s.", folder);
-        Score score = getScore(signatures, targets, buggyEntity);
+            Log.out(this, "Scoring %s.", buggyEntity.getUniqueIdentifier());
+            score = getScore(signatures, targets, buggyEntity);
 
-        Log.out(this, "Finish scoring %s.", folder);
+            Log.out(this, "Finish scoring %s.", buggyEntity.getUniqueIdentifier());
+        }
+        else if (this.type.equals("sbfl")) {
+            LinkedList<Op2Line> lines = new LinkedList<>();
+            BufferedReader csvReader = null;
+            try {
+                csvReader = new BufferedReader(new FileReader(bug.getWorkDataDir().resolve("ranking").resolve("op2").resolve("ranking.rnk").toString()));
+            String row;
+            while ((row = csvReader.readLine()) != null) {
+                String[] data = row.split(":");
+                lines.add(new Op2Line(data));
+            }
+            csvReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            List<CodeLocation> targets = getTargets(buggyEntity);
 
+            score = getScore(lines, targets, buggyEntity);
+        }
+        else {
+            Log.err(this, "Wrong type argument!");
+        }
 
         //Output
         String line;
@@ -86,7 +112,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         }
         ScoringFileWriter.getInstance().write(line);
 
-        Log.out(this, "Score for %s is %f.", folder, score.getBestScore());
+        Log.out(this, "Score for %s is %f.", buggyEntity.getUniqueIdentifier(), score.getBestScore());
 
         return buggyEntity;
     }
@@ -133,6 +159,39 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                     }
                 }
             }
+        }
+        Optional<Score> best = scores.stream().min(Comparator.comparingDouble(Score::getBestScore));
+        return best.orElse(new Score());
+    }
+
+    private Score getScore(LinkedList<Op2Line> signatures, List<CodeLocation> targets, BuggyFixedEntity<?> buggyEntity) {
+        List<Score> scores = new ArrayList<>();
+        double currentDS = 1;
+        int codeLocationCounterBestCase = 0;
+        int codeLocationCounterWorstCase = 0;
+        if (signatures.size() == 0)
+            Log.out(this, "score with %s signatures in %s", signatures.size() , buggyEntity.getUniqueIdentifier());
+        if (targets.size() == 0)
+            Log.out(this, "score with %s targets in %s", targets.size(), buggyEntity.getUniqueIdentifier());
+        currentDS = signatures.iterator().next().suspicion;
+        for (Op2Line entry : signatures) {
+            if (entry.suspicion == currentDS) {
+                codeLocationCounterWorstCase += 1;
+            }
+            else if (entry.suspicion < currentDS) {
+                codeLocationCounterBestCase += codeLocationCounterWorstCase + 1;
+                codeLocationCounterWorstCase += 1;
+                currentDS = entry.suspicion;
+            }
+            else {
+                throw new RuntimeException("signatures need to be sorted");
+            }
+            for (Op2Line line : signatures) {
+                    for (CodeLocation target : targets) {
+                        Score score = new Score(calculateScore(line.location, target, buggyEntity), codeLocationCounterBestCase, codeLocationCounterWorstCase, currentDS);
+                        scores.add(score);
+                    }
+                }
         }
         Optional<Score> best = scores.stream().min(Comparator.comparingDouble(Score::getBestScore));
         return best.orElse(new Score());
@@ -289,6 +348,21 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
 
         public double getAverageScore() {
             return 0.5 * (this.getBestScore() + this.getWorstScore());
+        }
+    }
+
+    private static class Op2Line {
+        String location;  // target: org/apache/commons/math3/exception/util/ExceptionContext:174
+        double suspicion;
+
+        Op2Line(String[] data) { //0: package, 1: classfile, 2: method, 3,4: lines, 5: ?, 6: suspicion
+            StringBuilder sBuild = new StringBuilder();
+            String clazz = data[1].substring(0, data[1].length() - 5); //remove .java ending
+            sBuild.append(clazz);
+            sBuild.append(':');
+            sBuild.append(data[3]); //line
+            this.location = sBuild.toString();
+            this.suspicion = Double.parseDouble(data[6]);
         }
     }
 }
