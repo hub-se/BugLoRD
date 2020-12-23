@@ -67,10 +67,10 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
             LinkedHashMap<Signature.Identifier, Signature> signatures = this.readFromFile(bug.getWorkDataDir().toString(), "signatures.dat");
 
 
-            //resolve Code locations
-            String folder = Paths.get(rankingDir.resolve(subDirName).toString()).toString();
-            Output.readFromFile(folder);
-            Output.writeToHumanFile(folder);
+//            //resolve Code locations
+//            String folder = Paths.get(rankingDir.resolve(subDirName).toString()).toString();
+//            Output.readFromFile(folder);
+//            Output.writeToHumanFile(folder);
 
 
             Log.out(this, "getTargets %s.", buggyEntity.getUniqueIdentifier());
@@ -83,21 +83,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         }
         else if (this.type.equals("sbfl")) {
 
-            LinkedList<Op2Line> lines = new LinkedList<>();
-            BufferedReader csvReader = null;
-            try {
-                csvReader = new BufferedReader(new FileReader(bug.getWorkDataDir().resolve("ranking").resolve("op2").resolve("ranking.rnk").toString()));
-            String row;
-            while ((row = csvReader.readLine()) != null) {
-                String[] data = row.split(":");
-                if (Double.parseDouble(data[6]) == 0.0)
-                    break;
-                lines.add(new Op2Line(data));
-            }
-            csvReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            LinkedList<Op2Line> lines = getOp2Lines(bug);
             Log.out(this, "found %s lines", lines.size());
             Log.out(this, "getTargets %s.", buggyEntity.getUniqueIdentifier());
             List<CodeLocation> targets = getTargets(buggyEntity);
@@ -124,6 +110,25 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         return buggyEntity;
     }
 
+    private LinkedList<Op2Line> getOp2Lines(Entity bug) {
+        LinkedList<Op2Line> lines = new LinkedList<>();
+        BufferedReader csvReader;
+        try {
+            csvReader = new BufferedReader(new FileReader(bug.getWorkDataDir().resolve("ranking").resolve("op2").resolve("ranking.rnk").toString()));
+        String row;
+        while ((row = csvReader.readLine()) != null) {
+            String[] data = row.split(":");
+            if (Double.parseDouble(data[6]) == 0.0)
+                break;
+            lines.add(new Op2Line(data));
+        }
+        csvReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return lines;
+    }
+
     private LinkedHashMap<Signature.Identifier, Signature> readFromFile(String folder , String filename){
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(folder + "/" + filename))) {
 
@@ -139,10 +144,12 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         double currentDS = 1;
         int codeLocationCounterBestCase = 0;
         int codeLocationCounterWorstCase = 0;
-        if (signatures.size() == 0)
-            Log.out(this, "score with %s signatures in %s", signatures.size() , buggyEntity.getUniqueIdentifier());
+        if (signatures == null  || signatures.size() == 0) {
+            Log.out(this, "score with 0 signatures in %s", buggyEntity.getUniqueIdentifier());
+            return new Score();
+        }
         if (targets.size() == 0)
-            Log.out(this, "score with %s targets in %s", targets.size(), buggyEntity.getUniqueIdentifier());
+            Log.out(this, "score with 0 targets in %s", buggyEntity.getUniqueIdentifier());
         currentDS = signatures.keySet().iterator().next().DS;
         for (Map.Entry<Signature.Identifier, Signature> entry : signatures.entrySet()) {
             Signature.Identifier key = entry.getKey();
