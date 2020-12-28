@@ -47,7 +47,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         NGramSet nGrams = dynSup ?
                 new NGramSet(hitTrace, maxN, minSup, true) : new NGramSet(hitTrace, maxN, minSup);
        //PT ->
-        System.out.println(nGrams.getResultAsText()); //PT
+        //System.out.println(nGrams.getResultAsText()); //PT
         	//System.out.println("_________________"); //PT
         	//System.out.println(hitTrace.successfulToString()); //PT
         	//System.out.println("_________________"); //PT
@@ -65,7 +65,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         nGrams.getnGrams().forEach(nGram -> {
         	//Idee: für jedes nGram mit EF > 0 den kleinsten Abstand (Cross-Entropy) zu nGrams mit EF = 0 berechnen
         	//und den Cross-Entropy-Wert als Suspiciousness zuordnen.
-    		System.out.println(nGram.toString());
+    	  //System.out.println(nGram.toString());
     		//System.out.println("_________________");
     		//System.out.println("BlockIDs: " + nGram.getBlockIDs());
     		//System.out.println("_________________");
@@ -211,6 +211,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	nGramProbability = calculateNGramProbability(nGram, hitTrace);
     	logProbability = Math.log(nGramProbability)/Math.log(2);
     	crossEntropy = -(1/N)*logProbability; //eigentlich *sum(...) aber da N = 1 wird sowieso nur ein Element berechnet
+    	if (crossEntropy < 0.0) crossEntropy = 0.0; //Um negative Werte zu vermeiden
     	return crossEntropy;
     }
     
