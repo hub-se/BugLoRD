@@ -211,7 +211,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	nGramProbability = calculateNGramProbability(nGram, hitTrace);
     	logProbability = Math.log(nGramProbability)/Math.log(2);
     	crossEntropy = -(1/N)*logProbability; //eigentlich *sum(...) aber da N = 1 wird sowieso nur ein Element berechnet
-    	if (crossEntropy < 0.000001) crossEntropy = 0.0; //Um negative Werte zu vermeiden
+    	if (crossEntropy < 0.00000000001) crossEntropy = 0.0; //Um negative Werte zu vermeiden
     	return crossEntropy;
     }
     
@@ -222,7 +222,9 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
     		double EC = calculateEC(nGram, hitTrace); //Anzahl der Ausfuehrungen dieses Kontexts mit anderem letzten Wert im nGram
     						//(noch keine Implementierung -> zusaetzliche Funktion)
-    		q = (ET/EC);
+    		if (EC > 0.0) { //Teilen durch 0 verhindern
+    			q = (ET/EC);
+    		}
     	}
     	return q;
     }
