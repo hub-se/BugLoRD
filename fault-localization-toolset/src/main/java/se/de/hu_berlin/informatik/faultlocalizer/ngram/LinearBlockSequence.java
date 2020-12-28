@@ -50,4 +50,11 @@ public class LinearBlockSequence {
         result = 31 * result + blockSeq.hashCode();
         return result;
     }
+    
+    //PT ->
+    public int getElement(int i) {
+    	if(blockSeq.size() >= i+1) return blockSeq.get(i);
+    	return 0;
+    }
+    //<- PT
 }

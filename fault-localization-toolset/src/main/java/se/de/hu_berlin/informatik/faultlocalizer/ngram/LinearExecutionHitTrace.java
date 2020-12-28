@@ -298,6 +298,23 @@ public class LinearExecutionHitTrace {
         });
     	return successfulTestTrace;
     }
+    
+    public int getTestTracesCount() {
+    	ArrayList<LinearExecutionTestTrace> successfulTestTrace = new ArrayList<LinearExecutionTestTrace>();
+    	TestTrace.forEach(t -> {
+    		if (t.isSuccessful()) {
+        		successfulTestTrace.add(t);
+        	}
+        });
+    	ArrayList<LinearExecutionTestTrace> failedTestTrace = new ArrayList<LinearExecutionTestTrace>();
+    	TestTrace.forEach(t -> {
+    		if (!(t.isSuccessful())) {
+        		failedTestTrace.add(t);
+        	}
+        });
+    	int size = successfulTestTrace.size() + failedTestTrace.size();
+    	return size;
+    }
 
 
 }

@@ -72,7 +72,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
     		//BlockIDs = nGram.getBlockIDs();
     		//setNewConfidence(nGram, calculateConfidence(nGram, hitTrace)); //ohne Cross-Entropy
-    		setNewConfidence(nGram, calculateCrossEntropy(nGram, nGrams));
+    		setNewConfidence(nGram, calculateCrossEntropy(nGram, hitTrace));
     		System.out.println(nGram.toString());
     		//BlockIDs.forEach(ID -> {
     			//setNewConfidence(nGram, 1.0); //funktioniert auch nicht -> scheinbar keine Zuweisungen auf nGrams
@@ -201,45 +201,60 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     }
     
     //Berechnet die Cross-Entropy fuer ein nGram
-    public double calculateCrossEntropy(NGram nGram, NGramSet nGrams) {
+    public double calculateCrossEntropy(NGram nGram, LinearExecutionHitTrace hitTrace) {
     	double crossEntropy =0.0;
     	int length = nGram.getLength();
     	int m = length -1;
     	int N = length - m;
     	double nGramProbability = 0.0;
     	double logProbability = 0.0;
-    	nGramProbability = calculateNGramProbability(nGram, nGrams);
+    	nGramProbability = calculateNGramProbability(nGram, hitTrace);
     	logProbability = Math.log(nGramProbability)/Math.log(2);
     	crossEntropy = -(1/N)*logProbability; //eigentlich *sum(...) aber da N = 1 wird sowieso nur ein Element berechnet
     	return crossEntropy;
     }
     
     //Berechnet q(nGram) (die Wahrscheinlichkeit des Auftretens des letzten Tokens nach diesem Kontext
-    public double calculateNGramProbability(NGram nGram, NGramSet nGrams) {
-    	double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
-    	double EC = calculateEC(nGram); //Anzahl der Ausfuehrungen dieses Kontexts mit anderem letzten Wert im nGram
+    public double calculateNGramProbability(NGram nGram, LinearExecutionHitTrace hitTrace) {
+    	double q = 0.0;
+    	if (nGram.getLength() == 3) { //Es werden nur nGrams der Laenge 3 berechnet, sonst confidence = 0
+    		double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
+    		double EC = calculateEC(nGram, hitTrace); //Anzahl der Ausfuehrungen dieses Kontexts mit anderem letzten Wert im nGram
     						//(noch keine Implementierung -> zusaetzliche Funktion)
-    	/*double EC = 0.0;
-    	nGrams.getnGrams().forEach(nGram2 -> {
-    		EC = EC + compareNGrams(nGram, nGram2);
-    	});*/
-    	double q = (ET/EC);
+    		q = (ET/EC);
+    	}
     	return q;
     }
     
-    public double calculateEC(NGram nGram) {
+    public double calculateEC(NGram nGram, LinearExecutionHitTrace hitTrace) {
     	double EC = 0.0;
-    	EC = nGram.getET() * 2.0; //Test um richtiges Uebergeben von nGram zu pruefen und unterschiedliche Werte 
+    	ArrayList<Integer> nGramBlockIDs = nGram.getBlockIDs();
+    	int context1 = nGramBlockIDs.get(0);
+    	int context2 = nGramBlockIDs.get(1);
+    	int seqContext1;
+    	int seqContext2;
+    	//EC = nGram.getET() * 2.0; //Test um richtiges Uebergeben von nGram zu pruefen und unterschiedliche Werte 
     							//fuer EC zu erhalten
+    	for(int i = 0; i < hitTrace.getTestTracesCount(); i++) { //Iterieren ueber alle Sequenzen
+    		LinearExecutionTestTrace testTrace = hitTrace.getTrace(i); //Finden jeder Ausfuehrung des gleichen
+    		for(int j = 0; j < testTrace.getTraces().size(); j++) { //Kontexts in den Traces
+    			LinearBlockSequence blockSequence = testTrace.getTrace(j);
+    			//nGram.getBlockIDs() == blockSequence.getBlockSeq() -> immer zwei Elemente fuer den Kontext
+    			//Iterieren ueber blockSequence
+    			//einzelne Elemente zum Vergleich in eigene Variablen speichern
+    			if (blockSequence.getBlockSeqSize() < 3) continue;
+    			for(int k = 0; k < blockSequence.getBlockSeqSize() - 3; k++) { //-3 because the last element has no
+    				seqContext1 = blockSequence.getElement(k); //following element
+    				seqContext2 = blockSequence.getElement(k+1);
+    				if ((context1 == seqContext1) && (context2 == seqContext2)) {
+    					EC = EC + 1.0;
+    				}
+    			}
+    		}
+    	}		
     	return EC;
     }
     
-   /* public double compareNGrams(NGram nGram, NGram nGram2) {
-    	InvolvedBlocks.forEach(blockID -> {
-			if (ID == blockID) {
-				found = true;
-			}
-		});
-    }*/
+   
     //<- PT
 }

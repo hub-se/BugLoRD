@@ -132,4 +132,5 @@ public class NGram implements Comparable<NGram> {
         this.confidence = conf;
         return;
     }
+    // <- PT
 }
