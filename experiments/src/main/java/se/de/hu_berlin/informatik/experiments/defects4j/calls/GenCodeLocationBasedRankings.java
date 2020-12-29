@@ -215,7 +215,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         String[] packagePath = Arrays.copyOf(packageAndClassPath, packageAndClassPath.length - 1);
         String pck = String.join(".", packagePath);
         String className = packageAndClassPath[packageAndClassPath.length - 1];
-        String classPaths = buggyEntity.getBuggyVersion().getClassPath(true);
+        String classPaths = buggyEntity.getBuggyVersion().getClassPath(true) + ":" + buggyEntity.getBuggyVersion().getTestClassPath(true);
         SootConnector sc = SootConnector.getInstance(pck, className, classPaths, false);
         List<SootMethod> methods = sc.getAllMethods();
         //Log.out(this, "Calculating score with %s methods", methods.size());
@@ -285,7 +285,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                 String[] packagePath = Arrays.copyOf(packageAndClassPath, packageAndClassPath.length - 1);
                 String pck = String.join(".",packagePath);
                 String className = packageAndClassPath[packageAndClassPath.length -1];
-                String classPaths = buggyEntity.getBuggyVersion().getClassPath(true);
+                String classPaths = buggyEntity.getBuggyVersion().getClassPath(true) + ":" + buggyEntity.getBuggyVersion().getTestClassPath(true);
                 List<SootMethod> methods = new ArrayList<>();
                 try {
                     SootConnector sc = SootConnector.getInstance(pck, className, classPaths);
