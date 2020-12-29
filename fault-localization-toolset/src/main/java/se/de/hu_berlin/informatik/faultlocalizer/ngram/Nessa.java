@@ -218,7 +218,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	}
     	System.out.println("logProbability: " + logProbability);
     	if (logProbability != 0.0 ) {
-    		crossEntropy = -(1/N)*logProbability; //eigentlich *sum(...) aber da N = 1 wird sowieso nur ein Element berechnet
+    		crossEntropy = -(1/N)*logProbability; //eigentlich *sum(...), da N = 1 wird nur ein Element berechnet
     	}
     	else {
     		crossEntropy = 0.0;
@@ -233,8 +233,9 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	double q = 0.0;
     	if (nGram.getLength() == 3) { //Es werden nur nGrams der Laenge 3 berechnet, sonst confidence = 0
     		double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
-    		double EC = calculateEC(nGram, hitTrace); //Anzahl der Ausfuehrungen dieses Kontexts mit anderem letzten Wert im nGram
-    						//(noch keine Implementierung -> zusaetzliche Funktion)
+    		double EC = calculateEC(nGram, hitTrace); //Ausfuehrungen von Kontext mit anderem letzten Wert im nGram
+    		System.out.println("ET: " + ET);
+    		System.out.println("EC: " + EC);
     		if (EC > 0.0) { //Teilen durch 0 verhindern
     			q = (ET/EC);
     		}
