@@ -13,6 +13,7 @@ import se.de.hu_berlin.informatik.gen.spectra.predicates.pdg.SootConnector;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
 import soot.SootMethod;
+import soot.SootResolver;
 import soot.Unit;
 import soot.UnitPatchingChain;
 import soot.jimple.toolkits.callgraph.Edge;
@@ -285,8 +286,14 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                 String pck = String.join(".",packagePath);
                 String className = packageAndClassPath[packageAndClassPath.length -1];
                 String classPaths = buggyEntity.getBuggyVersion().getClassPath(true) + ":" + buggyEntity.getBuggyVersion().getTestClassPath(true);
-                SootConnector sc = SootConnector.getInstance(pck, className, classPaths);
-                List<SootMethod> methods = sc.getAllMethods();
+                List<SootMethod> methods = new ArrayList<>();
+                try {
+                    SootConnector sc = SootConnector.getInstance(pck, className, classPaths);
+                    methods = sc.getAllMethods();
+                }
+                catch (SootResolver.SootClassNotFoundException ex) {
+                    Log.out(this, "SootClassNotFoundException %s", ex.getMessage());
+                }
                 //Log.out(this, "Calculating score with %s methods", methods.size());
                 for (SootMethod sootMethod : methods) {
                     if (!sootMethod.hasActiveBody())
