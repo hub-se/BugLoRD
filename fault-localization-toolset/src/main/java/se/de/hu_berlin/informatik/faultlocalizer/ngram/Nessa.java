@@ -260,7 +260,11 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     			//nGram.getBlockIDs() == blockSequence.getBlockSeq() -> immer zwei Elemente fuer den Kontext
     			//Iterieren ueber blockSequence
     			//einzelne Elemente zum Vergleich in eigene Variablen speichern
-    			if (blockSequence.getBlockSeqSize() < 3) continue;
+    			if (blockSequence.getBlockSeqSize() < 3) {
+    				System.out.println(testTrace.toString());
+    				System.out.println(blockSequence.toString());
+    				continue;
+    			}
     			for(int k = 0; k < blockSequence.getBlockSeqSize() - 3; k++) { //-3 because the last element has no
     				seqContext1 = blockSequence.getElement(k); //following element
     				seqContext2 = blockSequence.getElement(k+1);
