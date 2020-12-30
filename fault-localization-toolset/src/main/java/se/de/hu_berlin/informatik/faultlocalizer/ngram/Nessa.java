@@ -232,7 +232,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     public double calculateNGramProbability(NGram nGram, LinearExecutionHitTrace hitTrace) {
     	double q = 0.0;
     	if (nGram.getLength() == 3) { //Es werden nur nGrams der Laenge 3 berechnet, sonst confidence = 0
-    		double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
+    		//double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
+    		double ET = calculateET(nGram, hitTrace);
     		double EC = calculateEC(nGram, hitTrace); //Ausfuehrungen von Kontext mit anderem letzten Wert im nGram
     		System.out.println("ET: " + ET);
     		System.out.println("EC: " + EC);
@@ -275,6 +276,43 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		}
     	}		
     	return EC;
+    }
+    
+    public double calculateET(NGram nGram, LinearExecutionHitTrace hitTrace) {
+    	double ET = 0.0;
+    	ArrayList<Integer> nGramBlockIDs = nGram.getBlockIDs();
+    	int context1 = nGramBlockIDs.get(0);
+    	int context2 = nGramBlockIDs.get(1);
+    	int context3 = nGramBlockIDs.get(2);
+    	int seqContext1;
+    	int seqContext2;
+    	int seqContext3;
+    	//EC = nGram.getET() * 2.0; //Test um richtiges Uebergeben von nGram zu pruefen und unterschiedliche Werte 
+    							//fuer EC zu erhalten
+    	for(int i = 0; i < hitTrace.getTestTracesCount(); i++) { //Iterieren ueber alle Sequenzen
+    		LinearExecutionTestTrace testTrace = hitTrace.getTrace(i); //Finden jeder Ausfuehrung des gleichen
+    		for(int j = 0; j < testTrace.getTraces().size(); j++) { //Kontexts in den Traces
+    			LinearBlockSequence blockSequence = testTrace.getTrace(j);
+    			//nGram.getBlockIDs() == blockSequence.getBlockSeq() -> immer zwei Elemente fuer den Kontext
+    			//Iterieren ueber blockSequence
+    			//einzelne Elemente zum Vergleich in eigene Variablen speichern
+    			if (blockSequence.getBlockSeqSize() < 3) continue;
+    			for(int k = 0; k < blockSequence.getBlockSeqSize() - 4; k++) { //-4 because the last element has no
+    				seqContext1 = blockSequence.getElement(k); //following element
+    				seqContext2 = blockSequence.getElement(k+1);
+    				seqContext3 = blockSequence.getElement(k+2);
+    				System.out.println(nGram.toString());
+    				System.out.println("context1: " + context1);
+    		    	System.out.println("context2: " + context2);
+    				System.out.println("seqContext1: " + seqContext1);
+    		    	System.out.println("seqContext2: " + seqContext2);
+    				if ((context1 == seqContext1) && (context2 == seqContext2) && (context3 == seqContext3)) {
+    					ET = ET + 1.0;
+    				}
+    			}
+    		}
+    	}		
+    	return ET;
     }
     
    
