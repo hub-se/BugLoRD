@@ -297,8 +297,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     			//Iterieren ueber blockSequence
     			//einzelne Elemente zum Vergleich in eigene Variablen speichern
     			if (blockSequence.getBlockSeqSize() < 3) continue;
-    			for(int k = 0; k < blockSequence.getBlockSeqSize() - 4; k++) { //-4 because the last element has no
-    				seqContext1 = blockSequence.getElement(k); //following element
+    			for(int k = 0; k < blockSequence.getBlockSeqSize() - 3; k++) {
+    				seqContext1 = blockSequence.getElement(k);
     				seqContext2 = blockSequence.getElement(k+1);
     				seqContext3 = blockSequence.getElement(k+2);
     				System.out.println(nGram.toString());
