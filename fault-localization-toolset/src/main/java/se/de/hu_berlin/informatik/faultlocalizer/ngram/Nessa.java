@@ -252,8 +252,6 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	int seqContext2;
     	//EC = nGram.getET() * 2.0; //Test um richtiges Uebergeben von nGram zu pruefen und unterschiedliche Werte 
     							//fuer EC zu erhalten
-    	System.out.println("context1: " + context1);
-    	System.out.println("context2: " + context2);
     	for(int i = 0; i < hitTrace.getTestTracesCount(); i++) { //Iterieren ueber alle Sequenzen
     		LinearExecutionTestTrace testTrace = hitTrace.getTrace(i); //Finden jeder Ausfuehrung des gleichen
     		for(int j = 0; j < testTrace.getTraces().size(); j++) { //Kontexts in den Traces
@@ -265,6 +263,9 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     			for(int k = 0; k < blockSequence.getBlockSeqSize() - 3; k++) { //-3 because the last element has no
     				seqContext1 = blockSequence.getElement(k); //following element
     				seqContext2 = blockSequence.getElement(k+1);
+    				nGram.toString();
+    				System.out.println("context1: " + context1);
+    		    	System.out.println("context2: " + context2);
     				System.out.println("seqContext1: " + seqContext1);
     		    	System.out.println("seqContext2: " + seqContext2);
     				if ((context1 == seqContext1) && (context2 == seqContext2)) {
