@@ -264,11 +264,11 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     			for(int k = 0; k < blockSequence.getBlockSeqSize() - 3; k++) { //-3 because the last element has no
     				seqContext1 = blockSequence.getElement(k); //following element
     				seqContext2 = blockSequence.getElement(k+1);
-    				System.out.println(nGram.toString());
+    				/*System.out.println(nGram.toString());
     				System.out.println("context1: " + context1);
     		    	System.out.println("context2: " + context2);
     				System.out.println("seqContext1: " + seqContext1);
-    		    	System.out.println("seqContext2: " + seqContext2);
+    		    	System.out.println("seqContext2: " + seqContext2);*/
     				if ((context1 == seqContext1) && (context2 == seqContext2)) {
     					EC = EC + 1.0;
     				}
@@ -301,11 +301,11 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     				seqContext1 = blockSequence.getElement(k);
     				seqContext2 = blockSequence.getElement(k+1);
     				seqContext3 = blockSequence.getElement(k+2);
-    				System.out.println(nGram.toString());
+    				/*System.out.println(nGram.toString());
     				System.out.println("context1: " + context1);
     		    	System.out.println("context2: " + context2);
     				System.out.println("seqContext1: " + seqContext1);
-    		    	System.out.println("seqContext2: " + seqContext2);
+    		    	System.out.println("seqContext2: " + seqContext2);*/
     				if ((context1 == seqContext1) && (context2 == seqContext2) && (context3 == seqContext3)) {
     					ET = ET + 1.0;
     				}
