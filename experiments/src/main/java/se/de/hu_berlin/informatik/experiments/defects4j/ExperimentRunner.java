@@ -177,13 +177,13 @@ public class ExperimentRunner {
         }
         if (toDoContains(toDo, "predicates")) {
             EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>> firstEH =
-                    new ERProducePredicates(options.getOptionValue(CmdOptions.SUFFIX, null), options.hasOption(CmdOptions.FILL_EMPTY_LINES), options.getOptionValue(CmdOptions.SUFFIX, "pairs")).asEH();
+                    new ERProducePredicates(options.getOptionValue(CmdOptions.SUFFIX, null), options.hasOption(CmdOptions.FILL_EMPTY_LINES), options.getOptionValue(CmdOptions.JOINSTRATEGY, "pairs")).asEH();
             @SuppressWarnings("unchecked") final Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>>) firstEH.getClass();
             final EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>[] handlers = Misc.createGenericArray(clazz, threadCount);
 
             handlers[0] = firstEH;
             for (int i = 1; i < handlers.length; ++i) {
-                handlers[i] = new ERProducePredicates(options.getOptionValue(CmdOptions.SUFFIX, null), options.hasOption(CmdOptions.FILL_EMPTY_LINES), options.getOptionValue(CmdOptions.SUFFIX, "pairs")).asEH();
+                handlers[i] = new ERProducePredicates(options.getOptionValue(CmdOptions.SUFFIX, null), options.hasOption(CmdOptions.FILL_EMPTY_LINES), options.getOptionValue(CmdOptions.JOINSTRATEGY, "pairs")).asEH();
             }
             linker.append(new ThreadedProcessor<>(limit, handlers));
         }
