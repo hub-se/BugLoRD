@@ -263,7 +263,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     			for(int k = 0; k < blockSequence.getBlockSeqSize() - 3; k++) { //-3 because the last element has no
     				seqContext1 = blockSequence.getElement(k); //following element
     				seqContext2 = blockSequence.getElement(k+1);
-    				nGram.toString();
+    				System.out.println(nGram.toString());
     				System.out.println("context1: " + context1);
     		    	System.out.println("context2: " + context2);
     				System.out.println("seqContext1: " + seqContext1);
