@@ -7,6 +7,7 @@ import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4JBuggyFixedEntity;
 import se.de.hu_berlin.informatik.experiments.defects4j.BugLoRD.ToolSpecific;
 import se.de.hu_berlin.informatik.experiments.defects4j.calls.*;
+import se.de.hu_berlin.informatik.gen.spectra.predicates.modules.Output;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.optionparser.OptionParser;
@@ -58,7 +59,8 @@ public class ExperimentRunner {
                 + "trace file has previously been created that would usually be sufficient to compute SBFL rankings.",
                 false),
         LM("lm", "globalLM", true, "Path to a language model binary (kenLM).", false),
-        RANKING_TYPE("rt", "rankingType", true, "Rank predicates or sbfl", false);
+        RANKING_TYPE("rt", "rankingType", true, "Rank predicates or sbfl", false),
+        JOINSTRATEGY("js", "joinStrategy", true, "how to join predicates", false);
 
         /* the following code blocks should not need to be changed */
         final private OptionWrapper option;
@@ -175,13 +177,13 @@ public class ExperimentRunner {
         }
         if (toDoContains(toDo, "predicates")) {
             EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>> firstEH =
-                    new ERProducePredicates(options.getOptionValue(CmdOptions.SUFFIX, null), options.hasOption(CmdOptions.FILL_EMPTY_LINES)).asEH();
+                    new ERProducePredicates(options.getOptionValue(CmdOptions.SUFFIX, null), options.hasOption(CmdOptions.FILL_EMPTY_LINES), options.getOptionValue(CmdOptions.SUFFIX, "pairs")).asEH();
             @SuppressWarnings("unchecked") final Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>> clazz = (Class<EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>>) firstEH.getClass();
             final EHWithInputAndReturn<BuggyFixedEntity<?>, BuggyFixedEntity<?>>[] handlers = Misc.createGenericArray(clazz, threadCount);
 
             handlers[0] = firstEH;
             for (int i = 1; i < handlers.length; ++i) {
-                handlers[i] = new ERProducePredicates(options.getOptionValue(CmdOptions.SUFFIX, null), options.hasOption(CmdOptions.FILL_EMPTY_LINES)).asEH();
+                handlers[i] = new ERProducePredicates(options.getOptionValue(CmdOptions.SUFFIX, null), options.hasOption(CmdOptions.FILL_EMPTY_LINES), options.getOptionValue(CmdOptions.SUFFIX, "pairs")).asEH();
             }
             linker.append(new ThreadedProcessor<>(limit, handlers));
         }

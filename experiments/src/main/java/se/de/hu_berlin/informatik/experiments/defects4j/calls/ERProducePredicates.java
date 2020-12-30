@@ -3,54 +3,42 @@ package se.de.hu_berlin.informatik.experiments.defects4j.calls;
 import se.de.hu_berlin.informatik.benchmark.api.BugLoRDConstants;
 import se.de.hu_berlin.informatik.benchmark.api.BuggyFixedEntity;
 import se.de.hu_berlin.informatik.benchmark.api.Entity;
-import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J.Defects4JProperties;
-import se.de.hu_berlin.informatik.benchmark.modification.Modification;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerator.AbstractBuilder;
 import se.de.hu_berlin.informatik.gen.spectra.main.PredicatesSpectraGenerator;
-import se.de.hu_berlin.informatik.gen.spectra.predicates.extras.ScoringFileWriter;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.mining.Miner;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.mining.Signature;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.modules.Output;
 import se.de.hu_berlin.informatik.gen.spectra.predicates.modules.Predicate;
-import se.de.hu_berlin.informatik.gen.spectra.predicates.pdg.CodeLocation;
-import se.de.hu_berlin.informatik.gen.spectra.predicates.pdg.SootConnector;
 import se.de.hu_berlin.informatik.utils.files.FileUtils;
 import se.de.hu_berlin.informatik.utils.files.processors.SearchFileOrDirToListProcessor;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.processors.AbstractProcessor;
-import soot.SootMethod;
-import soot.Unit;
-import soot.UnitPatchingChain;
-import soot.jimple.toolkits.callgraph.Edge;
-import soot.toolkits.graph.UnitGraph;
-import soot.toolkits.graph.pdg.HashMutablePDG;
-import soot.toolkits.graph.pdg.PDGRegion;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
-/**
- * Runs a single experiment.
- *
- * @author Simon Heiden
- */
 public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, BuggyFixedEntity<?>> {
 
     private final String suffix;
     private final String subDirName;
     private final boolean fillEmptyLines;
+    private final String joinStrategy;
 
     /**
      * @param suffix         a suffix to append to the ranking directory (may be null)
      * @param fillEmptyLines whether to fill up empty lines between statements
+     * @param joinStrategy how to join predicates
      */
-    public ERProducePredicates(String suffix, boolean fillEmptyLines) {
+    public ERProducePredicates(String suffix, boolean fillEmptyLines, String joinStrategy) {
         this.fillEmptyLines = fillEmptyLines;
+        this.joinStrategy = joinStrategy;
         this.subDirName = "predicates"; //getSubDirName(toolSpecific);
         this.suffix = suffix;
     }
@@ -251,7 +239,8 @@ public class ERProducePredicates extends AbstractProcessor<BuggyFixedEntity<?>, 
         // repeat tests 2 times to generate more correct coverage data!?
 
         Log.out(this, "%s: Generating predicates...", buggyEntity);
-        AbstractBuilder builder = new PredicatesSpectraGenerator.Builder();
+        AbstractBuilder builder = new PredicatesSpectraGenerator.Builder()
+                .setJoinStrategy(this.joinStrategy);
 
         builder
                 .setCustomJvmArgs(Defects4JProperties.MAIN_JVM_ARGS.getValue().split(" ", 0))
