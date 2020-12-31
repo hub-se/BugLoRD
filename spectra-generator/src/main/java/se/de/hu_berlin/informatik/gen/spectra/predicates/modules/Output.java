@@ -15,7 +15,7 @@ public class Output {
     public static Map<Integer, Integer> Triggers = new ConcurrentHashMap<>();
     public static int nextPredicateNumber;
 
-    public static JOINSTRATEGY joinStrategy = JOINSTRATEGY.PAIRS;
+    public static JOINSTRATEGY joinStrategy = JOINSTRATEGY.NONE;
     private static Integer lastPredicateId = -1;
     private static final Map<Pair<Integer,Integer>,Integer> joinPredicateMap = new ConcurrentHashMap<>();
     private static boolean shouldWrite = false;
