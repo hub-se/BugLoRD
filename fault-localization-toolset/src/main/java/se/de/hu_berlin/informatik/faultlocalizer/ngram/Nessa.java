@@ -73,7 +73,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//BlockIDs = nGram.getBlockIDs();
     		//setNewConfidence(nGram, calculateConfidence(nGram, hitTrace)); //ohne Cross-Entropy
     		setNewConfidence(nGram, calculateCrossEntropy(nGram, hitTrace));
-    		System.out.println(nGram.toString());
+    //		System.out.println(nGram.toString());
     		//BlockIDs.forEach(ID -> {
     			//setNewConfidence(nGram, 1.0); //funktioniert auch nicht -> scheinbar keine Zuweisungen auf nGrams
     			//hitTrace.getFailedTestTraces().forEach(failedTestTrace -> { //in inneren foreach Schleifen moeglich
@@ -105,7 +105,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		}*/
         });
         nGrams.updateConfidence();
-        System.out.println("New Confidence: " + nGrams.getConfidence());
+   //     System.out.println("New Confidence: " + nGrams.getConfidence());
         // <- PT
         confidence = nGrams.getConfidence();
         confidence.forEach((key, value) -> {
@@ -260,7 +260,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     			//nGram.getBlockIDs() == blockSequence.getBlockSeq() -> immer zwei Elemente fuer den Kontext
     			//Iterieren ueber blockSequence
     			//einzelne Elemente zum Vergleich in eigene Variablen speichern
-    			System.out.println(testTrace.toString());
+    //			System.out.println(testTrace.toString());
     			if (blockSequence.getBlockSeqSize() < 3) {
     //				System.out.println(testTrace.toString());
     //				System.out.println(blockSequence.toString());
