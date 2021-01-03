@@ -317,6 +317,11 @@ public class NGramSet {
         for (int n = 0; n < length; n++) {
             if (tmp[n] != -1) count++;
         }
+        System.out.println("---------------------------------------------");
+        System.out.println("allSet: " + allSet);
+        System.out.println("tmp: " + tmp);
+        System.out.println("count: " + count);
+        System.out.println("---------------------------------------------");
         return count;
     }
     
