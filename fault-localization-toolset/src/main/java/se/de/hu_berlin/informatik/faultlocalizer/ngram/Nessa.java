@@ -209,21 +209,21 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	double nGramProbability = 0.0;
     	double logProbability = 0.0;
     	nGramProbability = calculateNGramProbability(nGram, hitTrace);
-    	System.out.println("nGramProbability: " + nGramProbability);
+    //	System.out.println("nGramProbability: " + nGramProbability);
     	if (nGramProbability > 0) {
     		logProbability = Math.log(nGramProbability)/Math.log(2);
     	}
     	else {
     		logProbability = 0.0;
     	}
-    	System.out.println("logProbability: " + logProbability);
+    //	System.out.println("logProbability: " + logProbability);
     	if (logProbability != 0.0 ) {
     		crossEntropy = -(1/N)*logProbability; //eigentlich *sum(...), da N = 1 wird nur ein Element berechnet
     	}
     	else {
     		crossEntropy = 0.0;
     	}
-    	System.out.println("crossEntropy: " + crossEntropy);
+    //	System.out.println("crossEntropy: " + crossEntropy);
     	//if (crossEntropy < 0.00000000001) crossEntropy = 0.0; //Um negative Werte zu vermeiden
     	return crossEntropy;
     }
@@ -235,8 +235,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
     		double ET = calculateET(nGram, hitTrace);
     		double EC = calculateEC(nGram, hitTrace); //Ausfuehrungen von Kontext mit anderem letzten Wert im nGram
-    		System.out.println("ET: " + ET);
-    		System.out.println("EC: " + EC);
+    //		System.out.println("ET: " + ET);
+    //		System.out.println("EC: " + EC);
     		if (EC > 0.0) { //Teilen durch 0 verhindern
     			q = (ET/EC);
     		}
@@ -262,8 +262,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     			//einzelne Elemente zum Vergleich in eigene Variablen speichern
     			System.out.println(testTrace.toString());
     			if (blockSequence.getBlockSeqSize() < 3) {
-    				System.out.println(testTrace.toString());
-    				System.out.println(blockSequence.toString());
+    //				System.out.println(testTrace.toString());
+    //				System.out.println(blockSequence.toString());
     				continue;
     			}
     			for(int k = 0; k < blockSequence.getBlockSeqSize() - 3; k++) { //-3 because the last element has no
