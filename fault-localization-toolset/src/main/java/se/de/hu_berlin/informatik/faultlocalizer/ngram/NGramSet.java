@@ -319,8 +319,10 @@ public class NGramSet {
         }
         System.out.println("---------------------------------------------");
         System.out.println("allSet: " + allSet);
-        System.out.println("tmp: " + tmp);
+        //System.out.println("tmp: " + tmp);
         System.out.println("count: " + count);
+        System.out.println("failedTest: "+ failedTest);
+        System.out.println("passedTest: " + passedTest);
         System.out.println("---------------------------------------------");
         return count;
     }
