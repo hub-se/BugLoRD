@@ -84,13 +84,15 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         }
         else if (this.type.equals("sbfl")) {
 
-            LinkedList<Op2Line> lines = getOp2Lines(bug);
-            Log.out(this, "found %s lines", lines.size());
-            Log.out(this, "getTargets %s.", buggyEntity.getUniqueIdentifier());
-            List<CodeLocation> targets = getTargets(buggyEntity);
-            Log.out(this, "Scoring %s.", buggyEntity.getUniqueIdentifier());
-            score = getScore(lines, targets, buggyEntity);
-            Log.out(this, "Finish scoring %s.", buggyEntity.getUniqueIdentifier());
+            LinkedList<Op2Line> lines = getDstarLines(bug);
+            if (lines.size() > 0) {
+                Log.out(this, "found %s lines", lines.size());
+                Log.out(this, "getTargets %s.", buggyEntity.getUniqueIdentifier());
+                List<CodeLocation> targets = getTargets(buggyEntity);
+                Log.out(this, "Scoring %s.", buggyEntity.getUniqueIdentifier());
+                score = getScore(lines, targets, buggyEntity);
+                Log.out(this, "Finish scoring %s.", buggyEntity.getUniqueIdentifier());
+            }
         }
         else {
             Log.err(this, "Wrong type argument!");
@@ -111,11 +113,11 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         return buggyEntity;
     }
 
-    private LinkedList<Op2Line> getOp2Lines(Entity bug) {
+    private LinkedList<Op2Line> getDstarLines(Entity bug) {
         LinkedList<Op2Line> lines = new LinkedList<>();
         BufferedReader csvReader;
         try {
-            csvReader = new BufferedReader(new FileReader(bug.getWorkDataDir().resolve("ranking").resolve("op2").resolve("ranking.rnk").toString()));
+            csvReader = new BufferedReader(new FileReader(bug.getWorkDataDir().resolve("ranking").resolve("dstar").resolve("ranking.rnk").toString()));
         String row;
         while ((row = csvReader.readLine()) != null) {
             String[] data = row.split(":");
