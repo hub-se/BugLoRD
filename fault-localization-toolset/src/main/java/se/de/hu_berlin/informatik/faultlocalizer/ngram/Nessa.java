@@ -104,7 +104,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     			System.out.println("EF <= 0:" + nGram.toString());
     		}*/
         });
-        nGrams.updateConfidence();
+        //nGrams.updateConfidence();
         System.out.println("New Confidence: " + nGrams.getConfidence());
         // <- PT
         confidence = nGrams.getConfidence();
