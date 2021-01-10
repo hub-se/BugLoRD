@@ -103,10 +103,11 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         //Output
         String line;
         if (score.Failed) {
-            line = buggyEntity.getUniqueIdentifier() + ";" + Double.NaN + ";" + Double.NaN + ";" + Double.NaN + ";" + Double.NaN + ";" + Double.NaN;
+            line = buggyEntity.getUniqueIdentifier() + ";" + Double.NaN + ";" + Double.NaN + ";" + Double.NaN + ";" + Double.NaN + ";" + Double.NaN + ";" + Double.NaN;
         }
         else {
-            line = buggyEntity.getUniqueIdentifier() + ";" + score.getBestScore() + ";" + score.getWorstScore() + ";" + score.getAverageScore() + ";" + score.PathCost + ";" + score.DS;
+            line = buggyEntity.getUniqueIdentifier() + ";" + score.getBestScore() + ";" + score.getWorstScore() + ";" + score.getAverageScore() + ";" + score.PathCost + ";" + score.DS
+                    + ";" + (score.CodeLocationsBeforeWorstCase - score.CodeLocationsBeforeBestCase);
         }
         ScoringFileWriter.getInstance().write(line);
 
@@ -278,7 +279,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                         Integer internDistanceInTarget = this.getDistanceInUnits(sc, target.method, target.unit, edge.srcUnit());
                         if (internDistanceInTarget == null)
                             continue; //we wont get a result that is fair to compare
-                        Log.out(this, "Found a edge connection!");
+                        Log.out(this, "Found a reverse edge connection!");
                         edgeDistances.add((double) (internDistanceInGoal + internDistanceInTarget + classPenalty + 10)); //TODO EdgeCost
                     }
                 }
