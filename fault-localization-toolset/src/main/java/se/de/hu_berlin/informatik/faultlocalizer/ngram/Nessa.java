@@ -72,7 +72,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
     		//BlockIDs = nGram.getBlockIDs();
     		//setNewConfidence(nGram, calculateConfidence(nGram, hitTrace)); //ohne Cross-Entropy
-//    		setNewConfidence(nGram, calculateCrossEntropy(nGram, hitTrace));
+    		setNewConfidence(nGram, calculateCrossEntropy(nGram, hitTrace));
     //		System.out.println(nGram.toString());
     		//BlockIDs.forEach(ID -> {
     			//setNewConfidence(nGram, 1.0); //funktioniert auch nicht -> scheinbar keine Zuweisungen auf nGrams
@@ -104,7 +104,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     			System.out.println("EF <= 0:" + nGram.toString());
     		}*/
         });
-//        nGrams.updateConfidence();
+        nGrams.updateConfidence();
         System.out.println("New Confidence: " + nGrams.getConfidence());
         // <- PT
         confidence = nGrams.getConfidence();
