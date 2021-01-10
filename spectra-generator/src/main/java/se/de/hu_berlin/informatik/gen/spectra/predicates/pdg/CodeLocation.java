@@ -9,13 +9,15 @@ public class CodeLocation {
     public String className;
     public String methodName;
     public SootMethod method;
+    public SootConnector sootConnector;
 
-    public CodeLocation(Unit unit, String className, SootMethod method)
+    public CodeLocation(Unit unit, String className, SootMethod method, SootConnector sootConnector)
     {
         this.unit = unit;
         this.className = className;
         this.methodName = method.getName();
         this.method = method;
+        this.sootConnector = sootConnector;
     }
 
     public String getLocationString()

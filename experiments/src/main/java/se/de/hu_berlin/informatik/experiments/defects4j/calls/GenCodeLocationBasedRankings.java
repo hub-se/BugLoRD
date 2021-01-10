@@ -228,7 +228,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                 continue;
             sootMethod.getActiveBody().getUnits().forEach(unit -> {
                 if (unit.getJavaSourceStartLineNumber() == predicateLine)
-                    predicateLocations.add(new CodeLocation(unit, className, sootMethod));
+                    predicateLocations.add(new CodeLocation(unit, className, sootMethod, sc));
             });
         }
 
@@ -247,7 +247,9 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
             }
             else {
                 Iterator<Edge> iteratorOnCallsOutOfGoalMethod = sc.getIteratorOnCallsOutOfMethod(goal.method);
-                Iterator<Edge> iteratorOnCallsOutOfTargetMethod = sc.getIteratorOnCallsOutOfMethod(target.method);
+                Iterator<Edge> iteratorOnCallsOutOfTargetMethod = null;
+                if (target.sootConnector != null)
+                    iteratorOnCallsOutOfTargetMethod = target.sootConnector.getIteratorOnCallsOutOfMethod(target.method);
                 int classPenalty = 0;
                 if (goal.className.equals(target.className))
                     classPenalty = 25;
@@ -267,7 +269,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                     }
                 }
                 //target -> goal
-                while (iteratorOnCallsOutOfTargetMethod.hasNext()) {
+                while (iteratorOnCallsOutOfTargetMethod != null && iteratorOnCallsOutOfTargetMethod.hasNext()) {
                     Edge edge = iteratorOnCallsOutOfTargetMethod.next();
                     if (edge.tgt() == goal.method) {
                         Integer internDistanceInGoal = this.getDistanceInUnits(sc, goal.method, goal.unit, edge.tgt().getActiveBody().getUnits().getFirst());
@@ -310,8 +312,9 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                 String className = packageAndClassPath[packageAndClassPath.length -1];
                 String classPaths = buggyEntity.getBuggyVersion().getClassPath(true) + ":" + buggyEntity.getBuggyVersion().getTestClassPath(true);
                 List<SootMethod> methods = new ArrayList<>();
+                SootConnector sc = null;
                 try {
-                    SootConnector sc = SootConnector.getInstance(pck, className, classPaths);
+                    sc = SootConnector.getInstance(pck, className, classPaths);
                     methods = sc.getAllMethods();
                 }
                 catch (SootResolver.SootClassNotFoundException ex) {
@@ -334,7 +337,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                         for (int possibleLine : modification.getPossibleLines()) {
                             //Log.out(this, "possibleLine %s ", possibleLine);
                             if (lines.contains(possibleLine))
-                                targets.add(new CodeLocation(unit, className, sootMethod));
+                                targets.add(new CodeLocation(unit, className, sootMethod, sc));
                         }
                     }
                 }
