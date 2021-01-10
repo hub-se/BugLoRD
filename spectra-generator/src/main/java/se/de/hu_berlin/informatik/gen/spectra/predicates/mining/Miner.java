@@ -19,7 +19,7 @@ public class Miner {
     public LinkedHashMap<Signature.Identifier, Signature> mine(String folder) {
 
         String row;
-        Database db = new Database();
+        //Database db = new Database();
 
         Log.out(Miner.class, "Mining %s.", folder);
 
@@ -32,22 +32,28 @@ public class Miner {
         }
 
         Log.out(this, "Setting up first DB.");
-        try {
-            BufferedReader csvReader = new BufferedReader(new FileReader(Paths.get(folder, "Profiles.csv").toString()));
-            while ((row = csvReader.readLine()) != null) {
-                String[] profileString = row.split(";");
-                List<Integer> predicates = new ArrayList<>();
-                if (!profileString[0].isEmpty()) {
-                    predicates = Ints.asList(Arrays.stream(profileString[0].split(",")).mapToInt(Integer::parseInt).toArray());
-                }
-                Profile profile = new Profile(predicates,Boolean.parseBoolean(profileString[1]));
-                db.addProfile(profile);
-            }
-            csvReader.close();
+//        try {
+//            BufferedReader csvReader = new BufferedReader(new FileReader(Paths.get(folder, "Profiles.csv").toString()));
+//            while ((row = csvReader.readLine()) != null) {
+//                String[] profileString = row.split(";");
+//                List<Integer> predicates = new ArrayList<>();
+//                if (!profileString[0].isEmpty()) {
+//                    predicates = Ints.asList(Arrays.stream(profileString[0].split(",")).mapToInt(Integer::parseInt).toArray());
+//                }
+//                Profile profile = new Profile(predicates,Boolean.parseBoolean(profileString[1]));
+//                db.addProfile(profile);
+//            }
+//            csvReader.close();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Profile t1 = new Profile(Arrays.asList(1,3), true);
+        Profile t2 = new Profile(Arrays.asList(1,3,4), true);
+        Profile t3 = new Profile(Arrays.asList(2,4), true);
+        Profile t4 = new Profile(Arrays.asList(2,4,5), false);
+        Database db = new Database(new ArrayList<>(Arrays.asList(t1, t2, t3, t4)),new ArrayList<>());
 
 //        Profile t1 = new Profile(Arrays.asList(2), true);
 //        Profile t2 = new Profile(Arrays.asList(4,12), true);

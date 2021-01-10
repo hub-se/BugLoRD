@@ -45,7 +45,9 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         Log.out(this, "%s mode", this.type);
 
         Entity bug = buggyEntity.getBuggyVersion();
+        Log.out(this, "checking out bug");
         buggyEntity.requireBug(true);
+        Log.out(this, "compiling bug");
         bug.compile(true);
 
         File buggyVersionDir = bug.getWorkDir(true).toFile();
@@ -83,7 +85,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
             Log.out(this, "Finish scoring %s.", buggyEntity.getUniqueIdentifier());
         }
         else if (this.type.equals("sbfl")) {
-
+            Log.out(this, "getting lines");
             LinkedList<Op2Line> lines = getDstarLines(bug);
             if (lines.size() > 0) {
                 Log.out(this, "found %s lines", lines.size());

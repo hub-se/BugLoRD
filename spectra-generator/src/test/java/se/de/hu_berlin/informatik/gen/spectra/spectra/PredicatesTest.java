@@ -147,6 +147,21 @@ public class PredicatesTest extends TestSettings {
         HashMap<Signature.Identifier, Signature> signatures = miner.mine(folder);
     }
 
+    @Test
+    public void MineTestListSmall() {
+        Miner miner = new Miner();
+        HashMap<Signature.Identifier, Signature> signatures = miner.mine("");
+
+        signatures.forEach((identifier, signature) -> {
+            System.out.println("DS: " + identifier.DS
+                    + "; "
+                    + "Support: ( +" + identifier.positiveSupport + ", -" + identifier.negativeSupport
+                    + " ); "
+                    + Arrays.toString(signature.allItems.stream().map(item -> item.prefixedId).toArray())
+                    );
+        });
+    }
+
     //needs old  results in folder
     @Test
     public void MineForLang10TestListSmall() {
