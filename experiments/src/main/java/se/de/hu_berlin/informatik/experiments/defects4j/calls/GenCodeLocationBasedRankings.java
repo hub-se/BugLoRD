@@ -245,11 +245,13 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                 if (unitPathDistance != null)
                     return unitPathDistance;
             }
-            else if (target.className.equals(goal.className)) {
-                Iterator<Edge> iteratorOnCallsOutOfMethod = sc.getIteratorOnCallsOutOfMethod(goal.method);
+            else {
+                Iterator<Edge> iteratorOnCallsOutOfGoalMethod = sc.getIteratorOnCallsOutOfMethod(goal.method);
+                Iterator<Edge> iteratorOnCallsOutOfTargetMethod = sc.getIteratorOnCallsOutOfMethod(target.method);
                 List<Double> edgeDistances = new ArrayList<>();
-                while (iteratorOnCallsOutOfMethod.hasNext()) {
-                    Edge edge = iteratorOnCallsOutOfMethod.next();
+                //goal -> target
+                while (iteratorOnCallsOutOfGoalMethod.hasNext()) {
+                    Edge edge = iteratorOnCallsOutOfGoalMethod.next();
                     if (edge.tgt() == target.method) {
                         Integer internDistanceInGoal = this.getDistanceInUnits(sc, goal.method, goal.unit, edge.srcUnit());
                         if (internDistanceInGoal == null)
@@ -261,7 +263,21 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                         edgeDistances.add((double) (internDistanceInGoal + internDistanceInTarget + 10)); //TODO EdgeCost
                     }
                 }
-                return edgeDistances.stream().min(Double::compareTo).orElse(Double.NaN);
+                //target -> goal
+                while (iteratorOnCallsOutOfTargetMethod.hasNext()) {
+                    Edge edge = iteratorOnCallsOutOfTargetMethod.next();
+                    if (edge.tgt() == goal.method) {
+                        Integer internDistanceInGoal = this.getDistanceInUnits(sc, goal.method, goal.unit, edge.tgt().getActiveBody().getUnits().getFirst());
+                        if (internDistanceInGoal == null)
+                            continue; //we wont get a result that is fair to compare
+                        Integer internDistanceInTarget = this.getDistanceInUnits(sc, target.method, target.unit, edge.srcUnit());
+                        if (internDistanceInTarget == null)
+                            continue; //we wont get a result that is fair to compare
+                        Log.out(this, "Found a edge connection!");
+                        edgeDistances.add((double) (internDistanceInGoal + internDistanceInTarget + 10)); //TODO EdgeCost
+                    }
+                }
+                return edgeDistances.stream().min(Double::compareTo).orElse(Double.POSITIVE_INFINITY);
             }
         }
         return Double.POSITIVE_INFINITY;
