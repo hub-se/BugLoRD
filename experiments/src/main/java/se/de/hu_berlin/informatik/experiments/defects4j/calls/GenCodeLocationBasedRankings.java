@@ -251,7 +251,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                 if (target.sootConnector != null)
                     iteratorOnCallsOutOfTargetMethod = target.sootConnector.getIteratorOnCallsOutOfMethod(target.method);
                 int classPenalty = 0;
-                if (goal.className.equals(target.className))
+                if (!goal.className.equals(target.className))
                     classPenalty = 25;
                 List<Double> edgeDistances = new ArrayList<>();
                 //goal -> target
