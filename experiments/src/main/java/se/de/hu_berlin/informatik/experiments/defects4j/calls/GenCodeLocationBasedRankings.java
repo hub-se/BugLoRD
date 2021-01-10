@@ -248,6 +248,9 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
             else {
                 Iterator<Edge> iteratorOnCallsOutOfGoalMethod = sc.getIteratorOnCallsOutOfMethod(goal.method);
                 Iterator<Edge> iteratorOnCallsOutOfTargetMethod = sc.getIteratorOnCallsOutOfMethod(target.method);
+                int classPenalty = 0;
+                if (goal.className.equals(target.className))
+                    classPenalty = 25;
                 List<Double> edgeDistances = new ArrayList<>();
                 //goal -> target
                 while (iteratorOnCallsOutOfGoalMethod.hasNext()) {
@@ -260,7 +263,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                         if (internDistanceInTarget == null)
                             continue; //we wont get a result that is fair to compare
                         Log.out(this, "Found a edge connection!");
-                        edgeDistances.add((double) (internDistanceInGoal + internDistanceInTarget + 10)); //TODO EdgeCost
+                        edgeDistances.add((double) (internDistanceInGoal + internDistanceInTarget + classPenalty + 10)); //TODO EdgeCost
                     }
                 }
                 //target -> goal
@@ -274,7 +277,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
                         if (internDistanceInTarget == null)
                             continue; //we wont get a result that is fair to compare
                         Log.out(this, "Found a edge connection!");
-                        edgeDistances.add((double) (internDistanceInGoal + internDistanceInTarget + 10)); //TODO EdgeCost
+                        edgeDistances.add((double) (internDistanceInGoal + internDistanceInTarget + classPenalty + 10)); //TODO EdgeCost
                     }
                 }
                 return edgeDistances.stream().min(Double::compareTo).orElse(Double.POSITIVE_INFINITY);
