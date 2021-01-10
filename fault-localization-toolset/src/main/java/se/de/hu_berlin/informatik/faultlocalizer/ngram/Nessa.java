@@ -275,7 +275,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     				System.out.println("seqContext1: " + seqContext1);
     		    	System.out.println("seqContext2: " + seqContext2);*/
     				if ((context1 == seqContext1) && (context2 == seqContext2)) {
-    					EC = EC + 2.0;
+    					EC = EC + 1.0;
     				}
     			}
     		}
