@@ -225,7 +225,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	}
     //	System.out.println("crossEntropy: " + crossEntropy);
     	//if (crossEntropy < 0.00000000001) crossEntropy = 0.0; //Um negative Werte zu vermeiden
-    	crossEntropy = crossEntropy * 2; //--
+    	//crossEntropy = crossEntropy * 2; //--
     	return crossEntropy;
     }
     
