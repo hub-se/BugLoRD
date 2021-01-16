@@ -66,7 +66,6 @@ public class ExperimentCall implements Callable<Boolean> {
 
             // save simple ranking
             Ranking.save(ranking, parent.resultsFile(experiment, "ranking.rnk").toString());
-            System.out.println("------- Ranking saved in ranking.rnk -------"); //PT
 
             // store ranking
             rankingWriter = new FileWriter(parent.resultsFile(experiment, "ranking.csv"));

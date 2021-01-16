@@ -108,12 +108,10 @@ public class RankingUtils {
                 sbflRankingFile = bug.getWorkDataDir().resolve(
                         suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
                         .resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
-                System.out.println("------- Filename resolved -------"); //PT
             } else {
                 sbflRankingFile = bugDir.resolve(
                         suffix == null ? BugLoRDConstants.DIR_NAME_RANKING : BugLoRDConstants.DIR_NAME_RANKING + "_" + suffix)
                         .resolve(rankingIdentifier).resolve(BugLoRDConstants.FILENAME_RANKING_FILE);
-                System.out.println("------- Filename resolved -------"); //PT
             }
 
             if (sbflRankingFile.toFile().exists()) {
