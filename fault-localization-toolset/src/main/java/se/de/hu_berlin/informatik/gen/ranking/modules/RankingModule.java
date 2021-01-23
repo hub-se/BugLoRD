@@ -88,8 +88,6 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T, ?>, ISpectra
             Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
             ranking.save(outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_RANKING_FILE);
             System.out.println("------- ranking saved -------"); //PT
-            ranking.save(outputdir + File.separator + subfolder + File.separator + "ranking2.rnk");
-            System.out.println("------- ranking saved again -------"); //PT
             System.out.println(ranking.getBestRankingElement()); //PT
             System.out.println(ranking.getBestRankingValue()); //PT
         } catch (IOException e) {
