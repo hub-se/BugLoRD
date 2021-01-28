@@ -311,7 +311,8 @@ public class GenerateCsvBugDataFiles {
         }
 
         if (ranking == null) {
-            Log.abort(GenerateCsvBugDataFiles.class, "Found no ranking with identifier '%s'.", rankingIdentifier);
+            //Log.abort(GenerateCsvBugDataFiles.class, "Found no ranking with identifier '%s'.", rankingIdentifier);
+        	Log.abort(GenerateCsvBugDataFiles.class, "Found no ranking with identifier '%s' for '%s'.", rankingIdentifier, bug.getUniqueIdentifier());
         }
         return ranking;
     }
