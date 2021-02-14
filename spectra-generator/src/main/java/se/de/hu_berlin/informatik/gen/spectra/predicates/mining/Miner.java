@@ -19,7 +19,7 @@ public class Miner {
     public LinkedHashMap<Signature.Identifier, Signature> mine(String folder) {
 
         String row;
-        //Database db = new Database();
+        Database db = new Database();
 
         Log.out(Miner.class, "Mining %s.", folder);
 
@@ -32,35 +32,35 @@ public class Miner {
         }
 
         Log.out(this, "Setting up first DB.");
-//        try {
-//            BufferedReader csvReader = new BufferedReader(new FileReader(Paths.get(folder, "Profiles.csv").toString()));
-//            while ((row = csvReader.readLine()) != null) {
-//                String[] profileString = row.split(";");
-//                List<Integer> predicates = new ArrayList<>();
-//                if (!profileString[0].isEmpty()) {
-//                    predicates = Ints.asList(Arrays.stream(profileString[0].split(",")).mapToInt(Integer::parseInt).toArray());
-//                }
-//                Profile profile = new Profile(predicates,Boolean.parseBoolean(profileString[1]));
-//                db.addProfile(profile);
-//            }
-//            csvReader.close();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            BufferedReader csvReader = new BufferedReader(new FileReader(Paths.get(folder, "Profiles.csv").toString()));
+            while ((row = csvReader.readLine()) != null) {
+                String[] profileString = row.split(";");
+                List<Integer> predicates = new ArrayList<>();
+                if (!profileString[0].isEmpty()) {
+                    predicates = Ints.asList(Arrays.stream(profileString[0].split(",")).mapToInt(Integer::parseInt).toArray());
+                }
+                Profile profile = new Profile(predicates,Boolean.parseBoolean(profileString[1]));
+                db.addProfile(profile);
+            }
+            csvReader.close();
 
-        Profile t1 = new Profile(Arrays.asList(2,3), true);
-        Profile t2 = new Profile(Arrays.asList(2,4,5), true);
-        Profile t3 = new Profile(Arrays.asList(2,4,6,7), false);
-        Profile t4 = new Profile(Arrays.asList(2,4,6,8), false);
-        Database db = new Database(new ArrayList<>(Arrays.asList(t1, t2, t3, t4)),new ArrayList<>());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-//        Profile t1 = new Profile(Arrays.asList(2), true);
-//        Profile t2 = new Profile(Arrays.asList(4,12), true);
-//        Profile t3 = new Profile(Arrays.asList(4,7,9,14,11), true);
-//        Profile t4 = new Profile(Arrays.asList(4,7,9,14,16), true);
-//        Profile t5 = new Profile(Arrays.asList(4,7,9,11,16), false);
-//        Database db = new Database(new ArrayList<Profile>(Arrays.asList(t1, t2, t3, t4, t5)),new ArrayList<>());
+//        Profile t1 = new Profile(Arrays.asList(2,3), true);
+//        Profile t2 = new Profile(Arrays.asList(2,4,5), true);
+//        Profile t3 = new Profile(Arrays.asList(2,4,6,7), false);
+//        Profile t4 = new Profile(Arrays.asList(2,4,6,8), false);
+//        Database db = new Database(new ArrayList<>(Arrays.asList(t1, t2, t3, t4)),new ArrayList<>());
+
+        Profile t1 = new Profile(Arrays.asList(2), true);
+        Profile t2 = new Profile(Arrays.asList(4,12), true);
+        Profile t3 = new Profile(Arrays.asList(4,7,9,14,11), true);
+        Profile t4 = new Profile(Arrays.asList(4,7,9,14,16), true);
+        Profile t5 = new Profile(Arrays.asList(4,7,9,11,16), false);
+        db = new Database(new ArrayList<Profile>(Arrays.asList(t1, t2, t3, t4, t5)),new ArrayList<>());
 
         int neg_support = (int) Math.ceil(db.getNegativeCount() / 2.0);
 
@@ -79,9 +79,10 @@ public class Miner {
         Log.out(this, "Creating Signatures.");
         LinkedHashMap<Signature.Identifier, Signature> signatures = new LinkedHashMap<>();
         try {
+            Database finalDb = db;
             sorted.forEach(entry -> {
                 entry.getValue().forEach(item -> {
-                    Signature.Identifier newIdent = new Signature.Identifier(entry.getKey().getLeft(), entry.getKey().getRight(), db, miner, item);
+                    Signature.Identifier newIdent = new Signature.Identifier(entry.getKey().getLeft(), entry.getKey().getRight(), finalDb, miner, item);
                     Signature sig = signatures.get(newIdent);
                     if (sig == null) {
                         sig = new Signature(newIdent);
