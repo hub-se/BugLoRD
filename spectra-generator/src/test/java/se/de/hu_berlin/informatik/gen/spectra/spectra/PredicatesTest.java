@@ -13,9 +13,6 @@ import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
 import se.de.hu_berlin.informatik.utils.miscellaneous.TestSettings;
 import soot.SootMethod;
 import soot.Unit;
-import soot.toolkits.graph.UnitGraph;
-import soot.toolkits.graph.pdg.HashMutablePDG;
-import soot.toolkits.graph.pdg.PDGRegion;
 
 import java.io.File;
 import java.nio.file.Files;
