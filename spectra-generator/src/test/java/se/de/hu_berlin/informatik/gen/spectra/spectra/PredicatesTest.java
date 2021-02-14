@@ -116,7 +116,7 @@ public class PredicatesTest extends TestSettings {
         }
     }
 
-    @Test
+    //@Test
     public void testGenerateRankingForLang10TestListSmall() {
         // org.apache.commons.lang3.time.FastDateParser, counter ID 166, line 399
         String outputDirName = "reportLang10bTestListSmall";
@@ -124,7 +124,7 @@ public class PredicatesTest extends TestSettings {
                 10000L, 1, false, false, false, true, "lang10testsSmall.txt");
     }
 
-    @Test
+    //@Test
     public void testGenerateRankingAndMineForLang10TestList() {
         // org.apache.commons.lang3.time.FastDateParser, counter ID 166, line 399
         String outputDirName = "reportLang10bTestListSmall";
@@ -135,7 +135,7 @@ public class PredicatesTest extends TestSettings {
         this.MineForLang10TestListSmall();
     }
 
-    @Test
+    //@Test
     public void testGenerateRankingAndMineForTime3bTest() {
         // org.apache.commons.lang3.time.FastDateParser, counter ID 166, line 399
         String outputDirName = "reportTime3bTest";
@@ -147,7 +147,7 @@ public class PredicatesTest extends TestSettings {
         HashMap<Signature.Identifier, Signature> signatures = miner.mine(folder);
     }
 
-    @Test
+    //@Test
     public void MineTestListSmall() {
         Miner miner = new Miner();
         HashMap<Signature.Identifier, Signature> signatures = miner.mine("");
@@ -163,7 +163,7 @@ public class PredicatesTest extends TestSettings {
     }
 
     //needs old  results in folder
-    @Test
+    //@Test
     public void MineForLang10TestListSmall() {
         long startTime = new Date().getTime();
         TestProject project = new TestProjects.Lang10b();
