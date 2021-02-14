@@ -49,10 +49,10 @@ public class Miner {
 //            e.printStackTrace();
 //        }
 
-        Profile t1 = new Profile(Arrays.asList(1,3), true);
-        Profile t2 = new Profile(Arrays.asList(1,3,4), true);
-        Profile t3 = new Profile(Arrays.asList(2,4), true);
-        Profile t4 = new Profile(Arrays.asList(2,4,5), false);
+        Profile t1 = new Profile(Arrays.asList(2,3), true);
+        Profile t2 = new Profile(Arrays.asList(2,4,5), true);
+        Profile t3 = new Profile(Arrays.asList(2,4,6,7), false);
+        Profile t4 = new Profile(Arrays.asList(2,4,6,8), false);
         Database db = new Database(new ArrayList<>(Arrays.asList(t1, t2, t3, t4)),new ArrayList<>());
 
 //        Profile t1 = new Profile(Arrays.asList(2), true);

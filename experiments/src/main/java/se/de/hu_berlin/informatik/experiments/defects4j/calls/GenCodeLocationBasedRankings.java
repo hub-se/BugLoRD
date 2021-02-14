@@ -191,6 +191,7 @@ public class GenCodeLocationBasedRankings extends AbstractProcessor<BuggyFixedEn
         if (targets.size() == 0)
             Log.out(this, "score with 0 targets in %s",  buggyEntity.getUniqueIdentifier());
         for (Op2Line entry : signatures) {
+            entry.codeLocationCounterWorstCase--; //remove one
             for (Op2Line sig : signatures) {
                 if (entry.suspicion <= sig.suspicion)
                     entry.codeLocationCounterWorstCase++;
