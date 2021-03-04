@@ -179,7 +179,7 @@ public abstract class AbstractSpectraGenerator {
          * # delete instrumented classes
          * #==================================================================================== */
 
-        //FileUtils.delete(instrumentedDir);
+        FileUtils.delete(instrumentedDir);
 
         FileUtils.delete(outputDirPath.resolve("rawTraces.zip"));
     }

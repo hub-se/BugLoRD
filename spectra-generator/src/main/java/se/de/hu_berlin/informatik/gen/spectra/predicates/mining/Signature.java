@@ -17,7 +17,6 @@ public class Signature implements Serializable {
     public List<GrTree.Item> allItems = new ArrayList<>();
     public List<Predicate> predicates =  new ArrayList<>();
 
-    //public List<String> locations = new ArrayList<>();
     public HashSet<String> locations = new HashSet<>();
 
     public Signature(Identifier newIdent) {

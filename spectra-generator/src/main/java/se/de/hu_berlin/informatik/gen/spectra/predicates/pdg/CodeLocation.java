@@ -31,7 +31,8 @@ public class CodeLocation {
             return true;
         if (obj instanceof CodeLocation) {
             CodeLocation other = (CodeLocation) obj;
-            if (other.getLocationString().equals(this.getLocationString()))
+            if (this.className.equals(other.className) &&
+            this.unit.getJavaSourceStartLineNumber() == other.unit.getJavaSourceStartLineNumber())
                 return true;
         }
         return super.equals(obj);

@@ -49,19 +49,6 @@ public class Miner {
             e.printStackTrace();
         }
 
-//        Profile t1 = new Profile(Arrays.asList(2,3), true);
-//        Profile t2 = new Profile(Arrays.asList(2,4,5), true);
-//        Profile t3 = new Profile(Arrays.asList(2,4,6,7), false);
-//        Profile t4 = new Profile(Arrays.asList(2,4,6,8), false);
-//        Database db = new Database(new ArrayList<>(Arrays.asList(t1, t2, t3, t4)),new ArrayList<>());
-
-        Profile t1 = new Profile(Arrays.asList(2), true);
-        Profile t2 = new Profile(Arrays.asList(4,12), true);
-        Profile t3 = new Profile(Arrays.asList(4,7,9,14,11), true);
-        Profile t4 = new Profile(Arrays.asList(4,7,9,14,16), true);
-        Profile t5 = new Profile(Arrays.asList(4,7,9,11,16), false);
-        db = new Database(new ArrayList<Profile>(Arrays.asList(t1, t2, t3, t4, t5)),new ArrayList<>());
-
         int neg_support = (int) Math.ceil(db.getNegativeCount() / 2.0);
 
         db.PurgeFullSupport();
@@ -102,22 +89,6 @@ public class Miner {
 
 
         return signatures;
-
-
-//        System.out.println();
-//        sorted.forEach(entry -> System.out.println("DS: " + miner.DiscriminativeSignificance(entry.getKey().getLeft(),entry.getKey().getRight())
-//                + "; "
-//                + "Support: ( +" + entry.getKey().getLeft() + ", -" + entry.getKey().getRight()
-//                + " ); "
-//                + Arrays.toString(entry.getValue().stream().map(item -> item.prefixedId).toArray())));
-//
-//        sorted.forEach(entry -> writeSignatures("DS: " + miner.DiscriminativeSignificance(entry.getKey().getLeft(),entry.getKey().getRight())
-//                + "; "
-//                + "Support: ( +" + entry.getKey().getLeft() + ", -" + entry.getKey().getRight()
-//                + " ); "
-//                + Arrays.toString(entry.getValue().stream().map(item -> item.prefixedId).toArray()), folder));
-
-
     }
 
 
