@@ -16,7 +16,6 @@ import se.de.hu_berlin.informatik.utils.statistics.Statistics;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * Runs a single test inside a new JVM and generates statistics. A timeout may
@@ -44,7 +43,7 @@ public abstract class AbstractRunTestInNewJVMModuleWithServer<T extends Serializ
 
         if (listener != null) {
             this.port = listener.getServerPort();
-//			Log.out(this, "Server started with port %d...", port);
+			Log.out(this, "Server started with port %d...", port);
         } else {
             this.port = -1;
             Log.abort(this, "Unable to establich server.");

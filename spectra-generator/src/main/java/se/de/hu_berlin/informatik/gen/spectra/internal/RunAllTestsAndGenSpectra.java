@@ -6,6 +6,7 @@ import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.AbstractSpectraGenerationFactory.Strategy;
 import se.de.hu_berlin.informatik.gen.spectra.cobertura.CoberturaSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.gen.spectra.jacoco.JaCoCoSpectraGenerationFactory;
+import se.de.hu_berlin.informatik.gen.spectra.predicates.PredicatesSpectraGeneratorFactory;
 import se.de.hu_berlin.informatik.gen.spectra.tracecobertura.TraceCoberturaSpectraGenerationFactory;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Log;
 import se.de.hu_berlin.informatik.utils.miscellaneous.Misc;
@@ -151,6 +152,9 @@ public class RunAllTestsAndGenSpectra {
                 }
                 Integer agentPort = options.getOptionValueAsInt(CmdOptions.AGENT_PORT);
                 factory = new JaCoCoSpectraGenerationFactory(agentPort);
+                break;
+            case PREDICATES:
+                factory = new PredicatesSpectraGeneratorFactory(null);
                 break;
             default:
                 Log.abort(RunAllTestsAndGenSpectra.class, "Unimplemented strategy: '%s'", strategy);
