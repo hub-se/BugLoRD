@@ -62,7 +62,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
         	//System.out.println("All tests: {" + hitTrace.getTestTrace() + "}");
         //System.out.println("Confidence: " + nGrams.getConfidence()); //PT
         //System.out.println("_________________");
-        nGrams.getnGrams().forEach(nGram -> {
+//--        nGrams.getnGrams().forEach(nGram -> {
         	//Idee: für jedes nGram mit EF > 0 den kleinsten Abstand (Cross-Entropy) zu nGrams mit EF = 0 berechnen
         	//und den Cross-Entropy-Wert als Suspiciousness zuordnen.
     	  //System.out.println(nGram.toString());
@@ -72,7 +72,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//ArrayList<Integer> BlockIDs = new ArrayList<Integer>();
     		//BlockIDs = nGram.getBlockIDs();
     		//setNewConfidence(nGram, calculateConfidence(nGram, hitTrace)); //ohne Cross-Entropy
-    		setNewConfidence(nGram, calculateCrossEntropy(nGram, hitTrace));
+//--    		setNewConfidence(nGram, calculateCrossEntropy(nGram, hitTrace));
     //		System.out.println(nGram.toString());
     		//BlockIDs.forEach(ID -> {
     			//setNewConfidence(nGram, 1.0); //funktioniert auch nicht -> scheinbar keine Zuweisungen auf nGrams
@@ -103,9 +103,9 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		if (nGram.getEF()  <= 0.0) { //kein Ergebnis, es existieren nur nGrams mit EF > 0.0
     			System.out.println("EF <= 0:" + nGram.toString());
     		}*/
-        });
-        nGrams.updateConfidence();
-        System.out.println("New Confidence: " + nGrams.getConfidence());
+//--        });
+//--        nGrams.updateConfidence();
+//--        System.out.println("New Confidence: " + nGrams.getConfidence());
         // <- PT
         confidence = nGrams.getConfidence();
         confidence.forEach((key, value) -> {
