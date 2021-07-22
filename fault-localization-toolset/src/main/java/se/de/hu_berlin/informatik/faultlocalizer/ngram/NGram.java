@@ -9,13 +9,15 @@ public class NGram implements Comparable<NGram> {
     private double EF;
     private double ET;
     private double confidence;
+    private ArrayList<Integer> context; //PT
 
-    public NGram(int length, double EF, double ET, ArrayList<Integer> blockIDs) {
+    public NGram(int length, double EF, double ET, ArrayList<Integer> blockIDs, ArrayList<Integer> context) {
         this.length = length;
         this.blockIDs = blockIDs;
         this.EF = EF;
         this.ET = ET;
         confidence = (ET > 0) ? EF / ET : 0.0;
+        this.context = context; //PT
     }
     
 /*    // If useEntropy is set to 1 (or any other number other than 0) this constructor uses Cross-Entropy
@@ -69,6 +71,11 @@ public class NGram implements Comparable<NGram> {
 
     public double getET() {
         return ET;
+    }
+    
+    //PT
+    public ArrayList<Integer> getContext() {
+        return context;
     }
 
 

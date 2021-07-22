@@ -202,27 +202,38 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     
     //Berechnet die Cross-Entropy fuer ein nGram
     public double calculateCrossEntropy(NGram nGram, LinearExecutionHitTrace hitTrace) {
-    	double crossEntropy =0.0;
+    	double crossEntropy = 0.0;
     	int length = nGram.getLength();
-    	int m = length -1;
-    	int N = length - m;
-    	double nGramProbability = 0.0;
-    	double logProbability = 0.0;
-    	nGramProbability = calculateNGramProbability(nGram, hitTrace);
+    	//int m = length -1;
+    	//int N = length - m;
+    	int N = 3;
+    	//double nGramProbability = 0.0;
+    	//double logProbability = 0.0;
+    	double nGramProbability1 = calculateNGramProbability(nGram, hitTrace, 1);
+    	double nGramProbability2 = calculateNGramProbability(nGram, hitTrace, 2);
+    	double nGramProbability3 = calculateNGramProbability(nGram, hitTrace, 3);
+    	double logProbability1 = 0.0;
+    	double logProbability2 = 0.0;
+    	double logProbability3 = 0.0;
     //	System.out.println("nGramProbability: " + nGramProbability);
-    	if (nGramProbability > 0) {
-    		logProbability = Math.log(nGramProbability)/Math.log(2);
+    	if (nGramProbability1 > 0) {
+    		logProbability1 = Math.log(nGramProbability1)/Math.log(2);
     	}
-    	else {
-    		logProbability = 0.0;
+    	if (nGramProbability2 > 0) {
+    		logProbability2 = Math.log(nGramProbability2)/Math.log(2);
+    	}
+    	if (nGramProbability3 > 0) {
+    		logProbability3 = Math.log(nGramProbability3)/Math.log(2);
     	}
     //	System.out.println("logProbability: " + logProbability);
-    	if (logProbability != 0.0 ) {
+    	double sumProbability = logProbability1 + logProbability2 + logProbability3;
+    	/*if (logProbability != 0.0 ) {
     		crossEntropy = -(1/N)*logProbability; //eigentlich *sum(...), da N = 1 wird nur ein Element berechnet
     	}
     	else {
     		crossEntropy = 0.0;
-    	}
+    	}*/
+    	crossEntropy = -(1/N)*sumProbability;
     //	System.out.println("crossEntropy: " + crossEntropy);
     	//if (crossEntropy < 0.00000000001) crossEntropy = 0.0; //Um negative Werte zu vermeiden
     	//crossEntropy = crossEntropy * 2; //--
@@ -230,12 +241,12 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     }
     
     //Berechnet q(nGram) (die Wahrscheinlichkeit des Auftretens des letzten Tokens nach diesem Kontext
-    public double calculateNGramProbability(NGram nGram, LinearExecutionHitTrace hitTrace) {
+    public double calculateNGramProbability(NGram nGram, LinearExecutionHitTrace hitTrace, int contextFlag) {
     	double q = 0.0;
     	if (nGram.getLength() == 3) { //Es werden nur nGrams der Laenge 3 berechnet, sonst confidence = 0
     		//double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
-    		double ET = calculateET(nGram, hitTrace);
-    		double EC = calculateEC(nGram, hitTrace); //Ausfuehrungen von Kontext mit anderem letzten Wert im nGram
+    		double ET = calculateET(nGram, hitTrace, contextFlag);
+    		double EC = calculateEC(nGram, hitTrace, contextFlag); //Ausfuehrungen von Kontext mit anderem letzten Wert im nGram
     //		System.out.println("ET: " + ET);
     //		System.out.println("EC: " + EC);
     		if (EC > 0.0) { //Teilen durch 0 verhindern
@@ -245,11 +256,25 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	return q;
     }
     
-    public double calculateEC(NGram nGram, LinearExecutionHitTrace hitTrace) {
+    public double calculateEC(NGram nGram, LinearExecutionHitTrace hitTrace, int contextFlag) {
     	double EC = 0.0;
     	ArrayList<Integer> nGramBlockIDs = nGram.getBlockIDs();
-    	int context1 = nGramBlockIDs.get(0);
-    	int context2 = nGramBlockIDs.get(1);
+    	ArrayList<Integer> context = nGram.getContext();
+    	int context1;
+		int context2;
+    	//contextFlag -> 1: context of first element; 2: context of second element; 3: context of third element
+    	if (contextFlag == 1) {
+    		context1 = context.get(0);
+    		context2 = context.get(1);
+    	}
+    	else if (contextFlag == 2) {
+    		context1 = context.get(1);
+    		context2 = nGramBlockIDs.get(0);
+    	}
+    	else {
+    	    context1 = nGramBlockIDs.get(0);
+    	    context2 = nGramBlockIDs.get(1);
+    	}
     	int seqContext1;
     	int seqContext2;
     	//EC = nGram.getET() * 2.0; //Test um richtiges Uebergeben von nGram zu pruefen und unterschiedliche Werte 
@@ -284,12 +309,29 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	return EC;
     }
     
-    public double calculateET(NGram nGram, LinearExecutionHitTrace hitTrace) {
+    public double calculateET(NGram nGram, LinearExecutionHitTrace hitTrace, int contextFlag) {
     	double ET = 0.0;
     	ArrayList<Integer> nGramBlockIDs = nGram.getBlockIDs();
-    	int context1 = nGramBlockIDs.get(0);
-    	int context2 = nGramBlockIDs.get(1);
-    	int context3 = nGramBlockIDs.get(2);
+    	ArrayList<Integer> context = nGram.getContext();
+    	int context1;
+		int context2;
+		int context3;
+    	//contextFlag -> 1: context of first element; 2: context of second element; 3: context of third element
+    	if (contextFlag == 1) {
+    		context1 = context.get(0);
+    		context2 = context.get(1);
+    		context3 = nGramBlockIDs.get(0);
+    	}
+    	else if (contextFlag == 2) {
+    		context1 = context.get(1);
+    		context2 = nGramBlockIDs.get(0);
+    		context3 = nGramBlockIDs.get(1);
+    	}
+    	else {
+    	    context1 = nGramBlockIDs.get(0);
+    	    context2 = nGramBlockIDs.get(1);
+    	    context3 = nGramBlockIDs.get(2);
+    	}
     	int seqContext1;
     	int seqContext2;
     	int seqContext3;
