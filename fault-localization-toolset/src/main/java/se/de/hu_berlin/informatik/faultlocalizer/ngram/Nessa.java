@@ -323,6 +323,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
 		int context2;
 		int context3;
 		System.out.println("context: " + context);
+		System.out.println("nGram: " + nGram.toString());
 		System.out.println("context.get(1): " + context.get(1));
 		System.out.println("context.get(0): " + context.get(0));
     	//contextFlag -> 1: context of first element; 2: context of second element; 3: context of third element

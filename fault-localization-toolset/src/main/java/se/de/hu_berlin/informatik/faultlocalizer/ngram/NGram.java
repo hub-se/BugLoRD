@@ -132,6 +132,7 @@ public class NGram implements Comparable<NGram> {
                 ", EF=" + EF +
                 ", ET=" + ET +
                 ", confidence=" + confidence +
+                ", context=" + context + //PT
                 '}';
     }
     
