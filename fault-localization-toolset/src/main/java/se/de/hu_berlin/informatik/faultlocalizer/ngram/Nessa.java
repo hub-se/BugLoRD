@@ -202,6 +202,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     
     //Berechnet die Cross-Entropy fuer ein nGram
     public double calculateCrossEntropy(NGram nGram, LinearExecutionHitTrace hitTrace) {
+    	System.out.println("calculate cross-entropy");
     	double crossEntropy = 0.0;
     	int length = nGram.getLength();
     	//int m = length -1;
@@ -242,6 +243,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     
     //Berechnet q(nGram) (die Wahrscheinlichkeit des Auftretens des letzten Tokens nach diesem Kontext
     public double calculateNGramProbability(NGram nGram, LinearExecutionHitTrace hitTrace, int contextFlag) {
+    	System.out.println("calculate nGram probability");
     	double q = 0.0;
     	if (nGram.getLength() == 3) { //Es werden nur nGrams der Laenge 3 berechnet, sonst confidence = 0
     		//double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
