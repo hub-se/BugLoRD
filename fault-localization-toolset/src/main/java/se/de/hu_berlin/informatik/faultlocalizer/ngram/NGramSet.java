@@ -349,8 +349,10 @@ public class NGramSet {
                 // confidence will be equal or bigger as before
                 double EP = getIntersectionCount2(ngram, passedTest, nMax);
                 double newConf = EF / (EP + EF);
-                if (newConf > confOfLastRelNode)
+                if (newConf > confOfLastRelNode) {
                     nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, EP + EF, ngram, context));
+                    System.out.println("context in checkThenAdd, NGram created line 353: " + context);
+                }    
                 return;
             } else {
                 // the current block may lower the EF factor
