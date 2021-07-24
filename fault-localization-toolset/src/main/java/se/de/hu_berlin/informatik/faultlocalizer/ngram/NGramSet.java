@@ -229,7 +229,7 @@ public class NGramSet {
         //init the first nMax-Gram
         for (int i = 0; i < nMax; i++) {
             int tmp = blockIt.next();
-            counter++;
+            counter = counter + 1;
             if (hitTrace.getEF(tmp) == failedTestCount) {
 
                 distToLastFailedNode = i;
@@ -271,7 +271,7 @@ public class NGramSet {
 
             //get the next element and reset the distance if a new failed node is found.
             int tmp = blockIt.next();
-            counter++;
+            counter = counter + 1;
 
             if (hitTrace.getEF(tmp) == failedTestCount) {
 
@@ -299,6 +299,7 @@ public class NGramSet {
             	else {
             		context.add(0, seq.get(counter-2));
             		context.add(1, seq.get(counter-1));
+            		System.out.println("context: " + context);
             	}
                 checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context);
             }
