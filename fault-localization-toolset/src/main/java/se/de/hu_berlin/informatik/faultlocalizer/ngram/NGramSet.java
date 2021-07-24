@@ -361,7 +361,9 @@ public class NGramSet {
 
         if ((EF > 0) && (EF >= minEF)) {
             double EP = getIntersectionCount2(ngram, passedTest, nMax);
+            System.out.println("context in checkThenAdd, new NGram: " + context);
             nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, EP + EF, ngram, context));
+            System.out.println("context in checkThenAdd, NGram created: " + context);
         }
 
     } //<- PT
