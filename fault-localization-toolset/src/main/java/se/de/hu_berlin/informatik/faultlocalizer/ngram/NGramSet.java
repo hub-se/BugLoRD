@@ -261,6 +261,7 @@ public class NGramSet {
         	//System.out.println("context: " + context);
             checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode, context);
             context.clear();
+            System.out.println("First clear");
             //System.out.println("context should be empty: " + context);
         }
 
@@ -306,6 +307,7 @@ public class NGramSet {
             	//System.out.println("context: " + context);
                 checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context);
                 context.clear();
+                System.out.println("Second clear");
                 //System.out.println("context should be empty: " + context);
             }
             lastNGram = nGram;
