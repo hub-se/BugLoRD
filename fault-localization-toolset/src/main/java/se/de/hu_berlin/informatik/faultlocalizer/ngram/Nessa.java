@@ -203,8 +203,9 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     //Berechnet die Cross-Entropy fuer ein nGram
     public double calculateCrossEntropy(NGram nGram, LinearExecutionHitTrace hitTrace) {
     	System.out.println("calculate cross-entropy");
+    	System.out.println("nGram: " + nGram.toString());
     	double crossEntropy = 0.0;
-    	int length = nGram.getLength();
+    	//int length = nGram.getLength();
     	//int m = length -1;
     	//int N = length - m;
     	int N = 3;
@@ -260,7 +261,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     
     public double calculateEC(NGram nGram, LinearExecutionHitTrace hitTrace, int contextFlag) {
     	double EC = 0.0;
-    	System.out.println("calculate EC");
+    	//System.out.println("calculate EC");
     	ArrayList<Integer> nGramBlockIDs = nGram.getBlockIDs();
     	ArrayList<Integer> context = nGram.getContext();
     	int context1;
@@ -280,8 +281,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	}
     	int seqContext1;
     	int seqContext2;
-    	System.out.println("context1: " + context1);
-    	System.out.println("context2: " + context2);
+    	//System.out.println("context1: " + context1);
+    	//System.out.println("context2: " + context2);
     	//EC = nGram.getET() * 2.0; //Test um richtiges Uebergeben von nGram zu pruefen und unterschiedliche Werte 
     							//fuer EC zu erhalten
     	for(int i = 0; i < hitTrace.getTestTracesCount(); i++) { //Iterieren ueber alle Sequenzen

@@ -258,11 +258,11 @@ public class NGramSet {
         		context.add(0, seq.get(counter-2));
         		context.add(1, seq.get(counter-1));
         	}
-        	System.out.println("context: " + context);
+        	//System.out.println("context: " + context);
             checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode, context);
             context.clear();
-            System.out.println("First clear");
-            System.out.println("context should be empty: " + context);
+            //System.out.println("First clear");
+            //System.out.println("context should be empty: " + context);
         }
 
         while (blockIt.hasNext()) {
@@ -304,11 +304,11 @@ public class NGramSet {
             		context.add(0, seq.get(counter-2));
             		context.add(1, seq.get(counter-1));
             	}
-            	System.out.println("context: " + context);
+            	//System.out.println("context: " + context);
                 checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context);
                 context.clear();
-                System.out.println("Second clear");
-                System.out.println("context should be empty: " + context);
+                //System.out.println("Second clear");
+                //System.out.println("context should be empty: " + context);
             }
             lastNGram = nGram;
         }
@@ -342,7 +342,7 @@ public class NGramSet {
     // PT ->
     private void checkThenAdd(int nMax, ArrayList<Integer> ngram, double confOfLastRelNode, int distance, ArrayList<Integer> context) {
         double EF = getIntersectionCount2(ngram, failedTest, nMax);
-        System.out.println("context in checkThenAdd: " + context);
+        //System.out.println("context in checkThenAdd: " + context);
         if (dynaSup) {
             if (distance == 0) {
                 // the current block has EF factor = 1.0 -> the EF factor will not change
@@ -351,7 +351,7 @@ public class NGramSet {
                 double newConf = EF / (EP + EF);
                 if (newConf > confOfLastRelNode) {
                     nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, EP + EF, ngram, context));
-                    System.out.println("context in checkThenAdd, NGram created line 353: " + context);
+                    //System.out.println("context in checkThenAdd, NGram created line 353: " + context);
                 }    
                 return;
             } else {
@@ -363,9 +363,9 @@ public class NGramSet {
 
         if ((EF > 0) && (EF >= minEF)) {
             double EP = getIntersectionCount2(ngram, passedTest, nMax);
-            System.out.println("context in checkThenAdd, new NGram: " + context);
+            //System.out.println("context in checkThenAdd, new NGram: " + context);
             nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, EP + EF, ngram, context));
-            System.out.println("context in checkThenAdd, NGram created: " + context);
+            //System.out.println("context in checkThenAdd, NGram created: " + context);
         }
 
     } //<- PT
