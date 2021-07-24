@@ -258,10 +258,10 @@ public class NGramSet {
         		context.add(0, seq.get(counter-2));
         		context.add(1, seq.get(counter-1));
         	}
-        	System.out.println("context: " + context);
+        	//System.out.println("context: " + context);
             checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode, context);
             context.clear();
-            System.out.println("context should be empty: " + context);
+            //System.out.println("context should be empty: " + context);
         }
 
         while (blockIt.hasNext()) {
@@ -303,10 +303,10 @@ public class NGramSet {
             		context.add(0, seq.get(counter-2));
             		context.add(1, seq.get(counter-1));
             	}
-            	System.out.println("context: " + context);
+            	//System.out.println("context: " + context);
                 checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context);
                 context.clear();
-                System.out.println("context should be empty: " + context);
+                //System.out.println("context should be empty: " + context);
             }
             lastNGram = nGram;
         }
