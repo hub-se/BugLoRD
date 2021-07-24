@@ -342,6 +342,7 @@ public class NGramSet {
     // PT ->
     private void checkThenAdd(int nMax, ArrayList<Integer> ngram, double confOfLastRelNode, int distance, ArrayList<Integer> context) {
         double EF = getIntersectionCount2(ngram, failedTest, nMax);
+        System.out.println("context in checkThenAdd: " + context);
         if (dynaSup) {
             if (distance == 0) {
                 // the current block has EF factor = 1.0 -> the EF factor will not change
