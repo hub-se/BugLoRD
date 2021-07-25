@@ -267,6 +267,7 @@ public class NGramSet {
 
         while (blockIt.hasNext()) {
             ArrayList<Integer> nGram = new ArrayList<>(nMax);
+            ArrayList<Integer> context2 = new ArrayList<>(2);
 
             // copy the tail of the last n-gram
             for (int j = 0; j < nMax - 1; j++) {
@@ -292,20 +293,20 @@ public class NGramSet {
                 //updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
             	if (counter < 4) {
             		if (counter < 3) {
-            			context.add(0, -1);
-            			context.add(1, -1);
+            			context2.add(0, -1);
+            			context2.add(1, -1);
             		}
             		else {
-            			context.add(0, -1);
-            			context.add(1, seq.get(counter-3)); //in this case, counter should always be 1
+            			context2.add(0, -1);
+            			context2.add(1, seq.get(counter-3)); //in this case, counter should always be 1
             		}
             	}
             	else {
-            		context.add(0, seq.get(counter-4));
-            		context.add(1, seq.get(counter-3));
+            		context2.add(0, seq.get(counter-4));
+            		context2.add(1, seq.get(counter-3));
             	}
             	//System.out.println("context: " + context);
-                checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context);
+                checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context2);
             //    context.clear();
                 //System.out.println("Second clear");
                 //System.out.println("context should be empty: " + context);
