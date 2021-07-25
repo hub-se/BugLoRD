@@ -493,6 +493,7 @@ public class NGramSet {
     //PT ->
     public ArrayList<NGram> getnGrams() {
     	ArrayList<NGram> nGramList = new ArrayList<NGram>(nGramHashSet.values());
+    	System.out.println("nGramList from getnGrams: " + nGramList);
     	return nGramList;
     }
     
