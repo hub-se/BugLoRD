@@ -350,6 +350,11 @@ public class NGramSet {
                 double EP = getIntersectionCount2(ngram, passedTest, nMax);
                 double newConf = EF / (EP + EF);
                 if (newConf > confOfLastRelNode) {
+                	if (context.size() != 2) {
+                		System.out.println("Size != 2: Size is" + context.size());
+                		System.out.println(context);
+                		System.out.println("------------------------------------------------------------------");
+                	}
                     nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, EP + EF, ngram, context));
                     //System.out.println("context in checkThenAdd, NGram created line 353: " + context);
                 }    
@@ -364,6 +369,11 @@ public class NGramSet {
         if ((EF > 0) && (EF >= minEF)) {
             double EP = getIntersectionCount2(ngram, passedTest, nMax);
             //System.out.println("context in checkThenAdd, new NGram: " + context);
+            if (context.size() != 2) {
+        		System.out.println("Size != 2: Size is " + context.size());
+        		System.out.println(context);
+        		System.out.println("------------------------------------------------------------------");
+        	}
             nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, EP + EF, ngram, context));
             //System.out.println("context in checkThenAdd, NGram created: " + context);
         }
@@ -394,7 +404,9 @@ public class NGramSet {
                                     // PT ->
                                     ArrayList<Integer> context = new ArrayList<>(2);
                                     context.add(0, -1);
-                        			context.add(1, -1);                                  
+                        			context.add(1, -1);
+                        			System.out.println("context size in initFailedTest is " + context.size());
+                            		System.out.println("context in initFailedTest is " + context);
                                     nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, tmp, context)); 
                                     // <- PT
                                     //nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, tmp)); //original
