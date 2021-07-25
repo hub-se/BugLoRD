@@ -204,6 +204,11 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     public double calculateCrossEntropy(NGram nGram, LinearExecutionHitTrace hitTrace) {
     	System.out.println("calculate cross-entropy");
     	System.out.println("nGram: " + nGram.toString());
+    	System.out.println("context of nGram printed from NGram: ");
+    	nGram.printContext();
+    	System.out.println("context(0): " + nGram.getContexti(0));
+    	System.out.println("context(1): " + nGram.getContexti(1));
+    	System.out.println("nGram: " + nGram.toString());
     	double crossEntropy = 0.0;
     	//int length = nGram.getLength();
     	//int m = length -1;
