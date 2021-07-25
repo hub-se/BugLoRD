@@ -244,23 +244,23 @@ public class NGramSet {
         // that means that "distToLastFailedNode" must be smaller than "nMax".
         if (distToLastFailedNode < nMax) {
 
-        	if (counter < 2) {
-        		if (counter < 1) {
+        	if (counter < 4) {
+        		if (counter < 3) {
         			context.add(0, -1);
         			context.add(1, -1);
         		}
         		else {
         			context.add(0, -1);
-        			context.add(1, seq.get(counter-1)); //in this case, counter should always be 1
+        			context.add(1, seq.get(counter-3)); //in this case, counter should always be 1
         		}
         	}
         	else {
-        		context.add(0, seq.get(counter-2));
-        		context.add(1, seq.get(counter-1));
+        		context.add(0, seq.get(counter-4));
+        		context.add(1, seq.get(counter-3));
         	}
         	//System.out.println("context: " + context);
             checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode, context);
-            context.clear();
+       //     context.clear();
             //System.out.println("First clear");
             //System.out.println("context should be empty: " + context);
         }
@@ -306,7 +306,7 @@ public class NGramSet {
             	}
             	//System.out.println("context: " + context);
                 checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context);
-                context.clear();
+            //    context.clear();
                 //System.out.println("Second clear");
                 //System.out.println("context should be empty: " + context);
             }
