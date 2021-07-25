@@ -264,8 +264,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
     		double ET = calculateET(nGram, hitTrace, contextFlag);
     		double EC = calculateEC(nGram, hitTrace, contextFlag); //Ausfuehrungen von Kontext mit anderem letzten Wert im nGram
-    		System.out.println("ET: " + ET);
-    		System.out.println("EC: " + EC);
+    		//System.out.println("ET: " + ET);
+    		//System.out.println("EC: " + EC);
     		if (EC > 0.0) { //Teilen durch 0 verhindern
     			q = (ET/EC);
     		}
