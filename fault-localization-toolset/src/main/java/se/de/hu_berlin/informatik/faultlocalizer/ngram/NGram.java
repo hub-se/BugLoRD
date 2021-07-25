@@ -78,6 +78,17 @@ public class NGram implements Comparable<NGram> {
     public ArrayList<Integer> getContext() {
         return context;
     }
+    
+    public Integer getContexti(int index) {
+        return context.get(index);
+    }
+    
+    public void printContext() {
+        System.out.println("context printed from NGram.printContext: " + context);
+        System.out.println("context(0) printed from NGram.printContext: " + context.get(0));
+        System.out.println("context(1) printed from NGram.printContext: " + context.get(1));
+    	return;
+    }
 
 
     // the algorithm begins with the relevant 1-gram item sets with maximal support.
