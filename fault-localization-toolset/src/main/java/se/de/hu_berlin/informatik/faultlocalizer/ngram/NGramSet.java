@@ -290,19 +290,19 @@ public class NGramSet {
             // again, we only save this ngram if it contains a relevant block
             if (distToLastFailedNode < nMax) {
                 //updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
-            	if (counter < 2) {
-            		if (counter < 1) {
+            	if (counter < 4) {
+            		if (counter < 3) {
             			context.add(0, -1);
             			context.add(1, -1);
             		}
             		else {
             			context.add(0, -1);
-            			context.add(1, seq.get(counter-1)); //in this case, counter should always be 1
+            			context.add(1, seq.get(counter-3)); //in this case, counter should always be 1
             		}
             	}
             	else {
-            		context.add(0, seq.get(counter-2));
-            		context.add(1, seq.get(counter-1));
+            		context.add(0, seq.get(counter-4));
+            		context.add(1, seq.get(counter-3));
             	}
             	//System.out.println("context: " + context);
                 checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context);
