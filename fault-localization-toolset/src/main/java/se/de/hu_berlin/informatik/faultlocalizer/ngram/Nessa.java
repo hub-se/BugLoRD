@@ -202,10 +202,10 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     
     //Berechnet die Cross-Entropy fuer ein nGram
     public double calculateCrossEntropy(NGram nGram, LinearExecutionHitTrace hitTrace) {
-    	System.out.println("calculate cross-entropy");
-    	System.out.println("nGram: " + nGram.toString());
-    	System.out.println("context of nGram printed from NGram: ");
-    	nGram.printContext();
+    	//System.out.println("calculate cross-entropy");
+    	//System.out.println("nGram: " + nGram.toString());
+    	//System.out.println("context of nGram printed from NGram: ");
+    	//nGram.printContext();
     	//System.out.println("context(0): " + nGram.getContexti(0));
     	//System.out.println("context(1): " + nGram.getContexti(1));
     	//System.out.println("nGram: " + nGram.toString());
@@ -219,6 +219,10 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	double nGramProbability1 = calculateNGramProbability(nGram, hitTrace, 1);
     	double nGramProbability2 = calculateNGramProbability(nGram, hitTrace, 2);
     	double nGramProbability3 = calculateNGramProbability(nGram, hitTrace, 3);
+    	System.out.println("calculate cross-entropy");
+    	System.out.println("nGramProbability1: " + nGramProbability1);
+    	System.out.println("nGramProbability2: " + nGramProbability2);
+    	System.out.println("nGramProbability3: " + nGramProbability3);
     	double logProbability1 = 0.0;
     	double logProbability2 = 0.0;
     	double logProbability3 = 0.0;
@@ -255,8 +259,8 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		//double ET = nGram.getET(); //Anzahl der Ausfuehrungen dieses nGrams
     		double ET = calculateET(nGram, hitTrace, contextFlag);
     		double EC = calculateEC(nGram, hitTrace, contextFlag); //Ausfuehrungen von Kontext mit anderem letzten Wert im nGram
-    //		System.out.println("ET: " + ET);
-    //		System.out.println("EC: " + EC);
+    		System.out.println("ET: " + ET);
+    		System.out.println("EC: " + EC);
     		if (EC > 0.0) { //Teilen durch 0 verhindern
     			q = (ET/EC);
     		}
