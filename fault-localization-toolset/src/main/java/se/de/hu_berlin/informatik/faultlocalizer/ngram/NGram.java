@@ -18,6 +18,7 @@ public class NGram implements Comparable<NGram> {
         this.ET = ET;
         confidence = (ET > 0) ? EF / ET : 0.0;
         this.context = context; //PT
+        System.out.println("blockIDs in NGram is " + blockIDs);
         System.out.println("context in NGram is " + context);
     }
     
