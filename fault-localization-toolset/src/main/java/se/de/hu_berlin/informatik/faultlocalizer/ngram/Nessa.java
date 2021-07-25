@@ -213,7 +213,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	//int length = nGram.getLength();
     	//int m = length -1;
     	//int N = length - m;
-    	int N = 3;
+    	double N = 3.0;
     	//double nGramProbability = 0.0;
     	//double logProbability = 0.0;
     	double nGramProbability1 = calculateNGramProbability(nGram, hitTrace, 1);
