@@ -219,29 +219,29 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     	double nGramProbability1 = calculateNGramProbability(nGram, hitTrace, 1);
     	double nGramProbability2 = calculateNGramProbability(nGram, hitTrace, 2);
     	double nGramProbability3 = calculateNGramProbability(nGram, hitTrace, 3);
-    	System.out.println("calculate cross-entropy");
-    	System.out.println("nGramProbability1: " + nGramProbability1);
-    	System.out.println("nGramProbability2: " + nGramProbability2);
-    	System.out.println("nGramProbability3: " + nGramProbability3);
+    	//System.out.println("calculate cross-entropy");
+    	//System.out.println("nGramProbability1: " + nGramProbability1);
+    	//System.out.println("nGramProbability2: " + nGramProbability2);
+    	//System.out.println("nGramProbability3: " + nGramProbability3);
     	double logProbability1 = 0.0;
     	double logProbability2 = 0.0;
     	double logProbability3 = 0.0;
     //	System.out.println("nGramProbability: " + nGramProbability);
     	if (nGramProbability1 > 0) {
     		logProbability1 = Math.log(nGramProbability1)/Math.log(2);
-    		System.out.println("logProbability1: " + logProbability1);
+    		//System.out.println("logProbability1: " + logProbability1);
     	}
     	if (nGramProbability2 > 0) {
     		logProbability2 = Math.log(nGramProbability2)/Math.log(2);
-    		System.out.println("logProbability2: " + logProbability2);
+    		//System.out.println("logProbability2: " + logProbability2);
     	}
     	if (nGramProbability3 > 0) {
     		logProbability3 = Math.log(nGramProbability3)/Math.log(2);
-    		System.out.println("logProbability3: " + logProbability3);
+    		//System.out.println("logProbability3: " + logProbability3);
     	}
     //	System.out.println("logProbability: " + logProbability);
     	double sumProbability = logProbability1 + logProbability2 + logProbability3;
-    	System.out.println("sumProbability: " + sumProbability);
+    	//System.out.println("sumProbability: " + sumProbability);
     	/*if (logProbability != 0.0 ) {
     		crossEntropy = -(1/N)*logProbability; //eigentlich *sum(...), da N = 1 wird nur ein Element berechnet
     	}
@@ -249,7 +249,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     		crossEntropy = 0.0;
     	}*/
     	crossEntropy = -(1/N)*sumProbability;
-    	System.out.println("crossEntropy: " + crossEntropy);
+    	//System.out.println("crossEntropy: " + crossEntropy);
     //	System.out.println("crossEntropy: " + crossEntropy);
     	//if (crossEntropy < 0.00000000001) crossEntropy = 0.0; //Um negative Werte zu vermeiden
     	//crossEntropy = crossEntropy * 2; //--
