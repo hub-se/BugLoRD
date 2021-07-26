@@ -259,6 +259,9 @@ public class NGramSet {
         		context.add(1, seq.get(counter-3));
         	}
         	//System.out.println("context: " + context);
+        	System.out.println("ngram: " + lastNGram);
+        	System.out.println("context: " + context);
+        	System.out.println("Elements in seq: " + seq.get(counter-4) + " " + seq.get(counter-3) + " " + seq.get(counter-2) + " " + seq.get(counter-1) + " " + seq.get(counter));
             checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode, context);
        //     context.clear();
             //System.out.println("First clear");
@@ -306,6 +309,9 @@ public class NGramSet {
             		context2.add(1, seq.get(counter-3));
             	}
             	//System.out.println("context: " + context);
+            	System.out.println("ngram: " + nGram);
+            	System.out.println("context: " + context2);
+            	System.out.println("Elements in seq: " + seq.get(counter-4) + " " + seq.get(counter-3) + " " + seq.get(counter-2) + " " + seq.get(counter-1) + " " + seq.get(counter));
                 checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context2);
             //    context.clear();
                 //System.out.println("Second clear");
@@ -351,11 +357,11 @@ public class NGramSet {
                 double EP = getIntersectionCount2(ngram, passedTest, nMax);
                 double newConf = EF / (EP + EF);
                 if (newConf > confOfLastRelNode) {
-                	if (context.size() != 2) {
+                	//if (context.size() != 2) {
                 		//System.out.println("Size != 2: Size is" + context.size());
                 		//System.out.println(context);
                 		//System.out.println("------------------------------------------------------------------");
-                	}
+                	//} 
                     nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, EP + EF, ngram, context));
                     //System.out.println("context in checkThenAdd, NGram created line 353: " + context);
                 }    
@@ -370,11 +376,11 @@ public class NGramSet {
         if ((EF > 0) && (EF >= minEF)) {
             double EP = getIntersectionCount2(ngram, passedTest, nMax);
             //System.out.println("context in checkThenAdd, new NGram: " + context);
-            if (context.size() != 2) {
+            //if (context.size() != 2) {
         		//System.out.println("Size != 2: Size is " + context.size());
         		//System.out.println(context);
         		//System.out.println("------------------------------------------------------------------");
-        	}
+        	//}
             nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, EP + EF, ngram, context));
             //System.out.println("context in checkThenAdd, NGram created: " + context);
         }
