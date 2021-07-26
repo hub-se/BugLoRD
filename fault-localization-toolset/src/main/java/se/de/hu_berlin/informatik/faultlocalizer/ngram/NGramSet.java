@@ -259,9 +259,9 @@ public class NGramSet {
         		context.add(1, seq.get(counter-3));
         	}
         	//System.out.println("context: " + context);
-        	System.out.println("ngram: " + lastNGram);
-        	System.out.println("context: " + context);
-        	System.out.println("Elements in seq: " + seq.get(counter-4) + " " + seq.get(counter-3) + " " + seq.get(counter-2) + " " + seq.get(counter-1) + " " + seq.get(counter));
+        	//System.out.println("ngram: " + lastNGram);
+        	//System.out.println("context: " + context);
+        	//System.out.println("Elements in seq: " + seq.get(counter-4) + " " + seq.get(counter-3) + " " + seq.get(counter-2) + " " + seq.get(counter-1) + " " + seq.get(counter));
             checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode, context);
        //     context.clear();
             //System.out.println("First clear");
@@ -309,9 +309,9 @@ public class NGramSet {
             		context2.add(1, seq.get(counter-3));
             	}
             	//System.out.println("context: " + context);
-            	System.out.println("ngram: " + nGram);
-            	System.out.println("context: " + context2);
-            	System.out.println("Elements in seq: " + seq.get(counter-4) + " " + seq.get(counter-3) + " " + seq.get(counter-2) + " " + seq.get(counter-1) + " " + seq.get(counter));
+            	//System.out.println("ngram: " + nGram);
+            	//System.out.println("context: " + context2);
+            	//System.out.println("Elements in seq: " + seq.get(counter-4) + " " + seq.get(counter-3) + " " + seq.get(counter-2) + " " + seq.get(counter-1) + " " + seq.get(counter));
                 checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context2);
             //    context.clear();
                 //System.out.println("Second clear");

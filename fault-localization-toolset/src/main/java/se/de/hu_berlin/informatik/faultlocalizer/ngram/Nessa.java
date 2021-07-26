@@ -253,7 +253,7 @@ public class Nessa<T> extends AbstractFaultLocalizer<T> {
     //	System.out.println("crossEntropy: " + crossEntropy);
     	//if (crossEntropy < 0.00000000001) crossEntropy = 0.0; //Um negative Werte zu vermeiden
     	//crossEntropy = crossEntropy * 2; //--
-    	return crossEntropy;
+    	return Math.abs(crossEntropy);
     }
     
     //Berechnet q(nGram) (die Wahrscheinlichkeit des Auftretens des letzten Tokens nach diesem Kontext
