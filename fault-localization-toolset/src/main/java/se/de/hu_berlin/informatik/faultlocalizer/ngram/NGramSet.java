@@ -208,7 +208,7 @@ public class NGramSet {
     // PT ->
     private void calcNGramStats(LinkedList<Integer> seq, int nMax) {
 
-        // stop is this sequence is too short
+        // stop if this sequence is too short
         if (seq.size() < nMax) {
             return;
         }
@@ -258,14 +258,7 @@ public class NGramSet {
         		context.add(0, seq.get(counter-4));
         		context.add(1, seq.get(counter-3));
         	}
-        	//System.out.println("context: " + context);
-        	//System.out.println("ngram: " + lastNGram);
-        	//System.out.println("context: " + context);
-        	//System.out.println("Elements in seq: " + seq.get(counter-4) + " " + seq.get(counter-3) + " " + seq.get(counter-2) + " " + seq.get(counter-1) + " " + seq.get(counter));
             checkThenAdd(nMax, lastNGram, confOfLastRelNode, distToLastFailedNode, context);
-       //     context.clear();
-            //System.out.println("First clear");
-            //System.out.println("context should be empty: " + context);
         }
 
         while (blockIt.hasNext()) {
@@ -293,7 +286,6 @@ public class NGramSet {
 
             // again, we only save this ngram if it contains a relevant block
             if (distToLastFailedNode < nMax) {
-                //updateMinSup(nMax, distToLastFailedNode, confOfLastRelNode);
             	if (counter < 4) {
             		if (counter < 3) {
             			context2.add(0, -1);
@@ -308,14 +300,7 @@ public class NGramSet {
             		context2.add(0, seq.get(counter-4));
             		context2.add(1, seq.get(counter-3));
             	}
-            	//System.out.println("context: " + context);
-            	//System.out.println("ngram: " + nGram);
-            	//System.out.println("context: " + context2);
-            	//System.out.println("Elements in seq: " + seq.get(counter-4) + " " + seq.get(counter-3) + " " + seq.get(counter-2) + " " + seq.get(counter-1) + " " + seq.get(counter));
                 checkThenAdd(nMax, nGram, confOfLastRelNode, distToLastFailedNode, context2);
-            //    context.clear();
-                //System.out.println("Second clear");
-                //System.out.println("context should be empty: " + context);
             }
             lastNGram = nGram;
         }
@@ -349,7 +334,6 @@ public class NGramSet {
     // PT ->
     private void checkThenAdd(int nMax, ArrayList<Integer> ngram, double confOfLastRelNode, int distance, ArrayList<Integer> context) {
         double EF = getIntersectionCount2(ngram, failedTest, nMax);
-        //System.out.println("context in checkThenAdd: " + context);
         if (dynaSup) {
             if (distance == 0) {
                 // the current block has EF factor = 1.0 -> the EF factor will not change
@@ -357,13 +341,7 @@ public class NGramSet {
                 double EP = getIntersectionCount2(ngram, passedTest, nMax);
                 double newConf = EF / (EP + EF);
                 if (newConf > confOfLastRelNode) {
-                	//if (context.size() != 2) {
-                		//System.out.println("Size != 2: Size is" + context.size());
-                		//System.out.println(context);
-                		//System.out.println("------------------------------------------------------------------");
-                	//} 
                     nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, EP + EF, ngram, context));
-                    //System.out.println("context in checkThenAdd, NGram created line 353: " + context);
                 }    
                 return;
             } else {
@@ -375,14 +353,7 @@ public class NGramSet {
 
         if ((EF > 0) && (EF >= minEF)) {
             double EP = getIntersectionCount2(ngram, passedTest, nMax);
-            //System.out.println("context in checkThenAdd, new NGram: " + context);
-            //if (context.size() != 2) {
-        		//System.out.println("Size != 2: Size is " + context.size());
-        		//System.out.println(context);
-        		//System.out.println("------------------------------------------------------------------");
-        	//}
             nGramHashSet.computeIfAbsent(ngram, v -> new NGram(nMax, EF, EP + EF, ngram, context));
-            //System.out.println("context in checkThenAdd, NGram created: " + context);
         }
 
     } //<- PT
@@ -407,18 +378,13 @@ public class NGramSet {
                                     ET = hitTrace.getEP(b) + EF;
                                     ArrayList<Integer> tmp = new ArrayList<>(1);
                                     tmp.add(b);
-                                    //double successfulTestCount = hitTrace.getSuccessfulTestCount(); //Philipp Thamm
                                     // PT ->
                                     ArrayList<Integer> context = new ArrayList<>(2);
                                     context.add(0, -1);
                         			context.add(1, -1);
-                        			//System.out.println("context size in initFailedTest is " + context.size());
-                            		//System.out.println("context in initFailedTest is " + context);
                                     nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, tmp, context)); 
                                     // <- PT
                                     //nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, tmp)); //original
-                                    
-                                    //nGramHashSet.computeIfAbsent(tmp, v -> new NGram(1, EF, ET, failedTestCount, successfulTestCount, tmp, 1));
                                 }
                             });
                 });
@@ -483,28 +449,16 @@ public class NGramSet {
         for (int n = 0; n < length; n++) {
             if (tmp[n] != -1) count++;
         }
-      /*System.out.println("---------------------------------------------");
-        System.out.println("allSet: " + allSet);
-        System.out.println("tmp: " + tmp);
-        System.out.println("count: " + count);
-        System.out.println("---------------------------------------------");
-        System.out.println("---------------------------------------------");
-        System.out.println("failedTest: "+ failedTest);
-        System.out.println("---------------------------------------------");
-        System.out.println("passedTest: " + passedTest);
-        System.out.println("---------------------------------------------");
-        System.out.println("---------------------------------------------");*/
         return count;
     }
     
     //PT ->
     public ArrayList<NGram> getnGrams() {
     	ArrayList<NGram> nGramList = new ArrayList<NGram>(nGramHashSet.values());
-    	//System.out.println("nGramList from getnGrams: " + nGramList);
-    	//System.out.println("nGramHashSet.values(): " + nGramHashSet.values());
     	return nGramList;
     }
     
+    //used to update the confidence values saved in the n-Grams
     public void updateConfidence() {
     	LinkedHashMap<Integer, Double> newConfidence = new LinkedHashMap<>(result.size());
     	ConcurrentHashMap<Integer, LinkedHashSet<Integer>> blockMap = hitTrace.getBlock2NodeMap();
@@ -523,11 +477,6 @@ public class NGramSet {
     		}	
     	});
     	confidence = newConfidence;
-    	/*System.out.println("newConfidence->");
-    	System.out.println(newConfidence);
-    	System.out.println("__________");
-    	System.out.println(confidence);
-    	System.out.println("<-confidence");*/
     	return;
     }
     //<- PT
