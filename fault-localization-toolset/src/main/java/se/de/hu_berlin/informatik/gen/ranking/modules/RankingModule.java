@@ -87,9 +87,6 @@ public class RankingModule<T> extends AbstractProcessor<ISpectra<T, ?>, ISpectra
             final Ranking<INode<T>> ranking = localizer.localize(spectra, strategy);
             Paths.get(outputdir + File.separator + subfolder).toFile().mkdirs();
             ranking.save(outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_RANKING_FILE);
-            System.out.println("------- ranking saved -------"); //PT
-            System.out.println(ranking.getBestRankingElement()); //PT
-            System.out.println(ranking.getBestRankingValue()); //PT
         } catch (IOException e) {
             Log.err(this, e, "Could not save ranking in '%s'.",
                     outputdir + File.separator + subfolder + File.separator + BugLoRDConstants.FILENAME_RANKING_FILE);
