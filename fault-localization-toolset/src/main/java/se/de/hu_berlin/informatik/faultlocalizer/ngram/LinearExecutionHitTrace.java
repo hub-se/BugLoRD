@@ -13,6 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import java.util.ArrayList; //PT
+import java.util.List; //PT
+
 public class LinearExecutionHitTrace {
     final private int numOfCores = Runtime.getRuntime().availableProcessors();
     private ArrayList<LinearExecutionTestTrace> TestTrace;
@@ -117,7 +120,7 @@ public class LinearExecutionHitTrace {
     public int getFailedTestCount() {
         return spectra.getFailingTraces().size();
     }
-
+    
     public ConcurrentHashMap.KeySetView<Integer, LinkedHashSet<Integer>> getAllBlocks() {
         return block2NodeMap.keySet();
     }
@@ -247,6 +250,65 @@ public class LinearExecutionHitTrace {
             }
             testTrace.getTraces().add(innerTrace);
         }
+    }
+    
+    //Philipp Thamm ->
+    
+    public String successfulToString() {
+    	ArrayList<LinearExecutionTestTrace> successfulTestTrace = new ArrayList<LinearExecutionTestTrace>();
+    	TestTrace.forEach(t -> {
+    		if (t.isSuccessful()) {
+    			successfulTestTrace.add(t);
+        	}
+        });
+    	return "LEBHitTrace{" + "SuccessfulTestTrace=" + successfulTestTrace + '}';
+    }
+    
+    public String failedToString() {
+    	ArrayList<LinearExecutionTestTrace> failedTestTrace = new ArrayList<LinearExecutionTestTrace>();
+    	TestTrace.forEach(t -> {
+    		if (!(t.isSuccessful())) {
+        		failedTestTrace.add(t);
+        	}
+        });
+    	return "LEBHitTrace{" + "FailedTestTrace=" + failedTestTrace + '}';
+    }
+    
+    public ArrayList<LinearExecutionTestTrace> getFailedTestTraces() {
+    	ArrayList<LinearExecutionTestTrace> failedTestTrace = new ArrayList<LinearExecutionTestTrace>();
+    	TestTrace.forEach(t -> {
+    		if (!(t.isSuccessful())) {
+        		failedTestTrace.add(t);
+        	}
+        });
+    	return failedTestTrace;
+    }
+    
+    public ArrayList<LinearExecutionTestTrace> getSuccessfulTestTraces() {
+    	ArrayList<LinearExecutionTestTrace> successfulTestTrace = new ArrayList<LinearExecutionTestTrace>();
+    	TestTrace.forEach(t -> {
+    		if (t.isSuccessful()) {
+        		successfulTestTrace.add(t);
+        	}
+        });
+    	return successfulTestTrace;
+    }
+    
+    public int getTestTracesCount() {
+    	ArrayList<LinearExecutionTestTrace> successfulTestTrace = new ArrayList<LinearExecutionTestTrace>();
+    	TestTrace.forEach(t -> {
+    		if (t.isSuccessful()) {
+        		successfulTestTrace.add(t);
+        	}
+        });
+    	ArrayList<LinearExecutionTestTrace> failedTestTrace = new ArrayList<LinearExecutionTestTrace>();
+    	TestTrace.forEach(t -> {
+    		if (!(t.isSuccessful())) {
+        		failedTestTrace.add(t);
+        	}
+        });
+    	int size = successfulTestTrace.size() + failedTestTrace.size();
+    	return size;
     }
 
 

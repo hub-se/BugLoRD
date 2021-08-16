@@ -1,6 +1,7 @@
 package se.de.hu_berlin.informatik.faultlocalizer.ngram;
 
 import java.util.ArrayList;
+//import java.lang.Math; //for the log function
 
 public class NGram implements Comparable<NGram> {
     final private int length;
@@ -8,16 +9,17 @@ public class NGram implements Comparable<NGram> {
     private double EF;
     private double ET;
     private double confidence;
+    private ArrayList<Integer> context; //PT
 
-    public NGram(int length, double EF, double ET, ArrayList<Integer> blockIDs) {
+    public NGram(int length, double EF, double ET, ArrayList<Integer> blockIDs, ArrayList<Integer> context) {
         this.length = length;
         this.blockIDs = blockIDs;
         this.EF = EF;
         this.ET = ET;
         confidence = (ET > 0) ? EF / ET : 0.0;
-
+        this.context = context; //PT
     }
-
+    
     public int getLength() {
         return length;
     }
@@ -39,6 +41,22 @@ public class NGram implements Comparable<NGram> {
 
     public double getET() {
         return ET;
+    }
+    
+    //PT
+    public ArrayList<Integer> getContext() {
+        return context;
+    }
+    
+    public Integer getContexti(int index) {
+        return context.get(index);
+    }
+    
+    public void printContext() {
+        System.out.println("context printed from NGram.printContext: " + context);
+        System.out.println("context(0) printed from NGram.printContext: " + context.get(0));
+        System.out.println("context(1) printed from NGram.printContext: " + context.get(1));
+    	return;
     }
 
 
@@ -94,6 +112,14 @@ public class NGram implements Comparable<NGram> {
                 ", EF=" + EF +
                 ", ET=" + ET +
                 ", confidence=" + confidence +
+                ", context=" + context + //PT
                 '}';
     }
+    
+    //PT ->
+    public void setConfidence(double conf) {
+        this.confidence = conf;
+        return;
+    }
+    // <- PT
 }
