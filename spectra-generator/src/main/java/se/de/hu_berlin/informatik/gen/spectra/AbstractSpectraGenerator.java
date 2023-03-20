@@ -444,8 +444,8 @@ public abstract class AbstractSpectraGenerator {
                     factory, projectDir, sourceDir, testClassDir, outputDir,
                     testClassPath, testClassList, testList, javaHome,
                     useFullSpectra, useSeparateJVM, useJava7, condenseNodes, timeout, testRepeatCount,
-                    maxErrors, pipeBufferSize, agentPort, failingTests, customSmallJvmArgs, 
-                    (String[]) classesToInstrument);
+                    maxErrors, pipeBufferSize, agentPort, failingTests, customSmallJvmArgs,
+                    classesToInstrument);
         }
 
     }

@@ -57,3 +57,4 @@ jacoco.exec
 #intellij
 .idea
 *.iml
+defects4jProperties.ini

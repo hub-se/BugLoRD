@@ -254,7 +254,7 @@ public class TraceCoberturaToSpectraTest extends TestSettings {
                 .useJava7only(useJava7)
                 .setTimeout(timeout)
                 .setTestRepeatCount(testrepeatCount)
-                .setCustomJvmArgs(new String[] {MAX_HEAP, GC})
+                .setCustomJvmArgs(new String[]{MAX_HEAP, GC})
                 .setCustomSmallJvmArgs(new String[] {MAX_SMALL_HEAP, GC})
                 .run();
         long endTime = new Date().getTime();

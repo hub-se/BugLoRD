@@ -83,7 +83,8 @@ public abstract class AbstractSpectraGenerationFactory<T extends Serializable, R
     public enum Strategy {
         COBERTURA,
         JACOCO,
-        TRACE_COBERTURA;
+        TRACE_COBERTURA,
+        PREDICATES;
 
         @Override
         public String toString() {
@@ -94,6 +95,8 @@ public abstract class AbstractSpectraGenerationFactory<T extends Serializable, R
                     return "cobertura";
                 case JACOCO:
                     return "jacoco";
+                case PREDICATES:
+                    return "predicates";
                 default:
                     throw new UnsupportedOperationException("Not implemented.");
             }

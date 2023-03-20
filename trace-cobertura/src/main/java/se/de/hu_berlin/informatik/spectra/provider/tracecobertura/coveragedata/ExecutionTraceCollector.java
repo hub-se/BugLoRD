@@ -4,6 +4,7 @@ import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.data.CoverageI
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.CoberturaStatementEncoding;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.SequiturUtils;
 import se.de.hu_berlin.informatik.spectra.provider.tracecobertura.infrastructure.sequitur.output.OutputSequence;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class ExecutionTraceCollector {
     private static Map<Long, OutputSequence> executionTraces = new ConcurrentHashMap<>();
 //    private static SharedOutputGrammar grammar = new SharedOutputGrammar();
 
-    private static int[][] classesToCounterArrayMap = new int[(int)Math.pow(2, CoberturaStatementEncoding.CLASS_ID_BITS)][];
+    private static final int[][] classesToCounterArrayMap = new int[(int)Math.pow(2, CoberturaStatementEncoding.CLASS_ID_BITS)][];
 
 //    private static Set<Thread> currentThreads = new HashSet<>();
 
@@ -83,7 +84,7 @@ public class ExecutionTraceCollector {
             }
 //            byte[] grammarByteArray = SequiturUtils.convertToByteArray(tempGrammar);
             
-            System.out.println(String.format("executed statements: %,d, threads: %,d", counter, threadCounter));
+            //System.out.println(String.format("executed statements: %,d, threads: %,d", counter, threadCounter));
             counter = 0;
 //            if (sb.length() != 0) {
 //            	System.out.print(sb.toString());
