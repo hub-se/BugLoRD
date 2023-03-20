@@ -65,11 +65,11 @@ public class SpectraFileUtilsTest extends TestSettings {
 //		deleteTestOutputs();
     }
 
-    @Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
-
-    @Rule
-    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
+//    @Rule
+//    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+//
+//    @Rule
+//    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
 
     private int[] s(int... numbers) {
         return numbers;

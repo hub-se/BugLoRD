@@ -51,11 +51,11 @@ public class PlotterTest extends TestSettings {
         deleteTestOutputs();
     }
 
-    @Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
-
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
+//    @Rule
+//    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+//
+//    @Rule
+//    public final ExpectedException exception = ExpectedException.none();
 
     /**
      * Test method for {@link se.de.hu_berlin.informatik.rankingplotter.plotter.Plotter#main(java.lang.String[])}.
@@ -115,8 +115,13 @@ public class PlotterTest extends TestSettings {
                 + File.separator + "3" + File.separator + BugLoRDConstants.DATA_DIR_NAME,
                 CmdOptions.NORMAL_PLOT.asArg(), "dirThatNotExists",
                 CmdOptions.OUTPUT.asArg(), getStdTestDir(), "myRankingSingle"};
-        exception.expect(Abort.class);
-        Plotter.main(args);
+//        exception.expect(Abort.class);
+        try {
+        	Plotter.main(args);
+        	assertTrue(false);
+        } catch (Abort e) {
+        	// this is correct
+        }
     }
 
     /**

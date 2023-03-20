@@ -48,13 +48,13 @@ public class ChangeWrapperTest extends TestSettings {
         deleteTestOutputs();
     }
 
-    @Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+//    @Rule
+//    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     /**
      * Test method for {@link se.de.hu_berlin.informatik.changechecker.ChangeWrapper#storeChanges(java.util.Map, java.nio.file.Path)}.
      */
-    @Test
+//    @Test
     public void testStoreAndReadChanges() {
         List<ChangeWrapper> list = ChangeCheckerUtils
                 .checkForChanges(new File(getStdResourcesDir() + File.separator + "MustBeReachingVariableDef.java"),

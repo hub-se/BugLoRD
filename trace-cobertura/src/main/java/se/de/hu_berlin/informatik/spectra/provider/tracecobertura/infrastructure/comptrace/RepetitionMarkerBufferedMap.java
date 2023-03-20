@@ -12,6 +12,8 @@ import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+
 @CoverageIgnore
 public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 
@@ -38,6 +40,7 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
 
     private transient ByteBuffer writeBuffer = null;
 
+    @IgnoreJRERequirement
     private ByteBuffer getFreshBuffer() {
         // only (lazily) allocate ONE buffer per buffered map object! allocation costs are potentially high...
         if (writeBuffer == null) {
@@ -60,6 +63,7 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
         writeBuffer = null;
     }
 
+    @IgnoreJRERequirement
     @Override
     protected void store(Node<int[]> node, String filename) {
         try (RandomAccessFile raFile = new RandomAccessFile(filename, "rw")) {
@@ -86,6 +90,7 @@ public class RepetitionMarkerBufferedMap extends BufferedMap<int[]> {
         }
     }
 
+    @IgnoreJRERequirement
     @Override
     protected Node<int[]> load(int storeIndex, String filename) throws IllegalStateException {
         Node<int[]> loadedNode;

@@ -47,8 +47,8 @@ public class TokenizeLinesTest extends TestSettings {
 //		deleteTestOutputs();
     }
 
-    @Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+//    @Rule
+//    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     /**
      * Test method for {@link se.de.hu_berlin.informatik.javatokenizer.tokenizelines.TokenizeLines#main(java.lang.String[])}.

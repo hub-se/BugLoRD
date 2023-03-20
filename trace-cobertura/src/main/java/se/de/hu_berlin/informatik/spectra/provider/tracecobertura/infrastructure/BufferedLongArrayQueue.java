@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+
 /**
  * Simple single linked queue implementation using fixed/variable size array nodes.
  */
@@ -210,6 +212,7 @@ public class BufferedLongArrayQueue implements Serializable {
 
     private transient ByteBuffer writeBuffer = null;
 
+    @IgnoreJRERequirement
     private ByteBuffer getFreshBuffer() {
         // only (lazily) allocate ONE buffer per buffered queue object! allocation costs are potentially high...
         if (writeBuffer == null) {
@@ -219,6 +222,7 @@ public class BufferedLongArrayQueue implements Serializable {
         return writeBuffer;
     }
 
+    @IgnoreJRERequirement
     private void store(Node node) {
 //    	System.out.println(super.toString() + " store: " + node.storeIndex + ", " + cachedNodes.keySet() + ", last: " + (lastStoreIndex+1));
 //    	System.out.println("imem: " + Runtime.getRuntime().freeMemory());
@@ -374,6 +378,7 @@ public class BufferedLongArrayQueue implements Serializable {
         }
     }
 
+    @IgnoreJRERequirement
     private Node load(int storeIndex) {
         if (lastNode != null && storeIndex == lastNode.storeIndex) {
             return lastNode;

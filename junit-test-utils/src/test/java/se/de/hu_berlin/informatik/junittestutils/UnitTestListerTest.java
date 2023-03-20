@@ -52,11 +52,11 @@ public class UnitTestListerTest extends TestSettings {
         deleteTestOutputs();
     }
 
-    @Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
-
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
+//    @Rule
+//    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+//
+//    @Rule
+//    public final ExpectedException exception = ExpectedException.none();
 
     /**
      * Test method for {@link se.de.hu_berlin.informatik.junittestutils.testlister.UnitTestLister#main(java.lang.String[])}.

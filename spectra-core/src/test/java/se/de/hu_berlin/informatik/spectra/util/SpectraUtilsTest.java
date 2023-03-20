@@ -62,11 +62,11 @@ public class SpectraUtilsTest extends TestSettings {
 //        deleteTestOutputs();
     }
 
-    @Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
-
-    @Rule
-    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
+//    @Rule
+//    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+//
+//    @Rule
+//    public final SystemErrRule systemErrRule = new SystemErrRule().enableLog();
 
     @Test
     public void invertSimpleCoverage() {
