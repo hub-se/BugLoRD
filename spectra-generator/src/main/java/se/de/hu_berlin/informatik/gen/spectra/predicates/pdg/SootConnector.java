@@ -1,6 +1,5 @@
 package se.de.hu_berlin.informatik.gen.spectra.predicates.pdg;
 
-import jdk.nashorn.internal.runtime.regexp.joni.encoding.ObjPtr;
 import se.de.hu_berlin.informatik.benchmark.api.defects4j.Defects4J;
 import soot.*;
 import soot.jimple.JimpleBody;
